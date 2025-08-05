@@ -51,8 +51,22 @@ function getUltimos30Dias(): Date {
 }
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
-  const caixaContext = useCaixa();
-  const contasContext = useContas();
+  // Usar try/catch para lidar com contextos que podem não estar disponíveis ainda
+  let caixaContext, contasContext;
+
+  try {
+    caixaContext = useCaixa();
+  } catch (error) {
+    console.warn('CaixaContext not available yet');
+    caixaContext = null;
+  }
+
+  try {
+    contasContext = useContas();
+  } catch (error) {
+    console.warn('ContasContext not available yet');
+    contasContext = null;
+  }
 
   const [filtros, setFiltros] = useState<FiltrosPeriodo>({
     dataInicio: getInicioDoMes(),
