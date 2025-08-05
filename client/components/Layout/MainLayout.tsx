@@ -176,25 +176,25 @@ export default function MainLayout() {
             onToggle={() => setMobileMenuOpen(false)}
           />
         </SheetContent>
-      </Sheet>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Mobile Header */}
-        <div className="md:hidden bg-background border-b px-4 py-3 flex items-center justify-between">
-          <EmpresaLogo variant="default" size="md" showSubtitle={false} />
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Mobile Header */}
+          <div className="md:hidden bg-background border-b px-4 py-3 flex items-center justify-between">
+            <EmpresaLogo variant="default" size="md" showSubtitle={false} />
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+          </div>
+
+          {/* Page Content */}
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
         </div>
-
-        {/* Page Content */}
-        <main className="flex-1 overflow-auto">
-          <Outlet />
-        </main>
-      </div>
+      </Sheet>
     </div>
   );
 }
