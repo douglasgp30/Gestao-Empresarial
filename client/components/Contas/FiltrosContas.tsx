@@ -239,9 +239,9 @@ export default function FiltrosContas() {
             {/* Status */}
             <div>
               <Label>Status</Label>
-              <Select 
-                value={filtros.status || ''} 
-                onValueChange={(value) => setFiltros({ ...filtros, status: value || undefined })}
+              <Select
+                value={filtros.status || 'todos'}
+                onValueChange={(value) => setFiltros({ ...filtros, status: value === 'todos' ? undefined : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
