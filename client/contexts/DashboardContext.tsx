@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { DashboardStats, LancamentoCaixa, Conta } from '@shared/types';
+import { useCaixa } from './CaixaContext';
+import { useContas } from './ContasContext';
 
 interface FiltrosPeriodo {
   dataInicio: Date;
@@ -11,6 +13,7 @@ interface DashboardContextType {
   stats: DashboardStats;
   lancamentos: LancamentoCaixa[];
   contas: Conta[];
+  contasVencendo: Conta[];
   setFiltros: (filtros: FiltrosPeriodo) => void;
   setFiltroRapido: (tipo: 'ultimos7dias' | 'estaemana' | 'ultimos30dias' | 'mesAtual') => void;
   isLoading: boolean;
@@ -143,6 +146,9 @@ function getUltimos30Dias(): Date {
 }
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
+  const caixaContext = useCaixa();
+  const contasContext = useContas();
+
   const [filtros, setFiltros] = useState<FiltrosPeriodo>({
     dataInicio: getInicioDoMes(),
     dataFim: getHoje()
@@ -152,6 +158,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     totalReceitas: 0,
     totalDespesas: 0,
     saldoFinal: 0,
+    totalReceitasRecebidas: 0,
+    totalDespesasPagas: 0,
+    saldoGeralRecebidoPago: 0,
+    totalContasRecebidasPagas: 0,
+    totalContasPagasPagas: 0,
+    saldoContas: 0,
+    totalValorContasAtrasadas: 0,
+    qtdContasPagarAtrasadas: 0,
+    qtdContasReceberAtrasadas: 0,
     contasVencendoHoje: 0,
     contasAtrasadas: 0,
     totalContasPagar: 0,
@@ -181,19 +196,21 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setFiltros(novoFiltro);
   };
 
-  // Calcular estatísticas baseadas no período selecionado
+  // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
+    if (!caixaContext || !contasContext) return;
+
     setIsLoading(true);
-    
+
     // Simular delay de API
     setTimeout(() => {
-      // Filtrar lançamentos pelo período
-      const lancamentosFiltrados = mockLancamentos.filter(lancamento => {
+      // Filtrar lançamentos do caixa pelo período
+      const lancamentosFiltrados = caixaContext.lancamentos.filter(lancamento => {
         const dataLancamento = new Date(lancamento.data);
         return dataLancamento >= filtros.dataInicio && dataLancamento <= filtros.dataFim;
       });
 
-      // Calcular totais
+      // PRIMEIRA LINHA - Totais do Caixa (serviços realizados)
       const totalReceitas = lancamentosFiltrados
         .filter(l => l.tipo === 'receita')
         .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
@@ -202,27 +219,79 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         .filter(l => l.tipo === 'despesa')
         .reduce((total, l) => total + l.valor, 0);
 
-      // Calcular estatísticas de contas
+      const saldoFinal = totalReceitas - totalDespesas;
+
+      // SEGUNDA LINHA - Receitas recebidas e despesas pagas (incluindo contas)
+      // Receitas do caixa + contas a receber já pagas
+      const contasRecebidasPagas = contasContext.contas
+        .filter(c => c.tipo === 'receber' && c.status === 'paga')
+        .reduce((total, c) => total + c.valor, 0);
+
+      const totalReceitasRecebidas = totalReceitas + contasRecebidasPagas;
+
+      // Despesas do caixa + contas a pagar já pagas
+      const contasPagasPagas = contasContext.contas
+        .filter(c => c.tipo === 'pagar' && c.status === 'paga')
+        .reduce((total, c) => total + c.valor, 0);
+
+      const totalDespesasPagas = totalDespesas + contasPagasPagas;
+
+      const saldoGeralRecebidoPago = totalReceitasRecebidas - totalDespesasPagas;
+
+      // TERCEIRA LINHA - Totais específicos do módulo Contas
+      const totalContasRecebidasPagas = contasRecebidasPagas;
+      const totalContasPagasPagas = contasPagasPagas;
+      const saldoContas = totalContasRecebidasPagas - totalContasPagasPagas;
+
+      // Valor total de contas atrasadas
+      const totalValorContasAtrasadas = contasContext.contas
+        .filter(c => c.status === 'atrasada')
+        .reduce((total, c) => total + c.valor, 0);
+
+      // Quantidade de contas atrasadas por tipo
+      const qtdContasPagarAtrasadas = contasContext.contas
+        .filter(c => c.tipo === 'pagar' && c.status === 'atrasada').length;
+
+      const qtdContasReceberAtrasadas = contasContext.contas
+        .filter(c => c.tipo === 'receber' && c.status === 'atrasada').length;
+
+      // Estatísticas gerais para compatibilidade
       const hoje = new Date();
-      const contasVencendoHoje = mockContas.filter(c => {
+      const contasVencendoHoje = contasContext.contas.filter(c => {
         const dataVenc = new Date(c.dataVencimento);
         return dataVenc.toDateString() === hoje.toDateString();
       }).length;
 
-      const contasAtrasadas = mockContas.filter(c => c.status === 'atrasada').length;
+      const contasAtrasadas = contasContext.contas.filter(c => c.status === 'atrasada').length;
 
-      const totalContasPagar = mockContas
+      const totalContasPagar = contasContext.contas
         .filter(c => c.tipo === 'pagar' && c.status !== 'paga')
         .reduce((total, c) => total + c.valor, 0);
 
-      const totalContasReceber = mockContas
+      const totalContasReceber = contasContext.contas
         .filter(c => c.tipo === 'receber' && c.status !== 'paga')
         .reduce((total, c) => total + c.valor, 0);
 
       setStats({
+        // Primeira linha
         totalReceitas,
         totalDespesas,
-        saldoFinal: totalReceitas - totalDespesas,
+        saldoFinal,
+
+        // Segunda linha
+        totalReceitasRecebidas,
+        totalDespesasPagas,
+        saldoGeralRecebidoPago,
+
+        // Terceira linha
+        totalContasRecebidasPagas,
+        totalContasPagasPagas,
+        saldoContas,
+        totalValorContasAtrasadas,
+        qtdContasPagarAtrasadas,
+        qtdContasReceberAtrasadas,
+
+        // Compatibilidade
         contasVencendoHoje,
         contasAtrasadas,
         totalContasPagar,
@@ -231,13 +300,19 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       setIsLoading(false);
     }, 300);
-  }, [filtros]);
+  }, [filtros, caixaContext?.lancamentos, contasContext?.contas]);
+
+  // Filtrar contas que precisam de atenção (vencendo hoje e atrasadas)
+  const contasVencendo = contasContext?.contas?.filter(conta =>
+    conta.status === 'vence_hoje' || conta.status === 'atrasada'
+  ).sort((a, b) => new Date(a.dataVencimento).getTime() - new Date(b.dataVencimento).getTime()) || [];
 
   const value = {
     filtros,
     stats,
-    lancamentos: mockLancamentos,
-    contas: mockContas,
+    lancamentos: caixaContext?.lancamentos || [],
+    contas: contasContext?.contas || [],
+    contasVencendo,
     setFiltros,
     setFiltroRapido,
     isLoading
