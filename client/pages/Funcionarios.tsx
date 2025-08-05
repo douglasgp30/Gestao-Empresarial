@@ -1,22 +1,38 @@
 import React from 'react';
-import PlaceholderPage from './PlaceholderPage';
+import { FuncionariosProvider } from '../contexts/FuncionariosContext';
+import FormularioFuncionario from '../components/Funcionarios/FormularioFuncionario';
+import ListaFuncionarios from '../components/Funcionarios/ListaFuncionarios';
 import { Users } from 'lucide-react';
+
+function FuncionariosContent() {
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+            <Users className="h-8 w-8 text-primary" />
+            Funcionários
+          </h1>
+          <p className="text-muted-foreground">
+            Gestão completa de funcionários, permissões e comissões
+          </p>
+        </div>
+        <div className="flex space-x-2">
+          <FormularioFuncionario />
+        </div>
+      </div>
+
+      {/* Lista de Funcionários */}
+      <ListaFuncionarios />
+    </div>
+  );
+}
 
 export default function Funcionarios() {
   return (
-    <PlaceholderPage
-      title="Funcionários"
-      description="Cadastro e gestão de funcionários"
-      icon={Users}
-      features={[
-        'Cadastro completo de funcionários',
-        'Controle de login e senhas',
-        'Definição de permissões de acesso',
-        'Configuração de tipos de acesso (Admin/Operador)',
-        'Gestão de percentual de comissão',
-        'Histórico de atividades',
-        'Relatórios de performance'
-      ]}
-    />
+    <FuncionariosProvider>
+      <FuncionariosContent />
+    </FuncionariosProvider>
   );
 }
