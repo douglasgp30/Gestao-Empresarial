@@ -242,8 +242,8 @@ export default function FiltrosCaixa() {
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
-                  {tecnicos.map(tecnico => (
+                <SelectItem value="todos">Todos</SelectItem>
+                {tecnicos.map(tecnico => (
                     <SelectItem key={tecnico} value={tecnico}>{tecnico}</SelectItem>
                   ))}
                 </SelectContent>
