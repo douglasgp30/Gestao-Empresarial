@@ -71,9 +71,25 @@ export interface LoginCredentials {
 }
 
 export interface DashboardStats {
+  // Primeira linha - Totais do Caixa
   totalReceitas: number;
   totalDespesas: number;
   saldoFinal: number;
+
+  // Segunda linha - Receitas/Despesas efetivamente recebidas/pagas
+  totalReceitasRecebidas: number;
+  totalDespesasPagas: number;
+  saldoGeralRecebidoPago: number;
+
+  // Terceira linha - Totais específicos do módulo Contas
+  totalContasRecebidasPagas: number;
+  totalContasPagasPagas: number;
+  saldoContas: number;
+  totalValorContasAtrasadas: number;
+  qtdContasPagarAtrasadas: number;
+  qtdContasReceberAtrasadas: number;
+
+  // Stats gerais para compatibilidade
   contasVencendoHoje: number;
   contasAtrasadas: number;
   totalContasPagar: number;
