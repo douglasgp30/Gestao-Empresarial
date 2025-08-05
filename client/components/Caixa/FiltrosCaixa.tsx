@@ -279,8 +279,8 @@ export default function FiltrosCaixa() {
                 <SelectValue placeholder="Todas as campanhas" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas</SelectItem>
-                {campanhas.map(campanha => (
+              <SelectItem value="todas">Todas</SelectItem>
+              {campanhas.map(campanha => (
                   <SelectItem key={campanha.id} value={campanha.nome}>{campanha.nome}</SelectItem>
                 ))}
               </SelectContent>
