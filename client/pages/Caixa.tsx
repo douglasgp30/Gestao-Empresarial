@@ -23,9 +23,11 @@ function CaixaContent() {
             Controle completo de receitas e despesas da empresa
           </p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           <FormularioReceita />
           <FormularioDespesa />
+          <ModalCampanhas />
+          <ModalDescricoes />
         </div>
       </div>
 
