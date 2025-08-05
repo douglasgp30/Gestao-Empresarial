@@ -10,7 +10,6 @@ import {
   DollarSign,
   FileText,
   Users,
-  Megaphone,
   BarChart3,
   Settings,
   LogOut,
