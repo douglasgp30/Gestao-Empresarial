@@ -1,67 +1,86 @@
-import React, { useState } from 'react';
-import { useCaixa } from '../../contexts/CaixaContext';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Switch } from '../ui/switch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Separator } from '../ui/separator';
-import { Textarea } from '../ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { DollarSign, Plus, TrendingUp, Calculator } from 'lucide-react';
+import React, { useState } from "react";
+import { useCaixa } from "../../contexts/CaixaContext";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Switch } from "../ui/switch";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Separator } from "../ui/separator";
+import { Textarea } from "../ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { DollarSign, Plus, TrendingUp, Calculator } from "lucide-react";
 
 const formasPagamento = [
-  'Dinheiro',
-  'Pix',
-  'Cartão de Débito',
-  'Cartão de Crédito',
-  'Boleto',
-  'Transferência'
+  "Dinheiro",
+  "Pix",
+  "Cartão de Débito",
+  "Cartão de Crédito",
+  "Boleto",
+  "Transferência",
 ];
 
 const setores = [
-  'Residencial',
-  'Comercial',
-  'Industrial',
-  'Condomínio',
-  'Emergência'
+  "Residencial",
+  "Comercial",
+  "Industrial",
+  "Condomínio",
+  "Emergência",
 ];
 
 const tecnicos = [
-  'João Silva',
-  'Carlos Santos',
-  'Roberto Lima',
-  'Fernando Costa'
+  "João Silva",
+  "Carlos Santos",
+  "Roberto Lima",
+  "Fernando Costa",
 ];
 
 export default function FormularioReceita() {
   const { adicionarLancamento, campanhas, adicionarCampanha } = useCaixa();
   const [isOpen, setIsOpen] = useState(false);
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
-  
+
   const [formData, setFormData] = useState({
-    data: new Date().toISOString().split('T')[0],
-    valor: '',
-    formaPagamento: '',
-    tecnicoResponsavel: '',
+    data: new Date().toISOString().split("T")[0],
+    valor: "",
+    formaPagamento: "",
+    tecnicoResponsavel: "",
     notaFiscal: false,
-    setor: '',
-    campanha: '',
-    observacoes: ''
+    setor: "",
+    campanha: "",
+    observacoes: "",
   });
 
   const [novaCampanha, setNovaCampanha] = useState({
-    nome: '',
-    descricao: '',
-    dataInicio: new Date().toISOString().split('T')[0],
-    dataFim: ''
+    nome: "",
+    descricao: "",
+    dataInicio: new Date().toISOString().split("T")[0],
+    dataFim: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const valor = parseFloat(formData.valor);
     if (!valor || valor <= 0) return;
 
@@ -76,14 +95,15 @@ export default function FormularioReceita() {
     }
 
     // Aplicar taxa do cartão se for cartão
-    if (formData.formaPagamento.includes('Cartão')) {
-      const taxaCartao = formData.formaPagamento === 'Cartão de Débito' ? 2 : 3.5;
+    if (formData.formaPagamento.includes("Cartão")) {
+      const taxaCartao =
+        formData.formaPagamento === "Cartão de Débito" ? 2 : 3.5;
       const desconto = valorLiquido * (taxaCartao / 100);
       valorLiquido = valorLiquido - desconto;
     }
 
     adicionarLancamento({
-      tipo: 'receita',
+      tipo: "receita",
       data: new Date(formData.data),
       valor,
       valorLiquido,
@@ -93,19 +113,19 @@ export default function FormularioReceita() {
       descontoImposto: formData.notaFiscal ? descontoImposto : undefined,
       setor: formData.setor,
       campanha: formData.campanha || undefined,
-      descricao: formData.observacoes || undefined
+      descricao: formData.observacoes || undefined,
     });
 
     // Reset form
     setFormData({
-      data: new Date().toISOString().split('T')[0],
-      valor: '',
-      formaPagamento: '',
-      tecnicoResponsavel: '',
+      data: new Date().toISOString().split("T")[0],
+      valor: "",
+      formaPagamento: "",
+      tecnicoResponsavel: "",
       notaFiscal: false,
-      setor: '',
-      campanha: '',
-      observacoes: ''
+      setor: "",
+      campanha: "",
+      observacoes: "",
     });
 
     setIsOpen(false);
@@ -119,14 +139,16 @@ export default function FormularioReceita() {
       descricao: novaCampanha.descricao,
       ativa: true,
       dataInicio: new Date(novaCampanha.dataInicio),
-      dataFim: novaCampanha.dataFim ? new Date(novaCampanha.dataFim) : undefined
+      dataFim: novaCampanha.dataFim
+        ? new Date(novaCampanha.dataFim)
+        : undefined,
     });
 
     setNovaCampanha({
-      nome: '',
-      descricao: '',
-      dataInicio: new Date().toISOString().split('T')[0],
-      dataFim: ''
+      nome: "",
+      descricao: "",
+      dataInicio: new Date().toISOString().split("T")[0],
+      dataFim: "",
     });
 
     setIsNewCampanhaOpen(false);
@@ -140,8 +162,9 @@ export default function FormularioReceita() {
       valorLiquido = valor * 0.94; // 6% de imposto
     }
 
-    if (formData.formaPagamento.includes('Cartão')) {
-      const taxa = formData.formaPagamento === 'Cartão de Débito' ? 0.02 : 0.035;
+    if (formData.formaPagamento.includes("Cartão")) {
+      const taxa =
+        formData.formaPagamento === "Cartão de Débito" ? 0.02 : 0.035;
       valorLiquido = valorLiquido * (1 - taxa);
     }
 
@@ -180,7 +203,9 @@ export default function FormularioReceita() {
                 id="data"
                 type="date"
                 value={formData.data}
-                onChange={(e) => setFormData({ ...formData, data: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, data: e.target.value })
+                }
                 required
               />
             </div>
@@ -193,7 +218,9 @@ export default function FormularioReceita() {
                 step="0.01"
                 placeholder="0,00"
                 value={formData.valor}
-                onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, valor: e.target.value })
+                }
                 required
               />
             </div>
@@ -202,13 +229,20 @@ export default function FormularioReceita() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label>Forma de Pagamento</Label>
-              <Select value={formData.formaPagamento} onValueChange={(value) => setFormData({ ...formData, formaPagamento: value })}>
+              <Select
+                value={formData.formaPagamento}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, formaPagamento: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione a forma" />
                 </SelectTrigger>
                 <SelectContent>
-                  {formasPagamento.map(forma => (
-                    <SelectItem key={forma} value={forma}>{forma}</SelectItem>
+                  {formasPagamento.map((forma) => (
+                    <SelectItem key={forma} value={forma}>
+                      {forma}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -216,13 +250,20 @@ export default function FormularioReceita() {
 
             <div className="space-y-2">
               <Label>Técnico Responsável</Label>
-              <Select value={formData.tecnicoResponsavel} onValueChange={(value) => setFormData({ ...formData, tecnicoResponsavel: value })}>
+              <Select
+                value={formData.tecnicoResponsavel}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, tecnicoResponsavel: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o técnico" />
                 </SelectTrigger>
                 <SelectContent>
-                  {tecnicos.map(tecnico => (
-                    <SelectItem key={tecnico} value={tecnico}>{tecnico}</SelectItem>
+                  {tecnicos.map((tecnico) => (
+                    <SelectItem key={tecnico} value={tecnico}>
+                      {tecnico}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -232,13 +273,20 @@ export default function FormularioReceita() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label>Setor</Label>
-              <Select value={formData.setor} onValueChange={(value) => setFormData({ ...formData, setor: value })}>
+              <Select
+                value={formData.setor}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, setor: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o setor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {setores.map(setor => (
-                    <SelectItem key={setor} value={setor}>{setor}</SelectItem>
+                  {setores.map((setor) => (
+                    <SelectItem key={setor} value={setor}>
+                      {setor}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -247,9 +295,17 @@ export default function FormularioReceita() {
             <div className="space-y-2">
               <Label className="flex items-center justify-between">
                 Campanha
-                <Dialog open={isNewCampanhaOpen} onOpenChange={setIsNewCampanhaOpen}>
+                <Dialog
+                  open={isNewCampanhaOpen}
+                  onOpenChange={setIsNewCampanhaOpen}
+                >
                   <DialogTrigger asChild>
-                    <Button type="button" variant="ghost" size="sm" className="h-6 text-xs">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-xs"
+                    >
                       <Plus className="h-3 w-3 mr-1" />
                       Nova
                     </Button>
@@ -264,7 +320,12 @@ export default function FormularioReceita() {
                         <Input
                           id="nomeCampanha"
                           value={novaCampanha.nome}
-                          onChange={(e) => setNovaCampanha({ ...novaCampanha, nome: e.target.value })}
+                          onChange={(e) =>
+                            setNovaCampanha({
+                              ...novaCampanha,
+                              nome: e.target.value,
+                            })
+                          }
                           placeholder="Ex: Promoção Janeiro"
                         />
                       </div>
@@ -273,45 +334,77 @@ export default function FormularioReceita() {
                         <Textarea
                           id="descCampanha"
                           value={novaCampanha.descricao}
-                          onChange={(e) => setNovaCampanha({ ...novaCampanha, descricao: e.target.value })}
+                          onChange={(e) =>
+                            setNovaCampanha({
+                              ...novaCampanha,
+                              descricao: e.target.value,
+                            })
+                          }
                           placeholder="Descrição da campanha"
                         />
                       </div>
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label htmlFor="dataInicioCampanha">Data Início</Label>
+                          <Label htmlFor="dataInicioCampanha">
+                            Data Início
+                          </Label>
                           <Input
                             id="dataInicioCampanha"
                             type="date"
                             value={novaCampanha.dataInicio}
-                            onChange={(e) => setNovaCampanha({ ...novaCampanha, dataInicio: e.target.value })}
+                            onChange={(e) =>
+                              setNovaCampanha({
+                                ...novaCampanha,
+                                dataInicio: e.target.value,
+                              })
+                            }
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="dataFimCampanha">Data Fim (Opcional)</Label>
+                          <Label htmlFor="dataFimCampanha">
+                            Data Fim (Opcional)
+                          </Label>
                           <Input
                             id="dataFimCampanha"
                             type="date"
                             value={novaCampanha.dataFim}
-                            onChange={(e) => setNovaCampanha({ ...novaCampanha, dataFim: e.target.value })}
+                            onChange={(e) =>
+                              setNovaCampanha({
+                                ...novaCampanha,
+                                dataFim: e.target.value,
+                              })
+                            }
                           />
                         </div>
                       </div>
-                      <Button type="button" onClick={handleCriarCampanha} className="w-full">
+                      <Button
+                        type="button"
+                        onClick={handleCriarCampanha}
+                        className="w-full"
+                      >
                         Criar Campanha
                       </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
               </Label>
-              <Select value={formData.campanha} onValueChange={(value) => setFormData({ ...formData, campanha: value })}>
+              <Select
+                value={formData.campanha}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, campanha: value })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione campanha (opcional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  {campanhas.filter(c => c.ativa).map(campanha => (
-                    <SelectItem key={campanha.id} value={campanha.nome}>{campanha.nome}</SelectItem>
-                  ))}
+                  {campanhas
+                    .filter((c) => c.ativa)
+                    .map((campanha) => (
+                      <SelectItem key={campanha.id} value={campanha.nome}>
+                        {campanha.nome}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -321,9 +414,13 @@ export default function FormularioReceita() {
             <Switch
               id="notaFiscal"
               checked={formData.notaFiscal}
-              onCheckedChange={(checked) => setFormData({ ...formData, notaFiscal: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, notaFiscal: checked })
+              }
             />
-            <Label htmlFor="notaFiscal">Emitir Nota Fiscal (desconto de 6% de imposto)</Label>
+            <Label htmlFor="notaFiscal">
+              Emitir Nota Fiscal (desconto de 6% de imposto)
+            </Label>
           </div>
 
           <div className="space-y-2">
@@ -331,7 +428,9 @@ export default function FormularioReceita() {
             <Textarea
               id="observacoes"
               value={formData.observacoes}
-              onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, observacoes: e.target.value })
+              }
               placeholder="Observações sobre o serviço..."
               rows={3}
             />
@@ -350,29 +449,64 @@ export default function FormularioReceita() {
                 <CardContent className="space-y-2">
                   <div className="flex justify-between">
                     <span>Valor Bruto:</span>
-                    <span className="font-bold">R$ {parseFloat(formData.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                    <span className="font-bold">
+                      R${" "}
+                      {parseFloat(formData.valor).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
                   </div>
                   {formData.notaFiscal && (
                     <div className="flex justify-between text-red-600">
                       <span>Desconto Imposto (6%):</span>
-                      <span>- R$ {(parseFloat(formData.valor) * 0.06).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                      <span>
+                        - R${" "}
+                        {(parseFloat(formData.valor) * 0.06).toLocaleString(
+                          "pt-BR",
+                          { minimumFractionDigits: 2 },
+                        )}
+                      </span>
                     </div>
                   )}
-                  {formData.formaPagamento.includes('Cartão') && (
+                  {formData.formaPagamento.includes("Cartão") && (
                     <div className="flex justify-between text-orange-600">
-                      <span>Taxa Cartão ({formData.formaPagamento === 'Cartão de Débito' ? '2%' : '3,5%'}):</span>
-                      <span>- R$ {(calcularValorLiquido() * (formData.formaPagamento === 'Cartão de Débito' ? 0.02 : 0.035)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                      <span>
+                        Taxa Cartão (
+                        {formData.formaPagamento === "Cartão de Débito"
+                          ? "2%"
+                          : "3,5%"}
+                        ):
+                      </span>
+                      <span>
+                        - R${" "}
+                        {(
+                          calcularValorLiquido() *
+                          (formData.formaPagamento === "Cartão de Débito"
+                            ? 0.02
+                            : 0.035)
+                        ).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </span>
                     </div>
                   )}
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Valor Líquido:</span>
-                    <span className="text-green-600">R$ {calcularValorLiquido().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                    <span className="text-green-600">
+                      R${" "}
+                      {calcularValorLiquido().toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
                   </div>
                   {formData.tecnicoResponsavel && (
                     <div className="flex justify-between text-blue-600">
                       <span>Comissão {formData.tecnicoResponsavel} (15%):</span>
-                      <span>R$ {calcularComissao().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                      <span>
+                        R${" "}
+                        {calcularComissao().toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
                     </div>
                   )}
                 </CardContent>
@@ -381,7 +515,12 @@ export default function FormularioReceita() {
           )}
 
           <div className="flex gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              className="flex-1"
+            >
               Cancelar
             </Button>
             <Button type="submit" className="flex-1">

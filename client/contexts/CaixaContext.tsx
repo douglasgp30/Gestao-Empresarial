@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { LancamentoCaixa, Campanha } from '@shared/types';
-import { useAuth } from './AuthContext';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { LancamentoCaixa, Campanha } from "@shared/types";
+import { useAuth } from "./AuthContext";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
@@ -8,7 +14,7 @@ interface CaixaContextType {
   filtros: {
     dataInicio: Date;
     dataFim: Date;
-    tipo?: 'receita' | 'despesa' | 'todos';
+    tipo?: "receita" | "despesa" | "todos";
     formaPagamento?: string;
     tecnico?: string;
     campanha?: string;
@@ -20,10 +26,12 @@ interface CaixaContextType {
     saldo: number;
     comissoes: number;
   };
-  adicionarLancamento: (lancamento: Omit<LancamentoCaixa, 'id' | 'funcionarioId'>) => void;
+  adicionarLancamento: (
+    lancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
+  ) => void;
   editarLancamento: (id: string, lancamento: Partial<LancamentoCaixa>) => void;
   excluirLancamento: (id: string) => void;
-  adicionarCampanha: (campanha: Omit<Campanha, 'id'>) => void;
+  adicionarCampanha: (campanha: Omit<Campanha, "id">) => void;
   setFiltros: (filtros: any) => void;
   isLoading: boolean;
 }
@@ -33,156 +41,165 @@ const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 // Mock data inicial
 const mockLancamentos: LancamentoCaixa[] = [
   {
-    id: '1',
+    id: "1",
     data: new Date(2024, 11, 1),
-    tipo: 'receita',
-    valor: 450.00,
-    valorLiquido: 450.00,
-    formaPagamento: 'Pix',
-    tecnicoResponsavel: 'João Silva',
-    comissao: 67.50,
+    tipo: "receita",
+    valor: 450.0,
+    valorLiquido: 450.0,
+    formaPagamento: "Pix",
+    tecnicoResponsavel: "João Silva",
+    comissao: 67.5,
     notaFiscal: false,
-    setor: 'Residencial',
-    campanha: 'Desconto Dezembro',
-    funcionarioId: '2'
+    setor: "Residencial",
+    campanha: "Desconto Dezembro",
+    funcionarioId: "2",
   },
   {
-    id: '2',
+    id: "2",
     data: new Date(2024, 11, 2),
-    tipo: 'receita',
-    valor: 280.00,
-    valorLiquido: 280.00,
-    formaPagamento: 'Dinheiro',
-    tecnicoResponsavel: 'Carlos Santos',
-    comissao: 42.00,
+    tipo: "receita",
+    valor: 280.0,
+    valorLiquido: 280.0,
+    formaPagamento: "Dinheiro",
+    tecnicoResponsavel: "Carlos Santos",
+    comissao: 42.0,
     notaFiscal: false,
-    setor: 'Comercial',
-    funcionarioId: '3'
+    setor: "Comercial",
+    funcionarioId: "3",
   },
   {
-    id: '3',
+    id: "3",
     data: new Date(2024, 11, 3),
-    tipo: 'despesa',
-    valor: 120.50,
-    formaPagamento: 'Cartão',
-    categoria: 'Combustível',
-    descricao: 'Abastecimento van',
-    funcionarioId: '1'
+    tipo: "despesa",
+    valor: 120.5,
+    formaPagamento: "Cartão",
+    categoria: "Combustível",
+    descricao: "Abastecimento van",
+    funcionarioId: "1",
   },
   {
-    id: '4',
+    id: "4",
     data: new Date(2024, 11, 4),
-    tipo: 'receita',
-    valor: 380.00,
-    valorLiquido: 357.20,
-    formaPagamento: 'Cartão',
-    tecnicoResponsavel: 'João Silva',
-    comissao: 57.00,
+    tipo: "receita",
+    valor: 380.0,
+    valorLiquido: 357.2,
+    formaPagamento: "Cartão",
+    tecnicoResponsavel: "João Silva",
+    comissao: 57.0,
     notaFiscal: true,
-    descontoImposto: 22.80,
-    setor: 'Residencial',
-    funcionarioId: '2'
-  }
+    descontoImposto: 22.8,
+    setor: "Residencial",
+    funcionarioId: "2",
+  },
 ];
 
 const mockCampanhas: Campanha[] = [
   {
-    id: '1',
-    nome: 'Desconto Dezembro',
-    descricao: 'Promoção de fim de ano',
+    id: "1",
+    nome: "Desconto Dezembro",
+    descricao: "Promoção de fim de ano",
     ativa: true,
     dataInicio: new Date(2024, 11, 1),
-    dataFim: new Date(2024, 11, 31)
+    dataFim: new Date(2024, 11, 31),
   },
   {
-    id: '2',
-    nome: 'Black Friday',
-    descricao: 'Desconto especial Black Friday',
+    id: "2",
+    nome: "Black Friday",
+    descricao: "Desconto especial Black Friday",
     ativa: false,
     dataInicio: new Date(2024, 10, 25),
-    dataFim: new Date(2024, 10, 30)
-  }
+    dataFim: new Date(2024, 10, 30),
+  },
 ];
 
 export function CaixaProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>(mockLancamentos);
+  const [lancamentos, setLancamentos] =
+    useState<LancamentoCaixa[]>(mockLancamentos);
   const [campanhas, setCampanhas] = useState<Campanha[]>(mockCampanhas);
   const [isLoading, setIsLoading] = useState(false);
   const [filtros, setFiltros] = useState({
     dataInicio: new Date(2024, 11, 1),
     dataFim: new Date(),
-    tipo: 'todos' as 'receita' | 'despesa' | 'todos'
+    tipo: "todos" as "receita" | "despesa" | "todos",
   });
 
-  const adicionarLancamento = (novoLancamento: Omit<LancamentoCaixa, 'id' | 'funcionarioId'>) => {
+  const adicionarLancamento = (
+    novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
+  ) => {
     const id = Date.now().toString();
     const lancamento: LancamentoCaixa = {
       ...novoLancamento,
       id,
-      funcionarioId: user?.id || '1'
+      funcionarioId: user?.id || "1",
     };
 
     // Calcular comissão se for receita
-    if (lancamento.tipo === 'receita' && lancamento.tecnicoResponsavel) {
+    if (lancamento.tipo === "receita" && lancamento.tecnicoResponsavel) {
       const percentualComissao = 15; // Em um app real, viria do cadastro do funcionário
-      lancamento.comissao = (lancamento.valorLiquido || lancamento.valor) * (percentualComissao / 100);
+      lancamento.comissao =
+        (lancamento.valorLiquido || lancamento.valor) *
+        (percentualComissao / 100);
     }
 
-    setLancamentos(prev => [...prev, lancamento]);
+    setLancamentos((prev) => [...prev, lancamento]);
   };
 
-  const editarLancamento = (id: string, dadosAtualizados: Partial<LancamentoCaixa>) => {
-    setLancamentos(prev => 
-      prev.map(lancamento => 
-        lancamento.id === id 
+  const editarLancamento = (
+    id: string,
+    dadosAtualizados: Partial<LancamentoCaixa>,
+  ) => {
+    setLancamentos((prev) =>
+      prev.map((lancamento) =>
+        lancamento.id === id
           ? { ...lancamento, ...dadosAtualizados }
-          : lancamento
-      )
+          : lancamento,
+      ),
     );
   };
 
   const excluirLancamento = (id: string) => {
-    setLancamentos(prev => prev.filter(lancamento => lancamento.id !== id));
+    setLancamentos((prev) => prev.filter((lancamento) => lancamento.id !== id));
   };
 
-  const adicionarCampanha = (novaCampanha: Omit<Campanha, 'id'>) => {
+  const adicionarCampanha = (novaCampanha: Omit<Campanha, "id">) => {
     const id = Date.now().toString();
     const campanha: Campanha = {
       ...novaCampanha,
-      id
+      id,
     };
-    setCampanhas(prev => [...prev, campanha]);
+    setCampanhas((prev) => [...prev, campanha]);
   };
 
   // Calcular totais baseados nos filtros
   const totais = React.useMemo(() => {
-    const lancamentosFiltrados = lancamentos.filter(lancamento => {
+    const lancamentosFiltrados = lancamentos.filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
       const dentroDataInicio = dataLancamento >= filtros.dataInicio;
       const dentroDataFim = dataLancamento <= filtros.dataFim;
-      const tipoCorreto = filtros.tipo === 'todos' || lancamento.tipo === filtros.tipo;
-      
+      const tipoCorreto =
+        filtros.tipo === "todos" || lancamento.tipo === filtros.tipo;
+
       return dentroDataInicio && dentroDataFim && tipoCorreto;
     });
 
     const receitas = lancamentosFiltrados
-      .filter(l => l.tipo === 'receita')
+      .filter((l) => l.tipo === "receita")
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
     const despesas = lancamentosFiltrados
-      .filter(l => l.tipo === 'despesa')
+      .filter((l) => l.tipo === "despesa")
       .reduce((total, l) => total + l.valor, 0);
 
     const comissoes = lancamentosFiltrados
-      .filter(l => l.tipo === 'receita' && l.comissao)
+      .filter((l) => l.tipo === "receita" && l.comissao)
       .reduce((total, l) => total + (l.comissao || 0), 0);
 
     return {
       receitas,
       despesas,
       saldo: receitas - despesas,
-      comissoes
+      comissoes,
     };
   }, [lancamentos, filtros]);
 
@@ -196,20 +213,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     excluirLancamento,
     adicionarCampanha,
     setFiltros,
-    isLoading
+    isLoading,
   };
 
   return (
-    <CaixaContext.Provider value={value}>
-      {children}
-    </CaixaContext.Provider>
+    <CaixaContext.Provider value={value}>{children}</CaixaContext.Provider>
   );
 }
 
 export function useCaixa() {
   const context = useContext(CaixaContext);
   if (context === undefined) {
-    throw new Error('useCaixa must be used within a CaixaProvider');
+    throw new Error("useCaixa must be used within a CaixaProvider");
   }
   return context;
 }
