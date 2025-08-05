@@ -1,81 +1,18 @@
 import React from 'react';
+import { useDashboard } from '../contexts/DashboardContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { 
-  DollarSign, 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
+import FiltrosData from '../components/Dashboard/FiltrosData';
+import {
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
   Calendar,
-  Users,
   FileText,
-  Target
+  Target,
+  Loader2
 } from 'lucide-react';
-
-// Mock data - in a real app this would come from an API
-const mockStats = {
-  totalReceitas: 45280.50,
-  totalDespesas: 18750.30,
-  saldoFinal: 26530.20,
-  contasVencendoHoje: 3,
-  contasAtrasadas: 2,
-  totalContasPagar: 8950.00,
-  totalContasReceber: 12400.00,
-};
-
-const recentTransactions = [
-  {
-    id: '1',
-    tipo: 'receita' as const,
-    descricao: 'Serviço de desentupimento - Residencial',
-    valor: 280.00,
-    data: new Date(),
-    tecnico: 'João Silva',
-  },
-  {
-    id: '2',
-    tipo: 'despesa' as const,
-    descricao: 'Combustível',
-    valor: 120.50,
-    data: new Date(),
-    categoria: 'Operacional',
-  },
-  {
-    id: '3',
-    tipo: 'receita' as const,
-    descricao: 'Serviço de desentupimento - Comercial',
-    valor: 450.00,
-    data: new Date(Date.now() - 86400000), // Yesterday
-    tecnico: 'Carlos Santos',
-  },
-];
-
-const contasVencimento = [
-  {
-    id: '1',
-    tipo: 'pagar' as const,
-    fornecedor: 'Posto de Gasolina ABC',
-    valor: 350.00,
-    vencimento: new Date(),
-    status: 'vence_hoje' as const,
-  },
-  {
-    id: '2',
-    tipo: 'receber' as const,
-    cliente: 'Empresa XYZ Ltda',
-    valor: 1200.00,
-    vencimento: new Date(Date.now() - 86400000),
-    status: 'atrasada' as const,
-  },
-  {
-    id: '3',
-    tipo: 'pagar' as const,
-    fornecedor: 'Fornecedor de Materiais',
-    valor: 580.00,
-    vencimento: new Date(),
-    status: 'vence_hoje' as const,
-  },
-];
 
 function formatCurrency(value: number) {
   return value.toLocaleString('pt-BR', {
