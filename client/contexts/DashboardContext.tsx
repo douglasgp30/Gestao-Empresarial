@@ -240,6 +240,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasVencendo,
     setFiltros,
     setFiltroRapido,
+    aplicarFiltrosCaixa,
+    setAplicarFiltrosCaixa,
     isLoading
   };
 
