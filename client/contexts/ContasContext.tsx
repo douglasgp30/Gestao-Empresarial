@@ -252,7 +252,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
 export function useContas() {
   const context = useContext(ContasContext);
   if (context === undefined) {
-    throw new error('useContas must be used within a ContasProvider');
+    throw new Error('useContas must be used within a ContasProvider');
   }
   return context;
 }
