@@ -4,7 +4,7 @@ export interface Funcionario {
   login: string;
   senha: string;
   permissaoAcesso: boolean;
-  tipoAcesso: 'Administrador' | 'Operador';
+  tipoAcesso: "Administrador" | "Operador";
   percentualComissao: number;
   dataCadastro: Date;
   ativo: boolean;
@@ -13,7 +13,7 @@ export interface Funcionario {
 export interface LancamentoCaixa {
   id: string;
   data: Date;
-  tipo: 'receita' | 'despesa';
+  tipo: "receita" | "despesa";
   valor: number;
   valorLiquido?: number;
   formaPagamento: string;
@@ -30,12 +30,12 @@ export interface LancamentoCaixa {
 
 export interface Conta {
   id: string;
-  tipo: 'pagar' | 'receber';
+  tipo: "pagar" | "receber";
   dataVencimento: Date;
   fornecedorCliente: string;
   tipoPagamento: string;
   valor: number;
-  status: 'paga' | 'atrasada' | 'vence_hoje' | 'pendente';
+  status: "paga" | "atrasada" | "vence_hoje" | "pendente";
   observacoes?: string;
   dataPagamento?: Date;
   funcionarioId: string;
@@ -61,7 +61,7 @@ export interface AuthUser {
   id: string;
   nomeCompleto: string;
   login: string;
-  tipoAcesso: 'Administrador' | 'Operador';
+  tipoAcesso: "Administrador" | "Operador";
   permissaoAcesso: boolean;
 }
 
@@ -101,7 +101,7 @@ export interface RelatorioFiltros {
     dataInicio: Date;
     dataFim: Date;
   };
-  tipo?: 'receitas' | 'despesas' | 'ambos';
+  tipo?: "receitas" | "despesas" | "ambos";
   formaPagamento?: string;
   tecnico?: string;
   setor?: string;

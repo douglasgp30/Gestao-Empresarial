@@ -1,41 +1,55 @@
-import React from 'react';
-import { useRelatorios } from '../../contexts/RelatoriosContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { 
-  BarChart3, 
-  Download, 
-  FileText, 
-  TrendingUp, 
-  TrendingDown, 
+import React from "react";
+import { useRelatorios } from "../../contexts/RelatoriosContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import {
+  BarChart3,
+  Download,
+  FileText,
+  TrendingUp,
+  TrendingDown,
   DollarSign,
-  Percent
-} from 'lucide-react';
+  Percent,
+} from "lucide-react";
 
 function formatCurrency(value: number): string {
-  return value.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
   });
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('pt-BR');
+  return date.toLocaleDateString("pt-BR");
 }
 
 export default function RelatorioFinanceiro() {
-  const { gerarRelatorioFinanceiro, exportarPDF, exportarExcel } = useRelatorios();
-  
+  const { gerarRelatorioFinanceiro, exportarPDF, exportarExcel } =
+    useRelatorios();
+
   const relatorio = gerarRelatorioFinanceiro();
 
   const handleExportarPDF = () => {
-    exportarPDF('financeiro', relatorio);
+    exportarPDF("financeiro", relatorio);
   };
 
   const handleExportarExcel = () => {
-    exportarExcel('financeiro', relatorio);
+    exportarExcel("financeiro", relatorio);
   };
 
   return (
@@ -48,7 +62,8 @@ export default function RelatorioFinanceiro() {
             Relatório Financeiro
           </h2>
           <p className="text-muted-foreground">
-            Período: {formatDate(relatorio.periodo.inicio)} - {formatDate(relatorio.periodo.fim)}
+            Período: {formatDate(relatorio.periodo.inicio)} -{" "}
+            {formatDate(relatorio.periodo.fim)}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -98,15 +113,23 @@ export default function RelatorioFinanceiro() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Saldo Final</p>
-                <p className={`text-2xl font-bold ${
-                  relatorio.resumo.saldoFinal >= 0 ? 'text-green-600' : 'text-red-600'
-                }`}>
+                <p
+                  className={`text-2xl font-bold ${
+                    relatorio.resumo.saldoFinal >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
                   {formatCurrency(relatorio.resumo.saldoFinal)}
                 </p>
               </div>
-              <DollarSign className={`h-8 w-8 ${
-                relatorio.resumo.saldoFinal >= 0 ? 'text-green-600' : 'text-red-600'
-              }`} />
+              <DollarSign
+                className={`h-8 w-8 ${
+                  relatorio.resumo.saldoFinal >= 0
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              />
             </div>
           </CardContent>
         </Card>
@@ -144,7 +167,10 @@ export default function RelatorioFinanceiro() {
             ) : (
               <div className="space-y-4">
                 {relatorio.receitasPorFormaPagamento.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                  >
                     <div>
                       <p className="font-medium">{item.forma}</p>
                       <p className="text-sm text-muted-foreground">
@@ -156,7 +182,11 @@ export default function RelatorioFinanceiro() {
                         {formatCurrency(item.valor)}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {((item.valor / relatorio.resumo.totalReceitas) * 100).toFixed(1)}%
+                        {(
+                          (item.valor / relatorio.resumo.totalReceitas) *
+                          100
+                        ).toFixed(1)}
+                        %
                       </p>
                     </div>
                   </div>
@@ -182,7 +212,10 @@ export default function RelatorioFinanceiro() {
             ) : (
               <div className="space-y-4">
                 {relatorio.despesasPorCategoria.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                  >
                     <div>
                       <p className="font-medium">{item.categoria}</p>
                       <p className="text-sm text-muted-foreground">
@@ -194,8 +227,13 @@ export default function RelatorioFinanceiro() {
                         {formatCurrency(item.valor)}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {relatorio.resumo.totalDespesas > 0 ? 
-                          ((item.valor / relatorio.resumo.totalDespesas) * 100).toFixed(1) : '0'}%
+                        {relatorio.resumo.totalDespesas > 0
+                          ? (
+                              (item.valor / relatorio.resumo.totalDespesas) *
+                              100
+                            ).toFixed(1)
+                          : "0"}
+                        %
                       </p>
                     </div>
                   </div>
@@ -216,23 +254,41 @@ export default function RelatorioFinanceiro() {
             <div className="text-center p-4 bg-green-50 rounded-lg">
               <p className="text-sm text-muted-foreground">Margem de Lucro</p>
               <p className="text-xl font-bold text-green-600">
-                {relatorio.resumo.totalReceitas > 0 ? 
-                  ((relatorio.resumo.saldoFinal / relatorio.resumo.totalReceitas) * 100).toFixed(1) : '0'}%
+                {relatorio.resumo.totalReceitas > 0
+                  ? (
+                      (relatorio.resumo.saldoFinal /
+                        relatorio.resumo.totalReceitas) *
+                      100
+                    ).toFixed(1)
+                  : "0"}
+                %
               </p>
             </div>
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-muted-foreground">% Comissões</p>
               <p className="text-xl font-bold text-blue-600">
-                {relatorio.resumo.totalReceitas > 0 ? 
-                  ((relatorio.resumo.totalComissoes / relatorio.resumo.totalReceitas) * 100).toFixed(1) : '0'}%
+                {relatorio.resumo.totalReceitas > 0
+                  ? (
+                      (relatorio.resumo.totalComissoes /
+                        relatorio.resumo.totalReceitas) *
+                      100
+                    ).toFixed(1)
+                  : "0"}
+                %
               </p>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
               <p className="text-sm text-muted-foreground">Ticket Médio</p>
               <p className="text-xl font-bold text-purple-600">
-                {relatorio.receitasPorFormaPagamento.length > 0 ? 
-                  formatCurrency(relatorio.resumo.totalReceitas / relatorio.receitasPorFormaPagamento.reduce((total, item) => total + item.quantidade, 0)) : 
-                  formatCurrency(0)}
+                {relatorio.receitasPorFormaPagamento.length > 0
+                  ? formatCurrency(
+                      relatorio.resumo.totalReceitas /
+                        relatorio.receitasPorFormaPagamento.reduce(
+                          (total, item) => total + item.quantidade,
+                          0,
+                        ),
+                    )
+                  : formatCurrency(0)}
               </p>
             </div>
           </div>

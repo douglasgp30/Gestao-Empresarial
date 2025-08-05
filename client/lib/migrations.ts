@@ -10,8 +10,8 @@ interface MigrationScript {
 
 const migrations: MigrationScript[] = [
   {
-    version: '1.0.0',
-    description: 'Criar tabela Campanhas',
+    version: "1.0.0",
+    description: "Criar tabela Campanhas",
     script: `
       IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Campanhas')
       BEGIN
@@ -26,11 +26,11 @@ const migrations: MigrationScript[] = [
           )
       END
     `,
-    executed: false
+    executed: false,
   },
   {
-    version: '1.0.1',
-    description: 'Criar tabela Descricoes',
+    version: "1.0.1",
+    description: "Criar tabela Descricoes",
     script: `
       IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Descricoes')
       BEGIN
@@ -42,11 +42,11 @@ const migrations: MigrationScript[] = [
           )
       END
     `,
-    executed: false
+    executed: false,
   },
   {
-    version: '1.0.2',
-    description: 'Criar tabela FormasPagamento',
+    version: "1.0.2",
+    description: "Criar tabela FormasPagamento",
     script: `
       IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'FormasPagamento')
       BEGIN
@@ -58,11 +58,11 @@ const migrations: MigrationScript[] = [
           )
       END
     `,
-    executed: false
+    executed: false,
   },
   {
-    version: '1.0.3',
-    description: 'Criar tabela Clientes',
+    version: "1.0.3",
+    description: "Criar tabela Clientes",
     script: `
       IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Clientes')
       BEGIN
@@ -78,11 +78,11 @@ const migrations: MigrationScript[] = [
           )
       END
     `,
-    executed: false
+    executed: false,
   },
   {
-    version: '1.0.4',
-    description: 'Criar tabela Fornecedores',
+    version: "1.0.4",
+    description: "Criar tabela Fornecedores",
     script: `
       IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Fornecedores')
       BEGIN
@@ -94,13 +94,13 @@ const migrations: MigrationScript[] = [
           )
       END
     `,
-    executed: false
-  }
+    executed: false,
+  },
 ];
 
 class MigrationService {
   private static instance: MigrationService;
-  private migrationKey = 'system_migrations_executed';
+  private migrationKey = "system_migrations_executed";
 
   static getInstance(): MigrationService {
     if (!MigrationService.instance) {
@@ -110,32 +110,38 @@ class MigrationService {
   }
 
   async runMigrations(): Promise<void> {
-    console.log('🔄 Iniciando verificação de migrações...');
-    
+    console.log("🔄 Iniciando verificação de migrações...");
+
     const executedMigrations = this.getExecutedMigrations();
     const pendingMigrations = migrations.filter(
-      migration => !executedMigrations.includes(migration.version)
+      (migration) => !executedMigrations.includes(migration.version),
     );
 
     if (pendingMigrations.length === 0) {
-      console.log('✅ Todas as migrações já foram executadas');
+      console.log("✅ Todas as migrações já foram executadas");
       return;
     }
 
-    console.log(`🔧 Executando ${pendingMigrations.length} migração(ões) pendente(s)...`);
+    console.log(
+      `🔧 Executando ${pendingMigrations.length} migração(ões) pendente(s)...`,
+    );
 
     for (const migration of pendingMigrations) {
       try {
         await this.executeMigration(migration);
         this.markMigrationAsExecuted(migration.version);
-        console.log(`✅ Migração ${migration.version} executada: ${migration.description}`);
+        console.log(
+          `✅ Migração ${migration.version} executada: ${migration.description}`,
+        );
       } catch (error) {
         console.error(`❌ Erro na migração ${migration.version}:`, error);
-        throw new Error(`Falha na migração ${migration.version}: ${migration.description}`);
+        throw new Error(
+          `Falha na migração ${migration.version}: ${migration.description}`,
+        );
       }
     }
 
-    console.log('🎉 Todas as migrações foram executadas com sucesso!');
+    console.log("🎉 Todas as migrações foram executadas com sucesso!");
   }
 
   private async executeMigration(migration: MigrationScript): Promise<void> {
@@ -161,24 +167,30 @@ class MigrationService {
     }
   }
 
-  getMigrationStatus(): Array<{ version: string; description: string; executed: boolean }> {
+  getMigrationStatus(): Array<{
+    version: string;
+    description: string;
+    executed: boolean;
+  }> {
     const executedMigrations = this.getExecutedMigrations();
-    return migrations.map(migration => ({
+    return migrations.map((migration) => ({
       version: migration.version,
       description: migration.description,
-      executed: executedMigrations.includes(migration.version)
+      executed: executedMigrations.includes(migration.version),
     }));
   }
 
   async resetMigrations(): Promise<void> {
     localStorage.removeItem(this.migrationKey);
-    console.log('🔄 Migrações resetadas - próxima inicialização executará todas');
+    console.log(
+      "🔄 Migrações resetadas - próxima inicialização executará todas",
+    );
   }
 }
 
 export const migrationService = MigrationService.getInstance();
 
-import React from 'react';
+import React from "react";
 
 // Hook para executar migrações automaticamente
 export function useMigrations() {
@@ -191,7 +203,7 @@ export function useMigrations() {
         await migrationService.runMigrations();
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro desconhecido');
+        setError(err instanceof Error ? err.message : "Erro desconhecido");
       } finally {
         setIsLoading(false);
       }

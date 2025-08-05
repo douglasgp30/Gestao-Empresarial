@@ -1,11 +1,17 @@
-import React from 'react';
-import { useDashboard } from '../contexts/DashboardContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Switch } from '../components/ui/switch';
-import { Label } from '../components/ui/label';
-import FiltrosData from '../components/Dashboard/FiltrosData';
+import React from "react";
+import { useDashboard } from "../contexts/DashboardContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Switch } from "../components/ui/switch";
+import { Label } from "../components/ui/label";
+import FiltrosData from "../components/Dashboard/FiltrosData";
 import {
   DollarSign,
   TrendingUp,
@@ -17,30 +23,30 @@ import {
   Loader2,
   Receipt,
   CreditCard,
-  Filter
-} from 'lucide-react';
+  Filter,
+} from "lucide-react";
 
 function formatCurrency(value: number) {
-  return value.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
   });
 }
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString('pt-BR');
+  return date.toLocaleDateString("pt-BR");
 }
 
 function getStatusColor(status: string) {
   switch (status) {
-    case 'paga':
-      return 'bg-success text-success-foreground';
-    case 'atrasada':
-      return 'bg-destructive text-destructive-foreground';
-    case 'vence_hoje':
-      return 'bg-warning text-warning-foreground';
+    case "paga":
+      return "bg-success text-success-foreground";
+    case "atrasada":
+      return "bg-destructive text-destructive-foreground";
+    case "vence_hoje":
+      return "bg-warning text-warning-foreground";
     default:
-      return 'bg-muted text-muted-foreground';
+      return "bg-muted text-muted-foreground";
   }
 }
 
@@ -51,21 +57,22 @@ function StatCard({
   icon: Icon,
   trend,
   isLoading = false,
-  variant = 'default'
+  variant = "default",
 }: {
   title: string;
   value: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
   isLoading?: boolean;
-  variant?: 'default' | 'highlight' | 'danger';
+  variant?: "default" | "highlight" | "danger";
 }) {
-  const cardClass = variant === 'highlight' 
-    ? 'border-primary/20 bg-primary/5' 
-    : variant === 'danger' 
-    ? 'border-destructive/20 bg-destructive/5' 
-    : '';
+  const cardClass =
+    variant === "highlight"
+      ? "border-primary/20 bg-primary/5"
+      : variant === "danger"
+        ? "border-destructive/20 bg-destructive/5"
+        : "";
 
   return (
     <Card className={cardClass}>
@@ -81,14 +88,18 @@ function StatCard({
               <span className="text-muted-foreground">...</span>
             </div>
           ) : (
-            <span className={variant === 'danger' ? 'text-destructive' : ''}>
+            <span className={variant === "danger" ? "text-destructive" : ""}>
               {value}
             </span>
           )}
         </div>
         <p className="text-xs text-muted-foreground flex items-center">
-          {!isLoading && trend === 'up' && <TrendingUp className="h-3 w-3 mr-1 text-success" />}
-          {!isLoading && trend === 'down' && <TrendingDown className="h-3 w-3 mr-1 text-destructive" />}
+          {!isLoading && trend === "up" && (
+            <TrendingUp className="h-3 w-3 mr-1 text-success" />
+          )}
+          {!isLoading && trend === "down" && (
+            <TrendingDown className="h-3 w-3 mr-1 text-destructive" />
+          )}
           {description}
         </p>
       </CardContent>
@@ -97,13 +108,24 @@ function StatCard({
 }
 
 export default function Dashboard() {
-  const { stats, lancamentos, contasVencendo, filtros, isLoading, aplicarFiltrosCaixa, setAplicarFiltrosCaixa } = useDashboard();
+  const {
+    stats,
+    lancamentos,
+    contasVencendo,
+    filtros,
+    isLoading,
+    aplicarFiltrosCaixa,
+    setAplicarFiltrosCaixa,
+  } = useDashboard();
 
   // Filtrar lançamentos pelo período selecionado para exibir nas movimentações recentes
   const lancamentosRecentes = lancamentos
-    .filter(lancamento => {
+    .filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
-      return dataLancamento >= filtros.dataInicio && dataLancamento <= filtros.dataFim;
+      return (
+        dataLancamento >= filtros.dataInicio &&
+        dataLancamento <= filtros.dataFim
+      );
     })
     .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
     .slice(0, 5);
@@ -147,14 +169,11 @@ export default function Dashboard() {
               onCheckedChange={setAplicarFiltrosCaixa}
             />
             <Label htmlFor="filtros-caixa" className="flex flex-col space-y-1">
-              <span className="font-medium">
-                Usar filtros do módulo Caixa
-              </span>
+              <span className="font-medium">Usar filtros do módulo Caixa</span>
               <span className="text-xs text-muted-foreground">
                 {aplicarFiltrosCaixa
-                  ? 'Os totais serão calculados com base nos filtros aplicados no módulo Caixa (técnico, campanha, forma de pagamento, etc.)'
-                  : 'Os totais serão calculados apenas com base no período selecionado acima'
-                }
+                  ? "Os totais serão calculados com base nos filtros aplicados no módulo Caixa (técnico, campanha, forma de pagamento, etc.)"
+                  : "Os totais serão calculados apenas com base no período selecionado acima"}
               </span>
             </Label>
           </div>
@@ -171,7 +190,9 @@ export default function Dashboard() {
 
       {/* PRIMEIRA LINHA - Totais do Caixa (Serviços Realizados) */}
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground">Módulo Caixa - Serviços Realizados</h2>
+        <h2 className="text-lg font-semibold text-foreground">
+          Módulo Caixa - Serviços Realizados
+        </h2>
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Total de Receitas"
@@ -205,7 +226,9 @@ export default function Dashboard() {
 
       {/* SEGUNDA LINHA - Receitas Recebidas e Despesas Pagas */}
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground">Totais Efetivamente Recebidos e Pagos</h2>
+        <h2 className="text-lg font-semibold text-foreground">
+          Totais Efetivamente Recebidos e Pagos
+        </h2>
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Total Receitas Recebidas"
@@ -239,7 +262,9 @@ export default function Dashboard() {
 
       {/* TERCEIRA LINHA - Módulo Contas */}
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground">Módulo Contas - Situação Geral</h2>
+        <h2 className="text-lg font-semibold text-foreground">
+          Módulo Contas - Situação Geral
+        </h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
           <StatCard
             title="Contas Recebidas"
@@ -313,14 +338,19 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-4">
                 {lancamentosRecentes.map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between">
+                  <div
+                    key={transaction.id}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-full ${
-                        transaction.tipo === 'receita'
-                          ? 'bg-success/10 text-success'
-                          : 'bg-destructive/10 text-destructive'
-                      }`}>
-                        {transaction.tipo === 'receita' ? (
+                      <div
+                        className={`p-2 rounded-full ${
+                          transaction.tipo === "receita"
+                            ? "bg-success/10 text-success"
+                            : "bg-destructive/10 text-destructive"
+                        }`}
+                      >
+                        {transaction.tipo === "receita" ? (
                           <TrendingUp className="h-4 w-4" />
                         ) : (
                           <TrendingDown className="h-4 w-4" />
@@ -328,26 +358,36 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <p className="font-medium text-sm">
-                          {transaction.tipo === 'receita'
-                            ? `Serviço - ${transaction.setor || 'Geral'}`
-                            : transaction.descricao
-                          }
+                          {transaction.tipo === "receita"
+                            ? `Serviço - ${transaction.setor || "Geral"}`
+                            : transaction.descricao}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {transaction.tipo === 'receita' && transaction.tecnicoResponsavel &&
+                          {transaction.tipo === "receita" &&
+                            transaction.tecnicoResponsavel &&
                             `Técnico: ${transaction.tecnicoResponsavel}`}
-                          {transaction.tipo === 'despesa' && transaction.categoria &&
+                          {transaction.tipo === "despesa" &&
+                            transaction.categoria &&
                             `Categoria: ${transaction.categoria}`}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className={`font-bold ${
-                        transaction.tipo === 'receita' ? 'text-success' : 'text-destructive'
-                      }`}>
-                        {transaction.tipo === 'receita' ? '+' : '-'}{formatCurrency(transaction.valorLiquido || transaction.valor)}
+                      <p
+                        className={`font-bold ${
+                          transaction.tipo === "receita"
+                            ? "text-success"
+                            : "text-destructive"
+                        }`}
+                      >
+                        {transaction.tipo === "receita" ? "+" : "-"}
+                        {formatCurrency(
+                          transaction.valorLiquido || transaction.valor,
+                        )}
                       </p>
-                      <p className="text-xs text-muted-foreground">{formatDate(transaction.data)}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(transaction.data)}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -360,9 +400,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Contas Vencendo</CardTitle>
-            <CardDescription>
-              Contas vencendo hoje e atrasadas
-            </CardDescription>
+            <CardDescription>Contas vencendo hoje e atrasadas</CardDescription>
           </CardHeader>
           <CardContent>
             {contasVencendo.length === 0 ? (
@@ -372,14 +410,19 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-4">
                 {contasVencendo.map((conta) => (
-                  <div key={conta.id} className="flex items-center justify-between">
+                  <div
+                    key={conta.id}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-full ${
-                        conta.tipo === 'receber'
-                          ? 'bg-primary/10 text-primary'
-                          : 'bg-orange-500/10 text-orange-500'
-                      }`}>
-                        {conta.tipo === 'receber' ? (
+                      <div
+                        className={`p-2 rounded-full ${
+                          conta.tipo === "receber"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-orange-500/10 text-orange-500"
+                        }`}
+                      >
+                        {conta.tipo === "receber" ? (
                           <TrendingUp className="h-4 w-4" />
                         ) : (
                           <TrendingDown className="h-4 w-4" />
@@ -396,8 +439,12 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right">
                       <p className="font-bold">{formatCurrency(conta.valor)}</p>
-                      <Badge className={`text-xs ${getStatusColor(conta.status)}`}>
-                        {conta.status === 'vence_hoje' ? 'Vence Hoje' : 'Atrasada'}
+                      <Badge
+                        className={`text-xs ${getStatusColor(conta.status)}`}
+                      >
+                        {conta.status === "vence_hoje"
+                          ? "Vence Hoje"
+                          : "Atrasada"}
                       </Badge>
                     </div>
                   </div>

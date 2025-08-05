@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
-import { useConfig } from '../contexts/ConfigContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Separator } from '../components/ui/separator';
-import { Badge } from '../components/ui/badge';
-import { Alert, AlertDescription } from '../components/ui/alert';
-import SistemaBackup from '../components/Backup/SistemaBackup';
+import React, { useState } from "react";
+import { useConfig } from "../contexts/ConfigContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Separator } from "../components/ui/separator";
+import { Badge } from "../components/ui/badge";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import SistemaBackup from "../components/Backup/SistemaBackup";
 import {
   Settings,
   Building2,
@@ -20,9 +31,9 @@ import {
   RotateCcw,
   CheckCircle,
   Upload,
-  HardDrive
-} from 'lucide-react';
-import EmpresaLogo from '../components/EmpresaLogo';
+  HardDrive,
+} from "lucide-react";
+import EmpresaLogo from "../components/EmpresaLogo";
 
 export default function Configuracoes() {
   const { empresaConfig, updateEmpresaConfig, resetToDefault } = useConfig();
@@ -38,13 +49,13 @@ export default function Configuracoes() {
   const handleReset = () => {
     resetToDefault();
     setLocalConfig({
-      nomeEmpresa: 'Solução Desentupimento',
-      subtituloEmpresa: 'Sistema de Gestão Empresarial',
-      corPrimaria: '217 91% 60%',
-      endereco: '',
-      telefone: '',
-      email: '',
-      cnpj: ''
+      nomeEmpresa: "Solução Desentupimento",
+      subtituloEmpresa: "Sistema de Gestão Empresarial",
+      corPrimaria: "217 91% 60%",
+      endereco: "",
+      telefone: "",
+      email: "",
+      cnpj: "",
     });
   };
 
@@ -61,12 +72,12 @@ export default function Configuracoes() {
   };
 
   const cores = [
-    { nome: 'Azul Padrão', valor: '217 91% 60%' },
-    { nome: 'Verde', valor: '142 71% 45%' },
-    { nome: 'Roxo', valor: '262 52% 47%' },
-    { nome: 'Laranja', valor: '25 95% 53%' },
-    { nome: 'Vermelho', valor: '0 84% 60%' },
-    { nome: 'Cinza', valor: '220 9% 46%' }
+    { nome: "Azul Padrão", valor: "217 91% 60%" },
+    { nome: "Verde", valor: "142 71% 45%" },
+    { nome: "Roxo", valor: "262 52% 47%" },
+    { nome: "Laranja", valor: "25 95% 53%" },
+    { nome: "Vermelho", valor: "0 84% 60%" },
+    { nome: "Cinza", valor: "220 9% 46%" },
   ];
 
   return (
@@ -93,9 +104,7 @@ export default function Configuracoes() {
       {savedMessage && (
         <Alert>
           <CheckCircle className="h-4 w-4" />
-          <AlertDescription>
-            Configurações salvas com sucesso!
-          </AlertDescription>
+          <AlertDescription>Configurações salvas com sucesso!</AlertDescription>
         </Alert>
       )}
 
@@ -138,7 +147,12 @@ export default function Configuracoes() {
                   <Input
                     id="nomeEmpresa"
                     value={localConfig.nomeEmpresa}
-                    onChange={(e) => setLocalConfig({ ...localConfig, nomeEmpresa: e.target.value })}
+                    onChange={(e) =>
+                      setLocalConfig({
+                        ...localConfig,
+                        nomeEmpresa: e.target.value,
+                      })
+                    }
                     placeholder="Nome da empresa"
                   />
                 </div>
@@ -147,7 +161,12 @@ export default function Configuracoes() {
                   <Input
                     id="subtituloEmpresa"
                     value={localConfig.subtituloEmpresa}
-                    onChange={(e) => setLocalConfig({ ...localConfig, subtituloEmpresa: e.target.value })}
+                    onChange={(e) =>
+                      setLocalConfig({
+                        ...localConfig,
+                        subtituloEmpresa: e.target.value,
+                      })
+                    }
                     placeholder="Subtítulo ou slogan"
                   />
                 </div>
@@ -157,8 +176,10 @@ export default function Configuracoes() {
                 <Label htmlFor="endereco">Endereço</Label>
                 <Textarea
                   id="endereco"
-                  value={localConfig.endereco || ''}
-                  onChange={(e) => setLocalConfig({ ...localConfig, endereco: e.target.value })}
+                  value={localConfig.endereco || ""}
+                  onChange={(e) =>
+                    setLocalConfig({ ...localConfig, endereco: e.target.value })
+                  }
                   placeholder="Endereço completo da empresa"
                   rows={3}
                 />
@@ -169,8 +190,13 @@ export default function Configuracoes() {
                   <Label htmlFor="telefone">Telefone</Label>
                   <Input
                     id="telefone"
-                    value={localConfig.telefone || ''}
-                    onChange={(e) => setLocalConfig({ ...localConfig, telefone: e.target.value })}
+                    value={localConfig.telefone || ""}
+                    onChange={(e) =>
+                      setLocalConfig({
+                        ...localConfig,
+                        telefone: e.target.value,
+                      })
+                    }
                     placeholder="(11) 99999-9999"
                   />
                 </div>
@@ -179,8 +205,10 @@ export default function Configuracoes() {
                   <Input
                     id="email"
                     type="email"
-                    value={localConfig.email || ''}
-                    onChange={(e) => setLocalConfig({ ...localConfig, email: e.target.value })}
+                    value={localConfig.email || ""}
+                    onChange={(e) =>
+                      setLocalConfig({ ...localConfig, email: e.target.value })
+                    }
                     placeholder="contato@empresa.com"
                   />
                 </div>
@@ -188,8 +216,10 @@ export default function Configuracoes() {
                   <Label htmlFor="cnpj">CNPJ</Label>
                   <Input
                     id="cnpj"
-                    value={localConfig.cnpj || ''}
-                    onChange={(e) => setLocalConfig({ ...localConfig, cnpj: e.target.value })}
+                    value={localConfig.cnpj || ""}
+                    onChange={(e) =>
+                      setLocalConfig({ ...localConfig, cnpj: e.target.value })
+                    }
                     placeholder="00.000.000/0001-00"
                   />
                 </div>
@@ -223,7 +253,7 @@ export default function Configuracoes() {
                     />
                     <Button
                       variant="outline"
-                      onClick={() => document.getElementById('logo')?.click()}
+                      onClick={() => document.getElementById("logo")?.click()}
                     >
                       <Upload className="h-4 w-4 mr-2" />
                       Enviar Imagem
@@ -232,7 +262,9 @@ export default function Configuracoes() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setLocalConfig({ ...localConfig, logoUrl: undefined })}
+                        onClick={() =>
+                          setLocalConfig({ ...localConfig, logoUrl: undefined })
+                        }
                       >
                         Remover
                       </Button>
@@ -258,11 +290,13 @@ export default function Configuracoes() {
                 {cores.map((cor) => (
                   <button
                     key={cor.valor}
-                    onClick={() => setLocalConfig({ ...localConfig, corPrimaria: cor.valor })}
+                    onClick={() =>
+                      setLocalConfig({ ...localConfig, corPrimaria: cor.valor })
+                    }
                     className={`p-3 rounded-lg border-2 transition-all ${
                       localConfig.corPrimaria === cor.valor
-                        ? 'border-foreground'
-                        : 'border-transparent hover:border-muted-foreground'
+                        ? "border-foreground"
+                        : "border-transparent hover:border-muted-foreground"
                     }`}
                     style={{ backgroundColor: `hsl(${cor.valor})` }}
                   >
@@ -280,12 +314,19 @@ export default function Configuracoes() {
                   <Input
                     id="corCustom"
                     value={localConfig.corPrimaria}
-                    onChange={(e) => setLocalConfig({ ...localConfig, corPrimaria: e.target.value })}
+                    onChange={(e) =>
+                      setLocalConfig({
+                        ...localConfig,
+                        corPrimaria: e.target.value,
+                      })
+                    }
                     placeholder="217 91% 60%"
                   />
                   <div
                     className="w-12 h-10 rounded border border-border"
-                    style={{ backgroundColor: `hsl(${localConfig.corPrimaria})` }}
+                    style={{
+                      backgroundColor: `hsl(${localConfig.corPrimaria})`,
+                    }}
                   />
                 </div>
               </div>
@@ -305,7 +346,9 @@ export default function Configuracoes() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
-                    <h4 className="font-medium">Percentual de Comissão Padrão</h4>
+                    <h4 className="font-medium">
+                      Percentual de Comissão Padrão
+                    </h4>
                     <p className="text-sm text-muted-foreground">
                       Percentual aplicado por padrão para novos funcionários
                     </p>
@@ -361,7 +404,9 @@ export default function Configuracoes() {
                       Status da conexão com o banco
                     </p>
                   </div>
-                  <Badge className="bg-success text-success-foreground">Conectado</Badge>
+                  <Badge className="bg-success text-success-foreground">
+                    Conectado
+                  </Badge>
                 </div>
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
@@ -370,7 +415,9 @@ export default function Configuracoes() {
                       Sistema de atualização automática
                     </p>
                   </div>
-                  <Badge className="bg-success text-success-foreground">Atualizado</Badge>
+                  <Badge className="bg-success text-success-foreground">
+                    Atualizado
+                  </Badge>
                 </div>
               </div>
             </CardContent>
@@ -391,10 +438,13 @@ export default function Configuracoes() {
                   <div className="flex items-start space-x-3">
                     <HardDrive className="h-5 w-5 text-blue-600 mt-0.5" />
                     <div>
-                      <h4 className="font-medium text-blue-800">Backup Manual</h4>
+                      <h4 className="font-medium text-blue-800">
+                        Backup Manual
+                      </h4>
                       <p className="text-sm text-blue-700">
-                        Gere uma cópia de segurança completa do banco de dados SQL Server.
-                        O backup incluirá todos os dados e estruturas do sistema.
+                        Gere uma cópia de segurança completa do banco de dados
+                        SQL Server. O backup incluirá todos os dados e
+                        estruturas do sistema.
                       </p>
                     </div>
                   </div>
@@ -442,7 +492,9 @@ export default function Configuracoes() {
                   <div className="flex items-start space-x-3">
                     <CheckCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
                     <div>
-                      <h4 className="font-medium text-yellow-800">Recomendações</h4>
+                      <h4 className="font-medium text-yellow-800">
+                        Recomendações
+                      </h4>
                       <ul className="text-sm text-yellow-700 mt-1 space-y-1">
                         <li>• Execute backups regularmente</li>
                         <li>• Mantenha backups em local seguro</li>

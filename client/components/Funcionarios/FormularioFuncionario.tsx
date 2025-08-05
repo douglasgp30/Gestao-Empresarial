@@ -1,42 +1,61 @@
-import React, { useState } from 'react';
-import { useFuncionarios } from '../../contexts/FuncionariosContext';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Switch } from '../ui/switch';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Separator } from '../ui/separator';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { UserPlus, User, Shield, Percent } from 'lucide-react';
+import React, { useState } from "react";
+import { useFuncionarios } from "../../contexts/FuncionariosContext";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Switch } from "../ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Separator } from "../ui/separator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { UserPlus, User, Shield, Percent } from "lucide-react";
 
 export default function FormularioFuncionario() {
   const { adicionarFuncionario } = useFuncionarios();
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const [formData, setFormData] = useState({
-    nomeCompleto: '',
-    login: '',
-    senha: '',
-    confirmarSenha: '',
+    nomeCompleto: "",
+    login: "",
+    senha: "",
+    confirmarSenha: "",
     permissaoAcesso: true,
-    tipoAcesso: 'Operador' as 'Administrador' | 'Operador',
-    percentualComissao: '15',
-    ativo: true
+    tipoAcesso: "Operador" as "Administrador" | "Operador",
+    percentualComissao: "15",
+    ativo: true,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const resetForm = () => {
     setFormData({
-      nomeCompleto: '',
-      login: '',
-      senha: '',
-      confirmarSenha: '',
+      nomeCompleto: "",
+      login: "",
+      senha: "",
+      confirmarSenha: "",
       permissaoAcesso: true,
-      tipoAcesso: 'Operador',
-      percentualComissao: '15',
-      ativo: true
+      tipoAcesso: "Operador",
+      percentualComissao: "15",
+      ativo: true,
     });
     setErrors({});
   };
@@ -45,28 +64,28 @@ export default function FormularioFuncionario() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.nomeCompleto.trim()) {
-      newErrors.nomeCompleto = 'Nome completo é obrigatório';
+      newErrors.nomeCompleto = "Nome completo é obrigatório";
     }
 
     if (!formData.login.trim()) {
-      newErrors.login = 'Login é obrigatório';
+      newErrors.login = "Login é obrigatório";
     } else if (formData.login.length < 3) {
-      newErrors.login = 'Login deve ter pelo menos 3 caracteres';
+      newErrors.login = "Login deve ter pelo menos 3 caracteres";
     }
 
     if (!formData.senha) {
-      newErrors.senha = 'Senha é obrigatória';
+      newErrors.senha = "Senha é obrigatória";
     } else if (formData.senha.length < 6) {
-      newErrors.senha = 'Senha deve ter pelo menos 6 caracteres';
+      newErrors.senha = "Senha deve ter pelo menos 6 caracteres";
     }
 
     if (formData.senha !== formData.confirmarSenha) {
-      newErrors.confirmarSenha = 'Senhas não coincidem';
+      newErrors.confirmarSenha = "Senhas não coincidem";
     }
 
     const percentual = parseFloat(formData.percentualComissao);
     if (isNaN(percentual) || percentual < 0 || percentual > 100) {
-      newErrors.percentualComissao = 'Percentual deve estar entre 0 e 100';
+      newErrors.percentualComissao = "Percentual deve estar entre 0 e 100";
     }
 
     setErrors(newErrors);
@@ -75,7 +94,7 @@ export default function FormularioFuncionario() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validarFormulario()) return;
 
     adicionarFuncionario({
@@ -85,7 +104,7 @@ export default function FormularioFuncionario() {
       permissaoAcesso: formData.permissaoAcesso,
       tipoAcesso: formData.tipoAcesso,
       percentualComissao: parseFloat(formData.percentualComissao),
-      ativo: formData.ativo
+      ativo: formData.ativo,
     });
 
     resetForm();
@@ -123,9 +142,11 @@ export default function FormularioFuncionario() {
                 <Input
                   id="nomeCompleto"
                   value={formData.nomeCompleto}
-                  onChange={(e) => setFormData({ ...formData, nomeCompleto: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nomeCompleto: e.target.value })
+                  }
                   placeholder="Nome completo do funcionário"
-                  className={errors.nomeCompleto ? 'border-red-500' : ''}
+                  className={errors.nomeCompleto ? "border-red-500" : ""}
                 />
                 {errors.nomeCompleto && (
                   <p className="text-sm text-red-500">{errors.nomeCompleto}</p>
@@ -149,9 +170,11 @@ export default function FormularioFuncionario() {
                   <Input
                     id="login"
                     value={formData.login}
-                    onChange={(e) => setFormData({ ...formData, login: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, login: e.target.value })
+                    }
                     placeholder="Login para acesso"
-                    className={errors.login ? 'border-red-500' : ''}
+                    className={errors.login ? "border-red-500" : ""}
                   />
                   {errors.login && (
                     <p className="text-sm text-red-500">{errors.login}</p>
@@ -160,16 +183,20 @@ export default function FormularioFuncionario() {
 
                 <div className="space-y-2">
                   <Label>Tipo de Acesso</Label>
-                  <Select 
-                    value={formData.tipoAcesso} 
-                    onValueChange={(value: 'Administrador' | 'Operador') => setFormData({ ...formData, tipoAcesso: value })}
+                  <Select
+                    value={formData.tipoAcesso}
+                    onValueChange={(value: "Administrador" | "Operador") =>
+                      setFormData({ ...formData, tipoAcesso: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Operador">Operador</SelectItem>
-                      <SelectItem value="Administrador">Administrador</SelectItem>
+                      <SelectItem value="Administrador">
+                        Administrador
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -182,9 +209,11 @@ export default function FormularioFuncionario() {
                     id="senha"
                     type="password"
                     value={formData.senha}
-                    onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, senha: e.target.value })
+                    }
                     placeholder="Senha de acesso"
-                    className={errors.senha ? 'border-red-500' : ''}
+                    className={errors.senha ? "border-red-500" : ""}
                   />
                   {errors.senha && (
                     <p className="text-sm text-red-500">{errors.senha}</p>
@@ -197,12 +226,19 @@ export default function FormularioFuncionario() {
                     id="confirmarSenha"
                     type="password"
                     value={formData.confirmarSenha}
-                    onChange={(e) => setFormData({ ...formData, confirmarSenha: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirmarSenha: e.target.value,
+                      })
+                    }
                     placeholder="Confirme a senha"
-                    className={errors.confirmarSenha ? 'border-red-500' : ''}
+                    className={errors.confirmarSenha ? "border-red-500" : ""}
                   />
                   {errors.confirmarSenha && (
-                    <p className="text-sm text-red-500">{errors.confirmarSenha}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.confirmarSenha}
+                    </p>
                   )}
                 </div>
               </div>
@@ -211,9 +247,13 @@ export default function FormularioFuncionario() {
                 <Switch
                   id="permissaoAcesso"
                   checked={formData.permissaoAcesso}
-                  onCheckedChange={(checked) => setFormData({ ...formData, permissaoAcesso: checked })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, permissaoAcesso: checked })
+                  }
                 />
-                <Label htmlFor="permissaoAcesso">Permissão de acesso ao sistema</Label>
+                <Label htmlFor="permissaoAcesso">
+                  Permissão de acesso ao sistema
+                </Label>
               </div>
             </CardContent>
           </Card>
@@ -231,7 +271,9 @@ export default function FormularioFuncionario() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="percentualComissao">Percentual de Comissão (%)</Label>
+                <Label htmlFor="percentualComissao">
+                  Percentual de Comissão (%)
+                </Label>
                 <Input
                   id="percentualComissao"
                   type="number"
@@ -239,15 +281,23 @@ export default function FormularioFuncionario() {
                   max="100"
                   step="0.1"
                   value={formData.percentualComissao}
-                  onChange={(e) => setFormData({ ...formData, percentualComissao: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      percentualComissao: e.target.value,
+                    })
+                  }
                   placeholder="0.0"
-                  className={errors.percentualComissao ? 'border-red-500' : ''}
+                  className={errors.percentualComissao ? "border-red-500" : ""}
                 />
                 {errors.percentualComissao && (
-                  <p className="text-sm text-red-500">{errors.percentualComissao}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.percentualComissao}
+                  </p>
                 )}
                 <p className="text-sm text-muted-foreground">
-                  Percentual aplicado sobre o valor líquido dos serviços realizados
+                  Percentual aplicado sobre o valor líquido dos serviços
+                  realizados
                 </p>
               </div>
             </CardContent>
@@ -260,7 +310,9 @@ export default function FormularioFuncionario() {
                 <Switch
                   id="ativo"
                   checked={formData.ativo}
-                  onCheckedChange={(checked) => setFormData({ ...formData, ativo: checked })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, ativo: checked })
+                  }
                 />
                 <Label htmlFor="ativo">Funcionário ativo no sistema</Label>
               </div>
@@ -270,7 +322,12 @@ export default function FormularioFuncionario() {
           <Separator />
 
           <div className="flex gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              className="flex-1"
+            >
               Cancelar
             </Button>
             <Button type="submit" className="flex-1">

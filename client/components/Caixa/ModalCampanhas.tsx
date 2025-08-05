@@ -1,21 +1,41 @@
-import React, { useState } from 'react';
-import { useCaixa } from '../../contexts/CaixaContext';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
-import { Switch } from '../ui/switch';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Badge } from '../ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { 
+import React, { useState } from "react";
+import { useCaixa } from "../../contexts/CaixaContext";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Switch } from "../ui/switch";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import { Badge } from "../ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { 
+} from "../ui/dropdown-menu";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -24,49 +44,51 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../ui/alert-dialog';
-import { 
-  Megaphone, 
-  Plus, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
+} from "../ui/alert-dialog";
+import {
+  Megaphone,
+  Plus,
+  MoreVertical,
+  Edit,
+  Trash2,
   Calendar,
   Play,
-  Pause
-} from 'lucide-react';
+  Pause,
+} from "lucide-react";
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('pt-BR');
+  return date.toLocaleDateString("pt-BR");
 }
 
 export default function ModalCampanhas() {
   const { campanhas, adicionarCampanha } = useCaixa();
   const [isOpen, setIsOpen] = useState(false);
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
-  const [campanhaParaExcluir, setCampanhaParaExcluir] = useState<string | null>(null);
-  
+  const [campanhaParaExcluir, setCampanhaParaExcluir] = useState<string | null>(
+    null,
+  );
+
   const [formData, setFormData] = useState({
-    nome: '',
-    descricao: '',
+    nome: "",
+    descricao: "",
     ativa: true,
-    dataInicio: new Date().toISOString().split('T')[0],
-    dataFim: ''
+    dataInicio: new Date().toISOString().split("T")[0],
+    dataFim: "",
   });
 
   const resetForm = () => {
     setFormData({
-      nome: '',
-      descricao: '',
+      nome: "",
+      descricao: "",
       ativa: true,
-      dataInicio: new Date().toISOString().split('T')[0],
-      dataFim: ''
+      dataInicio: new Date().toISOString().split("T")[0],
+      dataFim: "",
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.nome.trim()) return;
 
     adicionarCampanha({
@@ -74,7 +96,7 @@ export default function ModalCampanhas() {
       descricao: formData.descricao.trim() || undefined,
       ativa: formData.ativa,
       dataInicio: new Date(formData.dataInicio),
-      dataFim: formData.dataFim ? new Date(formData.dataFim) : undefined
+      dataFim: formData.dataFim ? new Date(formData.dataFim) : undefined,
     });
 
     resetForm();
@@ -115,7 +137,10 @@ export default function ModalCampanhas() {
                   {campanhas.length} campanha(s) cadastrada(s)
                 </p>
               </div>
-              <Dialog open={isNewCampanhaOpen} onOpenChange={setIsNewCampanhaOpen}>
+              <Dialog
+                open={isNewCampanhaOpen}
+                onOpenChange={setIsNewCampanhaOpen}
+              >
                 <DialogTrigger asChild>
                   <Button className="gap-2">
                     <Plus className="h-4 w-4" />
@@ -136,7 +161,9 @@ export default function ModalCampanhas() {
                       <Input
                         id="nome"
                         value={formData.nome}
-                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, nome: e.target.value })
+                        }
                         placeholder="Ex: Promoção Janeiro 2024"
                         required
                       />
@@ -147,7 +174,12 @@ export default function ModalCampanhas() {
                       <Textarea
                         id="descricao"
                         value={formData.descricao}
-                        onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            descricao: e.target.value,
+                          })
+                        }
                         placeholder="Descreva os detalhes da campanha..."
                         rows={3}
                       />
@@ -160,7 +192,12 @@ export default function ModalCampanhas() {
                           id="dataInicio"
                           type="date"
                           value={formData.dataInicio}
-                          onChange={(e) => setFormData({ ...formData, dataInicio: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              dataInicio: e.target.value,
+                            })
+                          }
                           required
                         />
                       </div>
@@ -171,7 +208,12 @@ export default function ModalCampanhas() {
                           id="dataFim"
                           type="date"
                           value={formData.dataFim}
-                          onChange={(e) => setFormData({ ...formData, dataFim: e.target.value })}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              dataFim: e.target.value,
+                            })
+                          }
                           min={formData.dataInicio}
                         />
                       </div>
@@ -181,13 +223,20 @@ export default function ModalCampanhas() {
                       <Switch
                         id="ativa"
                         checked={formData.ativa}
-                        onCheckedChange={(checked) => setFormData({ ...formData, ativa: checked })}
+                        onCheckedChange={(checked) =>
+                          setFormData({ ...formData, ativa: checked })
+                        }
                       />
                       <Label htmlFor="ativa">Campanha ativa</Label>
                     </div>
 
                     <div className="flex gap-2 pt-4">
-                      <Button type="button" variant="outline" onClick={() => setIsNewCampanhaOpen(false)} className="flex-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsNewCampanhaOpen(false)}
+                        className="flex-1"
+                      >
                         Cancelar
                       </Button>
                       <Button type="submit" className="flex-1">
@@ -251,8 +300,8 @@ export default function ModalCampanhas() {
                         </TableCell>
 
                         <TableCell>
-                          <Badge 
-                            variant={campanha.ativa ? 'default' : 'secondary'}
+                          <Badge
+                            variant={campanha.ativa ? "default" : "secondary"}
                             className="flex items-center space-x-1 w-fit"
                           >
                             {campanha.ativa ? (
@@ -260,13 +309,13 @@ export default function ModalCampanhas() {
                             ) : (
                               <Pause className="h-3 w-3" />
                             )}
-                            <span>{campanha.ativa ? 'Ativa' : 'Inativa'}</span>
+                            <span>{campanha.ativa ? "Ativa" : "Inativa"}</span>
                           </Badge>
                         </TableCell>
 
                         <TableCell>
                           <span className="text-sm text-muted-foreground">
-                            {campanha.descricao || 'Sem descrição'}
+                            {campanha.descricao || "Sem descrição"}
                           </span>
                         </TableCell>
 
@@ -282,9 +331,11 @@ export default function ModalCampanhas() {
                                 <Edit className="h-4 w-4 mr-2" />
                                 Editar
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 className="text-red-600"
-                                onClick={() => setCampanhaParaExcluir(campanha.id)}
+                                onClick={() =>
+                                  setCampanhaParaExcluir(campanha.id)
+                                }
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Excluir
@@ -303,18 +354,24 @@ export default function ModalCampanhas() {
       </Dialog>
 
       {/* Dialog de confirmação de exclusão */}
-      <AlertDialog open={!!campanhaParaExcluir} onOpenChange={() => setCampanhaParaExcluir(null)}>
+      <AlertDialog
+        open={!!campanhaParaExcluir}
+        onOpenChange={() => setCampanhaParaExcluir(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir esta campanha? Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir esta campanha? Esta ação não pode
+              ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => campanhaParaExcluir && handleExcluir(campanhaParaExcluir)}
+              onClick={() =>
+                campanhaParaExcluir && handleExcluir(campanhaParaExcluir)
+              }
               className="bg-red-600 hover:bg-red-700"
             >
               Excluir

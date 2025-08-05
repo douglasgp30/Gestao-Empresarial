@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
-import { RelatoriosProvider } from '../contexts/RelatoriosContext';
-import FiltrosRelatorios from '../components/Relatorios/FiltrosRelatorios';
-import RelatorioFinanceiro from '../components/Relatorios/RelatorioFinanceiro';
-import RelatorioTecnicos from '../components/Relatorios/RelatorioTecnicos';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { BarChart3, DollarSign, Users, FileText } from 'lucide-react';
+import React, { useState } from "react";
+import { RelatoriosProvider } from "../contexts/RelatoriosContext";
+import FiltrosRelatorios from "../components/Relatorios/FiltrosRelatorios";
+import RelatorioFinanceiro from "../components/Relatorios/RelatorioFinanceiro";
+import RelatorioTecnicos from "../components/Relatorios/RelatorioTecnicos";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { BarChart3, DollarSign, Users, FileText } from "lucide-react";
 
 function RelatoriosContent() {
   return (
@@ -55,7 +60,8 @@ function RelatoriosContent() {
               Relatório de Contas
             </h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Relatório detalhado de contas a pagar e receber com análises de vencimento e status.
+              Relatório detalhado de contas a pagar e receber com análises de
+              vencimento e status.
               <br />
               <span className="text-sm italic">Em desenvolvimento...</span>
             </p>

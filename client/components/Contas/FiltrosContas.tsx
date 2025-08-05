@@ -1,48 +1,64 @@
-import React, { useState } from 'react';
-import { useContas } from '../../contexts/ContasContext';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Calendar } from '../ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { 
-  Filter, 
-  Calendar as CalendarIcon, 
+import React, { useState } from "react";
+import { useContas } from "../../contexts/ContasContext";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  Filter,
+  Calendar as CalendarIcon,
   X,
   FileText,
   TrendingUp,
   TrendingDown,
   AlertTriangle,
   Clock,
-  CheckCircle2
-} from 'lucide-react';
+  CheckCircle2,
+} from "lucide-react";
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('pt-BR');
+  return date.toLocaleDateString("pt-BR");
 }
 
 function formatCurrency(value: number): string {
-  return value.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
   });
 }
 
 export default function FiltrosContas() {
   const { filtros, setFiltros, totais, isLoading } = useContas();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [tempDataInicio, setTempDataInicio] = useState<Date | undefined>(filtros.dataInicio);
-  const [tempDataFim, setTempDataFim] = useState<Date | undefined>(filtros.dataFim);
+  const [tempDataInicio, setTempDataInicio] = useState<Date | undefined>(
+    filtros.dataInicio,
+  );
+  const [tempDataFim, setTempDataFim] = useState<Date | undefined>(
+    filtros.dataFim,
+  );
 
   const aplicarFiltroData = () => {
     if (tempDataInicio && tempDataFim) {
       setFiltros({
         ...filtros,
         dataInicio: tempDataInicio,
-        dataFim: tempDataFim
+        dataFim: tempDataFim,
       });
       setIsCalendarOpen(false);
     }
@@ -52,13 +68,13 @@ export default function FiltrosContas() {
     setFiltros({
       dataInicio: new Date(2024, 11, 1),
       dataFim: new Date(2024, 11, 31),
-      tipo: 'ambos'
+      tipo: "ambos",
     });
   };
 
   const contarFiltrosAtivos = () => {
     let count = 0;
-    if (filtros.tipo !== 'ambos') count++;
+    if (filtros.tipo !== "ambos") count++;
     if (filtros.status) count++;
     if (filtros.fornecedorCliente) count++;
     return count;
@@ -74,7 +90,7 @@ export default function FiltrosContas() {
               <div>
                 <p className="text-sm text-muted-foreground">A Pagar</p>
                 <p className="text-xl font-bold text-red-600">
-                  {isLoading ? '...' : formatCurrency(totais.totalPagar)}
+                  {isLoading ? "..." : formatCurrency(totais.totalPagar)}
                 </p>
               </div>
               <div className="bg-red-100 p-2 rounded-full">
@@ -90,7 +106,7 @@ export default function FiltrosContas() {
               <div>
                 <p className="text-sm text-muted-foreground">A Receber</p>
                 <p className="text-xl font-bold text-green-600">
-                  {isLoading ? '...' : formatCurrency(totais.totalReceber)}
+                  {isLoading ? "..." : formatCurrency(totais.totalReceber)}
                 </p>
               </div>
               <div className="bg-green-100 p-2 rounded-full">
@@ -106,7 +122,7 @@ export default function FiltrosContas() {
               <div>
                 <p className="text-sm text-muted-foreground">Vence Hoje</p>
                 <p className="text-xl font-bold text-orange-600">
-                  {isLoading ? '...' : formatCurrency(totais.totalVencendoHoje)}
+                  {isLoading ? "..." : formatCurrency(totais.totalVencendoHoje)}
                 </p>
               </div>
               <div className="bg-orange-100 p-2 rounded-full">
@@ -122,7 +138,7 @@ export default function FiltrosContas() {
               <div>
                 <p className="text-sm text-muted-foreground">Atrasadas</p>
                 <p className="text-xl font-bold text-red-700">
-                  {isLoading ? '...' : formatCurrency(totais.totalAtrasadas)}
+                  {isLoading ? "..." : formatCurrency(totais.totalAtrasadas)}
                 </p>
               </div>
               <div className="bg-red-200 p-2 rounded-full">
@@ -138,7 +154,7 @@ export default function FiltrosContas() {
               <div>
                 <p className="text-sm text-muted-foreground">Pagas</p>
                 <p className="text-xl font-bold text-green-700">
-                  {isLoading ? '...' : formatCurrency(totais.totalPagas)}
+                  {isLoading ? "..." : formatCurrency(totais.totalPagas)}
                 </p>
               </div>
               <div className="bg-green-200 p-2 rounded-full">
@@ -157,7 +173,9 @@ export default function FiltrosContas() {
               <Filter className="h-5 w-5" />
               <span>Filtros</span>
               {contarFiltrosAtivos() > 0 && (
-                <Badge variant="secondary">{contarFiltrosAtivos()} ativo(s)</Badge>
+                <Badge variant="secondary">
+                  {contarFiltrosAtivos()} ativo(s)
+                </Badge>
               )}
             </div>
             <Button variant="ghost" size="sm" onClick={limparFiltros}>
@@ -166,7 +184,8 @@ export default function FiltrosContas() {
             </Button>
           </CardTitle>
           <CardDescription>
-            Período: {formatDate(filtros.dataInicio)} - {formatDate(filtros.dataFim)}
+            Período: {formatDate(filtros.dataInicio)} -{" "}
+            {formatDate(filtros.dataFim)}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -176,7 +195,10 @@ export default function FiltrosContas() {
               <Label>Período</Label>
               <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-left">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left"
+                  >
                     <CalendarIcon className="h-4 w-4 mr-2" />
                     Alterar Datas
                   </Button>
@@ -198,16 +220,18 @@ export default function FiltrosContas() {
                         mode="single"
                         selected={tempDataFim}
                         onSelect={setTempDataFim}
-                        disabled={(date) => tempDataInicio ? date < tempDataInicio : false}
+                        disabled={(date) =>
+                          tempDataInicio ? date < tempDataInicio : false
+                        }
                       />
                     </div>
                     <div className="flex space-x-2">
                       <Button size="sm" onClick={aplicarFiltroData}>
                         Aplicar
                       </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => setIsCalendarOpen(false)}
                       >
                         Cancelar
@@ -221,9 +245,11 @@ export default function FiltrosContas() {
             {/* Tipo */}
             <div>
               <Label>Tipo</Label>
-              <Select 
-                value={filtros.tipo} 
-                onValueChange={(value: any) => setFiltros({ ...filtros, tipo: value })}
+              <Select
+                value={filtros.tipo}
+                onValueChange={(value: any) =>
+                  setFiltros({ ...filtros, tipo: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -240,15 +266,20 @@ export default function FiltrosContas() {
             <div>
               <Label>Status</Label>
               <Select
-                value={filtros.status || 'todos'}
-                onValueChange={(value) => setFiltros({ ...filtros, status: value === 'todos' ? undefined : value })}
+                value={filtros.status || "todos"}
+                onValueChange={(value) =>
+                  setFiltros({
+                    ...filtros,
+                    status: value === "todos" ? undefined : value,
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="pendente">Pendente</SelectItem>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="pendente">Pendente</SelectItem>
                   <SelectItem value="vence_hoje">Vence Hoje</SelectItem>
                   <SelectItem value="atrasada">Atrasada</SelectItem>
                   <SelectItem value="paga">Paga</SelectItem>
@@ -261,8 +292,13 @@ export default function FiltrosContas() {
               <Label>Fornecedor/Cliente</Label>
               <Input
                 placeholder="Buscar por nome..."
-                value={filtros.fornecedorCliente || ''}
-                onChange={(e) => setFiltros({ ...filtros, fornecedorCliente: e.target.value || undefined })}
+                value={filtros.fornecedorCliente || ""}
+                onChange={(e) =>
+                  setFiltros({
+                    ...filtros,
+                    fornecedorCliente: e.target.value || undefined,
+                  })
+                }
               />
             </div>
           </div>

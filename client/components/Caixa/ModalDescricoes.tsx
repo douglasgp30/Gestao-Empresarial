@@ -1,20 +1,40 @@
-import React, { useState } from 'react';
-import { useEntidades } from '../../contexts/EntidadesContext';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Badge } from '../ui/badge';
-import { Card, CardContent } from '../ui/card';
-import { 
+import React, { useState } from "react";
+import { useEntidades } from "../../contexts/EntidadesContext";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import { Badge } from "../ui/badge";
+import { Card, CardContent } from "../ui/card";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { 
+} from "../ui/dropdown-menu";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -23,56 +43,58 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../ui/alert-dialog';
-import { 
-  FileText, 
-  Plus, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
+} from "../ui/alert-dialog";
+import {
+  FileText,
+  Plus,
+  MoreVertical,
+  Edit,
+  Trash2,
   Calendar,
-  Tag
-} from 'lucide-react';
+  Tag,
+} from "lucide-react";
 
 const categorias = [
-  'Residencial',
-  'Comercial',
-  'Industrial',
-  'Condomínio',
-  'Emergência',
-  'Outros'
+  "Residencial",
+  "Comercial",
+  "Industrial",
+  "Condomínio",
+  "Emergência",
+  "Outros",
 ];
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('pt-BR');
+  return date.toLocaleDateString("pt-BR");
 }
 
 export default function ModalDescricoes() {
   const { descricoes, adicionarDescricao, excluirDescricao } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
   const [isNewDescricaoOpen, setIsNewDescricaoOpen] = useState(false);
-  const [descricaoParaExcluir, setDescricaoParaExcluir] = useState<string | null>(null);
-  
+  const [descricaoParaExcluir, setDescricaoParaExcluir] = useState<
+    string | null
+  >(null);
+
   const [formData, setFormData] = useState({
-    nome: '',
-    categoria: ''
+    nome: "",
+    categoria: "",
   });
 
   const resetForm = () => {
     setFormData({
-      nome: '',
-      categoria: ''
+      nome: "",
+      categoria: "",
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.nome.trim()) return;
 
     adicionarDescricao({
       nome: formData.nome.trim(),
-      categoria: formData.categoria || undefined
+      categoria: formData.categoria || undefined,
     });
 
     resetForm();
@@ -108,12 +130,17 @@ export default function ModalDescricoes() {
             {/* Header com botão de criar */}
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-semibold">Descrições Cadastradas</h3>
+                <h3 className="text-lg font-semibold">
+                  Descrições Cadastradas
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   {descricoes.length} descrição(ões) cadastrada(s)
                 </p>
               </div>
-              <Dialog open={isNewDescricaoOpen} onOpenChange={setIsNewDescricaoOpen}>
+              <Dialog
+                open={isNewDescricaoOpen}
+                onOpenChange={setIsNewDescricaoOpen}
+              >
                 <DialogTrigger asChild>
                   <Button className="gap-2">
                     <Plus className="h-4 w-4" />
@@ -134,7 +161,9 @@ export default function ModalDescricoes() {
                       <Input
                         id="nome"
                         value={formData.nome}
-                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, nome: e.target.value })
+                        }
                         placeholder="Ex: Desentupimento de pia"
                         required
                       />
@@ -142,23 +171,32 @@ export default function ModalDescricoes() {
 
                     <div className="space-y-2">
                       <Label>Categoria</Label>
-                      <Select 
-                        value={formData.categoria} 
-                        onValueChange={(value) => setFormData({ ...formData, categoria: value })}
+                      <Select
+                        value={formData.categoria}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, categoria: value })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione uma categoria" />
                         </SelectTrigger>
                         <SelectContent>
-                          {categorias.map(categoria => (
-                            <SelectItem key={categoria} value={categoria}>{categoria}</SelectItem>
+                          {categorias.map((categoria) => (
+                            <SelectItem key={categoria} value={categoria}>
+                              {categoria}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="flex gap-2 pt-4">
-                      <Button type="button" variant="outline" onClick={() => setIsNewDescricaoOpen(false)} className="flex-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsNewDescricaoOpen(false)}
+                        className="flex-1"
+                      >
                         Cancelar
                       </Button>
                       <Button type="submit" className="flex-1">
@@ -179,7 +217,8 @@ export default function ModalDescricoes() {
                     Nenhuma descrição cadastrada
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Clique em "Nova Descrição" para criar sua primeira descrição padrão.
+                    Clique em "Nova Descrição" para criar sua primeira descrição
+                    padrão.
                   </p>
                 </CardContent>
               </Card>
@@ -202,18 +241,25 @@ export default function ModalDescricoes() {
                             <div className="bg-primary/10 p-2 rounded-full">
                               <FileText className="h-4 w-4 text-primary" />
                             </div>
-                            <span className="font-medium">{descricao.nome}</span>
+                            <span className="font-medium">
+                              {descricao.nome}
+                            </span>
                           </div>
                         </TableCell>
 
                         <TableCell>
                           {descricao.categoria ? (
-                            <Badge variant="outline" className="flex items-center space-x-1 w-fit">
+                            <Badge
+                              variant="outline"
+                              className="flex items-center space-x-1 w-fit"
+                            >
                               <Tag className="h-3 w-3" />
                               <span>{descricao.categoria}</span>
                             </Badge>
                           ) : (
-                            <span className="text-muted-foreground">Sem categoria</span>
+                            <span className="text-muted-foreground">
+                              Sem categoria
+                            </span>
                           )}
                         </TableCell>
 
@@ -236,9 +282,11 @@ export default function ModalDescricoes() {
                                 <Edit className="h-4 w-4 mr-2" />
                                 Editar
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 className="text-red-600"
-                                onClick={() => setDescricaoParaExcluir(descricao.id)}
+                                onClick={() =>
+                                  setDescricaoParaExcluir(descricao.id)
+                                }
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Excluir
@@ -257,18 +305,24 @@ export default function ModalDescricoes() {
       </Dialog>
 
       {/* Dialog de confirmação de exclusão */}
-      <AlertDialog open={!!descricaoParaExcluir} onOpenChange={() => setDescricaoParaExcluir(null)}>
+      <AlertDialog
+        open={!!descricaoParaExcluir}
+        onOpenChange={() => setDescricaoParaExcluir(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir esta descrição? Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir esta descrição? Esta ação não pode
+              ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => descricaoParaExcluir && handleExcluir(descricaoParaExcluir)}
+              onClick={() =>
+                descricaoParaExcluir && handleExcluir(descricaoParaExcluir)
+              }
               className="bg-red-600 hover:bg-red-700"
             >
               Excluir

@@ -1,7 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { DashboardStats, LancamentoCaixa, Conta } from '@shared/types';
-import { useCaixa } from './CaixaContext';
-import { useContas } from './ContasContext';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { DashboardStats, LancamentoCaixa, Conta } from "@shared/types";
+import { useCaixa } from "./CaixaContext";
+import { useContas } from "./ContasContext";
 
 interface FiltrosPeriodo {
   dataInicio: Date;
@@ -15,14 +21,17 @@ interface DashboardContextType {
   contas: Conta[];
   contasVencendo: Conta[];
   setFiltros: (filtros: FiltrosPeriodo) => void;
-  setFiltroRapido: (tipo: 'ultimos7dias' | 'estaemana' | 'ultimos30dias' | 'mesAtual') => void;
+  setFiltroRapido: (
+    tipo: "ultimos7dias" | "estaemana" | "ultimos30dias" | "mesAtual",
+  ) => void;
   aplicarFiltrosCaixa: boolean;
   setAplicarFiltrosCaixa: (aplicar: boolean) => void;
   isLoading: boolean;
 }
 
-const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
-
+const DashboardContext = createContext<DashboardContextType | undefined>(
+  undefined,
+);
 
 function getInicioDoMes(): Date {
   const hoje = new Date();
@@ -42,7 +51,11 @@ function getInicioSemana(): Date {
   const hoje = new Date();
   const diaSemana = hoje.getDay();
   const diasAtras = diaSemana === 0 ? 6 : diaSemana - 1; // Segunda-feira como início
-  return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - diasAtras);
+  return new Date(
+    hoje.getFullYear(),
+    hoje.getMonth(),
+    hoje.getDate() - diasAtras,
+  );
 }
 
 function getUltimos30Dias(): Date {
@@ -56,7 +69,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   const [filtros, setFiltros] = useState<FiltrosPeriodo>({
     dataInicio: getInicioDoMes(),
-    dataFim: getHoje()
+    dataFim: getHoje(),
   });
   const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,29 +89,31 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasVencendoHoje: 0,
     contasAtrasadas: 0,
     totalContasPagar: 0,
-    totalContasReceber: 0
+    totalContasReceber: 0,
   });
 
-  const setFiltroRapido = (tipo: 'ultimos7dias' | 'estaemana' | 'ultimos30dias' | 'mesAtual') => {
+  const setFiltroRapido = (
+    tipo: "ultimos7dias" | "estaemana" | "ultimos30dias" | "mesAtual",
+  ) => {
     let novoFiltro: FiltrosPeriodo;
-    
+
     switch (tipo) {
-      case 'ultimos7dias':
+      case "ultimos7dias":
         novoFiltro = { dataInicio: getUltimos7Dias(), dataFim: getHoje() };
         break;
-      case 'estaemana':
+      case "estaemana":
         novoFiltro = { dataInicio: getInicioSemana(), dataFim: getHoje() };
         break;
-      case 'ultimos30dias':
+      case "ultimos30dias":
         novoFiltro = { dataInicio: getUltimos30Dias(), dataFim: getHoje() };
         break;
-      case 'mesAtual':
+      case "mesAtual":
         novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getHoje() };
         break;
       default:
         novoFiltro = filtros;
     }
-    
+
     setFiltros(novoFiltro);
   };
 
@@ -115,33 +130,56 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       if (aplicarFiltrosCaixa && caixaContext.filtros) {
         // Usar filtros específicos do Caixa para cálculos dinâmicos
-        lancamentosFiltrados = caixaContext.lancamentos.filter(lancamento => {
+        lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
           const dataLancamento = new Date(lancamento.data);
-          const dentroDataInicio = dataLancamento >= caixaContext.filtros.dataInicio;
+          const dentroDataInicio =
+            dataLancamento >= caixaContext.filtros.dataInicio;
           const dentroDataFim = dataLancamento <= caixaContext.filtros.dataFim;
-          const tipoCorreto = !caixaContext.filtros.tipo || caixaContext.filtros.tipo === 'todos' || lancamento.tipo === caixaContext.filtros.tipo;
-          const formaPagamentoCorreta = !caixaContext.filtros.formaPagamento || lancamento.formaPagamento === caixaContext.filtros.formaPagamento;
-          const tecnicoCorreto = !caixaContext.filtros.tecnico || lancamento.tecnicoResponsavel === caixaContext.filtros.tecnico;
-          const campanhaCorreta = !caixaContext.filtros.campanha || lancamento.campanha === caixaContext.filtros.campanha;
-          const setorCorreto = !caixaContext.filtros.setor || lancamento.setor === caixaContext.filtros.setor;
+          const tipoCorreto =
+            !caixaContext.filtros.tipo ||
+            caixaContext.filtros.tipo === "todos" ||
+            lancamento.tipo === caixaContext.filtros.tipo;
+          const formaPagamentoCorreta =
+            !caixaContext.filtros.formaPagamento ||
+            lancamento.formaPagamento === caixaContext.filtros.formaPagamento;
+          const tecnicoCorreto =
+            !caixaContext.filtros.tecnico ||
+            lancamento.tecnicoResponsavel === caixaContext.filtros.tecnico;
+          const campanhaCorreta =
+            !caixaContext.filtros.campanha ||
+            lancamento.campanha === caixaContext.filtros.campanha;
+          const setorCorreto =
+            !caixaContext.filtros.setor ||
+            lancamento.setor === caixaContext.filtros.setor;
 
-          return dentroDataInicio && dentroDataFim && tipoCorreto && formaPagamentoCorreta && tecnicoCorreto && campanhaCorreta && setorCorreto;
+          return (
+            dentroDataInicio &&
+            dentroDataFim &&
+            tipoCorreto &&
+            formaPagamentoCorreta &&
+            tecnicoCorreto &&
+            campanhaCorreta &&
+            setorCorreto
+          );
         });
       } else {
         // Usar filtros do dashboard (período básico)
-        lancamentosFiltrados = caixaContext.lancamentos.filter(lancamento => {
+        lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
           const dataLancamento = new Date(lancamento.data);
-          return dataLancamento >= filtros.dataInicio && dataLancamento <= filtros.dataFim;
+          return (
+            dataLancamento >= filtros.dataInicio &&
+            dataLancamento <= filtros.dataFim
+          );
         });
       }
 
       // PRIMEIRA LINHA - Totais do Caixa (serviços realizados)
       const totalReceitas = lancamentosFiltrados
-        .filter(l => l.tipo === 'receita')
+        .filter((l) => l.tipo === "receita")
         .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
       const totalDespesas = lancamentosFiltrados
-        .filter(l => l.tipo === 'despesa')
+        .filter((l) => l.tipo === "despesa")
         .reduce((total, l) => total + l.valor, 0);
 
       const saldoFinal = totalReceitas - totalDespesas;
@@ -149,19 +187,20 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       // SEGUNDA LINHA - Receitas recebidas e despesas pagas (incluindo contas)
       // Receitas do caixa + contas a receber já pagas
       const contasRecebidasPagas = contasContext.contas
-        .filter(c => c.tipo === 'receber' && c.status === 'paga')
+        .filter((c) => c.tipo === "receber" && c.status === "paga")
         .reduce((total, c) => total + c.valor, 0);
 
       const totalReceitasRecebidas = totalReceitas + contasRecebidasPagas;
 
       // Despesas do caixa + contas a pagar já pagas
       const contasPagasPagas = contasContext.contas
-        .filter(c => c.tipo === 'pagar' && c.status === 'paga')
+        .filter((c) => c.tipo === "pagar" && c.status === "paga")
         .reduce((total, c) => total + c.valor, 0);
 
       const totalDespesasPagas = totalDespesas + contasPagasPagas;
 
-      const saldoGeralRecebidoPago = totalReceitasRecebidas - totalDespesasPagas;
+      const saldoGeralRecebidoPago =
+        totalReceitasRecebidas - totalDespesasPagas;
 
       // TERCEIRA LINHA - Totais específicos do módulo Contas
       const totalContasRecebidasPagas = contasRecebidasPagas;
@@ -170,31 +209,35 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       // Valor total de contas atrasadas
       const totalValorContasAtrasadas = contasContext.contas
-        .filter(c => c.status === 'atrasada')
+        .filter((c) => c.status === "atrasada")
         .reduce((total, c) => total + c.valor, 0);
 
       // Quantidade de contas atrasadas por tipo
-      const qtdContasPagarAtrasadas = contasContext.contas
-        .filter(c => c.tipo === 'pagar' && c.status === 'atrasada').length;
+      const qtdContasPagarAtrasadas = contasContext.contas.filter(
+        (c) => c.tipo === "pagar" && c.status === "atrasada",
+      ).length;
 
-      const qtdContasReceberAtrasadas = contasContext.contas
-        .filter(c => c.tipo === 'receber' && c.status === 'atrasada').length;
+      const qtdContasReceberAtrasadas = contasContext.contas.filter(
+        (c) => c.tipo === "receber" && c.status === "atrasada",
+      ).length;
 
       // Estatísticas gerais para compatibilidade
       const hoje = new Date();
-      const contasVencendoHoje = contasContext.contas.filter(c => {
+      const contasVencendoHoje = contasContext.contas.filter((c) => {
         const dataVenc = new Date(c.dataVencimento);
         return dataVenc.toDateString() === hoje.toDateString();
       }).length;
 
-      const contasAtrasadas = contasContext.contas.filter(c => c.status === 'atrasada').length;
+      const contasAtrasadas = contasContext.contas.filter(
+        (c) => c.status === "atrasada",
+      ).length;
 
       const totalContasPagar = contasContext.contas
-        .filter(c => c.tipo === 'pagar' && c.status !== 'paga')
+        .filter((c) => c.tipo === "pagar" && c.status !== "paga")
         .reduce((total, c) => total + c.valor, 0);
 
       const totalContasReceber = contasContext.contas
-        .filter(c => c.tipo === 'receber' && c.status !== 'paga')
+        .filter((c) => c.tipo === "receber" && c.status !== "paga")
         .reduce((total, c) => total + c.valor, 0);
 
       setStats({
@@ -220,17 +263,30 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         contasVencendoHoje,
         contasAtrasadas,
         totalContasPagar,
-        totalContasReceber
+        totalContasReceber,
       });
 
       setIsLoading(false);
     }, 300);
-  }, [filtros, aplicarFiltrosCaixa, caixaContext?.lancamentos, caixaContext?.filtros, contasContext?.contas]);
+  }, [
+    filtros,
+    aplicarFiltrosCaixa,
+    caixaContext?.lancamentos,
+    caixaContext?.filtros,
+    contasContext?.contas,
+  ]);
 
   // Filtrar contas que precisam de atenção (vencendo hoje e atrasadas)
-  const contasVencendo = contasContext?.contas?.filter(conta =>
-    conta.status === 'vence_hoje' || conta.status === 'atrasada'
-  ).sort((a, b) => new Date(a.dataVencimento).getTime() - new Date(b.dataVencimento).getTime()) || [];
+  const contasVencendo =
+    contasContext?.contas
+      ?.filter(
+        (conta) => conta.status === "vence_hoje" || conta.status === "atrasada",
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.dataVencimento).getTime() -
+          new Date(b.dataVencimento).getTime(),
+      ) || [];
 
   const value = {
     filtros,
@@ -242,7 +298,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setFiltroRapido,
     aplicarFiltrosCaixa,
     setAplicarFiltrosCaixa,
-    isLoading
+    isLoading,
   };
 
   return (
@@ -255,7 +311,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 export function useDashboard() {
   const context = useContext(DashboardContext);
   if (context === undefined) {
-    throw new Error('useDashboard must be used within a DashboardProvider');
+    throw new Error("useDashboard must be used within a DashboardProvider");
   }
   return context;
 }

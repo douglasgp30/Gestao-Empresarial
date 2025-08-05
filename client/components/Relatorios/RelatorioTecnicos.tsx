@@ -1,48 +1,63 @@
-import React from 'react';
-import { useRelatorios } from '../../contexts/RelatoriosContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Badge } from '../ui/badge';
-import { 
-  Users, 
-  Download, 
-  FileText, 
-  TrendingUp, 
+import React from "react";
+import { useRelatorios } from "../../contexts/RelatoriosContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Button } from "../ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import { Badge } from "../ui/badge";
+import {
+  Users,
+  Download,
+  FileText,
+  TrendingUp,
   User,
   DollarSign,
-  Award
-} from 'lucide-react';
+  Award,
+} from "lucide-react";
 
 function formatCurrency(value: number): string {
-  return value.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
   });
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('pt-BR');
+  return date.toLocaleDateString("pt-BR");
 }
 
 export default function RelatorioTecnicos() {
-  const { gerarRelatorioTecnicos, exportarPDF, exportarExcel } = useRelatorios();
-  
+  const { gerarRelatorioTecnicos, exportarPDF, exportarExcel } =
+    useRelatorios();
+
   const relatorio = gerarRelatorioTecnicos();
 
   const handleExportarPDF = () => {
-    exportarPDF('tecnicos', relatorio);
+    exportarPDF("tecnicos", relatorio);
   };
 
   const handleExportarExcel = () => {
-    exportarExcel('tecnicos', relatorio);
+    exportarExcel("tecnicos", relatorio);
   };
 
-  const melhorTecnico = relatorio.performanceTecnicos.length > 0 
-    ? relatorio.performanceTecnicos.reduce((prev, current) => 
-        prev.valorTotal > current.valorTotal ? prev : current
-      )
-    : null;
+  const melhorTecnico =
+    relatorio.performanceTecnicos.length > 0
+      ? relatorio.performanceTecnicos.reduce((prev, current) =>
+          prev.valorTotal > current.valorTotal ? prev : current,
+        )
+      : null;
 
   return (
     <div className="space-y-6">
@@ -54,7 +69,8 @@ export default function RelatorioTecnicos() {
             Relatório de Técnicos
           </h2>
           <p className="text-muted-foreground">
-            Período: {formatDate(relatorio.periodo.inicio)} - {formatDate(relatorio.periodo.fim)}
+            Período: {formatDate(relatorio.periodo.inicio)} -{" "}
+            {formatDate(relatorio.periodo.fim)}
           </p>
         </div>
         <div className="flex space-x-2">
@@ -75,7 +91,9 @@ export default function RelatorioTecnicos() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total de Serviços</p>
+                <p className="text-sm text-muted-foreground">
+                  Total de Serviços
+                </p>
                 <p className="text-2xl font-bold text-blue-600">
                   {relatorio.resumo.totalServicos}
                 </p>
@@ -141,14 +159,17 @@ export default function RelatorioTecnicos() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-lg font-bold">{melhorTecnico.nome}</p>
-                <p className="text-muted-foreground">Técnico com maior faturamento</p>
+                <p className="text-muted-foreground">
+                  Técnico com maior faturamento
+                </p>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold text-primary">
                   {formatCurrency(melhorTecnico.valorTotal)}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {melhorTecnico.totalServicos} serviço(s) • {formatCurrency(melhorTecnico.comissaoTotal)} comissão
+                  {melhorTecnico.totalServicos} serviço(s) •{" "}
+                  {formatCurrency(melhorTecnico.comissaoTotal)} comissão
                 </p>
               </div>
             </div>
@@ -192,64 +213,62 @@ export default function RelatorioTecnicos() {
                   {relatorio.performanceTecnicos
                     .sort((a, b) => b.valorTotal - a.valorTotal)
                     .map((tecnico, index) => (
-                    <TableRow key={tecnico.nome}>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <div className="bg-primary/10 p-2 rounded-full">
-                            <User className="h-4 w-4 text-primary" />
+                      <TableRow key={tecnico.nome}>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <div className="bg-primary/10 p-2 rounded-full">
+                              <User className="h-4 w-4 text-primary" />
+                            </div>
+                            <span className="font-medium">{tecnico.nome}</span>
                           </div>
-                          <span className="font-medium">{tecnico.nome}</span>
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="text-center">
-                        <Badge variant="outline">
-                          {tecnico.totalServicos}
-                        </Badge>
-                      </TableCell>
+                        </TableCell>
 
-                      <TableCell className="text-right">
-                        <span className="font-bold text-green-600">
-                          {formatCurrency(tecnico.valorTotal)}
-                        </span>
-                      </TableCell>
-
-                      <TableCell className="text-right">
-                        <span className="font-medium text-blue-600">
-                          {formatCurrency(tecnico.comissaoTotal)}
-                        </span>
-                      </TableCell>
-
-                      <TableCell className="text-right">
-                        <span className="font-medium">
-                          {formatCurrency(tecnico.ticketMedio)}
-                        </span>
-                      </TableCell>
-
-                      <TableCell className="text-center">
-                        {index === 0 && (
-                          <Badge className="bg-yellow-500 text-yellow-50">
-                            🥇 1º
-                          </Badge>
-                        )}
-                        {index === 1 && (
-                          <Badge className="bg-gray-400 text-gray-50">
-                            🥈 2º
-                          </Badge>
-                        )}
-                        {index === 2 && (
-                          <Badge className="bg-orange-600 text-orange-50">
-                            🥉 3º
-                          </Badge>
-                        )}
-                        {index > 2 && (
+                        <TableCell className="text-center">
                           <Badge variant="outline">
-                            {index + 1}º
+                            {tecnico.totalServicos}
                           </Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+
+                        <TableCell className="text-right">
+                          <span className="font-bold text-green-600">
+                            {formatCurrency(tecnico.valorTotal)}
+                          </span>
+                        </TableCell>
+
+                        <TableCell className="text-right">
+                          <span className="font-medium text-blue-600">
+                            {formatCurrency(tecnico.comissaoTotal)}
+                          </span>
+                        </TableCell>
+
+                        <TableCell className="text-right">
+                          <span className="font-medium">
+                            {formatCurrency(tecnico.ticketMedio)}
+                          </span>
+                        </TableCell>
+
+                        <TableCell className="text-center">
+                          {index === 0 && (
+                            <Badge className="bg-yellow-500 text-yellow-50">
+                              🥇 1º
+                            </Badge>
+                          )}
+                          {index === 1 && (
+                            <Badge className="bg-gray-400 text-gray-50">
+                              🥈 2º
+                            </Badge>
+                          )}
+                          {index === 2 && (
+                            <Badge className="bg-orange-600 text-orange-50">
+                              🥉 3º
+                            </Badge>
+                          )}
+                          {index > 2 && (
+                            <Badge variant="outline">{index + 1}º</Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </div>
@@ -266,9 +285,12 @@ export default function RelatorioTecnicos() {
           <CardContent>
             <div className="space-y-4">
               {relatorio.performanceTecnicos.map((tecnico, index) => {
-                const maxValor = Math.max(...relatorio.performanceTecnicos.map(t => t.valorTotal));
-                const porcentagem = maxValor > 0 ? (tecnico.valorTotal / maxValor) * 100 : 0;
-                
+                const maxValor = Math.max(
+                  ...relatorio.performanceTecnicos.map((t) => t.valorTotal),
+                );
+                const porcentagem =
+                  maxValor > 0 ? (tecnico.valorTotal / maxValor) * 100 : 0;
+
                 return (
                   <div key={tecnico.nome} className="space-y-2">
                     <div className="flex justify-between text-sm">
@@ -276,7 +298,7 @@ export default function RelatorioTecnicos() {
                       <span>{formatCurrency(tecnico.valorTotal)}</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${porcentagem}%` }}
                       />
@@ -295,26 +317,44 @@ export default function RelatorioTecnicos() {
           <CardContent>
             <div className="grid gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-muted-foreground">Média de Serviços por Técnico</p>
+                <p className="text-sm text-muted-foreground">
+                  Média de Serviços por Técnico
+                </p>
                 <p className="text-xl font-bold text-blue-600">
-                  {relatorio.performanceTecnicos.length > 0 ? 
-                    (relatorio.resumo.totalServicos / relatorio.performanceTecnicos.length).toFixed(1) : '0'}
+                  {relatorio.performanceTecnicos.length > 0
+                    ? (
+                        relatorio.resumo.totalServicos /
+                        relatorio.performanceTecnicos.length
+                      ).toFixed(1)
+                    : "0"}
                 </p>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <p className="text-sm text-muted-foreground">Comissão Média por Técnico</p>
+                <p className="text-sm text-muted-foreground">
+                  Comissão Média por Técnico
+                </p>
                 <p className="text-xl font-bold text-green-600">
-                  {relatorio.performanceTecnicos.length > 0 ? 
-                    formatCurrency(relatorio.resumo.totalComissoes / relatorio.performanceTecnicos.length) : 
-                    formatCurrency(0)}
+                  {relatorio.performanceTecnicos.length > 0
+                    ? formatCurrency(
+                        relatorio.resumo.totalComissoes /
+                          relatorio.performanceTecnicos.length,
+                      )
+                    : formatCurrency(0)}
                 </p>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <p className="text-sm text-muted-foreground">Faturamento Médio</p>
+                <p className="text-sm text-muted-foreground">
+                  Faturamento Médio
+                </p>
                 <p className="text-xl font-bold text-purple-600">
-                  {relatorio.performanceTecnicos.length > 0 ? 
-                    formatCurrency(relatorio.performanceTecnicos.reduce((total, t) => total + t.valorTotal, 0) / relatorio.performanceTecnicos.length) : 
-                    formatCurrency(0)}
+                  {relatorio.performanceTecnicos.length > 0
+                    ? formatCurrency(
+                        relatorio.performanceTecnicos.reduce(
+                          (total, t) => total + t.valorTotal,
+                          0,
+                        ) / relatorio.performanceTecnicos.length,
+                      )
+                    : formatCurrency(0)}
                 </p>
               </div>
             </div>

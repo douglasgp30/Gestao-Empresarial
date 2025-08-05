@@ -1,8 +1,8 @@
-import React from 'react';
-import { FuncionariosProvider } from '../contexts/FuncionariosContext';
-import FormularioFuncionario from '../components/Funcionarios/FormularioFuncionario';
-import ListaFuncionarios from '../components/Funcionarios/ListaFuncionarios';
-import { Users } from 'lucide-react';
+import React from "react";
+import { FuncionariosProvider } from "../contexts/FuncionariosContext";
+import FormularioFuncionario from "../components/Funcionarios/FormularioFuncionario";
+import ListaFuncionarios from "../components/Funcionarios/ListaFuncionarios";
+import { Users } from "lucide-react";
 
 function FuncionariosContent() {
   return (

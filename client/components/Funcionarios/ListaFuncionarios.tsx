@@ -1,21 +1,40 @@
-import React, { useState } from 'react';
-import { useFuncionarios } from '../../contexts/FuncionariosContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Switch } from '../ui/switch';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { 
+import React, { useState } from "react";
+import { useFuncionarios } from "../../contexts/FuncionariosContext";
+import { useAuth } from "../../contexts/AuthContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Switch } from "../ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { 
+} from "../ui/dropdown-menu";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -24,11 +43,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '../ui/alert-dialog';
-import { 
-  Users, 
-  MoreVertical, 
-  Edit, 
+} from "../ui/alert-dialog";
+import {
+  Users,
+  MoreVertical,
+  Edit,
   Trash2,
   Shield,
   ShieldCheck,
@@ -38,36 +57,57 @@ import {
   Search,
   Filter,
   UserCheck,
-  UserX
-} from 'lucide-react';
+  UserX,
+} from "lucide-react";
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('pt-BR');
+  return date.toLocaleDateString("pt-BR");
 }
 
 export default function ListaFuncionarios() {
   const { user } = useAuth();
-  const { funcionarios, filtros, setFiltros, estatisticas, excluirFuncionario, alterarStatusFuncionario } = useFuncionarios();
-  const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState<string | null>(null);
+  const {
+    funcionarios,
+    filtros,
+    setFiltros,
+    estatisticas,
+    excluirFuncionario,
+    alterarStatusFuncionario,
+  } = useFuncionarios();
+  const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState<
+    string | null
+  >(null);
 
   // Filtrar funcionários
-  const funcionariosFiltrados = funcionarios.filter(funcionario => {
-    const buscaCorreta = !filtros.busca || 
-      funcionario.nomeCompleto.toLowerCase().includes(filtros.busca.toLowerCase()) ||
-      funcionario.login.toLowerCase().includes(filtros.busca.toLowerCase());
-    const tipoCorreto = filtros.tipoAcesso === 'todos' || funcionario.tipoAcesso === filtros.tipoAcesso;
-    const statusCorreto = filtros.status === 'todos' || 
-      (filtros.status === 'ativo' && funcionario.ativo) ||
-      (filtros.status === 'inativo' && !funcionario.ativo);
-    const permissaoCorreta = filtros.permissaoAcesso === undefined || funcionario.permissaoAcesso === filtros.permissaoAcesso;
+  const funcionariosFiltrados = funcionarios
+    .filter((funcionario) => {
+      const buscaCorreta =
+        !filtros.busca ||
+        funcionario.nomeCompleto
+          .toLowerCase()
+          .includes(filtros.busca.toLowerCase()) ||
+        funcionario.login.toLowerCase().includes(filtros.busca.toLowerCase());
+      const tipoCorreto =
+        filtros.tipoAcesso === "todos" ||
+        funcionario.tipoAcesso === filtros.tipoAcesso;
+      const statusCorreto =
+        filtros.status === "todos" ||
+        (filtros.status === "ativo" && funcionario.ativo) ||
+        (filtros.status === "inativo" && !funcionario.ativo);
+      const permissaoCorreta =
+        filtros.permissaoAcesso === undefined ||
+        funcionario.permissaoAcesso === filtros.permissaoAcesso;
 
-    return buscaCorreta && tipoCorreto && statusCorreto && permissaoCorreta;
-  }).sort((a, b) => {
-    // Admin primeiro, depois por nome
-    if (a.tipoAcesso === 'Administrador' && b.tipoAcesso !== 'Administrador') return -1;
-    if (b.tipoAcesso === 'Administrador' && a.tipoAcesso !== 'Administrador') return 1;
-    return a.nomeCompleto.localeCompare(b.nomeCompleto);
-  });
+      return buscaCorreta && tipoCorreto && statusCorreto && permissaoCorreta;
+    })
+    .sort((a, b) => {
+      // Admin primeiro, depois por nome
+      if (a.tipoAcesso === "Administrador" && b.tipoAcesso !== "Administrador")
+        return -1;
+      if (b.tipoAcesso === "Administrador" && a.tipoAcesso !== "Administrador")
+        return 1;
+      return a.nomeCompleto.localeCompare(b.nomeCompleto);
+    });
 
   const handleExcluir = (id: string) => {
     excluirFuncionario(id);
@@ -87,7 +127,9 @@ export default function ListaFuncionarios() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-2xl font-bold">{estatisticas.totalFuncionarios}</p>
+                <p className="text-2xl font-bold">
+                  {estatisticas.totalFuncionarios}
+                </p>
               </div>
               <Users className="h-8 w-8 text-muted-foreground" />
             </div>
@@ -99,7 +141,9 @@ export default function ListaFuncionarios() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Ativos</p>
-                <p className="text-2xl font-bold text-green-600">{estatisticas.totalAtivos}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {estatisticas.totalAtivos}
+                </p>
               </div>
               <UserCheck className="h-8 w-8 text-green-600" />
             </div>
@@ -111,7 +155,9 @@ export default function ListaFuncionarios() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Administradores</p>
-                <p className="text-2xl font-bold text-blue-600">{estatisticas.totalAdministradores}</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {estatisticas.totalAdministradores}
+                </p>
               </div>
               <ShieldCheck className="h-8 w-8 text-blue-600" />
             </div>
@@ -123,7 +169,9 @@ export default function ListaFuncionarios() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Operadores</p>
-                <p className="text-2xl font-bold text-purple-600">{estatisticas.totalOperadores}</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {estatisticas.totalOperadores}
+                </p>
               </div>
               <User className="h-8 w-8 text-purple-600" />
             </div>
@@ -147,8 +195,13 @@ export default function ListaFuncionarios() {
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Nome ou login..."
-                  value={filtros.busca || ''}
-                  onChange={(e) => setFiltros({ ...filtros, busca: e.target.value || undefined })}
+                  value={filtros.busca || ""}
+                  onChange={(e) =>
+                    setFiltros({
+                      ...filtros,
+                      busca: e.target.value || undefined,
+                    })
+                  }
                   className="pl-8"
                 />
               </div>
@@ -156,9 +209,11 @@ export default function ListaFuncionarios() {
 
             <div className="space-y-2">
               <Label>Tipo de Acesso</Label>
-              <Select 
-                value={filtros.tipoAcesso} 
-                onValueChange={(value: any) => setFiltros({ ...filtros, tipoAcesso: value })}
+              <Select
+                value={filtros.tipoAcesso}
+                onValueChange={(value: any) =>
+                  setFiltros({ ...filtros, tipoAcesso: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -173,9 +228,11 @@ export default function ListaFuncionarios() {
 
             <div className="space-y-2">
               <Label>Status</Label>
-              <Select 
-                value={filtros.status} 
-                onValueChange={(value: any) => setFiltros({ ...filtros, status: value })}
+              <Select
+                value={filtros.status}
+                onValueChange={(value: any) =>
+                  setFiltros({ ...filtros, status: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -190,12 +247,21 @@ export default function ListaFuncionarios() {
 
             <div className="space-y-2">
               <Label>Permissão</Label>
-              <Select 
-                value={filtros.permissaoAcesso === undefined ? 'todos' : (filtros.permissaoAcesso ? 'sim' : 'nao')} 
-                onValueChange={(value) => setFiltros({ 
-                  ...filtros, 
-                  permissaoAcesso: value === 'todos' ? undefined : value === 'sim' 
-                })}
+              <Select
+                value={
+                  filtros.permissaoAcesso === undefined
+                    ? "todos"
+                    : filtros.permissaoAcesso
+                      ? "sim"
+                      : "nao"
+                }
+                onValueChange={(value) =>
+                  setFiltros({
+                    ...filtros,
+                    permissaoAcesso:
+                      value === "todos" ? undefined : value === "sim",
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -253,14 +319,22 @@ export default function ListaFuncionarios() {
                             <User className="h-4 w-4 text-primary" />
                           </div>
                           <div>
-                            <p className="font-medium">{funcionario.nomeCompleto}</p>
+                            <p className="font-medium">
+                              {funcionario.nomeCompleto}
+                            </p>
                             <div className="flex items-center space-x-2 mt-1">
                               {funcionario.permissaoAcesso ? (
-                                <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-green-50 text-green-700 border-green-200"
+                                >
                                   Com Acesso
                                 </Badge>
                               ) : (
-                                <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200">
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-red-50 text-red-700 border-red-200"
+                                >
                                   Sem Acesso
                                 </Badge>
                               )}
@@ -281,11 +355,15 @@ export default function ListaFuncionarios() {
                       </TableCell>
 
                       <TableCell>
-                        <Badge 
-                          variant={funcionario.tipoAcesso === 'Administrador' ? 'default' : 'secondary'}
+                        <Badge
+                          variant={
+                            funcionario.tipoAcesso === "Administrador"
+                              ? "default"
+                              : "secondary"
+                          }
                           className="flex items-center space-x-1 w-fit"
                         >
-                          {funcionario.tipoAcesso === 'Administrador' ? (
+                          {funcionario.tipoAcesso === "Administrador" ? (
                             <ShieldCheck className="h-3 w-3" />
                           ) : (
                             <User className="h-3 w-3" />
@@ -304,7 +382,9 @@ export default function ListaFuncionarios() {
                       <TableCell>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{formatDate(funcionario.dataCadastro)}</span>
+                          <span className="text-sm">
+                            {formatDate(funcionario.dataCadastro)}
+                          </span>
                         </div>
                       </TableCell>
 
@@ -312,11 +392,16 @@ export default function ListaFuncionarios() {
                         <div className="flex items-center space-x-2">
                           <Switch
                             checked={funcionario.ativo}
-                            onCheckedChange={(checked) => handleAlterarStatus(funcionario.id, checked)}
-                            disabled={funcionario.id === user?.id || funcionario.id === '1'}
+                            onCheckedChange={(checked) =>
+                              handleAlterarStatus(funcionario.id, checked)
+                            }
+                            disabled={
+                              funcionario.id === user?.id ||
+                              funcionario.id === "1"
+                            }
                           />
                           <span className="text-sm">
-                            {funcionario.ativo ? 'Ativo' : 'Inativo'}
+                            {funcionario.ativo ? "Ativo" : "Inativo"}
                           </span>
                         </div>
                       </TableCell>
@@ -333,15 +418,18 @@ export default function ListaFuncionarios() {
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
                             </DropdownMenuItem>
-                            {funcionario.id !== user?.id && funcionario.id !== '1' && (
-                              <DropdownMenuItem 
-                                className="text-red-600"
-                                onClick={() => setFuncionarioParaExcluir(funcionario.id)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Excluir
-                              </DropdownMenuItem>
-                            )}
+                            {funcionario.id !== user?.id &&
+                              funcionario.id !== "1" && (
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onClick={() =>
+                                    setFuncionarioParaExcluir(funcionario.id)
+                                  }
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Excluir
+                                </DropdownMenuItem>
+                              )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -355,19 +443,25 @@ export default function ListaFuncionarios() {
       </Card>
 
       {/* Dialog de confirmação de exclusão */}
-      <AlertDialog open={!!funcionarioParaExcluir} onOpenChange={() => setFuncionarioParaExcluir(null)}>
+      <AlertDialog
+        open={!!funcionarioParaExcluir}
+        onOpenChange={() => setFuncionarioParaExcluir(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir este funcionário? Esta ação não pode ser desfeita e 
-              removerá todos os dados relacionados ao funcionário.
+              Tem certeza que deseja excluir este funcionário? Esta ação não
+              pode ser desfeita e removerá todos os dados relacionados ao
+              funcionário.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => funcionarioParaExcluir && handleExcluir(funcionarioParaExcluir)}
+              onClick={() =>
+                funcionarioParaExcluir && handleExcluir(funcionarioParaExcluir)
+              }
               className="bg-red-600 hover:bg-red-700"
             >
               Excluir Funcionário
