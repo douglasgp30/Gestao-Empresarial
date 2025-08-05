@@ -49,11 +49,6 @@ const sidebarItems: SidebarItem[] = [
     adminOnly: true,
   },
   {
-    title: 'Campanhas',
-    href: '/campanhas',
-    icon: Megaphone,
-  },
-  {
     title: 'Relatórios',
     href: '/relatorios',
     icon: BarChart3,
