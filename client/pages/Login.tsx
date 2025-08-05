@@ -51,15 +51,9 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-primary p-3 rounded-full">
-              <Wrench className="h-8 w-8 text-primary-foreground" />
-            </div>
+          <div className="flex justify-center mb-4">
+            <EmpresaLogo variant="login" size="lg" />
           </div>
-          <CardTitle className="text-2xl font-bold">Solução Desentupimento</CardTitle>
-          <CardDescription>
-            Sistema de Gestão Empresarial
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
