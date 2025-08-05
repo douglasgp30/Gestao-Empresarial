@@ -1,0 +1,84 @@
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
+interface EmpresaConfig {
+  nomeEmpresa: string;
+  subtituloEmpresa: string;
+  logoUrl?: string;
+  corPrimaria: string;
+  endereco?: string;
+  telefone?: string;
+  email?: string;
+  cnpj?: string;
+}
+
+interface ConfigContextType {
+  empresaConfig: EmpresaConfig;
+  updateEmpresaConfig: (config: Partial<EmpresaConfig>) => void;
+  resetToDefault: () => void;
+}
+
+const defaultConfig: EmpresaConfig = {
+  nomeEmpresa: 'Solução Desentupimento',
+  subtituloEmpresa: 'Sistema de Gestão Empresarial',
+  corPrimaria: '217 91% 60%',
+  endereco: '',
+  telefone: '',
+  email: '',
+  cnpj: ''
+};
+
+const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
+
+export function ConfigProvider({ children }: { children: ReactNode }) {
+  const [empresaConfig, setEmpresaConfig] = useState<EmpresaConfig>(defaultConfig);
+
+  useEffect(() => {
+    // Carregar configurações do localStorage
+    const savedConfig = localStorage.getItem('empresa_config');
+    if (savedConfig) {
+      try {
+        const parsedConfig = JSON.parse(savedConfig);
+        setEmpresaConfig({ ...defaultConfig, ...parsedConfig });
+      } catch (error) {
+        console.error('Erro ao carregar configurações:', error);
+      }
+    }
+  }, []);
+
+  const updateEmpresaConfig = (newConfig: Partial<EmpresaConfig>) => {
+    const updatedConfig = { ...empresaConfig, ...newConfig };
+    setEmpresaConfig(updatedConfig);
+    localStorage.setItem('empresa_config', JSON.stringify(updatedConfig));
+    
+    // Atualizar CSS custom property se cor primária foi alterada
+    if (newConfig.corPrimaria) {
+      document.documentElement.style.setProperty('--primary', newConfig.corPrimaria);
+    }
+  };
+
+  const resetToDefault = () => {
+    setEmpresaConfig(defaultConfig);
+    localStorage.removeItem('empresa_config');
+    document.documentElement.style.setProperty('--primary', defaultConfig.corPrimaria);
+  };
+
+  const value = {
+    empresaConfig,
+    updateEmpresaConfig,
+    resetToDefault
+  };
+
+  return (
+    <ConfigContext.Provider value={value}>
+      {children}
+    </ConfigContext.Provider>
+  );
+}
+
+export function useConfig() {
+  const context = useContext(ConfigContext);
+  if (context === undefined) {
+    throw new Error('useConfig must be used within a ConfigProvider');
+  }
+  return context;
+}
