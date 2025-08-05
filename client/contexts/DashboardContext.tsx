@@ -225,7 +225,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       setIsLoading(false);
     }, 300);
-  }, [filtros, caixaContext?.lancamentos, contasContext?.contas]);
+  }, [filtros, aplicarFiltrosCaixa, caixaContext?.lancamentos, caixaContext?.filtros, contasContext?.contas]);
 
   // Filtrar contas que precisam de atenção (vencendo hoje e atrasadas)
   const contasVencendo = contasContext?.contas?.filter(conta =>
