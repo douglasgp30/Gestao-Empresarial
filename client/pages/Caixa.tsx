@@ -42,8 +42,10 @@ function CaixaContent() {
 
 export default function Caixa() {
   return (
-    <CaixaProvider>
-      <CaixaContent />
-    </CaixaProvider>
+    <EntidadesProvider>
+      <CaixaProvider>
+        <CaixaContent />
+      </CaixaProvider>
+    </EntidadesProvider>
   );
 }
