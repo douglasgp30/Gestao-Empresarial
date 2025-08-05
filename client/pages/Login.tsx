@@ -6,7 +6,8 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Alert, AlertDescription } from '../components/ui/alert';
-import { Loader2, Wrench } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import EmpresaLogo from '../components/EmpresaLogo';
 
 export default function Login() {
   const [login, setLogin] = useState('');
