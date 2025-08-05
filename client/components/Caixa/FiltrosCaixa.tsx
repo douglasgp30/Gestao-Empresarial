@@ -260,8 +260,8 @@ export default function FiltrosCaixa() {
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
-                  {setores.map(setor => (
+                <SelectItem value="todos">Todos</SelectItem>
+                {setores.map(setor => (
                     <SelectItem key={setor} value={setor}>{setor}</SelectItem>
                   ))}
                 </SelectContent>
