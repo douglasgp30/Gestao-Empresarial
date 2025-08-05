@@ -104,13 +104,8 @@ function StatCard({
 }
 
 export default function Dashboard() {
-  const {
-    stats,
-    lancamentos,
-    contasVencendo,
-    filtros,
-    isLoading,
-  } = useDashboard();
+  const { stats, lancamentos, contasVencendo, filtros, isLoading } =
+    useDashboard();
 
   // Filtrar lançamentos pelo período selecionado para exibir nas movimentações recentes
   const lancamentosRecentes = lancamentos
@@ -143,7 +138,6 @@ export default function Dashboard() {
 
       {/* Filtros de Data */}
       <FiltrosData />
-
 
       {/* Loading State */}
       {isLoading && (
