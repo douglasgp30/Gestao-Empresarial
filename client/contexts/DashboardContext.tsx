@@ -16,6 +16,8 @@ interface DashboardContextType {
   contasVencendo: Conta[];
   setFiltros: (filtros: FiltrosPeriodo) => void;
   setFiltroRapido: (tipo: 'ultimos7dias' | 'estaemana' | 'ultimos30dias' | 'mesAtual') => void;
+  aplicarFiltrosCaixa: boolean;
+  setAplicarFiltrosCaixa: (aplicar: boolean) => void;
   isLoading: boolean;
 }
 
