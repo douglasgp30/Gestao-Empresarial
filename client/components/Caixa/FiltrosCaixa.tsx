@@ -234,9 +234,9 @@ export default function FiltrosCaixa() {
 
             <div>
               <Label>Técnico</Label>
-              <Select 
-                value={filtros.tecnico || ''} 
-                onValueChange={(value) => setFiltros({ ...filtros, tecnico: value || undefined })}
+              <Select
+                value={filtros.tecnico || 'todos'}
+                onValueChange={(value) => setFiltros({ ...filtros, tecnico: value === 'todos' ? undefined : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
