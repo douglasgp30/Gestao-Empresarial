@@ -252,9 +252,9 @@ export default function FiltrosCaixa() {
 
             <div>
               <Label>Setor</Label>
-              <Select 
-                value={filtros.setor || ''} 
-                onValueChange={(value) => setFiltros({ ...filtros, setor: value || undefined })}
+              <Select
+                value={filtros.setor || 'todos'}
+                onValueChange={(value) => setFiltros({ ...filtros, setor: value === 'todos' ? undefined : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
