@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Separator } from '../components/ui/separator';
 import { Badge } from '../components/ui/badge';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import SistemaBackup from '../components/Backup/SistemaBackup';
 import {
   Settings,
   Building2,
@@ -18,7 +19,8 @@ import {
   Save,
   RotateCcw,
   CheckCircle,
-  Upload
+  Upload,
+  HardDrive
 } from 'lucide-react';
 import EmpresaLogo from '../components/EmpresaLogo';
 
@@ -292,7 +294,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle>Configurações de Usuários</CardTitle>
               <CardDescription>
-                Configurações relacionadas a funcionários e permissões
+                Configuraç��es relacionadas a funcionários e permissões
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
