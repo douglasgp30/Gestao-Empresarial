@@ -247,8 +247,8 @@ export default function FiltrosContas() {
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
-                  <SelectItem value="pendente">Pendente</SelectItem>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="pendente">Pendente</SelectItem>
                   <SelectItem value="vence_hoje">Vence Hoje</SelectItem>
                   <SelectItem value="atrasada">Atrasada</SelectItem>
                   <SelectItem value="paga">Paga</SelectItem>
