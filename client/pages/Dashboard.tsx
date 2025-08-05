@@ -38,18 +38,20 @@ function getStatusColor(status: string) {
   }
 }
 
-function StatCard({ 
-  title, 
-  value, 
-  description, 
-  icon: Icon, 
-  trend 
+function StatCard({
+  title,
+  value,
+  description,
+  icon: Icon,
+  trend,
+  isLoading = false
 }: {
   title: string;
   value: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   trend?: 'up' | 'down' | 'neutral';
+  isLoading?: boolean;
 }) {
   return (
     <Card>
@@ -58,10 +60,19 @@ function StatCard({
         <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold">
+          {isLoading ? (
+            <div className="flex items-center space-x-2">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span className="text-muted-foreground">...</span>
+            </div>
+          ) : (
+            value
+          )}
+        </div>
         <p className="text-xs text-muted-foreground flex items-center">
-          {trend === 'up' && <TrendingUp className="h-3 w-3 mr-1 text-success" />}
-          {trend === 'down' && <TrendingDown className="h-3 w-3 mr-1 text-destructive" />}
+          {!isLoading && trend === 'up' && <TrendingUp className="h-3 w-3 mr-1 text-success" />}
+          {!isLoading && trend === 'down' && <TrendingDown className="h-3 w-3 mr-1 text-destructive" />}
           {description}
         </p>
       </CardContent>
