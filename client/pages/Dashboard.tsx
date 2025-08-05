@@ -2,6 +2,9 @@ import React from 'react';
 import { useDashboard } from '../contexts/DashboardContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Switch } from '../components/ui/switch';
+import { Label } from '../components/ui/label';
 import FiltrosData from '../components/Dashboard/FiltrosData';
 import {
   DollarSign,
@@ -13,7 +16,8 @@ import {
   Target,
   Loader2,
   Receipt,
-  CreditCard
+  CreditCard,
+  Filter
 } from 'lucide-react';
 
 function formatCurrency(value: number) {
