@@ -20,6 +20,7 @@ import {
 } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import { Badge } from "../components/ui/badge";
+import { Switch } from "../components/ui/switch";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import SistemaBackup from "../components/Backup/SistemaBackup";
 import {
