@@ -62,7 +62,6 @@ const App = () => (
                                 </ProtectedRoute>
                               }
                             />
-                            <Route path="campanhas" element={<Campanhas />} />
                             <Route path="relatorios" element={<Relatorios />} />
                             <Route
                               path="configuracoes"
