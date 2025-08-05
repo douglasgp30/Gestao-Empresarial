@@ -128,6 +128,39 @@ export default function Dashboard() {
       {/* Filtros de Data */}
       <FiltrosData />
 
+      {/* Controles de Filtros Dinâmicos */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Filter className="h-5 w-5" />
+            <span>Configurações de Filtros</span>
+          </CardTitle>
+          <CardDescription>
+            Configure como os totais do dashboard devem ser calculados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="filtros-caixa"
+              checked={aplicarFiltrosCaixa}
+              onCheckedChange={setAplicarFiltrosCaixa}
+            />
+            <Label htmlFor="filtros-caixa" className="flex flex-col space-y-1">
+              <span className="font-medium">
+                Usar filtros do módulo Caixa
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {aplicarFiltrosCaixa
+                  ? 'Os totais serão calculados com base nos filtros aplicados no módulo Caixa (técnico, campanha, forma de pagamento, etc.)'
+                  : 'Os totais serão calculados apenas com base no período selecionado acima'
+                }
+              </span>
+            </Label>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-8">
