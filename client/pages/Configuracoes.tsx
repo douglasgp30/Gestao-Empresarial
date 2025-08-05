@@ -34,6 +34,8 @@ import {
   CheckCircle,
   Upload,
   HardDrive,
+  Filter,
+  BarChart3,
 } from "lucide-react";
 import EmpresaLogo from "../components/EmpresaLogo";
 
