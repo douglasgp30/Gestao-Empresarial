@@ -86,15 +86,7 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center justify-between">
           {!collapsed && (
-            <div className="flex items-center space-x-2">
-              <div className="bg-sidebar-primary p-2 rounded-lg">
-                <Wrench className="h-5 w-5 text-sidebar-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="font-bold text-sidebar-foreground">Solução</h1>
-                <p className="text-xs text-sidebar-foreground/70">Desentupimento</p>
-              </div>
-            </div>
+            <EmpresaLogo variant="sidebar" size="md" />
           )}
           <Button
             variant="ghost"
