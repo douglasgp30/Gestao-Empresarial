@@ -100,7 +100,7 @@ export default function Configuracoes() {
       )}
 
       <Tabs defaultValue="empresa" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="empresa">
             <Building2 className="h-4 w-4 mr-2" />
             Empresa
@@ -116,6 +116,10 @@ export default function Configuracoes() {
           <TabsTrigger value="sistema">
             <FileText className="h-4 w-4 mr-2" />
             Sistema
+          </TabsTrigger>
+          <TabsTrigger value="backup">
+            <HardDrive className="h-4 w-4 mr-2" />
+            Backup
           </TabsTrigger>
         </TabsList>
 
