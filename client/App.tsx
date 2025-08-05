@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
 import { DashboardProvider } from "./contexts/DashboardContext";
+import { EntidadesProvider } from "./contexts/EntidadesContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/Layout/MainLayout";
 import Login from "./pages/Login";
