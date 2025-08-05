@@ -343,6 +343,68 @@ export default function Configuracoes() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="dashboard" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Filter className="h-5 w-5" />
+                <span>Configurações de Filtros do Dashboard</span>
+              </CardTitle>
+              <CardDescription>
+                Configure como os totais do dashboard devem ser calculados
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <Switch
+                    id="filtros-caixa"
+                    checked={aplicarFiltrosCaixa}
+                    onCheckedChange={setAplicarFiltrosCaixa}
+                  />
+                  <div>
+                    <Label htmlFor="filtros-caixa" className="font-medium">
+                      Usar filtros do módulo Caixa
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {aplicarFiltrosCaixa
+                        ? 'Os totais serão calculados com base nos filtros aplicados no módulo Caixa (técnico, campanha, forma de pagamento, etc.)'
+                        : 'Os totais serão calculados apenas com base no período selecionado no dashboard'
+                      }
+                    </p>
+                  </div>
+                </div>
+                <Badge variant={aplicarFiltrosCaixa ? "default" : "secondary"}>
+                  {aplicarFiltrosCaixa ? "Ativo" : "Desativo"}
+                </Badge>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div className="flex items-start space-x-3">
+                  <BarChart3 className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium text-blue-800">
+                      Como Funciona
+                    </h4>
+                    <div className="text-sm text-blue-700 mt-1 space-y-1">
+                      <p><strong>Desativado:</strong> Os totais do dashboard consideram apenas o período selecionado (data início e fim).</p>
+                      <p><strong>Ativado:</strong> Os totais do dashboard são calculados dinamicamente com base em TODOS os filtros aplicados no módulo Caixa:</p>
+                      <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                        <li>Período (data início e fim)</li>
+                        <li>Tipo (receita/despesa)</li>
+                        <li>Forma de pagamento</li>
+                        <li>Técnico responsável</li>
+                        <li>Campanha</li>
+                        <li>Setor</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="usuarios" className="space-y-6">
           <Card>
             <CardHeader>
@@ -392,7 +454,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle>Configurações do Sistema</CardTitle>
               <CardDescription>
-                Parâmetros gerais e configura��ões avançadas
+                Parâmetros gerais e configurações avançadas
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
