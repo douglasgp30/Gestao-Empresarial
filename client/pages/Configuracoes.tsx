@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useConfig } from "../contexts/ConfigContext";
+import { useDashboard } from "../contexts/DashboardContext";
 import {
   Card,
   CardContent,
