@@ -3,17 +3,17 @@ import { Link, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
-import { 
-  Menu, 
-  Home, 
-  DollarSign, 
-  FileText, 
-  Users, 
-  Megaphone, 
-  BarChart3, 
-  Settings, 
+import EmpresaLogo from '../EmpresaLogo';
+import {
+  Menu,
+  Home,
+  DollarSign,
+  FileText,
+  Users,
+  Megaphone,
+  BarChart3,
+  Settings,
   LogOut,
-  Wrench,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
