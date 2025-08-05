@@ -29,35 +29,37 @@ const App = () => (
       <Toaster />
       <Sonner />
       <ConfigProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <MainLayout />
-                </ProtectedRoute>
-              }>
-                <Route index element={<Dashboard />} />
-                <Route path="caixa" element={<Caixa />} />
-                <Route path="contas" element={<Contas />} />
-                <Route path="funcionarios" element={
-                  <ProtectedRoute requireAdmin>
-                    <Funcionarios />
+        <DashboardProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <MainLayout />
                   </ProtectedRoute>
-                } />
-                <Route path="campanhas" element={<Campanhas />} />
-                <Route path="relatorios" element={<Relatorios />} />
-                <Route path="configuracoes" element={
-                  <ProtectedRoute requireAdmin>
-                    <Configuracoes />
-                  </ProtectedRoute>
-                } />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </AuthProvider>
+                }>
+                  <Route index element={<Dashboard />} />
+                  <Route path="caixa" element={<Caixa />} />
+                  <Route path="contas" element={<Contas />} />
+                  <Route path="funcionarios" element={
+                    <ProtectedRoute requireAdmin>
+                      <Funcionarios />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="campanhas" element={<Campanhas />} />
+                  <Route path="relatorios" element={<Relatorios />} />
+                  <Route path="configuracoes" element={
+                    <ProtectedRoute requireAdmin>
+                      <Configuracoes />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
+        </DashboardProvider>
       </ConfigProvider>
     </TooltipProvider>
   </QueryClientProvider>
