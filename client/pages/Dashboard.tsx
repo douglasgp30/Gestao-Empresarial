@@ -11,7 +11,9 @@ import {
   Calendar,
   FileText,
   Target,
-  Loader2
+  Loader2,
+  Receipt,
+  CreditCard
 } from 'lucide-react';
 
 function formatCurrency(value: number) {
@@ -44,7 +46,8 @@ function StatCard({
   description,
   icon: Icon,
   trend,
-  isLoading = false
+  isLoading = false,
+  variant = 'default'
 }: {
   title: string;
   value: string;
@@ -52,9 +55,16 @@ function StatCard({
   icon: React.ComponentType<{ className?: string }>;
   trend?: 'up' | 'down' | 'neutral';
   isLoading?: boolean;
+  variant?: 'default' | 'highlight' | 'danger';
 }) {
+  const cardClass = variant === 'highlight' 
+    ? 'border-primary/20 bg-primary/5' 
+    : variant === 'danger' 
+    ? 'border-destructive/20 bg-destructive/5' 
+    : '';
+
   return (
-    <Card>
+    <Card className={cardClass}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground" />
@@ -67,7 +77,9 @@ function StatCard({
               <span className="text-muted-foreground">...</span>
             </div>
           ) : (
-            value
+            <span className={variant === 'danger' ? 'text-destructive' : ''}>
+              {value}
+            </span>
           )}
         </div>
         <p className="text-xs text-muted-foreground flex items-center">
@@ -81,7 +93,7 @@ function StatCard({
 }
 
 export default function Dashboard() {
-  const { stats, lancamentos, contas, filtros, isLoading } = useDashboard();
+  const { stats, lancamentos, contasVencendo, filtros, isLoading } = useDashboard();
 
   // Filtrar lançamentos pelo período selecionado para exibir nas movimentações recentes
   const lancamentosRecentes = lancamentos
@@ -91,11 +103,6 @@ export default function Dashboard() {
     })
     .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
     .slice(0, 5);
-
-  // Filtrar contas que precisam de atenção
-  const contasAtencao = contas
-    .filter(conta => conta.status === 'vence_hoje' || conta.status === 'atrasada')
-    .sort((a, b) => new Date(a.dataVencimento).getTime() - new Date(b.dataVencimento).getTime());
 
   const getPeriodoDescricao = () => {
     if (filtros.dataInicio.toDateString() === filtros.dataFim.toDateString()) {
@@ -125,64 +132,130 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Total Receitas"
-          value={formatCurrency(stats.totalReceitas)}
-          description={getPeriodoDescricao()}
-          icon={TrendingUp}
-          trend="up"
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="Total Despesas"
-          value={formatCurrency(stats.totalDespesas)}
-          description={getPeriodoDescricao()}
-          icon={TrendingDown}
-          trend="down"
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="Saldo Final"
-          value={formatCurrency(stats.saldoFinal)}
-          description="Receitas - Despesas"
-          icon={DollarSign}
-          trend={stats.saldoFinal >= 0 ? "up" : "down"}
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="Contas Vencendo"
-          value={stats.contasVencendoHoje.toString()}
-          description="Hoje"
-          icon={AlertTriangle}
-          isLoading={isLoading}
-        />
+      {/* PRIMEIRA LINHA - Totais do Caixa (Serviços Realizados) */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold text-foreground">Módulo Caixa - Serviços Realizados</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <StatCard
+            title="Total de Receitas"
+            value={formatCurrency(stats.totalReceitas)}
+            description="Serviços realizados no período"
+            icon={TrendingUp}
+            trend="up"
+            isLoading={isLoading}
+            variant="default"
+          />
+          <StatCard
+            title="Total de Despesas"
+            value={formatCurrency(stats.totalDespesas)}
+            description="Despesas lançadas no caixa"
+            icon={TrendingDown}
+            trend="down"
+            isLoading={isLoading}
+            variant="default"
+          />
+          <StatCard
+            title="Saldo Final"
+            value={formatCurrency(stats.saldoFinal)}
+            description="Receitas - Despesas do caixa"
+            icon={DollarSign}
+            trend={stats.saldoFinal >= 0 ? "up" : "down"}
+            isLoading={isLoading}
+            variant="highlight"
+          />
+        </div>
       </div>
 
-      {/* Secondary Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <StatCard
-          title="Contas Atrasadas"
-          value={stats.contasAtrasadas.toString()}
-          description="Requer atenção"
-          icon={Calendar}
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="A Pagar"
-          value={formatCurrency(stats.totalContasPagar)}
-          description="Total pendente"
-          icon={FileText}
-          isLoading={isLoading}
-        />
-        <StatCard
-          title="A Receber"
-          value={formatCurrency(stats.totalContasReceber)}
-          description="Total pendente"
-          icon={Target}
-          isLoading={isLoading}
-        />
+      {/* SEGUNDA LINHA - Receitas Recebidas e Despesas Pagas */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold text-foreground">Totais Efetivamente Recebidos e Pagos</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <StatCard
+            title="Total Receitas Recebidas"
+            value={formatCurrency(stats.totalReceitasRecebidas)}
+            description="Caixa + contas a receber pagas"
+            icon={Receipt}
+            trend="up"
+            isLoading={isLoading}
+            variant="default"
+          />
+          <StatCard
+            title="Total Despesas Pagas"
+            value={formatCurrency(stats.totalDespesasPagas)}
+            description="Caixa + contas a pagar pagas"
+            icon={CreditCard}
+            trend="down"
+            isLoading={isLoading}
+            variant="default"
+          />
+          <StatCard
+            title="Saldo Geral"
+            value={formatCurrency(stats.saldoGeralRecebidoPago)}
+            description="Recebidas - Pagas (total)"
+            icon={DollarSign}
+            trend={stats.saldoGeralRecebidoPago >= 0 ? "up" : "down"}
+            isLoading={isLoading}
+            variant="highlight"
+          />
+        </div>
+      </div>
+
+      {/* TERCEIRA LINHA - Módulo Contas */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold text-foreground">Módulo Contas - Situação Geral</h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+          <StatCard
+            title="Contas Recebidas"
+            value={formatCurrency(stats.totalContasRecebidasPagas)}
+            description="Contas a receber pagas"
+            icon={TrendingUp}
+            trend="up"
+            isLoading={isLoading}
+            variant="default"
+          />
+          <StatCard
+            title="Contas Pagas"
+            value={formatCurrency(stats.totalContasPagasPagas)}
+            description="Contas a pagar pagas"
+            icon={TrendingDown}
+            trend="down"
+            isLoading={isLoading}
+            variant="default"
+          />
+          <StatCard
+            title="Saldo Contas"
+            value={formatCurrency(stats.saldoContas)}
+            description="Recebidas - Pagas"
+            icon={DollarSign}
+            trend={stats.saldoContas >= 0 ? "up" : "down"}
+            isLoading={isLoading}
+            variant="highlight"
+          />
+          <StatCard
+            title="Valor Atrasadas"
+            value={formatCurrency(stats.totalValorContasAtrasadas)}
+            description="Total em atraso"
+            icon={AlertTriangle}
+            isLoading={isLoading}
+            variant="danger"
+          />
+          <StatCard
+            title="Qtd. A Pagar Atrasadas"
+            value={stats.qtdContasPagarAtrasadas.toString()}
+            description="Contas a pagar em atraso"
+            icon={FileText}
+            isLoading={isLoading}
+            variant="danger"
+          />
+          <StatCard
+            title="Qtd. A Receber Atrasadas"
+            value={stats.qtdContasReceberAtrasadas.toString()}
+            description="Contas a receber em atraso"
+            icon={Target}
+            isLoading={isLoading}
+            variant="danger"
+          />
+        </div>
       </div>
 
       {/* Content Grid */}
@@ -246,22 +319,22 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Accounts Due */}
+        {/* Contas Vencendo - Movido para parte inferior */}
         <Card>
           <CardHeader>
-            <CardTitle>Contas que Precisam de Atenção</CardTitle>
+            <CardTitle>Contas Vencendo</CardTitle>
             <CardDescription>
               Contas vencendo hoje e atrasadas
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {contasAtencao.length === 0 ? (
+            {contasVencendo.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <p>Nenhuma conta requer atenção no momento</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {contasAtencao.map((conta) => (
+                {contasVencendo.map((conta) => (
                   <div key={conta.id} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className={`p-2 rounded-full ${
