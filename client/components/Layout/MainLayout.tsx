@@ -182,12 +182,7 @@ export default function MainLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
         <div className="md:hidden bg-background border-b px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="bg-primary p-2 rounded-lg">
-              <Wrench className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <h1 className="font-bold text-foreground">Solução Desentupimento</h1>
-          </div>
+          <EmpresaLogo variant="default" size="md" showSubtitle={false} />
           <SheetTrigger asChild>
             <Button variant="ghost" size="sm">
               <Menu className="h-5 w-5" />
