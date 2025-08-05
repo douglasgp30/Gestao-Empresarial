@@ -178,6 +178,8 @@ class MigrationService {
 
 export const migrationService = MigrationService.getInstance();
 
+import React from 'react';
+
 // Hook para executar migrações automaticamente
 export function useMigrations() {
   const [isLoading, setIsLoading] = React.useState(true);
