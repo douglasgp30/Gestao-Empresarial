@@ -271,9 +271,9 @@ export default function FiltrosCaixa() {
 
           <div>
             <Label>Campanha</Label>
-            <Select 
-              value={filtros.campanha || ''} 
-              onValueChange={(value) => setFiltros({ ...filtros, campanha: value || undefined })}
+            <Select
+              value={filtros.campanha || 'todas'}
+              onValueChange={(value) => setFiltros({ ...filtros, campanha: value === 'todas' ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Todas as campanhas" />
