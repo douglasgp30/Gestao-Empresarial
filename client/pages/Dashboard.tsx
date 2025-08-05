@@ -110,8 +110,6 @@ export default function Dashboard() {
     contasVencendo,
     filtros,
     isLoading,
-    aplicarFiltrosCaixa,
-    setAplicarFiltrosCaixa,
   } = useDashboard();
 
   // Filtrar lançamentos pelo período selecionado para exibir nas movimentações recentes
