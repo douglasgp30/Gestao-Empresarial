@@ -224,8 +224,8 @@ export default function FiltrosCaixa() {
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
-                  {formasPagamento.map(forma => (
+                <SelectItem value="todas">Todas</SelectItem>
+                {formasPagamento.map(forma => (
                     <SelectItem key={forma} value={forma}>{forma}</SelectItem>
                   ))}
                 </SelectContent>
