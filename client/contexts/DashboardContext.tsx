@@ -58,6 +58,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     dataInicio: getInicioDoMes(),
     dataFim: getHoje()
   });
+  const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalReceitas: 0,
