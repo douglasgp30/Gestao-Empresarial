@@ -87,8 +87,12 @@ const App = () => (
   </QueryClientProvider>
 );
 
+// Evitar múltiplas inicializações do React
 const rootElement = document.getElementById("root")!;
-if (!rootElement._reactRootContainer) {
-  const root = createRoot(rootElement);
+let root: ReturnType<typeof createRoot>;
+
+if (!(rootElement as any)._reactRoot) {
+  root = createRoot(rootElement);
+  (rootElement as any)._reactRoot = root;
   root.render(<App />);
 }
