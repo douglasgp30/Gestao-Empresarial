@@ -347,15 +347,6 @@ export default function Configuracoes() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
-                    <h4 className="font-medium">Backup Automático</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Backup diário dos dados do sistema
-                    </p>
-                  </div>
-                  <Badge variant="secondary">Ativo</Badge>
-                </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
                     <h4 className="font-medium">Versão do Sistema</h4>
                     <p className="text-sm text-muted-foreground">
                       Versão atual instalada
@@ -371,6 +362,95 @@ export default function Configuracoes() {
                     </p>
                   </div>
                   <Badge className="bg-success text-success-foreground">Conectado</Badge>
+                </div>
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h4 className="font-medium">Migrações de Banco</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Sistema de atualização automática
+                    </p>
+                  </div>
+                  <Badge className="bg-success text-success-foreground">Atualizado</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="backup" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sistema de Backup</CardTitle>
+              <CardDescription>
+                Gerencie backups manuais do banco de dados
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="flex items-start space-x-3">
+                    <HardDrive className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-blue-800">Backup Manual</h4>
+                      <p className="text-sm text-blue-700">
+                        Gere uma cópia de segurança completa do banco de dados SQL Server.
+                        O backup incluirá todos os dados e estruturas do sistema.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium">Último Backup</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Nunca executado
+                      </p>
+                    </div>
+                    <Badge variant="secondary">Não disponível</Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium">Pasta de Destino</h4>
+                      <p className="text-sm text-muted-foreground">
+                        C:\Backups\
+                      </p>
+                    </div>
+                    <Badge variant="outline">Configurado</Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium">Formato do Arquivo</h4>
+                      <p className="text-sm text-muted-foreground">
+                        SQL Server Backup (.bak)
+                      </p>
+                    </div>
+                    <Badge variant="outline">Padrão</Badge>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="flex justify-center">
+                  <SistemaBackup />
+                </div>
+
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-yellow-800">Recomendações</h4>
+                      <ul className="text-sm text-yellow-700 mt-1 space-y-1">
+                        <li>• Execute backups regularmente</li>
+                        <li>• Mantenha backups em local seguro</li>
+                        <li>• Teste a restauração periodicamente</li>
+                        <li>• Considere backups em mídia externa</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
