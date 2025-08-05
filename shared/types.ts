@@ -92,3 +92,35 @@ export interface RelatorioFiltros {
   campanha?: string;
   status?: string;
 }
+
+export interface Descricao {
+  id: string;
+  nome: string;
+  categoria?: string;
+  dataCriacao: Date;
+}
+
+export interface FormaPagamento {
+  id: string;
+  nome: string;
+  ativa: boolean;
+  dataCriacao: Date;
+}
+
+export interface Cliente {
+  id: string;
+  nome: string;
+  cpf?: string;
+  telefone1: string;
+  telefone2?: string;
+  email?: string;
+  endereco?: string;
+  dataCriacao: Date;
+}
+
+export interface Fornecedor {
+  id: string;
+  nome: string;
+  telefone?: string;
+  dataCriacao: Date;
+}
