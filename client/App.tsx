@@ -21,7 +21,6 @@ import Dashboard from "./pages/Dashboard";
 import Caixa from "./pages/Caixa";
 import Contas from "./pages/Contas";
 import Funcionarios from "./pages/Funcionarios";
-import Campanhas from "./pages/Campanhas";
 import Relatorios from "./pages/Relatorios";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
