@@ -114,7 +114,7 @@ export default function Configuracoes() {
       )}
 
       <Tabs defaultValue="empresa" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="empresa">
             <Building2 className="h-4 w-4 mr-2" />
             Empresa
@@ -122,6 +122,10 @@ export default function Configuracoes() {
           <TabsTrigger value="aparencia">
             <Palette className="h-4 w-4 mr-2" />
             Aparência
+          </TabsTrigger>
+          <TabsTrigger value="dashboard">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Dashboard
           </TabsTrigger>
           <TabsTrigger value="usuarios">
             <Users className="h-4 w-4 mr-2" />
@@ -388,7 +392,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle>Configurações do Sistema</CardTitle>
               <CardDescription>
-                Parâmetros gerais e configurações avançadas
+                Parâmetros gerais e configura��ões avançadas
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
