@@ -110,11 +110,30 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     // Simular delay de API
     setTimeout(() => {
-      // Filtrar lançamentos do caixa pelo período
-      const lancamentosFiltrados = caixaContext.lancamentos.filter(lancamento => {
-        const dataLancamento = new Date(lancamento.data);
-        return dataLancamento >= filtros.dataInicio && dataLancamento <= filtros.dataFim;
-      });
+      // Filtrar lançamentos do caixa - usar filtros do dashboard ou do caixa
+      let lancamentosFiltrados;
+
+      if (aplicarFiltrosCaixa && caixaContext.filtros) {
+        // Usar filtros específicos do Caixa para cálculos dinâmicos
+        lancamentosFiltrados = caixaContext.lancamentos.filter(lancamento => {
+          const dataLancamento = new Date(lancamento.data);
+          const dentroDataInicio = dataLancamento >= caixaContext.filtros.dataInicio;
+          const dentroDataFim = dataLancamento <= caixaContext.filtros.dataFim;
+          const tipoCorreto = !caixaContext.filtros.tipo || caixaContext.filtros.tipo === 'todos' || lancamento.tipo === caixaContext.filtros.tipo;
+          const formaPagamentoCorreta = !caixaContext.filtros.formaPagamento || lancamento.formaPagamento === caixaContext.filtros.formaPagamento;
+          const tecnicoCorreto = !caixaContext.filtros.tecnico || lancamento.tecnicoResponsavel === caixaContext.filtros.tecnico;
+          const campanhaCorreta = !caixaContext.filtros.campanha || lancamento.campanha === caixaContext.filtros.campanha;
+          const setorCorreto = !caixaContext.filtros.setor || lancamento.setor === caixaContext.filtros.setor;
+
+          return dentroDataInicio && dentroDataFim && tipoCorreto && formaPagamentoCorreta && tecnicoCorreto && campanhaCorreta && setorCorreto;
+        });
+      } else {
+        // Usar filtros do dashboard (período básico)
+        lancamentosFiltrados = caixaContext.lancamentos.filter(lancamento => {
+          const dataLancamento = new Date(lancamento.data);
+          return dataLancamento >= filtros.dataInicio && dataLancamento <= filtros.dataFim;
+        });
+      }
 
       // PRIMEIRA LINHA - Totais do Caixa (serviços realizados)
       const totalReceitas = lancamentosFiltrados
