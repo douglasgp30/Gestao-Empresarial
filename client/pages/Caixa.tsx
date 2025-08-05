@@ -1,7 +1,10 @@
 import React from 'react';
 import { CaixaProvider } from '../contexts/CaixaContext';
+import { EntidadesProvider } from '../contexts/EntidadesContext';
 import FormularioReceita from '../components/Caixa/FormularioReceita';
 import FormularioDespesa from '../components/Caixa/FormularioDespesa';
+import ModalCampanhas from '../components/Caixa/ModalCampanhas';
+import ModalDescricoes from '../components/Caixa/ModalDescricoes';
 import FiltrosCaixa from '../components/Caixa/FiltrosCaixa';
 import ListaLancamentos from '../components/Caixa/ListaLancamentos';
 import { DollarSign } from 'lucide-react';
