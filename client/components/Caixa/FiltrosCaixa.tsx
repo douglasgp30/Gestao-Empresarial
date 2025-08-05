@@ -216,9 +216,9 @@ export default function FiltrosCaixa() {
 
             <div>
               <Label>Forma Pagamento</Label>
-              <Select 
-                value={filtros.formaPagamento || ''} 
-                onValueChange={(value) => setFiltros({ ...filtros, formaPagamento: value || undefined })}
+              <Select
+                value={filtros.formaPagamento || 'todas'}
+                onValueChange={(value) => setFiltros({ ...filtros, formaPagamento: value === 'todas' ? undefined : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
