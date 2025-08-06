@@ -123,6 +123,11 @@ export default function FormularioReceita() {
       return;
     }
 
+    if (formData.notaFiscal && !notaFiscalProcessada) {
+      alert("Por favor, aguarde a emissão da nota fiscal antes de lançar a receita.");
+      return;
+    }
+
     // Calcular valor líquido (valor real que fica para a empresa após todas as deduções)
     let valorLiquido = valor;
     let descontoImposto = 0;
@@ -689,7 +694,7 @@ export default function FormularioReceita() {
                     <DialogHeader>
                       <DialogTitle>Adicionar Nova Descrição</DialogTitle>
                       <DialogDescription>
-                        Cadastre uma nova descriç��o de serviço
+                        Cadastre uma nova descrição de serviço
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
@@ -810,7 +815,7 @@ export default function FormularioReceita() {
                                 nome: e.target.value,
                               })
                             }
-                            placeholder="Ex: Promoção Janeiro"
+                            placeholder="Ex: Promoç��o Janeiro"
                           />
                         </div>
                         <div className="space-y-2">
