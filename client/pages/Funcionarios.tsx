@@ -1,6 +1,7 @@
 import React from "react";
 import { FuncionariosProvider } from "../contexts/FuncionariosContext";
 import FormularioFuncionario from "../components/Funcionarios/FormularioFuncionario";
+import FiltrosFuncionariosCompacto from "../components/Funcionarios/FiltrosFuncionariosCompacto";
 import ListaFuncionarios from "../components/Funcionarios/ListaFuncionarios";
 import { Users } from "lucide-react";
 
