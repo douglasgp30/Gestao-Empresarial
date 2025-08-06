@@ -306,7 +306,7 @@ export default function FiltrosRelatoriosCompacto() {
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="Residencial">Residencial</SelectItem>
                     <SelectItem value="Comercial">Comercial</SelectItem>
                     <SelectItem value="Industrial">Industrial</SelectItem>
