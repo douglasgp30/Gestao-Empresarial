@@ -144,3 +144,15 @@ export interface Fornecedor {
   telefone?: string;
   dataCriacao: Date;
 }
+
+export interface Setor {
+  id: string;
+  nome: string;
+  dataCriacao: Date;
+}
+
+export interface Cidade {
+  id: string;
+  nome: string;
+  dataCriacao: Date;
+}
