@@ -61,6 +61,21 @@ export default function Configuracoes() {
   const [tempoSessao, setTempoSessao] = useState(60);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  // Carregar configurações salvas ao inicializar
+  useEffect(() => {
+    const savedConfigs = localStorage.getItem('userConfigs');
+    if (savedConfigs) {
+      try {
+        const configs = JSON.parse(savedConfigs);
+        setPercentualComissao(configs.percentualComissao || 15);
+        setPercentualImposto(configs.percentualImposto || 6);
+        setTempoSessao(configs.tempoSessao || 60);
+      } catch (error) {
+        console.error('Erro ao carregar configurações:', error);
+      }
+    }
+  }, []);
+
   const validateUserConfigs = () => {
     const errors: Record<string, string> = {};
 
@@ -742,7 +757,7 @@ export default function Configuracoes() {
                       <ul className="text-sm text-yellow-700 mt-1 space-y-1">
                         <li>• Execute backups regularmente</li>
                         <li>• Mantenha backups em local seguro</li>
-                        <li>��� Teste a restauração periodicamente</li>
+                        <li>• Teste a restauração periodicamente</li>
                         <li>• Considere backups em mídia externa</li>
                       </ul>
                     </div>
