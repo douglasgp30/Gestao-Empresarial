@@ -48,6 +48,7 @@ export default function Configuracoes() {
 
   const handleSave = () => {
     updateEmpresaConfig(localConfig);
+    updateBackupConfig(localBackupConfig);
     setSavedMessage(true);
     setTimeout(() => setSavedMessage(false), 3000);
   };
