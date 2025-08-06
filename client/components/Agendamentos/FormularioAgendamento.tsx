@@ -114,6 +114,7 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
         horaServico: formData.horaServico,
         descricaoServico: formData.descricaoServico.trim(),
         setor: formData.setor,
+        cidade: formData.cidade,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         finalTelefoneCliente: formData.finalTelefoneCliente,
         tempoLembrete: formData.tempoLembrete,
