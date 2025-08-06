@@ -153,7 +153,7 @@ export default function FiltrosPeriodoCompacto({
                   id="dataInicio"
                   type="date"
                   value={dataInicio}
-                  onChange={(e) => onDataInicioChange(e.target.value)}
+                  onChange={(e) => handleDataInicioChangeInterno(e.target.value)}
                   className="pl-8 h-9 text-sm"
                 />
               </div>
