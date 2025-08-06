@@ -14,14 +14,17 @@ import { FuncionariosProvider } from "./contexts/FuncionariosContext";
 import { RelatoriosProvider } from "./contexts/RelatoriosContext";
 import { DashboardProvider } from "./contexts/DashboardContext";
 import { EntidadesProvider } from "./contexts/EntidadesContext";
+import { AgendamentosProvider } from "./contexts/AgendamentosContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/Layout/MainLayout";
+import { GerenciadorLembretes } from "./components/Agendamentos/ModalLembrete";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Caixa from "./pages/Caixa";
 import Contas from "./pages/Contas";
 import Funcionarios from "./pages/Funcionarios";
 import Relatorios from "./pages/Relatorios";
+import Agendamentos from "./pages/Agendamentos";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
