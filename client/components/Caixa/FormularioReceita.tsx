@@ -380,7 +380,7 @@ export default function FormularioReceita() {
       if (formData.valorEntrou && parseFloat(formData.valorEntrou) > 0) {
         valorLiquido = parseFloat(formData.valorEntrou);
       } else {
-        const taxa = formData.formaPagamento === "Cartão de Débito" ? 0.02 : 0.035;
+        const taxa = formData.formaPagamento === "Cartão de D��bito" ? 0.02 : 0.035;
         valorLiquido = valorLiquido * (1 - taxa);
       }
     }
@@ -906,8 +906,8 @@ export default function FormularioReceita() {
                 onCheckedChange={(checked) => {
                   setFormData({ ...formData, notaFiscal: checked });
                   if (checked && !notaFiscalProcessada) {
-                    // ⚠️ IMPORTANTE: Substitua pela URL real da prefeitura fornecida pelo usuário
-                    const linkPrefeitura = "https://nfse.prefeitura.sp.gov.br/"; // <<<< INSERIR LINK REAL AQUI
+                    // Site da prefeitura de Goiânia para emissão de nota fiscal
+                    const linkPrefeitura = "https://www10.goiania.go.gov.br/Internet/Login.aspx?OriginalURL=https%3a%2f%2fwww10.goiania.go.gov.br%2fsicaeportal%2fHomePageNovo.aspx";
                     const janela = window.open(linkPrefeitura, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
 
                     // Detectar quando a janela é fechada
