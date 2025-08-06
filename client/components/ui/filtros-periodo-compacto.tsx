@@ -280,7 +280,11 @@ export default function FiltrosPeriodoCompacto({
               onAplicar();
               setFiltroAtivo("esta-semana");
             }}
-            className={`text-xs h-7 px-2 sm:px-3 transition-colors ${filtroAtivo === "esta-semana" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted"}`}
+            className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
+              filtroAtivo === "esta-semana"
+                ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
+                : "hover:bg-muted hover:scale-105"
+            }`}
           >
             Esta Semana
           </Button>
@@ -297,7 +301,11 @@ export default function FiltrosPeriodoCompacto({
               onAplicar();
               setFiltroAtivo("ultimos-7");
             }}
-            className={`text-xs h-7 px-2 sm:px-3 transition-colors ${filtroAtivo === "ultimos-7" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted"}`}
+            className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
+              filtroAtivo === "ultimos-7"
+                ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
+                : "hover:bg-muted hover:scale-105"
+            }`}
           >
             Últimos 7 Dias
           </Button>
@@ -314,7 +322,11 @@ export default function FiltrosPeriodoCompacto({
               onAplicar();
               setFiltroAtivo("ultimos-15");
             }}
-            className={`text-xs h-7 px-2 sm:px-3 transition-colors ${filtroAtivo === "ultimos-15" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted"}`}
+            className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
+              filtroAtivo === "ultimos-15"
+                ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
+                : "hover:bg-muted hover:scale-105"
+            }`}
           >
             Últimos 15 Dias
           </Button>
@@ -331,7 +343,11 @@ export default function FiltrosPeriodoCompacto({
               onAplicar();
               setFiltroAtivo("ultimos-30");
             }}
-            className={`text-xs h-7 px-2 sm:px-3 transition-colors ${filtroAtivo === "ultimos-30" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted"}`}
+            className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
+              filtroAtivo === "ultimos-30"
+                ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
+                : "hover:bg-muted hover:scale-105"
+            }`}
           >
             Últimos 30 Dias
           </Button>
@@ -349,7 +365,11 @@ export default function FiltrosPeriodoCompacto({
               onAplicar();
               setFiltroAtivo("este-mes");
             }}
-            className={`text-xs h-7 px-2 sm:px-3 transition-colors ${filtroAtivo === "este-mes" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted"}`}
+            className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
+              filtroAtivo === "este-mes"
+                ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
+                : "hover:bg-muted hover:scale-105"
+            }`}
           >
             Este Mês
           </Button>
