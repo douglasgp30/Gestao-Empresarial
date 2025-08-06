@@ -308,7 +308,51 @@ export default function FormularioReceita() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Setor</Label>
+              <Label className="flex items-center justify-between">
+                Setor
+                <Dialog
+                  open={isNewSetorOpen}
+                  onOpenChange={setIsNewSetorOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      + Novo
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Adicionar Novo Setor</DialogTitle>
+                      <DialogDescription>
+                        Cadastre um novo setor para os serviços
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="nomeSetor">Nome do Setor *</Label>
+                        <Input
+                          id="nomeSetor"
+                          value={novoSetor.nome}
+                          onChange={(e) =>
+                            setNovoSetor({ ...novoSetor, nome: e.target.value })
+                          }
+                          placeholder="Ex: Residencial, Comercial..."
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsNewSetorOpen(false)}
+                        >
+                          Cancelar
+                        </Button>
+                        <Button onClick={handleAddSetor}>
+                          Adicionar Setor
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </Label>
               <Select
                 value={formData.setor}
                 onValueChange={(value) =>
@@ -320,8 +364,8 @@ export default function FormularioReceita() {
                 </SelectTrigger>
                 <SelectContent>
                   {setores.map((setor) => (
-                    <SelectItem key={setor} value={setor}>
-                      {setor}
+                    <SelectItem key={setor.id} value={setor.nome}>
+                      {setor.nome}
                     </SelectItem>
                   ))}
                 </SelectContent>
