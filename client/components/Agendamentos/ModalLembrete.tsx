@@ -153,7 +153,7 @@ export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLe
                   onClick={() => handleAdiar(5)}
                   className="flex-1"
                 >
-                  <Snooze className="h-4 w-4 mr-1" />
+                  <AlarmClock className="h-4 w-4 mr-1" />
                   Adiar 5min
                 </Button>
                 <Button
@@ -161,7 +161,7 @@ export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLe
                   onClick={() => handleAdiar(10)}
                   className="flex-1"
                 >
-                  <Snooze className="h-4 w-4 mr-1" />
+                  <AlarmClock className="h-4 w-4 mr-1" />
                   Adiar 10min
                 </Button>
               </div>
