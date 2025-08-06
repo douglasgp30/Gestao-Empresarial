@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AuthUser, LoginCredentials, Funcionario } from '@shared/types';
+import { BackupService } from '../lib/backupService';
 
 interface AuthContextType {
   user: AuthUser | null;
