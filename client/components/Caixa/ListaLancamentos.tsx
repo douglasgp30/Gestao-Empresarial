@@ -217,11 +217,51 @@ export default function ListaLancamentos() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Tipo</TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('data')}
+                    >
+                      Data
+                      {getSortIcon('data')}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('tipo')}
+                    >
+                      Tipo
+                      {getSortIcon('tipo')}
+                    </Button>
+                  </TableHead>
                   <TableHead>Descrição</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Forma Pagto.</TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('valor')}
+                    >
+                      Valor
+                      {getSortIcon('valor')}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('formaPagamento')}
+                    >
+                      Forma Pagto.
+                      {getSortIcon('formaPagamento')}
+                    </Button>
+                  </TableHead>
                   <TableHead>Detalhes</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
