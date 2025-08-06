@@ -148,6 +148,11 @@ export default function Configuracoes() {
     setPercentualImposto(6);
     setTempoSessao(60);
     setValidationErrors({});
+
+    // Resetar tema para claro
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
+    setTemaDark(false);
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
