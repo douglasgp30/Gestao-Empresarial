@@ -447,14 +447,8 @@ export default function FormularioReceita() {
                   onOpenChange={setIsNewCampanhaOpen}
                 >
                   <DialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 text-xs"
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      Nova
+                    <Button variant="outline" size="sm">
+                      + Novo
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
