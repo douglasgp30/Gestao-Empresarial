@@ -234,12 +234,14 @@ export default function FormularioReceita() {
 
     adicionarDescricao({
       nome: novaDescricao.nome,
+      tipo: "receita",
       categoria: novaDescricao.categoria || undefined,
     });
 
     setNovaDescricao({
       nome: "",
       categoria: "",
+      tipo: "receita",
     });
 
     setIsNewDescricaoOpen(false);
