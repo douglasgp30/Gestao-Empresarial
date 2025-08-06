@@ -65,6 +65,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
+  // Sistema de logout automático por tempo de sessão
+  useEffect(() => {
+    if (!user) return;
+
+    let timeoutId: NodeJS.Timeout;
+    let lastActivity = Date.now();
+
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      lastActivity = Date.now();
+
+      // Obter tempo de sessão das configurações (padrão 60 minutos)
+      const userConfigs = localStorage.getItem("userConfigs");
+      let tempoSessao = 60;
+      if (userConfigs) {
+        try {
+          const configs = JSON.parse(userConfigs);
+          tempoSessao = configs.tempoSessao || 60;
+        } catch (error) {
+          console.error("Erro ao carregar configurações de sessão:", error);
+        }
+      }
+
+      timeoutId = setTimeout(() => {
+        if (Date.now() - lastActivity >= tempoSessao * 60 * 1000) {
+          logout();
+          alert(`Sessão expirada após ${tempoSessao} minutos de inatividade. Por favor, faça login novamente.`);
+        }
+      }, tempoSessao * 60 * 1000);
+    };
+
+    const handleActivity = () => {
+      resetTimer();
+    };
+
+    // Monitorar atividade do usuário
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    events.forEach(event => {
+      document.addEventListener(event, handleActivity, true);
+    });
+
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeoutId);
+      events.forEach(event => {
+        document.removeEventListener(event, handleActivity, true);
+      });
+    };
+  }, [user]);
+
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     setIsLoading(true);
 
