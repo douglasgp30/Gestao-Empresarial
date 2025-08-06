@@ -825,13 +825,37 @@ export default function FormularioReceita() {
               <Switch
                 id="notaFiscal"
                 checked={formData.notaFiscal}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, notaFiscal: checked })
-                }
+                onCheckedChange={(checked) => {
+                  setFormData({ ...formData, notaFiscal: checked });
+                  if (checked && !notaFiscalProcessada) {
+                    // Abrir site da prefeitura para emitir nota fiscal
+                    const linkPrefeitura = "https://nfse.prefeitura.sp.gov.br/"; // VOCÊ DEVE FORNECER O LINK REAL
+                    const janela = window.open(linkPrefeitura, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+
+                    // Detectar quando a janela é fechada
+                    const intervalo = setInterval(() => {
+                      if (janela?.closed) {
+                        setNotaFiscalProcessada(true);
+                        clearInterval(intervalo);
+                        alert('Nota fiscal processada! Agora você pode lançar a receita.');
+                      }
+                    }, 1000);
+                  }
+                }}
               />
               <Label htmlFor="notaFiscal">
                 Emitir Nota Fiscal (desconto de 6% de imposto)
               </Label>
+              {formData.notaFiscal && !notaFiscalProcessada && (
+                <span className="text-orange-600 text-sm">
+                  ⏳ Aguardando emissão da nota fiscal...
+                </span>
+              )}
+              {formData.notaFiscal && notaFiscalProcessada && (
+                <span className="text-green-600 text-sm">
+                  ✅ Nota fiscal processada
+                </span>
+              )}
             </div>
 
             <div className="space-y-2">
