@@ -59,12 +59,14 @@ export default function Configuracoes() {
   const [percentualComissao, setPercentualComissao] = useState(15);
   const [percentualImposto, setPercentualImposto] = useState(6);
   const [tempoSessao, setTempoSessao] = useState(60);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
   const [temaDark, setTemaDark] = useState(false);
 
   // Carregar configurações salvas ao inicializar
   useEffect(() => {
-    const savedConfigs = localStorage.getItem('userConfigs');
+    const savedConfigs = localStorage.getItem("userConfigs");
     if (savedConfigs) {
       try {
         const configs = JSON.parse(savedConfigs);
@@ -72,17 +74,17 @@ export default function Configuracoes() {
         setPercentualImposto(configs.percentualImposto || 6);
         setTempoSessao(configs.tempoSessao || 60);
       } catch (error) {
-        console.error('Erro ao carregar configurações:', error);
+        console.error("Erro ao carregar configurações:", error);
       }
     }
 
     // Carregar tema salvo
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
       setTemaDark(true);
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
       setTemaDark(false);
     }
   }, []);
@@ -91,11 +93,13 @@ export default function Configuracoes() {
     const errors: Record<string, string> = {};
 
     if (percentualComissao < 0 || percentualComissao > 100) {
-      errors.percentualComissao = "Percentual de comissão deve estar entre 0% e 100%";
+      errors.percentualComissao =
+        "Percentual de comissão deve estar entre 0% e 100%";
     }
 
     if (percentualImposto < 0 || percentualImposto > 100) {
-      errors.percentualImposto = "Percentual de imposto deve estar entre 0% e 100%";
+      errors.percentualImposto =
+        "Percentual de imposto deve estar entre 0% e 100%";
     }
 
     if (tempoSessao < 5 || tempoSessao > 480) {
@@ -115,11 +119,14 @@ export default function Configuracoes() {
     updateBackupConfig(localBackupConfig);
 
     // Salvar configurações de usuários no localStorage
-    localStorage.setItem('userConfigs', JSON.stringify({
-      percentualComissao,
-      percentualImposto,
-      tempoSessao
-    }));
+    localStorage.setItem(
+      "userConfigs",
+      JSON.stringify({
+        percentualComissao,
+        percentualImposto,
+        tempoSessao,
+      }),
+    );
 
     setSavedMessage(true);
     setTimeout(() => setSavedMessage(false), 3000);
@@ -150,8 +157,8 @@ export default function Configuracoes() {
     setValidationErrors({});
 
     // Resetar tema para claro
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('theme', 'light');
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
     setTemaDark(false);
   };
 
@@ -165,7 +172,7 @@ export default function Configuracoes() {
       }
 
       // Validar tipo do arquivo
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         alert("Por favor, selecione apenas arquivos de imagem.");
         return;
       }
@@ -186,7 +193,7 @@ export default function Configuracoes() {
     }
 
     // Limpar o input para permitir upload do mesmo arquivo novamente
-    event.target.value = '';
+    event.target.value = "";
   };
 
   const cores = [
@@ -363,8 +370,8 @@ export default function Configuracoes() {
                 <Button
                   variant={!temaDark ? "default" : "outline"}
                   onClick={() => {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
+                    document.documentElement.classList.remove("dark");
+                    localStorage.setItem("theme", "light");
                     setTemaDark(false);
                   }}
                   className="flex-1"
@@ -374,8 +381,8 @@ export default function Configuracoes() {
                 <Button
                   variant={temaDark ? "default" : "outline"}
                   onClick={() => {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
+                    document.documentElement.classList.add("dark");
+                    localStorage.setItem("theme", "dark");
                     setTemaDark(true);
                   }}
                   className="flex-1"
@@ -569,7 +576,9 @@ export default function Configuracoes() {
             <CardContent className="space-y-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="percentualComissao">Percentual de Comissão Padrão (%)</Label>
+                  <Label htmlFor="percentualComissao">
+                    Percentual de Comissão Padrão (%)
+                  </Label>
                   <Input
                     id="percentualComissao"
                     type="number"
@@ -577,12 +586,20 @@ export default function Configuracoes() {
                     max="100"
                     step="0.1"
                     value={percentualComissao}
-                    onChange={(e) => setPercentualComissao(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setPercentualComissao(parseFloat(e.target.value) || 0)
+                    }
                     placeholder="15"
-                    className={validationErrors.percentualComissao ? "border-red-500" : ""}
+                    className={
+                      validationErrors.percentualComissao
+                        ? "border-red-500"
+                        : ""
+                    }
                   />
                   {validationErrors.percentualComissao && (
-                    <p className="text-sm text-red-500">{validationErrors.percentualComissao}</p>
+                    <p className="text-sm text-red-500">
+                      {validationErrors.percentualComissao}
+                    </p>
                   )}
                   <p className="text-sm text-muted-foreground">
                     Percentual aplicado por padrão para novos funcionários
@@ -590,7 +607,9 @@ export default function Configuracoes() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="percentualImposto">Percentual de Imposto (NF) (%)</Label>
+                  <Label htmlFor="percentualImposto">
+                    Percentual de Imposto (NF) (%)
+                  </Label>
                   <Input
                     id="percentualImposto"
                     type="number"
@@ -598,12 +617,18 @@ export default function Configuracoes() {
                     max="100"
                     step="0.1"
                     value={percentualImposto}
-                    onChange={(e) => setPercentualImposto(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setPercentualImposto(parseFloat(e.target.value) || 0)
+                    }
                     placeholder="6"
-                    className={validationErrors.percentualImposto ? "border-red-500" : ""}
+                    className={
+                      validationErrors.percentualImposto ? "border-red-500" : ""
+                    }
                   />
                   {validationErrors.percentualImposto && (
-                    <p className="text-sm text-red-500">{validationErrors.percentualImposto}</p>
+                    <p className="text-sm text-red-500">
+                      {validationErrors.percentualImposto}
+                    </p>
                   )}
                   <p className="text-sm text-muted-foreground">
                     Desconto aplicado quando nota fiscal é emitida
@@ -611,19 +636,27 @@ export default function Configuracoes() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tempoSessao">Tempo de Sessão Automática (minutos)</Label>
+                  <Label htmlFor="tempoSessao">
+                    Tempo de Sessão Automática (minutos)
+                  </Label>
                   <Input
                     id="tempoSessao"
                     type="number"
                     min="5"
                     max="480"
                     value={tempoSessao}
-                    onChange={(e) => setTempoSessao(parseInt(e.target.value) || 60)}
+                    onChange={(e) =>
+                      setTempoSessao(parseInt(e.target.value) || 60)
+                    }
                     placeholder="60"
-                    className={validationErrors.tempoSessao ? "border-red-500" : ""}
+                    className={
+                      validationErrors.tempoSessao ? "border-red-500" : ""
+                    }
                   />
                   {validationErrors.tempoSessao && (
-                    <p className="text-sm text-red-500">{validationErrors.tempoSessao}</p>
+                    <p className="text-sm text-red-500">
+                      {validationErrors.tempoSessao}
+                    </p>
                   )}
                   <p className="text-sm text-muted-foreground">
                     Tempo limite para logout automático (5 a 480 minutos)

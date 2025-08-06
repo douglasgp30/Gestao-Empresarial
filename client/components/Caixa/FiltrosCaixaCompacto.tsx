@@ -20,7 +20,7 @@ import { Filter, ChevronDown, X, DollarSign } from "lucide-react";
 
 const formasPagamento = [
   "Dinheiro",
-  "Pix", 
+  "Pix",
   "Cartão de Débito",
   "Cartão de Crédito",
   "Boleto",
@@ -29,7 +29,7 @@ const formasPagamento = [
 
 const tecnicos = [
   "João Silva",
-  "Carlos Santos", 
+  "Carlos Santos",
   "Roberto Lima",
   "Fernando Costa",
 ];
@@ -42,14 +42,14 @@ export default function FiltrosCaixaCompacto() {
   const handleDataInicioChange = (data: string) => {
     setFiltros({
       ...filtros,
-      dataInicio: new Date(data)
+      dataInicio: new Date(data),
     });
   };
 
   const handleDataFimChange = (data: string) => {
     setFiltros({
       ...filtros,
-      dataFim: new Date(data)
+      dataFim: new Date(data),
     });
   };
 
@@ -87,8 +87,8 @@ export default function FiltrosCaixaCompacto() {
     <div className="space-y-3">
       {/* Filtros de Período */}
       <FiltrosPeriodoCompacto
-        dataInicio={filtros.dataInicio.toISOString().split('T')[0]}
-        dataFim={filtros.dataFim.toISOString().split('T')[0]}
+        dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
+        dataFim={filtros.dataFim.toISOString().split("T")[0]}
         onDataInicioChange={handleDataInicioChange}
         onDataFimChange={handleDataFimChange}
         onAplicar={handleAplicarPeriodo}
@@ -101,25 +101,39 @@ export default function FiltrosCaixaCompacto() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
           <div className="text-center">
             <div className="text-lg font-bold text-green-600">
-              {totais.receitas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              {totais.receitas.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
             </div>
             <div className="text-xs text-muted-foreground">Receitas</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-red-600">
-              {totais.despesas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              {totais.despesas.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
             </div>
             <div className="text-xs text-muted-foreground">Despesas</div>
           </div>
           <div className="text-center">
-            <div className={`text-lg font-bold ${totais.saldo >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {totais.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            <div
+              className={`text-lg font-bold ${totais.saldo >= 0 ? "text-green-600" : "text-red-600"}`}
+            >
+              {totais.saldo.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
             </div>
             <div className="text-xs text-muted-foreground">Saldo</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-blue-600">
-              {totais.comissoes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              {totais.comissoes.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
             </div>
             <div className="text-xs text-muted-foreground">Comissões</div>
           </div>
@@ -141,10 +155,12 @@ export default function FiltrosCaixaCompacto() {
                   {filtrosAtivos}
                 </Badge>
               )}
-              <ChevronDown className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? "rotate-180" : ""}`}
+              />
             </Button>
           </CollapsibleTrigger>
-          
+
           {filtrosAtivos > 0 && (
             <Button
               variant="ghost"
@@ -163,7 +179,9 @@ export default function FiltrosCaixaCompacto() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* Tipo */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Tipo</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Tipo
+                </label>
                 <Select
                   value={filtros.tipo || "todos"}
                   onValueChange={(value) =>
@@ -183,7 +201,9 @@ export default function FiltrosCaixaCompacto() {
 
               {/* Forma de Pagamento */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Forma de Pagamento</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Forma de Pagamento
+                </label>
                 <Select
                   value={filtros.formaPagamento || ""}
                   onValueChange={(value) =>
@@ -206,7 +226,9 @@ export default function FiltrosCaixaCompacto() {
 
               {/* Técnico */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Técnico</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Técnico
+                </label>
                 <Select
                   value={filtros.tecnico || ""}
                   onValueChange={(value) =>
@@ -229,7 +251,9 @@ export default function FiltrosCaixaCompacto() {
 
               {/* Setor */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Setor</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Setor
+                </label>
                 <Select
                   value={filtros.setor || ""}
                   onValueChange={(value) =>
@@ -252,7 +276,9 @@ export default function FiltrosCaixaCompacto() {
 
               {/* Campanha */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Campanha</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Campanha
+                </label>
                 <Select
                   value={filtros.campanha || ""}
                   onValueChange={(value) =>
@@ -264,11 +290,13 @@ export default function FiltrosCaixaCompacto() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">Todas</SelectItem>
-                    {campanhas?.filter(c => c.ativa).map((campanha) => (
-                      <SelectItem key={campanha.id} value={campanha.nome}>
-                        {campanha.nome}
-                      </SelectItem>
-                    ))}
+                    {campanhas
+                      ?.filter((c) => c.ativa)
+                      .map((campanha) => (
+                        <SelectItem key={campanha.id} value={campanha.nome}>
+                          {campanha.nome}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>

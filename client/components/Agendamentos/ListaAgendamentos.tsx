@@ -26,42 +26,52 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { 
-  MoreHorizontal, 
-  Edit, 
-  Trash2, 
-  CheckCircle, 
+import {
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  CheckCircle,
   ArrowUpDown,
   Calendar,
   Clock,
   User,
-  Phone
+  Phone,
 } from "lucide-react";
 import { Agendamento } from "../../../shared/types";
 import FormularioAgendamento from "./FormularioAgendamento";
 import { toast } from "../../hooks/use-toast";
 
-type ColunaOrdenacao = 'dataServico' | 'horaServico' | 'descricaoServico' | 'setor' | 'tecnicoResponsavel' | 'status';
-type DirecaoOrdenacao = 'asc' | 'desc';
+type ColunaOrdenacao =
+  | "dataServico"
+  | "horaServico"
+  | "descricaoServico"
+  | "setor"
+  | "tecnicoResponsavel"
+  | "status";
+type DirecaoOrdenacao = "asc" | "desc";
 
 export default function ListaAgendamentos() {
-  const { 
-    agendamentosFiltrados, 
-    excluirAgendamento, 
+  const {
+    agendamentosFiltrados,
+    excluirAgendamento,
     concluirAgendamento,
-    isLoading 
+    isLoading,
   } = useAgendamentos();
-  
+
   const [ordenacao, setOrdenacao] = useState<{
     coluna: ColunaOrdenacao;
     direcao: DirecaoOrdenacao;
   }>({
-    coluna: 'dataServico',
-    direcao: 'asc'
+    coluna: "dataServico",
+    direcao: "asc",
   });
-  
-  const [agendamentoExcluir, setAgendamentoExcluir] = useState<string | null>(null);
-  const [agendamentoEditar, setAgendamentoEditar] = useState<string | null>(null);
+
+  const [agendamentoExcluir, setAgendamentoExcluir] = useState<string | null>(
+    null,
+  );
+  const [agendamentoEditar, setAgendamentoEditar] = useState<string | null>(
+    null,
+  );
 
   // Resetar edição quando o modal fechar
   React.useEffect(() => {
@@ -71,9 +81,10 @@ export default function ListaAgendamentos() {
   }, [agendamentoEditar]);
 
   const handleOrdenar = (coluna: ColunaOrdenacao) => {
-    setOrdenacao(prev => ({
+    setOrdenacao((prev) => ({
       coluna,
-      direcao: prev.coluna === coluna && prev.direcao === 'asc' ? 'desc' : 'asc'
+      direcao:
+        prev.coluna === coluna && prev.direcao === "asc" ? "desc" : "asc",
     }));
   };
 
@@ -83,21 +94,21 @@ export default function ListaAgendamentos() {
     let valorB: any;
 
     switch (coluna) {
-      case 'dataServico':
+      case "dataServico":
         valorA = new Date(a.dataServico);
         valorB = new Date(b.dataServico);
         break;
-      case 'horaServico':
+      case "horaServico":
         valorA = a.horaServico;
         valorB = b.horaServico;
         break;
       default:
-        valorA = a[coluna] || '';
-        valorB = b[coluna] || '';
+        valorA = a[coluna] || "";
+        valorB = b[coluna] || "";
     }
 
-    if (valorA < valorB) return direcao === 'asc' ? -1 : 1;
-    if (valorA > valorB) return direcao === 'asc' ? 1 : -1;
+    if (valorA < valorB) return direcao === "asc" ? -1 : 1;
+    if (valorA > valorB) return direcao === "asc" ? 1 : -1;
     return 0;
   });
 
@@ -120,21 +131,42 @@ export default function ListaAgendamentos() {
     });
   };
 
-  const getStatusBadge = (status: Agendamento['status']) => {
+  const getStatusBadge = (status: Agendamento["status"]) => {
     switch (status) {
-      case 'agendado':
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Agendado</Badge>;
-      case 'concluido':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Concluído</Badge>;
-      case 'cancelado':
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Cancelado</Badge>;
+      case "agendado":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-blue-50 text-blue-700 border-blue-200"
+          >
+            Agendado
+          </Badge>
+        );
+      case "concluido":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-50 text-green-700 border-green-200"
+          >
+            Concluído
+          </Badge>
+        );
+      case "cancelado":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-red-50 text-red-700 border-red-200"
+          >
+            Cancelado
+          </Badge>
+        );
       default:
         return <Badge variant="outline">-</Badge>;
     }
   };
 
   const formatarData = (data: Date) => {
-    return new Date(data).toLocaleDateString('pt-BR');
+    return new Date(data).toLocaleDateString("pt-BR");
   };
 
   const formatarDataHora = (data: Date, hora: string) => {
@@ -177,9 +209,9 @@ export default function ListaAgendamentos() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => handleOrdenar('dataServico')}
+                onClick={() => handleOrdenar("dataServico")}
               >
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
@@ -187,9 +219,9 @@ export default function ListaAgendamentos() {
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => handleOrdenar('descricaoServico')}
+                onClick={() => handleOrdenar("descricaoServico")}
               >
                 <div className="flex items-center gap-2">
                   Serviço
@@ -198,19 +230,17 @@ export default function ListaAgendamentos() {
               </TableHead>
               <TableHead
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => handleOrdenar('setor')}
+                onClick={() => handleOrdenar("setor")}
               >
                 <div className="flex items-center gap-2">
                   Setor
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
-              <TableHead>
-                Cidade
-              </TableHead>
+              <TableHead>Cidade</TableHead>
               <TableHead
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => handleOrdenar('tecnicoResponsavel')}
+                onClick={() => handleOrdenar("tecnicoResponsavel")}
               >
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" />
@@ -224,9 +254,9 @@ export default function ListaAgendamentos() {
                   Tel. Final
                 </div>
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
-                onClick={() => handleOrdenar('status')}
+                onClick={() => handleOrdenar("status")}
               >
                 <div className="flex items-center gap-2">
                   Status
@@ -251,7 +281,10 @@ export default function ListaAgendamentos() {
                   </div>
                 </TableCell>
                 <TableCell className="max-w-[200px]">
-                  <div className="truncate" title={agendamento.descricaoServico}>
+                  <div
+                    className="truncate"
+                    title={agendamento.descricaoServico}
+                  >
                     {agendamento.descricaoServico}
                   </div>
                 </TableCell>
@@ -271,9 +304,7 @@ export default function ListaAgendamentos() {
                     ***{agendamento.finalTelefoneCliente}
                   </span>
                 </TableCell>
-                <TableCell>
-                  {getStatusBadge(agendamento.status)}
-                </TableCell>
+                <TableCell>{getStatusBadge(agendamento.status)}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -282,17 +313,21 @@ export default function ListaAgendamentos() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setAgendamentoEditar(agendamento.id)}>
+                      <DropdownMenuItem
+                        onClick={() => setAgendamentoEditar(agendamento.id)}
+                      >
                         <Edit className="h-4 w-4 mr-2" />
                         Editar
                       </DropdownMenuItem>
-                      {agendamento.status === 'agendado' && (
-                        <DropdownMenuItem onClick={() => handleConcluir(agendamento.id)}>
+                      {agendamento.status === "agendado" && (
+                        <DropdownMenuItem
+                          onClick={() => handleConcluir(agendamento.id)}
+                        >
                           <CheckCircle className="h-4 w-4 mr-2" />
                           Concluir
                         </DropdownMenuItem>
                       )}
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => setAgendamentoExcluir(agendamento.id)}
                         className="text-red-600"
                       >
@@ -317,7 +352,10 @@ export default function ListaAgendamentos() {
                 <div className="flex items-center gap-2 mb-1">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">
-                    {formatarDataHora(agendamento.dataServico, agendamento.horaServico)}
+                    {formatarDataHora(
+                      agendamento.dataServico,
+                      agendamento.horaServico,
+                    )}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-2">
@@ -333,17 +371,21 @@ export default function ListaAgendamentos() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setAgendamentoEditar(agendamento.id)}>
+                    <DropdownMenuItem
+                      onClick={() => setAgendamentoEditar(agendamento.id)}
+                    >
                       <Edit className="h-4 w-4 mr-2" />
                       Editar
                     </DropdownMenuItem>
-                    {agendamento.status === 'agendado' && (
-                      <DropdownMenuItem onClick={() => handleConcluir(agendamento.id)}>
+                    {agendamento.status === "agendado" && (
+                      <DropdownMenuItem
+                        onClick={() => handleConcluir(agendamento.id)}
+                      >
                         <CheckCircle className="h-4 w-4 mr-2" />
                         Concluir
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => setAgendamentoExcluir(agendamento.id)}
                       className="text-red-600"
                     >
@@ -354,7 +396,7 @@ export default function ListaAgendamentos() {
                 </DropdownMenu>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2">
                 <span className="font-medium">Setor:</span>
@@ -396,22 +438,29 @@ export default function ListaAgendamentos() {
           agendamentoId={agendamentoEditar}
           onClose={() => setAgendamentoEditar(null)}
         >
-          <div style={{ display: 'none' }} />
+          <div style={{ display: "none" }} />
         </FormularioAgendamento>
       )}
 
       {/* Dialog de Confirmação de Exclusão */}
-      <AlertDialog open={!!agendamentoExcluir} onOpenChange={() => setAgendamentoExcluir(null)}>
+      <AlertDialog
+        open={!!agendamentoExcluir}
+        onOpenChange={() => setAgendamentoExcluir(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir este agendamento? Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir este agendamento? Esta ação não
+              pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleExcluir} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleExcluir}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>

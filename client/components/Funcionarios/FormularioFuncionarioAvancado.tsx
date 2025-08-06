@@ -34,11 +34,11 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import { 
-  UserPlus, 
-  User, 
-  Shield, 
-  Percent, 
+import {
+  UserPlus,
+  User,
+  Shield,
+  Percent,
   ChevronDown,
   Lock,
   Eye,
@@ -46,7 +46,7 @@ import {
   Settings,
   BarChart3,
   HardDrive,
-  Users
+  Users,
 } from "lucide-react";
 import { FuncionarioPermissoes } from "@shared/types";
 
@@ -74,7 +74,7 @@ const permissoesDisponiveis = [
   },
   {
     id: "lancarDespesa",
-    nome: "Lançar Despesa", 
+    nome: "Lançar Despesa",
     descricao: "Criar novos lançamentos de despesa",
     modulo: "Caixa",
     icon: Edit,
@@ -158,13 +158,16 @@ const permissoesDisponiveis = [
   },
 ];
 
-const permissoesPorModulo = permissoesDisponiveis.reduce((acc, permissao) => {
-  if (!acc[permissao.modulo]) {
-    acc[permissao.modulo] = [];
-  }
-  acc[permissao.modulo].push(permissao);
-  return acc;
-}, {} as Record<string, typeof permissoesDisponiveis>);
+const permissoesPorModulo = permissoesDisponiveis.reduce(
+  (acc, permissao) => {
+    if (!acc[permissao.modulo]) {
+      acc[permissao.modulo] = [];
+    }
+    acc[permissao.modulo].push(permissao);
+    return acc;
+  },
+  {} as Record<string, typeof permissoesDisponiveis>,
+);
 
 export default function FormularioFuncionarioAvancado() {
   const { adicionarFuncionario } = useFuncionarios();
@@ -376,7 +379,9 @@ export default function FormularioFuncionarioAvancado() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="percentualComissao">Percentual de Comissão (%)</Label>
+                <Label htmlFor="percentualComissao">
+                  Percentual de Comissão (%)
+                </Label>
                 <div className="relative">
                   <Input
                     id="percentualComissao"
@@ -386,14 +391,21 @@ export default function FormularioFuncionarioAvancado() {
                     step="0.1"
                     value={formData.percentualComissao}
                     onChange={(e) =>
-                      setFormData({ ...formData, percentualComissao: e.target.value })
+                      setFormData({
+                        ...formData,
+                        percentualComissao: e.target.value,
+                      })
                     }
-                    className={errors.percentualComissao ? "border-red-500" : ""}
+                    className={
+                      errors.percentualComissao ? "border-red-500" : ""
+                    }
                   />
                   <Percent className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                 </div>
                 {errors.percentualComissao && (
-                  <p className="text-sm text-red-500">{errors.percentualComissao}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.percentualComissao}
+                  </p>
                 )}
               </div>
 
@@ -430,7 +442,7 @@ export default function FormularioFuncionarioAvancado() {
                     setFormData({ ...formData, temAcessoSistema: checked });
                     if (!checked) {
                       // Limpar dados de acesso se desabilitar
-                      setFormData(prev => ({
+                      setFormData((prev) => ({
                         ...prev,
                         login: "",
                         senha: "",
@@ -468,7 +480,9 @@ export default function FormularioFuncionarioAvancado() {
                       <Label>Tipo de Acesso</Label>
                       <Select
                         value={formData.tipoAcesso}
-                        onValueChange={(value: "Administrador" | "Operador") => {
+                        onValueChange={(
+                          value: "Administrador" | "Operador",
+                        ) => {
                           setFormData({ ...formData, tipoAcesso: value });
                           aplicarPermissoesPadrao(value);
                         }}
@@ -478,7 +492,9 @@ export default function FormularioFuncionarioAvancado() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Operador">Operador</SelectItem>
-                          <SelectItem value="Administrador">Administrador</SelectItem>
+                          <SelectItem value="Administrador">
+                            Administrador
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -509,13 +525,20 @@ export default function FormularioFuncionarioAvancado() {
                         type="password"
                         value={formData.confirmarSenha}
                         onChange={(e) =>
-                          setFormData({ ...formData, confirmarSenha: e.target.value })
+                          setFormData({
+                            ...formData,
+                            confirmarSenha: e.target.value,
+                          })
                         }
                         placeholder="Digite a senha novamente"
-                        className={errors.confirmarSenha ? "border-red-500" : ""}
+                        className={
+                          errors.confirmarSenha ? "border-red-500" : ""
+                        }
                       />
                       {errors.confirmarSenha && (
-                        <p className="text-sm text-red-500">{errors.confirmarSenha}</p>
+                        <p className="text-sm text-red-500">
+                          {errors.confirmarSenha}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -535,51 +558,62 @@ export default function FormularioFuncionarioAvancado() {
                               {contarPermissoesAtivas()} ativas
                             </Badge>
                           )}
-                          <ChevronDown className={`h-4 w-4 transition-transform ${permissoesAbertas ? 'rotate-180' : ''}`} />
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${permissoesAbertas ? "rotate-180" : ""}`}
+                          />
                         </Button>
                       </CollapsibleTrigger>
                     </div>
 
                     <CollapsibleContent className="mt-4">
                       <div className="space-y-4">
-                        {Object.entries(permissoesPorModulo).map(([modulo, permissoesModulo]) => (
-                          <div key={modulo} className="space-y-2">
-                            <h4 className="font-medium text-sm text-muted-foreground">
-                              {modulo}
-                            </h4>
-                            <div className="grid gap-2 pl-4">
-                              {permissoesModulo.map((permissao) => {
-                                const Icon = permissao.icon;
-                                return (
-                                  <div key={permissao.id} className="flex items-start space-x-2">
-                                    <Checkbox
-                                      id={permissao.id}
-                                      checked={permissoes[permissao.id as keyof FuncionarioPermissoes]}
-                                      onCheckedChange={(checked) =>
-                                        setPermissoes(prev => ({
-                                          ...prev,
-                                          [permissao.id]: checked
-                                        }))
-                                      }
-                                    />
-                                    <div className="grid gap-1">
-                                      <Label 
-                                        htmlFor={permissao.id}
-                                        className="text-sm font-medium flex items-center gap-2"
-                                      >
-                                        <Icon className="h-3 w-3" />
-                                        {permissao.nome}
-                                      </Label>
-                                      <p className="text-xs text-muted-foreground">
-                                        {permissao.descricao}
-                                      </p>
+                        {Object.entries(permissoesPorModulo).map(
+                          ([modulo, permissoesModulo]) => (
+                            <div key={modulo} className="space-y-2">
+                              <h4 className="font-medium text-sm text-muted-foreground">
+                                {modulo}
+                              </h4>
+                              <div className="grid gap-2 pl-4">
+                                {permissoesModulo.map((permissao) => {
+                                  const Icon = permissao.icon;
+                                  return (
+                                    <div
+                                      key={permissao.id}
+                                      className="flex items-start space-x-2"
+                                    >
+                                      <Checkbox
+                                        id={permissao.id}
+                                        checked={
+                                          permissoes[
+                                            permissao.id as keyof FuncionarioPermissoes
+                                          ]
+                                        }
+                                        onCheckedChange={(checked) =>
+                                          setPermissoes((prev) => ({
+                                            ...prev,
+                                            [permissao.id]: checked,
+                                          }))
+                                        }
+                                      />
+                                      <div className="grid gap-1">
+                                        <Label
+                                          htmlFor={permissao.id}
+                                          className="text-sm font-medium flex items-center gap-2"
+                                        >
+                                          <Icon className="h-3 w-3" />
+                                          {permissao.nome}
+                                        </Label>
+                                        <p className="text-xs text-muted-foreground">
+                                          {permissao.descricao}
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
-                                );
-                              })}
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ),
+                        )}
                       </div>
                     </CollapsibleContent>
                   </Collapsible>

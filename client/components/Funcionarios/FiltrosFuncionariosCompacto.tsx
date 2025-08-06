@@ -15,7 +15,16 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import { Filter, ChevronDown, X, Search, Users, UserCheck, UserX, Shield } from "lucide-react";
+import {
+  Filter,
+  ChevronDown,
+  X,
+  Search,
+  Users,
+  UserCheck,
+  UserX,
+  Shield,
+} from "lucide-react";
 
 export default function FiltrosFuncionariosCompacto() {
   const { filtros, setFiltros, estatisticas, isLoading } = useFuncionarios();
@@ -52,7 +61,9 @@ export default function FiltrosFuncionariosCompacto() {
             <Input
               placeholder="Buscar por nome ou login..."
               value={filtros.busca || ""}
-              onChange={(e) => setFiltros({ ...filtros, busca: e.target.value })}
+              onChange={(e) =>
+                setFiltros({ ...filtros, busca: e.target.value })
+              }
               className="pl-8 h-9"
             />
           </div>
@@ -61,7 +72,9 @@ export default function FiltrosFuncionariosCompacto() {
           <div className="flex gap-2">
             <Select
               value={filtros.status || "todos"}
-              onValueChange={(value) => setFiltros({ ...filtros, status: value as any })}
+              onValueChange={(value) =>
+                setFiltros({ ...filtros, status: value as any })
+              }
             >
               <SelectTrigger className="w-32 h-9">
                 <SelectValue />
@@ -75,7 +88,9 @@ export default function FiltrosFuncionariosCompacto() {
 
             <Select
               value={filtros.tipoAcesso || "todos"}
-              onValueChange={(value) => setFiltros({ ...filtros, tipoAcesso: value as any })}
+              onValueChange={(value) =>
+                setFiltros({ ...filtros, tipoAcesso: value as any })
+              }
             >
               <SelectTrigger className="w-40 h-9">
                 <SelectValue />
@@ -147,10 +162,12 @@ export default function FiltrosFuncionariosCompacto() {
                   {filtrosAtivos}
                 </Badge>
               )}
-              <ChevronDown className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? "rotate-180" : ""}`}
+              />
             </Button>
           </CollapsibleTrigger>
-          
+
           {filtrosAtivos > 0 && (
             <Button
               variant="ghost"
@@ -169,14 +186,25 @@ export default function FiltrosFuncionariosCompacto() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Acesso ao Sistema */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Acesso ao Sistema</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Acesso ao Sistema
+                </label>
                 <Select
-                  value={filtros.permissaoAcesso === undefined ? "todos" : filtros.permissaoAcesso ? "sim" : "nao"}
+                  value={
+                    filtros.permissaoAcesso === undefined
+                      ? "todos"
+                      : filtros.permissaoAcesso
+                        ? "sim"
+                        : "nao"
+                  }
                   onValueChange={(value) => {
                     if (value === "todos") {
                       setFiltros({ ...filtros, permissaoAcesso: undefined });
                     } else {
-                      setFiltros({ ...filtros, permissaoAcesso: value === "sim" });
+                      setFiltros({
+                        ...filtros,
+                        permissaoAcesso: value === "sim",
+                      });
                     }
                   }}
                 >
@@ -193,7 +221,9 @@ export default function FiltrosFuncionariosCompacto() {
 
               {/* Filtro por Data de Cadastro */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Período de Cadastro</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Período de Cadastro
+                </label>
                 <Select
                   value=""
                   onValueChange={(value) => {
@@ -206,9 +236,13 @@ export default function FiltrosFuncionariosCompacto() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ultimo_mes">Último mês</SelectItem>
-                    <SelectItem value="ultimos_3_meses">Últimos 3 meses</SelectItem>
+                    <SelectItem value="ultimos_3_meses">
+                      Últimos 3 meses
+                    </SelectItem>
                     <SelectItem value="este_ano">Este ano</SelectItem>
-                    <SelectItem value="personalizado">Período personalizado</SelectItem>
+                    <SelectItem value="personalizado">
+                      Período personalizado
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

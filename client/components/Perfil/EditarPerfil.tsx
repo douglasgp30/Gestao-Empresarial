@@ -21,14 +21,14 @@ import {
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { Alert, AlertDescription } from "../ui/alert";
-import { 
-  User, 
-  Lock, 
-  Shield, 
+import {
+  User,
+  Lock,
+  Shield,
   CheckCircle,
   Eye,
   EyeOff,
-  AlertTriangle 
+  AlertTriangle,
 } from "lucide-react";
 
 export default function EditarPerfil() {
@@ -65,9 +65,14 @@ export default function EditarPerfil() {
     }
 
     // Validar senha apenas se o usuário quiser alterar
-    if (formData.novaSenha || formData.confirmarNovaSenha || formData.senhaAtual) {
+    if (
+      formData.novaSenha ||
+      formData.confirmarNovaSenha ||
+      formData.senhaAtual
+    ) {
       if (!formData.senhaAtual) {
-        newErrors.senhaAtual = "Digite sua senha atual para confirmar as alterações";
+        newErrors.senhaAtual =
+          "Digite sua senha atual para confirmar as alterações";
       }
 
       if (formData.novaSenha && formData.novaSenha.length < 6) {
@@ -93,9 +98,9 @@ export default function EditarPerfil() {
 
     // Simular sucesso
     setSucessoMensagem("Perfil atualizado com sucesso!");
-    
+
     // Limpar campos de senha
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       senhaAtual: "",
       novaSenha: "",
@@ -151,8 +156,16 @@ export default function EditarPerfil() {
                 <Badge variant="outline">{user.login}</Badge>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Tipo de Acesso:</span>
-                <Badge variant={user.tipoAcesso === "Administrador" ? "default" : "secondary"}>
+                <span className="text-sm text-muted-foreground">
+                  Tipo de Acesso:
+                </span>
+                <Badge
+                  variant={
+                    user.tipoAcesso === "Administrador"
+                      ? "default"
+                      : "secondary"
+                  }
+                >
                   {user.tipoAcesso}
                 </Badge>
               </div>
@@ -253,13 +266,18 @@ export default function EditarPerfil() {
                   type="password"
                   value={formData.confirmarNovaSenha}
                   onChange={(e) =>
-                    setFormData({ ...formData, confirmarNovaSenha: e.target.value })
+                    setFormData({
+                      ...formData,
+                      confirmarNovaSenha: e.target.value,
+                    })
                   }
                   placeholder="Digite a nova senha novamente"
                   className={errors.confirmarNovaSenha ? "border-red-500" : ""}
                 />
                 {errors.confirmarNovaSenha && (
-                  <p className="text-sm text-red-500">{errors.confirmarNovaSenha}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.confirmarNovaSenha}
+                  </p>
                 )}
               </div>
             </CardContent>
@@ -269,7 +287,8 @@ export default function EditarPerfil() {
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Para alterar permissões ou tipo de acesso, solicite a um administrador.
+              Para alterar permissões ou tipo de acesso, solicite a um
+              administrador.
             </AlertDescription>
           </Alert>
 

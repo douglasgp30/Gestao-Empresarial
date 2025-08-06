@@ -58,7 +58,10 @@ const App = () => (
                               <Route index element={<Dashboard />} />
                               <Route path="caixa" element={<Caixa />} />
                               <Route path="contas" element={<Contas />} />
-                              <Route path="agendamentos" element={<Agendamentos />} />
+                              <Route
+                                path="agendamentos"
+                                element={<Agendamentos />}
+                              />
                               <Route
                                 path="funcionarios"
                                 element={
@@ -67,7 +70,10 @@ const App = () => (
                                   </ProtectedRoute>
                                 }
                               />
-                              <Route path="relatorios" element={<Relatorios />} />
+                              <Route
+                                path="relatorios"
+                                element={<Relatorios />}
+                              />
                               <Route
                                 path="configuracoes"
                                 element={

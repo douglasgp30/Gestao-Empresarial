@@ -114,9 +114,15 @@ export default function TabelaResponsivaLancamentos({
                       <span>{formatDate(lancamento.data)}</span>
                     </div>
                   </TableCell>
-                  
+
                   <TableCell>
-                    <Badge variant={lancamento.tipo === "receita" ? "default" : "destructive"}>
+                    <Badge
+                      variant={
+                        lancamento.tipo === "receita"
+                          ? "default"
+                          : "destructive"
+                      }
+                    >
                       {lancamento.tipo === "receita" ? "Receita" : "Despesa"}
                     </Badge>
                   </TableCell>
@@ -154,7 +160,9 @@ export default function TabelaResponsivaLancamentos({
                             : "text-red-600"
                         }`}
                       >
-                        {formatCurrency(lancamento.valorLiquido || lancamento.valor)}
+                        {formatCurrency(
+                          lancamento.valorLiquido || lancamento.valor,
+                        )}
                       </p>
                       {lancamento.valorLiquido &&
                         lancamento.valorLiquido !== lancamento.valor && (
@@ -185,12 +193,14 @@ export default function TabelaResponsivaLancamentos({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           {onEditar && (
-                            <DropdownMenuItem onClick={() => onEditar(lancamento.id)}>
+                            <DropdownMenuItem
+                              onClick={() => onEditar(lancamento.id)}
+                            >
                               Editar
                             </DropdownMenuItem>
                           )}
                           {onExcluir && (
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => onExcluir(lancamento.id)}
                               className="text-red-600"
                             >
@@ -215,8 +225,10 @@ export default function TabelaResponsivaLancamentos({
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-2">
-                  <Badge 
-                    variant={lancamento.tipo === "receita" ? "default" : "destructive"}
+                  <Badge
+                    variant={
+                      lancamento.tipo === "receita" ? "default" : "destructive"
+                    }
                     className="text-xs"
                   >
                     {lancamento.tipo === "receita" ? "Receita" : "Despesa"}
@@ -225,7 +237,7 @@ export default function TabelaResponsivaLancamentos({
                     {lancamento.formaPagamento}
                   </Badge>
                 </div>
-                
+
                 {(onEditar || onExcluir) && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -235,12 +247,14 @@ export default function TabelaResponsivaLancamentos({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       {onEditar && (
-                        <DropdownMenuItem onClick={() => onEditar(lancamento.id)}>
+                        <DropdownMenuItem
+                          onClick={() => onEditar(lancamento.id)}
+                        >
                           Editar
                         </DropdownMenuItem>
                       )}
                       {onExcluir && (
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => onExcluir(lancamento.id)}
                           className="text-red-600"
                         >
@@ -264,7 +278,9 @@ export default function TabelaResponsivaLancamentos({
                           : "text-red-600"
                       }`}
                     >
-                      {formatCurrency(lancamento.valorLiquido || lancamento.valor)}
+                      {formatCurrency(
+                        lancamento.valorLiquido || lancamento.valor,
+                      )}
                     </p>
                     {lancamento.valorLiquido &&
                       lancamento.valorLiquido !== lancamento.valor && (
@@ -277,7 +293,9 @@ export default function TabelaResponsivaLancamentos({
 
                 {/* Descrição */}
                 <div>
-                  <span className="text-sm text-muted-foreground">Descrição:</span>
+                  <span className="text-sm text-muted-foreground">
+                    Descrição:
+                  </span>
                   <div className="mt-1">
                     {lancamento.tipo === "receita" ? (
                       <div>
@@ -292,7 +310,9 @@ export default function TabelaResponsivaLancamentos({
                       </div>
                     ) : (
                       <div>
-                        <p className="font-medium text-sm">{lancamento.categoria}</p>
+                        <p className="font-medium text-sm">
+                          {lancamento.categoria}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           {lancamento.descricao}
                         </p>
@@ -307,13 +327,14 @@ export default function TabelaResponsivaLancamentos({
                     <Calendar className="h-3 w-3" />
                     <span>{formatDate(lancamento.data)}</span>
                   </div>
-                  
-                  {lancamento.tipo === "receita" && lancamento.tecnicoResponsavel && (
-                    <div className="flex items-center space-x-1 text-muted-foreground">
-                      <User className="h-3 w-3" />
-                      <span>{lancamento.tecnicoResponsavel}</span>
-                    </div>
-                  )}
+
+                  {lancamento.tipo === "receita" &&
+                    lancamento.tecnicoResponsavel && (
+                      <div className="flex items-center space-x-1 text-muted-foreground">
+                        <User className="h-3 w-3" />
+                        <span>{lancamento.tecnicoResponsavel}</span>
+                      </div>
+                    )}
                 </div>
               </div>
             </CardContent>

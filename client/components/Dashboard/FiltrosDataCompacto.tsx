@@ -1,6 +1,6 @@
-import React from 'react';
-import { useDashboard } from '../../contexts/DashboardContext';
-import FiltrosPeriodoCompacto from '../ui/filtros-periodo-compacto';
+import React from "react";
+import { useDashboard } from "../../contexts/DashboardContext";
+import FiltrosPeriodoCompacto from "../ui/filtros-periodo-compacto";
 
 export default function FiltrosDataCompacto() {
   const { filtros, setFiltros, isLoading } = useDashboard();
@@ -8,14 +8,14 @@ export default function FiltrosDataCompacto() {
   const handleDataInicioChange = (data: string) => {
     setFiltros({
       ...filtros,
-      dataInicio: new Date(data)
+      dataInicio: new Date(data),
     });
   };
 
   const handleDataFimChange = (data: string) => {
     setFiltros({
       ...filtros,
-      dataFim: new Date(data)
+      dataFim: new Date(data),
     });
   };
 
@@ -30,14 +30,14 @@ export default function FiltrosDataCompacto() {
     const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
     setFiltros({
       dataInicio: inicioMes,
-      dataFim: fimMes
+      dataFim: fimMes,
     });
   };
 
   return (
     <FiltrosPeriodoCompacto
-      dataInicio={filtros.dataInicio.toISOString().split('T')[0]}
-      dataFim={filtros.dataFim.toISOString().split('T')[0]}
+      dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
+      dataFim={filtros.dataFim.toISOString().split("T")[0]}
       onDataInicioChange={handleDataInicioChange}
       onDataFimChange={handleDataFimChange}
       onAplicar={handleAplicar}

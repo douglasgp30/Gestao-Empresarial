@@ -120,7 +120,6 @@ export default function ListaFuncionarios() {
 
   return (
     <div className="space-y-6">
-
       {/* Filtros */}
       <Card>
         <CardHeader>

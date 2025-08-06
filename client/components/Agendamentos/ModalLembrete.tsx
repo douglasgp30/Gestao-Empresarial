@@ -10,7 +10,15 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Badge } from "../ui/badge";
-import { Bell, Clock, User, Calendar, Phone, AlarmClock, CheckCircle } from "lucide-react";
+import {
+  Bell,
+  Clock,
+  User,
+  Calendar,
+  Phone,
+  AlarmClock,
+  CheckCircle,
+} from "lucide-react";
 import { Agendamento } from "../../../shared/types";
 
 interface ModalLembreteProps {
@@ -19,7 +27,11 @@ interface ModalLembreteProps {
   onFechar: () => void;
 }
 
-export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLembreteProps) {
+export default function ModalLembrete({
+  aberto,
+  agendamento,
+  onFechar,
+}: ModalLembreteProps) {
   const { marcarLembreteComoLido, adiarLembrete } = useAgendamentos();
   const [animacao, setAnimacao] = useState(false);
 
@@ -46,27 +58,27 @@ export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLe
 
   const formatarDataHora = () => {
     const data = new Date(agendamento.dataServico);
-    const dataFormatada = data.toLocaleDateString('pt-BR');
+    const dataFormatada = data.toLocaleDateString("pt-BR");
     return `${dataFormatada} às ${agendamento.horaServico}`;
   };
 
   const tempoRestante = () => {
     const agora = new Date();
     const dataServico = new Date(agendamento.dataServico);
-    const [hora, minutos] = agendamento.horaServico.split(':');
+    const [hora, minutos] = agendamento.horaServico.split(":");
     dataServico.setHours(parseInt(hora), parseInt(minutos));
-    
+
     const diferenca = dataServico.getTime() - agora.getTime();
     const minutosRestantes = Math.floor(diferenca / (1000 * 60));
-    
+
     if (minutosRestantes <= 0) {
       return "Agora";
     } else if (minutosRestantes < 60) {
-      return `em ${minutosRestantes} minuto${minutosRestantes === 1 ? '' : 's'}`;
+      return `em ${minutosRestantes} minuto${minutosRestantes === 1 ? "" : "s"}`;
     } else {
       const horas = Math.floor(minutosRestantes / 60);
       const mins = minutosRestantes % 60;
-      return `em ${horas}h${mins > 0 ? ` ${mins}min` : ''}`;
+      return `em ${horas}h${mins > 0 ? ` ${mins}min` : ""}`;
     }
   };
 
@@ -75,7 +87,9 @@ export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLe
       <DialogContent className="sm:max-w-[500px] border-yellow-200 bg-yellow-50/95">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-yellow-800">
-            <div className={`p-2 rounded-full bg-yellow-200 ${animacao ? 'animate-pulse' : ''}`}>
+            <div
+              className={`p-2 rounded-full bg-yellow-200 ${animacao ? "animate-pulse" : ""}`}
+            >
               <Bell className="h-5 w-5 text-yellow-700" />
             </div>
             Lembrete de Serviço
@@ -118,18 +132,24 @@ export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLe
                 {agendamento.tecnicoResponsavel && (
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{agendamento.tecnicoResponsavel}</span>
+                    <span className="text-sm">
+                      {agendamento.tecnicoResponsavel}
+                    </span>
                   </div>
                 )}
 
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-mono">***{agendamento.finalTelefoneCliente}</span>
+                  <span className="text-sm font-mono">
+                    ***{agendamento.finalTelefoneCliente}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Lembrete: {agendamento.tempoLembrete} min antes</span>
+                  <span className="text-sm">
+                    Lembrete: {agendamento.tempoLembrete} min antes
+                  </span>
                 </div>
               </div>
             </div>
@@ -137,7 +157,9 @@ export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLe
 
           {/* Ações de Resposta */}
           <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium mb-3 text-gray-700">O que você gostaria de fazer?</h4>
+            <h4 className="font-medium mb-3 text-gray-700">
+              O que você gostaria de fazer?
+            </h4>
             <div className="space-y-2">
               <Button
                 onClick={handleMarcarComoLido}
@@ -146,7 +168,7 @@ export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLe
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Marcar como Lido
               </Button>
-              
+
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant="outline"
@@ -171,7 +193,8 @@ export default function ModalLembrete({ aberto, agendamento, onFechar }: ModalLe
 
         <DialogFooter className="sm:justify-start">
           <p className="text-xs text-muted-foreground">
-            Este lembrete foi configurado para {agendamento.tempoLembrete} minutos antes do serviço.
+            Este lembrete foi configurado para {agendamento.tempoLembrete}{" "}
+            minutos antes do serviço.
           </p>
         </DialogFooter>
       </DialogContent>
@@ -189,14 +212,20 @@ export function GerenciadorLembretes() {
     };
 
     // Solicitar permissão para notificações
-    if ('Notification' in window && Notification.permission === 'default') {
+    if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
     }
 
-    window.addEventListener('mostrarLembreteAgendamento', handleLembrete as any);
-    
+    window.addEventListener(
+      "mostrarLembreteAgendamento",
+      handleLembrete as any,
+    );
+
     return () => {
-      window.removeEventListener('mostrarLembreteAgendamento', handleLembrete as any);
+      window.removeEventListener(
+        "mostrarLembreteAgendamento",
+        handleLembrete as any,
+      );
     };
   }, []);
 

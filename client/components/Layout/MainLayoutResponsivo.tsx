@@ -71,13 +71,17 @@ const sidebarItems: SidebarItem[] = [
   },
 ];
 
-function NavItem({ item, isActive, isMobile = false }: { 
-  item: SidebarItem; 
-  isActive: boolean; 
-  isMobile?: boolean; 
+function NavItem({
+  item,
+  isActive,
+  isMobile = false,
+}: {
+  item: SidebarItem;
+  isActive: boolean;
+  isMobile?: boolean;
 }) {
   const Icon = item.icon;
-  
+
   return (
     <Link
       to={item.href}
@@ -86,7 +90,7 @@ function NavItem({ item, isActive, isMobile = false }: {
         isActive
           ? "bg-accent text-accent-foreground"
           : "text-muted-foreground hover:text-foreground",
-        isMobile && "py-3"
+        isMobile && "py-3",
       )}
     >
       <Icon className="h-4 w-4" />
@@ -100,9 +104,12 @@ function NavItem({ item, isActive, isMobile = false }: {
   );
 }
 
-function MobileNav({ filteredItems, currentPath }: { 
-  filteredItems: SidebarItem[]; 
-  currentPath: string; 
+function MobileNav({
+  filteredItems,
+  currentPath,
+}: {
+  filteredItems: SidebarItem[];
+  currentPath: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -119,7 +126,7 @@ function MobileNav({ filteredItems, currentPath }: {
           <div className="p-6 border-b">
             <EmpresaLogo size="md" />
           </div>
-          
+
           {/* Navigation Mobile */}
           <nav className="flex-1 p-4 space-y-2">
             {filteredItems.map((item) => (
@@ -131,10 +138,14 @@ function MobileNav({ filteredItems, currentPath }: {
               />
             ))}
           </nav>
-          
+
           {/* Footer Mobile */}
           <div className="p-4 border-t">
-            <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => {}}>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3"
+              onClick={() => {}}
+            >
               <LogOut className="h-4 w-4" />
               Sair
             </Button>
@@ -145,9 +156,12 @@ function MobileNav({ filteredItems, currentPath }: {
   );
 }
 
-function DesktopSidebar({ filteredItems, currentPath }: { 
-  filteredItems: SidebarItem[]; 
-  currentPath: string; 
+function DesktopSidebar({
+  filteredItems,
+  currentPath,
+}: {
+  filteredItems: SidebarItem[];
+  currentPath: string;
 }) {
   return (
     <div className="hidden md:flex flex-col w-64 bg-background border-r">
@@ -155,7 +169,7 @@ function DesktopSidebar({ filteredItems, currentPath }: {
       <div className="p-6 border-b">
         <EmpresaLogo size="lg" />
       </div>
-      
+
       {/* Navigation Desktop */}
       <nav className="flex-1 p-4 space-y-2">
         {filteredItems.map((item) => (
@@ -166,10 +180,14 @@ function DesktopSidebar({ filteredItems, currentPath }: {
           />
         ))}
       </nav>
-      
+
       {/* Footer Desktop */}
       <div className="p-4 border-t">
-        <Button variant="ghost" className="w-full justify-start gap-3" onClick={() => {}}>
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-3"
+          onClick={() => {}}
+        >
           <LogOut className="h-4 w-4" />
           Sair do Sistema
         </Button>
@@ -199,7 +217,10 @@ export default function MainLayoutResponsivo() {
         <header className="h-14 border-b bg-background px-4 flex items-center justify-between">
           {/* Mobile Menu + Logo */}
           <div className="flex items-center gap-4">
-            <MobileNav filteredItems={filteredItems} currentPath={currentPath} />
+            <MobileNav
+              filteredItems={filteredItems}
+              currentPath={currentPath}
+            />
             <div className="md:hidden">
               <EmpresaLogo size="sm" variant="compact" />
             </div>

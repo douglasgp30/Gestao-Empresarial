@@ -15,7 +15,16 @@ import {
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import FiltrosPeriodoCompacto from "../ui/filtros-periodo-compacto";
-import { Filter, ChevronDown, X, FileText, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2 } from "lucide-react";
+import {
+  Filter,
+  ChevronDown,
+  X,
+  FileText,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
 
 const statusOptions = [
   { value: "pendente", label: "Pendente", color: "bg-yellow-500" },
@@ -59,14 +68,14 @@ export default function FiltrosContasCompacto() {
   const handleDataInicioChange = (data: string) => {
     setFiltros({
       ...filtros,
-      dataInicio: new Date(data)
+      dataInicio: new Date(data),
     });
   };
 
   const handleDataFimChange = (data: string) => {
     setFiltros({
       ...filtros,
-      dataFim: new Date(data)
+      dataFim: new Date(data),
     });
   };
 
@@ -100,8 +109,8 @@ export default function FiltrosContasCompacto() {
     <div className="space-y-3">
       {/* Filtros de Período */}
       <FiltrosPeriodoCompacto
-        dataInicio={filtros.dataInicio.toISOString().split('T')[0]}
-        dataFim={filtros.dataFim.toISOString().split('T')[0]}
+        dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
+        dataFim={filtros.dataFim.toISOString().split("T")[0]}
         onDataInicioChange={handleDataInicioChange}
         onDataFimChange={handleDataFimChange}
         onAplicar={handleAplicarPeriodo}
@@ -117,8 +126,7 @@ export default function FiltrosContasCompacto() {
               {formatCurrency(totaisSeguro.totalReceber)}
             </div>
             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-              <TrendingUp className="h-3 w-3" />
-              A Receber
+              <TrendingUp className="h-3 w-3" />A Receber
             </div>
           </div>
           <div className="text-center">
@@ -126,13 +134,16 @@ export default function FiltrosContasCompacto() {
               {formatCurrency(totaisSeguro.totalPagar)}
             </div>
             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-              <TrendingDown className="h-3 w-3" />
-              A Pagar
+              <TrendingDown className="h-3 w-3" />A Pagar
             </div>
           </div>
           <div className="text-center">
-            <div className={`text-lg font-bold ${totaisSeguro.totalReceber - totaisSeguro.totalPagar >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatCurrency(totaisSeguro.totalReceber - totaisSeguro.totalPagar)}
+            <div
+              className={`text-lg font-bold ${totaisSeguro.totalReceber - totaisSeguro.totalPagar >= 0 ? "text-green-600" : "text-red-600"}`}
+            >
+              {formatCurrency(
+                totaisSeguro.totalReceber - totaisSeguro.totalPagar,
+              )}
             </div>
             <div className="text-xs text-muted-foreground">Saldo</div>
           </div>
@@ -163,10 +174,12 @@ export default function FiltrosContasCompacto() {
                   {filtrosAtivos}
                 </Badge>
               )}
-              <ChevronDown className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? "rotate-180" : ""}`}
+              />
             </Button>
           </CollapsibleTrigger>
-          
+
           {filtrosAtivos > 0 && (
             <Button
               variant="ghost"
@@ -185,11 +198,16 @@ export default function FiltrosContasCompacto() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* Tipo */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Tipo</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Tipo
+                </label>
                 <Select
                   value={filtros.tipo || "ambos"}
                   onValueChange={(value) =>
-                    setFiltros({ ...filtros, tipo: value as "pagar" | "receber" | "ambos" })
+                    setFiltros({
+                      ...filtros,
+                      tipo: value as "pagar" | "receber" | "ambos",
+                    })
                   }
                 >
                   <SelectTrigger className="h-8 text-sm">
@@ -205,7 +223,9 @@ export default function FiltrosContasCompacto() {
 
               {/* Status */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Status</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Status
+                </label>
                 <Select
                   value={filtros.status || ""}
                   onValueChange={(value) =>
@@ -220,7 +240,9 @@ export default function FiltrosContasCompacto() {
                     {statusOptions.map((status) => (
                       <SelectItem key={status.value} value={status.value}>
                         <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${status.color}`} />
+                          <div
+                            className={`w-2 h-2 rounded-full ${status.color}`}
+                          />
                           {status.label}
                         </div>
                       </SelectItem>
@@ -229,14 +251,18 @@ export default function FiltrosContasCompacto() {
                 </Select>
               </div>
 
-
               {/* Fornecedor/Cliente */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Fornecedor/Cliente</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Fornecedor/Cliente
+                </label>
                 <Select
                   value={filtros.fornecedorCliente || ""}
                   onValueChange={(value) =>
-                    setFiltros({ ...filtros, fornecedorCliente: value === "" ? undefined : value })
+                    setFiltros({
+                      ...filtros,
+                      fornecedorCliente: value === "" ? undefined : value,
+                    })
                   }
                 >
                   <SelectTrigger className="h-8 text-sm">
@@ -244,11 +270,17 @@ export default function FiltrosContasCompacto() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">Todos</SelectItem>
-                    <SelectItem value="Empresa XYZ Ltda">Empresa XYZ Ltda</SelectItem>
+                    <SelectItem value="Empresa XYZ Ltda">
+                      Empresa XYZ Ltda
+                    </SelectItem>
                     <SelectItem value="João Silva">João Silva</SelectItem>
                     <SelectItem value="Maria Santos">Maria Santos</SelectItem>
-                    <SelectItem value="Posto de Gasolina ABC">Posto de Gasolina ABC</SelectItem>
-                    <SelectItem value="Fornecedor de Materiais Silva">Fornecedor de Materiais Silva</SelectItem>
+                    <SelectItem value="Posto de Gasolina ABC">
+                      Posto de Gasolina ABC
+                    </SelectItem>
+                    <SelectItem value="Fornecedor de Materiais Silva">
+                      Fornecedor de Materiais Silva
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>

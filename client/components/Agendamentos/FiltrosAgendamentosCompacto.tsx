@@ -20,24 +20,25 @@ import FiltrosPeriodoCompacto from "../ui/filtros-periodo-compacto";
 import { Filter, ChevronDown, X, Calendar } from "lucide-react";
 
 export default function FiltrosAgendamentosCompacto() {
-  const { filtros, setFiltros, agendamentosHoje, isLoading } = useAgendamentos();
+  const { filtros, setFiltros, agendamentosHoje, isLoading } =
+    useAgendamentos();
   const { setores } = useEntidades();
   const { funcionarios } = useFuncionarios();
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
-  const tecnicos = funcionarios.filter(f => f.ativo);
+  const tecnicos = funcionarios.filter((f) => f.ativo);
 
   const handleDataInicioChange = (data: string) => {
     setFiltros({
       ...filtros,
-      dataInicio: new Date(data)
+      dataInicio: new Date(data),
     });
   };
 
   const handleDataFimChange = (data: string) => {
     setFiltros({
       ...filtros,
-      dataFim: new Date(data)
+      dataFim: new Date(data),
     });
   };
 
@@ -72,15 +73,14 @@ export default function FiltrosAgendamentosCompacto() {
     <div className="space-y-3">
       {/* Filtros de Período */}
       <FiltrosPeriodoCompacto
-        dataInicio={filtros.dataInicio.toISOString().split('T')[0]}
-        dataFim={filtros.dataFim.toISOString().split('T')[0]}
+        dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
+        dataFim={filtros.dataFim.toISOString().split("T")[0]}
         onDataInicioChange={handleDataInicioChange}
         onDataFimChange={handleDataFimChange}
         onAplicar={handleAplicarPeriodo}
         onLimpar={limparFiltros}
         isLoading={isLoading}
       />
-
 
       {/* Filtros Avançados */}
       <Collapsible
@@ -97,10 +97,12 @@ export default function FiltrosAgendamentosCompacto() {
                   {filtrosAtivos}
                 </Badge>
               )}
-              <ChevronDown className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? "rotate-180" : ""}`}
+              />
             </Button>
           </CollapsibleTrigger>
-          
+
           {filtrosAtivos > 0 && (
             <Button
               variant="ghost"
@@ -119,7 +121,9 @@ export default function FiltrosAgendamentosCompacto() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* Status */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Status</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Status
+                </label>
                 <Select
                   value={filtros.status}
                   onValueChange={(value) =>
@@ -140,11 +144,16 @@ export default function FiltrosAgendamentosCompacto() {
 
               {/* Setor */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Setor</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Setor
+                </label>
                 <Select
                   value={filtros.setor || "todos"}
                   onValueChange={(value) =>
-                    setFiltros({ ...filtros, setor: value === "todos" ? undefined : value })
+                    setFiltros({
+                      ...filtros,
+                      setor: value === "todos" ? undefined : value,
+                    })
                   }
                 >
                   <SelectTrigger className="h-8 text-sm">
@@ -163,11 +172,16 @@ export default function FiltrosAgendamentosCompacto() {
 
               {/* Técnico */}
               <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Técnico</label>
+                <label className="text-xs font-medium text-muted-foreground">
+                  Técnico
+                </label>
                 <Select
                   value={filtros.tecnico || "todos"}
                   onValueChange={(value) =>
-                    setFiltros({ ...filtros, tecnico: value === "todos" ? undefined : value })
+                    setFiltros({
+                      ...filtros,
+                      tecnico: value === "todos" ? undefined : value,
+                    })
                   }
                 >
                   <SelectTrigger className="h-8 text-sm">

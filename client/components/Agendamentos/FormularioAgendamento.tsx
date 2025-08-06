@@ -31,11 +31,16 @@ interface FormularioAgendamentoProps {
   onClose?: () => void; // Callback quando modal fechar
 }
 
-export default function FormularioAgendamento({ children, agendamentoId, onClose }: FormularioAgendamentoProps) {
-  const { criarAgendamento, atualizarAgendamento, agendamentos } = useAgendamentos();
+export default function FormularioAgendamento({
+  children,
+  agendamentoId,
+  onClose,
+}: FormularioAgendamentoProps) {
+  const { criarAgendamento, atualizarAgendamento, agendamentos } =
+    useAgendamentos();
   const { setores, adicionarSetor, cidades, adicionarCidade } = useEntidades();
   const { funcionarios } = useFuncionarios();
-  
+
   const [aberto, setAberto] = useState(false);
   const [novoSetor, setNovoSetor] = useState("");
   const [mostrarNovoSetor, setMostrarNovoSetor] = useState(false);
@@ -43,11 +48,13 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
   const [mostrarNovaCidade, setMostrarNovaCidade] = useState(false);
 
   // Buscar agendamento para edição
-  const agendamentoEdicao = agendamentoId ? agendamentos.find(ag => ag.id === agendamentoId) : null;
+  const agendamentoEdicao = agendamentoId
+    ? agendamentos.find((ag) => ag.id === agendamentoId)
+    : null;
 
   // Estado do formulário
   const [formData, setFormData] = useState({
-    dataServico: new Date().toISOString().split('T')[0],
+    dataServico: new Date().toISOString().split("T")[0],
     horaServico: "09:00",
     descricaoServico: "",
     setor: "",
@@ -61,7 +68,7 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
   React.useEffect(() => {
     if (agendamentoEdicao) {
       setFormData({
-        dataServico: agendamentoEdicao.dataServico.toISOString().split('T')[0],
+        dataServico: agendamentoEdicao.dataServico.toISOString().split("T")[0],
         horaServico: agendamentoEdicao.horaServico,
         descricaoServico: agendamentoEdicao.descricaoServico,
         setor: agendamentoEdicao.setor,
@@ -76,7 +83,7 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
 
   const [erros, setErros] = useState<Record<string, string>>({});
 
-  const tecnicos = funcionarios.filter(f => f.ativo);
+  const tecnicos = funcionarios.filter((f) => f.ativo);
 
   const opcoesLembrete = [
     { valor: 10, label: "10 minutos antes" },
@@ -165,7 +172,7 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
 
   const resetarFormulario = () => {
     setFormData({
-      dataServico: new Date().toISOString().split('T')[0],
+      dataServico: new Date().toISOString().split("T")[0],
       horaServico: "09:00",
       descricaoServico: "",
       setor: "",
@@ -207,8 +214,8 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
     const horarios = [];
     for (let hora = 6; hora <= 22; hora++) {
       for (let minuto = 0; minuto < 60; minuto += 30) {
-        const h = hora.toString().padStart(2, '0');
-        const m = minuto.toString().padStart(2, '0');
+        const h = hora.toString().padStart(2, "0");
+        const m = minuto.toString().padStart(2, "0");
         horarios.push(`${h}:${m}`);
       }
     }
@@ -232,7 +239,7 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
           </Button>
         )}
       </DialogTrigger>
-      
+
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -240,10 +247,9 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
             {agendamentoId ? "Editar Agendamento" : "Novo Agendamento"}
           </DialogTitle>
           <DialogDescription>
-            {agendamentoId 
-              ? "Atualize as informações do agendamento." 
-              : "Preencha os dados para criar um novo agendamento de serviço."
-            }
+            {agendamentoId
+              ? "Atualize as informações do agendamento."
+              : "Preencha os dados para criar um novo agendamento de serviço."}
           </DialogDescription>
         </DialogHeader>
 
@@ -258,7 +264,9 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
               id="dataServico"
               type="date"
               value={formData.dataServico}
-              onChange={(e) => setFormData({ ...formData, dataServico: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, dataServico: e.target.value })
+              }
               className={erros.dataServico ? "border-red-500" : ""}
             />
             {erros.dataServico && (
@@ -272,8 +280,15 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
               <Clock className="h-4 w-4" />
               Hora do Serviço
             </Label>
-            <Select value={formData.horaServico} onValueChange={(value) => setFormData({ ...formData, horaServico: value })}>
-              <SelectTrigger className={erros.horaServico ? "border-red-500" : ""}>
+            <Select
+              value={formData.horaServico}
+              onValueChange={(value) =>
+                setFormData({ ...formData, horaServico: value })
+              }
+            >
+              <SelectTrigger
+                className={erros.horaServico ? "border-red-500" : ""}
+              >
                 <SelectValue placeholder="Selecione o horário" />
               </SelectTrigger>
               <SelectContent>
@@ -296,7 +311,9 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
               id="descricaoServico"
               placeholder="Ex: Desentupimento de fossa, Dedetização..."
               value={formData.descricaoServico}
-              onChange={(e) => setFormData({ ...formData, descricaoServico: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, descricaoServico: e.target.value })
+              }
               className={erros.descricaoServico ? "border-red-500" : ""}
               rows={3}
             />
@@ -309,11 +326,15 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
           <div className="space-y-2">
             <Label>Setor</Label>
             <div className="flex gap-2">
-              <Select 
-                value={formData.setor} 
-                onValueChange={(value) => setFormData({ ...formData, setor: value })}
+              <Select
+                value={formData.setor}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, setor: value })
+                }
               >
-                <SelectTrigger className={`flex-1 ${erros.setor ? "border-red-500" : ""}`}>
+                <SelectTrigger
+                  className={`flex-1 ${erros.setor ? "border-red-500" : ""}`}
+                >
                   <SelectValue placeholder="Selecione o setor" />
                 </SelectTrigger>
                 <SelectContent>
@@ -333,7 +354,7 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            
+
             {mostrarNovoSetor && (
               <div className="flex gap-2">
                 <Input
@@ -347,7 +368,7 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
                 </Button>
               </div>
             )}
-            
+
             {erros.setor && (
               <p className="text-sm text-red-500">{erros.setor}</p>
             )}
@@ -359,9 +380,13 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
             <div className="flex gap-2">
               <Select
                 value={formData.cidade}
-                onValueChange={(value) => setFormData({ ...formData, cidade: value })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, cidade: value })
+                }
               >
-                <SelectTrigger className={`flex-1 ${erros.cidade ? "border-red-500" : ""}`}>
+                <SelectTrigger
+                  className={`flex-1 ${erros.cidade ? "border-red-500" : ""}`}
+                >
                   <SelectValue placeholder="Selecione a cidade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -409,7 +434,12 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
             </Label>
             <Select
               value={formData.tecnicoResponsavel || "sem_tecnico"}
-              onValueChange={(value) => setFormData({ ...formData, tecnicoResponsavel: value === "sem_tecnico" ? "" : value })}
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  tecnicoResponsavel: value === "sem_tecnico" ? "" : value,
+                })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione o técnico" />
@@ -434,23 +464,27 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
               placeholder="Ex: 1234"
               value={formData.finalTelefoneCliente}
               onChange={(e) => {
-                const valor = e.target.value.replace(/\D/g, '').slice(0, 4);
+                const valor = e.target.value.replace(/\D/g, "").slice(0, 4);
                 setFormData({ ...formData, finalTelefoneCliente: valor });
               }}
               maxLength={4}
               className={erros.finalTelefoneCliente ? "border-red-500" : ""}
             />
             {erros.finalTelefoneCliente && (
-              <p className="text-sm text-red-500">{erros.finalTelefoneCliente}</p>
+              <p className="text-sm text-red-500">
+                {erros.finalTelefoneCliente}
+              </p>
             )}
           </div>
 
           {/* Tempo para Lembrete */}
           <div className="space-y-2">
             <Label>Lembrar quanto tempo antes</Label>
-            <Select 
-              value={formData.tempoLembrete.toString()} 
-              onValueChange={(value) => setFormData({ ...formData, tempoLembrete: parseInt(value) })}
+            <Select
+              value={formData.tempoLembrete.toString()}
+              onValueChange={(value) =>
+                setFormData({ ...formData, tempoLembrete: parseInt(value) })
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -467,7 +501,11 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
         </form>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+          >
             Cancelar
           </Button>
           <Button type="submit" onClick={handleSubmit}>

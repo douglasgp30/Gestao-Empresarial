@@ -22,7 +22,9 @@ import { Receipt } from "lucide-react";
 
 export default function ListaLancamentosSimples() {
   const { lancamentos, excluirLancamento, filtros, isLoading } = useCaixa();
-  const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<string | null>(null);
+  const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
+    string | null
+  >(null);
 
   // Filtrar lançamentos baseado nos filtros atuais
   const lancamentosFiltrados = React.useMemo(() => {
@@ -31,21 +33,17 @@ export default function ListaLancamentosSimples() {
       const dentroDataInicio = dataLancamento >= filtros.dataInicio;
       const dentroDataFim = dataLancamento <= filtros.dataFim;
       const tipoCorreto =
-        !filtros.tipo || 
-        filtros.tipo === "todos" || 
+        !filtros.tipo ||
+        filtros.tipo === "todos" ||
         lancamento.tipo === filtros.tipo;
       const formaPagamentoCorreta =
         !filtros.formaPagamento ||
         lancamento.formaPagamento === filtros.formaPagamento;
       const tecnicoCorreto =
-        !filtros.tecnico ||
-        lancamento.tecnicoResponsavel === filtros.tecnico;
+        !filtros.tecnico || lancamento.tecnicoResponsavel === filtros.tecnico;
       const campanhaCorreta =
-        !filtros.campanha ||
-        lancamento.campanha === filtros.campanha;
-      const setorCorreto =
-        !filtros.setor ||
-        lancamento.setor === filtros.setor;
+        !filtros.campanha || lancamento.campanha === filtros.campanha;
+      const setorCorreto = !filtros.setor || lancamento.setor === filtros.setor;
 
       return (
         dentroDataInicio &&
