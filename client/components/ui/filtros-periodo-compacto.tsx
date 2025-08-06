@@ -25,6 +25,7 @@ export default function FiltrosPeriodoCompacto({
   onLimpar,
   isLoading = false,
   className = "",
+  filtroInicialDashboard = false,
 }: FiltrosPeriodoCompactoProps) {
   return (
     <div className={`bg-muted/30 rounded-lg p-3 border ${className}`}>
