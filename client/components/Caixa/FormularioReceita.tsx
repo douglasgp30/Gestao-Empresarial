@@ -30,7 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { DollarSign, Plus, TrendingUp, Calculator } from "lucide-react";
+import { DollarSign, TrendingUp, Calculator } from "lucide-react";
 
 const formasPagamento = [
   "Dinheiro",
