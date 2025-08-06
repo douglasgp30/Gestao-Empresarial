@@ -293,7 +293,7 @@ export default function Dashboard() {
               icon={Target}
               trend="up"
               isLoading={isLoading}
-              variant="default"
+              variant="success"
             />
             <StatCard
               title="Total a Pagar"
