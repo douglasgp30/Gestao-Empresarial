@@ -94,35 +94,6 @@ export default function FiltrosAgendamentosCompacto() {
         isLoading={isLoading}
       />
 
-      {/* Estatísticas Rápidas */}
-      <div className="bg-background border rounded-lg p-3">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-          <div className="text-center">
-            <div className="text-lg font-bold text-blue-600">
-              {stats.hoje}
-            </div>
-            <div className="text-xs text-muted-foreground">Hoje</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-orange-600">
-              {stats.pendentes}
-            </div>
-            <div className="text-xs text-muted-foreground">Pendentes</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-green-600">
-              {stats.hoje - stats.pendentes}
-            </div>
-            <div className="text-xs text-muted-foreground">Concluídos</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-purple-600">
-              {setores.length}
-            </div>
-            <div className="text-xs text-muted-foreground">Setores</div>
-          </div>
-        </div>
-      </div>
 
       {/* Filtros Avançados */}
       <Collapsible
