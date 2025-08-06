@@ -74,10 +74,10 @@ export default function FiltrosCaixaCompacto() {
   const contarFiltrosAtivos = () => {
     let count = 0;
     if (filtros.tipo !== "todos") count++;
-    if (filtros.formaPagamento) count++;
-    if (filtros.tecnico) count++;
-    if (filtros.campanha) count++;
-    if (filtros.setor) count++;
+    if (filtros.formaPagamento && filtros.formaPagamento !== "todas") count++;
+    if (filtros.tecnico && filtros.tecnico !== "todos") count++;
+    if (filtros.campanha && filtros.campanha !== "todas") count++;
+    if (filtros.setor && filtros.setor !== "todos") count++;
     return count;
   };
 
