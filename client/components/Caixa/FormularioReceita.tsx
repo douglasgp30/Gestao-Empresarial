@@ -57,6 +57,7 @@ export default function FormularioReceita() {
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
   const [isNewSetorOpen, setIsNewSetorOpen] = useState(false);
   const [isNewCidadeOpen, setIsNewCidadeOpen] = useState(false);
+  const [isNewDescricaoOpen, setIsNewDescricaoOpen] = useState(false);
   const [isBoletoModalOpen, setIsBoletoModalOpen] = useState(false);
   const [boletoData, setBoletoData] = useState({
     valorTotal: 0,
