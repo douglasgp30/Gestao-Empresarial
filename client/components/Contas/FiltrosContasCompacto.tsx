@@ -179,16 +179,16 @@ export default function FiltrosContasCompacto() {
               <div className="space-y-1">
                 <label className="text-xs font-medium text-muted-foreground">Tipo</label>
                 <Select
-                  value={filtros.tipo || ""}
+                  value={filtros.tipo || "ambos"}
                   onValueChange={(value) =>
-                    setFiltros({ ...filtros, tipo: value })
+                    setFiltros({ ...filtros, tipo: value as "pagar" | "receber" | "ambos" })
                   }
                 >
                   <SelectTrigger className="h-8 text-sm">
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="ambos">Todos</SelectItem>
                     <SelectItem value="pagar">Contas a Pagar</SelectItem>
                     <SelectItem value="receber">Contas a Receber</SelectItem>
                   </SelectContent>
