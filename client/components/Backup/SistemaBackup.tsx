@@ -182,7 +182,7 @@ export default function SistemaBackup() {
                   </div>
 
                   <Button
-                    onClick={simularBackup}
+                    onClick={executarBackup}
                     className="w-full"
                     disabled={backupStatus.isRunning}
                   >
