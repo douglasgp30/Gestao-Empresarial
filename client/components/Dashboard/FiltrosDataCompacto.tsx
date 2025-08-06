@@ -27,9 +27,10 @@ export default function FiltrosDataCompacto() {
   const handleLimpar = () => {
     const hoje = new Date();
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
     setFiltros({
       dataInicio: inicioMes,
-      dataFim: hoje
+      dataFim: fimMes
     });
   };
 
