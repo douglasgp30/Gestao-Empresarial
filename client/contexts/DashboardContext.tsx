@@ -113,7 +113,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         novoFiltro = { dataInicio: getUltimos30Dias(), dataFim: getHoje() };
         break;
       case "mesAtual":
-        novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getHoje() };
+        novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getFimDoMes() };
         break;
       default:
         novoFiltro = filtros;
