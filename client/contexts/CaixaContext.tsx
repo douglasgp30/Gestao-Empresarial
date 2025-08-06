@@ -38,11 +38,18 @@ interface CaixaContextType {
 
 const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 
-// Mock data inicial
+// Mock data inicial - datas variadas para teste dos filtros
+const hoje = new Date();
+const ontem = new Date(hoje.getTime() - 24 * 60 * 60 * 1000);
+const anteontem = new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000);
+const cincodiasatras = new Date(hoje.getTime() - 5 * 24 * 60 * 60 * 1000);
+const dezdiasatras = new Date(hoje.getTime() - 10 * 24 * 60 * 60 * 1000);
+const vintediasatras = new Date(hoje.getTime() - 20 * 24 * 60 * 60 * 1000);
+
 const mockLancamentos: LancamentoCaixa[] = [
   {
     id: "1",
-    data: new Date(2024, 11, 1),
+    data: hoje,
     tipo: "receita",
     valor: 450.0,
     valorLiquido: 450.0,
@@ -51,12 +58,12 @@ const mockLancamentos: LancamentoCaixa[] = [
     comissao: 67.5,
     notaFiscal: false,
     setor: "Residencial",
-    campanha: "Desconto Dezembro",
+    campanha: "Promoção Janeiro",
     funcionarioId: "2",
   },
   {
     id: "2",
-    data: new Date(2024, 11, 2),
+    data: ontem,
     tipo: "receita",
     valor: 280.0,
     valorLiquido: 280.0,
@@ -69,7 +76,7 @@ const mockLancamentos: LancamentoCaixa[] = [
   },
   {
     id: "3",
-    data: new Date(2024, 11, 3),
+    data: anteontem,
     tipo: "despesa",
     valor: 120.5,
     formaPagamento: "Cartão",
@@ -79,7 +86,7 @@ const mockLancamentos: LancamentoCaixa[] = [
   },
   {
     id: "4",
-    data: new Date(2024, 11, 4),
+    data: cincodiasatras,
     tipo: "receita",
     valor: 380.0,
     valorLiquido: 357.2,
@@ -90,6 +97,29 @@ const mockLancamentos: LancamentoCaixa[] = [
     descontoImposto: 22.8,
     setor: "Residencial",
     funcionarioId: "2",
+  },
+  {
+    id: "5",
+    data: dezdiasatras,
+    tipo: "despesa",
+    valor: 85.0,
+    formaPagamento: "Pix",
+    categoria: "Material",
+    descricao: "Compra de ferramentas",
+    funcionarioId: "1",
+  },
+  {
+    id: "6",
+    data: vintediasatras,
+    tipo: "receita",
+    valor: 620.0,
+    valorLiquido: 620.0,
+    formaPagamento: "Transferência",
+    tecnicoResponsavel: "Roberto Lima",
+    comissao: 93.0,
+    notaFiscal: false,
+    setor: "Industrial",
+    funcionarioId: "4",
   },
 ];
 
