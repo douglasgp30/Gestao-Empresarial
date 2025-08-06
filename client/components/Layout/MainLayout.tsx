@@ -43,6 +43,11 @@ const sidebarItems: SidebarItem[] = [
     icon: FileText,
   },
   {
+    title: "Agendamentos",
+    href: "/agendamentos",
+    icon: Calendar,
+  },
+  {
     title: "Funcionários",
     href: "/funcionarios",
     icon: Users,
