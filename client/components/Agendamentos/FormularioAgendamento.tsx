@@ -151,6 +151,7 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
       horaServico: "09:00",
       descricaoServico: "",
       setor: "",
+      cidade: "",
       tecnicoResponsavel: "",
       finalTelefoneCliente: "",
       tempoLembrete: 30,
