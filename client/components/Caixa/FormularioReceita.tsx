@@ -815,7 +815,7 @@ export default function FormularioReceita() {
                                 nome: e.target.value,
                               })
                             }
-                            placeholder="Ex: Promoç��o Janeiro"
+                            placeholder="Ex: Promoção Janeiro"
                           />
                         </div>
                         <div className="space-y-2">
@@ -1061,8 +1061,15 @@ export default function FormularioReceita() {
               >
                 Cancelar
               </Button>
-              <Button type="submit" className="flex-1">
-                Lançar Receita
+              <Button
+                type="submit"
+                className="flex-1"
+                disabled={formData.notaFiscal && !notaFiscalProcessada}
+              >
+                {formData.notaFiscal && !notaFiscalProcessada
+                  ? "Aguardando Nota Fiscal..."
+                  : "Lançar Receita"
+                }
               </Button>
             </div>
           </form>
