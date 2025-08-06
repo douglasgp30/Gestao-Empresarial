@@ -29,6 +29,7 @@ import {
   Calculator,
   Banknote,
   Wallet,
+  Info,
 } from "lucide-react";
 
 function formatCurrency(value: number) {
