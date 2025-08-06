@@ -42,6 +42,11 @@ function getHoje(): Date {
   return new Date();
 }
 
+function getFimDoMes(): Date {
+  const hoje = new Date();
+  return new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+}
+
 function getUltimos7Dias(): Date {
   const hoje = new Date();
   return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 6);
