@@ -155,6 +155,62 @@ const mockFornecedores: Fornecedor[] = [
   },
 ];
 
+const mockSetores: Setor[] = [
+  {
+    id: "1",
+    nome: "Residencial",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "2",
+    nome: "Comercial",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "3",
+    nome: "Industrial",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "4",
+    nome: "Condomínio",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "5",
+    nome: "Emergência",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+];
+
+const mockCidades: Cidade[] = [
+  {
+    id: "1",
+    nome: "São Paulo",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "2",
+    nome: "Santos",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "3",
+    nome: "São Bernardo do Campo",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "4",
+    nome: "Santo André",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "5",
+    nome: "Diadema",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+];
+
 export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [descricoes, setDescricoes] = useState<Descricao[]>(mockDescricoes);
   const [formasPagamento, setFormasPagamento] =
