@@ -478,7 +478,7 @@ export default function ListaContas() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Dialog de confirmação de exclus��o */}
+      {/* Dialog de confirmação de exclusão */}
       <AlertDialog
         open={!!contaParaExcluir}
         onOpenChange={() => setContaParaExcluir(null)}
