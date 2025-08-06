@@ -22,6 +22,7 @@ export interface LancamentoCaixa {
   notaFiscal: boolean;
   descontoImposto?: number;
   setor?: string;
+  cidade?: string;
   campanha?: string;
   categoria?: string;
   descricao?: string;
