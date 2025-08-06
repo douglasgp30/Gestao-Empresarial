@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { RelatoriosProvider } from "../contexts/RelatoriosContext";
-import FiltrosRelatorios from "../components/Relatorios/FiltrosRelatorios";
+import FiltrosRelatoriosCompacto from "../components/Relatorios/FiltrosRelatoriosCompacto";
 import RelatorioFinanceiro from "../components/Relatorios/RelatorioFinanceiro";
 import RelatorioTecnicos from "../components/Relatorios/RelatorioTecnicos";
 import {
