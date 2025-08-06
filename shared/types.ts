@@ -1,10 +1,36 @@
+export interface Permissao {
+  id: string;
+  nome: string;
+  descricao: string;
+  modulo: string;
+}
+
+export interface FuncionarioPermissoes {
+  acessarDashboard: boolean;
+  verCaixa: boolean;
+  lancarReceita: boolean;
+  lancarDespesa: boolean;
+  editarLancamentos: boolean;
+  verContas: boolean;
+  lancarContasPagar: boolean;
+  lancarContasReceber: boolean;
+  marcarContasPagas: boolean;
+  acessarConfiguracoes: boolean;
+  fazerBackupManual: boolean;
+  gerarRelatorios: boolean;
+  verCadastros: boolean;
+  gerenciarFuncionarios: boolean;
+  alterarPermissoes: boolean;
+}
+
 export interface Funcionario {
   id: string;
   nomeCompleto: string;
-  login: string;
-  senha: string;
-  permissaoAcesso: boolean;
-  tipoAcesso: "Administrador" | "Operador";
+  login?: string;
+  senha?: string;
+  temAcessoSistema: boolean;
+  tipoAcesso?: "Administrador" | "Operador";
+  permissoes?: FuncionarioPermissoes;
   percentualComissao: number;
   dataCadastro: Date;
   ativo: boolean;
