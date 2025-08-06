@@ -1,0 +1,48 @@
+import React from 'react';
+import { useDashboard } from '../../contexts/DashboardContext';
+import FiltrosPeriodoCompacto from '../ui/filtros-periodo-compacto';
+
+export default function FiltrosDataCompacto() {
+  const { filtros, setFiltros, isLoading } = useDashboard();
+
+  const handleDataInicioChange = (data: string) => {
+    setFiltros({
+      ...filtros,
+      dataInicio: new Date(data)
+    });
+  };
+
+  const handleDataFimChange = (data: string) => {
+    setFiltros({
+      ...filtros,
+      dataFim: new Date(data)
+    });
+  };
+
+  const handleAplicar = () => {
+    // Força atualização dos dados
+    setFiltros({ ...filtros });
+  };
+
+  const handleLimpar = () => {
+    const hoje = new Date();
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    setFiltros({
+      dataInicio: inicioMes,
+      dataFim: hoje
+    });
+  };
+
+  return (
+    <FiltrosPeriodoCompacto
+      dataInicio={filtros.dataInicio.toISOString().split('T')[0]}
+      dataFim={filtros.dataFim.toISOString().split('T')[0]}
+      onDataInicioChange={handleDataInicioChange}
+      onDataFimChange={handleDataFimChange}
+      onAplicar={handleAplicar}
+      onLimpar={handleLimpar}
+      isLoading={isLoading}
+      className="mb-4"
+    />
+  );
+}
