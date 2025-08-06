@@ -21,6 +21,10 @@ export interface FuncionarioPermissoes {
   verCadastros: boolean;
   gerenciarFuncionarios: boolean;
   alterarPermissoes: boolean;
+  acessarAgendamentos: boolean;
+  criarAgendamento: boolean;
+  editarAgendamento: boolean;
+  excluirAgendamento: boolean;
 }
 
 export interface Funcionario {
@@ -205,4 +209,34 @@ export interface BackupResult {
   caminhoCompleto?: string;
   dataBackup: Date;
   erro?: string;
+}
+
+export interface Agendamento {
+  id: string;
+  dataServico: Date;
+  horaServico: string; // formato HH:mm
+  descricaoServico: string;
+  setor: string;
+  tecnicoResponsavel?: string;
+  finalTelefoneCliente: string; // 4 dígitos
+  tempoLembrete: number; // em minutos
+  status: "agendado" | "concluido" | "cancelado";
+  dataCriacao: Date;
+  funcionarioId: string;
+  lembreteEnviado?: boolean;
+}
+
+export interface FiltrosAgendamento {
+  dataInicio: Date;
+  dataFim: Date;
+  setor?: string;
+  tecnico?: string;
+  status: "todos" | "agendado" | "concluido" | "cancelado";
+}
+
+export interface LembreteAgendamento {
+  agendamentoId: string;
+  dataHoraLembrete: Date;
+  lido: boolean;
+  adiado?: boolean;
 }
