@@ -217,6 +217,7 @@ export interface Agendamento {
   horaServico: string; // formato HH:mm
   descricaoServico: string;
   setor: string;
+  cidade: string;
   tecnicoResponsavel?: string;
   finalTelefoneCliente: string; // 4 dígitos
   tempoLembrete: number; // em minutos
