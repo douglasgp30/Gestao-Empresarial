@@ -111,23 +111,26 @@ export default function FormularioReceita() {
       return;
     }
 
+    // Calcular valor líquido (valor real recebido pela empresa)
     let valorLiquido = valor;
     let descontoImposto = 0;
 
-    // Aplicar desconto de imposto se nota fiscal
+    // 🧾 Nota fiscal: descontar imposto de 6%
     if (formData.notaFiscal) {
       const percentualImposto = 6; // 6% de imposto
       descontoImposto = valor * (percentualImposto / 100);
       valorLiquido = valor - descontoImposto;
     }
 
-    // Aplicar taxa do cartão se for cartão
+    // 💳 Cartão de crédito/débito: descontar taxa da maquininha
     if (formData.formaPagamento.includes("Cartão")) {
       const taxaCartao =
         formData.formaPagamento === "Cartão de Débito" ? 2 : 3.5;
       const desconto = valorLiquido * (taxaCartao / 100);
       valorLiquido = valorLiquido - desconto;
     }
+
+    // 💰 Demais formas (Dinheiro, Pix, Boleto, Transferência): valor cheio
 
     // Se for boleto, abrir modal de parcelamento
     if (formData.formaPagamento === "Boleto") {
