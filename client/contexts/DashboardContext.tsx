@@ -74,22 +74,22 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
-    totalReceitas: 0,
-    totalDespesas: 0,
-    saldoFinal: 0,
-    totalReceitasRecebidas: 0,
-    totalDespesasPagas: 0,
-    saldoGeralRecebidoPago: 0,
-    totalContasRecebidasPagas: 0,
-    totalContasPagasPagas: 0,
-    saldoContas: 0,
-    totalValorContasAtrasadas: 0,
+    saldoGeralConsolidado: 0,
+    totalReceitasCaixa: 0,
+    totalDespesasCaixa: 0,
+    saldoCaixa: 0,
+    totalContasRecebidas: 0,
+    totalContasPagas: 0,
+    saldoContasPagas: 0,
+    totalGeralAReceber: 0,
+    totalGeralAPagar: 0,
+    saldoGeralContas: 0,
+    valorContasPagarAtrasadas: 0,
     qtdContasPagarAtrasadas: 0,
+    valorContasReceberAtrasadas: 0,
     qtdContasReceberAtrasadas: 0,
     contasVencendoHoje: 0,
     contasAtrasadas: 0,
-    totalContasPagar: 0,
-    totalContasReceber: 0,
   });
 
   const setFiltroRapido = (
