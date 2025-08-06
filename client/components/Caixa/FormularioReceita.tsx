@@ -175,9 +175,10 @@ export default function FormularioReceita() {
       tipo: "receita",
       data: new Date(formData.data),
       valor,
-      valorLiquido,
+      valorLiquido, // Valor que realmente fica para a empresa (já descontada a comissão)
       formaPagamento: formData.formaPagamento,
       tecnicoResponsavel: formData.tecnicoResponsavel,
+      comissao: comissaoFuncionario, // Valor da comissão calculada
       notaFiscal: formData.notaFiscal,
       descontoImposto: formData.notaFiscal ? descontoImposto : undefined,
       setor: formData.setor,
