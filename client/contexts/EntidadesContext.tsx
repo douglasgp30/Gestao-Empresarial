@@ -318,6 +318,7 @@ const mockCidades: Cidade[] = [
 
 export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [descricoes, setDescricoes] = useState<Descricao[]>(mockDescricoes);
+  const [categorias, setCategorias] = useState<Categoria[]>(mockCategorias);
   const [formasPagamento, setFormasPagamento] =
     useState<FormaPagamento[]>(mockFormasPagamento);
   const [clientes, setClientes] = useState<Cliente[]>(mockClientes);
