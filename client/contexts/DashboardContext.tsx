@@ -174,9 +174,14 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       }
 
       // LINHA 1 - Totais do Módulo Caixa (dinâmicos com filtros)
+      // Usar sempre valor líquido para receitas (valor real recebido pela empresa)
       const totalReceitasCaixa = lancamentosFiltrados
         .filter((l) => l.tipo === "receita")
-        .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+        .reduce((total, l) => {
+          // Para receitas, sempre usar valorLiquido se disponível
+          // valorLiquido já considera descontos de cartão, nota fiscal, etc.
+          return total + (l.valorLiquido || l.valor);
+        }, 0);
 
       const totalDespesasCaixa = lancamentosFiltrados
         .filter((l) => l.tipo === "despesa")
