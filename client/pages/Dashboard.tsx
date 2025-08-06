@@ -219,7 +219,7 @@ export default function Dashboard() {
               icon={TrendingUp}
               trend="up"
               isLoading={isLoading}
-              variant="default"
+              variant="success"
             />
             <StatCard
               title="Total de Despesas"
