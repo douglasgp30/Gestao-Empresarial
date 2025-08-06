@@ -123,9 +123,10 @@ export default function FormularioReceita() {
       return;
     }
 
-    // Calcular valor líquido (valor real recebido pela empresa)
+    // Calcular valor líquido (valor real que fica para a empresa após todas as deduções)
     let valorLiquido = valor;
     let descontoImposto = 0;
+    let comissaoFuncionario = 0;
 
     // 🧾 Nota fiscal: descontar imposto de 6%
     if (formData.notaFiscal) {
@@ -134,15 +135,27 @@ export default function FormularioReceita() {
       valorLiquido = valor - descontoImposto;
     }
 
-    // 💳 Cartão de crédito/débito: descontar taxa da maquininha
+    // 💳 Cartão de crédito/débito: usar valor que entrou ou calcular taxa
     if (formData.formaPagamento.includes("Cartão")) {
-      const taxaCartao =
-        formData.formaPagamento === "Cartão de Débito" ? 2 : 3.5;
-      const desconto = valorLiquido * (taxaCartao / 100);
-      valorLiquido = valorLiquido - desconto;
+      if (formData.valorEntrou && parseFloat(formData.valorEntrou) > 0) {
+        // Usar o valor que realmente entrou
+        valorLiquido = parseFloat(formData.valorEntrou);
+      } else {
+        // Calcular com taxa padrão
+        const taxaCartao = formData.formaPagamento === "Cartão de Débito" ? 2 : 3.5;
+        const desconto = valorLiquido * (taxaCartao / 100);
+        valorLiquido = valorLiquido - desconto;
+      }
     }
 
-    // 💰 Demais formas (Dinheiro, Pix, Boleto, Transferência): valor cheio
+    // 👷 Comissão do funcionário: abater do valor líquido
+    if (formData.tecnicoResponsavel) {
+      const percentualComissao = 15; // 15% de comissão padrão (pode vir das configurações)
+      comissaoFuncionario = valorLiquido * (percentualComissao / 100);
+      valorLiquido = valorLiquido - comissaoFuncionario; // Abater comissão do valor da empresa
+    }
+
+    // 💰 Demais formas (Dinheiro, Pix, Boleto, Transferência): valor cheio menos comissão
 
     // Se for boleto, abrir modal de parcelamento
     if (formData.formaPagamento === "Boleto") {
