@@ -200,9 +200,11 @@ export default function FormularioDespesa() {
                 <SelectValue placeholder="Selecione a categoria" />
               </SelectTrigger>
               <SelectContent>
-                {categoriasDespesa.map((categoria) => (
-                  <SelectItem key={categoria} value={categoria}>
-                    {categoria}
+                {categorias
+                  .filter(cat => cat.tipo === 'despesa')
+                  .map((categoria) => (
+                  <SelectItem key={categoria.id} value={categoria.nome}>
+                    {categoria.nome}
                   </SelectItem>
                 ))}
               </SelectContent>
