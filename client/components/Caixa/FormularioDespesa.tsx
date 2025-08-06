@@ -58,8 +58,14 @@ export default function FormularioDespesa() {
     valor: "",
     formaPagamento: "",
     categoria: "",
-    descricao: "",
+    descricaoServico: "",
     observacoes: "",
+  });
+
+  const [novaDescricao, setNovaDescricao] = useState({
+    nome: "",
+    categoria: "",
+    tipo: "despesa" as 'receita' | 'despesa',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
