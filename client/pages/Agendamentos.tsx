@@ -37,7 +37,7 @@ export default function Agendamentos() {
         {/* Filtros */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Filtros e Estatísticas</CardTitle>
+            <CardTitle className="text-base">Filtros</CardTitle>
             <CardDescription>
               Filtre os agendamentos por período, status, setor ou técnico
             </CardDescription>
