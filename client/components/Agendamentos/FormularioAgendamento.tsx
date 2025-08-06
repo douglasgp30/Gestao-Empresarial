@@ -467,7 +467,7 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
         </form>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setAberto(false)}>
+          <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
             Cancelar
           </Button>
           <Button type="submit" onClick={handleSubmit}>
