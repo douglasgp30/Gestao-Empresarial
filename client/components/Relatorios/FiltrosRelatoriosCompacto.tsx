@@ -86,12 +86,12 @@ export default function FiltrosRelatoriosCompacto() {
         dataInicio: inicioMes,
         dataFim: hoje,
       },
-      tipo: undefined,
-      formaPagamento: undefined,
-      tecnico: undefined,
-      setor: undefined,
-      campanha: undefined,
-      status: undefined,
+      tipo: "todos",
+      formaPagamento: "todas",
+      tecnico: "todos",
+      setor: "todos",
+      campanha: "todas",
+      status: "todos",
     });
   };
 
