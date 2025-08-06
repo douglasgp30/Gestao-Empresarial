@@ -98,6 +98,19 @@ export default function FiltrosPeriodoCompacto({
     setFiltroAtivo(filtroCalculado);
   }, [dataInicio, dataFim]);
 
+  // Inicializar com filtro correto na primeira renderização
+  React.useEffect(() => {
+    const filtroInicial = determinarFiltroAtivo();
+    if (!filtroInicial) {
+      // Se não há filtro ativo, definir padrão
+      if (filtroInicialDashboard) {
+        setFiltroAtivo("este-mes");
+      } else {
+        setFiltroAtivo("hoje");
+      }
+    }
+  }, []);
+
   // Detectar quando o usuário altera as datas manualmente (não por botão)
   const handleDataInicioChangeInterno = (data: string) => {
     onDataInicioChange(data);
