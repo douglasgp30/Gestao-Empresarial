@@ -224,7 +224,7 @@ export default function FiltrosRelatoriosCompacto() {
                     <SelectValue placeholder="Todos os tipos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos os tipos</SelectItem>
+                    <SelectItem value="todos">Todos os tipos</SelectItem>
                     <SelectItem value="receitas">Receitas</SelectItem>
                     <SelectItem value="despesas">Despesas</SelectItem>
                     <SelectItem value="ambos">Receitas e Despesas</SelectItem>
