@@ -26,7 +26,7 @@ function RelatoriosContent() {
       </div>
 
       {/* Filtros Globais */}
-      <FiltrosRelatorios />
+      <FiltrosRelatoriosCompacto />
 
       {/* Relatórios por Abas */}
       <Tabs defaultValue="financeiro" className="space-y-6">
