@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
+import TabelaResponsivaLancamentos from "../ui/tabela-responsiva";
 import {
   Card,
   CardContent,
