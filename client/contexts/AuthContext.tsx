@@ -58,14 +58,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     setIsLoading(true);
-    
+
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     const funcionario = mockFuncionarios.find(
-      f => f.login === credentials.login && 
-           f.senha === credentials.senha && 
-           f.permissaoAcesso && 
+      f => f.login === credentials.login &&
+           f.senha === credentials.senha &&
+           f.permissaoAcesso &&
            f.ativo
     );
 
@@ -77,15 +77,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tipoAcesso: funcionario.tipoAcesso,
         permissaoAcesso: funcionario.permissaoAcesso
       };
-      
+
       setUser(authUser);
       localStorage.setItem('auth_user', JSON.stringify(authUser));
+
+      // Verificar se deve fazer backup automático
+      await performAutomaticBackupIfNeeded();
+
       setIsLoading(false);
       return true;
     }
-    
+
     setIsLoading(false);
     return false;
+  };
+
+  const performAutomaticBackupIfNeeded = async () => {
+    try {
+      if (BackupService.shouldPerformAutomaticBackup()) {
+        const config = BackupService.getBackupConfig();
+
+        if (!config.localBackup.trim()) {
+          // Local não configurado - mostrar alerta
+          BackupService.showConfigurationAlert();
+          BackupService.markLoginToday(); // Marcar para não mostrar novamente hoje
+          return;
+        }
+
+        // Executar backup automático em background
+        setTimeout(async () => {
+          try {
+            const result = await BackupService.performBackup();
+
+            if (result.sucesso) {
+              const hora = result.dataBackup.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+              BackupService.showBackupAlert(`✅ Backup automático realizado com sucesso em ${hora}`);
+            } else {
+              BackupService.showBackupAlert(
+                `Erro no backup automático: ${result.erro}`,
+                true
+              );
+            }
+          } catch (error) {
+            console.error('Erro no backup automático:', error);
+            BackupService.showBackupAlert(
+              'Erro inesperado durante o backup automático',
+              true
+            );
+          }
+        }, 2000); // Aguardar 2 segundos após login para não impactar UX
+
+        // Marcar login de hoje independente do resultado do backup
+        BackupService.markLoginToday();
+      } else {
+        // Apenas marcar login se não precisar fazer backup
+        BackupService.markLoginToday();
+      }
+    } catch (error) {
+      console.error('Erro ao verificar backup automático:', error);
+      BackupService.markLoginToday(); // Marcar para não tentar novamente hoje
+    }
   };
 
   const logout = () => {
