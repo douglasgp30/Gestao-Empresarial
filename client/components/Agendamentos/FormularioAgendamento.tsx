@@ -38,6 +38,8 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
   const [aberto, setAberto] = useState(false);
   const [novoSetor, setNovoSetor] = useState("");
   const [mostrarNovoSetor, setMostrarNovoSetor] = useState(false);
+  const [novaCidade, setNovaCidade] = useState("");
+  const [mostrarNovaCidade, setMostrarNovaCidade] = useState(false);
 
   // Buscar agendamento para edição
   const agendamentoEdicao = agendamentoId ? agendamentos.find(ag => ag.id === agendamentoId) : null;
