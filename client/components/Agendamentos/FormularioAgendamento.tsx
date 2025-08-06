@@ -312,9 +312,9 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
               <User className="h-4 w-4" />
               Técnico (Opcional)
             </Label>
-            <Select 
-              value={formData.tecnicoResponsavel} 
-              onValueChange={(value) => setFormData({ ...formData, tecnicoResponsavel: value })}
+            <Select
+              value={formData.tecnicoResponsavel || "sem_tecnico"}
+              onValueChange={(value) => setFormData({ ...formData, tecnicoResponsavel: value === "sem_tecnico" ? "" : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione o técnico" />
