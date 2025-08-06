@@ -119,7 +119,13 @@ export default function FiltrosCaixaCompacto() {
           </div>
           <div className="text-center">
             <div
-              className={`text-lg font-bold ${totais.saldo >= 0 ? "text-green-600" : "text-red-600"}`}
+              className={`text-lg font-bold ${
+                totais.saldo > 0
+                  ? "text-green-600"
+                  : totais.saldo < 0
+                    ? "text-red-600"
+                    : "text-foreground"
+              }`}
             >
               {totais.saldo.toLocaleString("pt-BR", {
                 style: "currency",
