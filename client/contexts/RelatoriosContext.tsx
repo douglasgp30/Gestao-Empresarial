@@ -160,7 +160,7 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [filtros, setFiltros] = useState<RelatorioFiltros>({
     periodo: {
-      dataInicio: new Date(2024, 11, 1),
+      dataInicio: new Date(),
       dataFim: new Date(),
     },
   });
