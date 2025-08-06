@@ -374,6 +374,73 @@ export default function FormularioReceita() {
 
             <div className="space-y-2">
               <Label className="flex items-center justify-between">
+                Cidade
+                <Dialog
+                  open={isNewCidadeOpen}
+                  onOpenChange={setIsNewCidadeOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      + Novo
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Adicionar Nova Cidade</DialogTitle>
+                      <DialogDescription>
+                        Cadastre uma nova cidade para os serviços
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="nomeCidade">Nome da Cidade *</Label>
+                        <Input
+                          id="nomeCidade"
+                          value={novaCidade.nome}
+                          onChange={(e) =>
+                            setNovaCidade({ ...novaCidade, nome: e.target.value })
+                          }
+                          placeholder="Ex: São Paulo, Santos..."
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsNewCidadeOpen(false)}
+                        >
+                          Cancelar
+                        </Button>
+                        <Button onClick={handleAddCidade}>
+                          Adicionar Cidade
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </Label>
+              <Select
+                value={formData.cidade}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, cidade: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a cidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cidades.map((cidade) => (
+                    <SelectItem key={cidade.id} value={cidade.nome}>
+                      {cidade.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label className="flex items-center justify-between">
                 Campanha
                 <Dialog
                   open={isNewCampanhaOpen}
