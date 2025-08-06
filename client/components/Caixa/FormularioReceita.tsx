@@ -283,7 +283,7 @@ export default function FormularioReceita() {
       setor: formData.setor,
       cidade: formData.cidade,
       campanha: formData.campanha || undefined,
-      descricao: boletoData.descricao,
+      descricao: formData.descricaoServico,
     });
 
     // Adicionar cada parcela como conta a receber
