@@ -58,11 +58,11 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
   const tecnicos = funcionarios.filter(f => f.ativo);
 
   const opcoesLembrete = [
-    { valor: 10, label: "10 minutos" },
-    { valor: 15, label: "15 minutos" },
-    { valor: 30, label: "30 minutos" },
-    { valor: 60, label: "1 hora" },
-    { valor: 120, label: "2 horas" },
+    { valor: 10, label: "10 minutos antes" },
+    { valor: 15, label: "15 minutos antes" },
+    { valor: 30, label: "30 minutos antes" },
+    { valor: 60, label: "1 hora antes" },
+    { valor: 120, label: "2 horas antes" },
   ];
 
   const validarFormulario = () => {
