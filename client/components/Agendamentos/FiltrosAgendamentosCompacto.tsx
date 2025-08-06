@@ -70,17 +70,6 @@ export default function FiltrosAgendamentosCompacto() {
 
   const filtrosAtivos = contarFiltrosAtivos();
 
-  const estatisticasStatus = () => {
-    const hoje = new Date();
-    const totalHoje = agendamentosHoje.length;
-    return {
-      hoje: totalHoje,
-      pendentes: agendamentosHoje.filter(ag => ag.status === 'agendado').length
-    };
-  };
-
-  const stats = estatisticasStatus();
-
   return (
     <div className="space-y-3">
       {/* Filtros de Período */}
