@@ -95,6 +95,11 @@ export default function FormularioReceita() {
     nome: "",
   });
 
+  const [novaDescricao, setNovaDescricao] = useState({
+    nome: "",
+    categoria: "",
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -849,7 +854,7 @@ export default function FormularioReceita() {
                 onChange={(e) =>
                   setBoletoData({ ...boletoData, descricao: e.target.value })
                 }
-                placeholder="Descrição do serviço"
+                placeholder="Descrição do servi��o"
               />
             </div>
           </div>
