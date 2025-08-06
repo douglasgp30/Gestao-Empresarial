@@ -25,7 +25,7 @@ function ContasContent() {
       </div>
 
       {/* Filtros e Totais */}
-      <FiltrosContas />
+      <FiltrosContasCompacto />
 
       {/* Lista de Contas */}
       <ListaContas />
