@@ -460,6 +460,32 @@ export default function FormularioReceita() {
                 </div>
               )}
 
+              {!(formData.formaPagamento === "Cartão de Crédito" || formData.formaPagamento === "Cartão de Débito") && (
+                <div className="space-y-2">
+                  <Label>Técnico Responsável</Label>
+                  <Select
+                    value={formData.tecnicoResponsavel}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, tecnicoResponsavel: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o técnico" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tecnicos.map((tecnico) => (
+                        <SelectItem key={tecnico} value={tecnico}>
+                          {tecnico}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+
+            {/* Campo Técnico Responsável separado quando for cartão */}
+            {(formData.formaPagamento === "Cartão de Crédito" || formData.formaPagamento === "Cartão de Débito") && (
               <div className="space-y-2">
                 <Label>Técnico Responsável</Label>
                 <Select
@@ -480,7 +506,7 @@ export default function FormularioReceita() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+            )}
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
