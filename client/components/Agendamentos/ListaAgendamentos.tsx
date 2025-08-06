@@ -252,6 +252,9 @@ export default function ListaAgendamentos() {
                   <Badge variant="secondary">{agendamento.setor}</Badge>
                 </TableCell>
                 <TableCell>
+                  <span className="text-sm">{agendamento.cidade}</span>
+                </TableCell>
+                <TableCell>
                   {agendamento.tecnicoResponsavel || (
                     <span className="text-muted-foreground text-sm">-</span>
                   )}
