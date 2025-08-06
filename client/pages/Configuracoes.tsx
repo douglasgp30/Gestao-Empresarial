@@ -337,6 +337,39 @@ export default function Configuracoes() {
         <TabsContent value="aparencia" className="space-y-6">
           <Card>
             <CardHeader>
+              <CardTitle>Tema do Sistema</CardTitle>
+              <CardDescription>
+                Escolha entre modo claro ou escuro
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant={document.documentElement.classList.contains('dark') ? "outline" : "default"}
+                  onClick={() => {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                  }}
+                  className="flex-1"
+                >
+                  ☀️ Modo Claro
+                </Button>
+                <Button
+                  variant={document.documentElement.classList.contains('dark') ? "default" : "outline"}
+                  onClick={() => {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                  }}
+                  className="flex-1"
+                >
+                  🌙 Modo Escuro
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>Logo da Empresa</CardTitle>
               <CardDescription>
                 Personalize a logo que aparece no sistema
