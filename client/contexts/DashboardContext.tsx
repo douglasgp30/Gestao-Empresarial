@@ -173,16 +173,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         });
       }
 
-      // PRIMEIRA LINHA - Totais do Caixa (serviços realizados)
-      const totalReceitas = lancamentosFiltrados
+      // LINHA 1 - Totais do Módulo Caixa (dinâmicos com filtros)
+      const totalReceitasCaixa = lancamentosFiltrados
         .filter((l) => l.tipo === "receita")
         .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-      const totalDespesas = lancamentosFiltrados
+      const totalDespesasCaixa = lancamentosFiltrados
         .filter((l) => l.tipo === "despesa")
         .reduce((total, l) => total + l.valor, 0);
 
-      const saldoFinal = totalReceitas - totalDespesas;
+      const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
       // SEGUNDA LINHA - Receitas recebidas e despesas pagas (incluindo contas)
       // Receitas do caixa + contas a receber já pagas
