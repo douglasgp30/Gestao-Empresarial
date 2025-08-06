@@ -41,13 +41,6 @@ const formasPagamento = [
   "Transferência",
 ];
 
-const setores = [
-  "Residencial",
-  "Comercial",
-  "Industrial",
-  "Condomínio",
-  "Emergência",
-];
 
 const tecnicos = [
   "João Silva",
