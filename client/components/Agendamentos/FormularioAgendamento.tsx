@@ -172,6 +172,19 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
     }
   };
 
+  const handleAdicionarCidade = () => {
+    if (novaCidade.trim()) {
+      adicionarCidade({ nome: novaCidade.trim() });
+      setFormData({ ...formData, cidade: novaCidade.trim() });
+      setNovaCidade("");
+      setMostrarNovaCidade(false);
+      toast({
+        title: "Cidade adicionada",
+        description: `A cidade "${novaCidade}" foi adicionada com sucesso.`,
+      });
+    }
+  };
+
   const gerarHorarios = () => {
     const horarios = [];
     for (let hora = 6; hora <= 22; hora++) {
