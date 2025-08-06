@@ -71,11 +71,17 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     const updatedConfig = { ...empresaConfig, ...newConfig };
     setEmpresaConfig(updatedConfig);
     localStorage.setItem('empresa_config', JSON.stringify(updatedConfig));
-    
+
     // Atualizar CSS custom property se cor primária foi alterada
     if (newConfig.corPrimaria) {
       document.documentElement.style.setProperty('--primary', newConfig.corPrimaria);
     }
+  };
+
+  const updateBackupConfig = (newConfig: Partial<BackupConfig>) => {
+    const updatedBackupConfig = { ...backupConfig, ...newConfig };
+    setBackupConfig(updatedBackupConfig);
+    localStorage.setItem('backup_config', JSON.stringify(updatedBackupConfig));
   };
 
   const resetToDefault = () => {
