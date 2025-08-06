@@ -341,8 +341,8 @@ export default function FiltrosPeriodoCompacto({
               const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
               onDataInicioChange(ultimos30.toISOString().split('T')[0]);
               onDataFimChange(hoje.toISOString().split('T')[0]);
-              onAplicar();
               setFiltroAtivo("ultimos-30");
+              onAplicar();
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "ultimos-30"
