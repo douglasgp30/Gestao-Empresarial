@@ -71,7 +71,7 @@ function StatCard({
   icon: React.ComponentType<{ className?: string }>;
   trend?: "up" | "down" | "neutral";
   isLoading?: boolean;
-  variant?: "default" | "highlight" | "danger";
+  variant?: "default" | "highlight" | "danger" | "success" | "neutral";
 }) {
   const cardClass =
     variant === "highlight"
