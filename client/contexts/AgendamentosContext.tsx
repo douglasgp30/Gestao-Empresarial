@@ -197,15 +197,15 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
 
   const verificarLembretes = () => {
     const agora = new Date();
-    
+
     lembretes.forEach(lembrete => {
       if (!lembrete.lido && lembrete.dataHoraLembrete <= agora) {
         const agendamento = agendamentos.find(ag => ag.id === lembrete.agendamentoId);
-        if (agendamento && agendamento.status === 'agendado') {
+        if (agendamento && agendamento.status === 'agendado' && !agendamento.lembreteEnviado) {
           // Disparar notificação
           mostrarNotificacaoLembrete(agendamento);
-          
-          // Marcar como lembrete enviado
+
+          // Marcar como lembrete enviado para evitar repetição
           atualizarAgendamento(agendamento.id, { lembreteEnviado: true });
         }
       }
