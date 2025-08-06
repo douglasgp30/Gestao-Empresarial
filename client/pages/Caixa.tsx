@@ -5,7 +5,7 @@ import FormularioReceita from "../components/Caixa/FormularioReceita";
 import FormularioDespesa from "../components/Caixa/FormularioDespesa";
 import ModalCampanhas from "../components/Caixa/ModalCampanhas";
 import ModalDescricoesAvancado from "../components/Caixa/ModalDescricoesAvancado";
-import FiltrosCaixa from "../components/Caixa/FiltrosCaixa";
+import FiltrosCaixaCompacto from "../components/Caixa/FiltrosCaixaCompacto";
 import ListaLancamentos from "../components/Caixa/ListaLancamentos";
 import { DollarSign } from "lucide-react";
 
