@@ -115,7 +115,7 @@ export default function FiltrosContasCompacto() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
           <div className="text-center">
             <div className="text-lg font-bold text-green-600">
-              {formatCurrency(totais?.totalReceber)}
+              {formatCurrency(totaisSeguro.totalReceber)}
             </div>
             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
               <TrendingUp className="h-3 w-3" />
@@ -124,7 +124,7 @@ export default function FiltrosContasCompacto() {
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-red-600">
-              {formatCurrency(totais?.totalPagar)}
+              {formatCurrency(totaisSeguro.totalPagar)}
             </div>
             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
               <TrendingDown className="h-3 w-3" />
@@ -132,14 +132,14 @@ export default function FiltrosContasCompacto() {
             </div>
           </div>
           <div className="text-center">
-            <div className={`text-lg font-bold ${(totais?.totalReceber || 0) - (totais?.totalPagar || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatCurrency((totais?.totalReceber || 0) - (totais?.totalPagar || 0))}
+            <div className={`text-lg font-bold ${totaisSeguro.totalReceber - totaisSeguro.totalPagar >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {formatCurrency(totaisSeguro.totalReceber - totaisSeguro.totalPagar)}
             </div>
             <div className="text-xs text-muted-foreground">Saldo</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-orange-600">
-              {formatCurrency(totais?.totalAtrasadas)}
+              {formatCurrency(totaisSeguro.totalAtrasadas)}
             </div>
             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
               <AlertTriangle className="h-3 w-3" />
