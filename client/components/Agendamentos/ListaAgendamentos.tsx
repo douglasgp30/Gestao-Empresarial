@@ -355,7 +355,14 @@ export default function ListaAgendamentos() {
                   {agendamento.setor}
                 </Badge>
               </div>
-              
+
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Cidade:</span>
+                <span className="text-muted-foreground">
+                  {agendamento.cidade}
+                </span>
+              </div>
+
               {agendamento.tecnicoResponsavel && (
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
@@ -364,7 +371,7 @@ export default function ListaAgendamentos() {
                   </span>
                 </div>
               )}
-              
+
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-muted-foreground" />
                 <span className="font-mono text-muted-foreground">
