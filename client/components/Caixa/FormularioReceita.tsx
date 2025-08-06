@@ -138,6 +138,7 @@ export default function FormularioReceita() {
       tecnicoResponsavel: "",
       notaFiscal: false,
       setor: "",
+      cidade: "",
       campanha: "",
       observacoes: "",
     });
