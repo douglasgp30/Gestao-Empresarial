@@ -60,11 +60,16 @@ function formatCurrency(value: number): string {
   });
 }
 
+type SortField = 'data' | 'tipo' | 'valor' | 'formaPagamento' | 'tecnicoResponsavel' | 'setor' | 'cidade';
+type SortDirection = 'asc' | 'desc' | null;
+
 export default function ListaLancamentos() {
   const { lancamentos, filtros, excluirLancamento } = useCaixa();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
     string | null
   >(null);
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
   // Filtrar lançamentos
   const lancamentosFiltrados = lancamentos
