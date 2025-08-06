@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
@@ -72,7 +72,7 @@ export default function FiltrosPeriodoCompacto({
       return "ultimos-15";
     }
 
-    // ��ltimos 30 Dias
+    // Últimos 30 Dias
     const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
     const ultimos30Norm = new Date(ultimos30.getFullYear(), ultimos30.getMonth(), ultimos30.getDate());
 
