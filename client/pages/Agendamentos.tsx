@@ -60,9 +60,6 @@ export default function Agendamentos() {
           </CardContent>
         </Card>
 
-        {/* Totais e Estatísticas */}
-        <TotaisAgendamentos />
-
         {/* Informações de Rodapé */}
         <div className="text-center text-sm text-muted-foreground bg-muted/30 rounded-lg p-4">
           <p>
