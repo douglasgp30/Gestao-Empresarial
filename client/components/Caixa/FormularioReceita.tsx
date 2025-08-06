@@ -347,7 +347,9 @@ export default function FormularioReceita() {
       descricaoServico: "",
       campanha: "",
       observacoes: "",
+      valorEntrou: "",
     });
+    setNotaFiscalProcessada(false);
 
     setBoletoData({
       valorTotal: 0,
@@ -687,7 +689,7 @@ export default function FormularioReceita() {
                     <DialogHeader>
                       <DialogTitle>Adicionar Nova Descrição</DialogTitle>
                       <DialogDescription>
-                        Cadastre uma nova descrição de serviço
+                        Cadastre uma nova descriç��o de serviço
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
