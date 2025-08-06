@@ -55,7 +55,7 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
 
   const [erros, setErros] = useState<Record<string, string>>({});
 
-  const tecnicos = funcionarios.filter(f => f.ativo && f.temAcessoSistema);
+  const tecnicos = funcionarios.filter(f => f.ativo);
 
   const opcoesLembrete = [
     { valor: 10, label: "10 minutos" },
