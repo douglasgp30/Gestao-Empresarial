@@ -184,42 +184,48 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
-      // SEGUNDA LINHA - Receitas recebidas e despesas pagas (incluindo contas)
-      // Receitas do caixa + contas a receber já pagas
-      const contasRecebidasPagas = contasContext.contas
+      // LINHA 2 - Totais do Módulo Contas (apenas pagas/recebidas)
+      const totalContasRecebidas = contasContext.contas
         .filter((c) => c.tipo === "receber" && c.status === "paga")
         .reduce((total, c) => total + c.valor, 0);
 
-      const totalReceitasRecebidas = totalReceitas + contasRecebidasPagas;
-
-      // Despesas do caixa + contas a pagar já pagas
-      const contasPagasPagas = contasContext.contas
+      const totalContasPagas = contasContext.contas
         .filter((c) => c.tipo === "pagar" && c.status === "paga")
         .reduce((total, c) => total + c.valor, 0);
 
-      const totalDespesasPagas = totalDespesas + contasPagasPagas;
+      const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
-      const saldoGeralRecebidoPago =
-        totalReceitasRecebidas - totalDespesasPagas;
-
-      // TERCEIRA LINHA - Totais específicos do módulo Contas
-      const totalContasRecebidasPagas = contasRecebidasPagas;
-      const totalContasPagasPagas = contasPagasPagas;
-      const saldoContas = totalContasRecebidasPagas - totalContasPagasPagas;
-
-      // Valor total de contas atrasadas
-      const totalValorContasAtrasadas = contasContext.contas
-        .filter((c) => c.status === "atrasada")
+      // LINHA 3 - Resumo Completo do Módulo Contas
+      const totalGeralAReceber = contasContext.contas
+        .filter((c) => c.tipo === "receber")
         .reduce((total, c) => total + c.valor, 0);
 
-      // Quantidade de contas atrasadas por tipo
+      const totalGeralAPagar = contasContext.contas
+        .filter((c) => c.tipo === "pagar")
+        .reduce((total, c) => total + c.valor, 0);
+
+      const saldoGeralContas = totalGeralAReceber - totalGeralAPagar;
+
+      // Contas Atrasadas (em vermelho)
+      const valorContasPagarAtrasadas = contasContext.contas
+        .filter((c) => c.tipo === "pagar" && c.status === "atrasada")
+        .reduce((total, c) => total + c.valor, 0);
+
       const qtdContasPagarAtrasadas = contasContext.contas.filter(
         (c) => c.tipo === "pagar" && c.status === "atrasada",
       ).length;
 
+      const valorContasReceberAtrasadas = contasContext.contas
+        .filter((c) => c.tipo === "receber" && c.status === "atrasada")
+        .reduce((total, c) => total + c.valor, 0);
+
       const qtdContasReceberAtrasadas = contasContext.contas.filter(
         (c) => c.tipo === "receber" && c.status === "atrasada",
       ).length;
+
+      // SALDO GERAL CONSOLIDADO
+      // Total receitas caixa + contas recebidas - total despesas caixa - contas pagas
+      const saldoGeralConsolidado = totalReceitasCaixa + totalContasRecebidas - totalDespesasCaixa - totalContasPagas;
 
       // Estatísticas gerais para compatibilidade
       const hoje = new Date();
