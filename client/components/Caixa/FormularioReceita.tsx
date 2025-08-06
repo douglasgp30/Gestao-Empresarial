@@ -318,6 +318,7 @@ export default function FormularioReceita() {
   };
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
@@ -776,5 +777,129 @@ export default function FormularioReceita() {
         </form>
       </DialogContent>
     </Dialog>
+
+    {/* Modal de Parcelamento Boleto */}
+    <Dialog open={isBoletoModalOpen} onOpenChange={setIsBoletoModalOpen}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Configurar Boleto - Contas a Receber</DialogTitle>
+          <DialogDescription>
+            Configure o parcelamento e vencimentos para o boleto
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="valorTotal">Valor Total</Label>
+              <Input
+                id="valorTotal"
+                type="number"
+                step="0.01"
+                value={boletoData.valorTotal}
+                onChange={(e) =>
+                  setBoletoData({
+                    ...boletoData,
+                    valorTotal: parseFloat(e.target.value) || 0,
+                  })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="parcelas">Número de Parcelas</Label>
+              <Select
+                value={boletoData.parcelas.toString()}
+                onValueChange={(value) => handleParcelasChange(parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+                    <SelectItem key={num} value={num.toString()}>
+                      {num} {num === 1 ? "parcela" : "parcelas"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="cliente">Cliente</Label>
+              <Input
+                id="cliente"
+                value={boletoData.cliente}
+                onChange={(e) =>
+                  setBoletoData({ ...boletoData, cliente: e.target.value })
+                }
+                placeholder="Nome do cliente"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="descricao">Descrição</Label>
+              <Input
+                id="descricao"
+                value={boletoData.descricao}
+                onChange={(e) =>
+                  setBoletoData({ ...boletoData, descricao: e.target.value })
+                }
+                placeholder="Descrição do serviço"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Lista de Parcelas e Vencimentos</Label>
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {boletoData.vencimentos.map((vencimento, index) => (
+                <div key={index} className="flex items-center space-x-2 p-2 border rounded">
+                  <span className="w-20 text-sm font-medium">
+                    Parcela {index + 1}:
+                  </span>
+                  <span className="w-24 text-sm">
+                    R$ {(boletoData.valorTotal / boletoData.parcelas).toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
+                  <Label htmlFor={`vencimento-${index}`} className="text-sm">
+                    Vencimento:
+                  </Label>
+                  <Input
+                    id={`vencimento-${index}`}
+                    type="date"
+                    value={vencimento.toISOString().split("T")[0]}
+                    onChange={(e) => handleVencimentoChange(index, e.target.value)}
+                    className="flex-1"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsBoletoModalOpen(false)}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={handleConfirmarBoleto}
+              className="flex-1"
+            >
+              Confirmar Lançamento
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
