@@ -73,7 +73,11 @@ export default function FormularioDespesa() {
 
     const valor = parseFloat(formData.valor);
     if (!valor || valor <= 0) return;
-    if (!formData.categoria || !formData.descricao) return;
+
+    if (!formData.descricaoServico.trim()) {
+      alert('Por favor, selecione ou cadastre uma descrição da despesa.');
+      return;
+    }
 
     adicionarLancamento({
       tipo: "despesa",
@@ -81,7 +85,7 @@ export default function FormularioDespesa() {
       valor,
       formaPagamento: formData.formaPagamento,
       categoria: formData.categoria,
-      descricao: formData.descricao,
+      descricao: formData.descricaoServico,
     });
 
     // Reset form
@@ -90,11 +94,29 @@ export default function FormularioDespesa() {
       valor: "",
       formaPagamento: "",
       categoria: "",
-      descricao: "",
+      descricaoServico: "",
       observacoes: "",
     });
 
     setIsOpen(false);
+  };
+
+  const handleAddDescricao = () => {
+    if (!novaDescricao.nome.trim()) return;
+
+    adicionarDescricao({
+      nome: novaDescricao.nome,
+      tipo: "despesa",
+      categoria: novaDescricao.categoria || undefined,
+    });
+
+    setNovaDescricao({
+      nome: "",
+      categoria: "",
+      tipo: "despesa",
+    });
+
+    setIsNewDescricaoOpen(false);
   };
 
   return (
