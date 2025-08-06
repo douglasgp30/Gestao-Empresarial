@@ -137,58 +137,49 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* SALDO GERAL CONSOLIDADO - Acima do título */}
-      <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center space-x-2 text-2xl">
-            <Calculator className="h-6 w-6" />
-            <span>Saldo Geral Consolidado</span>
-          </CardTitle>
-          <CardDescription className="max-w-4xl mx-auto">
-            <div className="text-lg font-semibold mb-2">
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin mx-auto" />
-              ) : (
+    <TooltipProvider>
+      <div className="p-6 space-y-6">
+        {/* Header com Saldo Geral no canto direito */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Visão geral financeira - Período: {getPeriodoDescricao()}
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium text-muted-foreground">
+              Saldo Geral:
+            </span>
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
                 <span
-                  className={
+                  className={`text-lg font-bold ${
                     stats.saldoGeralConsolidado >= 0
                       ? "text-success"
                       : "text-destructive"
-                  }
+                  }`}
                 >
                   {formatCurrency(stats.saldoGeralConsolidado)}
                 </span>
-              )}
-            </div>
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p className="font-medium">Cálculo:</p>
-              <p>
-                <span className="text-success">
-                  Total receitas do caixa + Total contas recebidas (pagas)
-                </span>
-              </p>
-              <p className="text-center font-medium">menos</p>
-              <p>
-                <span className="text-destructive">
-                  Total despesas do caixa + Total contas pagas
-                </span>
-              </p>
-              <p className="text-center font-medium text-foreground">
-                = Resultado final dos dois módulos
-              </p>
-            </div>
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Visão geral financeira - Período: {getPeriodoDescricao()}
-        </p>
-      </div>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="font-medium mb-1">Cálculo do Saldo Geral:</p>
+                    <p className="text-xs">
+                      (Receitas do Caixa + Contas Recebidas) - (Despesas do
+                      Caixa + Contas Pagas)
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
+          </div>
+        </div>
 
       {/* Filtros de Data */}
       <FiltrosData />
@@ -479,6 +470,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
