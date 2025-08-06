@@ -228,7 +228,7 @@ export default function FiltrosContasCompacto() {
                 <Select
                   value={filtros.fornecedorCliente || ""}
                   onValueChange={(value) =>
-                    setFiltros({ ...filtros, fornecedorCliente: value })
+                    setFiltros({ ...filtros, fornecedorCliente: value === "" ? undefined : value })
                   }
                 >
                   <SelectTrigger className="h-8 text-sm">
