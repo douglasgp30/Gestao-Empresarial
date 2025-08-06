@@ -361,7 +361,7 @@ export default function FormularioReceita() {
     setIsOpen(false);
   };
 
-  const calcularValorLiquido = () => {
+  const calcularValorSemComissao = () => {
     const valor = parseFloat(formData.valor) || 0;
     let valorLiquido = valor;
 
@@ -370,17 +370,26 @@ export default function FormularioReceita() {
     }
 
     if (formData.formaPagamento.includes("Cartão")) {
-      const taxa =
-        formData.formaPagamento === "Cartão de Débito" ? 0.02 : 0.035;
-      valorLiquido = valorLiquido * (1 - taxa);
+      if (formData.valorEntrou && parseFloat(formData.valorEntrou) > 0) {
+        valorLiquido = parseFloat(formData.valorEntrou);
+      } else {
+        const taxa = formData.formaPagamento === "Cartão de Débito" ? 0.02 : 0.035;
+        valorLiquido = valorLiquido * (1 - taxa);
+      }
     }
 
     return valorLiquido;
   };
 
   const calcularComissao = () => {
-    const valorLiquido = calcularValorLiquido();
-    return valorLiquido * 0.15; // 15% de comissão
+    const valorSemComissao = calcularValorSemComissao();
+    return valorSemComissao * 0.15; // 15% de comissão
+  };
+
+  const calcularValorLiquidoFinal = () => {
+    const valorSemComissao = calcularValorSemComissao();
+    const comissao = formData.tecnicoResponsavel ? calcularComissao() : 0;
+    return valorSemComissao - comissao; // Valor final para a empresa
   };
 
   return (
