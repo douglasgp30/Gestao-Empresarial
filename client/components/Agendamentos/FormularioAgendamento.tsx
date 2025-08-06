@@ -87,6 +87,10 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
       novosErros.setor = "Setor é obrigatório";
     }
 
+    if (!formData.cidade) {
+      novosErros.cidade = "Cidade é obrigatória";
+    }
+
     if (!formData.finalTelefoneCliente.trim()) {
       novosErros.finalTelefoneCliente = "Final do telefone é obrigatório";
     } else if (!/^\d{4}$/.test(formData.finalTelefoneCliente)) {
