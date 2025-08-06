@@ -52,10 +52,19 @@ const tecnicos = [
 export default function FormularioReceita() {
   const { adicionarLancamento, campanhas, adicionarCampanha } = useCaixa();
   const { setores, adicionarSetor, cidades, adicionarCidade } = useEntidades();
+  const { adicionarConta } = useContas();
   const [isOpen, setIsOpen] = useState(false);
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
   const [isNewSetorOpen, setIsNewSetorOpen] = useState(false);
   const [isNewCidadeOpen, setIsNewCidadeOpen] = useState(false);
+  const [isBoletoModalOpen, setIsBoletoModalOpen] = useState(false);
+  const [boletoData, setBoletoData] = useState({
+    valorTotal: 0,
+    parcelas: 1,
+    vencimentos: [] as Date[],
+    cliente: "",
+    descricao: "",
+  });
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
