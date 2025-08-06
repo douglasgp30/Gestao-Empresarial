@@ -352,7 +352,7 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
 
           {/* Tempo para Lembrete */}
           <div className="space-y-2">
-            <Label>Tempo para Lembrete</Label>
+            <Label>Lembrar quanto tempo antes</Label>
             <Select 
               value={formData.tempoLembrete.toString()} 
               onValueChange={(value) => setFormData({ ...formData, tempoLembrete: parseInt(value) })}
