@@ -302,7 +302,7 @@ export default function Dashboard() {
               icon={CreditCard}
               trend="down"
               isLoading={isLoading}
-              variant="default"
+              variant="danger"
             />
             <StatCard
               title="Saldo Geral Contas"
