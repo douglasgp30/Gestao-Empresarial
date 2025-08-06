@@ -106,6 +106,11 @@ export default function FormularioReceita() {
     const valor = parseFloat(formData.valor);
     if (!valor || valor <= 0) return;
 
+    if (!formData.descricaoServico.trim()) {
+      alert('Por favor, selecione ou cadastre uma descrição do serviço.');
+      return;
+    }
+
     let valorLiquido = valor;
     let descontoImposto = 0;
 
@@ -854,7 +859,7 @@ export default function FormularioReceita() {
                 onChange={(e) =>
                   setBoletoData({ ...boletoData, descricao: e.target.value })
                 }
-                placeholder="Descrição do servi��o"
+                placeholder="Descrição do serviço"
               />
             </div>
           </div>
