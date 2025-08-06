@@ -25,7 +25,7 @@ export default function FiltrosAgendamentosCompacto() {
   const { funcionarios } = useFuncionarios();
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
-  const tecnicos = funcionarios.filter(f => f.ativo && f.temAcessoSistema);
+  const tecnicos = funcionarios.filter(f => f.ativo);
 
   const handleDataInicioChange = (data: string) => {
     setFiltros({
