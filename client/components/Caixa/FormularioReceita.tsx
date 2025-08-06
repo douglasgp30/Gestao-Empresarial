@@ -124,7 +124,9 @@ export default function FormularioReceita() {
     }
 
     if (formData.notaFiscal && !notaFiscalProcessada) {
-      alert("Por favor, aguarde a emissão da nota fiscal antes de lançar a receita.");
+      alert(
+        "Por favor, aguarde a emissão da nota fiscal antes de lançar a receita.",
+      );
       return;
     }
 
@@ -147,7 +149,8 @@ export default function FormularioReceita() {
         valorLiquido = parseFloat(formData.valorEntrou);
       } else {
         // Calcular com taxa padrão
-        const taxaCartao = formData.formaPagamento === "Cartão de Débito" ? 2 : 3.5;
+        const taxaCartao =
+          formData.formaPagamento === "Cartão de Débito" ? 2 : 3.5;
         const desconto = valorLiquido * (taxaCartao / 100);
         valorLiquido = valorLiquido - desconto;
       }
@@ -380,7 +383,8 @@ export default function FormularioReceita() {
       if (formData.valorEntrou && parseFloat(formData.valorEntrou) > 0) {
         valorLiquido = parseFloat(formData.valorEntrou);
       } else {
-        const taxa = formData.formaPagamento === "Cartão de D��bito" ? 0.02 : 0.035;
+        const taxa =
+          formData.formaPagamento === "Cartão de D��bito" ? 0.02 : 0.035;
         valorLiquido = valorLiquido * (1 - taxa);
       }
     }
@@ -456,7 +460,11 @@ export default function FormularioReceita() {
                 <Select
                   value={formData.formaPagamento}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, formaPagamento: value, valorEntrou: "" })
+                    setFormData({
+                      ...formData,
+                      formaPagamento: value,
+                      valorEntrou: "",
+                    })
                   }
                 >
                   <SelectTrigger>
@@ -473,7 +481,8 @@ export default function FormularioReceita() {
               </div>
 
               {/* Campo "Valor que Entrou" para cartões */}
-              {(formData.formaPagamento === "Cartão de Crédito" || formData.formaPagamento === "Cartão de Débito") && (
+              {(formData.formaPagamento === "Cartão de Crédito" ||
+                formData.formaPagamento === "Cartão de Débito") && (
                 <div className="space-y-2">
                   <Label htmlFor="valorEntrou">Valor que Entrou (R$)</Label>
                   <Input
@@ -492,7 +501,10 @@ export default function FormularioReceita() {
                 </div>
               )}
 
-              {!(formData.formaPagamento === "Cartão de Crédito" || formData.formaPagamento === "Cartão de Débito") && (
+              {!(
+                formData.formaPagamento === "Cartão de Crédito" ||
+                formData.formaPagamento === "Cartão de Débito"
+              ) && (
                 <div className="space-y-2">
                   <Label>Técnico Responsável</Label>
                   <Select
@@ -517,7 +529,8 @@ export default function FormularioReceita() {
             </div>
 
             {/* Campo Técnico Responsável separado quando for cartão */}
-            {(formData.formaPagamento === "Cartão de Crédito" || formData.formaPagamento === "Cartão de Débito") && (
+            {(formData.formaPagamento === "Cartão de Crédito" ||
+              formData.formaPagamento === "Cartão de Débito") && (
               <div className="space-y-2">
                 <Label>Técnico Responsável</Label>
                 <Select
@@ -907,15 +920,22 @@ export default function FormularioReceita() {
                   setFormData({ ...formData, notaFiscal: checked });
                   if (checked && !notaFiscalProcessada) {
                     // Site da prefeitura de Goiânia para emissão de nota fiscal
-                    const linkPrefeitura = "https://www10.goiania.go.gov.br/Internet/Login.aspx?OriginalURL=https%3a%2f%2fwww10.goiania.go.gov.br%2fsicaeportal%2fHomePageNovo.aspx";
-                    const janela = window.open(linkPrefeitura, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                    const linkPrefeitura =
+                      "https://www10.goiania.go.gov.br/Internet/Login.aspx?OriginalURL=https%3a%2f%2fwww10.goiania.go.gov.br%2fsicaeportal%2fHomePageNovo.aspx";
+                    const janela = window.open(
+                      linkPrefeitura,
+                      "_blank",
+                      "width=1200,height=800,scrollbars=yes,resizable=yes",
+                    );
 
                     // Detectar quando a janela é fechada
                     const intervalo = setInterval(() => {
                       if (janela?.closed) {
                         setNotaFiscalProcessada(true);
                         clearInterval(intervalo);
-                        alert('Nota fiscal processada! Agora você pode lançar a receita.');
+                        alert(
+                          "Nota fiscal processada! Agora você pode lançar a receita.",
+                        );
                       }
                     }, 1000);
                   }
@@ -981,39 +1001,44 @@ export default function FormularioReceita() {
                         </span>
                       </div>
                     )}
-                    {formData.formaPagamento.includes("Cartão") && !formData.valorEntrou && (
-                      <div className="flex justify-between text-orange-600">
-                        <span>
-                          Taxa Cartão (
-                          {formData.formaPagamento === "Cartão de Débito"
-                            ? "2%"
-                            : "3,5%"}
-                          ):
-                        </span>
-                        <span>
-                          - R${" "}
-                          {(
-                            (parseFloat(formData.valor) || 0) *
-                            (formData.formaPagamento === "Cartão de Débito"
-                              ? 0.02
-                              : 0.035)
-                          ).toLocaleString("pt-BR", {
-                            minimumFractionDigits: 2,
-                          })}
-                        </span>
-                      </div>
-                    )}
-                    {formData.formaPagamento.includes("Cartão") && formData.valorEntrou && (
-                      <div className="flex justify-between text-blue-600">
-                        <span>Valor que Entrou:</span>
-                        <span>
-                          R${" "}
-                          {parseFloat(formData.valorEntrou).toLocaleString("pt-BR", {
-                            minimumFractionDigits: 2,
-                          })}
-                        </span>
-                      </div>
-                    )}
+                    {formData.formaPagamento.includes("Cartão") &&
+                      !formData.valorEntrou && (
+                        <div className="flex justify-between text-orange-600">
+                          <span>
+                            Taxa Cartão (
+                            {formData.formaPagamento === "Cartão de Débito"
+                              ? "2%"
+                              : "3,5%"}
+                            ):
+                          </span>
+                          <span>
+                            - R${" "}
+                            {(
+                              (parseFloat(formData.valor) || 0) *
+                              (formData.formaPagamento === "Cartão de Débito"
+                                ? 0.02
+                                : 0.035)
+                            ).toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </span>
+                        </div>
+                      )}
+                    {formData.formaPagamento.includes("Cartão") &&
+                      formData.valorEntrou && (
+                        <div className="flex justify-between text-blue-600">
+                          <span>Valor que Entrou:</span>
+                          <span>
+                            R${" "}
+                            {parseFloat(formData.valorEntrou).toLocaleString(
+                              "pt-BR",
+                              {
+                                minimumFractionDigits: 2,
+                              },
+                            )}
+                          </span>
+                        </div>
+                      )}
                     <Separator />
                     <div className="flex justify-between text-lg">
                       <span>Valor Antes da Comissão:</span>
@@ -1068,8 +1093,7 @@ export default function FormularioReceita() {
               >
                 {formData.notaFiscal && !notaFiscalProcessada
                   ? "Aguardando Nota Fiscal..."
-                  : "Lançar Receita"
-                }
+                  : "Lançar Receita"}
               </Button>
             </div>
           </form>

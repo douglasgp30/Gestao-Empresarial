@@ -96,15 +96,17 @@ function StatCard({
               <span className="text-muted-foreground">...</span>
             </div>
           ) : (
-            <span className={
-              variant === "danger"
-                ? "text-destructive"
-                : variant === "success"
-                  ? "text-green-600 dark:text-green-400"
-                  : variant === "neutral"
-                    ? "text-foreground"
-                    : ""
-            }>
+            <span
+              className={
+                variant === "danger"
+                  ? "text-destructive"
+                  : variant === "success"
+                    ? "text-green-600 dark:text-green-400"
+                    : variant === "neutral"
+                      ? "text-foreground"
+                      : ""
+              }
+            >
               {value}
             </span>
           )}

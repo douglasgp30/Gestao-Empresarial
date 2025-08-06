@@ -88,12 +88,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      timeoutId = setTimeout(() => {
-        if (Date.now() - lastActivity >= tempoSessao * 60 * 1000) {
-          logout();
-          alert(`Sessão expirada após ${tempoSessao} minutos de inatividade. Por favor, faça login novamente.`);
-        }
-      }, tempoSessao * 60 * 1000);
+      timeoutId = setTimeout(
+        () => {
+          if (Date.now() - lastActivity >= tempoSessao * 60 * 1000) {
+            logout();
+            alert(
+              `Sessão expirada após ${tempoSessao} minutos de inatividade. Por favor, faça login novamente.`,
+            );
+          }
+        },
+        tempoSessao * 60 * 1000,
+      );
     };
 
     const handleActivity = () => {
@@ -101,8 +106,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     // Monitorar atividade do usuário
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    events.forEach(event => {
+    const events = [
+      "mousedown",
+      "mousemove",
+      "keypress",
+      "scroll",
+      "touchstart",
+    ];
+    events.forEach((event) => {
       document.addEventListener(event, handleActivity, true);
     });
 
@@ -110,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       clearTimeout(timeoutId);
-      events.forEach(event => {
+      events.forEach((event) => {
         document.removeEventListener(event, handleActivity, true);
       });
     };

@@ -214,7 +214,10 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       const dentroDataFim = dataVencimento <= filtros.dataFim;
       const tipoCorreto =
         filtros.tipo === "ambos" || conta.tipo === filtros.tipo;
-      const statusCorreto = !filtros.status || filtros.status === "todos" || conta.status === filtros.status;
+      const statusCorreto =
+        !filtros.status ||
+        filtros.status === "todos" ||
+        conta.status === filtros.status;
       const fornecedorCorreto =
         !filtros.fornecedorCliente ||
         filtros.fornecedorCliente === "todos" ||
