@@ -490,7 +490,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle>Configurações de Usuários</CardTitle>
               <CardDescription>
-                Configuraç��es relacionadas a funcionários e permissões
+                Configurações relacionadas a funcionários e permissões
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
