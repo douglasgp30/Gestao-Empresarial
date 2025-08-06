@@ -357,15 +357,7 @@ export default function FiltrosPeriodoCompacto({
           <Button
             variant={filtroAtivo === "este-mes" ? "default" : "ghost"}
             size="sm"
-            onClick={() => {
-              const hoje = new Date();
-              const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-              const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-              onDataInicioChange(inicioMes.toISOString().split('T')[0]);
-              onDataFimChange(fimMes.toISOString().split('T')[0]);
-              onAplicar();
-              setFiltroAtivo("este-mes");
-            }}
+            onClick={aplicarFiltroEsteMes}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "este-mes"
                 ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
