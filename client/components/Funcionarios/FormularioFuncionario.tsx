@@ -67,20 +67,23 @@ export default function FormularioFuncionario() {
       newErrors.nomeCompleto = "Nome completo é obrigatório";
     }
 
-    if (!formData.login.trim()) {
-      newErrors.login = "Login é obrigatório";
-    } else if (formData.login.length < 3) {
-      newErrors.login = "Login deve ter pelo menos 3 caracteres";
-    }
+    // Login e senha só são obrigatórios se o funcionário tiver permissão de acesso
+    if (formData.permissaoAcesso) {
+      if (!formData.login.trim()) {
+        newErrors.login = "Login é obrigatório para funcionários com acesso ao sistema";
+      } else if (formData.login.length < 3) {
+        newErrors.login = "Login deve ter pelo menos 3 caracteres";
+      }
 
-    if (!formData.senha) {
-      newErrors.senha = "Senha é obrigatória";
-    } else if (formData.senha.length < 6) {
-      newErrors.senha = "Senha deve ter pelo menos 6 caracteres";
-    }
+      if (!formData.senha) {
+        newErrors.senha = "Senha é obrigatória para funcionários com acesso ao sistema";
+      } else if (formData.senha.length < 6) {
+        newErrors.senha = "Senha deve ter pelo menos 6 caracteres";
+      }
 
-    if (formData.senha !== formData.confirmarSenha) {
-      newErrors.confirmarSenha = "Senhas não coincidem";
+      if (formData.senha !== formData.confirmarSenha) {
+        newErrors.confirmarSenha = "Senhas não coincidem";
+      }
     }
 
     const percentual = parseFloat(formData.percentualComissao);
