@@ -906,8 +906,8 @@ export default function FormularioReceita() {
                 onCheckedChange={(checked) => {
                   setFormData({ ...formData, notaFiscal: checked });
                   if (checked && !notaFiscalProcessada) {
-                    // Abrir site da prefeitura para emitir nota fiscal
-                    const linkPrefeitura = "https://nfse.prefeitura.sp.gov.br/"; // VOCÊ DEVE FORNECER O LINK REAL
+                    // ⚠️ IMPORTANTE: Substitua pela URL real da prefeitura fornecida pelo usuário
+                    const linkPrefeitura = "https://nfse.prefeitura.sp.gov.br/"; // <<<< INSERIR LINK REAL AQUI
                     const janela = window.open(linkPrefeitura, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
 
                     // Detectar quando a janela é fechada
