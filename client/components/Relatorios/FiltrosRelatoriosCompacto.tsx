@@ -278,7 +278,7 @@ export default function FiltrosRelatoriosCompacto() {
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     {tecnicos.map((tecnico) => (
                       <SelectItem key={tecnico} value={tecnico}>
                         {tecnico}
