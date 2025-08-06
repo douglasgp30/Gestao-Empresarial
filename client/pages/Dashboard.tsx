@@ -14,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../components/ui/tooltip";
-import FiltrosData from "../components/Dashboard/FiltrosData";
+import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
 import {
   DollarSign,
   TrendingUp,
