@@ -343,7 +343,7 @@ export default function Dashboard() {
               description="Contas em atraso"
               icon={Target}
               isLoading={isLoading}
-              variant="danger"
+              variant="neutral"
             />
           </div>
         </div>
