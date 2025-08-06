@@ -119,7 +119,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [campanhas, setCampanhas] = useState<Campanha[]>(mockCampanhas);
   const [isLoading, setIsLoading] = useState(false);
   const [filtros, setFiltros] = useState({
-    dataInicio: new Date(2024, 11, 1),
+    dataInicio: new Date(),
     dataFim: new Date(),
     tipo: "todos" as "receita" | "despesa" | "todos",
   });
