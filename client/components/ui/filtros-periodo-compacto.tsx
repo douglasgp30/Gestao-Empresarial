@@ -72,7 +72,7 @@ export default function FiltrosPeriodoCompacto({
       return "ultimos-15";
     }
 
-    // Últimos 30 Dias
+    // ��ltimos 30 Dias
     const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
     const ultimos30Norm = new Date(ultimos30.getFullYear(), ultimos30.getMonth(), ultimos30.getDate());
 
@@ -170,22 +170,23 @@ export default function FiltrosPeriodoCompacto({
         <div className="flex flex-wrap gap-1">
           {/* 1. Hoje */}
           <Button
-            variant="ghost"
+            variant={filtroAtivo === "hoje" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
               const hoje = new Date();
               onDataInicioChange(hoje.toISOString().split('T')[0]);
               onDataFimChange(hoje.toISOString().split('T')[0]);
               onAplicar();
+              setFiltroAtivo("hoje");
             }}
-            className="text-xs h-7 px-2"
+            className={`text-xs h-7 px-2 ${filtroAtivo === "hoje" ? "bg-primary text-primary-foreground" : ""}`}
           >
             Hoje
           </Button>
 
           {/* 2. Esta Semana (iniciando na segunda-feira) */}
           <Button
-            variant="ghost"
+            variant={filtroAtivo === "esta-semana" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
               const hoje = new Date();
@@ -196,15 +197,16 @@ export default function FiltrosPeriodoCompacto({
               onDataInicioChange(inicioSemana.toISOString().split('T')[0]);
               onDataFimChange(hoje.toISOString().split('T')[0]);
               onAplicar();
+              setFiltroAtivo("esta-semana");
             }}
-            className="text-xs h-7 px-2"
+            className={`text-xs h-7 px-2 ${filtroAtivo === "esta-semana" ? "bg-primary text-primary-foreground" : ""}`}
           >
             Esta Semana
           </Button>
 
           {/* 3. Últimos 7 Dias */}
           <Button
-            variant="ghost"
+            variant={filtroAtivo === "ultimos-7" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
               const hoje = new Date();
@@ -212,15 +214,16 @@ export default function FiltrosPeriodoCompacto({
               onDataInicioChange(ultimos7.toISOString().split('T')[0]);
               onDataFimChange(hoje.toISOString().split('T')[0]);
               onAplicar();
+              setFiltroAtivo("ultimos-7");
             }}
-            className="text-xs h-7 px-2"
+            className={`text-xs h-7 px-2 ${filtroAtivo === "ultimos-7" ? "bg-primary text-primary-foreground" : ""}`}
           >
             Últimos 7 Dias
           </Button>
 
           {/* 4. Últimos 15 Dias */}
           <Button
-            variant="ghost"
+            variant={filtroAtivo === "ultimos-15" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
               const hoje = new Date();
@@ -228,15 +231,16 @@ export default function FiltrosPeriodoCompacto({
               onDataInicioChange(ultimos15.toISOString().split('T')[0]);
               onDataFimChange(hoje.toISOString().split('T')[0]);
               onAplicar();
+              setFiltroAtivo("ultimos-15");
             }}
-            className="text-xs h-7 px-2"
+            className={`text-xs h-7 px-2 ${filtroAtivo === "ultimos-15" ? "bg-primary text-primary-foreground" : ""}`}
           >
             Últimos 15 Dias
           </Button>
 
           {/* 5. Últimos 30 Dias */}
           <Button
-            variant="ghost"
+            variant={filtroAtivo === "ultimos-30" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
               const hoje = new Date();
@@ -244,15 +248,16 @@ export default function FiltrosPeriodoCompacto({
               onDataInicioChange(ultimos30.toISOString().split('T')[0]);
               onDataFimChange(hoje.toISOString().split('T')[0]);
               onAplicar();
+              setFiltroAtivo("ultimos-30");
             }}
-            className="text-xs h-7 px-2"
+            className={`text-xs h-7 px-2 ${filtroAtivo === "ultimos-30" ? "bg-primary text-primary-foreground" : ""}`}
           >
             Últimos 30 Dias
           </Button>
 
           {/* 6. Este Mês (início e fim do mês atual) */}
           <Button
-            variant="ghost"
+            variant={filtroAtivo === "este-mes" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
               const hoje = new Date();
@@ -261,8 +266,9 @@ export default function FiltrosPeriodoCompacto({
               onDataInicioChange(inicioMes.toISOString().split('T')[0]);
               onDataFimChange(fimMes.toISOString().split('T')[0]);
               onAplicar();
+              setFiltroAtivo("este-mes");
             }}
-            className="text-xs h-7 px-2"
+            className={`text-xs h-7 px-2 ${filtroAtivo === "este-mes" ? "bg-primary text-primary-foreground" : ""}`}
           >
             Este Mês
           </Button>
