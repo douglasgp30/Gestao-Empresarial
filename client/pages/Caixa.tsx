@@ -32,7 +32,7 @@ function CaixaContent() {
       </div>
 
       {/* Filtros e Totais */}
-      <FiltrosCaixa />
+      <FiltrosCaixaCompacto />
 
       {/* Lista de Lançamentos */}
       <ListaLancamentos />
