@@ -238,13 +238,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         (c) => c.status === "atrasada",
       ).length;
 
-      const totalContasPagar = contasContext.contas
-        .filter((c) => c.tipo === "pagar" && c.status !== "paga")
-        .reduce((total, c) => total + c.valor, 0);
-
-      const totalContasReceber = contasContext.contas
-        .filter((c) => c.tipo === "receber" && c.status !== "paga")
-        .reduce((total, c) => total + c.valor, 0);
 
       setStats({
         saldoGeralConsolidado,
