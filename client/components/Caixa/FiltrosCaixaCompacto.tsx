@@ -64,10 +64,10 @@ export default function FiltrosCaixaCompacto() {
       dataInicio: hoje,
       dataFim: hoje,
       tipo: "todos",
-      formaPagamento: "",
-      tecnico: "",
-      campanha: "",
-      setor: "",
+      formaPagamento: "todas",
+      tecnico: "todos",
+      campanha: "todas",
+      setor: "todos",
     });
   };
 
