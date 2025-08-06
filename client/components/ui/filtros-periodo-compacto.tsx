@@ -119,12 +119,8 @@ export default function FiltrosPeriodoCompacto({
     }
   }, []);
 
-  // Aplicar filtro automaticamente após mudança de estado
-  React.useEffect(() => {
-    if (filtroAtivo) {
-      onAplicar();
-    }
-  }, [filtroAtivo]);
+  // Remover o auto-apply para evitar loops infinitos
+  // Os botões agora chamam onAplicar() diretamente
 
   // Detectar quando o usuário altera as datas manualmente (não por botão)
   const handleDataInicioChangeInterno = (data: string) => {
