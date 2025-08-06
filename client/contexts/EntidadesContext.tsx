@@ -406,6 +406,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     editarFornecedor,
     excluirFornecedor,
 
+    // Setores
+    setores,
+    adicionarSetor,
+    editarSetor,
+    excluirSetor,
+
+    // Cidades
+    cidades,
+    adicionarCidade,
+    editarCidade,
+    excluirCidade,
+
     isLoading,
   };
 
