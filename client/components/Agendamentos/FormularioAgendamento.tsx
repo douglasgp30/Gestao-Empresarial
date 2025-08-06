@@ -320,7 +320,7 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
                 <SelectValue placeholder="Selecione o técnico" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Nenhum técnico</SelectItem>
+                <SelectItem value="sem_tecnico">Nenhum técnico</SelectItem>
                 {tecnicos.map((tecnico) => (
                   <SelectItem key={tecnico.id} value={tecnico.nomeCompleto}>
                     {tecnico.nomeCompleto}
