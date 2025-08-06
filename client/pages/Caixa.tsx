@@ -35,7 +35,7 @@ function CaixaContent() {
       <FiltrosCaixaCompacto />
 
       {/* Lista de Lançamentos */}
-      <ListaLancamentos />
+      <ListaLancamentosSimples />
     </div>
   );
 }
