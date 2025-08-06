@@ -102,7 +102,7 @@ export default function ListaLancamentos() {
     return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
   };
 
-  // Filtrar lançamentos
+  // Filtrar e ordenar lançamentos
   const lancamentosFiltrados = lancamentos
     .filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
@@ -129,7 +129,57 @@ export default function ListaLancamentos() {
         setorCorreto
       );
     })
-    .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+    .sort((a, b) => {
+      // Aplicar ordenação personalizada se houver
+      if (sortField && sortDirection) {
+        let aValue: any, bValue: any;
+
+        switch (sortField) {
+          case 'data':
+            aValue = new Date(a.data).getTime();
+            bValue = new Date(b.data).getTime();
+            break;
+          case 'tipo':
+            aValue = a.tipo;
+            bValue = b.tipo;
+            break;
+          case 'valor':
+            aValue = a.valorLiquido || a.valor;
+            bValue = b.valorLiquido || b.valor;
+            break;
+          case 'formaPagamento':
+            aValue = a.formaPagamento;
+            bValue = b.formaPagamento;
+            break;
+          case 'tecnicoResponsavel':
+            aValue = a.tecnicoResponsavel || '';
+            bValue = b.tecnicoResponsavel || '';
+            break;
+          case 'setor':
+            aValue = a.setor || '';
+            bValue = b.setor || '';
+            break;
+          case 'cidade':
+            aValue = a.cidade || '';
+            bValue = b.cidade || '';
+            break;
+          default:
+            return 0;
+        }
+
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          aValue = aValue.toLowerCase();
+          bValue = bValue.toLowerCase();
+        }
+
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      }
+
+      // Ordenação padrão por data (mais recente primeiro)
+      return new Date(b.data).getTime() - new Date(a.data).getTime();
+    });
 
   const handleExcluir = (id: string) => {
     excluirLancamento(id);
