@@ -295,7 +295,7 @@ export default function FiltrosCaixaCompacto() {
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
+                    <SelectItem value="todas">Todas</SelectItem>
                     {campanhas
                       ?.filter((c) => c.ativa)
                       .map((campanha) => (
