@@ -199,7 +199,9 @@ export default function FormularioReceita() {
       descricaoServico: "",
       campanha: "",
       observacoes: "",
+      valorEntrou: "",
     });
+    setNotaFiscalProcessada(false);
 
     setIsOpen(false);
   };
