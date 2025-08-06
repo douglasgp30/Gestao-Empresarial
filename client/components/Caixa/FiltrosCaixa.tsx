@@ -148,10 +148,22 @@ export default function FiltrosCaixa() {
                 </p>
               </div>
               <div
-                className={`p-2 rounded-full ${totais.saldo >= 0 ? "bg-green-100" : "bg-red-100"}`}
+                className={`p-2 rounded-full ${
+                  totais.saldo > 0
+                    ? "bg-green-100"
+                    : totais.saldo < 0
+                      ? "bg-red-100"
+                      : "bg-muted"
+                }`}
               >
                 <div
-                  className={`w-2 h-2 rounded-full ${totais.saldo >= 0 ? "bg-green-600" : "bg-red-600"}`}
+                  className={`w-2 h-2 rounded-full ${
+                    totais.saldo > 0
+                      ? "bg-green-600"
+                      : totais.saldo < 0
+                        ? "bg-red-600"
+                        : "bg-muted-foreground"
+                  }`}
                 ></div>
               </div>
             </div>
