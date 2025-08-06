@@ -128,8 +128,8 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [filtros, setFiltros] = useState({
-    dataInicio: new Date(2024, 11, 1),
-    dataFim: new Date(2024, 11, 31),
+    dataInicio: new Date(),
+    dataFim: new Date(),
     tipo: "ambos" as "pagar" | "receber" | "ambos",
   });
 
