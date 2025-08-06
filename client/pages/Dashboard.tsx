@@ -20,6 +20,9 @@ import {
   Loader2,
   Receipt,
   CreditCard,
+  Calculator,
+  Banknote,
+  Wallet,
 } from "lucide-react";
 
 function formatCurrency(value: number) {
@@ -67,8 +70,8 @@ function StatCard({
     variant === "highlight"
       ? "border-primary/20 bg-primary/5"
       : variant === "danger"
-        ? "border-destructive/20 bg-destructive/5"
-        : "";
+      ? "border-destructive/20 bg-destructive/5"
+      : "";
 
   return (
     <Card className={cardClass}>
@@ -128,6 +131,50 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* SALDO GERAL CONSOLIDADO - Acima do título */}
+      <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
+        <CardHeader className="text-center">
+          <CardTitle className="flex items-center justify-center space-x-2 text-2xl">
+            <Calculator className="h-6 w-6" />
+            <span>Saldo Geral Consolidado</span>
+          </CardTitle>
+          <CardDescription className="max-w-4xl mx-auto">
+            <div className="text-lg font-semibold mb-2">
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+              ) : (
+                <span
+                  className={
+                    stats.saldoGeralConsolidado >= 0
+                      ? "text-success"
+                      : "text-destructive"
+                  }
+                >
+                  {formatCurrency(stats.saldoGeralConsolidado)}
+                </span>
+              )}
+            </div>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p className="font-medium">Cálculo:</p>
+              <p>
+                <span className="text-success">
+                  Total receitas do caixa + Total contas recebidas (pagas)
+                </span>
+              </p>
+              <p className="text-center font-medium">menos</p>
+              <p>
+                <span className="text-destructive">
+                  Total despesas do caixa + Total contas pagas
+                </span>
+              </p>
+              <p className="text-center font-medium text-foreground">
+                = Resultado final dos dois módulos
+              </p>
+            </div>
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
@@ -147,16 +194,18 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* PRIMEIRA LINHA - Totais do Caixa (Serviços Realizados) */}
+      {/* LINHA 1 - Totais do Módulo Caixa */}
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground">
-          Módulo Caixa - Serviços Realizados
+        <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+          <Wallet className="h-5 w-5" />
+          <span>Linha 1: Totais do Módulo Caixa</span>
+          <Badge variant="outline">Dinâmico com filtros</Badge>
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             title="Total de Receitas"
-            value={formatCurrency(stats.totalReceitas)}
-            description="Serviços realizados no período"
+            value={formatCurrency(stats.totalReceitasCaixa)}
+            description="Serviços lançados no caixa"
             icon={TrendingUp}
             trend="up"
             isLoading={isLoading}
@@ -164,7 +213,7 @@ export default function Dashboard() {
           />
           <StatCard
             title="Total de Despesas"
-            value={formatCurrency(stats.totalDespesas)}
+            value={formatCurrency(stats.totalDespesasCaixa)}
             description="Despesas lançadas no caixa"
             icon={TrendingDown}
             trend="down"
@@ -172,89 +221,91 @@ export default function Dashboard() {
             variant="default"
           />
           <StatCard
-            title="Saldo Final"
-            value={formatCurrency(stats.saldoFinal)}
+            title="Saldo (Caixa)"
+            value={formatCurrency(stats.saldoCaixa)}
             description="Receitas - Despesas do caixa"
             icon={DollarSign}
-            trend={stats.saldoFinal >= 0 ? "up" : "down"}
+            trend={stats.saldoCaixa >= 0 ? "up" : "down"}
             isLoading={isLoading}
             variant="highlight"
           />
         </div>
       </div>
 
-      {/* SEGUNDA LINHA - Receitas Recebidas e Despesas Pagas */}
+      {/* LINHA 2 - Totais do Módulo Contas (apenas pagas/recebidas) */}
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground">
-          Totais Efetivamente Recebidos e Pagos
+        <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+          <Receipt className="h-5 w-5" />
+          <span>Linha 2: Totais do Módulo Contas (Pagas/Recebidas)</span>
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
-            title="Total Receitas Recebidas"
-            value={formatCurrency(stats.totalReceitasRecebidas)}
-            description="Caixa + contas a receber pagas"
-            icon={Receipt}
-            trend="up"
-            isLoading={isLoading}
-            variant="default"
-          />
-          <StatCard
-            title="Total Despesas Pagas"
-            value={formatCurrency(stats.totalDespesasPagas)}
-            description="Caixa + contas a pagar pagas"
-            icon={CreditCard}
-            trend="down"
-            isLoading={isLoading}
-            variant="default"
-          />
-          <StatCard
-            title="Saldo Geral"
-            value={formatCurrency(stats.saldoGeralRecebidoPago)}
-            description="Recebidas - Pagas (total)"
-            icon={DollarSign}
-            trend={stats.saldoGeralRecebidoPago >= 0 ? "up" : "down"}
-            isLoading={isLoading}
-            variant="highlight"
-          />
-        </div>
-      </div>
-
-      {/* TERCEIRA LINHA - Módulo Contas */}
-      <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground">
-          Módulo Contas - Situação Geral
-        </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-          <StatCard
-            title="Contas Recebidas"
-            value={formatCurrency(stats.totalContasRecebidasPagas)}
-            description="Contas a receber pagas"
+            title="Total Contas Recebidas"
+            value={formatCurrency(stats.totalContasRecebidas)}
+            description="Contas a receber marcadas como pagas"
             icon={TrendingUp}
             trend="up"
             isLoading={isLoading}
             variant="default"
           />
           <StatCard
-            title="Contas Pagas"
-            value={formatCurrency(stats.totalContasPagasPagas)}
-            description="Contas a pagar pagas"
+            title="Total Contas Pagas"
+            value={formatCurrency(stats.totalContasPagas)}
+            description="Contas a pagar marcadas como pagas"
             icon={TrendingDown}
             trend="down"
             isLoading={isLoading}
             variant="default"
           />
           <StatCard
-            title="Saldo Contas"
-            value={formatCurrency(stats.saldoContas)}
+            title="Saldo (Contas)"
+            value={formatCurrency(stats.saldoContasPagas)}
             description="Recebidas - Pagas"
             icon={DollarSign}
-            trend={stats.saldoContas >= 0 ? "up" : "down"}
+            trend={stats.saldoContasPagas >= 0 ? "up" : "down"}
+            isLoading={isLoading}
+            variant="highlight"
+          />
+        </div>
+      </div>
+
+      {/* LINHA 3 - Resumo Completo do Módulo Contas */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+          <FileText className="h-5 w-5" />
+          <span>Linha 3: Resumo Completo do Módulo Contas</span>
+        </h2>
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-7">
+          <StatCard
+            title="Total a Receber"
+            value={formatCurrency(stats.totalGeralAReceber)}
+            description="Recebidas + pendentes"
+            icon={Target}
+            trend="up"
+            isLoading={isLoading}
+            variant="default"
+          />
+          <StatCard
+            title="Total a Pagar"
+            value={formatCurrency(stats.totalGeralAPagar)}
+            description="Pagas + pendentes"
+            icon={CreditCard}
+            trend="down"
+            isLoading={isLoading}
+            variant="default"
+          />
+          <StatCard
+            title="Saldo Geral Contas"
+            value={formatCurrency(stats.saldoGeralContas)}
+            description="A receber - a pagar"
+            icon={Banknote}
+            trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
             isLoading={isLoading}
             variant="highlight"
           />
           <StatCard
-            title="Valor Atrasadas"
-            value={formatCurrency(stats.totalValorContasAtrasadas)}
+            title="Valor A Pagar Atrasadas"
+            value={formatCurrency(stats.valorContasPagarAtrasadas)}
             description="Total em atraso"
             icon={AlertTriangle}
             isLoading={isLoading}
@@ -263,15 +314,23 @@ export default function Dashboard() {
           <StatCard
             title="Qtd. A Pagar Atrasadas"
             value={stats.qtdContasPagarAtrasadas.toString()}
-            description="Contas a pagar em atraso"
+            description="Contas em atraso"
             icon={FileText}
+            isLoading={isLoading}
+            variant="danger"
+          />
+          <StatCard
+            title="Valor A Receber Atrasadas"
+            value={formatCurrency(stats.valorContasReceberAtrasadas)}
+            description="Total em atraso"
+            icon={AlertTriangle}
             isLoading={isLoading}
             variant="danger"
           />
           <StatCard
             title="Qtd. A Receber Atrasadas"
             value={stats.qtdContasReceberAtrasadas.toString()}
-            description="Contas a receber em atraso"
+            description="Contas em atraso"
             icon={Target}
             isLoading={isLoading}
             variant="danger"
@@ -355,11 +414,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Contas Vencendo - Movido para parte inferior */}
+        {/* Contas Vencendo */}
         <Card>
           <CardHeader>
             <CardTitle>Contas Vencendo</CardTitle>
-            <CardDescription>Contas vencendo hoje e atrasadas</CardDescription>
+            <CardDescription>
+              Contas vencendo hoje e atrasadas
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {contasVencendo.length === 0 ? (
@@ -397,7 +458,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold">{formatCurrency(conta.valor)}</p>
+                      <p className="font-bold">
+                        {formatCurrency(conta.valor)}
+                      </p>
                       <Badge
                         className={`text-xs ${getStatusColor(conta.status)}`}
                       >
