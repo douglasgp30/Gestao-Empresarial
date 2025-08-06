@@ -14,7 +14,9 @@ interface EmpresaConfig {
 
 interface ConfigContextType {
   empresaConfig: EmpresaConfig;
+  backupConfig: BackupConfig;
   updateEmpresaConfig: (config: Partial<EmpresaConfig>) => void;
+  updateBackupConfig: (config: Partial<BackupConfig>) => void;
   resetToDefault: () => void;
 }
 
