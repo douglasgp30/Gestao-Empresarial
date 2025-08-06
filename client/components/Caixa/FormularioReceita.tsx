@@ -117,6 +117,19 @@ export default function FormularioReceita() {
       valorLiquido = valorLiquido - desconto;
     }
 
+    // Se for boleto, abrir modal de parcelamento
+    if (formData.formaPagamento === "Boleto") {
+      setBoletoData({
+        valorTotal: valor,
+        parcelas: 1,
+        vencimentos: [new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)], // 30 dias a partir de hoje
+        cliente: formData.tecnicoResponsavel || "",
+        descricao: `Serviço - ${formData.setor || "Geral"} - ${formData.cidade || ""}`.trim(),
+      });
+      setIsBoletoModalOpen(true);
+      return; // Não prosseguir com o lançamento ainda
+    }
+
     adicionarLancamento({
       tipo: "receita",
       data: new Date(formData.data),
