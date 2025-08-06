@@ -152,6 +152,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     dataInicio: new Date(),
     dataFim: new Date(),
     tipo: "todos" as "receita" | "despesa" | "todos",
+    formaPagamento: "todas",
+    tecnico: "todos",
+    campanha: "todas",
+    setor: "todos",
   });
 
   const adicionarLancamento = (
