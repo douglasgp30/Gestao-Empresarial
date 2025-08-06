@@ -83,6 +83,14 @@ export default function FormularioReceita() {
     dataFim: "",
   });
 
+  const [novoSetor, setNovoSetor] = useState({
+    nome: "",
+  });
+
+  const [novaCidade, setNovaCidade] = useState({
+    nome: "",
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
