@@ -32,7 +32,7 @@ interface FormularioAgendamentoProps {
 
 export default function FormularioAgendamento({ children, agendamentoId }: FormularioAgendamentoProps) {
   const { criarAgendamento, atualizarAgendamento, agendamentos } = useAgendamentos();
-  const { setores, adicionarSetor } = useEntidades();
+  const { setores, adicionarSetor, cidades, adicionarCidade } = useEntidades();
   const { funcionarios } = useFuncionarios();
   
   const [aberto, setAberto] = useState(false);
