@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import {
   Descricao,
+  Categoria,
   FormaPagamento,
   Cliente,
   Fornecedor,
