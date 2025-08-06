@@ -98,6 +98,7 @@ export default function FormularioReceita() {
   const [novaDescricao, setNovaDescricao] = useState({
     nome: "",
     categoria: "",
+    tipo: "receita" as 'receita' | 'despesa',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
