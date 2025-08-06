@@ -228,7 +228,7 @@ export default function Dashboard() {
               icon={TrendingDown}
               trend="down"
               isLoading={isLoading}
-              variant="default"
+              variant="danger"
             />
             <StatCard
               title="Saldo (Caixa)"
