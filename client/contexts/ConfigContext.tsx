@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { BackupConfig } from '@shared/types';
 
 interface EmpresaConfig {
   nomeEmpresa: string;
