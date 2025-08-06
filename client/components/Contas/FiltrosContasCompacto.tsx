@@ -89,8 +89,8 @@ export default function FiltrosContasCompacto() {
   const contarFiltrosAtivos = () => {
     let count = 0;
     if (filtros.tipo && filtros.tipo !== "ambos") count++;
-    if (filtros.status) count++;
-    if (filtros.fornecedorCliente) count++;
+    if (filtros.status && filtros.status !== "todos") count++;
+    if (filtros.fornecedorCliente && filtros.fornecedorCliente !== "todos") count++;
     return count;
   };
 
