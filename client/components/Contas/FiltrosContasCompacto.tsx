@@ -81,8 +81,8 @@ export default function FiltrosContasCompacto() {
       dataInicio: hoje,
       dataFim: hoje,
       tipo: "ambos",
-      status: undefined,
-      fornecedorCliente: undefined,
+      status: "todos",
+      fornecedorCliente: "todos",
     });
   };
 
