@@ -225,7 +225,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       // SALDO GERAL CONSOLIDADO
       // Total receitas caixa + contas recebidas - total despesas caixa - contas pagas
-      const saldoGeralConsolidado = totalReceitasCaixa + totalContasRecebidas - totalDespesasCaixa - totalContasPagas;
+      const saldoGeralConsolidado =
+        totalReceitasCaixa +
+        totalContasRecebidas -
+        totalDespesasCaixa -
+        totalContasPagas;
 
       // Estatísticas gerais para compatibilidade
       const hoje = new Date();
@@ -237,7 +241,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       const contasAtrasadas = contasContext.contas.filter(
         (c) => c.status === "atrasada",
       ).length;
-
 
       setStats({
         saldoGeralConsolidado,

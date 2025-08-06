@@ -41,7 +41,6 @@ const formasPagamento = [
   "Transferência",
 ];
 
-
 const tecnicos = [
   "João Silva",
   "Carlos Santos",
@@ -310,10 +309,7 @@ export default function FormularioReceita() {
             <div className="space-y-2">
               <Label className="flex items-center justify-between">
                 Setor
-                <Dialog
-                  open={isNewSetorOpen}
-                  onOpenChange={setIsNewSetorOpen}
-                >
+                <Dialog open={isNewSetorOpen} onOpenChange={setIsNewSetorOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm">
                       + Novo
@@ -398,7 +394,10 @@ export default function FormularioReceita() {
                           id="nomeCidade"
                           value={novaCidade.nome}
                           onChange={(e) =>
-                            setNovaCidade({ ...novaCidade, nome: e.target.value })
+                            setNovaCidade({
+                              ...novaCidade,
+                              nome: e.target.value,
+                            })
                           }
                           placeholder="Ex: São Paulo, Santos..."
                         />

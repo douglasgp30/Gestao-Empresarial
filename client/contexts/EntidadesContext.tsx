@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Descricao, FormaPagamento, Cliente, Fornecedor, Setor, Cidade } from "@shared/types";
+import {
+  Descricao,
+  FormaPagamento,
+  Cliente,
+  Fornecedor,
+  Setor,
+  Cidade,
+} from "@shared/types";
 
 interface EntidadesContextType {
   // Descrições

@@ -70,8 +70,8 @@ function StatCard({
     variant === "highlight"
       ? "border-primary/20 bg-primary/5"
       : variant === "danger"
-      ? "border-destructive/20 bg-destructive/5"
-      : "";
+        ? "border-destructive/20 bg-destructive/5"
+        : "";
 
   return (
     <Card className={cardClass}>
@@ -418,9 +418,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Contas Vencendo</CardTitle>
-            <CardDescription>
-              Contas vencendo hoje e atrasadas
-            </CardDescription>
+            <CardDescription>Contas vencendo hoje e atrasadas</CardDescription>
           </CardHeader>
           <CardContent>
             {contasVencendo.length === 0 ? (
@@ -458,9 +456,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold">
-                        {formatCurrency(conta.valor)}
-                      </p>
+                      <p className="font-bold">{formatCurrency(conta.valor)}</p>
                       <Badge
                         className={`text-xs ${getStatusColor(conta.status)}`}
                       >
