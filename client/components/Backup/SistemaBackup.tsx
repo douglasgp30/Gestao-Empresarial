@@ -48,18 +48,7 @@ export default function SistemaBackup() {
     filePath: null,
   });
 
-  const gerarNomeBackup = () => {
-    const agora = new Date();
-    const ano = agora.getFullYear();
-    const mes = String(agora.getMonth() + 1).padStart(2, "0");
-    const dia = String(agora.getDate()).padStart(2, "0");
-    const hora = String(agora.getHours()).padStart(2, "0");
-    const minuto = String(agora.getMinutes()).padStart(2, "0");
-
-    return `SolucaoDesentupimento_Backup_${ano}${mes}${dia}_${hora}${minuto}.bak`;
-  };
-
-  const simularBackup = async () => {
+  const executarBackup = async () => {
     setBackupStatus({
       isRunning: true,
       progress: 0,
@@ -69,46 +58,47 @@ export default function SistemaBackup() {
       filePath: null,
     });
 
-    const etapas = [
-      { stage: "Verificando conexão com banco de dados...", duration: 1000 },
-      { stage: "Validando integridade dos dados...", duration: 1500 },
-      { stage: "Iniciando backup do SQL Server...", duration: 2000 },
-      { stage: "Compactando dados...", duration: 1500 },
-      { stage: "Finalizando backup...", duration: 1000 },
-    ];
-
     try {
-      for (let i = 0; i < etapas.length; i++) {
-        const etapa = etapas[i];
+      const result = await BackupService.performBackup((stage, progress) => {
         setBackupStatus((prev) => ({
           ...prev,
-          stage: etapa.stage,
-          progress: ((i + 1) / etapas.length) * 100,
+          stage,
+          progress,
         }));
-
-        await new Promise((resolve) => setTimeout(resolve, etapa.duration));
-      }
-
-      // Simular criação do arquivo
-      const nomeArquivo = gerarNomeBackup();
-      const caminhoCompleto = `C:\\Backups\\${nomeArquivo}`;
-
-      setBackupStatus({
-        isRunning: false,
-        progress: 100,
-        stage: "Backup concluído com sucesso!",
-        completed: true,
-        error: null,
-        filePath: caminhoCompleto,
       });
+
+      if (result.sucesso) {
+        setBackupStatus({
+          isRunning: false,
+          progress: 100,
+          stage: "Backup concluído com sucesso!",
+          completed: true,
+          error: null,
+          filePath: result.caminhoCompleto || null,
+        });
+
+        const hora = result.dataBackup.toLocaleTimeString('pt-BR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        BackupService.showBackupAlert(`✅ Backup automático realizado com sucesso em ${hora}`);
+      } else {
+        setBackupStatus({
+          isRunning: false,
+          progress: 0,
+          stage: "",
+          completed: false,
+          error: result.erro || "Erro desconhecido durante o backup",
+          filePath: null,
+        });
+      }
     } catch (error) {
       setBackupStatus({
         isRunning: false,
         progress: 0,
         stage: "",
         completed: false,
-        error:
-          "Erro ao executar backup. Verifique as permissões e tente novamente.",
+        error: "Erro ao executar backup. Verifique as permissões e tente novamente.",
         filePath: null,
       });
     }
