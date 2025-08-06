@@ -974,7 +974,7 @@ export default function FormularioReceita() {
                         </span>
                       </div>
                     )}
-                    {formData.formaPagamento.includes("Cartão") && (
+                    {formData.formaPagamento.includes("Cartão") && !formData.valorEntrou && (
                       <div className="flex justify-between text-orange-600">
                         <span>
                           Taxa Cartão (
@@ -986,7 +986,7 @@ export default function FormularioReceita() {
                         <span>
                           - R${" "}
                           {(
-                            calcularValorLiquido() *
+                            (parseFloat(formData.valor) || 0) *
                             (formData.formaPagamento === "Cartão de Débito"
                               ? 0.02
                               : 0.035)
@@ -996,29 +996,50 @@ export default function FormularioReceita() {
                         </span>
                       </div>
                     )}
+                    {formData.formaPagamento.includes("Cartão") && formData.valorEntrou && (
+                      <div className="flex justify-between text-blue-600">
+                        <span>Valor que Entrou:</span>
+                        <span>
+                          R${" "}
+                          {parseFloat(formData.valorEntrou).toLocaleString("pt-BR", {
+                            minimumFractionDigits: 2,
+                          })}
+                        </span>
+                      </div>
+                    )}
                     <Separator />
-                    <div className="flex justify-between text-lg font-bold">
-                      <span>Valor Líquido:</span>
-                      <span className="text-green-600">
+                    <div className="flex justify-between text-lg">
+                      <span>Valor Antes da Comissão:</span>
+                      <span className="text-blue-600">
                         R${" "}
-                        {calcularValorLiquido().toLocaleString("pt-BR", {
+                        {calcularValorSemComissao().toLocaleString("pt-BR", {
                           minimumFractionDigits: 2,
                         })}
                       </span>
                     </div>
                     {formData.tecnicoResponsavel && (
-                      <div className="flex justify-between text-blue-600">
+                      <div className="flex justify-between text-orange-600">
                         <span>
                           Comissão {formData.tecnicoResponsavel} (15%):
                         </span>
                         <span>
-                          R${" "}
+                          - R${" "}
                           {calcularComissao().toLocaleString("pt-BR", {
                             minimumFractionDigits: 2,
                           })}
                         </span>
                       </div>
                     )}
+                    <Separator />
+                    <div className="flex justify-between text-lg font-bold">
+                      <span>Valor Líquido Final (Empresa):</span>
+                      <span className="text-green-600">
+                        R${" "}
+                        {calcularValorLiquidoFinal().toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
+                    </div>
                   </CardContent>
                 </Card>
               </>
