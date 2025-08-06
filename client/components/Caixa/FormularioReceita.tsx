@@ -212,6 +212,89 @@ export default function FormularioReceita() {
     setIsNewCidadeOpen(false);
   };
 
+  const handleParcelasChange = (numParcelas: number) => {
+    const novasData = [];
+    const valorParcela = boletoData.valorTotal / numParcelas;
+
+    for (let i = 0; i < numParcelas; i++) {
+      const dataVencimento = new Date();
+      dataVencimento.setDate(dataVencimento.getDate() + (i + 1) * 30); // 30 dias entre parcelas
+      novasData.push(dataVencimento);
+    }
+
+    setBoletoData({
+      ...boletoData,
+      parcelas: numParcelas,
+      vencimentos: novasData,
+    });
+  };
+
+  const handleVencimentoChange = (index: number, novaData: string) => {
+    const novosVencimentos = [...boletoData.vencimentos];
+    novosVencimentos[index] = new Date(novaData);
+    setBoletoData({
+      ...boletoData,
+      vencimentos: novosVencimentos,
+    });
+  };
+
+  const handleConfirmarBoleto = () => {
+    const valorParcela = boletoData.valorTotal / boletoData.parcelas;
+
+    // Adicionar lançamento no caixa
+    adicionarLancamento({
+      tipo: "receita",
+      data: new Date(formData.data),
+      valor: boletoData.valorTotal,
+      valorLiquido: boletoData.valorTotal,
+      formaPagamento: "Boleto",
+      tecnicoResponsavel: formData.tecnicoResponsavel,
+      notaFiscal: formData.notaFiscal,
+      descontoImposto: formData.notaFiscal ? boletoData.valorTotal * 0.06 : undefined,
+      setor: formData.setor,
+      cidade: formData.cidade,
+      campanha: formData.campanha || undefined,
+      descricao: boletoData.descricao,
+    });
+
+    // Adicionar cada parcela como conta a receber
+    boletoData.vencimentos.forEach((vencimento, index) => {
+      adicionarConta({
+        tipo: "receber",
+        dataVencimento: vencimento,
+        fornecedorCliente: boletoData.cliente,
+        tipoPagamento: "Boleto",
+        valor: valorParcela,
+        status: "pendente",
+        observacoes: `${boletoData.descricao} - Parcela ${index + 1}/${boletoData.parcelas}`,
+      });
+    });
+
+    // Reset forms
+    setFormData({
+      data: new Date().toISOString().split("T")[0],
+      valor: "",
+      formaPagamento: "",
+      tecnicoResponsavel: "",
+      notaFiscal: false,
+      setor: "",
+      cidade: "",
+      campanha: "",
+      observacoes: "",
+    });
+
+    setBoletoData({
+      valorTotal: 0,
+      parcelas: 1,
+      vencimentos: [],
+      cliente: "",
+      descricao: "",
+    });
+
+    setIsBoletoModalOpen(false);
+    setIsOpen(false);
+  };
+
   const calcularValorLiquido = () => {
     const valor = parseFloat(formData.valor) || 0;
     let valorLiquido = valor;
