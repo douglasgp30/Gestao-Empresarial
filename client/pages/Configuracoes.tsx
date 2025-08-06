@@ -64,6 +64,12 @@ export default function Configuracoes() {
       email: "",
       cnpj: "",
     });
+    setLocalBackupConfig({
+      localBackup: 'C:\\Backups\\',
+      backupAutomatico: true,
+      ultimoBackup: undefined,
+      ultimoLoginData: undefined
+    });
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
