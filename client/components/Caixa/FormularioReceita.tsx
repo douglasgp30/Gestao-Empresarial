@@ -58,8 +58,11 @@ const tecnicos = [
 
 export default function FormularioReceita() {
   const { adicionarLancamento, campanhas, adicionarCampanha } = useCaixa();
+  const { setores, adicionarSetor, cidades, adicionarCidade } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
+  const [isNewSetorOpen, setIsNewSetorOpen] = useState(false);
+  const [isNewCidadeOpen, setIsNewCidadeOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -68,6 +71,7 @@ export default function FormularioReceita() {
     tecnicoResponsavel: "",
     notaFiscal: false,
     setor: "",
+    cidade: "",
     campanha: "",
     observacoes: "",
   });
