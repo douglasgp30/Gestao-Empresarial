@@ -157,9 +157,11 @@ export default function Dashboard() {
               <>
                 <span
                   className={`text-lg font-bold ${
-                    stats.saldoGeralConsolidado >= 0
+                    stats.saldoGeralConsolidado > 0
                       ? "text-success"
-                      : "text-destructive"
+                      : stats.saldoGeralConsolidado < 0
+                        ? "text-destructive"
+                        : "text-foreground"
                   }`}
                 >
                   {formatCurrency(stats.saldoGeralConsolidado)}
