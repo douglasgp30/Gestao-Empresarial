@@ -27,7 +27,7 @@ function CaixaContent() {
           <FormularioReceita />
           <FormularioDespesa />
           <ModalCampanhas />
-          <ModalDescricoes />
+          <ModalDescricoesAvancado />
         </div>
       </div>
 
