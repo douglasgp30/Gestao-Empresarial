@@ -40,7 +40,7 @@ import {
 import EmpresaLogo from "../components/EmpresaLogo";
 
 export default function Configuracoes() {
-  const { empresaConfig, updateEmpresaConfig, resetToDefault } = useConfig();
+  const { empresaConfig, backupConfig, updateEmpresaConfig, updateBackupConfig, resetToDefault } = useConfig();
   const { aplicarFiltrosCaixa, setAplicarFiltrosCaixa } = useDashboard();
   const [localConfig, setLocalConfig] = useState(empresaConfig);
   const [savedMessage, setSavedMessage] = useState(false);
