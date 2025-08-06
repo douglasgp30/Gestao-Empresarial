@@ -86,13 +86,17 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
 
   const resetToDefault = () => {
     setEmpresaConfig(defaultConfig);
+    setBackupConfig(defaultBackupConfig);
     localStorage.removeItem('empresa_config');
+    localStorage.removeItem('backup_config');
     document.documentElement.style.setProperty('--primary', defaultConfig.corPrimaria);
   };
 
   const value = {
     empresaConfig,
+    backupConfig,
     updateEmpresaConfig,
+    updateBackupConfig,
     resetToDefault
   };
 
