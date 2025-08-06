@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Badge } from "../ui/badge";
-import { Bell, Clock, User, Calendar, Phone, Snooze, CheckCircle } from "lucide-react";
+import { Bell, Clock, User, Calendar, Phone, AlarmClock, CheckCircle } from "lucide-react";
 import { Agendamento } from "../../../shared/types";
 
 interface ModalLembreteProps {
