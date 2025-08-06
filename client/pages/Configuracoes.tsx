@@ -511,6 +511,85 @@ export default function Configuracoes() {
         <TabsContent value="backup" className="space-y-6">
           <Card>
             <CardHeader>
+              <CardTitle>Configurações de Backup</CardTitle>
+              <CardDescription>
+                Configure o local de backup e backup automático
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="localBackup">Local de Backup</Label>
+                  <div className="flex space-x-2">
+                    <Input
+                      id="localBackup"
+                      value={localBackupConfig.localBackup}
+                      onChange={(e) =>
+                        setLocalBackupConfig({
+                          ...localBackupConfig,
+                          localBackup: e.target.value,
+                        })
+                      }
+                      placeholder="C:\Backups\"
+                      className="flex-1"
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        // Em um sistema real, isso abriria um seletor de pasta
+                        alert("Função para selecionar pasta seria implementada aqui");
+                      }}
+                    >
+                      <FolderOpen className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Diretório onde os backups automáticos e manuais serão salvos
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <Switch
+                      id="backup-automatico"
+                      checked={localBackupConfig.backupAutomatico}
+                      onCheckedChange={(checked) =>
+                        setLocalBackupConfig({
+                          ...localBackupConfig,
+                          backupAutomatico: checked,
+                        })
+                      }
+                    />
+                    <div>
+                      <Label htmlFor="backup-automatico" className="font-medium">
+                        Backup Automático Diário
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {localBackupConfig.backupAutomatico
+                          ? "Backup será feito automaticamente no primeiro login do dia"
+                          : "Backup automático desativado"}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant={localBackupConfig.backupAutomatico ? "default" : "secondary"}>
+                    {localBackupConfig.backupAutomatico ? "Ativo" : "Desativo"}
+                  </Badge>
+                </div>
+
+                {localBackupConfig.backupAutomatico && !localBackupConfig.localBackup.trim() && (
+                  <Alert>
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      ⚠️ Local de backup não definido. Configure o local de backup para ativar o backup automático.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>Sistema de Backup</CardTitle>
               <CardDescription>
                 Gerencie backups manuais do banco de dados
@@ -539,27 +618,33 @@ export default function Configuracoes() {
                     <div>
                       <h4 className="font-medium">Último Backup</h4>
                       <p className="text-sm text-muted-foreground">
-                        Nunca executado
+                        {backupConfig.ultimoBackup
+                          ? new Date(backupConfig.ultimoBackup).toLocaleString('pt-BR')
+                          : "Nunca executado"}
                       </p>
                     </div>
-                    <Badge variant="secondary">Não disponível</Badge>
+                    <Badge variant={backupConfig.ultimoBackup ? "default" : "secondary"}>
+                      {backupConfig.ultimoBackup ? "Disponível" : "Não disponível"}
+                    </Badge>
                   </div>
 
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Pasta de Destino</h4>
                       <p className="text-sm text-muted-foreground">
-                        C:\Backups\
+                        {backupConfig.localBackup}
                       </p>
                     </div>
-                    <Badge variant="outline">Configurado</Badge>
+                    <Badge variant={backupConfig.localBackup.trim() ? "default" : "destructive"}>
+                      {backupConfig.localBackup.trim() ? "Configurado" : "Não configurado"}
+                    </Badge>
                   </div>
 
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Formato do Arquivo</h4>
                       <p className="text-sm text-muted-foreground">
-                        SQL Server Backup (.bak)
+                        backup_YYYY-MM-DD_HH-MM-SS
                       </p>
                     </div>
                     <Badge variant="outline">Padrão</Badge>
