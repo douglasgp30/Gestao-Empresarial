@@ -278,8 +278,8 @@ export default function FiltrosPeriodoCompacto({
 
               onDataInicioChange(inicioSemana.toISOString().split('T')[0]);
               onDataFimChange(dataFim.toISOString().split('T')[0]);
-              onAplicar();
               setFiltroAtivo("esta-semana");
+              onAplicar();
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "esta-semana"
