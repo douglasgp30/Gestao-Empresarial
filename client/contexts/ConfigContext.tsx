@@ -57,10 +57,25 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     if (savedConfig) {
       try {
         const parsedConfig = JSON.parse(savedConfig);
-        setEmpresaConfig({ ...defaultConfig, ...parsedConfig });
+        const loadedConfig = { ...defaultConfig, ...parsedConfig };
+        setEmpresaConfig(loadedConfig);
+
+        // Aplicar cor primária imediatamente ao carregar
+        if (loadedConfig.corPrimaria) {
+          document.documentElement.style.setProperty(
+            "--primary",
+            loadedConfig.corPrimaria,
+          );
+        }
       } catch (error) {
         console.error("Erro ao carregar configurações:", error);
       }
+    } else {
+      // Se não há configuração salva, aplicar a cor padrão
+      document.documentElement.style.setProperty(
+        "--primary",
+        defaultConfig.corPrimaria,
+      );
     }
 
     // Carregar configurações de backup
