@@ -189,7 +189,7 @@ export default function ListaAgendamentos() {
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => handleOrdenar('setor')}
               >
@@ -198,7 +198,10 @@ export default function ListaAgendamentos() {
                   <ArrowUpDown className="h-3 w-3" />
                 </div>
               </TableHead>
-              <TableHead 
+              <TableHead>
+                Cidade
+              </TableHead>
+              <TableHead
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => handleOrdenar('tecnicoResponsavel')}
               >
