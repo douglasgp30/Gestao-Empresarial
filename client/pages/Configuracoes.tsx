@@ -36,6 +36,8 @@ import {
   HardDrive,
   Filter,
   BarChart3,
+  FolderOpen,
+  AlertTriangle,
 } from "lucide-react";
 import EmpresaLogo from "../components/EmpresaLogo";
 
