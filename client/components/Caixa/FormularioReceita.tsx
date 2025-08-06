@@ -51,7 +51,7 @@ const tecnicos = [
 
 export default function FormularioReceita() {
   const { adicionarLancamento, campanhas, adicionarCampanha } = useCaixa();
-  const { setores, adicionarSetor, cidades, adicionarCidade, descricoes, adicionarDescricao } = useEntidades();
+  const { setores, adicionarSetor, cidades, adicionarCidade, descricoes, categorias, adicionarDescricao } = useEntidades();
   const { adicionarConta } = useContas();
   const [isOpen, setIsOpen] = useState(false);
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
