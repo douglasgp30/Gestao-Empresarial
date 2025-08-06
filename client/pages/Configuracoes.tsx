@@ -489,34 +489,66 @@ export default function Configuracoes() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h4 className="font-medium">
-                      Percentual de Comissão Padrão
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      Percentual aplicado por padrão para novos funcionários
-                    </p>
-                  </div>
-                  <Badge variant="secondary">15%</Badge>
+                <div className="space-y-2">
+                  <Label htmlFor="percentualComissao">Percentual de Comissão Padrão (%)</Label>
+                  <Input
+                    id="percentualComissao"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={percentualComissao}
+                    onChange={(e) => setPercentualComissao(parseFloat(e.target.value) || 0)}
+                    placeholder="15"
+                    className={validationErrors.percentualComissao ? "border-red-500" : ""}
+                  />
+                  {validationErrors.percentualComissao && (
+                    <p className="text-sm text-red-500">{validationErrors.percentualComissao}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Percentual aplicado por padrão para novos funcionários
+                  </p>
                 </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Percentual de Imposto (NF)</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Desconto aplicado quando nota fiscal é emitida
-                    </p>
-                  </div>
-                  <Badge variant="secondary">6%</Badge>
+
+                <div className="space-y-2">
+                  <Label htmlFor="percentualImposto">Percentual de Imposto (NF) (%)</Label>
+                  <Input
+                    id="percentualImposto"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={percentualImposto}
+                    onChange={(e) => setPercentualImposto(parseFloat(e.target.value) || 0)}
+                    placeholder="6"
+                    className={validationErrors.percentualImposto ? "border-red-500" : ""}
+                  />
+                  {validationErrors.percentualImposto && (
+                    <p className="text-sm text-red-500">{validationErrors.percentualImposto}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Desconto aplicado quando nota fiscal é emitida
+                  </p>
                 </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h4 className="font-medium">Sessão Automática</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Tempo limite para logout automático (em minutos)
-                    </p>
-                  </div>
-                  <Badge variant="secondary">60 min</Badge>
+
+                <div className="space-y-2">
+                  <Label htmlFor="tempoSessao">Tempo de Sessão Automática (minutos)</Label>
+                  <Input
+                    id="tempoSessao"
+                    type="number"
+                    min="5"
+                    max="480"
+                    value={tempoSessao}
+                    onChange={(e) => setTempoSessao(parseInt(e.target.value) || 60)}
+                    placeholder="60"
+                    className={validationErrors.tempoSessao ? "border-red-500" : ""}
+                  />
+                  {validationErrors.tempoSessao && (
+                    <p className="text-sm text-red-500">{validationErrors.tempoSessao}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Tempo limite para logout automático (5 a 480 minutos)
+                  </p>
                 </div>
               </div>
             </CardContent>
