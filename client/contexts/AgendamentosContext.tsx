@@ -38,12 +38,10 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
   
   // Filtros padrão
   const hoje = new Date();
-  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-  const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-  
+
   const [filtros, setFiltros] = useState<FiltrosAgendamento>({
-    dataInicio: inicioMes,
-    dataFim: fimMes,
+    dataInicio: hoje,
+    dataFim: hoje,
     status: "todos"
   });
 
