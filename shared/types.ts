@@ -71,29 +71,33 @@ export interface LoginCredentials {
 }
 
 export interface DashboardStats {
-  // Primeira linha - Totais do Caixa
-  totalReceitas: number;
-  totalDespesas: number;
-  saldoFinal: number;
+  // SALDO GERAL (acima do título)
+  saldoGeralConsolidado: number;
 
-  // Segunda linha - Receitas/Despesas efetivamente recebidas/pagas
-  totalReceitasRecebidas: number;
-  totalDespesasPagas: number;
-  saldoGeralRecebidoPago: number;
+  // Linha 1 - Totais do Módulo Caixa (dinâmicos com filtros)
+  totalReceitasCaixa: number;
+  totalDespesasCaixa: number;
+  saldoCaixa: number;
 
-  // Terceira linha - Totais específicos do módulo Contas
-  totalContasRecebidasPagas: number;
-  totalContasPagasPagas: number;
-  saldoContas: number;
-  totalValorContasAtrasadas: number;
+  // Linha 2 - Totais do Módulo Contas (apenas pagas/recebidas)
+  totalContasRecebidas: number; // Contas a receber marcadas como pagas
+  totalContasPagas: number; // Contas a pagar marcadas como pagas
+  saldoContasPagas: number; // Contas recebidas - contas pagas
+
+  // Linha 3 - Resumo Completo do Módulo Contas
+  totalGeralAReceber: number; // Todas as contas a receber (pagas + pendentes)
+  totalGeralAPagar: number; // Todas as contas a pagar (pagas + pendentes)
+  saldoGeralContas: number; // Total a receber - total a pagar
+
+  // Contas Atrasadas (em vermelho)
+  valorContasPagarAtrasadas: number;
   qtdContasPagarAtrasadas: number;
+  valorContasReceberAtrasadas: number;
   qtdContasReceberAtrasadas: number;
 
   // Stats gerais para compatibilidade
   contasVencendoHoje: number;
   contasAtrasadas: number;
-  totalContasPagar: number;
-  totalContasReceber: number;
 }
 
 export interface RelatorioFiltros {
