@@ -247,29 +247,22 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         .reduce((total, c) => total + c.valor, 0);
 
       setStats({
-        // Primeira linha
-        totalReceitas,
-        totalDespesas,
-        saldoFinal,
-
-        // Segunda linha
-        totalReceitasRecebidas,
-        totalDespesasPagas,
-        saldoGeralRecebidoPago,
-
-        // Terceira linha
-        totalContasRecebidasPagas,
-        totalContasPagasPagas,
-        saldoContas,
-        totalValorContasAtrasadas,
+        saldoGeralConsolidado,
+        totalReceitasCaixa,
+        totalDespesasCaixa,
+        saldoCaixa,
+        totalContasRecebidas,
+        totalContasPagas,
+        saldoContasPagas,
+        totalGeralAReceber,
+        totalGeralAPagar,
+        saldoGeralContas,
+        valorContasPagarAtrasadas,
         qtdContasPagarAtrasadas,
+        valorContasReceberAtrasadas,
         qtdContasReceberAtrasadas,
-
-        // Compatibilidade
         contasVencendoHoje,
         contasAtrasadas,
-        totalContasPagar,
-        totalContasReceber,
       });
 
       setIsLoading(false);
