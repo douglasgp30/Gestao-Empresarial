@@ -394,11 +394,9 @@ export default function ListaAgendamentos() {
       {agendamentoEditar && (
         <FormularioAgendamento
           agendamentoId={agendamentoEditar}
+          onClose={() => setAgendamentoEditar(null)}
         >
-          <Button
-            style={{ display: 'none' }}
-            onClick={() => setAgendamentoEditar(null)}
-          />
+          <div style={{ display: 'none' }} />
         </FormularioAgendamento>
       )}
 
