@@ -250,7 +250,7 @@ export default function FiltrosRelatoriosCompacto() {
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
+                    <SelectItem value="todas">Todas</SelectItem>
                     {formasPagamento.map((forma) => (
                       <SelectItem key={forma} value={forma}>
                         {forma}
