@@ -248,13 +248,7 @@ export default function FiltrosPeriodoCompacto({
           <Button
             variant={filtroAtivo === "hoje" ? "default" : "ghost"}
             size="sm"
-            onClick={() => {
-              const hoje = new Date();
-              onDataInicioChange(hoje.toISOString().split('T')[0]);
-              onDataFimChange(hoje.toISOString().split('T')[0]);
-              onAplicar();
-              setFiltroAtivo("hoje");
-            }}
+            onClick={aplicarFiltroHoje}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "hoje"
                 ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
