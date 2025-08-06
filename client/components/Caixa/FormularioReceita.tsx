@@ -368,7 +368,7 @@ export default function FormularioReceita() {
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button className="gap-2">
+          <Button className="gap-2 bg-green-600 hover:bg-green-700 text-white">
             <TrendingUp className="h-4 w-4" />
             Nova Receita
           </Button>
@@ -832,7 +832,7 @@ export default function FormularioReceita() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="observacoes">Observações (Opcional)</Label>
+              <Label htmlFor="observacoes">Observaç��es (Opcional)</Label>
               <Textarea
                 id="observacoes"
                 value={formData.observacoes}
