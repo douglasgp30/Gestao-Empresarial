@@ -356,6 +356,34 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     setDescricoes((prev) => prev.filter((descricao) => descricao.id !== id));
   };
 
+  // Categorias
+  const adicionarCategoria = (
+    novaCategoria: Omit<Categoria, "id" | "dataCriacao">,
+  ) => {
+    const id = Date.now().toString();
+    const categoria: Categoria = {
+      ...novaCategoria,
+      id,
+      dataCriacao: new Date(),
+    };
+    setCategorias((prev) => [...prev, categoria]);
+  };
+
+  const editarCategoria = (
+    id: string,
+    dadosAtualizados: Partial<Categoria>,
+  ) => {
+    setCategorias((prev) =>
+      prev.map((categoria) =>
+        categoria.id === id ? { ...categoria, ...dadosAtualizados } : categoria,
+      ),
+    );
+  };
+
+  const excluirCategoria = (id: string) => {
+    setCategorias((prev) => prev.filter((categoria) => categoria.id !== id));
+  };
+
   // Formas de Pagamento
   const adicionarFormaPagamento = (
     novaForma: Omit<FormaPagamento, "id" | "dataCriacao">,
