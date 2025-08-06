@@ -225,6 +225,22 @@ export default function FormularioReceita() {
     setIsNewCidadeOpen(false);
   };
 
+  const handleAddDescricao = () => {
+    if (!novaDescricao.nome.trim()) return;
+
+    adicionarDescricao({
+      nome: novaDescricao.nome,
+      categoria: novaDescricao.categoria || undefined,
+    });
+
+    setNovaDescricao({
+      nome: "",
+      categoria: "",
+    });
+
+    setIsNewDescricaoOpen(false);
+  };
+
   const handleParcelasChange = (numParcelas: number) => {
     const novasData = [];
     const valorParcela = boletoData.valorTotal / numParcelas;
