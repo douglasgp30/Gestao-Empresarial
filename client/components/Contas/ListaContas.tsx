@@ -172,7 +172,46 @@ export default function ListaContas() {
       );
     })
     .sort((a, b) => {
-      // Ordenar por status (atrasada, vence hoje, pendente, paga) e depois por data
+      // Aplicar ordenação personalizada se houver
+      if (sortField && sortDirection) {
+        let aValue: any, bValue: any;
+
+        switch (sortField) {
+          case 'dataVencimento':
+            aValue = new Date(a.dataVencimento).getTime();
+            bValue = new Date(b.dataVencimento).getTime();
+            break;
+          case 'tipo':
+            aValue = a.tipo;
+            bValue = b.tipo;
+            break;
+          case 'fornecedorCliente':
+            aValue = a.fornecedorCliente.toLowerCase();
+            bValue = b.fornecedorCliente.toLowerCase();
+            break;
+          case 'valor':
+            aValue = a.valor;
+            bValue = b.valor;
+            break;
+          case 'tipoPagamento':
+            aValue = a.tipoPagamento.toLowerCase();
+            bValue = b.tipoPagamento.toLowerCase();
+            break;
+          case 'status':
+            const statusOrder = { atrasada: 0, vence_hoje: 1, pendente: 2, paga: 3 };
+            aValue = statusOrder[a.status as keyof typeof statusOrder];
+            bValue = statusOrder[b.status as keyof typeof statusOrder];
+            break;
+          default:
+            return 0;
+        }
+
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      }
+
+      // Ordenação padrão por status (atrasada, vence hoje, pendente, paga) e depois por data
       const statusOrder = { atrasada: 0, vence_hoje: 1, pendente: 2, paga: 3 };
       const statusDiff =
         statusOrder[a.status as keyof typeof statusOrder] -
