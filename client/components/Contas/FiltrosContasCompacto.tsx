@@ -47,6 +47,15 @@ export default function FiltrosContasCompacto() {
   const { filtros, setFiltros, totais, isLoading } = useContas();
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
+  // Valores padrão para evitar erros durante o carregamento
+  const totaisSeguro = totais || {
+    totalReceber: 0,
+    totalPagar: 0,
+    totalAtrasadas: 0,
+    totalVencendoHoje: 0,
+    totalPagas: 0,
+  };
+
   const handleDataInicioChange = (data: string) => {
     setFiltros({
       ...filtros,
