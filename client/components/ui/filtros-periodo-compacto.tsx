@@ -96,6 +96,27 @@ export default function FiltrosPeriodoCompacto({
   React.useEffect(() => {
     setFiltroAtivo(determinarFiltroAtivo());
   }, [dataInicio, dataFim]);
+
+  const handleLimparInterno = () => {
+    // Reset para "Hoje" em todos os módulos, exceto Dashboard que usa "Este Mês"
+    const hoje = new Date();
+    if (filtroInicialDashboard) {
+      const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+      onDataInicioChange(inicioMes.toISOString().split('T')[0]);
+      onDataFimChange(fimMes.toISOString().split('T')[0]);
+      setFiltroAtivo("este-mes");
+    } else {
+      onDataInicioChange(hoje.toISOString().split('T')[0]);
+      onDataFimChange(hoje.toISOString().split('T')[0]);
+      setFiltroAtivo("hoje");
+    }
+    if (onLimpar) {
+      onLimpar();
+    }
+    onAplicar();
+  };
+
   return (
     <div className={`bg-muted/30 rounded-lg p-3 border ${className}`}>
       <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
