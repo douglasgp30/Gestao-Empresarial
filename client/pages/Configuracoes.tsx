@@ -43,6 +43,7 @@ export default function Configuracoes() {
   const { empresaConfig, backupConfig, updateEmpresaConfig, updateBackupConfig, resetToDefault } = useConfig();
   const { aplicarFiltrosCaixa, setAplicarFiltrosCaixa } = useDashboard();
   const [localConfig, setLocalConfig] = useState(empresaConfig);
+  const [localBackupConfig, setLocalBackupConfig] = useState(backupConfig);
   const [savedMessage, setSavedMessage] = useState(false);
 
   const handleSave = () => {
