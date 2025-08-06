@@ -385,8 +385,13 @@ export default function ListaAgendamentos() {
 
       {/* Dialog de Edição */}
       {agendamentoEditar && (
-        <FormularioAgendamento agendamentoId={agendamentoEditar}>
-          <div />
+        <FormularioAgendamento
+          agendamentoId={agendamentoEditar}
+        >
+          <Button
+            style={{ display: 'none' }}
+            onClick={() => setAgendamentoEditar(null)}
+          />
         </FormularioAgendamento>
       )}
 
