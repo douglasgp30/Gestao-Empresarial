@@ -134,7 +134,13 @@ export default function FiltrosCaixa() {
               <div>
                 <p className="text-sm text-muted-foreground">Saldo Final</p>
                 <p
-                  className={`text-2xl font-bold ${totais.saldo >= 0 ? "text-green-600" : "text-red-600"}`}
+                  className={`text-2xl font-bold ${
+                    totais.saldo > 0
+                      ? "text-green-600"
+                      : totais.saldo < 0
+                        ? "text-red-600"
+                        : "text-foreground"
+                  }`}
                 >
                   {isLoading
                     ? "..."
