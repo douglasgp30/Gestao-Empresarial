@@ -48,12 +48,10 @@ export default function FiltrosAgendamentosCompacto() {
 
   const limparFiltros = () => {
     const hoje = new Date();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-    
+
     setFiltros({
-      dataInicio: inicioMes,
-      dataFim: fimMes,
+      dataInicio: hoje,
+      dataFim: hoje,
       status: "todos",
       setor: undefined,
       tecnico: undefined,
