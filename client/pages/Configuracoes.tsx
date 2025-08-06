@@ -40,6 +40,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import EmpresaLogo from "../components/EmpresaLogo";
+import { useEffect } from "react";
 
 export default function Configuracoes() {
   const {
@@ -741,7 +742,7 @@ export default function Configuracoes() {
                       <ul className="text-sm text-yellow-700 mt-1 space-y-1">
                         <li>• Execute backups regularmente</li>
                         <li>• Mantenha backups em local seguro</li>
-                        <li>• Teste a restauração periodicamente</li>
+                        <li>��� Teste a restauração periodicamente</li>
                         <li>• Considere backups em mídia externa</li>
                       </ul>
                     </div>
