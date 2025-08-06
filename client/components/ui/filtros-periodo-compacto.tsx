@@ -229,7 +229,7 @@ export default function FiltrosPeriodoCompacto({
 
       {/* Filtros Rápidos - Mobile/Desktop */}
       <div className="mt-2 pt-2 border-t border-muted">
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 sm:gap-2">
           {/* 1. Hoje */}
           <Button
             variant={filtroAtivo === "hoje" ? "default" : "ghost"}
