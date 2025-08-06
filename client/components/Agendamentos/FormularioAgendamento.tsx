@@ -328,6 +328,54 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
             )}
           </div>
 
+          {/* Cidade */}
+          <div className="space-y-2">
+            <Label>Cidade</Label>
+            <div className="flex gap-2">
+              <Select
+                value={formData.cidade}
+                onValueChange={(value) => setFormData({ ...formData, cidade: value })}
+              >
+                <SelectTrigger className={`flex-1 ${erros.cidade ? "border-red-500" : ""}`}>
+                  <SelectValue placeholder="Selecione a cidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cidades.map((cidade) => (
+                    <SelectItem key={cidade.id} value={cidade.nome}>
+                      {cidade.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setMostrarNovaCidade(!mostrarNovaCidade)}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {mostrarNovaCidade && (
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Nome da nova cidade"
+                  value={novaCidade}
+                  onChange={(e) => setNovaCidade(e.target.value)}
+                  className="flex-1"
+                />
+                <Button type="button" size="sm" onClick={handleAdicionarCidade}>
+                  Adicionar
+                </Button>
+              </div>
+            )}
+
+            {erros.cidade && (
+              <p className="text-sm text-red-500">{erros.cidade}</p>
+            )}
+          </div>
+
           {/* Técnico (Opcional) */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
