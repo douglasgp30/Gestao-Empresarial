@@ -13,6 +13,7 @@ interface FiltrosPeriodoCompactoProps {
   onLimpar?: () => void;
   isLoading?: boolean;
   className?: string;
+  filtroInicialDashboard?: boolean; // Para definir filtro inicial diferente no Dashboard
 }
 
 export default function FiltrosPeriodoCompacto({
