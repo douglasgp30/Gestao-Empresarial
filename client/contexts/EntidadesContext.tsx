@@ -32,6 +32,18 @@ interface EntidadesContextType {
   editarFornecedor: (id: string, fornecedor: Partial<Fornecedor>) => void;
   excluirFornecedor: (id: string) => void;
 
+  // Setores
+  setores: Setor[];
+  adicionarSetor: (setor: Omit<Setor, "id" | "dataCriacao">) => void;
+  editarSetor: (id: string, setor: Partial<Setor>) => void;
+  excluirSetor: (id: string) => void;
+
+  // Cidades
+  cidades: Cidade[];
+  adicionarCidade: (cidade: Omit<Cidade, "id" | "dataCriacao">) => void;
+  editarCidade: (id: string, cidade: Partial<Cidade>) => void;
+  excluirCidade: (id: string) => void;
+
   isLoading: boolean;
 }
 
