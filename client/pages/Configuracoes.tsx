@@ -356,20 +356,22 @@ export default function Configuracoes() {
             <CardContent>
               <div className="flex items-center space-x-4">
                 <Button
-                  variant={document.documentElement.classList.contains('dark') ? "outline" : "default"}
+                  variant={!temaDark ? "default" : "outline"}
                   onClick={() => {
                     document.documentElement.classList.remove('dark');
                     localStorage.setItem('theme', 'light');
+                    setTemaDark(false);
                   }}
                   className="flex-1"
                 >
                   ☀️ Modo Claro
                 </Button>
                 <Button
-                  variant={document.documentElement.classList.contains('dark') ? "default" : "outline"}
+                  variant={temaDark ? "default" : "outline"}
                   onClick={() => {
                     document.documentElement.classList.add('dark');
                     localStorage.setItem('theme', 'dark');
+                    setTemaDark(true);
                   }}
                   className="flex-1"
                 >
