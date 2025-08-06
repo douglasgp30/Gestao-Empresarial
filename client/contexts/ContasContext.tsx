@@ -34,12 +34,19 @@ interface ContasContextType {
 
 const ContasContext = createContext<ContasContextType | undefined>(undefined);
 
-// Mock data inicial
+// Mock data inicial - datas variadas para teste dos filtros
+const hoje = new Date();
+const amanha = new Date(hoje.getTime() + 24 * 60 * 60 * 1000);
+const doisdiasfrente = new Date(hoje.getTime() + 2 * 24 * 60 * 60 * 1000);
+const cincofuturo = new Date(hoje.getTime() + 5 * 24 * 60 * 60 * 1000);
+const dezvencido = new Date(hoje.getTime() - 10 * 24 * 60 * 60 * 1000);
+const vintevencido = new Date(hoje.getTime() - 20 * 24 * 60 * 60 * 1000);
+
 const mockContas: Conta[] = [
   {
     id: "1",
     tipo: "pagar",
-    dataVencimento: new Date(2024, 11, 5),
+    dataVencimento: hoje,
     fornecedorCliente: "Posto de Gasolina ABC",
     tipoPagamento: "Boleto",
     valor: 350.0,
@@ -50,7 +57,7 @@ const mockContas: Conta[] = [
   {
     id: "2",
     tipo: "receber",
-    dataVencimento: new Date(2024, 11, 4),
+    dataVencimento: dezvencido,
     fornecedorCliente: "Empresa XYZ Ltda",
     tipoPagamento: "Boleto",
     valor: 1200.0,
@@ -61,7 +68,7 @@ const mockContas: Conta[] = [
   {
     id: "3",
     tipo: "pagar",
-    dataVencimento: new Date(2024, 11, 10),
+    dataVencimento: cincofuturo,
     fornecedorCliente: "Fornecedor de Materiais Silva",
     tipoPagamento: "Pix",
     valor: 580.0,
@@ -72,7 +79,7 @@ const mockContas: Conta[] = [
   {
     id: "4",
     tipo: "receber",
-    dataVencimento: new Date(2024, 11, 6),
+    dataVencimento: amanha,
     fornecedorCliente: "Condomínio Residencial Verde",
     tipoPagamento: "Transferência",
     valor: 750.0,
@@ -83,19 +90,19 @@ const mockContas: Conta[] = [
   {
     id: "5",
     tipo: "pagar",
-    dataVencimento: new Date(2024, 10, 28),
+    dataVencimento: vintevencido,
     fornecedorCliente: "Oficina do João - Manutenção",
     tipoPagamento: "Dinheiro",
     valor: 420.0,
     status: "paga",
     observacoes: "Manutenção da van",
-    dataPagamento: new Date(2024, 10, 27),
+    dataPagamento: new Date(vintevencido.getTime() - 24 * 60 * 60 * 1000),
     funcionarioId: "1",
   },
   {
     id: "6",
     tipo: "receber",
-    dataVencimento: new Date(2024, 11, 8),
+    dataVencimento: doisdiasfrente,
     fornecedorCliente: "Restaurante Bom Sabor",
     tipoPagamento: "Cartão",
     valor: 320.0,
