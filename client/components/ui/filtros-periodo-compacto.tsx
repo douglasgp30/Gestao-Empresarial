@@ -27,6 +27,75 @@ export default function FiltrosPeriodoCompacto({
   className = "",
   filtroInicialDashboard = false,
 }: FiltrosPeriodoCompactoProps) {
+  const [filtroAtivo, setFiltroAtivo] = useState<string>("");
+
+  // Determinar qual filtro está ativo com base nas datas
+  const determinarFiltroAtivo = () => {
+    const hoje = new Date();
+    const dataInicioDate = new Date(dataInicio);
+    const dataFimDate = new Date(dataFim);
+
+    // Normalizar datas para comparação (apenas ano, mês, dia)
+    const hojeNorm = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+    const inicioNorm = new Date(dataInicioDate.getFullYear(), dataInicioDate.getMonth(), dataInicioDate.getDate());
+    const fimNorm = new Date(dataFimDate.getFullYear(), dataFimDate.getMonth(), dataFimDate.getDate());
+
+    // Hoje
+    if (inicioNorm.getTime() === hojeNorm.getTime() && fimNorm.getTime() === hojeNorm.getTime()) {
+      return "hoje";
+    }
+
+    // Esta Semana
+    const inicioSemana = new Date(hoje);
+    const dia = hoje.getDay();
+    const diasAtras = dia === 0 ? 6 : dia - 1;
+    inicioSemana.setDate(hoje.getDate() - diasAtras);
+    const inicioSemanaNorm = new Date(inicioSemana.getFullYear(), inicioSemana.getMonth(), inicioSemana.getDate());
+
+    if (inicioNorm.getTime() === inicioSemanaNorm.getTime() && fimNorm.getTime() === hojeNorm.getTime()) {
+      return "esta-semana";
+    }
+
+    // Últimos 7 Dias
+    const ultimos7 = new Date(hoje.getTime() - 6 * 24 * 60 * 60 * 1000);
+    const ultimos7Norm = new Date(ultimos7.getFullYear(), ultimos7.getMonth(), ultimos7.getDate());
+
+    if (inicioNorm.getTime() === ultimos7Norm.getTime() && fimNorm.getTime() === hojeNorm.getTime()) {
+      return "ultimos-7";
+    }
+
+    // Últimos 15 Dias
+    const ultimos15 = new Date(hoje.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const ultimos15Norm = new Date(ultimos15.getFullYear(), ultimos15.getMonth(), ultimos15.getDate());
+
+    if (inicioNorm.getTime() === ultimos15Norm.getTime() && fimNorm.getTime() === hojeNorm.getTime()) {
+      return "ultimos-15";
+    }
+
+    // Últimos 30 Dias
+    const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
+    const ultimos30Norm = new Date(ultimos30.getFullYear(), ultimos30.getMonth(), ultimos30.getDate());
+
+    if (inicioNorm.getTime() === ultimos30Norm.getTime() && fimNorm.getTime() === hojeNorm.getTime()) {
+      return "ultimos-30";
+    }
+
+    // Este Mês
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    const inicioMesNorm = new Date(inicioMes.getFullYear(), inicioMes.getMonth(), inicioMes.getDate());
+    const fimMesNorm = new Date(fimMes.getFullYear(), fimMes.getMonth(), fimMes.getDate());
+
+    if (inicioNorm.getTime() === inicioMesNorm.getTime() && fimNorm.getTime() === fimMesNorm.getTime()) {
+      return "este-mes";
+    }
+
+    return "";
+  };
+
+  React.useEffect(() => {
+    setFiltroAtivo(determinarFiltroAtivo());
+  }, [dataInicio, dataFim]);
   return (
     <div className={`bg-muted/30 rounded-lg p-3 border ${className}`}>
       <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
