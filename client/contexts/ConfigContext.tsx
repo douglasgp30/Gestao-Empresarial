@@ -30,6 +30,13 @@ const defaultConfig: EmpresaConfig = {
   cnpj: ''
 };
 
+const defaultBackupConfig: BackupConfig = {
+  localBackup: 'C:\\Backups\\',
+  backupAutomatico: true,
+  ultimoBackup: undefined,
+  ultimoLoginData: undefined
+};
+
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
