@@ -218,6 +218,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>(mockClientes);
   const [fornecedores, setFornecedores] =
     useState<Fornecedor[]>(mockFornecedores);
+  const [setores, setSetores] = useState<Setor[]>(mockSetores);
+  const [cidades, setCidades] = useState<Cidade[]>(mockCidades);
   const [isLoading, setIsLoading] = useState(false);
 
   // Descrições
