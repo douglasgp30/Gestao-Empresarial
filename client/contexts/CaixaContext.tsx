@@ -183,6 +183,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       return dentroDataInicio && dentroDataFim && tipoCorreto;
     });
 
+    // Para receitas, sempre usar valor líquido (valor real recebido)
+    // Considera descontos de cartão, nota fiscal, etc.
     const receitas = lancamentosFiltrados
       .filter((l) => l.tipo === "receita")
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
