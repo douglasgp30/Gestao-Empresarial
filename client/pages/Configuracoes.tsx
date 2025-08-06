@@ -131,6 +131,12 @@ export default function Configuracoes() {
       ultimoBackup: undefined,
       ultimoLoginData: undefined,
     });
+
+    // Resetar configurações de usuários
+    setPercentualComissao(15);
+    setPercentualImposto(6);
+    setTempoSessao(60);
+    setValidationErrors({});
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
