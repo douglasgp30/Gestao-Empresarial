@@ -78,7 +78,9 @@ function StatCard({
       ? "border-primary/20 bg-primary/5"
       : variant === "danger"
         ? "border-destructive/20 bg-destructive/5"
-        : "";
+        : variant === "success"
+          ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950"
+          : "";
 
   return (
     <Card className={cardClass}>
