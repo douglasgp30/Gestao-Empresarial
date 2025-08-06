@@ -174,6 +174,9 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
 
   const concluirAgendamento = (id: string) => {
     atualizarAgendamento(id, { status: 'concluido' });
+
+    // Marcar lembrete como lido para evitar notificações futuras
+    marcarLembreteComoLido(id);
   };
 
   const marcarLembreteComoLido = (agendamentoId: string) => {
