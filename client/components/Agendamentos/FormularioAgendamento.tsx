@@ -215,8 +215,15 @@ export default function FormularioAgendamento({ children, agendamentoId, onClose
     return horarios;
   };
 
+  const handleOpenChange = (open: boolean) => {
+    setAberto(open);
+    if (!open && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={aberto} onOpenChange={setAberto}>
+    <Dialog open={aberto} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children || (
           <Button onClick={() => setAberto(true)}>
