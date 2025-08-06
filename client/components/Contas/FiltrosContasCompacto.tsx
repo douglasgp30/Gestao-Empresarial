@@ -243,7 +243,7 @@ export default function FiltrosContasCompacto() {
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="Empresa XYZ Ltda">Empresa XYZ Ltda</SelectItem>
                     <SelectItem value="João Silva">João Silva</SelectItem>
                     <SelectItem value="Maria Santos">Maria Santos</SelectItem>
