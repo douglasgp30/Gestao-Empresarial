@@ -166,6 +166,7 @@ export default function FormularioReceita() {
       notaFiscal: false,
       setor: "",
       cidade: "",
+      descricaoServico: "",
       campanha: "",
       observacoes: "",
     });
