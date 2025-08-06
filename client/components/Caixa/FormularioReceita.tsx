@@ -424,7 +424,7 @@ export default function FormularioReceita() {
                 <Select
                   value={formData.formaPagamento}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, formaPagamento: value })
+                    setFormData({ ...formData, formaPagamento: value, valorEntrou: "" })
                   }
                 >
                   <SelectTrigger>
@@ -439,6 +439,26 @@ export default function FormularioReceita() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Campo "Valor que Entrou" para cartões */}
+              {(formData.formaPagamento === "Cartão de Crédito" || formData.formaPagamento === "Cartão de Débito") && (
+                <div className="space-y-2">
+                  <Label htmlFor="valorEntrou">Valor que Entrou (R$)</Label>
+                  <Input
+                    id="valorEntrou"
+                    type="number"
+                    step="0.01"
+                    placeholder="Valor líquido recebido"
+                    value={formData.valorEntrou}
+                    onChange={(e) =>
+                      setFormData({ ...formData, valorEntrou: e.target.value })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Valor que realmente entrou na conta após as taxas
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label>Técnico Responsável</Label>
