@@ -263,12 +263,72 @@ export default function ListaContas() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Vencimento</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Fornecedor/Cliente</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Pagamento</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('dataVencimento')}
+                    >
+                      Vencimento
+                      {getSortIcon('dataVencimento')}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('tipo')}
+                    >
+                      Tipo
+                      {getSortIcon('tipo')}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('fornecedorCliente')}
+                    >
+                      Fornecedor/Cliente
+                      {getSortIcon('fornecedorCliente')}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('valor')}
+                    >
+                      Valor
+                      {getSortIcon('valor')}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('tipoPagamento')}
+                    >
+                      Pagamento
+                      {getSortIcon('tipoPagamento')}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 font-medium"
+                      onClick={() => handleSort('status')}
+                    >
+                      Status
+                      {getSortIcon('status')}
+                    </Button>
+                  </TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -407,7 +467,7 @@ export default function ListaContas() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Dialog de confirmação de exclusão */}
+      {/* Dialog de confirmação de exclus��o */}
       <AlertDialog
         open={!!contaParaExcluir}
         onOpenChange={() => setContaParaExcluir(null)}
