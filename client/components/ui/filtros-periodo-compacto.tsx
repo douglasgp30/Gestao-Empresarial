@@ -52,7 +52,15 @@ export default function FiltrosPeriodoCompacto({
     inicioSemana.setDate(hoje.getDate() - diasAtras);
     const inicioSemanaNorm = new Date(inicioSemana.getFullYear(), inicioSemana.getMonth(), inicioSemana.getDate());
 
-    if (inicioNorm.getTime() === inicioSemanaNorm.getTime() && fimNorm.getTime() === hojeNorm.getTime()) {
+    // Fim da semana (domingo)
+    const fimSemana = new Date(inicioSemana);
+    fimSemana.setDate(inicioSemana.getDate() + 6);
+    const fimSemanaNorm = new Date(fimSemana.getFullYear(), fimSemana.getMonth(), fimSemana.getDate());
+
+    // Se ainda estamos na semana atual, usar até hoje, senão usar até domingo
+    const dataFimSemana = fimSemana <= hoje ? fimSemanaNorm : hojeNorm;
+
+    if (inicioNorm.getTime() === inicioSemanaNorm.getTime() && fimNorm.getTime() === dataFimSemana.getTime()) {
       return "esta-semana";
     }
 
