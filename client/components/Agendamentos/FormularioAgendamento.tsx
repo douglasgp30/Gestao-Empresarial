@@ -50,6 +50,7 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
     horaServico: agendamentoEdicao?.horaServico || "09:00",
     descricaoServico: agendamentoEdicao?.descricaoServico || "",
     setor: agendamentoEdicao?.setor || "",
+    cidade: agendamentoEdicao?.cidade || "",
     tecnicoResponsavel: agendamentoEdicao?.tecnicoResponsavel || "",
     finalTelefoneCliente: agendamentoEdicao?.finalTelefoneCliente || "",
     tempoLembrete: agendamentoEdicao?.tempoLembrete || 30,
