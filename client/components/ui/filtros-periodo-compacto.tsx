@@ -200,7 +200,7 @@ export default function FiltrosPeriodoCompacto({
               onAplicar();
               setFiltroAtivo("hoje");
             }}
-            className={`text-xs h-7 px-2 ${filtroAtivo === "hoje" ? "bg-primary text-primary-foreground" : ""}`}
+            className={`text-xs h-7 px-2 transition-colors ${filtroAtivo === "hoje" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted"}`}
           >
             Hoje
           </Button>
