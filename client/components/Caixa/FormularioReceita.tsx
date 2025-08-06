@@ -651,7 +651,9 @@ export default function FormularioReceita() {
                 <SelectValue placeholder="Selecione ou cadastre a descrição *" />
               </SelectTrigger>
               <SelectContent>
-                {descricoes.map((descricao) => (
+                {descricoes
+                  .filter((descricao) => descricao.tipo === 'receita')
+                  .map((descricao) => (
                   <SelectItem key={descricao.id} value={descricao.nome}>
                     {descricao.nome}
                     {descricao.categoria && (
