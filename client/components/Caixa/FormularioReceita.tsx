@@ -616,17 +616,28 @@ export default function FormularioReceita() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="categoriaDescricao">Categoria (Opcional)</Label>
-                      <Input
-                        id="categoriaDescricao"
+                      <Select
                         value={novaDescricao.categoria}
-                        onChange={(e) =>
+                        onValueChange={(value) =>
                           setNovaDescricao({
                             ...novaDescricao,
-                            categoria: e.target.value,
+                            categoria: value,
                           })
                         }
-                        placeholder="Ex: Hidráulica, Limpeza..."
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categorias
+                            .filter(cat => cat.tipo === 'receita')
+                            .map((categoria) => (
+                            <SelectItem key={categoria.id} value={categoria.nome}>
+                              {categoria.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="flex justify-end space-x-2">
                       <Button
