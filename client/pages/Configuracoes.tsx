@@ -60,9 +60,40 @@ export default function Configuracoes() {
   const [tempoSessao, setTempoSessao] = useState(60);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  const validateUserConfigs = () => {
+    const errors: Record<string, string> = {};
+
+    if (percentualComissao < 0 || percentualComissao > 100) {
+      errors.percentualComissao = "Percentual de comissão deve estar entre 0% e 100%";
+    }
+
+    if (percentualImposto < 0 || percentualImposto > 100) {
+      errors.percentualImposto = "Percentual de imposto deve estar entre 0% e 100%";
+    }
+
+    if (tempoSessao < 5 || tempoSessao > 480) {
+      errors.tempoSessao = "Tempo de sessão deve estar entre 5 e 480 minutos";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSave = () => {
+    if (!validateUserConfigs()) {
+      return;
+    }
+
     updateEmpresaConfig(localConfig);
     updateBackupConfig(localBackupConfig);
+
+    // Salvar configurações de usuários no localStorage
+    localStorage.setItem('userConfigs', JSON.stringify({
+      percentualComissao,
+      percentualImposto,
+      tempoSessao
+    }));
+
     setSavedMessage(true);
     setTimeout(() => setSavedMessage(false), 3000);
   };
