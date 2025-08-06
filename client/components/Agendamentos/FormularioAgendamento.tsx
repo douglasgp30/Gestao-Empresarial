@@ -153,10 +153,6 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
 
       setAberto(false);
       resetarFormulario();
-      // Reset para limpar estado de edição no componente pai
-      if (agendamentoId) {
-        setTimeout(() => window.location.reload(), 100);
-      }
     } catch (error) {
       toast({
         title: "Erro",
