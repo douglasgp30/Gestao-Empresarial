@@ -522,6 +522,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     editarDescricao,
     excluirDescricao,
 
+    // Categorias
+    categorias,
+    adicionarCategoria,
+    editarCategoria,
+    excluirCategoria,
+
     // Formas de Pagamento
     formasPagamento,
     adicionarFormaPagamento,
