@@ -49,6 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const parsedUser = JSON.parse(savedUser);
         setUser(parsedUser);
+
+        // Verificar backup automático para usuários já logados (refresh da página)
+        performAutomaticBackupIfNeeded();
       } catch (error) {
         localStorage.removeItem('auth_user');
       }
