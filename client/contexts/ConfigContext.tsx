@@ -41,6 +41,7 @@ const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
   const [empresaConfig, setEmpresaConfig] = useState<EmpresaConfig>(defaultConfig);
+  const [backupConfig, setBackupConfig] = useState<BackupConfig>(defaultBackupConfig);
 
   useEffect(() => {
     // Carregar configurações do localStorage
