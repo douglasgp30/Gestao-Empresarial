@@ -54,6 +54,12 @@ export default function Configuracoes() {
   const [localBackupConfig, setLocalBackupConfig] = useState(backupConfig);
   const [savedMessage, setSavedMessage] = useState(false);
 
+  // Configurações de usuários
+  const [percentualComissao, setPercentualComissao] = useState(15);
+  const [percentualImposto, setPercentualImposto] = useState(6);
+  const [tempoSessao, setTempoSessao] = useState(60);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
   const handleSave = () => {
     updateEmpresaConfig(localConfig);
     updateBackupConfig(localBackupConfig);
