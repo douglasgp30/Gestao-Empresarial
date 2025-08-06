@@ -80,8 +80,10 @@ export default function Configuracoes() {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       document.documentElement.classList.add('dark');
+      setTemaDark(true);
     } else {
       document.documentElement.classList.remove('dark');
+      setTemaDark(false);
     }
   }, []);
 
@@ -487,7 +489,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Filter className="h-5 w-5" />
-                <span>Configura��ões de Filtros do Dashboard</span>
+                <span>Configurações de Filtros do Dashboard</span>
               </CardTitle>
               <CardDescription>
                 Configure como os totais do dashboard devem ser calculados
