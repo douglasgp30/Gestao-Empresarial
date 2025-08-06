@@ -174,7 +174,7 @@ export default function FiltrosPeriodoCompacto({
           
           {onLimpar && (
             <Button
-              onClick={onLimpar}
+              onClick={handleLimparInterno}
               variant="outline"
               size="sm"
               className="flex-1 sm:flex-none"
