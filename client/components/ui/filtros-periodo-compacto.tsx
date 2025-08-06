@@ -168,7 +168,7 @@ export default function FiltrosPeriodoCompacto({
                   id="dataFim"
                   type="date"
                   value={dataFim}
-                  onChange={(e) => onDataFimChange(e.target.value)}
+                  onChange={(e) => handleDataFimChangeInterno(e.target.value)}
                   className="pl-8 h-9 text-sm"
                 />
               </div>
