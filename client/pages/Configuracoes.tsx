@@ -142,13 +142,35 @@ export default function Configuracoes() {
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Validar tamanho do arquivo (máximo 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert("O arquivo deve ter no máximo 2MB.");
+        return;
+      }
+
+      // Validar tipo do arquivo
+      if (!file.type.startsWith('image/')) {
+        alert("Por favor, selecione apenas arquivos de imagem.");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const logoUrl = e.target?.result as string;
         setLocalConfig({ ...localConfig, logoUrl });
+
+        // Feedback de sucesso
+        setSavedMessage(true);
+        setTimeout(() => setSavedMessage(false), 2000);
+      };
+      reader.onerror = () => {
+        alert("Erro ao carregar a imagem. Tente novamente.");
       };
       reader.readAsDataURL(file);
     }
+
+    // Limpar o input para permitir upload do mesmo arquivo novamente
+    event.target.value = '';
   };
 
   const cores = [
