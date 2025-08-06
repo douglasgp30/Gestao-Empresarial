@@ -54,6 +54,17 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
         console.error('Erro ao carregar configurações:', error);
       }
     }
+
+    // Carregar configurações de backup
+    const savedBackupConfig = localStorage.getItem('backup_config');
+    if (savedBackupConfig) {
+      try {
+        const parsedBackupConfig = JSON.parse(savedBackupConfig);
+        setBackupConfig({ ...defaultBackupConfig, ...parsedBackupConfig });
+      } catch (error) {
+        console.error('Erro ao carregar configurações de backup:', error);
+      }
+    }
   }, []);
 
   const updateEmpresaConfig = (newConfig: Partial<EmpresaConfig>) => {
