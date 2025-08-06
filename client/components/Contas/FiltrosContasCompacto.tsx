@@ -221,28 +221,6 @@ export default function FiltrosContasCompacto() {
                 </Select>
               </div>
 
-              {/* Forma de Pagamento */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">Forma de Pagamento</label>
-                <Select
-                  value={filtros.tipoPagamento || ""}
-                  onValueChange={(value) =>
-                    setFiltros({ ...filtros, tipoPagamento: value })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Todas" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
-                    {formasPagamento.map((forma) => (
-                      <SelectItem key={forma} value={forma}>
-                        {forma}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
               {/* Fornecedor/Cliente */}
               <div className="space-y-1">
