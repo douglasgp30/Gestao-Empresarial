@@ -49,7 +49,9 @@ const categoriasDespesa = [
 
 export default function FormularioDespesa() {
   const { adicionarLancamento } = useCaixa();
+  const { descricoes, categorias, adicionarDescricao } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
+  const [isNewDescricaoOpen, setIsNewDescricaoOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
