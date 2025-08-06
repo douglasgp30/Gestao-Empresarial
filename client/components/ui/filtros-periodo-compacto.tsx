@@ -94,8 +94,28 @@ export default function FiltrosPeriodoCompacto({
   };
 
   React.useEffect(() => {
-    setFiltroAtivo(determinarFiltroAtivo());
+    const filtroCalculado = determinarFiltroAtivo();
+    setFiltroAtivo(filtroCalculado);
   }, [dataInicio, dataFim]);
+
+  // Detectar quando o usuário altera as datas manualmente (não por botão)
+  const handleDataInicioChangeInterno = (data: string) => {
+    onDataInicioChange(data);
+    // Limpar filtro ativo temporariamente para detectar mudança manual
+    setTimeout(() => {
+      const novoFiltro = determinarFiltroAtivo();
+      setFiltroAtivo(novoFiltro);
+    }, 100);
+  };
+
+  const handleDataFimChangeInterno = (data: string) => {
+    onDataFimChange(data);
+    // Limpar filtro ativo temporariamente para detectar mudança manual
+    setTimeout(() => {
+      const novoFiltro = determinarFiltroAtivo();
+      setFiltroAtivo(novoFiltro);
+    }, 100);
+  };
 
   const handleLimparInterno = () => {
     // Reset para "Hoje" em todos os módulos, exceto Dashboard que usa "Este Mês"
