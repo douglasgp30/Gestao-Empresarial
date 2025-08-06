@@ -574,6 +574,91 @@ export default function FormularioReceita() {
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label className="flex items-center justify-between">
+              Descrição do Serviço *
+              <Dialog
+                open={isNewDescricaoOpen}
+                onOpenChange={setIsNewDescricaoOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    + Novo
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Adicionar Nova Descrição</DialogTitle>
+                    <DialogDescription>
+                      Cadastre uma nova descrição de serviço
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="nomeDescricao">Nome da Descrição *</Label>
+                      <Input
+                        id="nomeDescricao"
+                        value={novaDescricao.nome}
+                        onChange={(e) =>
+                          setNovaDescricao({
+                            ...novaDescricao,
+                            nome: e.target.value,
+                          })
+                        }
+                        placeholder="Ex: Desentupimento, Fossa Séptica..."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="categoriaDescricao">Categoria (Opcional)</Label>
+                      <Input
+                        id="categoriaDescricao"
+                        value={novaDescricao.categoria}
+                        onChange={(e) =>
+                          setNovaDescricao({
+                            ...novaDescricao,
+                            categoria: e.target.value,
+                          })
+                        }
+                        placeholder="Ex: Hidráulica, Limpeza..."
+                      />
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsNewDescricaoOpen(false)}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button onClick={handleAddDescricao}>
+                        Adicionar Descrição
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </Label>
+            <Select
+              value={formData.descricaoServico}
+              onValueChange={(value) =>
+                setFormData({ ...formData, descricaoServico: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione ou cadastre a descrição *" />
+              </SelectTrigger>
+              <SelectContent>
+                {descricoes.map((descricao) => (
+                  <SelectItem key={descricao.id} value={descricao.nome}>
+                    {descricao.nome}
+                    {descricao.categoria && (
+                      <span className="text-muted-foreground"> - {descricao.categoria}</span>
+                    )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label className="flex items-center justify-between">
