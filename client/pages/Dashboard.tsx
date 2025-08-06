@@ -182,7 +182,7 @@ export default function Dashboard() {
         </div>
 
         {/* Filtros de Data */}
-        <FiltrosData />
+      <FiltrosDataCompacto />
 
         {/* Loading State */}
         {isLoading && (
