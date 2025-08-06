@@ -24,6 +24,9 @@ function FuncionariosContent() {
         </div>
       </div>
 
+      {/* Filtros */}
+      <FiltrosFuncionariosCompacto />
+
       {/* Lista de Funcionários */}
       <ListaFuncionarios />
     </div>
