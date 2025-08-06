@@ -107,10 +107,46 @@ function getStatusLabel(status: string) {
   }
 }
 
+type SortField = 'dataVencimento' | 'tipo' | 'fornecedorCliente' | 'valor' | 'tipoPagamento' | 'status';
+type SortDirection = 'asc' | 'desc' | null;
+
 export default function ListaContas() {
   const { contas, filtros, excluirConta, marcarComoPaga } = useContas();
   const [contaParaExcluir, setContaParaExcluir] = useState<string | null>(null);
   const [contaParaPagar, setContaParaPagar] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      // Se clicou na mesma coluna, alterna a direção
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortDirection(null);
+        setSortField(null);
+      } else {
+        setSortDirection('asc');
+      }
+    } else {
+      // Nova coluna, inicia com ordenação crescente
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
+    }
+    if (sortDirection === 'asc') {
+      return <ArrowUp className="h-3 w-3 text-foreground" />;
+    }
+    if (sortDirection === 'desc') {
+      return <ArrowDown className="h-3 w-3 text-foreground" />;
+    }
+    return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
+  };
 
   // Filtrar contas
   const contasFiltradas = contas
