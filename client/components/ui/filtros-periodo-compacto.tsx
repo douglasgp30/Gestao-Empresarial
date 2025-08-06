@@ -246,10 +246,18 @@ export default function FiltrosPeriodoCompacto({
               const hoje = new Date();
               const inicioSemana = new Date(hoje);
               const dia = hoje.getDay();
-              const diasAtras = dia === 0 ? 6 : dia - 1;
+              const diasAtras = dia === 0 ? 6 : dia - 1; // Segunda-feira como início
               inicioSemana.setDate(hoje.getDate() - diasAtras);
+
+              // Fim da semana (domingo)
+              const fimSemana = new Date(inicioSemana);
+              fimSemana.setDate(inicioSemana.getDate() + 6);
+
+              // Se ainda estamos na semana atual, usar até hoje, senão usar até domingo
+              const dataFim = fimSemana <= hoje ? fimSemana : hoje;
+
               onDataInicioChange(inicioSemana.toISOString().split('T')[0]);
-              onDataFimChange(hoje.toISOString().split('T')[0]);
+              onDataFimChange(dataFim.toISOString().split('T')[0]);
               onAplicar();
               setFiltroAtivo("esta-semana");
             }}
