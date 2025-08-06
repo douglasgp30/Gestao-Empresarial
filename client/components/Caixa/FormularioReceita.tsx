@@ -154,7 +154,7 @@ export default function FormularioReceita() {
       setor: formData.setor,
       cidade: formData.cidade,
       campanha: formData.campanha || undefined,
-      descricao: formData.observacoes || undefined,
+      descricao: formData.descricaoServico,
     });
 
     // Reset form
