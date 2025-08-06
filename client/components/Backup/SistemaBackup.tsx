@@ -77,11 +77,13 @@ export default function SistemaBackup() {
           filePath: result.caminhoCompleto || null,
         });
 
-        const hora = result.dataBackup.toLocaleTimeString('pt-BR', {
-          hour: '2-digit',
-          minute: '2-digit'
+        const hora = result.dataBackup.toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
         });
-        BackupService.showBackupAlert(`✅ Backup automático realizado com sucesso em ${hora}`);
+        BackupService.showBackupAlert(
+          `✅ Backup automático realizado com sucesso em ${hora}`,
+        );
       } else {
         setBackupStatus({
           isRunning: false,
@@ -98,7 +100,8 @@ export default function SistemaBackup() {
         progress: 0,
         stage: "",
         completed: false,
-        error: "Erro ao executar backup. Verifique as permissões e tente novamente.",
+        error:
+          "Erro ao executar backup. Verifique as permissões e tente novamente.",
         filePath: null,
       });
     }

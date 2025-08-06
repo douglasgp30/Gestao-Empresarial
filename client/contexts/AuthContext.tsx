@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthUser, LoginCredentials, Funcionario } from '@shared/types';
-import { BackupService } from '../lib/backupService';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { AuthUser, LoginCredentials, Funcionario } from "@shared/types";
+import { BackupService } from "../lib/backupService";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -15,27 +21,27 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Mock data for demonstration - in a real app this would be from a database
 const mockFuncionarios: Funcionario[] = [
   {
-    id: '1',
-    nomeCompleto: 'Administrador do Sistema',
-    login: 'admin',
-    senha: 'admin123',
+    id: "1",
+    nomeCompleto: "Administrador do Sistema",
+    login: "admin",
+    senha: "admin123",
     permissaoAcesso: true,
-    tipoAcesso: 'Administrador',
+    tipoAcesso: "Administrador",
     percentualComissao: 0,
     dataCadastro: new Date(),
-    ativo: true
+    ativo: true,
   },
   {
-    id: '2',
-    nomeCompleto: 'João Silva',
-    login: 'joao',
-    senha: '123456',
+    id: "2",
+    nomeCompleto: "João Silva",
+    login: "joao",
+    senha: "123456",
     permissaoAcesso: true,
-    tipoAcesso: 'Operador',
+    tipoAcesso: "Operador",
     percentualComissao: 15,
     dataCadastro: new Date(),
-    ativo: true
-  }
+    ativo: true,
+  },
 ];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -44,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check if user is already logged in (localStorage)
-    const savedUser = localStorage.getItem('auth_user');
+    const savedUser = localStorage.getItem("auth_user");
     if (savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);
@@ -53,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Verificar backup automático para usuários já logados (refresh da página)
         performAutomaticBackupIfNeeded();
       } catch (error) {
-        localStorage.removeItem('auth_user');
+        localStorage.removeItem("auth_user");
       }
     }
     setIsLoading(false);
@@ -63,13 +69,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const funcionario = mockFuncionarios.find(
-      f => f.login === credentials.login &&
-           f.senha === credentials.senha &&
-           f.permissaoAcesso &&
-           f.ativo
+      (f) =>
+        f.login === credentials.login &&
+        f.senha === credentials.senha &&
+        f.permissaoAcesso &&
+        f.ativo,
     );
 
     if (funcionario) {
@@ -78,11 +85,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         nomeCompleto: funcionario.nomeCompleto,
         login: funcionario.login,
         tipoAcesso: funcionario.tipoAcesso,
-        permissaoAcesso: funcionario.permissaoAcesso
+        permissaoAcesso: funcionario.permissaoAcesso,
       };
 
       setUser(authUser);
-      localStorage.setItem('auth_user', JSON.stringify(authUser));
+      localStorage.setItem("auth_user", JSON.stringify(authUser));
 
       // Verificar se deve fazer backup automático
       await performAutomaticBackupIfNeeded();
@@ -113,22 +120,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const result = await BackupService.performBackup();
 
             if (result.sucesso) {
-              const hora = result.dataBackup.toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit'
+              const hora = result.dataBackup.toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
               });
-              BackupService.showBackupAlert(`✅ Backup automático realizado com sucesso em ${hora}`);
+              BackupService.showBackupAlert(
+                `✅ Backup automático realizado com sucesso em ${hora}`,
+              );
             } else {
               BackupService.showBackupAlert(
                 `Erro no backup automático: ${result.erro}`,
-                true
+                true,
               );
             }
           } catch (error) {
-            console.error('Erro no backup automático:', error);
+            console.error("Erro no backup automático:", error);
             BackupService.showBackupAlert(
-              'Erro inesperado durante o backup automático',
-              true
+              "Erro inesperado durante o backup automático",
+              true,
             );
           }
         }, 2000); // Aguardar 2 segundos após login para não impactar UX
@@ -140,14 +149,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         BackupService.markLoginToday();
       }
     } catch (error) {
-      console.error('Erro ao verificar backup automático:', error);
+      console.error("Erro ao verificar backup automático:", error);
       BackupService.markLoginToday(); // Marcar para não tentar novamente hoje
     }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('auth_user');
+    localStorage.removeItem("auth_user");
   };
 
   const value = {
@@ -155,20 +164,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     isLoading,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

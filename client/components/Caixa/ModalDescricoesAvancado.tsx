@@ -18,12 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   Table,
   TableBody,
@@ -68,34 +63,41 @@ function formatDate(date: Date): string {
 }
 
 export default function ModalDescricoesAvancado() {
-  const { descricoes, categorias, adicionarDescricao, excluirDescricao, adicionarCategoria, excluirCategoria } = useEntidades();
+  const {
+    descricoes,
+    categorias,
+    adicionarDescricao,
+    excluirDescricao,
+    adicionarCategoria,
+    excluirCategoria,
+  } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
   const [isNewDescricaoOpen, setIsNewDescricaoOpen] = useState(false);
   const [isNewCategoriaOpen, setIsNewCategoriaOpen] = useState(false);
   const [itemParaExcluir, setItemParaExcluir] = useState<{
     id: string;
-    tipo: 'descricao' | 'categoria';
+    tipo: "descricao" | "categoria";
     nome: string;
   } | null>(null);
 
-  const [tipoAtivo, setTipoAtivo] = useState<'receita' | 'despesa'>('receita');
+  const [tipoAtivo, setTipoAtivo] = useState<"receita" | "despesa">("receita");
 
   const [formDescricao, setFormDescricao] = useState({
     nome: "",
-    tipo: "receita" as 'receita' | 'despesa',
+    tipo: "receita" as "receita" | "despesa",
     categoria: "",
   });
 
   const [formCategoria, setFormCategoria] = useState({
     nome: "",
-    tipo: "receita" as 'receita' | 'despesa',
+    tipo: "receita" as "receita" | "despesa",
   });
 
   // Filtrar dados por tipo
-  const descricoesReceitas = descricoes.filter(d => d.tipo === 'receita');
-  const descriçoesDespesas = descricoes.filter(d => d.tipo === 'despesa');
-  const categoriasReceitas = categorias.filter(c => c.tipo === 'receita');
-  const categoriasDespesas = categorias.filter(c => c.tipo === 'despesa');
+  const descricoesReceitas = descricoes.filter((d) => d.tipo === "receita");
+  const descriçoesDespesas = descricoes.filter((d) => d.tipo === "despesa");
+  const categoriasReceitas = categorias.filter((c) => c.tipo === "receita");
+  const categoriasDespesas = categorias.filter((c) => c.tipo === "despesa");
 
   const resetFormDescricao = () => {
     setFormDescricao({
@@ -141,22 +143,22 @@ export default function ModalDescricoesAvancado() {
 
   const handleExcluir = () => {
     if (!itemParaExcluir) return;
-    
-    if (itemParaExcluir.tipo === 'descricao') {
+
+    if (itemParaExcluir.tipo === "descricao") {
       excluirDescricao(itemParaExcluir.id);
     } else {
       excluirCategoria(itemParaExcluir.id);
     }
-    
+
     setItemParaExcluir(null);
   };
 
-  const abrirModalDescricao = (tipo: 'receita' | 'despesa') => {
+  const abrirModalDescricao = (tipo: "receita" | "despesa") => {
     setFormDescricao({ ...formDescricao, tipo });
     setIsNewDescricaoOpen(true);
   };
 
-  const abrirModalCategoria = (tipo: 'receita' | 'despesa') => {
+  const abrirModalCategoria = (tipo: "receita" | "despesa") => {
     setFormCategoria({ ...formCategoria, tipo });
     setIsNewCategoriaOpen(true);
   };
@@ -169,11 +171,13 @@ export default function ModalDescricoesAvancado() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Folder className="h-5 w-5 text-green-600" />
-              <CardTitle className="text-green-600">Categorias de Receitas</CardTitle>
+              <CardTitle className="text-green-600">
+                Categorias de Receitas
+              </CardTitle>
             </div>
-            <Button 
-              onClick={() => abrirModalCategoria('receita')}
-              size="sm" 
+            <Button
+              onClick={() => abrirModalCategoria("receita")}
+              size="sm"
               className="gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -183,17 +187,26 @@ export default function ModalDescricoesAvancado() {
         </CardHeader>
         <CardContent>
           {categoriasReceitas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma categoria cadastrada</p>
+            <p className="text-sm text-muted-foreground">
+              Nenhuma categoria cadastrada
+            </p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {categoriasReceitas.map((categoria) => (
                 <div key={categoria.id} className="flex items-center">
-                  <Badge variant="outline" className="text-green-600 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className="text-green-600 border-green-200"
+                  >
                     {categoria.nome}
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 ml-1"
+                      >
                         <MoreVertical className="h-3 w-3" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -204,11 +217,13 @@ export default function ModalDescricoesAvancado() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-red-600"
-                        onClick={() => setItemParaExcluir({
-                          id: categoria.id,
-                          tipo: 'categoria',
-                          nome: categoria.nome
-                        })}
+                        onClick={() =>
+                          setItemParaExcluir({
+                            id: categoria.id,
+                            tipo: "categoria",
+                            nome: categoria.nome,
+                          })
+                        }
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Excluir
@@ -228,11 +243,13 @@ export default function ModalDescricoesAvancado() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
-              <CardTitle className="text-green-600">Descrições de Receitas</CardTitle>
+              <CardTitle className="text-green-600">
+                Descrições de Receitas
+              </CardTitle>
             </div>
-            <Button 
-              onClick={() => abrirModalDescricao('receita')}
-              size="sm" 
+            <Button
+              onClick={() => abrirModalDescricao("receita")}
+              size="sm"
               className="gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -242,7 +259,9 @@ export default function ModalDescricoesAvancado() {
         </CardHeader>
         <CardContent>
           {descricoesReceitas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma descrição cadastrada</p>
+            <p className="text-sm text-muted-foreground">
+              Nenhuma descrição cadastrada
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -264,11 +283,16 @@ export default function ModalDescricoesAvancado() {
                     </TableCell>
                     <TableCell>
                       {descricao.categoria ? (
-                        <Badge variant="outline" className="text-green-600 border-green-200">
+                        <Badge
+                          variant="outline"
+                          className="text-green-600 border-green-200"
+                        >
                           {descricao.categoria}
                         </Badge>
                       ) : (
-                        <span className="text-muted-foreground">Sem categoria</span>
+                        <span className="text-muted-foreground">
+                          Sem categoria
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -291,11 +315,13 @@ export default function ModalDescricoesAvancado() {
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-red-600"
-                            onClick={() => setItemParaExcluir({
-                              id: descricao.id,
-                              tipo: 'descricao',
-                              nome: descricao.nome
-                            })}
+                            onClick={() =>
+                              setItemParaExcluir({
+                                id: descricao.id,
+                                tipo: "descricao",
+                                nome: descricao.nome,
+                              })
+                            }
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Excluir
@@ -321,11 +347,13 @@ export default function ModalDescricoesAvancado() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Folder className="h-5 w-5 text-red-600" />
-              <CardTitle className="text-red-600">Categorias de Despesas</CardTitle>
+              <CardTitle className="text-red-600">
+                Categorias de Despesas
+              </CardTitle>
             </div>
-            <Button 
-              onClick={() => abrirModalCategoria('despesa')}
-              size="sm" 
+            <Button
+              onClick={() => abrirModalCategoria("despesa")}
+              size="sm"
               className="gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -335,17 +363,26 @@ export default function ModalDescricoesAvancado() {
         </CardHeader>
         <CardContent>
           {categoriasDespesas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma categoria cadastrada</p>
+            <p className="text-sm text-muted-foreground">
+              Nenhuma categoria cadastrada
+            </p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {categoriasDespesas.map((categoria) => (
                 <div key={categoria.id} className="flex items-center">
-                  <Badge variant="outline" className="text-red-600 border-red-200">
+                  <Badge
+                    variant="outline"
+                    className="text-red-600 border-red-200"
+                  >
                     {categoria.nome}
                   </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 ml-1"
+                      >
                         <MoreVertical className="h-3 w-3" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -356,11 +393,13 @@ export default function ModalDescricoesAvancado() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-red-600"
-                        onClick={() => setItemParaExcluir({
-                          id: categoria.id,
-                          tipo: 'categoria',
-                          nome: categoria.nome
-                        })}
+                        onClick={() =>
+                          setItemParaExcluir({
+                            id: categoria.id,
+                            tipo: "categoria",
+                            nome: categoria.nome,
+                          })
+                        }
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Excluir
@@ -380,11 +419,13 @@ export default function ModalDescricoesAvancado() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <XCircle className="h-5 w-5 text-red-600" />
-              <CardTitle className="text-red-600">Descrições de Despesas</CardTitle>
+              <CardTitle className="text-red-600">
+                Descrições de Despesas
+              </CardTitle>
             </div>
-            <Button 
-              onClick={() => abrirModalDescricao('despesa')}
-              size="sm" 
+            <Button
+              onClick={() => abrirModalDescricao("despesa")}
+              size="sm"
               className="gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -394,7 +435,9 @@ export default function ModalDescricoesAvancado() {
         </CardHeader>
         <CardContent>
           {descriçoesDespesas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma descrição cadastrada</p>
+            <p className="text-sm text-muted-foreground">
+              Nenhuma descrição cadastrada
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -416,11 +459,16 @@ export default function ModalDescricoesAvancado() {
                     </TableCell>
                     <TableCell>
                       {descricao.categoria ? (
-                        <Badge variant="outline" className="text-red-600 border-red-200">
+                        <Badge
+                          variant="outline"
+                          className="text-red-600 border-red-200"
+                        >
                           {descricao.categoria}
                         </Badge>
                       ) : (
-                        <span className="text-muted-foreground">Sem categoria</span>
+                        <span className="text-muted-foreground">
+                          Sem categoria
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -443,11 +491,13 @@ export default function ModalDescricoesAvancado() {
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-red-600"
-                            onClick={() => setItemParaExcluir({
-                              id: descricao.id,
-                              tipo: 'descricao',
-                              nome: descricao.nome
-                            })}
+                            onClick={() =>
+                              setItemParaExcluir({
+                                id: descricao.id,
+                                tipo: "descricao",
+                                nome: descricao.nome,
+                              })
+                            }
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Excluir
@@ -481,34 +531,35 @@ export default function ModalDescricoesAvancado() {
               Gerenciar Descrições e Categorias
             </DialogTitle>
             <DialogDescription>
-              Organize suas descrições por categorias, separadas entre receitas e despesas
+              Organize suas descrições por categorias, separadas entre receitas
+              e despesas
             </DialogDescription>
           </DialogHeader>
 
           <Tabs defaultValue="receitas" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger 
-                value="receitas" 
+              <TabsTrigger
+                value="receitas"
                 className="flex items-center gap-2"
-                onClick={() => setTipoAtivo('receita')}
+                onClick={() => setTipoAtivo("receita")}
               >
                 <CheckCircle className="h-4 w-4" />
                 Receitas
               </TabsTrigger>
-              <TabsTrigger 
-                value="despesas" 
+              <TabsTrigger
+                value="despesas"
                 className="flex items-center gap-2"
-                onClick={() => setTipoAtivo('despesa')}
+                onClick={() => setTipoAtivo("despesa")}
               >
                 <XCircle className="h-4 w-4" />
                 Despesas
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="receitas" className="mt-6">
               {renderTabReceitas()}
             </TabsContent>
-            
+
             <TabsContent value="despesas" className="mt-6">
               {renderTabDespesas()}
             </TabsContent>
@@ -521,10 +572,12 @@ export default function ModalDescricoesAvancado() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Nova Descrição de {formDescricao.tipo === 'receita' ? 'Receita' : 'Despesa'}
+              Nova Descrição de{" "}
+              {formDescricao.tipo === "receita" ? "Receita" : "Despesa"}
             </DialogTitle>
             <DialogDescription>
-              Adicione uma nova descrição padrão para {formDescricao.tipo === 'receita' ? 'serviços' : 'despesas'}
+              Adicione uma nova descrição padrão para{" "}
+              {formDescricao.tipo === "receita" ? "serviços" : "despesas"}
             </DialogDescription>
           </DialogHeader>
 
@@ -534,8 +587,14 @@ export default function ModalDescricoesAvancado() {
               <Input
                 id="nome"
                 value={formDescricao.nome}
-                onChange={(e) => setFormDescricao({ ...formDescricao, nome: e.target.value })}
-                placeholder={formDescricao.tipo === 'receita' ? 'Ex: Desentupimento de pia' : 'Ex: Combustível'}
+                onChange={(e) =>
+                  setFormDescricao({ ...formDescricao, nome: e.target.value })
+                }
+                placeholder={
+                  formDescricao.tipo === "receita"
+                    ? "Ex: Desentupimento de pia"
+                    : "Ex: Combustível"
+                }
                 required
               />
             </div>
@@ -544,13 +603,18 @@ export default function ModalDescricoesAvancado() {
               <Label>Categoria</Label>
               <Select
                 value={formDescricao.categoria}
-                onValueChange={(value) => setFormDescricao({ ...formDescricao, categoria: value })}
+                onValueChange={(value) =>
+                  setFormDescricao({ ...formDescricao, categoria: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione uma categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(formDescricao.tipo === 'receita' ? categoriasReceitas : categoriasDespesas).map((categoria) => (
+                  {(formDescricao.tipo === "receita"
+                    ? categoriasReceitas
+                    : categoriasDespesas
+                  ).map((categoria) => (
                     <SelectItem key={categoria.id} value={categoria.nome}>
                       {categoria.nome}
                     </SelectItem>
@@ -581,10 +645,12 @@ export default function ModalDescricoesAvancado() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Nova Categoria de {formCategoria.tipo === 'receita' ? 'Receita' : 'Despesa'}
+              Nova Categoria de{" "}
+              {formCategoria.tipo === "receita" ? "Receita" : "Despesa"}
             </DialogTitle>
             <DialogDescription>
-              Adicione uma nova categoria para organizar suas {formCategoria.tipo === 'receita' ? 'receitas' : 'despesas'}
+              Adicione uma nova categoria para organizar suas{" "}
+              {formCategoria.tipo === "receita" ? "receitas" : "despesas"}
             </DialogDescription>
           </DialogHeader>
 
@@ -594,8 +660,14 @@ export default function ModalDescricoesAvancado() {
               <Input
                 id="nomeCategoria"
                 value={formCategoria.nome}
-                onChange={(e) => setFormCategoria({ ...formCategoria, nome: e.target.value })}
-                placeholder={formCategoria.tipo === 'receita' ? 'Ex: Serviços, Taxas' : 'Ex: Operacional, Administrativo'}
+                onChange={(e) =>
+                  setFormCategoria({ ...formCategoria, nome: e.target.value })
+                }
+                placeholder={
+                  formCategoria.tipo === "receita"
+                    ? "Ex: Serviços, Taxas"
+                    : "Ex: Operacional, Administrativo"
+                }
                 required
               />
             </div>
@@ -626,7 +698,8 @@ export default function ModalDescricoesAvancado() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir "{itemParaExcluir?.nome}"? Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir "{itemParaExcluir?.nome}"? Esta
+              ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

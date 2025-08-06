@@ -117,7 +117,7 @@ export interface RelatorioFiltros {
 export interface Descricao {
   id: string;
   nome: string;
-  tipo: 'receita' | 'despesa';
+  tipo: "receita" | "despesa";
   categoria?: string;
   dataCriacao: Date;
 }
@@ -125,7 +125,7 @@ export interface Descricao {
 export interface Categoria {
   id: string;
   nome: string;
-  tipo: 'receita' | 'despesa';
+  tipo: "receita" | "despesa";
   dataCriacao: Date;
 }
 

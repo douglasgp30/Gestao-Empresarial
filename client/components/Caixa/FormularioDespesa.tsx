@@ -65,7 +65,7 @@ export default function FormularioDespesa() {
   const [novaDescricao, setNovaDescricao] = useState({
     nome: "",
     categoria: "",
-    tipo: "despesa" as 'receita' | 'despesa',
+    tipo: "despesa" as "receita" | "despesa",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -75,7 +75,7 @@ export default function FormularioDespesa() {
     if (!valor || valor <= 0) return;
 
     if (!formData.descricaoServico.trim()) {
-      alert('Por favor, selecione ou cadastre uma descrição da despesa.');
+      alert("Por favor, selecione ou cadastre uma descrição da despesa.");
       return;
     }
 
@@ -201,12 +201,12 @@ export default function FormularioDespesa() {
               </SelectTrigger>
               <SelectContent>
                 {categorias
-                  .filter(cat => cat.tipo === 'despesa')
+                  .filter((cat) => cat.tipo === "despesa")
                   .map((categoria) => (
-                  <SelectItem key={categoria.id} value={categoria.nome}>
-                    {categoria.nome}
-                  </SelectItem>
-                ))}
+                    <SelectItem key={categoria.id} value={categoria.nome}>
+                      {categoria.nome}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
@@ -246,7 +246,9 @@ export default function FormularioDespesa() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="categoriaDescricao">Categoria (Opcional)</Label>
+                      <Label htmlFor="categoriaDescricao">
+                        Categoria (Opcional)
+                      </Label>
                       <Select
                         value={novaDescricao.categoria}
                         onValueChange={(value) =>
@@ -261,12 +263,15 @@ export default function FormularioDespesa() {
                         </SelectTrigger>
                         <SelectContent>
                           {categorias
-                            .filter(cat => cat.tipo === 'despesa')
+                            .filter((cat) => cat.tipo === "despesa")
                             .map((categoria) => (
-                            <SelectItem key={categoria.id} value={categoria.nome}>
-                              {categoria.nome}
-                            </SelectItem>
-                          ))}
+                              <SelectItem
+                                key={categoria.id}
+                                value={categoria.nome}
+                              >
+                                {categoria.nome}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -296,15 +301,18 @@ export default function FormularioDespesa() {
               </SelectTrigger>
               <SelectContent>
                 {descricoes
-                  .filter((descricao) => descricao.tipo === 'despesa')
+                  .filter((descricao) => descricao.tipo === "despesa")
                   .map((descricao) => (
-                  <SelectItem key={descricao.id} value={descricao.nome}>
-                    {descricao.nome}
-                    {descricao.categoria && (
-                      <span className="text-muted-foreground"> - {descricao.categoria}</span>
-                    )}
-                  </SelectItem>
-                ))}
+                    <SelectItem key={descricao.id} value={descricao.nome}>
+                      {descricao.nome}
+                      {descricao.categoria && (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          - {descricao.categoria}
+                        </span>
+                      )}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

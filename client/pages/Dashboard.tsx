@@ -181,295 +181,299 @@ export default function Dashboard() {
           </div>
         </div>
 
-      {/* Filtros de Data */}
-      <FiltrosData />
+        {/* Filtros de Data */}
+        <FiltrosData />
 
-      {/* Loading State */}
-      {isLoading && (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-2 text-lg">Atualizando dados...</span>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-lg">Atualizando dados...</span>
+          </div>
+        )}
+
+        {/* LINHA 1 - Totais do Módulo Caixa */}
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+            <Wallet className="h-5 w-5" />
+            <span>📊 Totais do Módulo Caixa</span>
+            <Badge variant="outline">Dinâmico com filtros</Badge>
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            <StatCard
+              title="Total de Receitas"
+              value={formatCurrency(stats.totalReceitasCaixa)}
+              description="Serviços lançados no caixa"
+              icon={TrendingUp}
+              trend="up"
+              isLoading={isLoading}
+              variant="default"
+            />
+            <StatCard
+              title="Total de Despesas"
+              value={formatCurrency(stats.totalDespesasCaixa)}
+              description="Despesas lançadas no caixa"
+              icon={TrendingDown}
+              trend="down"
+              isLoading={isLoading}
+              variant="default"
+            />
+            <StatCard
+              title="Saldo (Caixa)"
+              value={formatCurrency(stats.saldoCaixa)}
+              description="Receitas - Despesas do caixa"
+              icon={DollarSign}
+              trend={stats.saldoCaixa >= 0 ? "up" : "down"}
+              isLoading={isLoading}
+              variant="highlight"
+            />
+          </div>
         </div>
-      )}
 
-      {/* LINHA 1 - Totais do Módulo Caixa */}
-      <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-          <Wallet className="h-5 w-5" />
-          <span>📊 Totais do Módulo Caixa</span>
-          <Badge variant="outline">Dinâmico com filtros</Badge>
-        </h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          <StatCard
-            title="Total de Receitas"
-            value={formatCurrency(stats.totalReceitasCaixa)}
-            description="Serviços lançados no caixa"
-            icon={TrendingUp}
-            trend="up"
-            isLoading={isLoading}
-            variant="default"
-          />
-          <StatCard
-            title="Total de Despesas"
-            value={formatCurrency(stats.totalDespesasCaixa)}
-            description="Despesas lançadas no caixa"
-            icon={TrendingDown}
-            trend="down"
-            isLoading={isLoading}
-            variant="default"
-          />
-          <StatCard
-            title="Saldo (Caixa)"
-            value={formatCurrency(stats.saldoCaixa)}
-            description="Receitas - Despesas do caixa"
-            icon={DollarSign}
-            trend={stats.saldoCaixa >= 0 ? "up" : "down"}
-            isLoading={isLoading}
-            variant="highlight"
-          />
+        {/* LINHA 2 - Totais do Módulo Contas (apenas pagas/recebidas) */}
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+            <Receipt className="h-5 w-5" />
+            <span>📊 Totais do Módulo Contas</span>
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            <StatCard
+              title="Total Contas Recebidas"
+              value={formatCurrency(stats.totalContasRecebidas)}
+              description="Contas a receber marcadas como pagas"
+              icon={TrendingUp}
+              trend="up"
+              isLoading={isLoading}
+              variant="default"
+            />
+            <StatCard
+              title="Total Contas Pagas"
+              value={formatCurrency(stats.totalContasPagas)}
+              description="Contas a pagar marcadas como pagas"
+              icon={TrendingDown}
+              trend="down"
+              isLoading={isLoading}
+              variant="default"
+            />
+            <StatCard
+              title="Saldo (Contas)"
+              value={formatCurrency(stats.saldoContasPagas)}
+              description="Recebidas - Pagas"
+              icon={DollarSign}
+              trend={stats.saldoContasPagas >= 0 ? "up" : "down"}
+              isLoading={isLoading}
+              variant="highlight"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* LINHA 2 - Totais do Módulo Contas (apenas pagas/recebidas) */}
-      <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-          <Receipt className="h-5 w-5" />
-          <span>📊 Totais do Módulo Contas</span>
-        </h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          <StatCard
-            title="Total Contas Recebidas"
-            value={formatCurrency(stats.totalContasRecebidas)}
-            description="Contas a receber marcadas como pagas"
-            icon={TrendingUp}
-            trend="up"
-            isLoading={isLoading}
-            variant="default"
-          />
-          <StatCard
-            title="Total Contas Pagas"
-            value={formatCurrency(stats.totalContasPagas)}
-            description="Contas a pagar marcadas como pagas"
-            icon={TrendingDown}
-            trend="down"
-            isLoading={isLoading}
-            variant="default"
-          />
-          <StatCard
-            title="Saldo (Contas)"
-            value={formatCurrency(stats.saldoContasPagas)}
-            description="Recebidas - Pagas"
-            icon={DollarSign}
-            trend={stats.saldoContasPagas >= 0 ? "up" : "down"}
-            isLoading={isLoading}
-            variant="highlight"
-          />
+        {/* LINHA 3 - Resumo Completo do Módulo Contas */}
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+            <FileText className="h-5 w-5" />
+            <span>📊 Contas Atrasadas</span>
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-7">
+            <StatCard
+              title="Total a Receber"
+              value={formatCurrency(stats.totalGeralAReceber)}
+              description="Recebidas + pendentes"
+              icon={Target}
+              trend="up"
+              isLoading={isLoading}
+              variant="default"
+            />
+            <StatCard
+              title="Total a Pagar"
+              value={formatCurrency(stats.totalGeralAPagar)}
+              description="Pagas + pendentes"
+              icon={CreditCard}
+              trend="down"
+              isLoading={isLoading}
+              variant="default"
+            />
+            <StatCard
+              title="Saldo Geral Contas"
+              value={formatCurrency(stats.saldoGeralContas)}
+              description="A receber - a pagar"
+              icon={Banknote}
+              trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
+              isLoading={isLoading}
+              variant="highlight"
+            />
+            <StatCard
+              title="Valor A Pagar Atrasadas"
+              value={formatCurrency(stats.valorContasPagarAtrasadas)}
+              description="Total em atraso"
+              icon={AlertTriangle}
+              isLoading={isLoading}
+              variant="danger"
+            />
+            <StatCard
+              title="Qtd. A Pagar Atrasadas"
+              value={stats.qtdContasPagarAtrasadas.toString()}
+              description="Contas em atraso"
+              icon={FileText}
+              isLoading={isLoading}
+              variant="danger"
+            />
+            <StatCard
+              title="Valor A Receber Atrasadas"
+              value={formatCurrency(stats.valorContasReceberAtrasadas)}
+              description="Total em atraso"
+              icon={AlertTriangle}
+              isLoading={isLoading}
+              variant="danger"
+            />
+            <StatCard
+              title="Qtd. A Receber Atrasadas"
+              value={stats.qtdContasReceberAtrasadas.toString()}
+              description="Contas em atraso"
+              icon={Target}
+              isLoading={isLoading}
+              variant="danger"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* LINHA 3 - Resumo Completo do Módulo Contas */}
-      <div className="space-y-2">
-        <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-          <FileText className="h-5 w-5" />
-          <span>📊 Contas Atrasadas</span>
-        </h2>
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-7">
-          <StatCard
-            title="Total a Receber"
-            value={formatCurrency(stats.totalGeralAReceber)}
-            description="Recebidas + pendentes"
-            icon={Target}
-            trend="up"
-            isLoading={isLoading}
-            variant="default"
-          />
-          <StatCard
-            title="Total a Pagar"
-            value={formatCurrency(stats.totalGeralAPagar)}
-            description="Pagas + pendentes"
-            icon={CreditCard}
-            trend="down"
-            isLoading={isLoading}
-            variant="default"
-          />
-          <StatCard
-            title="Saldo Geral Contas"
-            value={formatCurrency(stats.saldoGeralContas)}
-            description="A receber - a pagar"
-            icon={Banknote}
-            trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
-            isLoading={isLoading}
-            variant="highlight"
-          />
-          <StatCard
-            title="Valor A Pagar Atrasadas"
-            value={formatCurrency(stats.valorContasPagarAtrasadas)}
-            description="Total em atraso"
-            icon={AlertTriangle}
-            isLoading={isLoading}
-            variant="danger"
-          />
-          <StatCard
-            title="Qtd. A Pagar Atrasadas"
-            value={stats.qtdContasPagarAtrasadas.toString()}
-            description="Contas em atraso"
-            icon={FileText}
-            isLoading={isLoading}
-            variant="danger"
-          />
-          <StatCard
-            title="Valor A Receber Atrasadas"
-            value={formatCurrency(stats.valorContasReceberAtrasadas)}
-            description="Total em atraso"
-            icon={AlertTriangle}
-            isLoading={isLoading}
-            variant="danger"
-          />
-          <StatCard
-            title="Qtd. A Receber Atrasadas"
-            value={stats.qtdContasReceberAtrasadas.toString()}
-            description="Contas em atraso"
-            icon={Target}
-            isLoading={isLoading}
-            variant="danger"
-          />
-        </div>
-      </div>
-
-      {/* Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Recent Transactions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Movimentações no Período</CardTitle>
-            <CardDescription>
-              Receitas e despesas do período selecionado
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {lancamentosRecentes.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>Nenhuma movimentação encontrada no período selecionado</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {lancamentosRecentes.map((transaction) => (
-                  <div
-                    key={transaction.id}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={`p-2 rounded-full ${
-                          transaction.tipo === "receita"
-                            ? "bg-success/10 text-success"
-                            : "bg-destructive/10 text-destructive"
-                        }`}
-                      >
-                        {transaction.tipo === "receita" ? (
-                          <TrendingUp className="h-4 w-4" />
-                        ) : (
-                          <TrendingDown className="h-4 w-4" />
-                        )}
+        {/* Content Grid */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Recent Transactions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Movimentações no Período</CardTitle>
+              <CardDescription>
+                Receitas e despesas do período selecionado
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {lancamentosRecentes.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Nenhuma movimentação encontrada no período selecionado</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {lancamentosRecentes.map((transaction) => (
+                    <div
+                      key={transaction.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={`p-2 rounded-full ${
+                            transaction.tipo === "receita"
+                              ? "bg-success/10 text-success"
+                              : "bg-destructive/10 text-destructive"
+                          }`}
+                        >
+                          {transaction.tipo === "receita" ? (
+                            <TrendingUp className="h-4 w-4" />
+                          ) : (
+                            <TrendingDown className="h-4 w-4" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {transaction.tipo === "receita"
+                              ? `Serviço - ${transaction.setor || "Geral"}`
+                              : transaction.descricao}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {transaction.tipo === "receita" &&
+                              transaction.tecnicoResponsavel &&
+                              `Técnico: ${transaction.tecnicoResponsavel}`}
+                            {transaction.tipo === "despesa" &&
+                              transaction.categoria &&
+                              `Categoria: ${transaction.categoria}`}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-sm">
-                          {transaction.tipo === "receita"
-                            ? `Serviço - ${transaction.setor || "Geral"}`
-                            : transaction.descricao}
+                      <div className="text-right">
+                        <p
+                          className={`font-bold ${
+                            transaction.tipo === "receita"
+                              ? "text-success"
+                              : "text-destructive"
+                          }`}
+                        >
+                          {transaction.tipo === "receita" ? "+" : "-"}
+                          {formatCurrency(
+                            transaction.valorLiquido || transaction.valor,
+                          )}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {transaction.tipo === "receita" &&
-                            transaction.tecnicoResponsavel &&
-                            `Técnico: ${transaction.tecnicoResponsavel}`}
-                          {transaction.tipo === "despesa" &&
-                            transaction.categoria &&
-                            `Categoria: ${transaction.categoria}`}
+                          {formatDate(transaction.data)}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p
-                        className={`font-bold ${
-                          transaction.tipo === "receita"
-                            ? "text-success"
-                            : "text-destructive"
-                        }`}
-                      >
-                        {transaction.tipo === "receita" ? "+" : "-"}
-                        {formatCurrency(
-                          transaction.valorLiquido || transaction.valor,
-                        )}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDate(transaction.data)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Contas Vencendo */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Contas Vencendo</CardTitle>
-            <CardDescription>Contas vencendo hoje e atrasadas</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {contasVencendo.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>Nenhuma conta requer atenção no momento</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {contasVencendo.map((conta) => (
-                  <div
-                    key={conta.id}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={`p-2 rounded-full ${
-                          conta.tipo === "receber"
-                            ? "bg-primary/10 text-primary"
-                            : "bg-orange-500/10 text-orange-500"
-                        }`}
-                      >
-                        {conta.tipo === "receber" ? (
-                          <TrendingUp className="h-4 w-4" />
-                        ) : (
-                          <TrendingDown className="h-4 w-4" />
-                        )}
+          {/* Contas Vencendo */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Contas Vencendo</CardTitle>
+              <CardDescription>
+                Contas vencendo hoje e atrasadas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {contasVencendo.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Nenhuma conta requer atenção no momento</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {contasVencendo.map((conta) => (
+                    <div
+                      key={conta.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={`p-2 rounded-full ${
+                            conta.tipo === "receber"
+                              ? "bg-primary/10 text-primary"
+                              : "bg-orange-500/10 text-orange-500"
+                          }`}
+                        >
+                          {conta.tipo === "receber" ? (
+                            <TrendingUp className="h-4 w-4" />
+                          ) : (
+                            <TrendingDown className="h-4 w-4" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {conta.fornecedorCliente}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Vencimento: {formatDate(conta.dataVencimento)}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-sm">
-                          {conta.fornecedorCliente}
+                      <div className="text-right">
+                        <p className="font-bold">
+                          {formatCurrency(conta.valor)}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          Vencimento: {formatDate(conta.dataVencimento)}
-                        </p>
+                        <Badge
+                          className={`text-xs ${getStatusColor(conta.status)}`}
+                        >
+                          {conta.status === "vence_hoje"
+                            ? "Vence Hoje"
+                            : "Atrasada"}
+                        </Badge>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold">{formatCurrency(conta.valor)}</p>
-                      <Badge
-                        className={`text-xs ${getStatusColor(conta.status)}`}
-                      >
-                        {conta.status === "vence_hoje"
-                          ? "Vence Hoje"
-                          : "Atrasada"}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </TooltipProvider>
   );

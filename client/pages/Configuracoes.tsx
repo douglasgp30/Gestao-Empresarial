@@ -42,7 +42,13 @@ import {
 import EmpresaLogo from "../components/EmpresaLogo";
 
 export default function Configuracoes() {
-  const { empresaConfig, backupConfig, updateEmpresaConfig, updateBackupConfig, resetToDefault } = useConfig();
+  const {
+    empresaConfig,
+    backupConfig,
+    updateEmpresaConfig,
+    updateBackupConfig,
+    resetToDefault,
+  } = useConfig();
   const { aplicarFiltrosCaixa, setAplicarFiltrosCaixa } = useDashboard();
   const [localConfig, setLocalConfig] = useState(empresaConfig);
   const [localBackupConfig, setLocalBackupConfig] = useState(backupConfig);
@@ -67,10 +73,10 @@ export default function Configuracoes() {
       cnpj: "",
     });
     setLocalBackupConfig({
-      localBackup: 'C:\\Backups\\',
+      localBackup: "C:\\Backups\\",
       backupAutomatico: true,
       ultimoBackup: undefined,
-      ultimoLoginData: undefined
+      ultimoLoginData: undefined,
     });
   };
 
@@ -539,7 +545,9 @@ export default function Configuracoes() {
                       variant="outline"
                       onClick={() => {
                         // Em um sistema real, isso abriria um seletor de pasta
-                        alert("Função para selecionar pasta seria implementada aqui");
+                        alert(
+                          "Função para selecionar pasta seria implementada aqui",
+                        );
                       }}
                     >
                       <FolderOpen className="h-4 w-4" />
@@ -563,7 +571,10 @@ export default function Configuracoes() {
                       }
                     />
                     <div>
-                      <Label htmlFor="backup-automatico" className="font-medium">
+                      <Label
+                        htmlFor="backup-automatico"
+                        className="font-medium"
+                      >
                         Backup Automático Diário
                       </Label>
                       <p className="text-sm text-muted-foreground mt-1">
@@ -573,19 +584,27 @@ export default function Configuracoes() {
                       </p>
                     </div>
                   </div>
-                  <Badge variant={localBackupConfig.backupAutomatico ? "default" : "secondary"}>
+                  <Badge
+                    variant={
+                      localBackupConfig.backupAutomatico
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
                     {localBackupConfig.backupAutomatico ? "Ativo" : "Desativo"}
                   </Badge>
                 </div>
 
-                {localBackupConfig.backupAutomatico && !localBackupConfig.localBackup.trim() && (
-                  <Alert>
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      ⚠️ Local de backup não definido. Configure o local de backup para ativar o backup automático.
-                    </AlertDescription>
-                  </Alert>
-                )}
+                {localBackupConfig.backupAutomatico &&
+                  !localBackupConfig.localBackup.trim() && (
+                    <Alert>
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        ⚠️ Local de backup não definido. Configure o local de
+                        backup para ativar o backup automático.
+                      </AlertDescription>
+                    </Alert>
+                  )}
               </div>
             </CardContent>
           </Card>
@@ -621,12 +640,20 @@ export default function Configuracoes() {
                       <h4 className="font-medium">Último Backup</h4>
                       <p className="text-sm text-muted-foreground">
                         {backupConfig.ultimoBackup
-                          ? new Date(backupConfig.ultimoBackup).toLocaleString('pt-BR')
+                          ? new Date(backupConfig.ultimoBackup).toLocaleString(
+                              "pt-BR",
+                            )
                           : "Nunca executado"}
                       </p>
                     </div>
-                    <Badge variant={backupConfig.ultimoBackup ? "default" : "secondary"}>
-                      {backupConfig.ultimoBackup ? "Disponível" : "Não disponível"}
+                    <Badge
+                      variant={
+                        backupConfig.ultimoBackup ? "default" : "secondary"
+                      }
+                    >
+                      {backupConfig.ultimoBackup
+                        ? "Disponível"
+                        : "Não disponível"}
                     </Badge>
                   </div>
 
@@ -637,8 +664,16 @@ export default function Configuracoes() {
                         {backupConfig.localBackup}
                       </p>
                     </div>
-                    <Badge variant={backupConfig.localBackup.trim() ? "default" : "destructive"}>
-                      {backupConfig.localBackup.trim() ? "Configurado" : "Não configurado"}
+                    <Badge
+                      variant={
+                        backupConfig.localBackup.trim()
+                          ? "default"
+                          : "destructive"
+                      }
+                    >
+                      {backupConfig.localBackup.trim()
+                        ? "Configurado"
+                        : "Não configurado"}
                     </Badge>
                   </div>
 

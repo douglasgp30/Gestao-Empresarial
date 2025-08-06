@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { BackupConfig } from '@shared/types';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { BackupConfig } from "@shared/types";
 
 interface EmpresaConfig {
   nomeEmpresa: string;
@@ -21,48 +27,50 @@ interface ConfigContextType {
 }
 
 const defaultConfig: EmpresaConfig = {
-  nomeEmpresa: 'Solução Desentupimento',
-  subtituloEmpresa: 'Sistema de Gestão Empresarial',
-  corPrimaria: '217 91% 60%',
-  endereco: '',
-  telefone: '',
-  email: '',
-  cnpj: ''
+  nomeEmpresa: "Solução Desentupimento",
+  subtituloEmpresa: "Sistema de Gestão Empresarial",
+  corPrimaria: "217 91% 60%",
+  endereco: "",
+  telefone: "",
+  email: "",
+  cnpj: "",
 };
 
 const defaultBackupConfig: BackupConfig = {
-  localBackup: 'C:\\Backups\\',
+  localBackup: "C:\\Backups\\",
   backupAutomatico: true,
   ultimoBackup: undefined,
-  ultimoLoginData: undefined
+  ultimoLoginData: undefined,
 };
 
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
-  const [empresaConfig, setEmpresaConfig] = useState<EmpresaConfig>(defaultConfig);
-  const [backupConfig, setBackupConfig] = useState<BackupConfig>(defaultBackupConfig);
+  const [empresaConfig, setEmpresaConfig] =
+    useState<EmpresaConfig>(defaultConfig);
+  const [backupConfig, setBackupConfig] =
+    useState<BackupConfig>(defaultBackupConfig);
 
   useEffect(() => {
     // Carregar configurações do localStorage
-    const savedConfig = localStorage.getItem('empresa_config');
+    const savedConfig = localStorage.getItem("empresa_config");
     if (savedConfig) {
       try {
         const parsedConfig = JSON.parse(savedConfig);
         setEmpresaConfig({ ...defaultConfig, ...parsedConfig });
       } catch (error) {
-        console.error('Erro ao carregar configurações:', error);
+        console.error("Erro ao carregar configurações:", error);
       }
     }
 
     // Carregar configurações de backup
-    const savedBackupConfig = localStorage.getItem('backup_config');
+    const savedBackupConfig = localStorage.getItem("backup_config");
     if (savedBackupConfig) {
       try {
         const parsedBackupConfig = JSON.parse(savedBackupConfig);
         setBackupConfig({ ...defaultBackupConfig, ...parsedBackupConfig });
       } catch (error) {
-        console.error('Erro ao carregar configurações de backup:', error);
+        console.error("Erro ao carregar configurações de backup:", error);
       }
     }
   }, []);
@@ -70,26 +78,32 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const updateEmpresaConfig = (newConfig: Partial<EmpresaConfig>) => {
     const updatedConfig = { ...empresaConfig, ...newConfig };
     setEmpresaConfig(updatedConfig);
-    localStorage.setItem('empresa_config', JSON.stringify(updatedConfig));
+    localStorage.setItem("empresa_config", JSON.stringify(updatedConfig));
 
     // Atualizar CSS custom property se cor primária foi alterada
     if (newConfig.corPrimaria) {
-      document.documentElement.style.setProperty('--primary', newConfig.corPrimaria);
+      document.documentElement.style.setProperty(
+        "--primary",
+        newConfig.corPrimaria,
+      );
     }
   };
 
   const updateBackupConfig = (newConfig: Partial<BackupConfig>) => {
     const updatedBackupConfig = { ...backupConfig, ...newConfig };
     setBackupConfig(updatedBackupConfig);
-    localStorage.setItem('backup_config', JSON.stringify(updatedBackupConfig));
+    localStorage.setItem("backup_config", JSON.stringify(updatedBackupConfig));
   };
 
   const resetToDefault = () => {
     setEmpresaConfig(defaultConfig);
     setBackupConfig(defaultBackupConfig);
-    localStorage.removeItem('empresa_config');
-    localStorage.removeItem('backup_config');
-    document.documentElement.style.setProperty('--primary', defaultConfig.corPrimaria);
+    localStorage.removeItem("empresa_config");
+    localStorage.removeItem("backup_config");
+    document.documentElement.style.setProperty(
+      "--primary",
+      defaultConfig.corPrimaria,
+    );
   };
 
   const value = {
@@ -97,20 +111,18 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     backupConfig,
     updateEmpresaConfig,
     updateBackupConfig,
-    resetToDefault
+    resetToDefault,
   };
 
   return (
-    <ConfigContext.Provider value={value}>
-      {children}
-    </ConfigContext.Provider>
+    <ConfigContext.Provider value={value}>{children}</ConfigContext.Provider>
   );
 }
 
 export function useConfig() {
   const context = useContext(ConfigContext);
   if (context === undefined) {
-    throw new Error('useConfig must be used within a ConfigProvider');
+    throw new Error("useConfig must be used within a ConfigProvider");
   }
   return context;
 }

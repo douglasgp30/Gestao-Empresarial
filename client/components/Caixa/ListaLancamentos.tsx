@@ -60,8 +60,15 @@ function formatCurrency(value: number): string {
   });
 }
 
-type SortField = 'data' | 'tipo' | 'valor' | 'formaPagamento' | 'tecnicoResponsavel' | 'setor' | 'cidade';
-type SortDirection = 'asc' | 'desc' | null;
+type SortField =
+  | "data"
+  | "tipo"
+  | "valor"
+  | "formaPagamento"
+  | "tecnicoResponsavel"
+  | "setor"
+  | "cidade";
+type SortDirection = "asc" | "desc" | null;
 
 export default function ListaLancamentos() {
   const { lancamentos, filtros, excluirLancamento } = useCaixa();
@@ -74,18 +81,18 @@ export default function ListaLancamentos() {
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       // Se clicou na mesma coluna, alterna a direção
-      if (sortDirection === 'asc') {
-        setSortDirection('desc');
-      } else if (sortDirection === 'desc') {
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
         setSortDirection(null);
         setSortField(null);
       } else {
-        setSortDirection('asc');
+        setSortDirection("asc");
       }
     } else {
       // Nova coluna, inicia com ordenação crescente
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -93,10 +100,10 @@ export default function ListaLancamentos() {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
     }
-    if (sortDirection === 'asc') {
+    if (sortDirection === "asc") {
       return <ArrowUp className="h-3 w-3 text-foreground" />;
     }
-    if (sortDirection === 'desc') {
+    if (sortDirection === "desc") {
       return <ArrowDown className="h-3 w-3 text-foreground" />;
     }
     return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
@@ -135,45 +142,45 @@ export default function ListaLancamentos() {
         let aValue: any, bValue: any;
 
         switch (sortField) {
-          case 'data':
+          case "data":
             aValue = new Date(a.data).getTime();
             bValue = new Date(b.data).getTime();
             break;
-          case 'tipo':
+          case "tipo":
             aValue = a.tipo;
             bValue = b.tipo;
             break;
-          case 'valor':
+          case "valor":
             aValue = a.valorLiquido || a.valor;
             bValue = b.valorLiquido || b.valor;
             break;
-          case 'formaPagamento':
+          case "formaPagamento":
             aValue = a.formaPagamento;
             bValue = b.formaPagamento;
             break;
-          case 'tecnicoResponsavel':
-            aValue = a.tecnicoResponsavel || '';
-            bValue = b.tecnicoResponsavel || '';
+          case "tecnicoResponsavel":
+            aValue = a.tecnicoResponsavel || "";
+            bValue = b.tecnicoResponsavel || "";
             break;
-          case 'setor':
-            aValue = a.setor || '';
-            bValue = b.setor || '';
+          case "setor":
+            aValue = a.setor || "";
+            bValue = b.setor || "";
             break;
-          case 'cidade':
-            aValue = a.cidade || '';
-            bValue = b.cidade || '';
+          case "cidade":
+            aValue = a.cidade || "";
+            bValue = b.cidade || "";
             break;
           default:
             return 0;
         }
 
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
+        if (typeof aValue === "string" && typeof bValue === "string") {
           aValue = aValue.toLowerCase();
           bValue = bValue.toLowerCase();
         }
 
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
         return 0;
       }
 
@@ -222,10 +229,10 @@ export default function ListaLancamentos() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('data')}
+                      onClick={() => handleSort("data")}
                     >
                       Data
-                      {getSortIcon('data')}
+                      {getSortIcon("data")}
                     </Button>
                   </TableHead>
                   <TableHead>
@@ -233,10 +240,10 @@ export default function ListaLancamentos() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('tipo')}
+                      onClick={() => handleSort("tipo")}
                     >
                       Tipo
-                      {getSortIcon('tipo')}
+                      {getSortIcon("tipo")}
                     </Button>
                   </TableHead>
                   <TableHead>Descrição</TableHead>
@@ -245,10 +252,10 @@ export default function ListaLancamentos() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('valor')}
+                      onClick={() => handleSort("valor")}
                     >
                       Valor
-                      {getSortIcon('valor')}
+                      {getSortIcon("valor")}
                     </Button>
                   </TableHead>
                   <TableHead>
@@ -256,10 +263,10 @@ export default function ListaLancamentos() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('formaPagamento')}
+                      onClick={() => handleSort("formaPagamento")}
                     >
                       Forma Pagto.
-                      {getSortIcon('formaPagamento')}
+                      {getSortIcon("formaPagamento")}
                     </Button>
                   </TableHead>
                   <TableHead>Detalhes</TableHead>

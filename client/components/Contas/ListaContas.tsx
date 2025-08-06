@@ -107,8 +107,14 @@ function getStatusLabel(status: string) {
   }
 }
 
-type SortField = 'dataVencimento' | 'tipo' | 'fornecedorCliente' | 'valor' | 'tipoPagamento' | 'status';
-type SortDirection = 'asc' | 'desc' | null;
+type SortField =
+  | "dataVencimento"
+  | "tipo"
+  | "fornecedorCliente"
+  | "valor"
+  | "tipoPagamento"
+  | "status";
+type SortDirection = "asc" | "desc" | null;
 
 export default function ListaContas() {
   const { contas, filtros, excluirConta, marcarComoPaga } = useContas();
@@ -120,18 +126,18 @@ export default function ListaContas() {
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       // Se clicou na mesma coluna, alterna a direção
-      if (sortDirection === 'asc') {
-        setSortDirection('desc');
-      } else if (sortDirection === 'desc') {
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
         setSortDirection(null);
         setSortField(null);
       } else {
-        setSortDirection('asc');
+        setSortDirection("asc");
       }
     } else {
       // Nova coluna, inicia com ordenação crescente
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
@@ -139,10 +145,10 @@ export default function ListaContas() {
     if (sortField !== field) {
       return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
     }
-    if (sortDirection === 'asc') {
+    if (sortDirection === "asc") {
       return <ArrowUp className="h-3 w-3 text-foreground" />;
     }
-    if (sortDirection === 'desc') {
+    if (sortDirection === "desc") {
       return <ArrowDown className="h-3 w-3 text-foreground" />;
     }
     return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
@@ -177,28 +183,33 @@ export default function ListaContas() {
         let aValue: any, bValue: any;
 
         switch (sortField) {
-          case 'dataVencimento':
+          case "dataVencimento":
             aValue = new Date(a.dataVencimento).getTime();
             bValue = new Date(b.dataVencimento).getTime();
             break;
-          case 'tipo':
+          case "tipo":
             aValue = a.tipo;
             bValue = b.tipo;
             break;
-          case 'fornecedorCliente':
+          case "fornecedorCliente":
             aValue = a.fornecedorCliente.toLowerCase();
             bValue = b.fornecedorCliente.toLowerCase();
             break;
-          case 'valor':
+          case "valor":
             aValue = a.valor;
             bValue = b.valor;
             break;
-          case 'tipoPagamento':
+          case "tipoPagamento":
             aValue = a.tipoPagamento.toLowerCase();
             bValue = b.tipoPagamento.toLowerCase();
             break;
-          case 'status':
-            const statusOrder = { atrasada: 0, vence_hoje: 1, pendente: 2, paga: 3 };
+          case "status":
+            const statusOrder = {
+              atrasada: 0,
+              vence_hoje: 1,
+              pendente: 2,
+              paga: 3,
+            };
             aValue = statusOrder[a.status as keyof typeof statusOrder];
             bValue = statusOrder[b.status as keyof typeof statusOrder];
             break;
@@ -206,8 +217,8 @@ export default function ListaContas() {
             return 0;
         }
 
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
         return 0;
       }
 
@@ -268,10 +279,10 @@ export default function ListaContas() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('dataVencimento')}
+                      onClick={() => handleSort("dataVencimento")}
                     >
                       Vencimento
-                      {getSortIcon('dataVencimento')}
+                      {getSortIcon("dataVencimento")}
                     </Button>
                   </TableHead>
                   <TableHead>
@@ -279,10 +290,10 @@ export default function ListaContas() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('tipo')}
+                      onClick={() => handleSort("tipo")}
                     >
                       Tipo
-                      {getSortIcon('tipo')}
+                      {getSortIcon("tipo")}
                     </Button>
                   </TableHead>
                   <TableHead>
@@ -290,10 +301,10 @@ export default function ListaContas() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('fornecedorCliente')}
+                      onClick={() => handleSort("fornecedorCliente")}
                     >
                       Fornecedor/Cliente
-                      {getSortIcon('fornecedorCliente')}
+                      {getSortIcon("fornecedorCliente")}
                     </Button>
                   </TableHead>
                   <TableHead>
@@ -301,10 +312,10 @@ export default function ListaContas() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('valor')}
+                      onClick={() => handleSort("valor")}
                     >
                       Valor
-                      {getSortIcon('valor')}
+                      {getSortIcon("valor")}
                     </Button>
                   </TableHead>
                   <TableHead>
@@ -312,10 +323,10 @@ export default function ListaContas() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('tipoPagamento')}
+                      onClick={() => handleSort("tipoPagamento")}
                     >
                       Pagamento
-                      {getSortIcon('tipoPagamento')}
+                      {getSortIcon("tipoPagamento")}
                     </Button>
                   </TableHead>
                   <TableHead>
@@ -323,10 +334,10 @@ export default function ListaContas() {
                       variant="ghost"
                       size="sm"
                       className="h-auto p-0 font-medium"
-                      onClick={() => handleSort('status')}
+                      onClick={() => handleSort("status")}
                     >
                       Status
-                      {getSortIcon('status')}
+                      {getSortIcon("status")}
                     </Button>
                   </TableHead>
                   <TableHead className="w-[50px]"></TableHead>
