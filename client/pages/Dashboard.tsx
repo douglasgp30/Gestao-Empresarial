@@ -196,7 +196,7 @@ export default function Dashboard() {
       <div className="space-y-2">
         <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
           <Wallet className="h-5 w-5" />
-          <span>Linha 1: Totais do Módulo Caixa</span>
+          <span>📊 Totais do Módulo Caixa</span>
           <Badge variant="outline">Dinâmico com filtros</Badge>
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
@@ -234,7 +234,7 @@ export default function Dashboard() {
       <div className="space-y-2">
         <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
           <Receipt className="h-5 w-5" />
-          <span>Linha 2: Totais do Módulo Contas (Pagas/Recebidas)</span>
+          <span>📊 Totais do Módulo Contas</span>
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
@@ -271,7 +271,7 @@ export default function Dashboard() {
       <div className="space-y-2">
         <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
           <FileText className="h-5 w-5" />
-          <span>Linha 3: Resumo Completo do Módulo Contas</span>
+          <span>📊 Contas Atrasadas</span>
         </h2>
         <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-7">
           <StatCard
