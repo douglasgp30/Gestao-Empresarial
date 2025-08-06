@@ -54,6 +54,11 @@ const sidebarItems: SidebarItem[] = [
     badge: "3", // Exemplo: contas vencendo
   },
   {
+    title: "Agendamentos",
+    href: "/agendamentos",
+    icon: Calendar,
+  },
+  {
     title: "Funcionários",
     href: "/funcionarios",
     icon: Users,
