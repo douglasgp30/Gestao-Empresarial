@@ -146,15 +146,19 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
             lancamento.tipo === caixaContext.filtros.tipo;
           const formaPagamentoCorreta =
             !caixaContext.filtros.formaPagamento ||
+            caixaContext.filtros.formaPagamento === "todas" ||
             lancamento.formaPagamento === caixaContext.filtros.formaPagamento;
           const tecnicoCorreto =
             !caixaContext.filtros.tecnico ||
+            caixaContext.filtros.tecnico === "todos" ||
             lancamento.tecnicoResponsavel === caixaContext.filtros.tecnico;
           const campanhaCorreta =
             !caixaContext.filtros.campanha ||
+            caixaContext.filtros.campanha === "todas" ||
             lancamento.campanha === caixaContext.filtros.campanha;
           const setorCorreto =
             !caixaContext.filtros.setor ||
+            caixaContext.filtros.setor === "todos" ||
             lancamento.setor === caixaContext.filtros.setor;
 
           return (
