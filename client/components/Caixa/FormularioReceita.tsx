@@ -125,6 +125,7 @@ export default function FormularioReceita() {
       notaFiscal: formData.notaFiscal,
       descontoImposto: formData.notaFiscal ? descontoImposto : undefined,
       setor: formData.setor,
+      cidade: formData.cidade,
       campanha: formData.campanha || undefined,
       descricao: formData.observacoes || undefined,
     });
