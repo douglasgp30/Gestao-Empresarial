@@ -86,7 +86,10 @@ export default function FormularioReceita() {
     descricaoServico: "",
     campanha: "",
     observacoes: "",
+    valorEntrou: "", // Para cartão de crédito/débito
   });
+
+  const [notaFiscalProcessada, setNotaFiscalProcessada] = useState(false);
 
   const [novaCampanha, setNovaCampanha] = useState({
     nome: "",
@@ -832,7 +835,7 @@ export default function FormularioReceita() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="observacoes">Observaç��es (Opcional)</Label>
+              <Label htmlFor="observacoes">Observações (Opcional)</Label>
               <Textarea
                 id="observacoes"
                 value={formData.observacoes}
