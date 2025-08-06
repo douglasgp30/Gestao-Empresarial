@@ -334,7 +334,7 @@ export default function FiltrosRelatoriosCompacto() {
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     {statusOptions.map((status) => (
                       <SelectItem key={status} value={status}>
                         {status}
