@@ -270,7 +270,7 @@ export default function FiltrosCaixaCompacto() {
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     {setores.map((setor) => (
                       <SelectItem key={setor.id} value={setor.nome}>
                         {setor.nome}
