@@ -28,6 +28,7 @@ import { toast } from "../../hooks/use-toast";
 interface FormularioAgendamentoProps {
   children?: React.ReactNode;
   agendamentoId?: string; // Para edição
+  onClose?: () => void; // Callback quando modal fechar
 }
 
 export default function FormularioAgendamento({ children, agendamentoId }: FormularioAgendamentoProps) {
