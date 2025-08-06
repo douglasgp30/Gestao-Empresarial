@@ -1,7 +1,7 @@
 import React from "react";
 import { ContasProvider } from "../contexts/ContasContext";
 import FormularioConta from "../components/Contas/FormularioConta";
-import FiltrosContas from "../components/Contas/FiltrosContas";
+import FiltrosContasCompacto from "../components/Contas/FiltrosContasCompacto";
 import ListaContas from "../components/Contas/ListaContas";
 import { FileText } from "lucide-react";
 
