@@ -18,6 +18,14 @@ interface EntidadesContextType {
   editarDescricao: (id: string, descricao: Partial<Descricao>) => void;
   excluirDescricao: (id: string) => void;
 
+  // Categorias
+  categorias: Categoria[];
+  adicionarCategoria: (
+    categoria: Omit<Categoria, "id" | "dataCriacao">,
+  ) => void;
+  editarCategoria: (id: string, categoria: Partial<Categoria>) => void;
+  excluirCategoria: (id: string) => void;
+
   // Formas de Pagamento
   formasPagamento: FormaPagamento[];
   adicionarFormaPagamento: (
