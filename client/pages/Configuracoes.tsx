@@ -60,6 +60,7 @@ export default function Configuracoes() {
   const [percentualImposto, setPercentualImposto] = useState(6);
   const [tempoSessao, setTempoSessao] = useState(60);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [temaDark, setTemaDark] = useState(false);
 
   // Carregar configurações salvas ao inicializar
   useEffect(() => {
@@ -486,7 +487,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Filter className="h-5 w-5" />
-                <span>Configurações de Filtros do Dashboard</span>
+                <span>Configura��ões de Filtros do Dashboard</span>
               </CardTitle>
               <CardDescription>
                 Configure como os totais do dashboard devem ser calculados
