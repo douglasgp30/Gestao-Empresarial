@@ -77,9 +77,8 @@ export default function FiltrosContasCompacto() {
 
   const limparFiltros = () => {
     const hoje = new Date();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
     setFiltros({
-      dataInicio: inicioMes,
+      dataInicio: hoje,
       dataFim: hoje,
       tipo: "ambos",
       status: undefined,
