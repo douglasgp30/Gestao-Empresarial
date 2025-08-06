@@ -99,48 +99,22 @@ export default function FiltrosPeriodoCompacto({
       {/* Filtros Rápidos - Mobile/Desktop */}
       <div className="mt-2 pt-2 border-t border-muted">
         <div className="flex flex-wrap gap-1">
+          {/* 1. Hoje */}
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
               const hoje = new Date();
-              const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-              onDataInicioChange(inicioMes.toISOString().split('T')[0]);
+              onDataInicioChange(hoje.toISOString().split('T')[0]);
               onDataFimChange(hoje.toISOString().split('T')[0]);
               onAplicar();
             }}
             className="text-xs h-7 px-2"
           >
-            Este Mês
+            Hoje
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              const hoje = new Date();
-              const ultimos7 = new Date(hoje.getTime() - 6 * 24 * 60 * 60 * 1000);
-              onDataInicioChange(ultimos7.toISOString().split('T')[0]);
-              onDataFimChange(hoje.toISOString().split('T')[0]);
-              onAplicar();
-            }}
-            className="text-xs h-7 px-2"
-          >
-            7 Dias
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              const hoje = new Date();
-              const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
-              onDataInicioChange(ultimos30.toISOString().split('T')[0]);
-              onDataFimChange(hoje.toISOString().split('T')[0]);
-              onAplicar();
-            }}
-            className="text-xs h-7 px-2"
-          >
-            30 Dias
-          </Button>
+
+          {/* 2. Esta Semana (iniciando na segunda-feira) */}
           <Button
             variant="ghost"
             size="sm"
@@ -157,6 +131,71 @@ export default function FiltrosPeriodoCompacto({
             className="text-xs h-7 px-2"
           >
             Esta Semana
+          </Button>
+
+          {/* 3. Últimos 7 Dias */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const hoje = new Date();
+              const ultimos7 = new Date(hoje.getTime() - 6 * 24 * 60 * 60 * 1000);
+              onDataInicioChange(ultimos7.toISOString().split('T')[0]);
+              onDataFimChange(hoje.toISOString().split('T')[0]);
+              onAplicar();
+            }}
+            className="text-xs h-7 px-2"
+          >
+            Últimos 7 Dias
+          </Button>
+
+          {/* 4. Últimos 15 Dias */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const hoje = new Date();
+              const ultimos15 = new Date(hoje.getTime() - 14 * 24 * 60 * 60 * 1000);
+              onDataInicioChange(ultimos15.toISOString().split('T')[0]);
+              onDataFimChange(hoje.toISOString().split('T')[0]);
+              onAplicar();
+            }}
+            className="text-xs h-7 px-2"
+          >
+            Últimos 15 Dias
+          </Button>
+
+          {/* 5. Últimos 30 Dias */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const hoje = new Date();
+              const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
+              onDataInicioChange(ultimos30.toISOString().split('T')[0]);
+              onDataFimChange(hoje.toISOString().split('T')[0]);
+              onAplicar();
+            }}
+            className="text-xs h-7 px-2"
+          >
+            Últimos 30 Dias
+          </Button>
+
+          {/* 6. Este Mês (início e fim do mês atual) */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              const hoje = new Date();
+              const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+              const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+              onDataInicioChange(inicioMes.toISOString().split('T')[0]);
+              onDataFimChange(fimMes.toISOString().split('T')[0]);
+              onAplicar();
+            }}
+            className="text-xs h-7 px-2"
+          >
+            Este Mês
           </Button>
         </div>
       </div>
