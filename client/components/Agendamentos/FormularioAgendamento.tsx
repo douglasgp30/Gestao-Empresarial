@@ -31,7 +31,7 @@ interface FormularioAgendamentoProps {
   onClose?: () => void; // Callback quando modal fechar
 }
 
-export default function FormularioAgendamento({ children, agendamentoId }: FormularioAgendamentoProps) {
+export default function FormularioAgendamento({ children, agendamentoId, onClose }: FormularioAgendamentoProps) {
   const { criarAgendamento, atualizarAgendamento, agendamentos } = useAgendamentos();
   const { setores, adicionarSetor, cidades, adicionarCidade } = useEntidades();
   const { funcionarios } = useFuncionarios();
