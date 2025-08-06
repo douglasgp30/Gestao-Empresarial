@@ -9,6 +9,7 @@ import {
   Home,
   DollarSign,
   FileText,
+  Calendar,
   Users,
   BarChart3,
   Settings,
