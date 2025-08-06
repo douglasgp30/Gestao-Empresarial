@@ -67,24 +67,113 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Mock data inicial
+// Mock data inicial - Categorias
+const mockCategorias: Categoria[] = [
+  // Categorias de Receitas
+  {
+    id: "1",
+    nome: "Serviços",
+    tipo: "receita",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "2",
+    nome: "Taxas",
+    tipo: "receita",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "3",
+    nome: "Emergência",
+    tipo: "receita",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  // Categorias de Despesas
+  {
+    id: "4",
+    nome: "Operacional",
+    tipo: "despesa",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "5",
+    nome: "Administrativo",
+    tipo: "despesa",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "6",
+    nome: "Manutenção",
+    tipo: "despesa",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+];
+
+// Mock data inicial - Descrições
 const mockDescricoes: Descricao[] = [
+  // Descrições de Receitas
   {
     id: "1",
     nome: "Desentupimento de pia",
-    categoria: "Residencial",
+    tipo: "receita",
+    categoria: "Serviços",
     dataCriacao: new Date(2024, 10, 1),
   },
   {
     id: "2",
     nome: "Desentupimento de vaso sanitário",
-    categoria: "Residencial",
+    tipo: "receita",
+    categoria: "Serviços",
     dataCriacao: new Date(2024, 10, 1),
   },
   {
     id: "3",
     nome: "Limpeza de caixa d'água",
-    categoria: "Comercial",
+    tipo: "receita",
+    categoria: "Serviços",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "4",
+    nome: "Dedetização",
+    tipo: "receita",
+    categoria: "Serviços",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "5",
+    nome: "Taxa de urgência",
+    tipo: "receita",
+    categoria: "Taxas",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  // Descrições de Despesas
+  {
+    id: "6",
+    nome: "Combustível",
+    tipo: "despesa",
+    categoria: "Operacional",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "7",
+    nome: "Almoço da equipe",
+    tipo: "despesa",
+    categoria: "Administrativo",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "8",
+    nome: "Manutenção do equipamento",
+    tipo: "despesa",
+    categoria: "Manutenção",
+    dataCriacao: new Date(2024, 10, 1),
+  },
+  {
+    id: "9",
+    nome: "Material de limpeza",
+    tipo: "despesa",
+    categoria: "Operacional",
     dataCriacao: new Date(2024, 10, 1),
   },
 ];
