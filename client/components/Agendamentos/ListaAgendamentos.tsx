@@ -63,6 +63,13 @@ export default function ListaAgendamentos() {
   const [agendamentoExcluir, setAgendamentoExcluir] = useState<string | null>(null);
   const [agendamentoEditar, setAgendamentoEditar] = useState<string | null>(null);
 
+  // Resetar edição quando o modal fechar
+  React.useEffect(() => {
+    if (!agendamentoEditar) {
+      // Modal fechou, não precisa fazer nada
+    }
+  }, [agendamentoEditar]);
+
   const handleOrdenar = (coluna: ColunaOrdenacao) => {
     setOrdenacao(prev => ({
       coluna,
