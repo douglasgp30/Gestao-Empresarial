@@ -46,15 +46,32 @@ export default function FormularioAgendamento({ children, agendamentoId }: Formu
 
   // Estado do formulário
   const [formData, setFormData] = useState({
-    dataServico: agendamentoEdicao?.dataServico.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
-    horaServico: agendamentoEdicao?.horaServico || "09:00",
-    descricaoServico: agendamentoEdicao?.descricaoServico || "",
-    setor: agendamentoEdicao?.setor || "",
-    cidade: agendamentoEdicao?.cidade || "",
-    tecnicoResponsavel: agendamentoEdicao?.tecnicoResponsavel || "",
-    finalTelefoneCliente: agendamentoEdicao?.finalTelefoneCliente || "",
-    tempoLembrete: agendamentoEdicao?.tempoLembrete || 30,
+    dataServico: new Date().toISOString().split('T')[0],
+    horaServico: "09:00",
+    descricaoServico: "",
+    setor: "",
+    cidade: "",
+    tecnicoResponsavel: "",
+    finalTelefoneCliente: "",
+    tempoLembrete: 30,
   });
+
+  // Atualizar formulário quando agendamento de edição mudar
+  React.useEffect(() => {
+    if (agendamentoEdicao) {
+      setFormData({
+        dataServico: agendamentoEdicao.dataServico.toISOString().split('T')[0],
+        horaServico: agendamentoEdicao.horaServico,
+        descricaoServico: agendamentoEdicao.descricaoServico,
+        setor: agendamentoEdicao.setor,
+        cidade: agendamentoEdicao.cidade || "",
+        tecnicoResponsavel: agendamentoEdicao.tecnicoResponsavel || "",
+        finalTelefoneCliente: agendamentoEdicao.finalTelefoneCliente,
+        tempoLembrete: agendamentoEdicao.tempoLembrete,
+      });
+      setAberto(true);
+    }
+  }, [agendamentoEdicao]);
 
   const [erros, setErros] = useState<Record<string, string>>({});
 
