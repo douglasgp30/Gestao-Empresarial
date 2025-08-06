@@ -6,7 +6,6 @@ import { Calendar, Plus } from "lucide-react";
 import FiltrosAgendamentosCompacto from "../components/Agendamentos/FiltrosAgendamentosCompacto";
 import ListaAgendamentos from "../components/Agendamentos/ListaAgendamentos";
 import FormularioAgendamento from "../components/Agendamentos/FormularioAgendamento";
-import TotaisAgendamentos from "../components/Agendamentos/TotaisAgendamentos";
 
 export default function Agendamentos() {
   return (
