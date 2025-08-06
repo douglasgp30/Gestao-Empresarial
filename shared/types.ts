@@ -157,3 +157,18 @@ export interface Cidade {
   nome: string;
   dataCriacao: Date;
 }
+
+export interface BackupConfig {
+  localBackup: string;
+  ultimoBackup?: Date;
+  backupAutomatico: boolean;
+  ultimoLoginData?: string; // YYYY-MM-DD format for first login control
+}
+
+export interface BackupResult {
+  sucesso: boolean;
+  nomeArquivo?: string;
+  caminhoCompleto?: string;
+  dataBackup: Date;
+  erro?: string;
+}
