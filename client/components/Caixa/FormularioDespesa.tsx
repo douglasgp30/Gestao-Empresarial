@@ -212,17 +212,101 @@ export default function FormularioDespesa() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="descricao">Descrição *</Label>
-            <Textarea
-              id="descricao"
-              value={formData.descricao}
-              onChange={(e) =>
-                setFormData({ ...formData, descricao: e.target.value })
+            <Label className="flex items-center justify-between">
+              Descrição da Despesa *
+              <Dialog
+                open={isNewDescricaoOpen}
+                onOpenChange={setIsNewDescricaoOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    + Novo
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Adicionar Nova Descrição</DialogTitle>
+                    <DialogDescription>
+                      Cadastre uma nova descrição de despesa
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="nomeDescricao">Nome da Descrição *</Label>
+                      <Input
+                        id="nomeDescricao"
+                        value={novaDescricao.nome}
+                        onChange={(e) =>
+                          setNovaDescricao({
+                            ...novaDescricao,
+                            nome: e.target.value,
+                          })
+                        }
+                        placeholder="Ex: Combustível, Material de limpeza..."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="categoriaDescricao">Categoria (Opcional)</Label>
+                      <Select
+                        value={novaDescricao.categoria}
+                        onValueChange={(value) =>
+                          setNovaDescricao({
+                            ...novaDescricao,
+                            categoria: value,
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categorias
+                            .filter(cat => cat.tipo === 'despesa')
+                            .map((categoria) => (
+                            <SelectItem key={categoria.id} value={categoria.nome}>
+                              {categoria.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsNewDescricaoOpen(false)}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button onClick={handleAddDescricao}>
+                        Adicionar Descrição
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </Label>
+            <Select
+              value={formData.descricaoServico}
+              onValueChange={(value) =>
+                setFormData({ ...formData, descricaoServico: value })
               }
-              placeholder="Descreva a despesa (obrigatório)"
-              rows={3}
-              required
-            />
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione ou cadastre a descrição *" />
+              </SelectTrigger>
+              <SelectContent>
+                {descricoes
+                  .filter((descricao) => descricao.tipo === 'despesa')
+                  .map((descricao) => (
+                  <SelectItem key={descricao.id} value={descricao.nome}>
+                    {descricao.nome}
+                    {descricao.categoria && (
+                      <span className="text-muted-foreground"> - {descricao.categoria}</span>
+                    )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
