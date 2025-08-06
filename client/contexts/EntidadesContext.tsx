@@ -335,6 +335,52 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  // Setores
+  const adicionarSetor = (novoSetor: Omit<Setor, "id" | "dataCriacao">) => {
+    const id = Date.now().toString();
+    const setor: Setor = {
+      ...novoSetor,
+      id,
+      dataCriacao: new Date(),
+    };
+    setSetores((prev) => [...prev, setor]);
+  };
+
+  const editarSetor = (id: string, dadosAtualizados: Partial<Setor>) => {
+    setSetores((prev) =>
+      prev.map((setor) =>
+        setor.id === id ? { ...setor, ...dadosAtualizados } : setor,
+      ),
+    );
+  };
+
+  const excluirSetor = (id: string) => {
+    setSetores((prev) => prev.filter((setor) => setor.id !== id));
+  };
+
+  // Cidades
+  const adicionarCidade = (novaCidade: Omit<Cidade, "id" | "dataCriacao">) => {
+    const id = Date.now().toString();
+    const cidade: Cidade = {
+      ...novaCidade,
+      id,
+      dataCriacao: new Date(),
+    };
+    setCidades((prev) => [...prev, cidade]);
+  };
+
+  const editarCidade = (id: string, dadosAtualizados: Partial<Cidade>) => {
+    setCidades((prev) =>
+      prev.map((cidade) =>
+        cidade.id === id ? { ...cidade, ...dadosAtualizados } : cidade,
+      ),
+    );
+  };
+
+  const excluirCidade = (id: string) => {
+    setCidades((prev) => prev.filter((cidade) => cidade.id !== id));
+  };
+
   const value = {
     // Descrições
     descricoes,
