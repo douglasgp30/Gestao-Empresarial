@@ -72,10 +72,9 @@ export default function FiltrosContasCompacto() {
     setFiltros({
       dataInicio: inicioMes,
       dataFim: hoje,
-      tipo: "",
-      status: "",
-      fornecedorCliente: "",
-      tipoPagamento: "",
+      tipo: "ambos",
+      status: undefined,
+      fornecedorCliente: undefined,
     });
   };
 
