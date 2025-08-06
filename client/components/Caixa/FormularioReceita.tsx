@@ -169,6 +169,34 @@ export default function FormularioReceita() {
     setIsNewCampanhaOpen(false);
   };
 
+  const handleAddSetor = () => {
+    if (!novoSetor.nome.trim()) return;
+
+    adicionarSetor({
+      nome: novoSetor.nome,
+    });
+
+    setNovoSetor({
+      nome: "",
+    });
+
+    setIsNewSetorOpen(false);
+  };
+
+  const handleAddCidade = () => {
+    if (!novaCidade.nome.trim()) return;
+
+    adicionarCidade({
+      nome: novaCidade.nome,
+    });
+
+    setNovaCidade({
+      nome: "",
+    });
+
+    setIsNewCidadeOpen(false);
+  };
+
   const calcularValorLiquido = () => {
     const valor = parseFloat(formData.valor) || 0;
     let valorLiquido = valor;
