@@ -202,9 +202,9 @@ export default function Dashboard() {
               Visão geral financeira - Período: {getPeriodoDescricao()}
             </p>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full gap-8">
             {/* Lado Esquerdo: Meta do Mês, Total Alcançado e Restante */}
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-12">
               {/* Meta do Mês */}
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium text-muted-foreground">
@@ -295,7 +295,7 @@ export default function Dashboard() {
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3">
                     <span
                       className={`text-lg font-bold ${
                         restanteParaMeta <= 0
@@ -310,7 +310,7 @@ export default function Dashboard() {
                     )}
                     <Tooltip>
                       <TooltipTrigger>
-                        <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors ml-1" />
+                        <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <p className="font-medium mb-1">Restante para Meta:</p>
@@ -327,15 +327,15 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Lado Direito: Saldo Geral */}
-            <div className="flex items-center space-x-2">
+            {/* Lado Direito: Saldo Geral - Com espaçamento adequado */}
+            <div className="flex items-center space-x-3 bg-accent/20 px-4 py-2 rounded-lg border">
               <span className="text-sm font-medium text-muted-foreground">
                 Saldo Geral:
               </span>
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   <span
                     className={`text-lg font-bold ${
                       stats.saldoGeralConsolidado > 0
@@ -349,7 +349,7 @@ export default function Dashboard() {
                   </span>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors ml-1" />
+                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
                       <p className="font-medium mb-1">Cálculo do Saldo Geral:</p>
