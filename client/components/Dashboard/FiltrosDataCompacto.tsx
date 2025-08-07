@@ -13,6 +13,7 @@ export default function FiltrosDataCompacto() {
     setFiltros({
       ...filtros,
       dataInicio: novaData,
+      __timestamp: Date.now() // Força re-render
     });
   };
 
