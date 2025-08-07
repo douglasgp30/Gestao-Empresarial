@@ -217,21 +217,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
           const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
 
-          const incluido = (dataLancNorm >= dataInicio && dataLancNorm <= dataFim);
-
-          console.log(`Lançamento ${lancamento.id}:`, {
-            data: dataLancamento.toISOString().split('T')[0],
-            tipo: lancamento.tipo,
-            valor: lancamento.valor,
-            dataInicio: dataInicio.toISOString().split('T')[0],
-            dataFim: dataFim.toISOString().split('T')[0],
-            dataOriginal: lancamento.data,
-            dataInicioOriginal: filtros.dataInicio,
-            dataFimOriginal: filtros.dataFim,
-            incluido
-          });
-
-          return incluido;
+          return (dataLancNorm >= dataInicio && dataLancNorm <= dataFim);
         });
       }
 
