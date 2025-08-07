@@ -163,6 +163,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    if (!caixaContext.lancamentos || caixaContext.lancamentos.length === 0) {
+      console.log('Nenhum lançamento disponível ainda');
+      return;
+    }
+
     console.log('Total de lançamentos disponíveis:', caixaContext.lancamentos.length);
 
     setIsLoading(true);
