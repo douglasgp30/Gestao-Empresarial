@@ -12,6 +12,7 @@ import { useContas } from "./ContasContext";
 interface FiltrosPeriodo {
   dataInicio: Date;
   dataFim: Date;
+  __timestamp?: number; // Para forçar re-render
 }
 
 interface DashboardContextType {
