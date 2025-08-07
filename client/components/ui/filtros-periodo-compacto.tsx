@@ -60,7 +60,7 @@ export default function FiltrosPeriodoCompacto({
       return "hoje";
     }
 
-    // Esta Semana
+    // Esta Semana (segunda-feira da semana atual até hoje)
     const inicioSemana = new Date(hoje);
     const dia = hoje.getDay();
     const diasAtras = dia === 0 ? 6 : dia - 1;
@@ -71,27 +71,15 @@ export default function FiltrosPeriodoCompacto({
       inicioSemana.getDate(),
     );
 
-    // Fim da semana (domingo)
-    const fimSemana = new Date(inicioSemana);
-    fimSemana.setDate(inicioSemana.getDate() + 6);
-    const fimSemanaNorm = new Date(
-      fimSemana.getFullYear(),
-      fimSemana.getMonth(),
-      fimSemana.getDate(),
-    );
-
-    // Se ainda estamos na semana atual, usar até hoje, senão usar até domingo
-    const dataFimSemana = fimSemana <= hoje ? fimSemanaNorm : hojeNorm;
-
     if (
       inicioNorm.getTime() === inicioSemanaNorm.getTime() &&
-      fimNorm.getTime() === dataFimSemana.getTime()
+      fimNorm.getTime() === hojeNorm.getTime()
     ) {
       return "esta-semana";
     }
 
-    // Últimos 7 Dias
-    const ultimos7 = new Date(hoje.getTime() - 6 * 24 * 60 * 60 * 1000);
+    // Últimos 7 Dias (7 dias antes de hoje até hoje)
+    const ultimos7 = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000);
     const ultimos7Norm = new Date(
       ultimos7.getFullYear(),
       ultimos7.getMonth(),
@@ -105,8 +93,8 @@ export default function FiltrosPeriodoCompacto({
       return "ultimos-7";
     }
 
-    // Últimos 15 Dias
-    const ultimos15 = new Date(hoje.getTime() - 14 * 24 * 60 * 60 * 1000);
+    // Últimos 15 Dias (15 dias antes de hoje até hoje)
+    const ultimos15 = new Date(hoje.getTime() - 15 * 24 * 60 * 60 * 1000);
     const ultimos15Norm = new Date(
       ultimos15.getFullYear(),
       ultimos15.getMonth(),
@@ -135,17 +123,23 @@ export default function FiltrosPeriodoCompacto({
       return "ultimos-30";
     }
 
-    // Este Mês (do primeiro dia do mês até hoje)
+    // Este Mês (do primeiro dia do mês até o último dia)
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
     const inicioMesNorm = new Date(
       inicioMes.getFullYear(),
       inicioMes.getMonth(),
       inicioMes.getDate(),
     );
+    const fimMesNorm = new Date(
+      fimMes.getFullYear(),
+      fimMes.getMonth(),
+      fimMes.getDate(),
+    );
 
     if (
       inicioNorm.getTime() === inicioMesNorm.getTime() &&
-      fimNorm.getTime() === hojeNorm.getTime()
+      fimNorm.getTime() === fimMesNorm.getTime()
     ) {
       return "este-mes";
     }
@@ -205,9 +199,10 @@ export default function FiltrosPeriodoCompacto({
   const aplicarFiltroEsteMes = () => {
     const hoje = new Date();
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    // Para "Este Mês" - data final deve ser hoje, não fim do mês
+    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    // Para "Este Mês" - do dia 1 até o último dia do mês
     onDataInicioChange(inicioMes.toISOString().split("T")[0]);
-    onDataFimChange(hoje.toISOString().split("T")[0]);
+    onDataFimChange(fimMes.toISOString().split("T")[0]);
     setFiltroAtivo("este-mes");
     onAplicar();
   };
@@ -323,15 +318,9 @@ export default function FiltrosPeriodoCompacto({
               const diasAtras = dia === 0 ? 6 : dia - 1; // Segunda-feira como início
               inicioSemana.setDate(hoje.getDate() - diasAtras);
 
-              // Fim da semana (domingo)
-              const fimSemana = new Date(inicioSemana);
-              fimSemana.setDate(inicioSemana.getDate() + 6);
-
-              // Se ainda estamos na semana atual, usar até hoje, senão usar até domingo
-              const dataFim = fimSemana <= hoje ? fimSemana : hoje;
-
+              // Data final sempre é hoje para "Esta Semana"
               onDataInicioChange(inicioSemana.toISOString().split("T")[0]);
-              onDataFimChange(dataFim.toISOString().split("T")[0]);
+              onDataFimChange(hoje.toISOString().split("T")[0]);
               setFiltroAtivo("esta-semana");
               onAplicar();
             }}
@@ -350,8 +339,9 @@ export default function FiltrosPeriodoCompacto({
             size="sm"
             onClick={() => {
               const hoje = new Date();
+              // Últimos 7 dias = 7 dias antes de hoje até hoje
               const ultimos7 = new Date(
-                hoje.getTime() - 6 * 24 * 60 * 60 * 1000,
+                hoje.getTime() - 7 * 24 * 60 * 60 * 1000,
               );
               onDataInicioChange(ultimos7.toISOString().split("T")[0]);
               onDataFimChange(hoje.toISOString().split("T")[0]);
@@ -373,8 +363,9 @@ export default function FiltrosPeriodoCompacto({
             size="sm"
             onClick={() => {
               const hoje = new Date();
+              // Últimos 15 dias = 15 dias antes de hoje até hoje
               const ultimos15 = new Date(
-                hoje.getTime() - 14 * 24 * 60 * 60 * 1000,
+                hoje.getTime() - 15 * 24 * 60 * 60 * 1000,
               );
               onDataInicioChange(ultimos15.toISOString().split("T")[0]);
               onDataFimChange(hoje.toISOString().split("T")[0]);
