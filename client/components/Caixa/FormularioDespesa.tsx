@@ -59,6 +59,7 @@ export default function FormularioDespesa() {
     formaPagamento: "",
     categoria: "",
     descricaoServico: "",
+    tipoDespesa: "empresa" as "empresa" | "pessoal",
     observacoes: "",
   });
 
@@ -95,6 +96,7 @@ export default function FormularioDespesa() {
       formaPagamento: "",
       categoria: "",
       descricaoServico: "",
+      tipoDespesa: "empresa" as "empresa" | "pessoal",
       observacoes: "",
     });
 
