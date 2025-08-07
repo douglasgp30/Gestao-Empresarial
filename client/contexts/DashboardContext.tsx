@@ -317,10 +317,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         totalContasPagas;
 
       // CÁLCULO TOTAL ALCANÇADO DA META
+      // IMPORTANTE: Meta é SEMPRE do mês atual, independente dos filtros de data selecionados
       // Baseado apenas em receitas do mês atual + contas a receber criadas no mês atual
       const hoje = new Date();
       const inicioMesAtual = getInicioDoMes();
       const fimMesAtual = getFimDoMes();
+
+      console.log('Dashboard: Meta calculada para mês atual:', inicioMesAtual, 'até', fimMesAtual);
 
       // 1. Receitas do caixa do mês atual
       const receitasCaixaMesAtual = caixaContext.lancamentos
