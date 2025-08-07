@@ -199,7 +199,7 @@ export default function Dashboard() {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground">
-              Visão geral financeira - Período: {getPeriodoDescricao()}
+              Visão geral financeira: {getPeriodoDescricao()}
             </p>
           </div>
           <div className="flex items-center justify-between w-full gap-8">
