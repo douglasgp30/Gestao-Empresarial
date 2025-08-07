@@ -198,6 +198,11 @@ export default function FormularioReceita() {
       tecnicoResponsavel: formData.tecnicoResponsavel,
       comissao: comissaoFuncionario, // Valor da comissão calculada
       notaFiscal: formData.notaFiscal,
+      notaFiscalArquivo: uploadedFile ? {
+        nome: uploadedFile.name,
+        tamanho: uploadedFile.size,
+        dataUpload: new Date(),
+      } : undefined,
       descontoImposto: formData.notaFiscal ? descontoImposto : undefined,
       setor: formData.setor,
       cidade: formData.cidade,
@@ -333,6 +338,11 @@ export default function FormularioReceita() {
       formaPagamento: "Boleto",
       tecnicoResponsavel: formData.tecnicoResponsavel,
       notaFiscal: formData.notaFiscal,
+      notaFiscalArquivo: uploadedFile ? {
+        nome: uploadedFile.name,
+        tamanho: uploadedFile.size,
+        dataUpload: new Date(),
+      } : undefined,
       descontoImposto: formData.notaFiscal
         ? boletoData.valorTotal * 0.06
         : undefined,
