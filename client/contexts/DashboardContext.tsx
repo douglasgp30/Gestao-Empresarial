@@ -151,12 +151,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
-    console.log('=== DASHBOARD USEEFFECT EXECUTADO ===');
-    console.log('Filtros atuais:', {
-      dataInicio: filtros.dataInicio.toISOString().split('T')[0],
-      dataFim: filtros.dataFim.toISOString().split('T')[0],
-      timestamp: filtros.__timestamp
-    });
+    console.log('Dashboard useEffect - Filtros:', filtros.dataInicio.toISOString().split('T')[0], 'até', filtros.dataFim.toISOString().split('T')[0]);
 
     if (!caixaContext || !contasContext) {
       console.log('Contextos não disponíveis ainda');
@@ -314,7 +309,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
-      // LINHA 3 - Totais de Contas a Receber e a Pagar (n��o processadas, filtradas por data)
+      // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
       const totalContasAReceber = contasContext.contas
         .filter((c) => {
           if (c.tipo !== "receber" || c.status === "paga") return false;
