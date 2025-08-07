@@ -564,6 +564,29 @@ export default function FiltrosPeriodoCompacto({
           >
             Este Mês
           </Button>
+
+          {/* Botão de Teste Temporário */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              alert('Botão de teste clicado! Verificando se o JavaScript está funcionando...');
+              console.log('TESTE: Botão clicado, dataInicio atual:', dataInicio, 'dataFim atual:', dataFim);
+
+              // Teste direto de mudança
+              const hoje = new Date().toISOString().split("T")[0];
+              console.log('TESTE: Tentando mudar para hoje:', hoje);
+
+              onDataInicioChange(hoje);
+              onDataFimChange(hoje);
+              onAplicar();
+
+              console.log('TESTE: Funções chamadas');
+            }}
+            className="text-xs h-7 px-2 bg-red-500 text-white"
+          >
+            🧪 TESTE
+          </Button>
         </div>
       </div>
     </div>
