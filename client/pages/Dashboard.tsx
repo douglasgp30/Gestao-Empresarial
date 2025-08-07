@@ -285,7 +285,7 @@ export default function Dashboard() {
                       <TooltipContent className="max-w-xs">
                         <p className="font-medium mb-1">Total Alcançado da Meta:</p>
                         <p className="text-xs">
-                          Receitas do Caixa + Contas a Receber criadas no mês atual (baseado na data de criação, não vencimento)
+                          <strong>Sempre do mês atual, independente dos filtros.</strong> Receitas do Caixa + Contas a Receber criadas no mês atual.
                         </p>
                       </TooltipContent>
                     </Tooltip>
