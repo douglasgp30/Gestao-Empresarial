@@ -387,7 +387,7 @@ export default function Dashboard() {
             <StatCard
               title="Total de Receitas"
               value={formatCurrency(stats.totalReceitasCaixa)}
-              description="Servi��os lançados no caixa"
+              description="Serviços lançados no caixa"
               icon={TrendingUp}
               trend="up"
               isLoading={isLoading}
