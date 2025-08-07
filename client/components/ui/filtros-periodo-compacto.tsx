@@ -29,6 +29,8 @@ export default function FiltrosPeriodoCompacto({
 }: FiltrosPeriodoCompactoProps) {
   const [filtroAtivo, setFiltroAtivo] = useState<string>("");
   const [forceUpdate, setForceUpdate] = useState(0);
+  const [localDataInicio, setLocalDataInicio] = useState(dataInicio);
+  const [localDataFim, setLocalDataFim] = useState(dataFim);
   const inputInicioRef = useRef<HTMLInputElement>(null);
   const inputFimRef = useRef<HTMLInputElement>(null);
 
@@ -36,6 +38,12 @@ export default function FiltrosPeriodoCompacto({
   const triggerForceUpdate = useCallback(() => {
     setForceUpdate(prev => prev + 1);
   }, []);
+
+  // Sync com props quando mudam externamente
+  React.useEffect(() => {
+    setLocalDataInicio(dataInicio);
+    setLocalDataFim(dataFim);
+  }, [dataInicio, dataFim]);
 
   // Determinar qual filtro está ativo com base nas datas
   const determinarFiltroAtivo = () => {
@@ -242,10 +250,12 @@ export default function FiltrosPeriodoCompacto({
                   ref={inputInicioRef}
                   id="dataInicio"
                   type="date"
-                  value={dataInicio}
-                  onChange={(e) =>
-                    handleDataInicioChangeInterno(e.target.value)
-                  }
+                  value={localDataInicio}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setLocalDataInicio(newValue);
+                    handleDataInicioChangeInterno(newValue);
+                  }}
                   className="pl-8 h-9 text-sm"
                   key={`inicio-${forceUpdate}`}
                 />
@@ -261,8 +271,12 @@ export default function FiltrosPeriodoCompacto({
                   ref={inputFimRef}
                   id="dataFim"
                   type="date"
-                  value={dataFim}
-                  onChange={(e) => handleDataFimChangeInterno(e.target.value)}
+                  value={localDataFim}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setLocalDataFim(newValue);
+                    handleDataFimChangeInterno(newValue);
+                  }}
                   className="pl-8 h-9 text-sm"
                   key={`fim-${forceUpdate}`}
                 />
@@ -314,27 +328,30 @@ export default function FiltrosPeriodoCompacto({
               const dataFormatada = hoje.toISOString().split("T")[0];
               console.log('Data formatada:', dataFormatada); // Debug
 
-              // Forçar atualização direta dos inputs usando refs e DOM
+              // Atualizar estado local primeiro
+              setLocalDataInicio(dataFormatada);
+              setLocalDataFim(dataFormatada);
+
+              // Forçar atualização dos inputs
               const inputInicio = inputInicioRef.current || document.getElementById('dataInicio') as HTMLInputElement;
               const inputFim = inputFimRef.current || document.getElementById('dataFim') as HTMLInputElement;
 
               if (inputInicio) {
                 inputInicio.value = dataFormatada;
                 inputInicio.dispatchEvent(new Event('input', { bubbles: true }));
-                inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
               }
               if (inputFim) {
                 inputFim.value = dataFormatada;
                 inputFim.dispatchEvent(new Event('input', { bubbles: true }));
-                inputFim.dispatchEvent(new Event('change', { bubbles: true }));
               }
 
-              triggerForceUpdate();
-
+              // Chamar callbacks externos
               onDataInicioChange(dataFormatada);
               onDataFimChange(dataFormatada);
               setFiltroAtivo("hoje");
               onAplicar();
+
+              triggerForceUpdate();
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "hoje"
