@@ -6,7 +6,6 @@ export default function FiltrosDataCompacto() {
   const { filtros, setFiltros, isLoading } = useDashboard();
 
   const handleDataInicioChange = (data: string) => {
-    console.log('Dashboard: Alterando data início para:', data);
     const novaData = new Date(data);
     // Normalizar para início do dia
     novaData.setHours(0, 0, 0, 0);
@@ -26,7 +25,6 @@ export default function FiltrosDataCompacto() {
   };
 
   const handleDataFimChange = (data: string) => {
-    console.log('Dashboard: Alterando data fim para:', data);
     const novaData = new Date(data);
     // Normalizar para fim do dia
     novaData.setHours(23, 59, 59, 999);
