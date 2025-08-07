@@ -93,10 +93,16 @@ const RelatoriosContext = createContext<RelatoriosContextType | undefined>(
 );
 
 // Mock data - em um app real viria de APIs/contexts existentes
+const hoje = new Date();
+const ontem = new Date(hoje.getTime() - 24 * 60 * 60 * 1000);
+const anteontem = new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000);
+const cincodiasatras = new Date(hoje.getTime() - 5 * 24 * 60 * 60 * 1000);
+const dezdiasatras = new Date(hoje.getTime() - 10 * 24 * 60 * 60 * 1000);
+
 const mockLancamentos: LancamentoCaixa[] = [
   {
     id: "1",
-    data: new Date(2024, 11, 1),
+    data: hoje,
     tipo: "receita",
     valor: 450.0,
     valorLiquido: 450.0,
