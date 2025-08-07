@@ -22,6 +22,7 @@ export default function FiltrosDataCompacto() {
   };
 
   const handleAplicar = () => {
+    console.log('Dashboard: Aplicando filtros:', filtros);
     // Força atualização dos dados criando nova referência com timestamp
     setFiltros({
       ...filtros,
