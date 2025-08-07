@@ -83,8 +83,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const contasContext = useContas();
 
   const [filtros, setFiltros] = useState<FiltrosPeriodo>({
-    dataInicio: getInicioDoMes(),
-    dataFim: getFimDoMes(),
+    dataInicio: getHoje(),
+    dataFim: getHoje(),
   });
   const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
