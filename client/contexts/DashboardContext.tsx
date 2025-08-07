@@ -76,7 +76,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     dataInicio: getInicioDoMes(),
     dataFim: getFimDoMes(),
   });
-  const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(true);
+  const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     saldoGeralConsolidado: 0,
