@@ -415,6 +415,10 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
     gerarRelatorioFinanceiro,
     gerarRelatorioContas,
     gerarRelatorioTecnicos,
+    // Relatórios pré-calculados reativos
+    relatorioFinanceiro,
+    relatorioContas,
+    relatorioTecnicos,
     exportarPDF,
     exportarExcel,
     isLoading,
