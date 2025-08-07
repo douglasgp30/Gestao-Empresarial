@@ -363,6 +363,9 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
+
+            {/* Espaçador à direita para equilibrar o layout */}
+            <div className="flex-1"></div>
           </div>
         </div>
 
