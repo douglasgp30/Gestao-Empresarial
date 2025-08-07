@@ -94,8 +94,8 @@ export default function FiltrosPeriodoCompacto({
       return "esta-semana";
     }
 
-    // Últimos 7 Dias (7 dias antes de hoje até hoje)
-    const ultimos7 = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000);
+    // Últimos 7 Dias (incluindo hoje, então 6 dias atrás até hoje)
+    const ultimos7 = new Date(hoje.getTime() - 6 * 24 * 60 * 60 * 1000);
     const ultimos7Norm = new Date(
       ultimos7.getFullYear(),
       ultimos7.getMonth(),
@@ -109,8 +109,8 @@ export default function FiltrosPeriodoCompacto({
       return "ultimos-7";
     }
 
-    // Últimos 15 Dias (15 dias antes de hoje até hoje)
-    const ultimos15 = new Date(hoje.getTime() - 15 * 24 * 60 * 60 * 1000);
+    // Últimos 15 Dias (incluindo hoje, então 14 dias atrás até hoje)
+    const ultimos15 = new Date(hoje.getTime() - 14 * 24 * 60 * 60 * 1000);
     const ultimos15Norm = new Date(
       ultimos15.getFullYear(),
       ultimos15.getMonth(),
@@ -124,8 +124,8 @@ export default function FiltrosPeriodoCompacto({
       return "ultimos-15";
     }
 
-    // Últimos 30 Dias (30 dias atrás até hoje)
-    const ultimos30 = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000);
+    // Últimos 30 Dias (incluindo hoje, então 29 dias atrás até hoje)
+    const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
     const ultimos30Norm = new Date(
       ultimos30.getFullYear(),
       ultimos30.getMonth(),
@@ -412,7 +412,7 @@ export default function FiltrosPeriodoCompacto({
             onClick={() => {
               console.log('Clicou em Últimos 7 Dias'); // Debug
               const hoje = new Date();
-              const ultimos7 = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000);
+              const ultimos7 = new Date(hoje.getTime() - 6 * 24 * 60 * 60 * 1000);
               const dataInicio7 = ultimos7.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 7 Dias - Início:', dataInicio7, 'Fim:', dataHoje); // Debug
@@ -451,7 +451,7 @@ export default function FiltrosPeriodoCompacto({
             onClick={() => {
               console.log('Clicou em Últimos 15 Dias'); // Debug
               const hoje = new Date();
-              const ultimos15 = new Date(hoje.getTime() - 15 * 24 * 60 * 60 * 1000);
+              const ultimos15 = new Date(hoje.getTime() - 14 * 24 * 60 * 60 * 1000);
               const dataInicio15 = ultimos15.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 15 Dias - Início:', dataInicio15, 'Fim:', dataHoje); // Debug
@@ -490,7 +490,7 @@ export default function FiltrosPeriodoCompacto({
             onClick={() => {
               console.log('Clicou em Últimos 30 Dias'); // Debug
               const hoje = new Date();
-              const ultimos30 = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000);
+              const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
               const dataInicio30 = ultimos30.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 30 Dias - Início:', dataInicio30, 'Fim:', dataHoje); // Debug
