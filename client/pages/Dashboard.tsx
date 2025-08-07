@@ -158,9 +158,14 @@ export default function Dashboard() {
   const lancamentosRecentes = lancamentos
     .filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
+      // Normalizar datas para comparação (apenas ano, mês, dia)
+      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
+      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
+      const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+
       return (
-        dataLancamento >= filtros.dataInicio &&
-        dataLancamento <= filtros.dataFim
+        dataLancNorm >= dataInicio &&
+        dataLancNorm <= dataFim
       );
     })
     .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
