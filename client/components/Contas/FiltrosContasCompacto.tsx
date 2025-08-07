@@ -80,8 +80,11 @@ export default function FiltrosContasCompacto() {
   };
 
   const handleAplicarPeriodo = () => {
-    // Força atualização com novos filtros
-    setFiltros({ ...filtros });
+    // Força atualização com novos filtros criando nova referência
+    setFiltros({
+      ...filtros,
+      __timestamp: Date.now() // Força re-render
+    });
   };
 
   const limparFiltros = () => {
