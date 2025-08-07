@@ -205,8 +205,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
             dataLancNorm <= dataFim
           );
         });
-
-        console.log('Dashboard: Lançamentos total:', caixaContext.lancamentos.length, 'Filtrados:', lancamentosFiltrados.length);
       }
 
       // LINHA 1 - Totais do Módulo Caixa (dinâmicos com filtros)
