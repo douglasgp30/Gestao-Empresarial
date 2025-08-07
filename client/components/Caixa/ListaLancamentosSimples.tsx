@@ -38,12 +38,20 @@ export default function ListaLancamentosSimples() {
         lancamento.tipo === filtros.tipo;
       const formaPagamentoCorreta =
         !filtros.formaPagamento ||
+        filtros.formaPagamento === "todas" ||
         lancamento.formaPagamento === filtros.formaPagamento;
       const tecnicoCorreto =
-        !filtros.tecnico || lancamento.tecnicoResponsavel === filtros.tecnico;
+        !filtros.tecnico ||
+        filtros.tecnico === "todos" ||
+        lancamento.tecnicoResponsavel === filtros.tecnico;
       const campanhaCorreta =
-        !filtros.campanha || lancamento.campanha === filtros.campanha;
-      const setorCorreto = !filtros.setor || lancamento.setor === filtros.setor;
+        !filtros.campanha ||
+        filtros.campanha === "todas" ||
+        lancamento.campanha === filtros.campanha;
+      const setorCorreto =
+        !filtros.setor ||
+        filtros.setor === "todos" ||
+        lancamento.setor === filtros.setor;
 
       return (
         dentroDataInicio &&
