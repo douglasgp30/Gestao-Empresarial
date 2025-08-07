@@ -31,7 +31,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { DollarSign, TrendingUp, Calculator } from "lucide-react";
+import { DollarSign, TrendingUp, Calculator, Upload, FileText, X } from "lucide-react";
 
 const formasPagamento = [
   "Dinheiro",
@@ -90,6 +90,9 @@ export default function FormularioReceita() {
   });
 
   const [notaFiscalProcessada, setNotaFiscalProcessada] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [notaFiscalArquivada, setNotaFiscalArquivada] = useState(false);
 
   const [novaCampanha, setNovaCampanha] = useState({
     nome: "",
@@ -126,6 +129,13 @@ export default function FormularioReceita() {
     if (formData.notaFiscal && !notaFiscalProcessada) {
       alert(
         "Por favor, aguarde a emissão da nota fiscal antes de lançar a receita.",
+      );
+      return;
+    }
+
+    if (formData.notaFiscal && notaFiscalProcessada && !notaFiscalArquivada) {
+      alert(
+        "Por favor, faça o upload da nota fiscal em PDF antes de lançar a receita.",
       );
       return;
     }
@@ -480,7 +490,7 @@ export default function FormularioReceita() {
                 </Select>
               </div>
 
-              {/* Campo "Valor que Entrou" para cartões */}
+              {/* Campo "Valor que Entrou" para cart��es */}
               {(formData.formaPagamento === "Cartão de Crédito" ||
                 formData.formaPagamento === "Cartão de Débito") && (
                 <div className="space-y-2">
@@ -919,7 +929,7 @@ export default function FormularioReceita() {
                 onCheckedChange={(checked) => {
                   setFormData({ ...formData, notaFiscal: checked });
                   if (checked && !notaFiscalProcessada) {
-                    // Site da prefeitura de Goiânia para emissão de nota fiscal
+                    // Site da prefeitura de Goiânia para emiss��o de nota fiscal
                     const linkPrefeitura =
                       "https://www10.goiania.go.gov.br/Internet/Login.aspx?OriginalURL=https%3a%2f%2fwww10.goiania.go.gov.br%2fsicaeportal%2fHomePageNovo.aspx";
                     const janela = window.open(
@@ -933,9 +943,8 @@ export default function FormularioReceita() {
                       if (janela?.closed) {
                         setNotaFiscalProcessada(true);
                         clearInterval(intervalo);
-                        alert(
-                          "Nota fiscal processada! Agora você pode lançar a receita.",
-                        );
+                        // Abrir modal de upload após fechar a janela da prefeitura
+                        setIsUploadModalOpen(true);
                       }
                     }, 1000);
                   }
@@ -949,9 +958,19 @@ export default function FormularioReceita() {
                   ⏳ Aguardando emissão da nota fiscal...
                 </span>
               )}
-              {formData.notaFiscal && notaFiscalProcessada && (
-                <span className="text-green-600 text-sm">
-                  ✅ Nota fiscal processada
+              {formData.notaFiscal && notaFiscalProcessada && !notaFiscalArquivada && (
+                <span className="text-blue-600 text-sm">
+                  📄 Nota emitida - Aguardando upload do PDF
+                </span>
+              )}
+              {formData.notaFiscal && notaFiscalArquivada && (
+                <span className="text-green-600 text-sm flex items-center gap-1">
+                  ✅ Nota fiscal arquivada
+                  {uploadedFile && (
+                    <Badge variant="outline" className="text-xs">
+                      {uploadedFile.name}
+                    </Badge>
+                  )}
                 </span>
               )}
             </div>
