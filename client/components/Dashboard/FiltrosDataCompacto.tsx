@@ -30,12 +30,15 @@ export default function FiltrosDataCompacto() {
   };
 
   const handleAplicar = () => {
-    console.log('Dashboard: Aplicando filtros:', filtros);
-    // Força atualização dos dados criando nova referência com timestamp
-    setFiltros({
+    console.log('=== HANDLE APLICAR CHAMADO ===');
+    console.log('Filtros antes:', filtros);
+    const novosFiltros = {
       ...filtros,
       __timestamp: Date.now() // Força re-render
-    });
+    };
+    console.log('Novos filtros:', novosFiltros);
+    setFiltros(novosFiltros);
+    console.log('setFiltros chamado com timestamp:', novosFiltros.__timestamp);
   };
 
   const handleLimpar = () => {
