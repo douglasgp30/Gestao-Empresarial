@@ -15,6 +15,7 @@ import { RelatoriosProvider } from "./contexts/RelatoriosContext";
 import { DashboardProvider } from "./contexts/DashboardContext";
 import { EntidadesProvider } from "./contexts/EntidadesContext";
 import { AgendamentosProvider } from "./contexts/AgendamentosContext";
+import { ClientesProvider } from "./contexts/ClientesContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/Layout/MainLayout";
 import { GerenciadorLembretes } from "./components/Agendamentos/ModalLembrete";
@@ -25,6 +26,7 @@ import Contas from "./pages/Contas";
 import Funcionarios from "./pages/Funcionarios";
 import Relatorios from "./pages/Relatorios";
 import Agendamentos from "./pages/Agendamentos";
+import Clientes from "./pages/Clientes";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
@@ -38,9 +40,10 @@ const App = () => (
       <ConfigProvider>
         <AuthProvider>
           <EntidadesProvider>
-            <FuncionariosProvider>
-              <AgendamentosProvider>
-                <CaixaProvider>
+            <ClientesProvider>
+              <FuncionariosProvider>
+                <AgendamentosProvider>
+                  <CaixaProvider>
                   <ContasProvider>
                     <RelatoriosProvider>
                       <DashboardProvider>
@@ -62,6 +65,7 @@ const App = () => (
                                 path="agendamentos"
                                 element={<Agendamentos />}
                               />
+                              <Route path="clientes" element={<Clientes />} />
                               <Route
                                 path="funcionarios"
                                 element={
@@ -90,9 +94,10 @@ const App = () => (
                       </DashboardProvider>
                     </RelatoriosProvider>
                   </ContasProvider>
-                </CaixaProvider>
-              </AgendamentosProvider>
-            </FuncionariosProvider>
+                  </CaixaProvider>
+                </AgendamentosProvider>
+              </FuncionariosProvider>
+            </ClientesProvider>
           </EntidadesProvider>
         </AuthProvider>
       </ConfigProvider>
