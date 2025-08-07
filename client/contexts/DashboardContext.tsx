@@ -27,6 +27,11 @@ interface DashboardContextType {
   aplicarFiltrosCaixa: boolean;
   setAplicarFiltrosCaixa: (aplicar: boolean) => void;
   isLoading: boolean;
+  // Funcionalidades de Meta do Mês
+  metaMes: number;
+  totalMetaMes: number;
+  restanteParaMeta: number;
+  setMetaMes: (valor: number) => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(
@@ -36,6 +41,10 @@ const DashboardContext = createContext<DashboardContextType | undefined>(
 function getInicioDoMes(): Date {
   const hoje = new Date();
   return new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+}
+
+function isMesmoMes(data1: Date, data2: Date): boolean {
+  return data1.getFullYear() === data2.getFullYear() && data1.getMonth() === data2.getMonth();
 }
 
 function getHoje(): Date {
@@ -78,6 +87,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   });
   const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Estados para Meta do Mês
+  const [metaMes, setMetaMes] = useState<number>(() => {
+    const mesAtual = new Date().toISOString().slice(0, 7); // YYYY-MM
+    const storedMeta = localStorage.getItem(`metaMes_${mesAtual}`);
+    return storedMeta ? parseFloat(storedMeta) : 10000; // Meta padrão de R$ 10.000
+  });
+  const [totalMetaMes, setTotalMetaMes] = useState(0);
+  const [restanteParaMeta, setRestanteParaMeta] = useState(0);
   const [stats, setStats] = useState<DashboardStats>({
     saldoGeralConsolidado: 0,
     totalReceitasCaixa: 0,
@@ -274,6 +292,47 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         totalDespesasCaixa -
         totalContasPagas;
 
+      // CÁLCULO TOTAL DA META DO MÊS
+      // Total das receitas do mês atual (caixa)
+      const hoje = new Date();
+      const inicioMesAtual = getInicioDoMes();
+      const fimMesAtual = getFimDoMes();
+
+      // Receitas do caixa do mês atual
+      const receitasCaixaMesAtual = caixaContext.lancamentos
+        .filter((l) => {
+          if (l.tipo !== "receita") return false;
+          const dataLancamento = new Date(l.data);
+          return dataLancamento >= inicioMesAtual && dataLancamento <= fimMesAtual;
+        })
+        .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+
+      // Contas recebidas do mês atual (por data de pagamento)
+      const contasRecebidasMesAtual = contasContext.contas
+        .filter((c) => {
+          if (c.tipo !== "receber" || c.status !== "paga") return false;
+          const dataReferencia = c.dataPagamento ? new Date(c.dataPagamento) : new Date(c.dataVencimento);
+          return dataReferencia >= inicioMesAtual && dataReferencia <= fimMesAtual;
+        })
+        .reduce((total, c) => total + c.valor, 0);
+
+      // Contas a receber que foram CADASTRADAS no mês atual (independente do vencimento)
+      const contasAReceberCadastradasMesAtual = contasContext.contas
+        .filter((c) => {
+          if (c.tipo !== "receber") return false;
+          // Aqui usaria dataCadastro se existisse, por agora usar dataVencimento como proxy
+          const dataVencimento = new Date(c.dataVencimento);
+          return isMesmoMes(dataVencimento, hoje);
+        })
+        .reduce((total, c) => total + c.valor, 0);
+
+      const novoTotalMetaMes = receitasCaixaMesAtual + contasRecebidasMesAtual + contasAReceberCadastradasMesAtual;
+      setTotalMetaMes(novoTotalMetaMes);
+
+      // Restante para bater a meta
+      const novoRestanteParaMeta = metaMes - novoTotalMetaMes;
+      setRestanteParaMeta(novoRestanteParaMeta);
+
       // Estatísticas gerais para compatibilidade
       const hoje = new Date();
       const contasVencendoHoje = contasContext.contas.filter((c) => {
@@ -328,6 +387,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           new Date(b.dataVencimento).getTime(),
       ) || [];
 
+  // Função para atualizar meta do mês com persistência
+  const handleSetMetaMes = (valor: number) => {
+    setMetaMes(valor);
+    const mesAtual = new Date().toISOString().slice(0, 7); // YYYY-MM
+    localStorage.setItem(`metaMes_${mesAtual}`, valor.toString());
+  };
+
   const value = {
     filtros,
     stats,
@@ -339,6 +405,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     aplicarFiltrosCaixa,
     setAplicarFiltrosCaixa,
     isLoading,
+    // Meta do Mês
+    metaMes,
+    totalMetaMes,
+    restanteParaMeta,
+    setMetaMes: handleSetMetaMes,
   };
 
   return (
