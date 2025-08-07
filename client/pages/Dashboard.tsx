@@ -244,35 +244,72 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* LINHA 2 - Totais do Módulo Contas (apenas pagas/recebidas) */}
+        {/* LINHA 2 - Totais de Contas Recebidas e Pagas */}
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
             <Receipt className="h-5 w-5" />
-            <span>📊 Totais do Módulo Contas</span>
+            <span>📊 Totais de Contas Recebidas e Pagas</span>
           </h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             <StatCard
-              title="Total Contas Recebidas"
+              title="Total de Contas Recebidas"
               value={formatCurrency(stats.totalContasRecebidas)}
-              description="Contas a receber marcadas como pagas"
+              description="Contas a receber que foram marcadas como recebidas"
               icon={TrendingUp}
               trend="up"
               isLoading={isLoading}
               variant="success"
             />
             <StatCard
-              title="Total Contas Pagas"
+              title="Total de Contas Pagas"
               value={formatCurrency(stats.totalContasPagas)}
-              description="Contas a pagar marcadas como pagas"
+              description="Contas a pagar que foram marcadas como pagas"
               icon={TrendingDown}
               trend="down"
               isLoading={isLoading}
               variant="danger"
             />
+          </div>
+        </div>
+
+        {/* LINHA 3 - Totais de Contas a Receber e a Pagar */}
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
+            <FileText className="h-5 w-5" />
+            <span>📊 Totais de Contas a Receber e a Pagar</span>
+          </h2>
+          <div className="grid gap-4 md:grid-cols-4">
             <StatCard
-              title="Saldo (Contas)"
+              title="Total a Receber"
+              value={formatCurrency(stats.totalContasAReceber)}
+              description="Contas a receber ainda não recebidas"
+              icon={Target}
+              trend="up"
+              isLoading={isLoading}
+              variant="success"
+            />
+            <StatCard
+              title="Total a Pagar"
+              value={formatCurrency(stats.totalContasAPagar)}
+              description="Contas a pagar ainda não pagas"
+              icon={CreditCard}
+              trend="down"
+              isLoading={isLoading}
+              variant="danger"
+            />
+            <StatCard
+              title="Saldo Geral das Contas"
+              value={formatCurrency(stats.saldoGeralContas)}
+              description="Total a receber - total a pagar"
+              icon={Banknote}
+              trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
+              isLoading={isLoading}
+              variant={stats.saldoGeralContas >= 0 ? "success" : "danger"}
+            />
+            <StatCard
+              title="Saldo (Contas Processadas)"
               value={formatCurrency(stats.saldoContasPagas)}
-              description="Recebidas - Pagas"
+              description="Recebidas - pagas (já processadas)"
               icon={DollarSign}
               trend={stats.saldoContasPagas >= 0 ? "up" : "down"}
               isLoading={isLoading}
@@ -281,68 +318,25 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* LINHA 3 - Resumo Completo do Módulo Contas */}
+        {/* LINHA 4 - Contas Atrasadas */}
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <FileText className="h-5 w-5" />
+            <AlertTriangle className="h-5 w-5" />
             <span>📊 Contas Atrasadas</span>
           </h2>
-          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-7">
-            <StatCard
-              title="Total a Receber"
-              value={formatCurrency(stats.totalGeralAReceber)}
-              description="Recebidas + pendentes"
-              icon={Target}
-              trend="up"
-              isLoading={isLoading}
-              variant="success"
-            />
-            <StatCard
-              title="Total a Pagar"
-              value={formatCurrency(stats.totalGeralAPagar)}
-              description="Pagas + pendentes"
-              icon={CreditCard}
-              trend="down"
-              isLoading={isLoading}
-              variant="danger"
-            />
-            <StatCard
-              title="Saldo Geral Contas"
-              value={formatCurrency(stats.saldoGeralContas)}
-              description="A receber - a pagar"
-              icon={Banknote}
-              trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant="highlight"
-            />
-            <StatCard
-              title="Valor A Pagar Atrasadas"
-              value={formatCurrency(stats.valorContasPagarAtrasadas)}
-              description="Total em atraso"
-              icon={AlertTriangle}
-              isLoading={isLoading}
-              variant="danger"
-            />
+          <div className="grid gap-4 md:grid-cols-2">
             <StatCard
               title="Qtd. A Pagar Atrasadas"
               value={stats.qtdContasPagarAtrasadas.toString()}
-              description="Contas em atraso"
+              description="Quantidade de contas a pagar em atraso"
               icon={FileText}
               isLoading={isLoading}
-              variant="danger"
-            />
-            <StatCard
-              title="Valor A Receber Atrasadas"
-              value={formatCurrency(stats.valorContasReceberAtrasadas)}
-              description="Total em atraso"
-              icon={AlertTriangle}
-              isLoading={isLoading}
-              variant="danger"
+              variant="neutral"
             />
             <StatCard
               title="Qtd. A Receber Atrasadas"
               value={stats.qtdContasReceberAtrasadas.toString()}
-              description="Contas em atraso"
+              description="Quantidade de contas a receber em atraso"
               icon={Target}
               isLoading={isLoading}
               variant="neutral"
