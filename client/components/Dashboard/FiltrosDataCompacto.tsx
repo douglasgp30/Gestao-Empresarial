@@ -20,8 +20,11 @@ export default function FiltrosDataCompacto() {
   };
 
   const handleAplicar = () => {
-    // Força atualização dos dados
-    setFiltros({ ...filtros });
+    // Força atualização dos dados criando nova referência com timestamp
+    setFiltros({
+      ...filtros,
+      __timestamp: Date.now() // Força re-render
+    });
   };
 
   const handleLimpar = () => {
