@@ -145,8 +145,19 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
-    console.log('Dashboard useEffect executado!');
-    if (!caixaContext || !contasContext) return;
+    console.log('=== DASHBOARD USEEFFECT EXECUTADO ===');
+    console.log('Filtros atuais:', {
+      dataInicio: filtros.dataInicio.toISOString().split('T')[0],
+      dataFim: filtros.dataFim.toISOString().split('T')[0],
+      timestamp: filtros.__timestamp
+    });
+
+    if (!caixaContext || !contasContext) {
+      console.log('Contextos não disponíveis ainda');
+      return;
+    }
+
+    console.log('Total de lançamentos disponíveis:', caixaContext.lancamentos.length);
 
     setIsLoading(true);
 
