@@ -318,31 +318,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* LINHA 4 - Contas Atrasadas */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <AlertTriangle className="h-5 w-5" />
-            <span>📊 Contas Atrasadas</span>
-          </h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            <StatCard
-              title="Qtd. A Pagar Atrasadas"
-              value={stats.qtdContasPagarAtrasadas.toString()}
-              description="Quantidade de contas a pagar em atraso"
-              icon={FileText}
-              isLoading={isLoading}
-              variant="neutral"
-            />
-            <StatCard
-              title="Qtd. A Receber Atrasadas"
-              value={stats.qtdContasReceberAtrasadas.toString()}
-              description="Quantidade de contas a receber em atraso"
-              icon={Target}
-              isLoading={isLoading}
-              variant="neutral"
-            />
-          </div>
-        </div>
 
         {/* Content Grid */}
         <div className="grid gap-6 lg:grid-cols-2">
