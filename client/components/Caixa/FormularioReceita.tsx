@@ -1116,7 +1116,9 @@ export default function FormularioReceita() {
               >
                 {formData.notaFiscal && !notaFiscalProcessada
                   ? "Aguardando Nota Fiscal..."
-                  : "Lançar Receita"}
+                  : formData.notaFiscal && !notaFiscalArquivada
+                    ? "Aguardando Upload da Nota..."
+                    : "Lançar Receita"}
               </Button>
             </div>
           </form>
