@@ -168,8 +168,12 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   const gerarRelatorioFinanceiro = (): RelatorioFinanceiro => {
     const lancamentosFiltrados = mockLancamentos.filter((l) => {
       const data = new Date(l.data);
+      // Normalizar datas para comparação (apenas ano, mês, dia)
+      const dataInicio = new Date(filtros.periodo.dataInicio.getFullYear(), filtros.periodo.dataInicio.getMonth(), filtros.periodo.dataInicio.getDate());
+      const dataFim = new Date(filtros.periodo.dataFim.getFullYear(), filtros.periodo.dataFim.getMonth(), filtros.periodo.dataFim.getDate());
+      const dataNorm = new Date(data.getFullYear(), data.getMonth(), data.getDate());
       return (
-        data >= filtros.periodo.dataInicio && data <= filtros.periodo.dataFim
+        dataNorm >= dataInicio && dataNorm <= dataFim
       );
     });
 
@@ -246,8 +250,12 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   const gerarRelatorioContas = (): RelatorioContas => {
     const contasFiltradas = mockContas.filter((c) => {
       const data = new Date(c.dataVencimento);
+      // Normalizar datas para comparação (apenas ano, mês, dia)
+      const dataInicio = new Date(filtros.periodo.dataInicio.getFullYear(), filtros.periodo.dataInicio.getMonth(), filtros.periodo.dataInicio.getDate());
+      const dataFim = new Date(filtros.periodo.dataFim.getFullYear(), filtros.periodo.dataFim.getMonth(), filtros.periodo.dataFim.getDate());
+      const dataNorm = new Date(data.getFullYear(), data.getMonth(), data.getDate());
       return (
-        data >= filtros.periodo.dataInicio && data <= filtros.periodo.dataFim
+        dataNorm >= dataInicio && dataNorm <= dataFim
       );
     });
 
