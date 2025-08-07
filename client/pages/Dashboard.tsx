@@ -204,14 +204,11 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center justify-between w-full gap-8">
             {/* Lado Esquerdo: Meta do Mês, Total Alcançado e Restante */}
-            <div className="flex items-center space-x-12">
+            <div className="flex items-center space-x-8">
               {/* Meta do Mês */}
-              <div className="flex flex-col items-center space-y-1">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Meta do
-                </span>
-                <span className="text-xs font-medium text-muted-foreground -mt-1">
-                  Mês:
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Meta do Mês:
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
