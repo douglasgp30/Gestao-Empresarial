@@ -114,8 +114,13 @@ export default function ListaLancamentos() {
   const lancamentosFiltrados = lancamentos
     .filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
-      const dentroDataInicio = dataLancamento >= filtros.dataInicio;
-      const dentroDataFim = dataLancamento <= filtros.dataFim;
+      // Normalizar datas para comparação (apenas ano, mês, dia)
+      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
+      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
+      const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+
+      const dentroDataInicio = dataLancNorm >= dataInicio;
+      const dentroDataFim = dataLancNorm <= dataFim;
       const tipoCorreto =
         filtros.tipo === "todos" || lancamento.tipo === filtros.tipo;
       const formaCorreta =
