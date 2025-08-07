@@ -58,7 +58,7 @@ export default function FiltrosDataCompacto() {
       onLimpar={handleLimpar}
       isLoading={isLoading}
       className="mb-4"
-      filtroInicialDashboard={true}
+      filtroInicialDashboard={false}
     />
   );
 }
