@@ -200,24 +200,42 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
-      // LINHA 2 - Totais de Contas Recebidas e Pagas
+      // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data)
       const totalContasRecebidas = contasContext.contas
-        .filter((c) => c.tipo === "receber" && c.status === "paga")
+        .filter((c) => {
+          if (c.tipo !== "receber" || c.status !== "paga") return false;
+          // Usar dataPagamento se disponível, senão dataVencimento
+          const dataReferencia = c.dataPagamento ? new Date(c.dataPagamento) : new Date(c.dataVencimento);
+          return dataReferencia >= filtros.dataInicio && dataReferencia <= filtros.dataFim;
+        })
         .reduce((total, c) => total + c.valor, 0);
 
       const totalContasPagas = contasContext.contas
-        .filter((c) => c.tipo === "pagar" && c.status === "paga")
+        .filter((c) => {
+          if (c.tipo !== "pagar" || c.status !== "paga") return false;
+          // Usar dataPagamento se disponível, senão dataVencimento
+          const dataReferencia = c.dataPagamento ? new Date(c.dataPagamento) : new Date(c.dataVencimento);
+          return dataReferencia >= filtros.dataInicio && dataReferencia <= filtros.dataFim;
+        })
         .reduce((total, c) => total + c.valor, 0);
 
       const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
-      // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas)
+      // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
       const totalContasAReceber = contasContext.contas
-        .filter((c) => c.tipo === "receber" && c.status !== "paga")
+        .filter((c) => {
+          if (c.tipo !== "receber" || c.status === "paga") return false;
+          const dataVencimento = new Date(c.dataVencimento);
+          return dataVencimento >= filtros.dataInicio && dataVencimento <= filtros.dataFim;
+        })
         .reduce((total, c) => total + c.valor, 0);
 
       const totalContasAPagar = contasContext.contas
-        .filter((c) => c.tipo === "pagar" && c.status !== "paga")
+        .filter((c) => {
+          if (c.tipo !== "pagar" || c.status === "paga") return false;
+          const dataVencimento = new Date(c.dataVencimento);
+          return dataVencimento >= filtros.dataInicio && dataVencimento <= filtros.dataFim;
+        })
         .reduce((total, c) => total + c.valor, 0);
 
       const saldoGeralContas = totalContasAReceber - totalContasAPagar;
