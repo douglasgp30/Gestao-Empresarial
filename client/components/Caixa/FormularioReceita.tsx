@@ -1112,7 +1112,7 @@ export default function FormularioReceita() {
               <Button
                 type="submit"
                 className="flex-1"
-                disabled={formData.notaFiscal && !notaFiscalProcessada}
+                disabled={formData.notaFiscal && (!notaFiscalProcessada || !notaFiscalArquivada)}
               >
                 {formData.notaFiscal && !notaFiscalProcessada
                   ? "Aguardando Nota Fiscal..."
