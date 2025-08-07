@@ -87,6 +87,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     dataInicio: getHoje(),
     dataFim: getHoje(),
   });
+
+  console.log('DashboardContext: Estado inicial dos filtros:', {
+    dataInicio: getHoje().toISOString().split('T')[0],
+    dataFim: getHoje().toISOString().split('T')[0]
+  });
   const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
