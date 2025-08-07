@@ -39,10 +39,23 @@ function formatDate(date: Date): string {
 }
 
 export default function RelatorioTecnicos() {
-  const { gerarRelatorioTecnicos, exportarPDF, exportarExcel } =
+  const { relatorioTecnicos, exportarPDF, exportarExcel } =
     useRelatorios();
 
-  const relatorio = gerarRelatorioTecnicos();
+  // Se o relatório ainda não foi calculado, não renderizar
+  if (!relatorioTecnicos) {
+    return (
+      <Card>
+        <CardContent>
+          <div className="flex items-center justify-center p-8">
+            <div className="text-muted-foreground">Carregando relatório...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const relatorio = relatorioTecnicos;
 
   const handleExportarPDF = () => {
     exportarPDF("tecnicos", relatorio);
@@ -250,7 +263,7 @@ export default function RelatorioTecnicos() {
                         <TableCell className="text-center">
                           {index === 0 && (
                             <Badge className="bg-yellow-500 text-yellow-50">
-                              🥇 1º
+                              ��� 1º
                             </Badge>
                           )}
                           {index === 1 && (
