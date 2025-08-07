@@ -374,7 +374,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       const novoRestanteParaMeta = metaMes - novoTotalMetaMes;
       setRestanteParaMeta(novoRestanteParaMeta);
 
-      console.log('Dashboard: Meta alcançada:', novoTotalMetaMes, 'de', metaMes);
 
       // Estatísticas gerais para compatibilidade
       const contasVencendoHoje = contasContext.contas.filter((c) => {
