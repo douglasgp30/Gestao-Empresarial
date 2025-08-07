@@ -140,6 +140,9 @@ export interface DashboardStats {
   // Stats gerais para compatibilidade
   contasVencendoHoje: number;
   contasAtrasadas: number;
+
+  // Campo para forçar re-render
+  _lastUpdate?: number;
 }
 
 export interface RelatorioFiltros {
