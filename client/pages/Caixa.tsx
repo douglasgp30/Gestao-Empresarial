@@ -5,6 +5,8 @@ import FormularioReceita from "../components/Caixa/FormularioReceita";
 import FormularioDespesa from "../components/Caixa/FormularioDespesa";
 import ModalCampanhas from "../components/Caixa/ModalCampanhas";
 import ModalDescricoesAvancado from "../components/Caixa/ModalDescricoesAvancado";
+import ModalCidades from "../components/Caixa/ModalCidades";
+import ModalSetores from "../components/Caixa/ModalSetores";
 import FiltrosCaixaCompacto from "../components/Caixa/FiltrosCaixaCompacto";
 import ListaLancamentosSimples from "../components/Caixa/ListaLancamentosSimples";
 import { DollarSign } from "lucide-react";
@@ -28,6 +30,8 @@ function CaixaContent() {
           <FormularioDespesa />
           <ModalCampanhas />
           <ModalDescricoesAvancado />
+          <ModalCidades />
+          <ModalSetores />
         </div>
       </div>
 
