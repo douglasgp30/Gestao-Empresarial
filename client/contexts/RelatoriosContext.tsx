@@ -171,6 +171,11 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  // Estados para armazenar os relatórios calculados
+  const [relatorioFinanceiro, setRelatorioFinanceiro] = useState<RelatorioFinanceiro | null>(null);
+  const [relatorioContas, setRelatorioContas] = useState<RelatorioContas | null>(null);
+  const [relatorioTecnicos, setRelatorioTecnicos] = useState<RelatorioTecnicos | null>(null);
+
   const gerarRelatorioFinanceiro = (): RelatorioFinanceiro => {
     const lancamentosFiltrados = mockLancamentos.filter((l) => {
       const data = new Date(l.data);
