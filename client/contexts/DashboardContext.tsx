@@ -217,7 +217,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       const totalReceitasCaixa = lancamentosFiltrados
         .filter((l) => l.tipo === "receita")
         .reduce((total, l) => {
-          // Para receitas, sempre usar valorLiquido se dispon��vel
+          // Para receitas, sempre usar valorLiquido se disponível
           // valorLiquido já considera descontos de cartão, nota fiscal, etc.
           return total + (l.valorLiquido || l.valor);
         }, 0);
@@ -361,7 +361,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       const novoRestanteParaMeta = metaMes - novoTotalMetaMes;
       setRestanteParaMeta(novoRestanteParaMeta);
 
-      console.log('Dashboard: Meta (sempre mês atual) - Total alcançado:', novoTotalMetaMes, 'de', metaMes);
+      console.log('Dashboard: Meta alcançada:', novoTotalMetaMes, 'de', metaMes);
 
       // Estatísticas gerais para compatibilidade
       const contasVencendoHoje = contasContext.contas.filter((c) => {
