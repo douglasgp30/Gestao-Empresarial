@@ -361,18 +361,22 @@ export default function FiltrosPeriodoCompacto({
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Esta Semana - Início:', dataInicioSemana, 'Fim:', dataHoje); // Debug
 
-              // Forçar atualização direta dos inputs
-              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
-              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+              // Forçar atualização direta dos inputs usando refs e DOM
+              const inputInicio = inputInicioRef.current || document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = inputFimRef.current || document.getElementById('dataFim') as HTMLInputElement;
 
               if (inputInicio) {
                 inputInicio.value = dataInicioSemana;
+                inputInicio.dispatchEvent(new Event('input', { bubbles: true }));
                 inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
               }
               if (inputFim) {
                 inputFim.value = dataHoje;
+                inputFim.dispatchEvent(new Event('input', { bubbles: true }));
                 inputFim.dispatchEvent(new Event('change', { bubbles: true }));
               }
+
+              triggerForceUpdate();
 
               onDataInicioChange(dataInicioSemana);
               onDataFimChange(dataHoje);
@@ -400,18 +404,22 @@ export default function FiltrosPeriodoCompacto({
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 7 Dias - Início:', dataInicio7, 'Fim:', dataHoje); // Debug
 
-              // Forçar atualização direta dos inputs
-              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
-              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+              // Forçar atualização direta dos inputs usando refs e DOM
+              const inputInicio = inputInicioRef.current || document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = inputFimRef.current || document.getElementById('dataFim') as HTMLInputElement;
 
               if (inputInicio) {
                 inputInicio.value = dataInicio7;
+                inputInicio.dispatchEvent(new Event('input', { bubbles: true }));
                 inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
               }
               if (inputFim) {
                 inputFim.value = dataHoje;
+                inputFim.dispatchEvent(new Event('input', { bubbles: true }));
                 inputFim.dispatchEvent(new Event('change', { bubbles: true }));
               }
+
+              triggerForceUpdate();
 
               onDataInicioChange(dataInicio7);
               onDataFimChange(dataHoje);
@@ -439,18 +447,22 @@ export default function FiltrosPeriodoCompacto({
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 15 Dias - Início:', dataInicio15, 'Fim:', dataHoje); // Debug
 
-              // Forçar atualização direta dos inputs
-              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
-              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+              // Forçar atualização direta dos inputs usando refs e DOM
+              const inputInicio = inputInicioRef.current || document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = inputFimRef.current || document.getElementById('dataFim') as HTMLInputElement;
 
               if (inputInicio) {
                 inputInicio.value = dataInicio15;
+                inputInicio.dispatchEvent(new Event('input', { bubbles: true }));
                 inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
               }
               if (inputFim) {
                 inputFim.value = dataHoje;
+                inputFim.dispatchEvent(new Event('input', { bubbles: true }));
                 inputFim.dispatchEvent(new Event('change', { bubbles: true }));
               }
+
+              triggerForceUpdate();
 
               onDataInicioChange(dataInicio15);
               onDataFimChange(dataHoje);
@@ -478,18 +490,22 @@ export default function FiltrosPeriodoCompacto({
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 30 Dias - Início:', dataInicio30, 'Fim:', dataHoje); // Debug
 
-              // Forçar atualização direta dos inputs
-              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
-              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+              // Forçar atualização direta dos inputs usando refs e DOM
+              const inputInicio = inputInicioRef.current || document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = inputFimRef.current || document.getElementById('dataFim') as HTMLInputElement;
 
               if (inputInicio) {
                 inputInicio.value = dataInicio30;
+                inputInicio.dispatchEvent(new Event('input', { bubbles: true }));
                 inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
               }
               if (inputFim) {
                 inputFim.value = dataHoje;
+                inputFim.dispatchEvent(new Event('input', { bubbles: true }));
                 inputFim.dispatchEvent(new Event('change', { bubbles: true }));
               }
+
+              triggerForceUpdate();
 
               onDataInicioChange(dataInicio30);
               onDataFimChange(dataHoje);
@@ -518,18 +534,22 @@ export default function FiltrosPeriodoCompacto({
               const dataFimMes = fimMes.toISOString().split("T")[0];
               console.log('Este Mês - Início:', dataInicioMes, 'Fim:', dataFimMes); // Debug
 
-              // Forçar atualização direta dos inputs
-              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
-              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+              // Forçar atualização direta dos inputs usando refs e DOM
+              const inputInicio = inputInicioRef.current || document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = inputFimRef.current || document.getElementById('dataFim') as HTMLInputElement;
 
               if (inputInicio) {
                 inputInicio.value = dataInicioMes;
+                inputInicio.dispatchEvent(new Event('input', { bubbles: true }));
                 inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
               }
               if (inputFim) {
                 inputFim.value = dataFimMes;
+                inputFim.dispatchEvent(new Event('input', { bubbles: true }));
                 inputFim.dispatchEvent(new Event('change', { bubbles: true }));
               }
+
+              triggerForceUpdate();
 
               onDataInicioChange(dataInicioMes);
               onDataFimChange(dataFimMes);
