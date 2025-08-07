@@ -408,8 +408,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         _lastUpdate: Date.now() // Força re-render
       };
 
-      console.log('=== ATUALIZANDO STATS ===');
-      console.log('Novos stats:', newStats);
       setStats(newStats);
 
     setIsLoading(false);
