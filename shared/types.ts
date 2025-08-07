@@ -61,6 +61,8 @@ export interface LancamentoCaixa {
   campanha?: string;
   categoria?: string;
   descricao?: string;
+  tipoDespesa?: "empresa" | "pessoal"; // Apenas para despesas
+  cliente?: string; // Nome do cliente para receitas
   funcionarioId: string;
 }
 
@@ -182,7 +184,15 @@ export interface Cliente {
   telefone1: string;
   telefone2?: string;
   email?: string;
-  endereco?: string;
+  endereco?: {
+    cep?: string;
+    rua?: string;
+    numero?: string;
+    complemento?: string;
+    bairro?: string;
+    cidade?: string;
+    estado?: string;
+  };
   dataCriacao: Date;
 }
 
