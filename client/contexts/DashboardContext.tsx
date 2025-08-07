@@ -231,6 +231,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
             valor: lancamento.valor,
             dataInicio: dataInicio.toISOString().split('T')[0],
             dataFim: dataFim.toISOString().split('T')[0],
+            dataOriginal: lancamento.data,
+            dataInicioOriginal: filtros.dataInicio,
+            dataFimOriginal: filtros.dataFim,
             incluido
           });
 
