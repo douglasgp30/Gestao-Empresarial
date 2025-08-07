@@ -40,20 +40,31 @@ export default function FiltrosCaixaCompacto() {
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
   const handleDataInicioChange = (data: string) => {
+    console.log('handleDataInicioChange chamado com:', data); // Debug
+    const novaData = new Date(data);
+    console.log('Nova data início criada:', novaData); // Debug
+
     setFiltros({
       ...filtros,
-      dataInicio: new Date(data),
+      dataInicio: novaData,
     });
   };
 
   const handleDataFimChange = (data: string) => {
+    console.log('handleDataFimChange chamado com:', data); // Debug
+    const novaData = new Date(data);
+    console.log('Nova data fim criada:', novaData); // Debug
+
     setFiltros({
       ...filtros,
-      dataFim: new Date(data),
+      dataFim: novaData,
     });
   };
 
   const handleAplicarPeriodo = () => {
+    console.log('handleAplicarPeriodo chamado'); // Debug
+    console.log('Filtros atuais:', filtros); // Debug
+
     // Força atualização com novos filtros criando nova referência
     setFiltros({
       ...filtros,
