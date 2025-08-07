@@ -257,7 +257,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         .filter((c) => {
           if (c.tipo !== "receber" || c.status === "paga") return false;
           const dataVencimento = new Date(c.dataVencimento);
-          return dataVencimento >= filtros.dataInicio && dataVencimento <= filtros.dataFim;
+          // Normalizar datas para comparação (apenas ano, mês, dia)
+          const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
+          const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
+          const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
+          return dataVencNorm >= dataInicio && dataVencNorm <= dataFim;
         })
         .reduce((total, c) => total + c.valor, 0);
 
@@ -265,7 +269,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         .filter((c) => {
           if (c.tipo !== "pagar" || c.status === "paga") return false;
           const dataVencimento = new Date(c.dataVencimento);
-          return dataVencimento >= filtros.dataInicio && dataVencimento <= filtros.dataFim;
+          // Normalizar datas para comparação (apenas ano, mês, dia)
+          const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
+          const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
+          const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
+          return dataVencNorm >= dataInicio && dataVencNorm <= dataFim;
         })
         .reduce((total, c) => total + c.valor, 0);
 
