@@ -11,6 +11,7 @@ import {
   FileText,
   Calendar,
   Users,
+  UserCheck,
   BarChart3,
   Settings,
   LogOut,
@@ -46,6 +47,11 @@ const sidebarItems: SidebarItem[] = [
     title: "Agendamentos",
     href: "/agendamentos",
     icon: Calendar,
+  },
+  {
+    title: "Clientes",
+    href: "/clientes",
+    icon: UserCheck,
   },
   {
     title: "Funcionários",
