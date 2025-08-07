@@ -292,6 +292,14 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoGeralContas = totalContasAReceber - totalContasAPagar;
 
+      console.log('Dashboard: Totais Contas:', {
+        contasRecebidas: totalContasRecebidas,
+        contasPagas: totalContasPagas,
+        contasAReceber: totalContasAReceber,
+        contasAPagar: totalContasAPagar,
+        saldoContas: saldoGeralContas
+      });
+
       // Totais gerais para compatibilidade
       const totalGeralAReceber = contasContext.contas
         .filter((c) => c.tipo === "receber")
