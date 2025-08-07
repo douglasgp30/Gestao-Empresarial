@@ -86,6 +86,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     totalContasRecebidas: 0,
     totalContasPagas: 0,
     saldoContasPagas: 0,
+    totalContasAReceber: 0,
+    totalContasAPagar: 0,
     totalGeralAReceber: 0,
     totalGeralAPagar: 0,
     saldoGeralContas: 0,
@@ -198,7 +200,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
-      // LINHA 2 - Totais do Módulo Contas (apenas pagas/recebidas)
+      // LINHA 2 - Totais de Contas Recebidas e Pagas
       const totalContasRecebidas = contasContext.contas
         .filter((c) => c.tipo === "receber" && c.status === "paga")
         .reduce((total, c) => total + c.valor, 0);
@@ -209,7 +211,18 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
-      // LINHA 3 - Resumo Completo do Módulo Contas
+      // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas)
+      const totalContasAReceber = contasContext.contas
+        .filter((c) => c.tipo === "receber" && c.status !== "paga")
+        .reduce((total, c) => total + c.valor, 0);
+
+      const totalContasAPagar = contasContext.contas
+        .filter((c) => c.tipo === "pagar" && c.status !== "paga")
+        .reduce((total, c) => total + c.valor, 0);
+
+      const saldoGeralContas = totalContasAReceber - totalContasAPagar;
+
+      // Totais gerais para compatibilidade
       const totalGeralAReceber = contasContext.contas
         .filter((c) => c.tipo === "receber")
         .reduce((total, c) => total + c.valor, 0);
@@ -217,8 +230,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       const totalGeralAPagar = contasContext.contas
         .filter((c) => c.tipo === "pagar")
         .reduce((total, c) => total + c.valor, 0);
-
-      const saldoGeralContas = totalGeralAReceber - totalGeralAPagar;
 
       // Contas Atrasadas (em vermelho)
       const valorContasPagarAtrasadas = contasContext.contas
@@ -264,6 +275,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         totalContasRecebidas,
         totalContasPagas,
         saldoContasPagas,
+        totalContasAReceber,
+        totalContasAPagar,
         totalGeralAReceber,
         totalGeralAPagar,
         saldoGeralContas,
