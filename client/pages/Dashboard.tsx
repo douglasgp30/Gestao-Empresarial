@@ -203,8 +203,11 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center justify-between w-full gap-8">
-            {/* Lado Esquerdo: Meta do Mês, Total Alcançado e Restante */}
-            <div className="flex items-start space-x-12">
+            {/* Espaçador à esquerda para equilibrar o layout */}
+            <div className="flex-1"></div>
+
+            {/* Centro: Meta do Mês, Total Alcançado e Restante */}
+            <div className="flex items-start space-x-8 bg-accent/20 px-6 py-4 rounded-lg border">
               {/* Meta do Mês */}
               <div className="flex flex-col items-center space-y-2 min-w-0">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
