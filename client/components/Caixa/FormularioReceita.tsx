@@ -220,6 +220,8 @@ export default function FormularioReceita() {
       valorEntrou: "",
     });
     setNotaFiscalProcessada(false);
+    setNotaFiscalArquivada(false);
+    setUploadedFile(null);
 
     setIsOpen(false);
   };
@@ -368,6 +370,8 @@ export default function FormularioReceita() {
       valorEntrou: "",
     });
     setNotaFiscalProcessada(false);
+    setNotaFiscalArquivada(false);
+    setUploadedFile(null);
 
     setBoletoData({
       valorTotal: 0,
@@ -1116,6 +1120,102 @@ export default function FormularioReceita() {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Upload de Nota Fiscal */}
+      <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Upload da Nota Fiscal
+            </DialogTitle>
+            <DialogDescription>
+              Faça o upload da nota fiscal em PDF para arquivar no sistema
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+              {uploadedFile ? (
+                <div className="space-y-2">
+                  <FileText className="h-8 w-8 mx-auto text-green-600" />
+                  <p className="text-sm font-medium text-green-600">
+                    Arquivo selecionado:
+                  </p>
+                  <p className="text-xs text-muted-foreground break-all">
+                    {uploadedFile.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setUploadedFile(null)}
+                    className="mt-2"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Remover
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    Arraste o arquivo PDF aqui ou clique para selecionar
+                  </p>
+                  <Input
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file && file.type === "application/pdf") {
+                        setUploadedFile(file);
+                      } else {
+                        alert("Por favor, selecione apenas arquivos PDF.");
+                      }
+                    }}
+                    className="cursor-pointer"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsUploadModalOpen(false);
+                  setUploadedFile(null);
+                }}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  if (uploadedFile) {
+                    // Simular arquivamento do PDF
+                    // Em uma implementação real, você enviaria o arquivo para o servidor
+                    setNotaFiscalArquivada(true);
+                    setIsUploadModalOpen(false);
+                    alert(
+                      "Nota fiscal arquivada com sucesso! Agora você pode lançar a receita.",
+                    );
+                  } else {
+                    alert("Por favor, selecione um arquivo PDF.");
+                  }
+                }}
+                disabled={!uploadedFile}
+                className="flex-1"
+              >
+                Arquivar Nota
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
