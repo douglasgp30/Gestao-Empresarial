@@ -257,7 +257,18 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
-      console.log('Dashboard: Receitas=', totalReceitasCaixa, 'Despesas=', totalDespesasCaixa, 'Filtrados=', lancamentosFiltrados.length);
+      console.log('=== RESULTADO DA FILTRAGEM ===');
+      console.log('Lançamentos filtrados:', lancamentosFiltrados.length);
+      console.log('Total receitas calculado:', totalReceitasCaixa);
+      console.log('Total despesas calculado:', totalDespesasCaixa);
+      console.log('Saldo calculado:', saldoCaixa);
+      console.log('Lançamentos incluídos:', lancamentosFiltrados.map(l => ({
+        id: l.id,
+        data: l.data.toISOString().split('T')[0],
+        tipo: l.tipo,
+        valor: l.tipo === 'receita' ? (l.valorLiquido || l.valor) : l.valor
+      })));
+      console.log('================================');
 
       // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data)
       const totalContasRecebidas = contasContext.contas
