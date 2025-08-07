@@ -228,22 +228,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
-      console.log('Dashboard: Totais Caixa:', {
-        totalReceitas: totalReceitasCaixa,
-        totalDespesas: totalDespesasCaixa,
-        saldo: saldoCaixa,
-        lancamentosTotal: caixaContext.lancamentos.length,
-        lancamentosFiltrados: lancamentosFiltrados.length,
-        filtros: {
-          dataInicio: filtros.dataInicio.toISOString().split('T')[0],
-          dataFim: filtros.dataFim.toISOString().split('T')[0]
-        },
-        primeirosFiltrados: lancamentosFiltrados.slice(0, 3).map(l => ({
-          data: l.data.toISOString().split('T')[0],
-          tipo: l.tipo,
-          valor: l.valor
-        }))
-      });
+      console.log('Dashboard: Receitas=', totalReceitasCaixa, 'Despesas=', totalDespesasCaixa, 'Filtrados=', lancamentosFiltrados.length);
 
       // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data)
       const totalContasRecebidas = contasContext.contas
