@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
-import { MoreVertical, Calendar, DollarSign, User, Tag } from "lucide-react";
+import { MoreVertical, Calendar, DollarSign, User, Tag, FileText } from "lucide-react";
 
 interface DadosLancamento {
   id: string;
@@ -31,12 +31,18 @@ interface DadosLancamento {
   campanha?: string;
   descricao?: string;
   notaFiscal?: boolean;
+  notaFiscalArquivo?: {
+    nome: string;
+    tamanho: number;
+    dataUpload: Date;
+  };
 }
 
 interface TabelaResponsivaLancamentosProps {
   dados: DadosLancamento[];
   onEditar?: (id: string) => void;
   onExcluir?: (id: string) => void;
+  onVisualizarNota?: (lancamento: DadosLancamento) => void;
   isLoading?: boolean;
 }
 
