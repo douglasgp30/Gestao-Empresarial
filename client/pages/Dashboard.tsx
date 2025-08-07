@@ -202,8 +202,132 @@ export default function Dashboard() {
               Visão geral financeira - Período: {getPeriodoDescricao()}
             </p>
           </div>
-          <div className="flex items-center space-x-6">
-            {/* Saldo Geral */}
+          <div className="flex items-center justify-between w-full">
+            {/* Lado Esquerdo: Meta do Mês e Total Alcançado */}
+            <div className="flex items-center space-x-6">
+              {/* Meta do Mês */}
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Meta do Mês:
+                </span>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Dialog open={isEditingMeta} onOpenChange={setIsEditingMeta}>
+                      <DialogTrigger asChild>
+                        <button className="flex items-center space-x-1 hover:bg-accent/50 px-2 py-1 rounded transition-colors">
+                          <span className="text-lg font-bold text-primary">
+                            {formatCurrency(metaMes)}
+                          </span>
+                          <Edit3 className="h-3 w-3 text-muted-foreground" />
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Editar Meta do Mês</DialogTitle>
+                          <DialogDescription>
+                            Defina sua meta de receitas para o mês atual. Este valor será usado para calcular o progresso da meta.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <label htmlFor="meta" className="text-right">
+                              Valor da Meta:
+                            </label>
+                            <div className="col-span-3">
+                              <Input
+                                id="meta"
+                                placeholder="Ex: 15000"
+                                value={novaMetaValue}
+                                onChange={(e) => setNovaMetaValue(formatCurrencyInput(e.target.value))}
+                                className="w-full"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button type="button" variant="outline" onClick={handleCancelarEdicao}>
+                            Cancelar
+                          </Button>
+                          <Button type="button" onClick={handleSalvarMeta}>
+                            Salvar Meta
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </>
+                )}
+              </div>
+
+              {/* Total Alcançado da Meta */}
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Total Alcançado da Meta:
+                </span>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                      {formatCurrency(totalMetaMes)}
+                    </span>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-medium mb-1">Total Alcançado da Meta:</p>
+                        <p className="text-xs">
+                          Receitas do Caixa + Contas a Receber criadas no mês atual (baseado na data de criação, não vencimento)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </>
+                )}
+              </div>
+
+              {/* Restante para Meta */}
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Restante p/ Meta:
+                </span>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <span
+                      className={`text-lg font-bold ${
+                        restanteParaMeta <= 0
+                          ? "text-success"
+                          : "text-orange-600 dark:text-orange-400"
+                      }`}
+                    >
+                      {restanteParaMeta <= 0 ? "Meta Atingida!" : formatCurrency(restanteParaMeta)}
+                    </span>
+                    {restanteParaMeta <= 0 && (
+                      <Trophy className="h-4 w-4 text-success" />
+                    )}
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-medium mb-1">Restante para Meta:</p>
+                        <p className="text-xs">
+                          {restanteParaMeta <= 0
+                            ? "Parabéns! Você atingiu ou superou a meta do mês!"
+                            : "Valor que ainda falta para atingir a meta estabelecida."
+                          }
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Lado Direito: Saldo Geral */}
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-muted-foreground">
                 Saldo Geral:
@@ -238,127 +362,6 @@ export default function Dashboard() {
                 </>
               )}
             </div>
-
-            {/* Meta do Mês */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-muted-foreground">
-                Meta do Mês:
-              </span>
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Dialog open={isEditingMeta} onOpenChange={setIsEditingMeta}>
-                    <DialogTrigger asChild>
-                      <button className="flex items-center space-x-1 hover:bg-accent/50 px-2 py-1 rounded transition-colors">
-                        <span className="text-lg font-bold text-primary">
-                          {formatCurrency(metaMes)}
-                        </span>
-                        <Edit3 className="h-3 w-3 text-muted-foreground" />
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Editar Meta do Mês</DialogTitle>
-                        <DialogDescription>
-                          Defina sua meta de receitas para o mês atual. Este valor será usado para calcular o progresso da meta.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <label htmlFor="meta" className="text-right">
-                            Valor da Meta:
-                          </label>
-                          <div className="col-span-3">
-                            <Input
-                              id="meta"
-                              placeholder="Ex: 15000"
-                              value={novaMetaValue}
-                              onChange={(e) => setNovaMetaValue(formatCurrencyInput(e.target.value))}
-                              className="w-full"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button type="button" variant="outline" onClick={handleCancelarEdicao}>
-                          Cancelar
-                        </Button>
-                        <Button type="button" onClick={handleSalvarMeta}>
-                          Salvar Meta
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </>
-              )}
-            </div>
-
-            {/* Total da Meta do Mês */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-muted-foreground">
-                Total da Meta:
-              </span>
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                    {formatCurrency(totalMetaMes)}
-                  </span>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      <p className="font-medium mb-1">Total da Meta do Mês:</p>
-                      <p className="text-xs">
-                        Receitas do Caixa + Contas Recebidas + Contas a Receber cadastradas no mês atual
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </>
-              )}
-            </div>
-
-            {/* Restante para Meta */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-muted-foreground">
-                Restante p/ Meta:
-              </span>
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <span
-                    className={`text-lg font-bold ${
-                      restanteParaMeta <= 0
-                        ? "text-success"
-                        : "text-orange-600 dark:text-orange-400"
-                    }`}
-                  >
-                    {restanteParaMeta <= 0 ? "Meta Atingida!" : formatCurrency(restanteParaMeta)}
-                  </span>
-                  {restanteParaMeta <= 0 && (
-                    <Trophy className="h-4 w-4 text-success" />
-                  )}
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      <p className="font-medium mb-1">Restante para Meta:</p>
-                      <p className="text-xs">
-                        {restanteParaMeta <= 0
-                          ? "Parabéns! Você atingiu ou superou a meta do mês!"
-                          : "Valor que ainda falta para atingir a meta estabelecida."
-                        }
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </>
-              )}
-            </div>
           </div>
         </div>
 
@@ -384,7 +387,7 @@ export default function Dashboard() {
             <StatCard
               title="Total de Receitas"
               value={formatCurrency(stats.totalReceitasCaixa)}
-              description="Serviços lançados no caixa"
+              description="Servi��os lançados no caixa"
               icon={TrendingUp}
               trend="up"
               isLoading={isLoading}
