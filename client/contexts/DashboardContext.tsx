@@ -49,7 +49,8 @@ function isMesmoMes(data1: Date, data2: Date): boolean {
 }
 
 function getHoje(): Date {
-  return new Date();
+  const hoje = new Date();
+  return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
 }
 
 function getFimDoMes(): Date {
