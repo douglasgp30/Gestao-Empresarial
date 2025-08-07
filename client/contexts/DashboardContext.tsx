@@ -145,6 +145,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
+    console.log('Dashboard useEffect executado!');
     if (!caixaContext || !contasContext) return;
 
     setIsLoading(true);
