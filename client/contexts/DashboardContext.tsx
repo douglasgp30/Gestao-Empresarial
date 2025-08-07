@@ -325,12 +325,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       console.log('Dashboard: Meta calculada para mês atual:', inicioMesAtual, 'até', fimMesAtual);
 
-      // 1. Receitas do caixa do mês atual
+      // 1. Receitas do caixa do mês atual (independente dos filtros)
       const receitasCaixaMesAtual = caixaContext.lancamentos
         .filter((l) => {
           if (l.tipo !== "receita") return false;
           const dataLancamento = new Date(l.data);
-          return dataLancamento >= inicioMesAtual && dataLancamento <= fimMesAtual;
+          // Normalizar datas para comparação do mês atual
+          const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+          const inicioMesNorm = new Date(inicioMesAtual.getFullYear(), inicioMesAtual.getMonth(), inicioMesAtual.getDate());
+          const fimMesNorm = new Date(fimMesAtual.getFullYear(), fimMesAtual.getMonth(), fimMesAtual.getDate());
+          return dataLancNorm >= inicioMesNorm && dataLancNorm <= fimMesNorm;
         })
         .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
