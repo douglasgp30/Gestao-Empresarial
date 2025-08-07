@@ -39,10 +39,23 @@ function formatDate(date: Date): string {
 }
 
 export default function RelatorioFinanceiro() {
-  const { gerarRelatorioFinanceiro, exportarPDF, exportarExcel } =
+  const { relatorioFinanceiro, exportarPDF, exportarExcel } =
     useRelatorios();
 
-  const relatorio = gerarRelatorioFinanceiro();
+  // Se o relatório ainda não foi calculado, não renderizar
+  if (!relatorioFinanceiro) {
+    return (
+      <Card>
+        <CardContent>
+          <div className="flex items-center justify-center p-8">
+            <div className="text-muted-foreground">Carregando relatório...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const relatorio = relatorioFinanceiro;
 
   const handleExportarPDF = () => {
     exportarPDF("financeiro", relatorio);
