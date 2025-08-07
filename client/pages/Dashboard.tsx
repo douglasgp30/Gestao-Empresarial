@@ -210,7 +210,7 @@ export default function Dashboard() {
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
             <Wallet className="h-5 w-5" />
-            <span>📊 Totais do Módulo Caixa</span>
+            <span>📊 Totais do Caixa</span>
             <Badge variant="outline">Dinâmico com filtros</Badge>
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
