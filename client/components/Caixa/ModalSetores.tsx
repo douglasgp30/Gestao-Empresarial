@@ -3,6 +3,7 @@ import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -37,22 +38,46 @@ export default function ModalSetores() {
 
   const [formData, setFormData] = useState({
     nome: "",
+    setoresEmMassa: "",
   });
+
+  const [isCadastroMassa, setIsCadastroMassa] = useState(false);
 
   const resetForm = () => {
     setFormData({
       nome: "",
+      setoresEmMassa: "",
     });
+    setIsCadastroMassa(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.nome.trim()) return;
+    if (isCadastroMassa) {
+      // Cadastro em massa
+      if (!formData.setoresEmMassa.trim()) return;
 
-    adicionarSetor({
-      nome: formData.nome.trim(),
-    });
+      const setores = formData.setoresEmMassa
+        .split('\n')
+        .map(linha => linha.trim())
+        .filter(linha => linha.length > 0);
+
+      setores.forEach(nomeSetor => {
+        adicionarSetor({
+          nome: nomeSetor,
+        });
+      });
+
+      console.log(`${setores.length} setor(es) adicionado(s) em massa`);
+    } else {
+      // Cadastro individual
+      if (!formData.nome.trim()) return;
+
+      adicionarSetor({
+        nome: formData.nome.trim(),
+      });
+    }
 
     resetForm();
     setIsNewSetorOpen(false);
@@ -102,18 +127,63 @@ export default function ModalSetores() {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="nome">Nome do Setor *</Label>
-                    <Input
-                      id="nome"
-                      value={formData.nome}
-                      onChange={(e) =>
-                        setFormData({ ...formData, nome: e.target.value })
-                      }
-                      placeholder="Ex: Desentupimento"
-                      required
-                    />
+                  {/* Toggle entre cadastro individual e em massa */}
+                  <div className="flex items-center space-x-4 p-3 bg-muted rounded-lg">
+                    <button
+                      type="button"
+                      onClick={() => setIsCadastroMassa(false)}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        !isCadastroMassa
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Individual
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsCadastroMassa(true)}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        isCadastroMassa
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Em Massa
+                    </button>
                   </div>
+
+                  {!isCadastroMassa ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="nome">Nome do Setor *</Label>
+                      <Input
+                        id="nome"
+                        value={formData.nome}
+                        onChange={(e) =>
+                          setFormData({ ...formData, nome: e.target.value })
+                        }
+                        placeholder="Ex: Desentupimento"
+                        required
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="setoresEmMassa">Setores (um por linha) *</Label>
+                      <Textarea
+                        id="setoresEmMassa"
+                        value={formData.setoresEmMassa}
+                        onChange={(e) =>
+                          setFormData({ ...formData, setoresEmMassa: e.target.value })
+                        }
+                        placeholder="Desentupimento\nEletricidade\nHidráulica\nLimpeza de Caixa d'Água"
+                        rows={6}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Digite cada setor em uma linha separada. Linhas vazias serão ignoradas.
+                      </p>
+                    </div>
+                  )}
 
                   <div className="flex gap-2 pt-4">
                     <Button
