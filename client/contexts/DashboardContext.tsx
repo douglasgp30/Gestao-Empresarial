@@ -166,7 +166,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       // Filtrar lançamentos do caixa - usar filtros do dashboard ou do caixa
       let lancamentosFiltrados;
 
+      console.log('aplicarFiltrosCaixa:', aplicarFiltrosCaixa);
+      console.log('caixaContext.filtros:', caixaContext.filtros);
+
       if (aplicarFiltrosCaixa && caixaContext.filtros) {
+        console.log('Usando filtros do CAIXA');
         // Usar filtros específicos do Caixa para cálculos dinâmicos
         lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
           const dataLancamento = new Date(lancamento.data);
