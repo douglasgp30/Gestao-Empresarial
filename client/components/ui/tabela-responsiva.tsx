@@ -61,6 +61,7 @@ export default function TabelaResponsivaLancamentos({
   dados,
   onEditar,
   onExcluir,
+  onVisualizarNota,
   isLoading = false,
 }: TabelaResponsivaLancamentosProps) {
   if (isLoading) {
@@ -108,6 +109,7 @@ export default function TabelaResponsivaLancamentos({
                 <TableHead>Valor</TableHead>
                 <TableHead>Forma Pagamento</TableHead>
                 <TableHead>Técnico/Categoria</TableHead>
+                <TableHead className="text-center w-[60px]">Nota</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
