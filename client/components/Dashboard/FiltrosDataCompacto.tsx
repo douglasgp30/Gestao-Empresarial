@@ -7,17 +7,23 @@ export default function FiltrosDataCompacto() {
 
   const handleDataInicioChange = (data: string) => {
     console.log('Dashboard: Alterando data início para:', data);
+    const novaData = new Date(data);
+    // Normalizar para início do dia
+    novaData.setHours(0, 0, 0, 0);
     setFiltros({
       ...filtros,
-      dataInicio: new Date(data),
+      dataInicio: novaData,
     });
   };
 
   const handleDataFimChange = (data: string) => {
     console.log('Dashboard: Alterando data fim para:', data);
+    const novaData = new Date(data);
+    // Normalizar para fim do dia
+    novaData.setHours(23, 59, 59, 999);
     setFiltros({
       ...filtros,
-      dataFim: new Date(data),
+      dataFim: novaData,
     });
   };
 
