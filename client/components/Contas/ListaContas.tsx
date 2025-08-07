@@ -158,8 +158,13 @@ export default function ListaContas() {
   const contasFiltradas = contas
     .filter((conta) => {
       const dataVencimento = new Date(conta.dataVencimento);
-      const dentroDataInicio = dataVencimento >= filtros.dataInicio;
-      const dentroDataFim = dataVencimento <= filtros.dataFim;
+      // Normalizar datas para comparação (apenas ano, mês, dia)
+      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
+      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
+      const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
+
+      const dentroDataInicio = dataVencNorm >= dataInicio;
+      const dentroDataFim = dataVencNorm <= dataFim;
       const tipoCorreto =
         filtros.tipo === "ambos" || conta.tipo === filtros.tipo;
       const statusCorreto = !filtros.status || conta.status === filtros.status;
