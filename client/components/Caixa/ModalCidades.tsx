@@ -3,6 +3,7 @@ import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -37,22 +38,46 @@ export default function ModalCidades() {
 
   const [formData, setFormData] = useState({
     nome: "",
+    cidadesEmMassa: "",
   });
+
+  const [isCadastroMassa, setIsCadastroMassa] = useState(false);
 
   const resetForm = () => {
     setFormData({
       nome: "",
+      cidadesEmMassa: "",
     });
+    setIsCadastroMassa(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.nome.trim()) return;
+    if (isCadastroMassa) {
+      // Cadastro em massa
+      if (!formData.cidadesEmMassa.trim()) return;
 
-    adicionarCidade({
-      nome: formData.nome.trim(),
-    });
+      const cidades = formData.cidadesEmMassa
+        .split('\n')
+        .map(linha => linha.trim())
+        .filter(linha => linha.length > 0);
+
+      cidades.forEach(nomeCidade => {
+        adicionarCidade({
+          nome: nomeCidade,
+        });
+      });
+
+      console.log(`${cidades.length} cidade(s) adicionada(s) em massa`);
+    } else {
+      // Cadastro individual
+      if (!formData.nome.trim()) return;
+
+      adicionarCidade({
+        nome: formData.nome.trim(),
+      });
+    }
 
     resetForm();
     setIsNewCidadeOpen(false);
@@ -102,18 +127,63 @@ export default function ModalCidades() {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="nome">Nome da Cidade *</Label>
-                    <Input
-                      id="nome"
-                      value={formData.nome}
-                      onChange={(e) =>
-                        setFormData({ ...formData, nome: e.target.value })
-                      }
-                      placeholder="Ex: São Paulo"
-                      required
-                    />
+                  {/* Toggle entre cadastro individual e em massa */}
+                  <div className="flex items-center space-x-4 p-3 bg-muted rounded-lg">
+                    <button
+                      type="button"
+                      onClick={() => setIsCadastroMassa(false)}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        !isCadastroMassa
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Individual
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsCadastroMassa(true)}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        isCadastroMassa
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Em Massa
+                    </button>
                   </div>
+
+                  {!isCadastroMassa ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="nome">Nome da Cidade *</Label>
+                      <Input
+                        id="nome"
+                        value={formData.nome}
+                        onChange={(e) =>
+                          setFormData({ ...formData, nome: e.target.value })
+                        }
+                        placeholder="Ex: São Paulo"
+                        required
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="cidadesEmMassa">Cidades (uma por linha) *</Label>
+                      <Textarea
+                        id="cidadesEmMassa"
+                        value={formData.cidadesEmMassa}
+                        onChange={(e) =>
+                          setFormData({ ...formData, cidadesEmMassa: e.target.value })
+                        }
+                        placeholder="São Paulo\nRio de Janeiro\nBelo Horizonte\nRecife"
+                        rows={6}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Digite cada cidade em uma linha separada. Linhas vazias serão ignoradas.
+                      </p>
+                    </div>
+                  )}
 
                   <div className="flex gap-2 pt-4">
                     <Button
