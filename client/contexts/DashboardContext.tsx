@@ -157,9 +157,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         // Usar filtros específicos do Caixa para cálculos dinâmicos
         lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
           const dataLancamento = new Date(lancamento.data);
-          const dentroDataInicio =
-            dataLancamento >= caixaContext.filtros.dataInicio;
-          const dentroDataFim = dataLancamento <= caixaContext.filtros.dataFim;
+          // Normalizar datas para comparação (apenas ano, mês, dia)
+          const dataInicio = new Date(caixaContext.filtros.dataInicio.getFullYear(), caixaContext.filtros.dataInicio.getMonth(), caixaContext.filtros.dataInicio.getDate());
+          const dataFim = new Date(caixaContext.filtros.dataFim.getFullYear(), caixaContext.filtros.dataFim.getMonth(), caixaContext.filtros.dataFim.getDate());
+          const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+
+          const dentroDataInicio = dataLancNorm >= dataInicio;
+          const dentroDataFim = dataLancNorm <= dataFim;
           const tipoCorreto =
             !caixaContext.filtros.tipo ||
             caixaContext.filtros.tipo === "todos" ||
