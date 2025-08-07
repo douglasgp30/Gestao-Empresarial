@@ -184,12 +184,23 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   React.useEffect(() => {
     console.log('RelatoriosContext: Recalculando relatórios para filtros:', {
       dataInicio: filtros.periodo.dataInicio.toISOString().split('T')[0],
-      dataFim: filtros.periodo.dataFim.toISOString().split('T')[0]
+      dataFim: filtros.periodo.dataFim.toISOString().split('T')[0],
+      timestamp: filtros.periodo.__timestamp
     });
 
-    setRelatorioFinanceiro(gerarRelatorioFinanceiro());
-    setRelatorioContas(gerarRelatorioContas());
-    setRelatorioTecnicos(gerarRelatorioTecnicos());
+    const novoRelatorioFinanceiro = gerarRelatorioFinanceiro();
+    const novoRelatorioContas = gerarRelatorioContas();
+    const novoRelatorioTecnicos = gerarRelatorioTecnicos();
+
+    console.log('Relatório financeiro calculado:', {
+      totalReceitas: novoRelatorioFinanceiro.resumo.totalReceitas,
+      totalDespesas: novoRelatorioFinanceiro.resumo.totalDespesas,
+      saldoFinal: novoRelatorioFinanceiro.resumo.saldoFinal
+    });
+
+    setRelatorioFinanceiro(novoRelatorioFinanceiro);
+    setRelatorioContas(novoRelatorioContas);
+    setRelatorioTecnicos(novoRelatorioTecnicos);
   }, [filtros]);
 
   const gerarRelatorioFinanceiro = (): RelatorioFinanceiro => {
