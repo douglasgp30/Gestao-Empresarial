@@ -18,12 +18,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { Receipt } from "lucide-react";
+import { Receipt, FileText, Download, Eye } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
 
 export default function ListaLancamentosSimples() {
   const { lancamentos, excluirLancamento, filtros, isLoading } = useCaixa();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
     string | null
+  >(null);
+  const [notaFiscalVisualizada, setNotaFiscalVisualizada] = useState<
+    any | null
   >(null);
 
   // Filtrar lançamentos baseado nos filtros atuais
