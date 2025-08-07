@@ -409,9 +409,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Filtrar contas que precisam de atenção (vencendo hoje e atrasadas)
   const contasVencendo =
     contasContext?.contas
-      ?.filter(
-        (conta) => conta.status === "vence_hoje" || conta.status === "atrasada",
-      )
+      ?.filter((conta) => {
+        const hoje = new Date();
+        const hojeNorm = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+        const dataVencimento = new Date(conta.dataVencimento);
+        const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
+
+        // Contas que vencem hoje ou estão atrasadas
+        return dataVencNorm <= hojeNorm && conta.status !== "paga";
+      })
       .sort(
         (a, b) =>
           new Date(a.dataVencimento).getTime() -
