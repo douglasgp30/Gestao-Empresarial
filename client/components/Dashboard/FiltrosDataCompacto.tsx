@@ -14,6 +14,7 @@ export default function FiltrosDataCompacto() {
   };
 
   const handleDataFimChange = (data: string) => {
+    console.log('Dashboard: Alterando data fim para:', data);
     setFiltros({
       ...filtros,
       dataFim: new Date(data),
