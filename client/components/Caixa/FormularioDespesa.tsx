@@ -87,6 +87,7 @@ export default function FormularioDespesa() {
       formaPagamento: formData.formaPagamento,
       categoria: formData.categoria,
       descricao: formData.descricaoServico,
+      tipoDespesa: formData.tipoDespesa,
     });
 
     // Reset form
