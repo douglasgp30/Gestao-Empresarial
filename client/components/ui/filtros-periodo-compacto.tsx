@@ -296,7 +296,17 @@ export default function FiltrosPeriodoCompacto({
           <Button
             variant={filtroAtivo === "hoje" ? "default" : "ghost"}
             size="sm"
-            onClick={aplicarFiltroHoje}
+            onClick={() => {
+              console.log('Clicou em Hoje'); // Debug
+              const hoje = new Date();
+              const dataFormatada = hoje.toISOString().split("T")[0];
+              console.log('Data formatada:', dataFormatada); // Debug
+
+              onDataInicioChange(dataFormatada);
+              onDataFimChange(dataFormatada);
+              setFiltroAtivo("hoje");
+              onAplicar();
+            }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "hoje"
                 ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
@@ -311,16 +321,17 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "esta-semana" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
+              console.log('Clicou em Esta Semana'); // Debug
               const hoje = new Date();
               const inicioSemana = new Date(hoje);
               const dia = hoje.getDay();
-              const diasAtras = dia === 0 ? 6 : dia - 1; // Segunda-feira como início
+              const diasAtras = dia === 0 ? 6 : dia - 1;
               inicioSemana.setDate(hoje.getDate() - diasAtras);
 
               const dataInicioSemana = inicioSemana.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
+              console.log('Esta Semana - Início:', dataInicioSemana, 'Fim:', dataHoje); // Debug
 
-              // Aplicar mudanças imediatamente
               onDataInicioChange(dataInicioSemana);
               onDataFimChange(dataHoje);
               setFiltroAtivo("esta-semana");
@@ -340,15 +351,13 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-7" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
+              console.log('Clicou em Últimos 7 Dias'); // Debug
               const hoje = new Date();
-              // Últimos 7 dias = 7 dias antes de hoje até hoje
-              const ultimos7 = new Date(
-                hoje.getTime() - 7 * 24 * 60 * 60 * 1000,
-              );
+              const ultimos7 = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000);
               const dataInicio7 = ultimos7.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
+              console.log('Últimos 7 Dias - Início:', dataInicio7, 'Fim:', dataHoje); // Debug
 
-              // Aplicar mudanças imediatamente
               onDataInicioChange(dataInicio7);
               onDataFimChange(dataHoje);
               setFiltroAtivo("ultimos-7");
@@ -368,15 +377,13 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-15" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
+              console.log('Clicou em Últimos 15 Dias'); // Debug
               const hoje = new Date();
-              // Últimos 15 dias = 15 dias antes de hoje até hoje
-              const ultimos15 = new Date(
-                hoje.getTime() - 15 * 24 * 60 * 60 * 1000,
-              );
+              const ultimos15 = new Date(hoje.getTime() - 15 * 24 * 60 * 60 * 1000);
               const dataInicio15 = ultimos15.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
+              console.log('Últimos 15 Dias - Início:', dataInicio15, 'Fim:', dataHoje); // Debug
 
-              // Aplicar mudanças imediatamente
               onDataInicioChange(dataInicio15);
               onDataFimChange(dataHoje);
               setFiltroAtivo("ultimos-15");
@@ -396,15 +403,13 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-30" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
+              console.log('Clicou em Últimos 30 Dias'); // Debug
               const hoje = new Date();
-              // Para "Últimos 30 dias" - 30 dias atrás até hoje
-              const ultimos30 = new Date(
-                hoje.getTime() - 30 * 24 * 60 * 60 * 1000,
-              );
+              const ultimos30 = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000);
               const dataInicio30 = ultimos30.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
+              console.log('Últimos 30 Dias - Início:', dataInicio30, 'Fim:', dataHoje); // Debug
 
-              // Aplicar mudanças imediatamente
               onDataInicioChange(dataInicio30);
               onDataFimChange(dataHoje);
               setFiltroAtivo("ultimos-30");
@@ -423,7 +428,20 @@ export default function FiltrosPeriodoCompacto({
           <Button
             variant={filtroAtivo === "este-mes" ? "default" : "ghost"}
             size="sm"
-            onClick={aplicarFiltroEsteMes}
+            onClick={() => {
+              console.log('Clicou em Este Mês'); // Debug
+              const hoje = new Date();
+              const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+              const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+              const dataInicioMes = inicioMes.toISOString().split("T")[0];
+              const dataFimMes = fimMes.toISOString().split("T")[0];
+              console.log('Este Mês - Início:', dataInicioMes, 'Fim:', dataFimMes); // Debug
+
+              onDataInicioChange(dataInicioMes);
+              onDataFimChange(dataFimMes);
+              setFiltroAtivo("este-mes");
+              onAplicar();
+            }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "este-mes"
                 ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
