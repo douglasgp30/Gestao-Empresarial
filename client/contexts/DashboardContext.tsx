@@ -292,13 +292,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         totalDespesasCaixa -
         totalContasPagas;
 
-      // CÁLCULO TOTAL DA META DO MÊS
-      // Total das receitas do mês atual (caixa)
+      // CÁLCULO TOTAL ALCANÇADO DA META
+      // Baseado apenas em receitas do mês atual + contas a receber criadas no mês atual
       const hoje = new Date();
       const inicioMesAtual = getInicioDoMes();
       const fimMesAtual = getFimDoMes();
 
-      // Receitas do caixa do mês atual
+      // 1. Receitas do caixa do mês atual
       const receitasCaixaMesAtual = caixaContext.lancamentos
         .filter((l) => {
           if (l.tipo !== "receita") return false;
@@ -307,26 +307,22 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         })
         .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-      // Contas recebidas do mês atual (por data de pagamento)
-      const contasRecebidasMesAtual = contasContext.contas
-        .filter((c) => {
-          if (c.tipo !== "receber" || c.status !== "paga") return false;
-          const dataReferencia = c.dataPagamento ? new Date(c.dataPagamento) : new Date(c.dataVencimento);
-          return dataReferencia >= inicioMesAtual && dataReferencia <= fimMesAtual;
-        })
-        .reduce((total, c) => total + c.valor, 0);
-
-      // Contas a receber que foram CADASTRADAS no mês atual (independente do vencimento)
-      const contasAReceberCadastradasMesAtual = contasContext.contas
+      // 2. Contas a receber que foram CRIADAS no mês atual
+      // Como não temos dataCadastro, vamos usar dataVencimento como proxy
+      // Em uma implementação real, seria melhor ter um campo dataCriacao
+      const contasAReceberCriadasMesAtual = contasContext.contas
         .filter((c) => {
           if (c.tipo !== "receber") return false;
-          // Aqui usaria dataCadastro se existisse, por agora usar dataVencimento como proxy
+          // Simular data de criação usando dataVencimento
+          // Na prática, você deveria ter um campo dataCriacao ou dataCadastro
           const dataVencimento = new Date(c.dataVencimento);
           return isMesmoMes(dataVencimento, hoje);
         })
         .reduce((total, c) => total + c.valor, 0);
 
-      const novoTotalMetaMes = receitasCaixaMesAtual + contasRecebidasMesAtual + contasAReceberCadastradasMesAtual;
+      // Total alcançado da meta = apenas receitas + contas a receber criadas no mês
+      // NÃO inclui contas recebidas de meses anteriores
+      const novoTotalMetaMes = receitasCaixaMesAtual + contasAReceberCriadasMesAtual;
       setTotalMetaMes(novoTotalMetaMes);
 
       // Restante para bater a meta
