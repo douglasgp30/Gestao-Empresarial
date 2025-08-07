@@ -169,6 +169,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }
 
     console.log('Total de lançamentos disponíveis:', caixaContext.lancamentos.length);
+    console.log('Dados dos lançamentos:');
+    caixaContext.lancamentos.forEach((l, i) => {
+      console.log(`${i + 1}. ID: ${l.id}, Data: ${l.data.toISOString().split('T')[0]}, Tipo: ${l.tipo}, Valor: ${l.valor}`);
+    });
 
     setIsLoading(true);
 
