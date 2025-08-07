@@ -411,6 +411,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }, 300);
   }, [
     filtros,
+    filtros.__timestamp, // Força re-render quando timestamp muda
     aplicarFiltrosCaixa,
     caixaContext?.lancamentos,
     caixaContext?.filtros,
