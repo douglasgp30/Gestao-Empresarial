@@ -232,8 +232,17 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         totalReceitas: totalReceitasCaixa,
         totalDespesas: totalDespesasCaixa,
         saldo: saldoCaixa,
+        lancamentosTotal: caixaContext.lancamentos.length,
         lancamentosFiltrados: lancamentosFiltrados.length,
-        filtros: { dataInicio: filtros.dataInicio, dataFim: filtros.dataFim }
+        filtros: {
+          dataInicio: filtros.dataInicio.toISOString().split('T')[0],
+          dataFim: filtros.dataFim.toISOString().split('T')[0]
+        },
+        primeirosFiltrados: lancamentosFiltrados.slice(0, 3).map(l => ({
+          data: l.data.toISOString().split('T')[0],
+          tipo: l.tipo,
+          valor: l.valor
+        }))
       });
 
       // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data)
