@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
@@ -28,6 +28,14 @@ export default function FiltrosPeriodoCompacto({
   filtroInicialDashboard = false,
 }: FiltrosPeriodoCompactoProps) {
   const [filtroAtivo, setFiltroAtivo] = useState<string>("");
+  const [forceUpdate, setForceUpdate] = useState(0);
+  const inputInicioRef = useRef<HTMLInputElement>(null);
+  const inputFimRef = useRef<HTMLInputElement>(null);
+
+  // Função para forçar re-render
+  const triggerForceUpdate = useCallback(() => {
+    setForceUpdate(prev => prev + 1);
+  }, []);
 
   // Determinar qual filtro está ativo com base nas datas
   const determinarFiltroAtivo = () => {
@@ -231,6 +239,7 @@ export default function FiltrosPeriodoCompacto({
               <div className="relative">
                 <Calendar className="absolute left-2 top-2.5 h-3 w-3 text-muted-foreground" />
                 <Input
+                  ref={inputInicioRef}
                   id="dataInicio"
                   type="date"
                   value={dataInicio}
@@ -238,6 +247,7 @@ export default function FiltrosPeriodoCompacto({
                     handleDataInicioChangeInterno(e.target.value)
                   }
                   className="pl-8 h-9 text-sm"
+                  key={`inicio-${forceUpdate}`}
                 />
               </div>
             </div>
@@ -248,11 +258,13 @@ export default function FiltrosPeriodoCompacto({
               <div className="relative">
                 <Calendar className="absolute left-2 top-2.5 h-3 w-3 text-muted-foreground" />
                 <Input
+                  ref={inputFimRef}
                   id="dataFim"
                   type="date"
                   value={dataFim}
                   onChange={(e) => handleDataFimChangeInterno(e.target.value)}
                   className="pl-8 h-9 text-sm"
+                  key={`fim-${forceUpdate}`}
                 />
               </div>
             </div>
@@ -302,18 +314,22 @@ export default function FiltrosPeriodoCompacto({
               const dataFormatada = hoje.toISOString().split("T")[0];
               console.log('Data formatada:', dataFormatada); // Debug
 
-              // Forçar atualização direta dos inputs
-              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
-              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+              // Forçar atualização direta dos inputs usando refs e DOM
+              const inputInicio = inputInicioRef.current || document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = inputFimRef.current || document.getElementById('dataFim') as HTMLInputElement;
 
               if (inputInicio) {
                 inputInicio.value = dataFormatada;
+                inputInicio.dispatchEvent(new Event('input', { bubbles: true }));
                 inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
               }
               if (inputFim) {
                 inputFim.value = dataFormatada;
+                inputFim.dispatchEvent(new Event('input', { bubbles: true }));
                 inputFim.dispatchEvent(new Event('change', { bubbles: true }));
               }
+
+              triggerForceUpdate();
 
               onDataInicioChange(dataFormatada);
               onDataFimChange(dataFormatada);
