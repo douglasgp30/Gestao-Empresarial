@@ -42,6 +42,8 @@ export default function FiltrosCaixaCompacto() {
   const handleDataInicioChange = (data: string) => {
     console.log('handleDataInicioChange chamado com:', data); // Debug
     const novaData = new Date(data);
+    // Normalizar para início do dia
+    novaData.setHours(0, 0, 0, 0);
     console.log('Nova data início criada:', novaData); // Debug
 
     setFiltros({
@@ -53,6 +55,8 @@ export default function FiltrosCaixaCompacto() {
   const handleDataFimChange = (data: string) => {
     console.log('handleDataFimChange chamado com:', data); // Debug
     const novaData = new Date(data);
+    // Normalizar para fim do dia
+    novaData.setHours(23, 59, 59, 999);
     console.log('Nova data fim criada:', novaData); // Debug
 
     setFiltros({
