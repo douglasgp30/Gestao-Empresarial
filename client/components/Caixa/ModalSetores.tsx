@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +23,7 @@ import { Card, CardContent } from "../ui/card";
 import {
   Building,
   Calendar,
+  Plus,
 } from "lucide-react";
 
 function formatDate(date: Date): string {
@@ -28,8 +31,32 @@ function formatDate(date: Date): string {
 }
 
 export default function ModalSetores() {
-  const { setores } = useEntidades();
+  const { setores, adicionarSetor } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
+  const [isNewSetorOpen, setIsNewSetorOpen] = useState(false);
+
+  const [formData, setFormData] = useState({
+    nome: "",
+  });
+
+  const resetForm = () => {
+    setFormData({
+      nome: "",
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.nome.trim()) return;
+
+    adicionarSetor({
+      nome: formData.nome.trim(),
+    });
+
+    resetForm();
+    setIsNewSetorOpen(false);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -51,12 +78,59 @@ export default function ModalSetores() {
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Header com informações */}
-          <div>
-            <h3 className="text-lg font-semibold">Lista de Setores</h3>
-            <p className="text-sm text-muted-foreground">
-              {setores.length} setor(es) cadastrado(s)
-            </p>
+          {/* Header com botão de criar */}
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold">Lista de Setores</h3>
+              <p className="text-sm text-muted-foreground">
+                {setores.length} setor(es) cadastrado(s)
+              </p>
+            </div>
+            <Dialog open={isNewSetorOpen} onOpenChange={setIsNewSetorOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Novo Setor
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Criar Novo Setor</DialogTitle>
+                  <DialogDescription>
+                    Adicione um novo setor para organizar seus serviços
+                  </DialogDescription>
+                </DialogHeader>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nome">Nome do Setor *</Label>
+                    <Input
+                      id="nome"
+                      value={formData.nome}
+                      onChange={(e) =>
+                        setFormData({ ...formData, nome: e.target.value })
+                      }
+                      placeholder="Ex: Desentupimento"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsNewSetorOpen(false)}
+                      className="flex-1"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button type="submit" className="flex-1">
+                      Criar Setor
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {/* Lista de setores */}
