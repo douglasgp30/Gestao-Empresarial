@@ -288,17 +288,14 @@ export default function Dashboard() {
               </div>
 
               {/* Restante para Meta */}
-              <div className="flex flex-col items-center space-y-1">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Restante para
-                </span>
-                <span className="text-xs font-medium text-muted-foreground -mt-1">
-                  Meta:
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Restante para Meta:
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2">
                     <span
                       className={`text-lg font-bold ${
                         restanteParaMeta <= 0
