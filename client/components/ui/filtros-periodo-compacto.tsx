@@ -187,12 +187,14 @@ export default function FiltrosPeriodoCompacto({
   // Detectar quando o usuário altera as datas manualmente
   const handleDataInicioChangeInterno = (data: string) => {
     onDataInicioChange(data);
-    // O useEffect irá detectar a mudança e atualizar o filtro ativo
+    // Aplicar filtros automaticamente quando data é alterada manualmente
+    setTimeout(() => onAplicar(), 100);
   };
 
   const handleDataFimChangeInterno = (data: string) => {
     onDataFimChange(data);
-    // O useEffect irá detectar a mudança e atualizar o filtro ativo
+    // Aplicar filtros automaticamente quando data é alterada manualmente
+    setTimeout(() => onAplicar(), 100);
   };
 
   // Funções auxiliares para aplicar filtros
