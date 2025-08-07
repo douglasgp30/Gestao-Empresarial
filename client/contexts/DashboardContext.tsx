@@ -151,19 +151,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
-    console.log('Dashboard useEffect - Filtros:', filtros.dataInicio.toISOString().split('T')[0], 'até', filtros.dataFim.toISOString().split('T')[0]);
-
     if (!caixaContext || !contasContext) {
-      console.log('Contextos não disponíveis ainda');
       return;
     }
 
     if (!caixaContext.lancamentos || caixaContext.lancamentos.length === 0) {
-      console.log('Nenhum lançamento disponível ainda');
       return;
     }
-
-    console.log('Processando', caixaContext.lancamentos.length, 'lançamentos disponíveis');
 
     setIsLoading(true);
 
