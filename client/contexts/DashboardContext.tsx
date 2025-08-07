@@ -360,6 +360,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       const novoRestanteParaMeta = metaMes - novoTotalMetaMes;
       setRestanteParaMeta(novoRestanteParaMeta);
 
+      console.log('Dashboard: Meta -', 'Receitas mês atual:', receitasCaixaMesAtual, 'Contas a receber mês:', contasAReceberCriadasMesAtual, 'Total alcançado:', novoTotalMetaMes);
+
       // Estatísticas gerais para compatibilidade
       const contasVencendoHoje = contasContext.contas.filter((c) => {
         const dataVenc = new Date(c.dataVencimento);
