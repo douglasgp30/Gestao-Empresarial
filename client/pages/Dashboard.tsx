@@ -203,8 +203,8 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center justify-between w-full">
-            {/* Lado Esquerdo: Meta do Mês e Total Alcançado */}
-            <div className="flex items-center space-x-6">
+            {/* Lado Esquerdo: Meta do Mês, Total Alcançado e Restante */}
+            <div className="flex items-center space-x-8">
               {/* Meta do Mês */}
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium text-muted-foreground">
@@ -295,7 +295,7 @@ export default function Dashboard() {
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <>
+                  <div className="flex items-center space-x-2">
                     <span
                       className={`text-lg font-bold ${
                         restanteParaMeta <= 0
@@ -310,7 +310,7 @@ export default function Dashboard() {
                     )}
                     <Tooltip>
                       <TooltipTrigger>
-                        <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                        <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors ml-1" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <p className="font-medium mb-1">Restante para Meta:</p>
@@ -322,7 +322,7 @@ export default function Dashboard() {
                         </p>
                       </TooltipContent>
                     </Tooltip>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
@@ -335,7 +335,7 @@ export default function Dashboard() {
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <>
+                <div className="flex items-center space-x-2">
                   <span
                     className={`text-lg font-bold ${
                       stats.saldoGeralConsolidado > 0
@@ -349,7 +349,7 @@ export default function Dashboard() {
                   </span>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors ml-1" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
                       <p className="font-medium mb-1">Cálculo do Saldo Geral:</p>
@@ -359,7 +359,7 @@ export default function Dashboard() {
                       </p>
                     </TooltipContent>
                   </Tooltip>
-                </>
+                </div>
               )}
             </div>
           </div>
