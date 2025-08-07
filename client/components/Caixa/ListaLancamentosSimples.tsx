@@ -106,6 +106,7 @@ export default function ListaLancamentosSimples() {
             dados={lancamentosFiltrados}
             onEditar={handleEditar}
             onExcluir={setLancamentoParaExcluir}
+            onVisualizarNota={setNotaFiscalVisualizada}
             isLoading={isLoading}
           />
         </CardContent>
