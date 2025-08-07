@@ -146,7 +146,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!caixaContext || !contasContext) return;
 
-    console.log('Dashboard: Recalculando stats com filtros:', filtros);
     setIsLoading(true);
 
     // Simular delay de API
