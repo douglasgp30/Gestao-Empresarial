@@ -314,7 +314,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
-      // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
+      // LINHA 3 - Totais de Contas a Receber e a Pagar (n��o processadas, filtradas por data)
       const totalContasAReceber = contasContext.contas
         .filter((c) => {
           if (c.tipo !== "receber" || c.status === "paga") return false;
@@ -463,6 +463,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   }, [
     filtros,
     filtros.__timestamp, // Força re-render quando timestamp muda
+    filtros.dataInicio?.getTime(), // Força re-render quando data início muda
+    filtros.dataFim?.getTime(), // Força re-render quando data fim muda
     metaMes, // Recalcula restante da meta quando meta muda
     aplicarFiltrosCaixa,
     caixaContext?.lancamentos,
