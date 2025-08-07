@@ -334,7 +334,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       setRestanteParaMeta(novoRestanteParaMeta);
 
       // Estatísticas gerais para compatibilidade
-      const hoje = new Date();
       const contasVencendoHoje = contasContext.contas.filter((c) => {
         const dataVenc = new Date(c.dataVencimento);
         return dataVenc.toDateString() === hoje.toDateString();
