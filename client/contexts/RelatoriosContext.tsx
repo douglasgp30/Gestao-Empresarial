@@ -7,6 +7,10 @@ interface RelatoriosContextType {
   gerarRelatorioFinanceiro: () => RelatorioFinanceiro;
   gerarRelatorioContas: () => RelatorioContas;
   gerarRelatorioTecnicos: () => RelatorioTecnicos;
+  // Relatórios pré-calculados que reagem a mudanças nos filtros
+  relatorioFinanceiro: RelatorioFinanceiro | null;
+  relatorioContas: RelatorioContas | null;
+  relatorioTecnicos: RelatorioTecnicos | null;
   exportarPDF: (tipo: string, dados: any) => void;
   exportarExcel: (tipo: string, dados: any) => void;
   isLoading: boolean;
@@ -132,7 +136,7 @@ const mockLancamentos: LancamentoCaixa[] = [
     data: anteontem,
     tipo: "despesa",
     valor: 120.5,
-    formaPagamento: "Cart��o",
+    formaPagamento: "Cartão",
     categoria: "Combustível",
     descricao: "Abastecimento van",
     funcionarioId: "1",
