@@ -250,7 +250,7 @@ export default function Dashboard() {
             <Receipt className="h-5 w-5" />
             <span>📊 Totais de Contas Recebidas e Pagas</span>
           </h2>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-3">
             <StatCard
               title="Total de Contas Recebidas"
               value={formatCurrency(stats.totalContasRecebidas)}
@@ -269,6 +269,15 @@ export default function Dashboard() {
               isLoading={isLoading}
               variant="danger"
             />
+            <StatCard
+              title="Saldo (Contas Processadas)"
+              value={formatCurrency(stats.saldoContasPagas)}
+              description="Recebidas - pagas (já processadas)"
+              icon={DollarSign}
+              trend={stats.saldoContasPagas >= 0 ? "up" : "down"}
+              isLoading={isLoading}
+              variant="highlight"
+            />
           </div>
         </div>
 
@@ -278,7 +287,7 @@ export default function Dashboard() {
             <FileText className="h-5 w-5" />
             <span>📊 Totais de Contas a Receber e a Pagar</span>
           </h2>
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-3">
             <StatCard
               title="Total a Receber"
               value={formatCurrency(stats.totalContasAReceber)}
@@ -305,15 +314,6 @@ export default function Dashboard() {
               trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
               isLoading={isLoading}
               variant={stats.saldoGeralContas >= 0 ? "success" : "danger"}
-            />
-            <StatCard
-              title="Saldo (Contas Processadas)"
-              value={formatCurrency(stats.saldoContasPagas)}
-              description="Recebidas - pagas (já processadas)"
-              icon={DollarSign}
-              trend={stats.saldoContasPagas >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant="highlight"
             />
           </div>
         </div>
