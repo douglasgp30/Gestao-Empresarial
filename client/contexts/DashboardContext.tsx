@@ -228,6 +228,14 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
       const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
+      console.log('Dashboard: Totais Caixa:', {
+        totalReceitas: totalReceitasCaixa,
+        totalDespesas: totalDespesasCaixa,
+        saldo: saldoCaixa,
+        lancamentosFiltrados: lancamentosFiltrados.length,
+        filtros: { dataInicio: filtros.dataInicio, dataFim: filtros.dataFim }
+      });
+
       // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data)
       const totalContasRecebidas = contasContext.contas
         .filter((c) => {
