@@ -261,12 +261,9 @@ export default function Dashboard() {
               </div>
 
               {/* Total Alcançado da Meta */}
-              <div className="flex flex-col items-center space-y-1">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Total Alcançado
-                </span>
-                <span className="text-xs font-medium text-muted-foreground -mt-1">
-                  da Meta:
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Total Alcançado da Meta:
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
