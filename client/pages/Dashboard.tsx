@@ -324,7 +324,7 @@ export default function Dashboard() {
                       <TooltipContent className="max-w-xs">
                         <p className="font-medium mb-1">Restante para Meta:</p>
                         <p className="text-xs">
-                          {restanteParaMeta <= 0
+                          <strong>Sempre do mês atual.</strong> {restanteParaMeta <= 0
                             ? "Parabéns! Você atingiu ou superou a meta do mês!"
                             : "Valor que ainda falta para atingir a meta estabelecida."
                           }
