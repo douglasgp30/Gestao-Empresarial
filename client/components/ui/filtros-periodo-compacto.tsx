@@ -147,6 +147,7 @@ export default function FiltrosPeriodoCompacto({
     return "";
   };
 
+  // Detectar filtro ativo baseado nas datas atuais
   React.useEffect(() => {
     const filtroCalculado = determinarFiltroAtivo();
     setFiltroAtivo(filtroCalculado);
@@ -154,11 +155,8 @@ export default function FiltrosPeriodoCompacto({
 
   // Aplicar filtro inicial automaticamente na primeira renderização
   React.useEffect(() => {
-    const filtroInicial = determinarFiltroAtivo();
-    setFiltroAtivo(filtroInicial);
-
-    // Se não há filtro ativo na primeira renderização, aplicar padrão
-    if (!filtroInicial && dataInicio === "" && dataFim === "") {
+    // Se não há datas definidas, aplicar padrão
+    if (!dataInicio || !dataFim) {
       if (filtroInicialDashboard) {
         aplicarFiltroEsteMes();
       } else {
