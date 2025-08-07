@@ -202,7 +202,7 @@ export default function Dashboard() {
               Visão geral financeira
             </p>
           </div>
-          <div className="flex items-center justify-between w-full gap-8">
+          <div className="flex items-center w-full gap-8">
             {/* Espaçador à esquerda para equilibrar o layout */}
             <div className="flex-1"></div>
 
