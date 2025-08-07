@@ -132,7 +132,7 @@ const mockLancamentos: LancamentoCaixa[] = [
     data: anteontem,
     tipo: "despesa",
     valor: 120.5,
-    formaPagamento: "Cartão",
+    formaPagamento: "Cart��o",
     categoria: "Combustível",
     descricao: "Abastecimento van",
     funcionarioId: "1",
@@ -175,6 +175,18 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   const [relatorioFinanceiro, setRelatorioFinanceiro] = useState<RelatorioFinanceiro | null>(null);
   const [relatorioContas, setRelatorioContas] = useState<RelatorioContas | null>(null);
   const [relatorioTecnicos, setRelatorioTecnicos] = useState<RelatorioTecnicos | null>(null);
+
+  // Recalcular relatórios quando filtros mudam
+  React.useEffect(() => {
+    console.log('RelatoriosContext: Recalculando relatórios para filtros:', {
+      dataInicio: filtros.periodo.dataInicio.toISOString().split('T')[0],
+      dataFim: filtros.periodo.dataFim.toISOString().split('T')[0]
+    });
+
+    setRelatorioFinanceiro(gerarRelatorioFinanceiro());
+    setRelatorioContas(gerarRelatorioContas());
+    setRelatorioTecnicos(gerarRelatorioTecnicos());
+  }, [filtros]);
 
   const gerarRelatorioFinanceiro = (): RelatorioFinanceiro => {
     const lancamentosFiltrados = mockLancamentos.filter((l) => {
