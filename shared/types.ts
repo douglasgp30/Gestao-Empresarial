@@ -110,17 +110,21 @@ export interface DashboardStats {
   totalDespesasCaixa: number;
   saldoCaixa: number;
 
-  // Linha 2 - Totais do Módulo Contas (apenas pagas/recebidas)
-  totalContasRecebidas: number; // Contas a receber marcadas como pagas
+  // Linha 2 - Totais de Contas Recebidas e Pagas
+  totalContasRecebidas: number; // Contas a receber marcadas como recebidas
   totalContasPagas: number; // Contas a pagar marcadas como pagas
   saldoContasPagas: number; // Contas recebidas - contas pagas
 
-  // Linha 3 - Resumo Completo do Módulo Contas
-  totalGeralAReceber: number; // Todas as contas a receber (pagas + pendentes)
-  totalGeralAPagar: number; // Todas as contas a pagar (pagas + pendentes)
+  // Linha 3 - Totais de Contas a Receber e a Pagar
+  totalContasAReceber: number; // Contas a receber não recebidas ainda
+  totalContasAPagar: number; // Contas a pagar não pagas ainda
   saldoGeralContas: number; // Total a receber - total a pagar
 
-  // Contas Atrasadas (em vermelho)
+  // Campos mantidos para compatibilidade
+  totalGeralAReceber: number; // Todas as contas a receber (pagas + pendentes)
+  totalGeralAPagar: number; // Todas as contas a pagar (pagas + pendentes)
+
+  // Contas Atrasadas
   valorContasPagarAtrasadas: number;
   qtdContasPagarAtrasadas: number;
   valorContasReceberAtrasadas: number;
