@@ -66,16 +66,24 @@ export default function FiltrosContasCompacto() {
   };
 
   const handleDataInicioChange = (data: string) => {
+    const novaData = new Date(data);
+    // Normalizar para início do dia
+    novaData.setHours(0, 0, 0, 0);
     setFiltros({
       ...filtros,
-      dataInicio: new Date(data),
+      dataInicio: novaData,
+      __timestamp: Date.now() // Força re-render
     });
   };
 
   const handleDataFimChange = (data: string) => {
+    const novaData = new Date(data);
+    // Normalizar para fim do dia
+    novaData.setHours(23, 59, 59, 999);
     setFiltros({
       ...filtros,
-      dataFim: new Date(data),
+      dataFim: novaData,
+      __timestamp: Date.now() // Força re-render
     });
   };
 
