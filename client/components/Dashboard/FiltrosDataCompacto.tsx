@@ -10,11 +10,19 @@ export default function FiltrosDataCompacto() {
     const novaData = new Date(data);
     // Normalizar para início do dia
     novaData.setHours(0, 0, 0, 0);
-    setFiltros({
+    const novosFiltros = {
       ...filtros,
       dataInicio: novaData,
       __timestamp: Date.now() // Força re-render
-    });
+    };
+    setFiltros(novosFiltros);
+    // Forçar aplicação imediata
+    setTimeout(() => {
+      setFiltros({
+        ...novosFiltros,
+        __timestamp: Date.now() + 1
+      });
+    }, 50);
   };
 
   const handleDataFimChange = (data: string) => {
