@@ -50,6 +50,11 @@ export interface LancamentoCaixa {
   tecnicoResponsavel?: string;
   comissao?: number;
   notaFiscal: boolean;
+  notaFiscalArquivo?: {
+    nome: string;
+    tamanho: number;
+    dataUpload: Date;
+  };
   descontoImposto?: number;
   setor?: string;
   cidade?: string;
