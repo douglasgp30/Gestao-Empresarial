@@ -320,7 +320,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       const inicioMesAtual = getInicioDoMes();
       const fimMesAtual = getFimDoMes();
 
-      console.log('Dashboard: Meta calculada para mês atual:', inicioMesAtual, 'até', fimMesAtual);
 
       // 1. Receitas do caixa do mês atual (independente dos filtros)
       const receitasCaixaMesAtual = caixaContext.lancamentos
