@@ -302,6 +302,19 @@ export default function FiltrosPeriodoCompacto({
               const dataFormatada = hoje.toISOString().split("T")[0];
               console.log('Data formatada:', dataFormatada); // Debug
 
+              // Forçar atualização direta dos inputs
+              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+
+              if (inputInicio) {
+                inputInicio.value = dataFormatada;
+                inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+              if (inputFim) {
+                inputFim.value = dataFormatada;
+                inputFim.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+
               onDataInicioChange(dataFormatada);
               onDataFimChange(dataFormatada);
               setFiltroAtivo("hoje");
@@ -332,6 +345,19 @@ export default function FiltrosPeriodoCompacto({
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Esta Semana - Início:', dataInicioSemana, 'Fim:', dataHoje); // Debug
 
+              // Forçar atualização direta dos inputs
+              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+
+              if (inputInicio) {
+                inputInicio.value = dataInicioSemana;
+                inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+              if (inputFim) {
+                inputFim.value = dataHoje;
+                inputFim.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+
               onDataInicioChange(dataInicioSemana);
               onDataFimChange(dataHoje);
               setFiltroAtivo("esta-semana");
@@ -357,6 +383,19 @@ export default function FiltrosPeriodoCompacto({
               const dataInicio7 = ultimos7.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 7 Dias - Início:', dataInicio7, 'Fim:', dataHoje); // Debug
+
+              // Forçar atualização direta dos inputs
+              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+
+              if (inputInicio) {
+                inputInicio.value = dataInicio7;
+                inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+              if (inputFim) {
+                inputFim.value = dataHoje;
+                inputFim.dispatchEvent(new Event('change', { bubbles: true }));
+              }
 
               onDataInicioChange(dataInicio7);
               onDataFimChange(dataHoje);
@@ -384,6 +423,19 @@ export default function FiltrosPeriodoCompacto({
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 15 Dias - Início:', dataInicio15, 'Fim:', dataHoje); // Debug
 
+              // Forçar atualização direta dos inputs
+              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+
+              if (inputInicio) {
+                inputInicio.value = dataInicio15;
+                inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+              if (inputFim) {
+                inputFim.value = dataHoje;
+                inputFim.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+
               onDataInicioChange(dataInicio15);
               onDataFimChange(dataHoje);
               setFiltroAtivo("ultimos-15");
@@ -409,6 +461,19 @@ export default function FiltrosPeriodoCompacto({
               const dataInicio30 = ultimos30.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
               console.log('Últimos 30 Dias - Início:', dataInicio30, 'Fim:', dataHoje); // Debug
+
+              // Forçar atualização direta dos inputs
+              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+
+              if (inputInicio) {
+                inputInicio.value = dataInicio30;
+                inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+              if (inputFim) {
+                inputFim.value = dataHoje;
+                inputFim.dispatchEvent(new Event('change', { bubbles: true }));
+              }
 
               onDataInicioChange(dataInicio30);
               onDataFimChange(dataHoje);
@@ -436,6 +501,19 @@ export default function FiltrosPeriodoCompacto({
               const dataInicioMes = inicioMes.toISOString().split("T")[0];
               const dataFimMes = fimMes.toISOString().split("T")[0];
               console.log('Este Mês - Início:', dataInicioMes, 'Fim:', dataFimMes); // Debug
+
+              // Forçar atualização direta dos inputs
+              const inputInicio = document.getElementById('dataInicio') as HTMLInputElement;
+              const inputFim = document.getElementById('dataFim') as HTMLInputElement;
+
+              if (inputInicio) {
+                inputInicio.value = dataInicioMes;
+                inputInicio.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+              if (inputFim) {
+                inputFim.value = dataFimMes;
+                inputFim.dispatchEvent(new Event('change', { bubbles: true }));
+              }
 
               onDataInicioChange(dataInicioMes);
               onDataFimChange(dataFimMes);
