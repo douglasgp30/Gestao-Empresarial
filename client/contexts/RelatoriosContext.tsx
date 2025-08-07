@@ -129,7 +129,7 @@ const mockLancamentos: LancamentoCaixa[] = [
   },
   {
     id: "3",
-    data: new Date(2024, 11, 3),
+    data: anteontem,
     tipo: "despesa",
     valor: 120.5,
     formaPagamento: "Cartão",
@@ -143,7 +143,7 @@ const mockContas: Conta[] = [
   {
     id: "1",
     tipo: "pagar",
-    dataVencimento: new Date(2024, 11, 5),
+    dataVencimento: cincodiasatras,
     fornecedorCliente: "Posto de Gasolina ABC",
     tipoPagamento: "Boleto",
     valor: 350.0,
@@ -153,7 +153,7 @@ const mockContas: Conta[] = [
   {
     id: "2",
     tipo: "receber",
-    dataVencimento: new Date(2024, 11, 4),
+    dataVencimento: cincodiasatras,
     fornecedorCliente: "Empresa XYZ Ltda",
     tipoPagamento: "Boleto",
     valor: 1200.0,
