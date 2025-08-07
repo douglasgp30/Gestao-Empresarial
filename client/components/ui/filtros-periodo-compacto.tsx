@@ -120,8 +120,8 @@ export default function FiltrosPeriodoCompacto({
       return "ultimos-15";
     }
 
-    // Últimos 30 Dias
-    const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
+    // Últimos 30 Dias (30 dias atrás até hoje)
+    const ultimos30 = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000);
     const ultimos30Norm = new Date(
       ultimos30.getFullYear(),
       ultimos30.getMonth(),
@@ -135,23 +135,17 @@ export default function FiltrosPeriodoCompacto({
       return "ultimos-30";
     }
 
-    // Este Mês
+    // Este Mês (do primeiro dia do mês até hoje)
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
     const inicioMesNorm = new Date(
       inicioMes.getFullYear(),
       inicioMes.getMonth(),
       inicioMes.getDate(),
     );
-    const fimMesNorm = new Date(
-      fimMes.getFullYear(),
-      fimMes.getMonth(),
-      fimMes.getDate(),
-    );
 
     if (
       inicioNorm.getTime() === inicioMesNorm.getTime() &&
-      fimNorm.getTime() === fimMesNorm.getTime()
+      fimNorm.getTime() === hojeNorm.getTime()
     ) {
       return "este-mes";
     }
@@ -211,9 +205,9 @@ export default function FiltrosPeriodoCompacto({
   const aplicarFiltroEsteMes = () => {
     const hoje = new Date();
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    // Para "Este Mês" - data final deve ser hoje, não fim do mês
     onDataInicioChange(inicioMes.toISOString().split("T")[0]);
-    onDataFimChange(fimMes.toISOString().split("T")[0]);
+    onDataFimChange(hoje.toISOString().split("T")[0]);
     setFiltroAtivo("este-mes");
     onAplicar();
   };
@@ -402,8 +396,9 @@ export default function FiltrosPeriodoCompacto({
             size="sm"
             onClick={() => {
               const hoje = new Date();
+              // Para "Últimos 30 dias" - 30 dias atrás até hoje
               const ultimos30 = new Date(
-                hoje.getTime() - 29 * 24 * 60 * 60 * 1000,
+                hoje.getTime() - 30 * 24 * 60 * 60 * 1000,
               );
               onDataInicioChange(ultimos30.toISOString().split("T")[0]);
               onDataFimChange(hoje.toISOString().split("T")[0]);
