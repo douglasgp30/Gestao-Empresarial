@@ -210,6 +210,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         });
       } else {
         // Usar filtros do dashboard (período básico)
+        console.log('Aplicando filtros do dashboard...');
+
         lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
           const dataLancamento = new Date(lancamento.data);
           // Normalizar datas para comparação (apenas ano, mês, dia)
@@ -217,10 +219,18 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
           const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
 
-          return (
-            dataLancNorm >= dataInicio &&
-            dataLancNorm <= dataFim
-          );
+          const incluido = (dataLancNorm >= dataInicio && dataLancNorm <= dataFim);
+
+          console.log(`Lançamento ${lancamento.id}:`, {
+            data: dataLancamento.toISOString().split('T')[0],
+            tipo: lancamento.tipo,
+            valor: lancamento.valor,
+            dataInicio: dataInicio.toISOString().split('T')[0],
+            dataFim: dataFim.toISOString().split('T')[0],
+            incluido
+          });
+
+          return incluido;
         });
       }
 
