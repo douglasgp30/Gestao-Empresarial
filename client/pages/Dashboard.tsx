@@ -151,6 +151,17 @@ export default function Dashboard() {
     setMetaMes
   } = useDashboard();
 
+  console.log('Dashboard component - Stats recebidos:', {
+    totalReceitasCaixa: stats.totalReceitasCaixa,
+    totalDespesasCaixa: stats.totalDespesasCaixa,
+    saldoCaixa: stats.saldoCaixa,
+    isLoading,
+    filtros: {
+      dataInicio: filtros.dataInicio.toISOString().split('T')[0],
+      dataFim: filtros.dataFim.toISOString().split('T')[0]
+    }
+  });
+
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [novaMetaValue, setNovaMetaValue] = useState(metaMes.toString());
 
