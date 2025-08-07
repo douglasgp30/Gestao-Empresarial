@@ -217,6 +217,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         });
       }
 
+      console.log('Dashboard: Lançamentos filtrados:', {
+        total: caixaContext.lancamentos.length,
+        filtrados: lancamentosFiltrados.length,
+        filtrosUsados: { dataInicio: filtros.dataInicio, dataFim: filtros.dataFim },
+        primeirosLancamentos: lancamentosFiltrados.slice(0, 3).map(l => ({ data: l.data, valor: l.valor, tipo: l.tipo }))
+      });
+
       // LINHA 1 - Totais do Módulo Caixa (dinâmicos com filtros)
       // Usar sempre valor líquido para receitas (valor real recebido pela empresa)
       const totalReceitasCaixa = lancamentosFiltrados
