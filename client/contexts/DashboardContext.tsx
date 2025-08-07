@@ -161,10 +161,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
 
-    // Simular delay de API
-    setTimeout(() => {
-      // Filtrar lançamentos do caixa - usar filtros do dashboard ou do caixa
-      let lancamentosFiltrados;
+    // Processar imediatamente (removendo timeout para debug)
+    // Filtrar lançamentos do caixa - usar filtros do dashboard ou do caixa
+    let lancamentosFiltrados;
 
       console.log('aplicarFiltrosCaixa:', aplicarFiltrosCaixa);
       console.log('caixaContext.filtros:', caixaContext.filtros);
@@ -425,8 +424,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         contasAtrasadas,
       });
 
-      setIsLoading(false);
-    }, 300);
+    setIsLoading(false);
   }, [
     filtros,
     filtros.__timestamp, // Força re-render quando timestamp muda
