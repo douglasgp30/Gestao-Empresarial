@@ -6,6 +6,7 @@ export default function FiltrosDataCompacto() {
   const { filtros, setFiltros, isLoading } = useDashboard();
 
   const handleDataInicioChange = (data: string) => {
+    console.log('Dashboard: Alterando data início para:', data);
     setFiltros({
       ...filtros,
       dataInicio: new Date(data),
