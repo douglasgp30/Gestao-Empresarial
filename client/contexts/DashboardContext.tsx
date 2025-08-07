@@ -147,12 +147,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!caixaContext || !contasContext) return;
 
-    console.log('Dashboard useEffect disparado - Filtros:', {
-      dataInicio: filtros.dataInicio,
-      dataFim: filtros.dataFim,
-      timestamp: Date.now()
-    });
-
     setIsLoading(true);
 
     // Simular delay de API
