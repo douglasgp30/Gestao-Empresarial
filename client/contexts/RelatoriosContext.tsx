@@ -116,7 +116,7 @@ const mockLancamentos: LancamentoCaixa[] = [
   },
   {
     id: "2",
-    data: new Date(2024, 11, 2),
+    data: ontem,
     tipo: "receita",
     valor: 280.0,
     valorLiquido: 280.0,
