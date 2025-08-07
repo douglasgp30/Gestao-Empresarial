@@ -213,6 +213,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           );
         });
       } else {
+        console.log('Usando filtros do DASHBOARD');
         // Usar filtros do dashboard (período básico)
         console.log('Aplicando filtros do dashboard...');
 
