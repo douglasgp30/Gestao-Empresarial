@@ -155,8 +155,10 @@ export default function FiltrosPeriodoCompacto({
   // Aplicar filtro inicial automaticamente na primeira renderização
   React.useEffect(() => {
     const filtroInicial = determinarFiltroAtivo();
-    if (!filtroInicial) {
-      // Se não há filtro ativo, aplicar padrão
+    setFiltroAtivo(filtroInicial);
+
+    // Se não há filtro ativo na primeira renderização, aplicar padrão
+    if (!filtroInicial && dataInicio === "" && dataFim === "") {
       if (filtroInicialDashboard) {
         aplicarFiltroEsteMes();
       } else {
@@ -171,29 +173,26 @@ export default function FiltrosPeriodoCompacto({
   // Detectar quando o usuário altera as datas manualmente (não por botão)
   const handleDataInicioChangeInterno = (data: string) => {
     onDataInicioChange(data);
-    // Limpar filtro ativo temporariamente para detectar mudança manual
-    setTimeout(() => {
-      const novoFiltro = determinarFiltroAtivo();
-      setFiltroAtivo(novoFiltro);
-    }, 100);
+    setFiltroAtivo(""); // Limpar filtro ativo quando alterado manualmente
   };
 
   const handleDataFimChangeInterno = (data: string) => {
     onDataFimChange(data);
-    // Limpar filtro ativo temporariamente para detectar mudança manual
-    setTimeout(() => {
-      const novoFiltro = determinarFiltroAtivo();
-      setFiltroAtivo(novoFiltro);
-    }, 100);
+    setFiltroAtivo(""); // Limpar filtro ativo quando alterado manualmente
   };
 
   // Funções auxiliares para aplicar filtros
   const aplicarFiltroHoje = () => {
     const hoje = new Date();
-    onDataInicioChange(hoje.toISOString().split("T")[0]);
-    onDataFimChange(hoje.toISOString().split("T")[0]);
+    const dataHoje = hoje.toISOString().split("T")[0];
+    onDataInicioChange(dataHoje);
+    onDataFimChange(dataHoje);
     setFiltroAtivo("hoje");
-    onAplicar();
+
+    // Chamar onAplicar após um pequeno delay para garantir que as datas foram atualizadas
+    setTimeout(() => {
+      onAplicar();
+    }, 10);
   };
 
   const aplicarFiltroEsteMes = () => {
@@ -201,10 +200,17 @@ export default function FiltrosPeriodoCompacto({
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
     const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
     // Para "Este Mês" - do dia 1 até o último dia do mês
-    onDataInicioChange(inicioMes.toISOString().split("T")[0]);
-    onDataFimChange(fimMes.toISOString().split("T")[0]);
+    const dataInicioMes = inicioMes.toISOString().split("T")[0];
+    const dataFimMes = fimMes.toISOString().split("T")[0];
+
+    onDataInicioChange(dataInicioMes);
+    onDataFimChange(dataFimMes);
     setFiltroAtivo("este-mes");
-    onAplicar();
+
+    // Chamar onAplicar após um pequeno delay para garantir que as datas foram atualizadas
+    setTimeout(() => {
+      onAplicar();
+    }, 10);
   };
 
   const handleLimparInterno = () => {
@@ -319,10 +325,16 @@ export default function FiltrosPeriodoCompacto({
               inicioSemana.setDate(hoje.getDate() - diasAtras);
 
               // Data final sempre é hoje para "Esta Semana"
-              onDataInicioChange(inicioSemana.toISOString().split("T")[0]);
-              onDataFimChange(hoje.toISOString().split("T")[0]);
+              const dataInicioSemana = inicioSemana.toISOString().split("T")[0];
+              const dataHoje = hoje.toISOString().split("T")[0];
+
+              onDataInicioChange(dataInicioSemana);
+              onDataFimChange(dataHoje);
               setFiltroAtivo("esta-semana");
-              onAplicar();
+
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "esta-semana"
@@ -343,10 +355,16 @@ export default function FiltrosPeriodoCompacto({
               const ultimos7 = new Date(
                 hoje.getTime() - 7 * 24 * 60 * 60 * 1000,
               );
-              onDataInicioChange(ultimos7.toISOString().split("T")[0]);
-              onDataFimChange(hoje.toISOString().split("T")[0]);
+              const dataInicio7 = ultimos7.toISOString().split("T")[0];
+              const dataHoje = hoje.toISOString().split("T")[0];
+
+              onDataInicioChange(dataInicio7);
+              onDataFimChange(dataHoje);
               setFiltroAtivo("ultimos-7");
-              onAplicar();
+
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "ultimos-7"
@@ -367,10 +385,16 @@ export default function FiltrosPeriodoCompacto({
               const ultimos15 = new Date(
                 hoje.getTime() - 15 * 24 * 60 * 60 * 1000,
               );
-              onDataInicioChange(ultimos15.toISOString().split("T")[0]);
-              onDataFimChange(hoje.toISOString().split("T")[0]);
+              const dataInicio15 = ultimos15.toISOString().split("T")[0];
+              const dataHoje = hoje.toISOString().split("T")[0];
+
+              onDataInicioChange(dataInicio15);
+              onDataFimChange(dataHoje);
               setFiltroAtivo("ultimos-15");
-              onAplicar();
+
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "ultimos-15"
@@ -391,10 +415,16 @@ export default function FiltrosPeriodoCompacto({
               const ultimos30 = new Date(
                 hoje.getTime() - 30 * 24 * 60 * 60 * 1000,
               );
-              onDataInicioChange(ultimos30.toISOString().split("T")[0]);
-              onDataFimChange(hoje.toISOString().split("T")[0]);
+              const dataInicio30 = ultimos30.toISOString().split("T")[0];
+              const dataHoje = hoje.toISOString().split("T")[0];
+
+              onDataInicioChange(dataInicio30);
+              onDataFimChange(dataHoje);
               setFiltroAtivo("ultimos-30");
-              onAplicar();
+
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "ultimos-30"
@@ -409,7 +439,9 @@ export default function FiltrosPeriodoCompacto({
           <Button
             variant={filtroAtivo === "este-mes" ? "default" : "ghost"}
             size="sm"
-            onClick={aplicarFiltroEsteMes}
+            onClick={() => {
+              aplicarFiltroEsteMes();
+            }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "este-mes"
                 ? "bg-primary text-primary-foreground shadow-md border-2 border-primary/20 scale-105"
