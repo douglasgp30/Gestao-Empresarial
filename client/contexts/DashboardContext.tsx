@@ -432,7 +432,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         (c) => c.status === "atrasada",
       ).length;
 
-      setStats({
+      // Criar novo objeto stats sempre para forçar re-render
+      const newStats = {
         saldoGeralConsolidado,
         totalReceitasCaixa,
         totalDespesasCaixa,
@@ -451,7 +452,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         qtdContasReceberAtrasadas,
         contasVencendoHoje,
         contasAtrasadas,
-      });
+        _lastUpdate: Date.now() // Força re-render
+      };
+
+      console.log('=== ATUALIZANDO STATS ===');
+      console.log('Novos stats:', newStats);
+      setStats(newStats);
 
     setIsLoading(false);
   }, [
