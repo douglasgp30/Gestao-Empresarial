@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDashboard } from "../contexts/DashboardContext";
 import {
   Card,
@@ -14,6 +14,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../components/ui/tooltip";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
 import {
   DollarSign,
@@ -23,6 +34,8 @@ import {
   Calendar,
   FileText,
   Target,
+  Edit3,
+  Trophy,
   Loader2,
   Receipt,
   CreditCard,
@@ -126,8 +139,20 @@ function StatCard({
 }
 
 export default function Dashboard() {
-  const { stats, lancamentos, contasVencendo, filtros, isLoading } =
-    useDashboard();
+  const {
+    stats,
+    lancamentos,
+    contasVencendo,
+    filtros,
+    isLoading,
+    metaMes,
+    totalMetaMes,
+    restanteParaMeta,
+    setMetaMes
+  } = useDashboard();
+
+  const [isEditingMeta, setIsEditingMeta] = useState(false);
+  const [novaMetaValue, setNovaMetaValue] = useState(metaMes.toString());
 
   // Filtrar lançamentos pelo período selecionado para exibir nas movimentações recentes
   const lancamentosRecentes = lancamentos
@@ -148,10 +173,28 @@ export default function Dashboard() {
     return `${formatDate(filtros.dataInicio)} - ${formatDate(filtros.dataFim)}`;
   };
 
+  const handleSalvarMeta = () => {
+    const novaMetaNum = parseFloat(novaMetaValue.replace(/[^\d,]/g, '').replace(',', '.'));
+    if (!isNaN(novaMetaNum) && novaMetaNum > 0) {
+      setMetaMes(novaMetaNum);
+      setIsEditingMeta(false);
+    }
+  };
+
+  const handleCancelarEdicao = () => {
+    setNovaMetaValue(metaMes.toString());
+    setIsEditingMeta(false);
+  };
+
+  const formatCurrencyInput = (value: string) => {
+    const numValue = value.replace(/[^\d,]/g, '').replace(',', '.');
+    return numValue;
+  };
+
   return (
     <TooltipProvider>
       <div className="p-6 space-y-6">
-        {/* Header com Saldo Geral no canto direito */}
+        {/* Header com Saldo Geral e Meta do Mês */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
@@ -159,39 +202,163 @@ export default function Dashboard() {
               Visão geral financeira - Período: {getPeriodoDescricao()}
             </p>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-muted-foreground">
-              Saldo Geral:
-            </span>
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <>
-                <span
-                  className={`text-lg font-bold ${
-                    stats.saldoGeralConsolidado > 0
-                      ? "text-success"
-                      : stats.saldoGeralConsolidado < 0
-                        ? "text-destructive"
-                        : "text-foreground"
-                  }`}
-                >
-                  {formatCurrency(stats.saldoGeralConsolidado)}
-                </span>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
-                    <p className="font-medium mb-1">Cálculo do Saldo Geral:</p>
-                    <p className="text-xs">
-                      (Receitas do Caixa + Contas Recebidas) - (Despesas do
-                      Caixa + Contas Pagas)
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </>
-            )}
+          <div className="flex items-center space-x-6">
+            {/* Saldo Geral */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                Saldo Geral:
+              </span>
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <span
+                    className={`text-lg font-bold ${
+                      stats.saldoGeralConsolidado > 0
+                        ? "text-success"
+                        : stats.saldoGeralConsolidado < 0
+                          ? "text-destructive"
+                          : "text-foreground"
+                    }`}
+                  >
+                    {formatCurrency(stats.saldoGeralConsolidado)}
+                  </span>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="font-medium mb-1">Cálculo do Saldo Geral:</p>
+                      <p className="text-xs">
+                        (Receitas do Caixa + Contas Recebidas) - (Despesas do
+                        Caixa + Contas Pagas)
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </>
+              )}
+            </div>
+
+            {/* Meta do Mês */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                Meta do Mês:
+              </span>
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Dialog open={isEditingMeta} onOpenChange={setIsEditingMeta}>
+                    <DialogTrigger asChild>
+                      <button className="flex items-center space-x-1 hover:bg-accent/50 px-2 py-1 rounded transition-colors">
+                        <span className="text-lg font-bold text-primary">
+                          {formatCurrency(metaMes)}
+                        </span>
+                        <Edit3 className="h-3 w-3 text-muted-foreground" />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Editar Meta do Mês</DialogTitle>
+                        <DialogDescription>
+                          Defina sua meta de receitas para o mês atual. Este valor será usado para calcular o progresso da meta.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <label htmlFor="meta" className="text-right">
+                            Valor da Meta:
+                          </label>
+                          <div className="col-span-3">
+                            <Input
+                              id="meta"
+                              placeholder="Ex: 15000"
+                              value={novaMetaValue}
+                              onChange={(e) => setNovaMetaValue(formatCurrencyInput(e.target.value))}
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="button" variant="outline" onClick={handleCancelarEdicao}>
+                          Cancelar
+                        </Button>
+                        <Button type="button" onClick={handleSalvarMeta}>
+                          Salvar Meta
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </>
+              )}
+            </div>
+
+            {/* Total da Meta do Mês */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                Total da Meta:
+              </span>
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    {formatCurrency(totalMetaMes)}
+                  </span>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="font-medium mb-1">Total da Meta do Mês:</p>
+                      <p className="text-xs">
+                        Receitas do Caixa + Contas Recebidas + Contas a Receber cadastradas no mês atual
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </>
+              )}
+            </div>
+
+            {/* Restante para Meta */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                Restante p/ Meta:
+              </span>
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <span
+                    className={`text-lg font-bold ${
+                      restanteParaMeta <= 0
+                        ? "text-success"
+                        : "text-orange-600 dark:text-orange-400"
+                    }`}
+                  >
+                    {restanteParaMeta <= 0 ? "Meta Atingida!" : formatCurrency(restanteParaMeta)}
+                  </span>
+                  {restanteParaMeta <= 0 && (
+                    <Trophy className="h-4 w-4 text-success" />
+                  )}
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="font-medium mb-1">Restante para Meta:</p>
+                      <p className="text-xs">
+                        {restanteParaMeta <= 0
+                          ? "Parabéns! Você atingiu ou superou a meta do mês!"
+                          : "Valor que ainda falta para atingir a meta estabelecida."
+                        }
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
