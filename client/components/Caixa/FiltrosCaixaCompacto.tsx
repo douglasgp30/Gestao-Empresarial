@@ -63,6 +63,7 @@ export default function FiltrosCaixaCompacto() {
     setFiltros({
       ...filtros,
       dataFim: novaData,
+      __timestamp: Date.now() // Força re-render
     });
   };
 
