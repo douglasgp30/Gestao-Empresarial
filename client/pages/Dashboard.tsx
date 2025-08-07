@@ -204,24 +204,21 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center justify-between w-full gap-8">
             {/* Lado Esquerdo: Meta do Mês, Total Alcançado e Restante */}
-            <div className="flex items-center space-x-8">
+            <div className="flex items-start space-x-12">
               {/* Meta do Mês */}
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Meta do Mês:
+              <div className="flex flex-col items-center space-y-2 min-w-0">
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Meta do Mês
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <>
+                  <div className="flex items-center space-x-2">
                     <Dialog open={isEditingMeta} onOpenChange={setIsEditingMeta}>
                       <DialogTrigger asChild>
-                        <button className="flex items-center space-x-1 hover:bg-accent/50 px-2 py-1 rounded transition-colors">
-                          <span className="text-lg font-bold text-primary">
-                            {formatCurrency(metaMes)}
-                          </span>
-                          <Edit3 className="h-3 w-3 text-muted-foreground" />
-                        </button>
+                        <span className="text-lg font-bold text-primary cursor-pointer hover:bg-accent/50 px-2 py-1 rounded transition-colors">
+                          {formatCurrency(metaMes)}
+                        </span>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
@@ -256,19 +253,20 @@ export default function Dashboard() {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                  </>
+                    <Edit3 className="h-3 w-3 text-muted-foreground cursor-pointer" onClick={() => setIsEditingMeta(true)} />
+                  </div>
                 )}
               </div>
 
               {/* Total Alcançado da Meta */}
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Total Alcançado da Meta:
+              <div className="flex flex-col items-center space-y-2 min-w-0">
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Total Alcançado da Meta
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <>
+                  <div className="flex items-center space-x-2">
                     <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {formatCurrency(totalMetaMes)}
                     </span>
@@ -283,14 +281,14 @@ export default function Dashboard() {
                         </p>
                       </TooltipContent>
                     </Tooltip>
-                  </>
+                  </div>
                 )}
               </div>
 
               {/* Restante para Meta */}
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Restante para Meta:
+              <div className="flex flex-col items-center space-y-2 min-w-0">
+                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Restante para Meta
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
