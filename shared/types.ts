@@ -28,15 +28,15 @@ export interface FuncionarioPermissoes {
 }
 
 export interface Funcionario {
-  id: string;
-  nomeCompleto: string;
+  id: string;                     // CodigoTecnico
+  nome: string;                   // NomeTecnico (obrigatório)
+  percentualServico?: number;     // PercentualServico (obrigatório)
   login?: string;
   senha?: string;
   temAcessoSistema?: boolean;
   permissaoAcesso?: boolean;
   tipoAcesso?: "Administrador" | "Operador";
   permissoes?: FuncionarioPermissoes;
-  percentualComissao: number;
   dataCadastro: Date;
   ativo: boolean;
 }
