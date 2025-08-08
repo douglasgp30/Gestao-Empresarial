@@ -14,17 +14,23 @@ import {
   Setor,
   Cidade,
 } from "@shared/types";
+import { 
+  descricoesApi,
+  formasPagamentoApi,
+  funcionariosApi,
+  setoresApi
+} from "../lib/apiService";
 
 interface EntidadesContextType {
   // Descrições
   descricoes: Descricao[];
   adicionarDescricao: (
     descricao: Omit<Descricao, "id" | "dataCriacao">,
-  ) => void;
-  editarDescricao: (id: string, descricao: Partial<Descricao>) => void;
-  excluirDescricao: (id: string) => void;
+  ) => Promise<void>;
+  editarDescricao: (id: string, descricao: Partial<Descricao>) => Promise<void>;
+  excluirDescricao: (id: string) => Promise<void>;
 
-  // Categorias
+  // Categorias (mantém localStorage por enquanto)
   categorias: Categoria[];
   adicionarCategoria: (
     categoria: Omit<Categoria, "id" | "dataCriacao">,
@@ -36,17 +42,31 @@ interface EntidadesContextType {
   formasPagamento: FormaPagamento[];
   adicionarFormaPagamento: (
     forma: Omit<FormaPagamento, "id" | "dataCriacao">,
-  ) => void;
-  editarFormaPagamento: (id: string, forma: Partial<FormaPagamento>) => void;
-  excluirFormaPagamento: (id: string) => void;
+  ) => Promise<void>;
+  editarFormaPagamento: (id: string, forma: Partial<FormaPagamento>) => Promise<void>;
+  excluirFormaPagamento: (id: string) => Promise<void>;
 
-  // Clientes
+  // Funcionários/Técnicos
+  funcionarios: any[];
+  tecnicos: any[];
+  adicionarFuncionario: (funcionario: any) => Promise<void>;
+  editarFuncionario: (id: string, funcionario: any) => Promise<void>;
+  excluirFuncionario: (id: string) => Promise<void>;
+
+  // Setores
+  setores: Setor[];
+  cidades: string[];
+  adicionarSetor: (setor: Omit<Setor, "id" | "dataCriacao">) => Promise<void>;
+  editarSetor: (id: string, setor: Partial<Setor>) => Promise<void>;
+  excluirSetor: (id: string) => Promise<void>;
+
+  // Clientes (mantém localStorage)
   clientes: Cliente[];
   adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => void;
   editarCliente: (id: string, cliente: Partial<Cliente>) => void;
   excluirCliente: (id: string) => void;
 
-  // Fornecedores
+  // Fornecedores (mantém localStorage)
   fornecedores: Fornecedor[];
   adicionarFornecedor: (
     fornecedor: Omit<Fornecedor, "id" | "dataCriacao">,
@@ -54,19 +74,9 @@ interface EntidadesContextType {
   editarFornecedor: (id: string, fornecedor: Partial<Fornecedor>) => void;
   excluirFornecedor: (id: string) => void;
 
-  // Setores
-  setores: Setor[];
-  adicionarSetor: (setor: Omit<Setor, "id" | "dataCriacao">) => void;
-  editarSetor: (id: string, setor: Partial<Setor>) => void;
-  excluirSetor: (id: string) => void;
-
-  // Cidades
-  cidades: Cidade[];
-  adicionarCidade: (cidade: Omit<Cidade, "id" | "dataCriacao">) => void;
-  editarCidade: (id: string, cidade: Partial<Cidade>) => void;
-  excluirCidade: (id: string) => void;
-
+  carregarDados: () => Promise<void>;
   isLoading: boolean;
+  error: string | null;
 }
 
 const EntidadesContext = createContext<EntidadesContextType | undefined>(
@@ -88,32 +98,10 @@ const entidadesEssenciais = {
       tipo: "despesa" as const,
       dataCriacao: new Date(),
     },
-  ],
-  formasPagamento: [
-    {
-      id: "1",
-      nome: "Dinheiro",
-      tipo: "ambos" as const,
-      dataCriacao: new Date(),
-    },
-    { id: "2", nome: "Pix", tipo: "ambos" as const, dataCriacao: new Date() },
-    {
-      id: "3",
-      nome: "Cartão",
-      tipo: "ambos" as const,
-      dataCriacao: new Date(),
-    },
-  ],
-  setores: [
-    { id: "1", nome: "Residencial", dataCriacao: new Date() },
-    { id: "2", nome: "Comercial", dataCriacao: new Date() },
-  ],
-  cidades: [
-    { id: "1", nome: "Goiânia", estado: "GO", dataCriacao: new Date() },
-  ],
+  ]
 };
 
-// Funções para carregar dados do localStorage
+// Funções para localStorage (para entidades que ainda não migraram)
 function carregarEntidadeDoStorage<T>(
   key: string,
   defaultValue: T[] = [],
@@ -144,52 +132,332 @@ function salvarEntidadeNoStorage<T>(key: string, data: T[]) {
 
 export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Estados para todas as entidades
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  // Estados para entidades no banco
   const [descricoes, setDescricoes] = useState<Descricao[]>([]);
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
+  const [funcionarios, setFuncionarios] = useState<any[]>([]);
+  const [tecnicos, setTecnicos] = useState<any[]>([]);
+  const [setores, setSetores] = useState<Setor[]>([]);
+  const [cidades, setCidades] = useState<string[]>([]);
+
+  // Estados para entidades no localStorage (temporário)
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
-  const [setores, setSetores] = useState<Setor[]>([]);
-  const [cidades, setCidades] = useState<Cidade[]>([]);
 
-  // Carregar dados do localStorage na inicialização
+  // Função para carregar todos os dados
+  const carregarDados = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Carregar dados do banco
+      const [
+        descricoesResponse,
+        formasPagamentoResponse,
+        funcionariosResponse,
+        tecnicosResponse,
+        setoresResponse,
+        cidadesResponse
+      ] = await Promise.all([
+        descricoesApi.listar(),
+        formasPagamentoApi.listar(true), // apenas ativas
+        funcionariosApi.listar(),
+        funcionariosApi.listarTecnicos(),
+        setoresApi.listar(true), // apenas ativos
+        setoresApi.listarCidades()
+      ]);
+
+      // Atualizar estados com dados do banco
+      if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
+      if (formasPagamentoResponse.data) setFormasPagamento(formasPagamentoResponse.data);
+      if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
+      if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
+      if (setoresResponse.data) setSetores(setoresResponse.data);
+      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+
+      // Carregar dados do localStorage
+      const categoriasStorage = carregarEntidadeDoStorage<Categoria>(
+        "categorias",
+        entidadesEssenciais.categorias,
+      );
+      const clientesStorage = carregarEntidadeDoStorage<Cliente>("clientes");
+      const fornecedoresStorage = carregarEntidadeDoStorage<Fornecedor>("fornecedores");
+
+      setCategorias(categoriasStorage);
+      setClientes(clientesStorage);
+      setFornecedores(fornecedoresStorage);
+
+    } catch (error) {
+      console.error('Erro ao carregar entidades:', error);
+      setError('Erro ao carregar dados do servidor');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Carregar dados na inicialização
   useEffect(() => {
-    const categoriasStorage = carregarEntidadeDoStorage<Categoria>(
-      "categorias",
-      entidadesEssenciais.categorias,
-    );
-    const descricoesStorage =
-      carregarEntidadeDoStorage<Descricao>("descricoes");
-    const formasStorage = carregarEntidadeDoStorage<FormaPagamento>(
-      "formasPagamento",
-      entidadesEssenciais.formasPagamento,
-    );
-    const clientesStorage = carregarEntidadeDoStorage<Cliente>("clientes");
-    const fornecedoresStorage =
-      carregarEntidadeDoStorage<Fornecedor>("fornecedores");
-    const setoresStorage = carregarEntidadeDoStorage<Setor>(
-      "setores",
-      entidadesEssenciais.setores,
-    );
-    const cidadesStorage = carregarEntidadeDoStorage<Cidade>(
-      "cidades",
-      entidadesEssenciais.cidades,
-    );
-
-    setCategorias(categoriasStorage);
-    setDescricoes(descricoesStorage);
-    setFormasPagamento(formasStorage);
-    setClientes(clientesStorage);
-    setFornecedores(fornecedoresStorage);
-    setSetores(setoresStorage);
-    setCidades(cidadesStorage);
-
-    setIsLoading(false);
+    carregarDados();
   }, []);
 
-  // Funções para Categorias
+  // === FUNÇÕES PARA DESCRIÇÕES (API) ===
+  const adicionarDescricao = async (
+    novaDescricao: Omit<Descricao, "id" | "dataCriacao">,
+  ) => {
+    try {
+      setError(null);
+      const response = await descricoesApi.criar(novaDescricao);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar descrições
+      const descricoesResponse = await descricoesApi.listar();
+      if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
+    } catch (error) {
+      console.error('Erro ao adicionar descrição:', error);
+      throw error;
+    }
+  };
+
+  const editarDescricao = async (
+    id: string,
+    dadosAtualizados: Partial<Descricao>,
+  ) => {
+    try {
+      setError(null);
+      const response = await descricoesApi.atualizar(parseInt(id), dadosAtualizados);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar descrições
+      const descricoesResponse = await descricoesApi.listar();
+      if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
+    } catch (error) {
+      console.error('Erro ao editar descrição:', error);
+      throw error;
+    }
+  };
+
+  const excluirDescricao = async (id: string) => {
+    try {
+      setError(null);
+      const response = await descricoesApi.excluir(parseInt(id));
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar descrições
+      const descricoesResponse = await descricoesApi.listar();
+      if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
+    } catch (error) {
+      console.error('Erro ao excluir descrição:', error);
+      throw error;
+    }
+  };
+
+  // === FUNÇÕES PARA FORMAS DE PAGAMENTO (API) ===
+  const adicionarFormaPagamento = async (
+    novaForma: Omit<FormaPagamento, "id" | "dataCriacao">,
+  ) => {
+    try {
+      setError(null);
+      const response = await formasPagamentoApi.criar(novaForma);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar formas de pagamento
+      const formasResponse = await formasPagamentoApi.listar(true);
+      if (formasResponse.data) setFormasPagamento(formasResponse.data);
+    } catch (error) {
+      console.error('Erro ao adicionar forma de pagamento:', error);
+      throw error;
+    }
+  };
+
+  const editarFormaPagamento = async (
+    id: string,
+    dadosAtualizados: Partial<FormaPagamento>,
+  ) => {
+    try {
+      setError(null);
+      const response = await formasPagamentoApi.atualizar(parseInt(id), dadosAtualizados);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar formas de pagamento
+      const formasResponse = await formasPagamentoApi.listar(true);
+      if (formasResponse.data) setFormasPagamento(formasResponse.data);
+    } catch (error) {
+      console.error('Erro ao editar forma de pagamento:', error);
+      throw error;
+    }
+  };
+
+  const excluirFormaPagamento = async (id: string) => {
+    try {
+      setError(null);
+      const response = await formasPagamentoApi.excluir(parseInt(id));
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar formas de pagamento
+      const formasResponse = await formasPagamentoApi.listar(true);
+      if (formasResponse.data) setFormasPagamento(formasResponse.data);
+    } catch (error) {
+      console.error('Erro ao excluir forma de pagamento:', error);
+      throw error;
+    }
+  };
+
+  // === FUNÇÕES PARA FUNCIONÁRIOS (API) ===
+  const adicionarFuncionario = async (novoFuncionario: any) => {
+    try {
+      setError(null);
+      const response = await funcionariosApi.criar(novoFuncionario);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar funcionários e técnicos
+      const [funcionariosResponse, tecnicosResponse] = await Promise.all([
+        funcionariosApi.listar(),
+        funcionariosApi.listarTecnicos()
+      ]);
+      if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
+      if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
+    } catch (error) {
+      console.error('Erro ao adicionar funcionário:', error);
+      throw error;
+    }
+  };
+
+  const editarFuncionario = async (id: string, dadosAtualizados: any) => {
+    try {
+      setError(null);
+      const response = await funcionariosApi.atualizar(parseInt(id), dadosAtualizados);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar funcionários e técnicos
+      const [funcionariosResponse, tecnicosResponse] = await Promise.all([
+        funcionariosApi.listar(),
+        funcionariosApi.listarTecnicos()
+      ]);
+      if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
+      if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
+    } catch (error) {
+      console.error('Erro ao editar funcionário:', error);
+      throw error;
+    }
+  };
+
+  const excluirFuncionario = async (id: string) => {
+    try {
+      setError(null);
+      const response = await funcionariosApi.excluir(parseInt(id));
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar funcionários e técnicos
+      const [funcionariosResponse, tecnicosResponse] = await Promise.all([
+        funcionariosApi.listar(),
+        funcionariosApi.listarTecnicos()
+      ]);
+      if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
+      if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
+    } catch (error) {
+      console.error('Erro ao excluir funcionário:', error);
+      throw error;
+    }
+  };
+
+  // === FUNÇÕES PARA SETORES (API) ===
+  const adicionarSetor = async (novoSetor: Omit<Setor, "id" | "dataCriacao">) => {
+    try {
+      setError(null);
+      const response = await setoresApi.criar(novoSetor);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar setores e cidades
+      const [setoresResponse, cidadesResponse] = await Promise.all([
+        setoresApi.listar(true),
+        setoresApi.listarCidades()
+      ]);
+      if (setoresResponse.data) setSetores(setoresResponse.data);
+      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+    } catch (error) {
+      console.error('Erro ao adicionar setor:', error);
+      throw error;
+    }
+  };
+
+  const editarSetor = async (id: string, dadosAtualizados: Partial<Setor>) => {
+    try {
+      setError(null);
+      const response = await setoresApi.atualizar(parseInt(id), dadosAtualizados);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar setores e cidades
+      const [setoresResponse, cidadesResponse] = await Promise.all([
+        setoresApi.listar(true),
+        setoresApi.listarCidades()
+      ]);
+      if (setoresResponse.data) setSetores(setoresResponse.data);
+      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+    } catch (error) {
+      console.error('Erro ao editar setor:', error);
+      throw error;
+    }
+  };
+
+  const excluirSetor = async (id: string) => {
+    try {
+      setError(null);
+      const response = await setoresApi.excluir(parseInt(id));
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+      
+      // Recarregar setores e cidades
+      const [setoresResponse, cidadesResponse] = await Promise.all([
+        setoresApi.listar(true),
+        setoresApi.listarCidades()
+      ]);
+      if (setoresResponse.data) setSetores(setoresResponse.data);
+      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+    } catch (error) {
+      console.error('Erro ao excluir setor:', error);
+      throw error;
+    }
+  };
+
+  // === FUNÇÕES PARA CATEGORIAS (localStorage - temporário) ===
   const adicionarCategoria = (
     novaCategoria: Omit<Categoria, "id" | "dataCriacao">,
   ) => {
@@ -222,73 +490,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
   };
 
-  // Funções para Descrições
-  const adicionarDescricao = (
-    novaDescricao: Omit<Descricao, "id" | "dataCriacao">,
-  ) => {
-    const descricao: Descricao = {
-      ...novaDescricao,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    const novasDescricoes = [...descricoes, descricao];
-    setDescricoes(novasDescricoes);
-    salvarEntidadeNoStorage("descricoes", novasDescricoes);
-  };
-
-  const editarDescricao = (
-    id: string,
-    dadosAtualizados: Partial<Descricao>,
-  ) => {
-    const descricoesAtualizadas = descricoes.map((descricao) =>
-      descricao.id === id ? { ...descricao, ...dadosAtualizados } : descricao,
-    );
-    setDescricoes(descricoesAtualizadas);
-    salvarEntidadeNoStorage("descricoes", descricoesAtualizadas);
-  };
-
-  const excluirDescricao = (id: string) => {
-    const descricoesAtualizadas = descricoes.filter(
-      (descricao) => descricao.id !== id,
-    );
-    setDescricoes(descricoesAtualizadas);
-    salvarEntidadeNoStorage("descricoes", descricoesAtualizadas);
-  };
-
-  // Funções para Formas de Pagamento
-  const adicionarFormaPagamento = (
-    novaForma: Omit<FormaPagamento, "id" | "dataCriacao">,
-  ) => {
-    const forma: FormaPagamento = {
-      ...novaForma,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    const novasFormas = [...formasPagamento, forma];
-    setFormasPagamento(novasFormas);
-    salvarEntidadeNoStorage("formasPagamento", novasFormas);
-  };
-
-  const editarFormaPagamento = (
-    id: string,
-    dadosAtualizados: Partial<FormaPagamento>,
-  ) => {
-    const formasAtualizadas = formasPagamento.map((forma) =>
-      forma.id === id ? { ...forma, ...dadosAtualizados } : forma,
-    );
-    setFormasPagamento(formasAtualizadas);
-    salvarEntidadeNoStorage("formasPagamento", formasAtualizadas);
-  };
-
-  const excluirFormaPagamento = (id: string) => {
-    const formasAtualizadas = formasPagamento.filter(
-      (forma) => forma.id !== id,
-    );
-    setFormasPagamento(formasAtualizadas);
-    salvarEntidadeNoStorage("formasPagamento", formasAtualizadas);
-  };
-
-  // Funções para Clientes
+  // === FUNÇÕES PARA CLIENTES (localStorage - temporário) ===
   const adicionarCliente = (
     novoCliente: Omit<Cliente, "id" | "dataCriacao">,
   ) => {
@@ -316,7 +518,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     salvarEntidadeNoStorage("clientes", clientesAtualizados);
   };
 
-  // Funções para Fornecedores
+  // === FUNÇÕES PARA FORNECEDORES (localStorage - temporário) ===
   const adicionarFornecedor = (
     novoFornecedor: Omit<Fornecedor, "id" | "dataCriacao">,
   ) => {
@@ -351,103 +553,57 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     salvarEntidadeNoStorage("fornecedores", fornecedoresAtualizados);
   };
 
-  // Funções para Setores
-  const adicionarSetor = (novoSetor: Omit<Setor, "id" | "dataCriacao">) => {
-    const setor: Setor = {
-      ...novoSetor,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    const novosSetores = [...setores, setor];
-    setSetores(novosSetores);
-    salvarEntidadeNoStorage("setores", novosSetores);
-  };
-
-  const editarSetor = (id: string, dadosAtualizados: Partial<Setor>) => {
-    const setoresAtualizados = setores.map((setor) =>
-      setor.id === id ? { ...setor, ...dadosAtualizados } : setor,
-    );
-    setSetores(setoresAtualizados);
-    salvarEntidadeNoStorage("setores", setoresAtualizados);
-  };
-
-  const excluirSetor = (id: string) => {
-    const setoresAtualizados = setores.filter((setor) => setor.id !== id);
-    setSetores(setoresAtualizados);
-    salvarEntidadeNoStorage("setores", setoresAtualizados);
-  };
-
-  // Funç��es para Cidades
-  const adicionarCidade = (novaCidade: Omit<Cidade, "id" | "dataCriacao">) => {
-    const cidade: Cidade = {
-      ...novaCidade,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    const novasCidades = [...cidades, cidade];
-    setCidades(novasCidades);
-    salvarEntidadeNoStorage("cidades", novasCidades);
-  };
-
-  const editarCidade = (id: string, dadosAtualizados: Partial<Cidade>) => {
-    const cidadesAtualizadas = cidades.map((cidade) =>
-      cidade.id === id ? { ...cidade, ...dadosAtualizados } : cidade,
-    );
-    setCidades(cidadesAtualizadas);
-    salvarEntidadeNoStorage("cidades", cidadesAtualizadas);
-  };
-
-  const excluirCidade = (id: string) => {
-    const cidadesAtualizadas = cidades.filter((cidade) => cidade.id !== id);
-    setCidades(cidadesAtualizadas);
-    salvarEntidadeNoStorage("cidades", cidadesAtualizadas);
-  };
-
   const value = {
     // Estados
     categorias,
     descricoes,
     formasPagamento,
+    funcionarios,
+    tecnicos,
     clientes,
     fornecedores,
     setores,
     cidades,
     isLoading,
+    error,
 
-    // Funções para Categorias
+    // Funções para Categorias (localStorage)
     adicionarCategoria,
     editarCategoria,
     excluirCategoria,
 
-    // Funções para Descrições
+    // Funções para Descrições (API)
     adicionarDescricao,
     editarDescricao,
     excluirDescricao,
 
-    // Funções para Formas de Pagamento
+    // Funções para Formas de Pagamento (API)
     adicionarFormaPagamento,
     editarFormaPagamento,
     excluirFormaPagamento,
 
-    // Funções para Clientes
-    adicionarCliente,
-    editarCliente,
-    excluirCliente,
+    // Funções para Funcionários (API)
+    adicionarFuncionario,
+    editarFuncionario,
+    excluirFuncionario,
 
-    // Funções para Fornecedores
-    adicionarFornecedor,
-    editarFornecedor,
-    excluirFornecedor,
-
-    // Funções para Setores
+    // Funções para Setores (API)
     adicionarSetor,
     editarSetor,
     excluirSetor,
 
-    // Funções para Cidades
-    adicionarCidade,
-    editarCidade,
-    excluirCidade,
+    // Funções para Clientes (localStorage)
+    adicionarCliente,
+    editarCliente,
+    excluirCliente,
+
+    // Funções para Fornecedores (localStorage)
+    adicionarFornecedor,
+    editarFornecedor,
+    excluirFornecedor,
+
+    // Funções utilitárias
+    carregarDados,
   };
 
   return (
