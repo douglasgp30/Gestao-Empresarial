@@ -56,8 +56,15 @@ import {
   Pause,
 } from "lucide-react";
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("pt-BR");
+function formatDate(date: Date | string | null | undefined): string {
+  if (!date) return "-";
+
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  // Verificar se é uma data válida
+  if (isNaN(dateObj.getTime())) return "-";
+
+  return dateObj.toLocaleDateString("pt-BR");
 }
 
 export default function ModalCampanhas() {
