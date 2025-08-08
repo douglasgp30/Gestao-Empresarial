@@ -30,14 +30,30 @@ export default function FiltrosDataCompacto() {
   };
 
   const handleAplicar = () => {
-    console.log("Dashboard handleAplicar chamado"); // Debug
-    console.log("Filtros atuais:", filtros); // Debug
+    console.log("🎯 Dashboard handleAplicar chamado"); // Debug
+    console.log("📅 Filtros atuais:", {
+      dataInicio: filtros.dataInicio.toISOString().split("T")[0],
+      dataFim: filtros.dataFim.toISOString().split("T")[0],
+      timestamp: filtros.__timestamp
+    }); // Debug
+
     const novosFiltros = {
       ...filtros,
       __timestamp: Date.now(), // Força re-render
     };
-    console.log("Novos filtros:", novosFiltros); // Debug
+
+    console.log("✨ Aplicando novos filtros:", {
+      dataInicio: novosFiltros.dataInicio.toISOString().split("T")[0],
+      dataFim: novosFiltros.dataFim.toISOString().split("T")[0],
+      timestamp: novosFiltros.__timestamp
+    }); // Debug
+
     setFiltros(novosFiltros);
+
+    // Log de confirmação
+    setTimeout(() => {
+      console.log("✅ Filtros aplicados com sucesso no Dashboard");
+    }, 100);
   };
 
   const handleLimpar = () => {
