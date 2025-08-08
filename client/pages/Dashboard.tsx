@@ -541,7 +541,7 @@ export default function Dashboard() {
               icon={Banknote}
               trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
               isLoading={isLoading}
-              variant={stats.saldoGeralContas >= 0 ? "success" : "danger"}
+              variant="default"
             />
           </div>
         </div>
