@@ -200,6 +200,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     setLancamentos(lancamentosReais);
     setCampanhas(campanhasReais);
     setIsLoading(false);
+
+    console.log("✅ CaixaContext inicializado completamente");
+    console.log("📊 Estado final:", {
+      lancamentos: lancamentosReais.length,
+      campanhas: campanhasReais.length,
+      isLoading: false
+    });
   }, []);
 
   const adicionarLancamento = (
