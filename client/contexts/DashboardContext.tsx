@@ -102,14 +102,14 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   }
 
   const [filtros, setFiltros] = useState<FiltrosPeriodo>(() => {
+    console.log("🚀 Inicializando DashboardContext com filtro HOJE");
     const hoje = new Date();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-    inicioMes.setHours(0, 0, 0, 0);
-    fimMes.setHours(23, 59, 59, 999);
+    hoje.setHours(0, 0, 0, 0);
+    const fimHoje = new Date();
+    fimHoje.setHours(23, 59, 59, 999);
     return {
-      dataInicio: inicioMes,
-      dataFim: fimMes,
+      dataInicio: hoje,
+      dataFim: fimHoje,
     };
   });
 
