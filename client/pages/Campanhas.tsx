@@ -54,9 +54,9 @@ export default function Campanhas() {
     setCampanhasFiltradas(campanhasResultado);
   }, [campanhas, filtrosPeriodo]);
 
-  const handleFiltrosPeriodoChange = (dataInicio: Date, dataFim: Date) => {
+  const handleFiltrosPeriodoChange = useCallback((dataInicio: Date, dataFim: Date) => {
     setFiltrosPeriodo({ dataInicio, dataFim });
-  };
+  }, []);
 
   // Calcular estatísticas das campanhas no período
   const calcularEstatisticasCampanhas = () => {
