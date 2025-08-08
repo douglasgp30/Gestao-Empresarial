@@ -115,6 +115,8 @@ export default function FormularioDespesa() {
       notaFiscal: false, // Despesas geralmente não têm nota fiscal
     });
 
+    console.log("✅ Despesa adicionada com sucesso");
+
     // Feedback de sucesso
     toast({
       title: "Despesa lançada",
