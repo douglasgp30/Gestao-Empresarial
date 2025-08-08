@@ -38,116 +38,50 @@ interface CaixaContextType {
 
 const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 
-// Mock data inicial - datas variadas para teste dos filtros
-const hoje = new Date();
-const ontem = new Date(hoje.getTime() - 24 * 60 * 60 * 1000);
-const anteontem = new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000);
-const cincodiasatras = new Date(hoje.getTime() - 5 * 24 * 60 * 60 * 1000);
-const dezdiasatras = new Date(hoje.getTime() - 10 * 24 * 60 * 60 * 1000);
-const vintediasatras = new Date(hoje.getTime() - 20 * 24 * 60 * 60 * 1000);
+// Função para carregar dados reais do localStorage
+function carregarLancamentosReais(): LancamentoCaixa[] {
+  try {
+    const lancamentos = localStorage.getItem('lancamentos-caixa');
+    if (lancamentos) {
+      const parsedLancamentos = JSON.parse(lancamentos);
+      // Converter strings de data de volta para objetos Date
+      return parsedLancamentos.map((l: any) => ({
+        ...l,
+        data: new Date(l.data),
+        dataPagamento: l.dataPagamento ? new Date(l.dataPagamento) : undefined
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.warn('Erro ao carregar lançamentos do localStorage:', error);
+    return [];
+  }
+}
 
-const mockLancamentos: LancamentoCaixa[] = [
-  {
-    id: "1",
-    data: hoje,
-    tipo: "receita",
-    valor: 450.0,
-    valorLiquido: 450.0,
-    formaPagamento: "Pix",
-    tecnicoResponsavel: "João Silva",
-    comissao: 67.5,
-    notaFiscal: false,
-    setor: "Residencial",
-    campanha: "Promoção Janeiro",
-    funcionarioId: "2",
-  },
-  {
-    id: "2",
-    data: ontem,
-    tipo: "receita",
-    valor: 280.0,
-    valorLiquido: 280.0,
-    formaPagamento: "Dinheiro",
-    tecnicoResponsavel: "Carlos Santos",
-    comissao: 42.0,
-    notaFiscal: false,
-    setor: "Comercial",
-    funcionarioId: "3",
-  },
-  {
-    id: "3",
-    data: anteontem,
-    tipo: "despesa",
-    valor: 120.5,
-    formaPagamento: "Cartão",
-    categoria: "Combustível",
-    descricao: "Abastecimento van",
-    funcionarioId: "1",
-  },
-  {
-    id: "4",
-    data: cincodiasatras,
-    tipo: "receita",
-    valor: 380.0,
-    valorLiquido: 357.2,
-    formaPagamento: "Cartão",
-    tecnicoResponsavel: "João Silva",
-    comissao: 57.0,
-    notaFiscal: true,
-    descontoImposto: 22.8,
-    setor: "Residencial",
-    funcionarioId: "2",
-  },
-  {
-    id: "5",
-    data: dezdiasatras,
-    tipo: "despesa",
-    valor: 85.0,
-    formaPagamento: "Pix",
-    categoria: "Material",
-    descricao: "Compra de ferramentas",
-    funcionarioId: "1",
-  },
-  {
-    id: "6",
-    data: vintediasatras,
-    tipo: "receita",
-    valor: 620.0,
-    valorLiquido: 620.0,
-    formaPagamento: "Transferência",
-    tecnicoResponsavel: "Roberto Lima",
-    comissao: 93.0,
-    notaFiscal: false,
-    setor: "Industrial",
-    funcionarioId: "4",
-  },
-];
-
-const mockCampanhas: Campanha[] = [
-  {
-    id: "1",
-    nome: "Desconto Dezembro",
-    descricao: "Promoção de fim de ano",
-    ativa: true,
-    dataInicio: new Date(2024, 11, 1),
-    dataFim: new Date(2024, 11, 31),
-  },
-  {
-    id: "2",
-    nome: "Black Friday",
-    descricao: "Desconto especial Black Friday",
-    ativa: false,
-    dataInicio: new Date(2024, 10, 25),
-    dataFim: new Date(2024, 10, 30),
-  },
-];
+function carregarCampanhasReais(): Campanha[] {
+  try {
+    const campanhas = localStorage.getItem('campanhas');
+    if (campanhas) {
+      const parsedCampanhas = JSON.parse(campanhas);
+      // Converter strings de data de volta para objetos Date
+      return parsedCampanhas.map((c: any) => ({
+        ...c,
+        dataInicio: new Date(c.dataInicio),
+        dataFim: new Date(c.dataFim)
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.warn('Erro ao carregar campanhas do localStorage:', error);
+    return [];
+  }
+}
 
 export function CaixaProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [lancamentos, setLancamentos] =
-    useState<LancamentoCaixa[]>(mockLancamentos);
-  const [campanhas, setCampanhas] = useState<Campanha[]>(mockCampanhas);
-  const [isLoading, setIsLoading] = useState(false);
+  const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>([]);
+  const [campanhas, setCampanhas] = useState<Campanha[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filtros, setFiltros] = useState({
     dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
     dataFim: new Date(),
