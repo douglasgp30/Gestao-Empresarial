@@ -588,6 +588,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       qtdContasReceberAtrasadas,
       contasVencendoHoje,
       contasAtrasadas,
+      // Valores do período para compatibilidade
+      receitasPeriodo: totalReceitasCaixa,
+      despesasPeriodo: totalDespesasCaixa,
+      saldoPeriodo: saldoCaixa,
       _lastUpdate: Date.now(), // Força re-render
     };
 
