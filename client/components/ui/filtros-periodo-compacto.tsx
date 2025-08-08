@@ -323,10 +323,12 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "hoje" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log("Clicou em Hoje"); // Debug
+              console.log("Aplicando filtro: Hoje"); // Debug
               const hoje = new Date();
-              const dataFormatada = hoje.toISOString().split("T")[0];
-              console.log("Data formatada:", dataFormatada); // Debug
+              // Garantir que estamos usando a data real de hoje
+              const dataHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+              const dataFormatada = dataHoje.toISOString().split("T")[0];
+              console.log("Data real de hoje:", dataFormatada); // Debug
 
               // Atualizar estado local primeiro
               setLocalDataInicio(dataFormatada);
