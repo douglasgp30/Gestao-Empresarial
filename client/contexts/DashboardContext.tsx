@@ -221,53 +221,18 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         });
       }
 
-      // LINHA 1 - Totais do Módulo Caixa (dinâmicos com filtros)
-      // Usar sempre valor líquido para receitas (valor real recebido pela empresa)
-      const totalReceitasCaixa = lancamentosFiltrados
-        .filter((l) => l.tipo === "receita")
-        .reduce((total, l) => {
-          // Para receitas, sempre usar valorLiquido se disponível
-          // valorLiquido já considera descontos de cartão, nota fiscal, etc.
-          return total + (l.valorLiquido || l.valor);
-        }, 0);
-
-      const totalDespesasCaixa = lancamentosFiltrados
-        .filter((l) => l.tipo === "despesa")
-        .reduce((total, l) => total + l.valor, 0);
-
-      const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
+      // LINHA 1 - Totais do Módulo Caixa (usar dados calculados pelo CaixaContext)
+      const totalReceitasCaixa = caixaContext.totais.receitas;
+      const totalDespesasCaixa = caixaContext.totais.despesas;
+      const saldoCaixa = caixaContext.totais.saldo;
 
       // Debug essencial apenas
-      console.log('Dashboard: Filtrados', lancamentosFiltrados.length, 'lançamentos. Receitas:', totalReceitasCaixa, 'Despesas:', totalDespesasCaixa);
+      console.log('Dashboard: Usando totais do CaixaContext. Receitas:', totalReceitasCaixa, 'Despesas:', totalDespesasCaixa);
 
-      // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data)
-      const totalContasRecebidas = contasContext.contas
-        .filter((c) => {
-          if (c.tipo !== "receber" || c.status !== "paga") return false;
-          // Usar dataPagamento se disponível, senão dataVencimento
-          const dataReferencia = c.dataPagamento ? new Date(c.dataPagamento) : new Date(c.dataVencimento);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-          const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-          const dataRefNorm = new Date(dataReferencia.getFullYear(), dataReferencia.getMonth(), dataReferencia.getDate());
-          return dataRefNorm >= dataInicio && dataRefNorm <= dataFim;
-        })
-        .reduce((total, c) => total + c.valor, 0);
-
-      const totalContasPagas = contasContext.contas
-        .filter((c) => {
-          if (c.tipo !== "pagar" || c.status !== "paga") return false;
-          // Usar dataPagamento se disponível, senão dataVencimento
-          const dataReferencia = c.dataPagamento ? new Date(c.dataPagamento) : new Date(c.dataVencimento);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-          const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-          const dataRefNorm = new Date(dataReferencia.getFullYear(), dataReferencia.getMonth(), dataReferencia.getDate());
-          return dataRefNorm >= dataInicio && dataRefNorm <= dataFim;
-        })
-        .reduce((total, c) => total + c.valor, 0);
-
-      const saldoContasPagas = totalContasRecebidas - totalContasPagas;
+      // LINHA 2 - Totais de Contas (usar dados calculados pelo ContasContext)
+      const totalContasRecebidas = contasContext.totais.totalPagas; // Contas que foram pagas (receitas e despesas)
+      const totalContasPagas = contasContext.totais.totalPagas; // Total de contas pagas
+      const saldoContasPagas = contasContext.totais.totalReceber - contasContext.totais.totalPagar;
 
       // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
       const totalContasAReceber = contasContext.contas
@@ -441,7 +406,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           new Date(b.dataVencimento).getTime(),
       ) || [];
 
-  // Função para atualizar meta do mês com persistência
+  // Função para atualizar meta do m��s com persistência
   const handleSetMetaMes = (valor: number) => {
     setMetaMes(valor);
     const mesAtual = new Date().toISOString().slice(0, 7); // YYYY-MM
