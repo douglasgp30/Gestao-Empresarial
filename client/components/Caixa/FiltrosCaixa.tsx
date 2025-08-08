@@ -47,6 +47,10 @@ function formatDate(date: Date): string {
 
 export default function FiltrosCaixa() {
   const { filtros, setFiltros, campanhas, totais, isLoading } = useCaixa();
+  const { funcionarios } = useFuncionarios();
+
+  // Lista dinâmica de técnicos
+  const tecnicos = funcionarios.filter(f => f.ativo).map(f => f.nomeCompleto);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [tempDataInicio, setTempDataInicio] = useState<Date | undefined>(
     filtros.dataInicio,
