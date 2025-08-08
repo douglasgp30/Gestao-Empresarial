@@ -341,25 +341,30 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }
 
     // LINHA 1 - Totais do Módulo Caixa (calcular a partir dos dados filtrados)
-    const totalReceitasCaixa = lancamentosFiltrados
-      .filter((l) => l.tipo === "receita")
+    const receitasFiltradas = lancamentosFiltrados.filter((l) => l.tipo === "receita");
+    const despesasFiltradas = lancamentosFiltrados.filter((l) => l.tipo === "despesa");
+
+    const totalReceitasCaixa = receitasFiltradas
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-    const totalDespesasCaixa = lancamentosFiltrados
-      .filter((l) => l.tipo === "despesa")
+    const totalDespesasCaixa = despesasFiltradas
       .reduce((total, l) => total + l.valor, 0);
 
     const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
-    // Debug essencial apenas
-    console.log(
-      "Dashboard: Calculando totais dos dados filtrados. Receitas:",
-      totalReceitasCaixa,
-      "Despesas:",
-      totalDespesasCaixa,
-      "Dados filtrados:",
-      lancamentosFiltrados.length,
-    );
+    // Debug detalhado dos cálculos
+    console.log("💰 CÁLCULOS DO DASHBOARD:");
+    console.log(`📈 Receitas: ${receitasFiltradas.length} lançamentos = R$ ${totalReceitasCaixa.toFixed(2)}`);
+    console.log(`📉 Despesas: ${despesasFiltradas.length} lançamentos = R$ ${totalDespesasCaixa.toFixed(2)}`);
+    console.log(`💵 Saldo: R$ ${saldoCaixa.toFixed(2)}`);
+    console.log(`🔍 Total de dados filtrados: ${lancamentosFiltrados.length}`);
+
+    if (lancamentosFiltrados.length > 0) {
+      console.log("📋 Lançamentos no período:");
+      lancamentosFiltrados.forEach(l => {
+        console.log(`  - ${l.tipo}: R$ ${l.valor} em ${l.data.toISOString().split("T")[0]} (${l.descricao})`);
+      });
+    }
 
     // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data de pagamento)
     const totalContasRecebidas = contasData
