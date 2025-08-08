@@ -390,8 +390,9 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Gráfico Resumo Financeiro */}
+        {/* Layout reorganizado - Resumo Financeiro e Cards lado a lado */}
         <div className="grid gap-4 lg:grid-cols-4">
+          {/* Resumo Financeiro */}
           <div className="lg:col-span-1">
             <GraficoSimples
               dados={{
@@ -402,35 +403,69 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Cards rápidos de totais */}
-          <div className="lg:col-span-3 grid gap-4 md:grid-cols-3">
-            <StatCard
-              title="Receitas do Período"
-              value={formatCurrency(stats.receitasPeriodo)}
-              description="Baseado nos filtros"
-              icon={TrendingUp}
-              trend="up"
-              isLoading={isLoading}
-              variant="success"
-            />
-            <StatCard
-              title="Despesas do Período"
-              value={formatCurrency(stats.despesasPeriodo)}
-              description="Baseado nos filtros"
-              icon={TrendingDown}
-              trend="down"
-              isLoading={isLoading}
-              variant="destructive"
-            />
-            <StatCard
-              title="Saldo do Período"
-              value={formatCurrency(stats.saldoPeriodo)}
-              description="Baseado nos filtros"
-              icon={Wallet}
-              trend={stats.saldoPeriodo >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant={stats.saldoPeriodo >= 0 ? "success" : "destructive"}
-            />
+          {/* Cards de resumo lateral - organizados verticalmente */}
+          <div className="lg:col-span-3 grid gap-4">
+            {/* Primeira linha de cards */}
+            <div className="grid gap-4 md:grid-cols-3">
+              <StatCard
+                title="Total Caixa - Receitas"
+                value={formatCurrency(stats.totalReceitasCaixa)}
+                description="Período selecionado"
+                icon={TrendingUp}
+                trend="up"
+                isLoading={isLoading}
+                variant="success"
+              />
+              <StatCard
+                title="Total Caixa - Despesas"
+                value={formatCurrency(stats.totalDespesasCaixa)}
+                description="Período selecionado"
+                icon={TrendingDown}
+                trend="down"
+                isLoading={isLoading}
+                variant="danger"
+              />
+              <StatCard
+                title="Saldo do Caixa"
+                value={formatCurrency(stats.saldoCaixa)}
+                description="Período selecionado"
+                icon={Wallet}
+                trend={stats.saldoCaixa >= 0 ? "up" : "down"}
+                isLoading={isLoading}
+                variant={stats.saldoCaixa >= 0 ? "success" : "danger"}
+              />
+            </div>
+
+            {/* Segunda linha de cards */}
+            <div className="grid gap-4 md:grid-cols-3">
+              <StatCard
+                title="Contas Recebidas"
+                value={formatCurrency(stats.totalContasRecebidas)}
+                description="Período selecionado"
+                icon={Receipt}
+                trend="up"
+                isLoading={isLoading}
+                variant="success"
+              />
+              <StatCard
+                title="Contas Pagas"
+                value={formatCurrency(stats.totalContasPagas)}
+                description="Período selecionado"
+                icon={CreditCard}
+                trend="down"
+                isLoading={isLoading}
+                variant="danger"
+              />
+              <StatCard
+                title="Total a Receber"
+                value={formatCurrency(stats.totalContasAReceber)}
+                description="Período selecionado"
+                icon={Target}
+                trend="up"
+                isLoading={isLoading}
+                variant="highlight"
+              />
+            </div>
           </div>
         </div>
 
