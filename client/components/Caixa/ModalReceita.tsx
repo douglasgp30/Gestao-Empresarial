@@ -289,7 +289,30 @@ export function ModalReceita() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Campo Subdescrição (opcional, dependente da descrição selecionada) */}
+            {formData.descricao && (
+              <div className="space-y-2">
+                <Label htmlFor="subdescricao">Subdescrição</Label>
+                <Select
+                  value={formData.subdescricao}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, subdescricao: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a subdescrição (opcional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Nenhuma</SelectItem>
+                    {/* TODO: Filtrar subdescricoes baseado na descricao selecionada */}
+                    {/* Por enquanto mostrando placeholder até implementar a API de subdescricoes */}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Detalhamento adicional da descrição (opcional)
+                </p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
                 <Select
@@ -322,6 +345,25 @@ export function ModalReceita() {
                     {setores.map((setor) => (
                       <SelectItem key={setor.id} value={setor.id.toString()}>
                         {setor.nome} - {setor.cidade}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="campanha">Campanha</Label>
+                <Select
+                  value={formData.campanha}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, campanha: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a campanha" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {campanhas.filter(c => c.ativa).map((campanha) => (
+                      <SelectItem key={campanha.id} value={campanha.id.toString()}>
+                        {campanha.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
