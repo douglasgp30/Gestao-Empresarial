@@ -209,7 +209,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Calcular comissão se for receita
     if (lancamento.tipo === "receita" && lancamento.tecnicoResponsavel) {
-      const percentualComissao = 15; // Em um app real, viria do cadastro do funcionário
+      const percentualComissao = 50; // Comissão padrão alterada para 50%
       lancamento.comissao =
         (lancamento.valorLiquido || lancamento.valor) *
         (percentualComissao / 100);
