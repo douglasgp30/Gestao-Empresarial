@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 import { DashboardStats, LancamentoCaixa, Conta } from "@shared/types";
@@ -594,12 +595,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(false);
   }, [
-    filtros, // Includes __timestamp, dataInicio, dataFim already
-    metaMes, // Recalcula restante da meta quando meta muda
+    filtros.__timestamp, // Usar apenas timestamp para evitar re-renders desnecessarios
+    metaMes,
     aplicarFiltrosCaixa,
-    caixaContext?.lancamentos,
-    caixaContext?.filtros,
-    contasContext?.contas,
   ]);
 
   // Removed problematic filter synchronization to avoid circular dependencies
