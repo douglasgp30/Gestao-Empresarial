@@ -56,7 +56,11 @@ export default function FormularioReceita() {
     categorias,
     adicionarDescricao,
   } = useEntidades();
+  const { funcionarios } = useFuncionarios();
   const { adicionarConta } = useContas();
+
+  // Criar lista de técnicos a partir dos funcionários ativos
+  const tecnicos = funcionarios.filter(f => f.ativo).map(f => f.nomeCompleto);
   const [isOpen, setIsOpen] = useState(false);
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
   const [isNewSetorOpen, setIsNewSetorOpen] = useState(false);
