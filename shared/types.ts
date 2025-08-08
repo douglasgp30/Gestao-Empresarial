@@ -187,21 +187,15 @@ export interface FormaPagamento {
 }
 
 export interface Cliente {
-  id: string;
-  nome: string;
-  cpf?: string;
-  telefone1: string;
-  telefone2?: string;
-  email?: string;
-  endereco?: {
-    cep?: string;
-    rua?: string;
-    numero?: string;
-    complemento?: string;
-    bairro?: string;
-    cidade?: string;
-    estado?: string;
-  };
+  id: string;                 // CodigoCliente
+  nome: string;              // Nome do cliente (obrigatório)
+  cpf?: string;              // CPF do cliente (opcional)
+  telefonePrincipal: string; // Telefone principal (obrigatório)
+  telefoneSecundario?: string; // Telefone secundário (opcional)
+  email?: string;            // E-mail (opcional)
+  cep?: string;              // CEP (opcional)
+  logradouro?: string;       // Preenchido automaticamente a partir do CEP
+  complemento?: string;      // Complemento do endereço (opcional)
   dataCriacao: Date;
 }
 
