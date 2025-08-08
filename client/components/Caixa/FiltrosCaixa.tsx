@@ -38,12 +38,7 @@ const setores = [
   "Condomínio",
   "Emergência",
 ];
-const tecnicos = [
-  "João Silva",
-  "Carlos Santos",
-  "Roberto Lima",
-  "Fernando Costa",
-];
+// Técnicos removidos - usar dinâmico em FiltrosCaixaCompacto
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString("pt-BR");
