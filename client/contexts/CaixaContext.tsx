@@ -97,76 +97,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     let lancamentosReais = carregarLancamentosReais();
     const campanhasReais = carregarCampanhasReais();
 
-    // Se não há dados, criar alguns dados de exemplo
+    // Não criar dados de exemplo - apenas usar dados reais
     if (lancamentosReais.length === 0) {
-      console.log("Criando dados de exemplo para demonstração");
-      const hoje = new Date();
-      const ontem = new Date(hoje.getTime() - 24 * 60 * 60 * 1000);
-      const anteontem = new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000);
-
-      const dadosExemplo: LancamentoCaixa[] = [
-        {
-          id: "ex1",
-          tipo: "receita",
-          valor: 150.00,
-          valorLiquido: 150.00,
-          data: hoje,
-          descricao: "Serviço de Hoje",
-          setor: "Geral",
-          tecnicoResponsavel: "Técnico 1",
-          formaPagamento: "Dinheiro",
-          funcionarioId: "1",
-          campanha: "Exemplo"
-        },
-        {
-          id: "ex2",
-          tipo: "receita",
-          valor: 200.00,
-          valorLiquido: 200.00,
-          data: ontem,
-          descricao: "Serviço de Ontem",
-          setor: "Geral",
-          tecnicoResponsavel: "Técnico 2",
-          formaPagamento: "Cartão",
-          funcionarioId: "1",
-          campanha: "Exemplo"
-        },
-        {
-          id: "ex3",
-          tipo: "despesa",
-          valor: 50.00,
-          data: anteontem,
-          descricao: "Despesa de Anteontem",
-          categoria: "Material",
-          funcionarioId: "1"
-        },
-        {
-          id: "ex4",
-          tipo: "receita",
-          valor: 350.00,
-          valorLiquido: 350.00,
-          data: new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000),
-          descricao: "Serviço da Semana Passada",
-          setor: "Especializado",
-          tecnicoResponsavel: "Técnico 1",
-          formaPagamento: "PIX",
-          funcionarioId: "1",
-          campanha: "Exemplo"
-        },
-        {
-          id: "ex5",
-          tipo: "despesa",
-          valor: 120.00,
-          data: new Date(hoje.getTime() - 5 * 24 * 60 * 60 * 1000),
-          descricao: "Compra de Material",
-          categoria: "Equipamentos",
-          funcionarioId: "1"
-        }
-      ];
-
-      lancamentosReais = dadosExemplo;
-      // Salvar os dados de exemplo
-      localStorage.setItem("lancamentos", JSON.stringify(dadosExemplo));
+      console.log("Sistema iniciado sem dados - usuário deve adicionar lançamentos reais");
     }
 
     setLancamentos(lancamentosReais);
