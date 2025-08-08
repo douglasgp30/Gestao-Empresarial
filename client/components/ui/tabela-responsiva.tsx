@@ -54,9 +54,6 @@ function formatCurrency(value: number) {
   });
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("pt-BR");
-}
 
 export default function TabelaResponsivaLancamentos({
   dados,
