@@ -371,15 +371,28 @@ export function ModalReceita() {
               </div>
             </div>
 
-            {/* Campos avançados */}
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="campos-avancados"
-                checked={mostrarCamposAvancados}
-                onCheckedChange={setMostrarCamposAvancados}
-              />
-              <Label htmlFor="campos-avancados">Mostrar campos avançados</Label>
-            </div>
+            {/* Resumo dos dados preenchidos */}
+            {formData.valor && (
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h4 className="font-medium text-green-800 mb-2">Resumo do Lançamento</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                  <div>
+                    <span className="text-gray-600">Valor:</span>
+                    <div className="font-medium">R$ {parseFloat(formData.valor || "0").toFixed(2)}</div>
+                  </div>
+                  {formData.valorRecebido && (
+                    <div>
+                      <span className="text-gray-600">Valor Recebido:</span>
+                      <div className="font-medium">R$ {parseFloat(formData.valorRecebido || "0").toFixed(2)}</div>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-gray-600">Conta:</span>
+                    <div className="font-medium capitalize">{formData.conta}</div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {mostrarCamposAvancados && (
               <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
