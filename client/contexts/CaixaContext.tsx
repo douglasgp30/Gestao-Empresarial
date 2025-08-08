@@ -107,10 +107,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   console.log("🏗️ CaixaProvider inicializado com usuário:", user);
-  console.log(
-    "🔐 Auth Context:",
-    authContext ? "Disponível" : "Não disponível",
-  );
+  console.log("🔐 Auth Context disponível:", !!authContext);
   const [filtros, setFiltros] = useState(() => {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -159,7 +156,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (error) {
-        console.error("��️ ERRO CRÍTICO ao processar dados:", error);
+        console.error("⚠️ ERRO CRÍTICO ao processar dados:", error);
       }
     }
 
