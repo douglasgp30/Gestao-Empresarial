@@ -41,7 +41,7 @@ const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 // Função para carregar dados reais do localStorage
 function carregarLancamentosReais(): LancamentoCaixa[] {
   try {
-    const lancamentos = localStorage.getItem("lancamentos-caixa");
+    const lancamentos = localStorage.getItem("lancamentos");
     if (lancamentos) {
       const parsedLancamentos = JSON.parse(lancamentos);
       // Converter strings de data de volta para objetos Date
