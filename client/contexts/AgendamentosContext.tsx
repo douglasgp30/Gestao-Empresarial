@@ -181,16 +181,20 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     if (
       dadosAtualizacao.dataServico ||
       dadosAtualizacao.horaServico ||
-      dadosAtualizacao.tempoLembrete
+      dadosAtualizacao.tempoLembrete !== undefined
     ) {
       const agendamento = novosAgendamentos.find((ag) => ag.id === id);
       if (agendamento) {
         const dataHoraLembrete = new Date(agendamento.dataServico);
         const [hora, minutos] = agendamento.horaServico.split(":");
-        dataHoraLembrete.setHours(parseInt(hora), parseInt(minutos));
-        dataHoraLembrete.setMinutes(
-          dataHoraLembrete.getMinutes() - agendamento.tempoLembrete,
-        );
+        dataHoraLembrete.setHours(parseInt(hora), parseInt(minutos), 0, 0);
+
+        // Se tempoLembrete for 0, avisar na hora exata
+        if (agendamento.tempoLembrete > 0) {
+          dataHoraLembrete.setMinutes(
+            dataHoraLembrete.getMinutes() - agendamento.tempoLembrete,
+          );
+        }
 
         const novosLembretes = lembretes.map((l) =>
           l.agendamentoId === id
