@@ -87,42 +87,8 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
         }));
         setAgendamentos(dados);
       } else {
-        // Criar dados de exemplo se não existirem
-        const hoje = new Date();
-        const amanha = new Date(hoje.getTime() + 24 * 60 * 60 * 1000);
-        const ontem = new Date(hoje.getTime() - 24 * 60 * 60 * 1000);
-        const exemplos: Agendamento[] = [
-          {
-            id: "1",
-            dataServico: hoje,
-            horaServico: "14:30",
-            descricaoServico: "Desentupimento de pia residencial",
-            setor: "Residencial",
-            tecnicoResponsavel: "João Silva",
-            telefoneCliente: "1234",
-            tempoLembrete: 30,
-            status: "agendado",
-            dataCriacao: new Date(hoje.getTime() - 2 * 60 * 60 * 1000),
-            funcionarioId: "2",
-            lembreteEnviado: false,
-          },
-          {
-            id: "2",
-            dataServico: amanha,
-            horaServico: "09:00",
-            descricaoServico: "Manutenção preventiva sistema comercial",
-            setor: "Comercial",
-            tecnicoResponsavel: "Carlos Santos",
-            telefoneCliente: "5678",
-            tempoLembrete: 60,
-            status: "agendado",
-            dataCriacao: ontem,
-            funcionarioId: "3",
-            lembreteEnviado: false,
-          },
-        ];
-        setAgendamentos(exemplos);
-        localStorage.setItem("agendamentos", JSON.stringify(exemplos));
+        // Iniciar com lista vazia se não houver dados
+        setAgendamentos([]);
       }
     } catch (error) {
       console.error("Erro ao carregar agendamentos:", error);
