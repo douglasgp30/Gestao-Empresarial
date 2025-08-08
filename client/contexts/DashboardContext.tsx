@@ -351,7 +351,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     );
 
     // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data de pagamento)
-    const totalContasRecebidas = (contasContext?.contas || [])
+    const totalContasRecebidas = contasData
       .filter((c) => {
         if (c.tipo !== "receber" || c.status !== "paga" || !c.dataPagamento) return false;
         const dataPagamento = new Date(c.dataPagamento);
@@ -375,7 +375,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       })
       .reduce((total, c) => total + c.valor, 0);
 
-    const totalContasPagas = (contasContext?.contas || [])
+    const totalContasPagas = contasData
       .filter((c) => {
         if (c.tipo !== "pagar" || c.status !== "paga" || !c.dataPagamento) return false;
         const dataPagamento = new Date(c.dataPagamento);
