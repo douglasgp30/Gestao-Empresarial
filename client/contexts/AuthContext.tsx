@@ -123,13 +123,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Buscar funcionários do localStorage e incluir admin padrão
     let funcionarios: Funcionario[] = [adminPadrao];
     try {
-      const funcionariosStorage = localStorage.getItem('funcionarios');
+      const funcionariosStorage = localStorage.getItem("funcionarios");
       if (funcionariosStorage) {
         const funcionariosReais = JSON.parse(funcionariosStorage);
         funcionarios = [...funcionarios, ...funcionariosReais];
       }
     } catch (error) {
-      console.warn('Erro ao carregar funcionários para login:', error);
+      console.warn("Erro ao carregar funcionários para login:", error);
     }
 
     const funcionario = funcionarios.find(

@@ -45,7 +45,10 @@ function getInicioDoMes(): Date {
 }
 
 function isMesmoMes(data1: Date, data2: Date): boolean {
-  return data1.getFullYear() === data2.getFullYear() && data1.getMonth() === data2.getMonth();
+  return (
+    data1.getFullYear() === data2.getFullYear() &&
+    data1.getMonth() === data2.getMonth()
+  );
 }
 
 function getHoje(): Date {
@@ -88,9 +91,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     dataFim: new Date(),
   });
 
-  console.log('DashboardContext: Estado inicial dos filtros:', {
-    dataInicio: getHoje().toISOString().split('T')[0],
-    dataFim: getHoje().toISOString().split('T')[0]
+  console.log("DashboardContext: Estado inicial dos filtros:", {
+    dataInicio: getHoje().toISOString().split("T")[0],
+    dataFim: getHoje().toISOString().split("T")[0],
   });
   const [aplicarFiltrosCaixa, setAplicarFiltrosCaixa] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -165,215 +168,278 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     // Filtrar lançamentos do caixa - usar filtros do dashboard ou do caixa
     let lancamentosFiltrados;
 
-      if (aplicarFiltrosCaixa && caixaContext.filtros) {
-        // Usar filtros específicos do Caixa para cálculos dinâmicos
-        lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
-          const dataLancamento = new Date(lancamento.data);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(caixaContext.filtros.dataInicio.getFullYear(), caixaContext.filtros.dataInicio.getMonth(), caixaContext.filtros.dataInicio.getDate());
-          const dataFim = new Date(caixaContext.filtros.dataFim.getFullYear(), caixaContext.filtros.dataFim.getMonth(), caixaContext.filtros.dataFim.getDate());
-          const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+    if (aplicarFiltrosCaixa && caixaContext.filtros) {
+      // Usar filtros específicos do Caixa para cálculos dinâmicos
+      lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
+        const dataLancamento = new Date(lancamento.data);
+        // Normalizar datas para comparação (apenas ano, mês, dia)
+        const dataInicio = new Date(
+          caixaContext.filtros.dataInicio.getFullYear(),
+          caixaContext.filtros.dataInicio.getMonth(),
+          caixaContext.filtros.dataInicio.getDate(),
+        );
+        const dataFim = new Date(
+          caixaContext.filtros.dataFim.getFullYear(),
+          caixaContext.filtros.dataFim.getMonth(),
+          caixaContext.filtros.dataFim.getDate(),
+        );
+        const dataLancNorm = new Date(
+          dataLancamento.getFullYear(),
+          dataLancamento.getMonth(),
+          dataLancamento.getDate(),
+        );
 
-          const dentroDataInicio = dataLancNorm >= dataInicio;
-          const dentroDataFim = dataLancNorm <= dataFim;
-          const tipoCorreto =
-            !caixaContext.filtros.tipo ||
-            caixaContext.filtros.tipo === "todos" ||
-            lancamento.tipo === caixaContext.filtros.tipo;
-          const formaPagamentoCorreta =
-            !caixaContext.filtros.formaPagamento ||
-            caixaContext.filtros.formaPagamento === "todas" ||
-            lancamento.formaPagamento === caixaContext.filtros.formaPagamento;
-          const tecnicoCorreto =
-            !caixaContext.filtros.tecnico ||
-            caixaContext.filtros.tecnico === "todos" ||
-            lancamento.tecnicoResponsavel === caixaContext.filtros.tecnico;
-          const campanhaCorreta =
-            !caixaContext.filtros.campanha ||
-            caixaContext.filtros.campanha === "todas" ||
-            lancamento.campanha === caixaContext.filtros.campanha;
-          const setorCorreto =
-            !caixaContext.filtros.setor ||
-            caixaContext.filtros.setor === "todos" ||
-            lancamento.setor === caixaContext.filtros.setor;
+        const dentroDataInicio = dataLancNorm >= dataInicio;
+        const dentroDataFim = dataLancNorm <= dataFim;
+        const tipoCorreto =
+          !caixaContext.filtros.tipo ||
+          caixaContext.filtros.tipo === "todos" ||
+          lancamento.tipo === caixaContext.filtros.tipo;
+        const formaPagamentoCorreta =
+          !caixaContext.filtros.formaPagamento ||
+          caixaContext.filtros.formaPagamento === "todas" ||
+          lancamento.formaPagamento === caixaContext.filtros.formaPagamento;
+        const tecnicoCorreto =
+          !caixaContext.filtros.tecnico ||
+          caixaContext.filtros.tecnico === "todos" ||
+          lancamento.tecnicoResponsavel === caixaContext.filtros.tecnico;
+        const campanhaCorreta =
+          !caixaContext.filtros.campanha ||
+          caixaContext.filtros.campanha === "todas" ||
+          lancamento.campanha === caixaContext.filtros.campanha;
+        const setorCorreto =
+          !caixaContext.filtros.setor ||
+          caixaContext.filtros.setor === "todos" ||
+          lancamento.setor === caixaContext.filtros.setor;
 
-          return (
-            dentroDataInicio &&
-            dentroDataFim &&
-            tipoCorreto &&
-            formaPagamentoCorreta &&
-            tecnicoCorreto &&
-            campanhaCorreta &&
-            setorCorreto
-          );
-        });
-      } else {
-        // Usar filtros do dashboard (período básico)
+        return (
+          dentroDataInicio &&
+          dentroDataFim &&
+          tipoCorreto &&
+          formaPagamentoCorreta &&
+          tecnicoCorreto &&
+          campanhaCorreta &&
+          setorCorreto
+        );
+      });
+    } else {
+      // Usar filtros do dashboard (período básico)
 
-        lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
-          const dataLancamento = new Date(lancamento.data);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-          const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-          const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+      lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
+        const dataLancamento = new Date(lancamento.data);
+        // Normalizar datas para comparação (apenas ano, mês, dia)
+        const dataInicio = new Date(
+          filtros.dataInicio.getFullYear(),
+          filtros.dataInicio.getMonth(),
+          filtros.dataInicio.getDate(),
+        );
+        const dataFim = new Date(
+          filtros.dataFim.getFullYear(),
+          filtros.dataFim.getMonth(),
+          filtros.dataFim.getDate(),
+        );
+        const dataLancNorm = new Date(
+          dataLancamento.getFullYear(),
+          dataLancamento.getMonth(),
+          dataLancamento.getDate(),
+        );
 
-          return (dataLancNorm >= dataInicio && dataLancNorm <= dataFim);
-        });
-      }
+        return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
+      });
+    }
 
-      // LINHA 1 - Totais do Módulo Caixa (usar dados calculados pelo CaixaContext)
-      const totalReceitasCaixa = caixaContext.totais.receitas;
-      const totalDespesasCaixa = caixaContext.totais.despesas;
-      const saldoCaixa = caixaContext.totais.saldo;
+    // LINHA 1 - Totais do Módulo Caixa (usar dados calculados pelo CaixaContext)
+    const totalReceitasCaixa = caixaContext.totais.receitas;
+    const totalDespesasCaixa = caixaContext.totais.despesas;
+    const saldoCaixa = caixaContext.totais.saldo;
 
-      // Debug essencial apenas
-      console.log('Dashboard: Usando totais do CaixaContext. Receitas:', totalReceitasCaixa, 'Despesas:', totalDespesasCaixa);
+    // Debug essencial apenas
+    console.log(
+      "Dashboard: Usando totais do CaixaContext. Receitas:",
+      totalReceitasCaixa,
+      "Despesas:",
+      totalDespesasCaixa,
+    );
 
-      // LINHA 2 - Totais de Contas (usar dados calculados pelo ContasContext)
-      const totalContasRecebidas = contasContext.totais.totalContasRecebidas; // Contas recebidas (pagas)
-      const totalContasPagas = contasContext.totais.totalContasPagas; // Contas pagas (despesas)
-      const saldoContasPagas = totalContasRecebidas - totalContasPagas;
+    // LINHA 2 - Totais de Contas (usar dados calculados pelo ContasContext)
+    const totalContasRecebidas = contasContext.totais.totalContasRecebidas; // Contas recebidas (pagas)
+    const totalContasPagas = contasContext.totais.totalContasPagas; // Contas pagas (despesas)
+    const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
-      // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
-      const totalContasAReceber = contasContext.contas
-        .filter((c) => {
-          if (c.tipo !== "receber" || c.status === "paga") return false;
-          const dataVencimento = new Date(c.dataVencimento);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-          const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-          const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
-          return dataVencNorm >= dataInicio && dataVencNorm <= dataFim;
-        })
-        .reduce((total, c) => total + c.valor, 0);
+    // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
+    const totalContasAReceber = contasContext.contas
+      .filter((c) => {
+        if (c.tipo !== "receber" || c.status === "paga") return false;
+        const dataVencimento = new Date(c.dataVencimento);
+        // Normalizar datas para comparação (apenas ano, mês, dia)
+        const dataInicio = new Date(
+          filtros.dataInicio.getFullYear(),
+          filtros.dataInicio.getMonth(),
+          filtros.dataInicio.getDate(),
+        );
+        const dataFim = new Date(
+          filtros.dataFim.getFullYear(),
+          filtros.dataFim.getMonth(),
+          filtros.dataFim.getDate(),
+        );
+        const dataVencNorm = new Date(
+          dataVencimento.getFullYear(),
+          dataVencimento.getMonth(),
+          dataVencimento.getDate(),
+        );
+        return dataVencNorm >= dataInicio && dataVencNorm <= dataFim;
+      })
+      .reduce((total, c) => total + c.valor, 0);
 
-      const totalContasAPagar = contasContext.contas
-        .filter((c) => {
-          if (c.tipo !== "pagar" || c.status === "paga") return false;
-          const dataVencimento = new Date(c.dataVencimento);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-          const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-          const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
-          return dataVencNorm >= dataInicio && dataVencNorm <= dataFim;
-        })
-        .reduce((total, c) => total + c.valor, 0);
+    const totalContasAPagar = contasContext.contas
+      .filter((c) => {
+        if (c.tipo !== "pagar" || c.status === "paga") return false;
+        const dataVencimento = new Date(c.dataVencimento);
+        // Normalizar datas para comparação (apenas ano, mês, dia)
+        const dataInicio = new Date(
+          filtros.dataInicio.getFullYear(),
+          filtros.dataInicio.getMonth(),
+          filtros.dataInicio.getDate(),
+        );
+        const dataFim = new Date(
+          filtros.dataFim.getFullYear(),
+          filtros.dataFim.getMonth(),
+          filtros.dataFim.getDate(),
+        );
+        const dataVencNorm = new Date(
+          dataVencimento.getFullYear(),
+          dataVencimento.getMonth(),
+          dataVencimento.getDate(),
+        );
+        return dataVencNorm >= dataInicio && dataVencNorm <= dataFim;
+      })
+      .reduce((total, c) => total + c.valor, 0);
 
-      const saldoGeralContas = totalContasAReceber - totalContasAPagar;
+    const saldoGeralContas = totalContasAReceber - totalContasAPagar;
 
+    // Totais gerais para compatibilidade
+    const totalGeralAReceber = contasContext.contas
+      .filter((c) => c.tipo === "receber")
+      .reduce((total, c) => total + c.valor, 0);
 
-      // Totais gerais para compatibilidade
-      const totalGeralAReceber = contasContext.contas
-        .filter((c) => c.tipo === "receber")
-        .reduce((total, c) => total + c.valor, 0);
+    const totalGeralAPagar = contasContext.contas
+      .filter((c) => c.tipo === "pagar")
+      .reduce((total, c) => total + c.valor, 0);
 
-      const totalGeralAPagar = contasContext.contas
-        .filter((c) => c.tipo === "pagar")
-        .reduce((total, c) => total + c.valor, 0);
+    // Contas Atrasadas (em vermelho)
+    const valorContasPagarAtrasadas = contasContext.contas
+      .filter((c) => c.tipo === "pagar" && c.status === "atrasada")
+      .reduce((total, c) => total + c.valor, 0);
 
-      // Contas Atrasadas (em vermelho)
-      const valorContasPagarAtrasadas = contasContext.contas
-        .filter((c) => c.tipo === "pagar" && c.status === "atrasada")
-        .reduce((total, c) => total + c.valor, 0);
+    const qtdContasPagarAtrasadas = contasContext.contas.filter(
+      (c) => c.tipo === "pagar" && c.status === "atrasada",
+    ).length;
 
-      const qtdContasPagarAtrasadas = contasContext.contas.filter(
-        (c) => c.tipo === "pagar" && c.status === "atrasada",
-      ).length;
+    const valorContasReceberAtrasadas = contasContext.contas
+      .filter((c) => c.tipo === "receber" && c.status === "atrasada")
+      .reduce((total, c) => total + c.valor, 0);
 
-      const valorContasReceberAtrasadas = contasContext.contas
-        .filter((c) => c.tipo === "receber" && c.status === "atrasada")
-        .reduce((total, c) => total + c.valor, 0);
+    const qtdContasReceberAtrasadas = contasContext.contas.filter(
+      (c) => c.tipo === "receber" && c.status === "atrasada",
+    ).length;
 
-      const qtdContasReceberAtrasadas = contasContext.contas.filter(
-        (c) => c.tipo === "receber" && c.status === "atrasada",
-      ).length;
+    // SALDO GERAL CONSOLIDADO
+    // Total receitas caixa + contas recebidas - total despesas caixa - contas pagas
+    const saldoGeralConsolidado =
+      totalReceitasCaixa +
+      totalContasRecebidas -
+      totalDespesasCaixa -
+      totalContasPagas;
 
-      // SALDO GERAL CONSOLIDADO
-      // Total receitas caixa + contas recebidas - total despesas caixa - contas pagas
-      const saldoGeralConsolidado =
-        totalReceitasCaixa +
-        totalContasRecebidas -
-        totalDespesasCaixa -
-        totalContasPagas;
+    // CÁLCULO TOTAL ALCANÇADO DA META
+    // IMPORTANTE: Meta é SEMPRE do mês atual, independente dos filtros de data selecionados
+    // Baseado apenas em receitas do mês atual + contas a receber criadas no mês atual
+    const hoje = new Date();
+    const inicioMesAtual = getInicioDoMes();
+    const fimMesAtual = getFimDoMes();
 
-      // CÁLCULO TOTAL ALCANÇADO DA META
-      // IMPORTANTE: Meta é SEMPRE do mês atual, independente dos filtros de data selecionados
-      // Baseado apenas em receitas do mês atual + contas a receber criadas no mês atual
-      const hoje = new Date();
-      const inicioMesAtual = getInicioDoMes();
-      const fimMesAtual = getFimDoMes();
+    // 1. Receitas do caixa do mês atual (independente dos filtros)
+    const receitasCaixaMesAtual = caixaContext.lancamentos
+      .filter((l) => {
+        if (l.tipo !== "receita") return false;
+        const dataLancamento = new Date(l.data);
+        // Normalizar datas para comparação do mês atual
+        const dataLancNorm = new Date(
+          dataLancamento.getFullYear(),
+          dataLancamento.getMonth(),
+          dataLancamento.getDate(),
+        );
+        const inicioMesNorm = new Date(
+          inicioMesAtual.getFullYear(),
+          inicioMesAtual.getMonth(),
+          inicioMesAtual.getDate(),
+        );
+        const fimMesNorm = new Date(
+          fimMesAtual.getFullYear(),
+          fimMesAtual.getMonth(),
+          fimMesAtual.getDate(),
+        );
+        return dataLancNorm >= inicioMesNorm && dataLancNorm <= fimMesNorm;
+      })
+      .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
+    // 2. Contas a receber que foram CRIADAS no mês atual
+    // Como não temos dataCadastro, vamos usar dataVencimento como proxy
+    // Em uma implementação real, seria melhor ter um campo dataCriacao
+    const contasAReceberCriadasMesAtual = contasContext.contas
+      .filter((c) => {
+        if (c.tipo !== "receber") return false;
+        // Simular data de criação usando dataVencimento
+        // Na prática, você deveria ter um campo dataCriacao ou dataCadastro
+        const dataVencimento = new Date(c.dataVencimento);
+        return isMesmoMes(dataVencimento, hoje);
+      })
+      .reduce((total, c) => total + c.valor, 0);
 
-      // 1. Receitas do caixa do mês atual (independente dos filtros)
-      const receitasCaixaMesAtual = caixaContext.lancamentos
-        .filter((l) => {
-          if (l.tipo !== "receita") return false;
-          const dataLancamento = new Date(l.data);
-          // Normalizar datas para comparação do mês atual
-          const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
-          const inicioMesNorm = new Date(inicioMesAtual.getFullYear(), inicioMesAtual.getMonth(), inicioMesAtual.getDate());
-          const fimMesNorm = new Date(fimMesAtual.getFullYear(), fimMesAtual.getMonth(), fimMesAtual.getDate());
-          return dataLancNorm >= inicioMesNorm && dataLancNorm <= fimMesNorm;
-        })
-        .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    // Total alcançado da meta = apenas receitas + contas a receber criadas no mês
+    // NÃO inclui contas recebidas de meses anteriores
+    const novoTotalMetaMes =
+      receitasCaixaMesAtual + contasAReceberCriadasMesAtual;
+    setTotalMetaMes(novoTotalMetaMes);
 
-      // 2. Contas a receber que foram CRIADAS no mês atual
-      // Como não temos dataCadastro, vamos usar dataVencimento como proxy
-      // Em uma implementação real, seria melhor ter um campo dataCriacao
-      const contasAReceberCriadasMesAtual = contasContext.contas
-        .filter((c) => {
-          if (c.tipo !== "receber") return false;
-          // Simular data de criação usando dataVencimento
-          // Na prática, você deveria ter um campo dataCriacao ou dataCadastro
-          const dataVencimento = new Date(c.dataVencimento);
-          return isMesmoMes(dataVencimento, hoje);
-        })
-        .reduce((total, c) => total + c.valor, 0);
+    // Restante para bater a meta
+    const novoRestanteParaMeta = metaMes - novoTotalMetaMes;
+    setRestanteParaMeta(novoRestanteParaMeta);
 
-      // Total alcançado da meta = apenas receitas + contas a receber criadas no mês
-      // NÃO inclui contas recebidas de meses anteriores
-      const novoTotalMetaMes = receitasCaixaMesAtual + contasAReceberCriadasMesAtual;
-      setTotalMetaMes(novoTotalMetaMes);
+    // Estatísticas gerais para compatibilidade
+    const contasVencendoHoje = contasContext.contas.filter((c) => {
+      const dataVenc = new Date(c.dataVencimento);
+      return dataVenc.toDateString() === hoje.toDateString();
+    }).length;
 
-      // Restante para bater a meta
-      const novoRestanteParaMeta = metaMes - novoTotalMetaMes;
-      setRestanteParaMeta(novoRestanteParaMeta);
+    const contasAtrasadas = contasContext.contas.filter(
+      (c) => c.status === "atrasada",
+    ).length;
 
+    // Criar novo objeto stats sempre para forçar re-render
+    const newStats = {
+      saldoGeralConsolidado,
+      totalReceitasCaixa,
+      totalDespesasCaixa,
+      saldoCaixa,
+      totalContasRecebidas,
+      totalContasPagas,
+      saldoContasPagas,
+      totalContasAReceber,
+      totalContasAPagar,
+      totalGeralAReceber,
+      totalGeralAPagar,
+      saldoGeralContas,
+      valorContasPagarAtrasadas,
+      qtdContasPagarAtrasadas,
+      valorContasReceberAtrasadas,
+      qtdContasReceberAtrasadas,
+      contasVencendoHoje,
+      contasAtrasadas,
+      _lastUpdate: Date.now(), // Força re-render
+    };
 
-      // Estatísticas gerais para compatibilidade
-      const contasVencendoHoje = contasContext.contas.filter((c) => {
-        const dataVenc = new Date(c.dataVencimento);
-        return dataVenc.toDateString() === hoje.toDateString();
-      }).length;
-
-      const contasAtrasadas = contasContext.contas.filter(
-        (c) => c.status === "atrasada",
-      ).length;
-
-      // Criar novo objeto stats sempre para forçar re-render
-      const newStats = {
-        saldoGeralConsolidado,
-        totalReceitasCaixa,
-        totalDespesasCaixa,
-        saldoCaixa,
-        totalContasRecebidas,
-        totalContasPagas,
-        saldoContasPagas,
-        totalContasAReceber,
-        totalContasAPagar,
-        totalGeralAReceber,
-        totalGeralAPagar,
-        saldoGeralContas,
-        valorContasPagarAtrasadas,
-        qtdContasPagarAtrasadas,
-        valorContasReceberAtrasadas,
-        qtdContasReceberAtrasadas,
-        contasVencendoHoje,
-        contasAtrasadas,
-        _lastUpdate: Date.now() // Força re-render
-      };
-
-      setStats(newStats);
+    setStats(newStats);
 
     setIsLoading(false);
   }, [
@@ -414,9 +480,17 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasContext?.contas
       ?.filter((conta) => {
         const hoje = new Date();
-        const hojeNorm = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+        const hojeNorm = new Date(
+          hoje.getFullYear(),
+          hoje.getMonth(),
+          hoje.getDate(),
+        );
         const dataVencimento = new Date(conta.dataVencimento);
-        const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
+        const dataVencNorm = new Date(
+          dataVencimento.getFullYear(),
+          dataVencimento.getMonth(),
+          dataVencimento.getDate(),
+        );
 
         // Contas que vencem hoje ou estão atrasadas
         return dataVencNorm <= hojeNorm && conta.status !== "paga";

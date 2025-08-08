@@ -39,19 +39,19 @@ const ContasContext = createContext<ContasContextType | undefined>(undefined);
 // Função para carregar contas reais do localStorage
 function carregarContasReais(): Conta[] {
   try {
-    const contas = localStorage.getItem('contas');
+    const contas = localStorage.getItem("contas");
     if (contas) {
       const parsedContas = JSON.parse(contas);
       // Converter strings de data de volta para objetos Date
       return parsedContas.map((c: any) => ({
         ...c,
         dataVencimento: new Date(c.dataVencimento),
-        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined
+        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
       }));
     }
     return [];
   } catch (error) {
-    console.warn('Erro ao carregar contas do localStorage:', error);
+    console.warn("Erro ao carregar contas do localStorage:", error);
     return [];
   }
 }
@@ -161,11 +161,25 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   const totais = React.useMemo(() => {
     const contasFiltradas = contas.filter((conta) => {
       // Para contas pagas, usar dataPagamento. Para pendentes, usar dataVencimento
-      const dataReferencia = conta.dataPagamento ? new Date(conta.dataPagamento) : new Date(conta.dataVencimento);
+      const dataReferencia = conta.dataPagamento
+        ? new Date(conta.dataPagamento)
+        : new Date(conta.dataVencimento);
       // Normalizar datas para comparaç��o (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-      const dataRefNorm = new Date(dataReferencia.getFullYear(), dataReferencia.getMonth(), dataReferencia.getDate());
+      const dataInicio = new Date(
+        filtros.dataInicio.getFullYear(),
+        filtros.dataInicio.getMonth(),
+        filtros.dataInicio.getDate(),
+      );
+      const dataFim = new Date(
+        filtros.dataFim.getFullYear(),
+        filtros.dataFim.getMonth(),
+        filtros.dataFim.getDate(),
+      );
+      const dataRefNorm = new Date(
+        dataReferencia.getFullYear(),
+        dataReferencia.getMonth(),
+        dataReferencia.getDate(),
+      );
 
       const dentroDataInicio = dataRefNorm >= dataInicio;
       const dentroDataFim = dataRefNorm <= dataFim;

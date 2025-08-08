@@ -41,38 +41,38 @@ const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 // Função para carregar dados reais do localStorage
 function carregarLancamentosReais(): LancamentoCaixa[] {
   try {
-    const lancamentos = localStorage.getItem('lancamentos-caixa');
+    const lancamentos = localStorage.getItem("lancamentos-caixa");
     if (lancamentos) {
       const parsedLancamentos = JSON.parse(lancamentos);
       // Converter strings de data de volta para objetos Date
       return parsedLancamentos.map((l: any) => ({
         ...l,
         data: new Date(l.data),
-        dataPagamento: l.dataPagamento ? new Date(l.dataPagamento) : undefined
+        dataPagamento: l.dataPagamento ? new Date(l.dataPagamento) : undefined,
       }));
     }
     return [];
   } catch (error) {
-    console.warn('Erro ao carregar lançamentos do localStorage:', error);
+    console.warn("Erro ao carregar lançamentos do localStorage:", error);
     return [];
   }
 }
 
 function carregarCampanhasReais(): Campanha[] {
   try {
-    const campanhas = localStorage.getItem('campanhas');
+    const campanhas = localStorage.getItem("campanhas");
     if (campanhas) {
       const parsedCampanhas = JSON.parse(campanhas);
       // Converter strings de data de volta para objetos Date
       return parsedCampanhas.map((c: any) => ({
         ...c,
         dataInicio: new Date(c.dataInicio),
-        dataFim: new Date(c.dataFim)
+        dataFim: new Date(c.dataFim),
       }));
     }
     return [];
   } catch (error) {
-    console.warn('Erro ao carregar campanhas do localStorage:', error);
+    console.warn("Erro ao carregar campanhas do localStorage:", error);
     return [];
   }
 }
@@ -154,9 +154,21 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     const lancamentosFiltrados = lancamentos.filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
       // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-      const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+      const dataInicio = new Date(
+        filtros.dataInicio.getFullYear(),
+        filtros.dataInicio.getMonth(),
+        filtros.dataInicio.getDate(),
+      );
+      const dataFim = new Date(
+        filtros.dataFim.getFullYear(),
+        filtros.dataFim.getMonth(),
+        filtros.dataFim.getDate(),
+      );
+      const dataLancNorm = new Date(
+        dataLancamento.getFullYear(),
+        dataLancamento.getMonth(),
+        dataLancamento.getDate(),
+      );
 
       const dentroDataInicio = dataLancNorm >= dataInicio;
       const dentroDataFim = dataLancNorm <= dataFim;

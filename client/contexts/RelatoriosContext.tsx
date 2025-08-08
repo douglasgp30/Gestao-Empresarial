@@ -176,26 +176,29 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   });
 
   // Estados para armazenar os relatórios calculados
-  const [relatorioFinanceiro, setRelatorioFinanceiro] = useState<RelatorioFinanceiro | null>(null);
-  const [relatorioContas, setRelatorioContas] = useState<RelatorioContas | null>(null);
-  const [relatorioTecnicos, setRelatorioTecnicos] = useState<RelatorioTecnicos | null>(null);
+  const [relatorioFinanceiro, setRelatorioFinanceiro] =
+    useState<RelatorioFinanceiro | null>(null);
+  const [relatorioContas, setRelatorioContas] =
+    useState<RelatorioContas | null>(null);
+  const [relatorioTecnicos, setRelatorioTecnicos] =
+    useState<RelatorioTecnicos | null>(null);
 
   // Recalcular relatórios quando filtros mudam
   React.useEffect(() => {
-    console.log('RelatoriosContext: Recalculando relatórios para filtros:', {
-      dataInicio: filtros.periodo.dataInicio.toISOString().split('T')[0],
-      dataFim: filtros.periodo.dataFim.toISOString().split('T')[0],
-      timestamp: filtros.periodo.__timestamp
+    console.log("RelatoriosContext: Recalculando relatórios para filtros:", {
+      dataInicio: filtros.periodo.dataInicio.toISOString().split("T")[0],
+      dataFim: filtros.periodo.dataFim.toISOString().split("T")[0],
+      timestamp: filtros.periodo.__timestamp,
     });
 
     const novoRelatorioFinanceiro = gerarRelatorioFinanceiro();
     const novoRelatorioContas = gerarRelatorioContas();
     const novoRelatorioTecnicos = gerarRelatorioTecnicos();
 
-    console.log('Relatório financeiro calculado:', {
+    console.log("Relatório financeiro calculado:", {
       totalReceitas: novoRelatorioFinanceiro.resumo.totalReceitas,
       totalDespesas: novoRelatorioFinanceiro.resumo.totalDespesas,
-      saldoFinal: novoRelatorioFinanceiro.resumo.saldoFinal
+      saldoFinal: novoRelatorioFinanceiro.resumo.saldoFinal,
     });
 
     setRelatorioFinanceiro(novoRelatorioFinanceiro);
@@ -207,12 +210,22 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
     const lancamentosFiltrados = mockLancamentos.filter((l) => {
       const data = new Date(l.data);
       // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.periodo.dataInicio.getFullYear(), filtros.periodo.dataInicio.getMonth(), filtros.periodo.dataInicio.getDate());
-      const dataFim = new Date(filtros.periodo.dataFim.getFullYear(), filtros.periodo.dataFim.getMonth(), filtros.periodo.dataFim.getDate());
-      const dataNorm = new Date(data.getFullYear(), data.getMonth(), data.getDate());
-      return (
-        dataNorm >= dataInicio && dataNorm <= dataFim
+      const dataInicio = new Date(
+        filtros.periodo.dataInicio.getFullYear(),
+        filtros.periodo.dataInicio.getMonth(),
+        filtros.periodo.dataInicio.getDate(),
       );
+      const dataFim = new Date(
+        filtros.periodo.dataFim.getFullYear(),
+        filtros.periodo.dataFim.getMonth(),
+        filtros.periodo.dataFim.getDate(),
+      );
+      const dataNorm = new Date(
+        data.getFullYear(),
+        data.getMonth(),
+        data.getDate(),
+      );
+      return dataNorm >= dataInicio && dataNorm <= dataFim;
     });
 
     const receitas = lancamentosFiltrados.filter((l) => l.tipo === "receita");
@@ -289,12 +302,22 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
     const contasFiltradas = mockContas.filter((c) => {
       const data = new Date(c.dataVencimento);
       // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.periodo.dataInicio.getFullYear(), filtros.periodo.dataInicio.getMonth(), filtros.periodo.dataInicio.getDate());
-      const dataFim = new Date(filtros.periodo.dataFim.getFullYear(), filtros.periodo.dataFim.getMonth(), filtros.periodo.dataFim.getDate());
-      const dataNorm = new Date(data.getFullYear(), data.getMonth(), data.getDate());
-      return (
-        dataNorm >= dataInicio && dataNorm <= dataFim
+      const dataInicio = new Date(
+        filtros.periodo.dataInicio.getFullYear(),
+        filtros.periodo.dataInicio.getMonth(),
+        filtros.periodo.dataInicio.getDate(),
       );
+      const dataFim = new Date(
+        filtros.periodo.dataFim.getFullYear(),
+        filtros.periodo.dataFim.getMonth(),
+        filtros.periodo.dataFim.getDate(),
+      );
+      const dataNorm = new Date(
+        data.getFullYear(),
+        data.getMonth(),
+        data.getDate(),
+      );
+      return dataNorm >= dataInicio && dataNorm <= dataFim;
     });
 
     const totalAPagar = contasFiltradas

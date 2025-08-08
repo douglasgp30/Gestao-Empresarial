@@ -39,75 +39,79 @@ const FuncionariosContext = createContext<FuncionariosContextType | undefined>(
 // Função para carregar funcionarios reais do localStorage
 function carregarFuncionariosReais(): Funcionario[] {
   try {
-    const funcionarios = localStorage.getItem('funcionarios');
+    const funcionarios = localStorage.getItem("funcionarios");
     if (funcionarios) {
       const parsedFuncionarios = JSON.parse(funcionarios);
       // Converter strings de data de volta para objetos Date
       return parsedFuncionarios.map((f: any) => ({
         ...f,
-        dataCadastro: new Date(f.dataCadastro)
+        dataCadastro: new Date(f.dataCadastro),
       }));
     }
     // Se não houver funcionarios salvos, criar apenas o admin padrão
-    return [{
-      id: "1",
-      nomeCompleto: "Administrador do Sistema",
-      login: "admin",
-      senha: "admin123",
-      temAcessoSistema: true,
-      tipoAcesso: "Administrador",
-      permissoes: {
-        acessarDashboard: true,
-        verCaixa: true,
-        lancarReceita: true,
-        lancarDespesa: true,
-        editarLancamentos: true,
-        verContas: true,
-        lancarContasPagar: true,
-        lancarContasReceber: true,
-        marcarContasPagas: true,
-        acessarConfiguracoes: true,
-        fazerBackupManual: true,
-        gerarRelatorios: true,
-        verCadastros: true,
-        gerenciarFuncionarios: true,
-        alterarPermissoes: true,
+    return [
+      {
+        id: "1",
+        nomeCompleto: "Administrador do Sistema",
+        login: "admin",
+        senha: "admin123",
+        temAcessoSistema: true,
+        tipoAcesso: "Administrador",
+        permissoes: {
+          acessarDashboard: true,
+          verCaixa: true,
+          lancarReceita: true,
+          lancarDespesa: true,
+          editarLancamentos: true,
+          verContas: true,
+          lancarContasPagar: true,
+          lancarContasReceber: true,
+          marcarContasPagas: true,
+          acessarConfiguracoes: true,
+          fazerBackupManual: true,
+          gerarRelatorios: true,
+          verCadastros: true,
+          gerenciarFuncionarios: true,
+          alterarPermissoes: true,
+        },
+        percentualComissao: 0,
+        dataCadastro: new Date(),
+        ativo: true,
       },
-      percentualComissao: 0,
-      dataCadastro: new Date(),
-      ativo: true,
-    }];
+    ];
   } catch (error) {
-    console.warn('Erro ao carregar funcionarios do localStorage:', error);
+    console.warn("Erro ao carregar funcionarios do localStorage:", error);
     // Retornar admin padrão em caso de erro
-    return [{
-      id: "1",
-      nomeCompleto: "Administrador do Sistema",
-      login: "admin",
-      senha: "admin123",
-      temAcessoSistema: true,
-      tipoAcesso: "Administrador",
-      permissoes: {
-        acessarDashboard: true,
-        verCaixa: true,
-        lancarReceita: true,
-        lancarDespesa: true,
-        editarLancamentos: true,
-        verContas: true,
-        lancarContasPagar: true,
-        lancarContasReceber: true,
-        marcarContasPagas: true,
-        acessarConfiguracoes: true,
-        fazerBackupManual: true,
-        gerarRelatorios: true,
-        verCadastros: true,
-        gerenciarFuncionarios: true,
-        alterarPermissoes: true,
+    return [
+      {
+        id: "1",
+        nomeCompleto: "Administrador do Sistema",
+        login: "admin",
+        senha: "admin123",
+        temAcessoSistema: true,
+        tipoAcesso: "Administrador",
+        permissoes: {
+          acessarDashboard: true,
+          verCaixa: true,
+          lancarReceita: true,
+          lancarDespesa: true,
+          editarLancamentos: true,
+          verContas: true,
+          lancarContasPagar: true,
+          lancarContasReceber: true,
+          marcarContasPagas: true,
+          acessarConfiguracoes: true,
+          fazerBackupManual: true,
+          gerarRelatorios: true,
+          verCadastros: true,
+          gerenciarFuncionarios: true,
+          alterarPermissoes: true,
+        },
+        percentualComissao: 0,
+        dataCadastro: new Date(),
+        ativo: true,
       },
-      percentualComissao: 0,
-      dataCadastro: new Date(),
-      ativo: true,
-    }];
+    ];
   }
 }
 

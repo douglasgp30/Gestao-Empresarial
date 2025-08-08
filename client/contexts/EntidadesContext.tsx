@@ -76,13 +76,33 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
 // Entidades essenciais básicas - apenas o mínimo necessário para funcionamento
 const entidadesEssenciais = {
   categorias: [
-    { id: "1", nome: "Serviços", tipo: "receita" as const, dataCriacao: new Date() },
-    { id: "2", nome: "Operacional", tipo: "despesa" as const, dataCriacao: new Date() },
+    {
+      id: "1",
+      nome: "Serviços",
+      tipo: "receita" as const,
+      dataCriacao: new Date(),
+    },
+    {
+      id: "2",
+      nome: "Operacional",
+      tipo: "despesa" as const,
+      dataCriacao: new Date(),
+    },
   ],
   formasPagamento: [
-    { id: "1", nome: "Dinheiro", tipo: "ambos" as const, dataCriacao: new Date() },
+    {
+      id: "1",
+      nome: "Dinheiro",
+      tipo: "ambos" as const,
+      dataCriacao: new Date(),
+    },
     { id: "2", nome: "Pix", tipo: "ambos" as const, dataCriacao: new Date() },
-    { id: "3", nome: "Cartão", tipo: "ambos" as const, dataCriacao: new Date() },
+    {
+      id: "3",
+      nome: "Cartão",
+      tipo: "ambos" as const,
+      dataCriacao: new Date(),
+    },
   ],
   setores: [
     { id: "1", nome: "Residencial", dataCriacao: new Date() },
@@ -94,14 +114,17 @@ const entidadesEssenciais = {
 };
 
 // Funções para carregar dados do localStorage
-function carregarEntidadeDoStorage<T>(key: string, defaultValue: T[] = []): T[] {
+function carregarEntidadeDoStorage<T>(
+  key: string,
+  defaultValue: T[] = [],
+): T[] {
   try {
     const stored = localStorage.getItem(key);
     if (stored) {
       const parsed = JSON.parse(stored);
       return parsed.map((item: any) => ({
         ...item,
-        dataCriacao: new Date(item.dataCriacao)
+        dataCriacao: new Date(item.dataCriacao),
       }));
     }
     return defaultValue;
@@ -121,7 +144,7 @@ function salvarEntidadeNoStorage<T>(key: string, data: T[]) {
 
 export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Estados para todas as entidades
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [descricoes, setDescricoes] = useState<Descricao[]>([]);
@@ -133,13 +156,27 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados do localStorage na inicialização
   useEffect(() => {
-    const categoriasStorage = carregarEntidadeDoStorage<Categoria>('categorias', entidadesEssenciais.categorias);
-    const descricoesStorage = carregarEntidadeDoStorage<Descricao>('descricoes');
-    const formasStorage = carregarEntidadeDoStorage<FormaPagamento>('formasPagamento', entidadesEssenciais.formasPagamento);
-    const clientesStorage = carregarEntidadeDoStorage<Cliente>('clientes');
-    const fornecedoresStorage = carregarEntidadeDoStorage<Fornecedor>('fornecedores');
-    const setoresStorage = carregarEntidadeDoStorage<Setor>('setores', entidadesEssenciais.setores);
-    const cidadesStorage = carregarEntidadeDoStorage<Cidade>('cidades', entidadesEssenciais.cidades);
+    const categoriasStorage = carregarEntidadeDoStorage<Categoria>(
+      "categorias",
+      entidadesEssenciais.categorias,
+    );
+    const descricoesStorage =
+      carregarEntidadeDoStorage<Descricao>("descricoes");
+    const formasStorage = carregarEntidadeDoStorage<FormaPagamento>(
+      "formasPagamento",
+      entidadesEssenciais.formasPagamento,
+    );
+    const clientesStorage = carregarEntidadeDoStorage<Cliente>("clientes");
+    const fornecedoresStorage =
+      carregarEntidadeDoStorage<Fornecedor>("fornecedores");
+    const setoresStorage = carregarEntidadeDoStorage<Setor>(
+      "setores",
+      entidadesEssenciais.setores,
+    );
+    const cidadesStorage = carregarEntidadeDoStorage<Cidade>(
+      "cidades",
+      entidadesEssenciais.cidades,
+    );
 
     setCategorias(categoriasStorage);
     setDescricoes(descricoesStorage);
@@ -148,12 +185,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     setFornecedores(fornecedoresStorage);
     setSetores(setoresStorage);
     setCidades(cidadesStorage);
-    
+
     setIsLoading(false);
   }, []);
 
   // Funções para Categorias
-  const adicionarCategoria = (novaCategoria: Omit<Categoria, "id" | "dataCriacao">) => {
+  const adicionarCategoria = (
+    novaCategoria: Omit<Categoria, "id" | "dataCriacao">,
+  ) => {
     const categoria: Categoria = {
       ...novaCategoria,
       id: Date.now().toString(),
@@ -161,25 +200,32 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     };
     const novasCategorias = [...categorias, categoria];
     setCategorias(novasCategorias);
-    salvarEntidadeNoStorage('categorias', novasCategorias);
+    salvarEntidadeNoStorage("categorias", novasCategorias);
   };
 
-  const editarCategoria = (id: string, dadosAtualizados: Partial<Categoria>) => {
+  const editarCategoria = (
+    id: string,
+    dadosAtualizados: Partial<Categoria>,
+  ) => {
     const categoriasAtualizadas = categorias.map((categoria) =>
       categoria.id === id ? { ...categoria, ...dadosAtualizados } : categoria,
     );
     setCategorias(categoriasAtualizadas);
-    salvarEntidadeNoStorage('categorias', categoriasAtualizadas);
+    salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
   };
 
   const excluirCategoria = (id: string) => {
-    const categoriasAtualizadas = categorias.filter((categoria) => categoria.id !== id);
+    const categoriasAtualizadas = categorias.filter(
+      (categoria) => categoria.id !== id,
+    );
     setCategorias(categoriasAtualizadas);
-    salvarEntidadeNoStorage('categorias', categoriasAtualizadas);
+    salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
   };
 
   // Funções para Descrições
-  const adicionarDescricao = (novaDescricao: Omit<Descricao, "id" | "dataCriacao">) => {
+  const adicionarDescricao = (
+    novaDescricao: Omit<Descricao, "id" | "dataCriacao">,
+  ) => {
     const descricao: Descricao = {
       ...novaDescricao,
       id: Date.now().toString(),
@@ -187,25 +233,32 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     };
     const novasDescricoes = [...descricoes, descricao];
     setDescricoes(novasDescricoes);
-    salvarEntidadeNoStorage('descricoes', novasDescricoes);
+    salvarEntidadeNoStorage("descricoes", novasDescricoes);
   };
 
-  const editarDescricao = (id: string, dadosAtualizados: Partial<Descricao>) => {
+  const editarDescricao = (
+    id: string,
+    dadosAtualizados: Partial<Descricao>,
+  ) => {
     const descricoesAtualizadas = descricoes.map((descricao) =>
       descricao.id === id ? { ...descricao, ...dadosAtualizados } : descricao,
     );
     setDescricoes(descricoesAtualizadas);
-    salvarEntidadeNoStorage('descricoes', descricoesAtualizadas);
+    salvarEntidadeNoStorage("descricoes", descricoesAtualizadas);
   };
 
   const excluirDescricao = (id: string) => {
-    const descricoesAtualizadas = descricoes.filter((descricao) => descricao.id !== id);
+    const descricoesAtualizadas = descricoes.filter(
+      (descricao) => descricao.id !== id,
+    );
     setDescricoes(descricoesAtualizadas);
-    salvarEntidadeNoStorage('descricoes', descricoesAtualizadas);
+    salvarEntidadeNoStorage("descricoes", descricoesAtualizadas);
   };
 
   // Funções para Formas de Pagamento
-  const adicionarFormaPagamento = (novaForma: Omit<FormaPagamento, "id" | "dataCriacao">) => {
+  const adicionarFormaPagamento = (
+    novaForma: Omit<FormaPagamento, "id" | "dataCriacao">,
+  ) => {
     const forma: FormaPagamento = {
       ...novaForma,
       id: Date.now().toString(),
@@ -213,25 +266,32 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     };
     const novasFormas = [...formasPagamento, forma];
     setFormasPagamento(novasFormas);
-    salvarEntidadeNoStorage('formasPagamento', novasFormas);
+    salvarEntidadeNoStorage("formasPagamento", novasFormas);
   };
 
-  const editarFormaPagamento = (id: string, dadosAtualizados: Partial<FormaPagamento>) => {
+  const editarFormaPagamento = (
+    id: string,
+    dadosAtualizados: Partial<FormaPagamento>,
+  ) => {
     const formasAtualizadas = formasPagamento.map((forma) =>
       forma.id === id ? { ...forma, ...dadosAtualizados } : forma,
     );
     setFormasPagamento(formasAtualizadas);
-    salvarEntidadeNoStorage('formasPagamento', formasAtualizadas);
+    salvarEntidadeNoStorage("formasPagamento", formasAtualizadas);
   };
 
   const excluirFormaPagamento = (id: string) => {
-    const formasAtualizadas = formasPagamento.filter((forma) => forma.id !== id);
+    const formasAtualizadas = formasPagamento.filter(
+      (forma) => forma.id !== id,
+    );
     setFormasPagamento(formasAtualizadas);
-    salvarEntidadeNoStorage('formasPagamento', formasAtualizadas);
+    salvarEntidadeNoStorage("formasPagamento", formasAtualizadas);
   };
 
   // Funções para Clientes
-  const adicionarCliente = (novoCliente: Omit<Cliente, "id" | "dataCriacao">) => {
+  const adicionarCliente = (
+    novoCliente: Omit<Cliente, "id" | "dataCriacao">,
+  ) => {
     const cliente: Cliente = {
       ...novoCliente,
       id: Date.now().toString(),
@@ -239,7 +299,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     };
     const novosClientes = [...clientes, cliente];
     setClientes(novosClientes);
-    salvarEntidadeNoStorage('clientes', novosClientes);
+    salvarEntidadeNoStorage("clientes", novosClientes);
   };
 
   const editarCliente = (id: string, dadosAtualizados: Partial<Cliente>) => {
@@ -247,17 +307,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
     );
     setClientes(clientesAtualizados);
-    salvarEntidadeNoStorage('clientes', clientesAtualizados);
+    salvarEntidadeNoStorage("clientes", clientesAtualizados);
   };
 
   const excluirCliente = (id: string) => {
     const clientesAtualizados = clientes.filter((cliente) => cliente.id !== id);
     setClientes(clientesAtualizados);
-    salvarEntidadeNoStorage('clientes', clientesAtualizados);
+    salvarEntidadeNoStorage("clientes", clientesAtualizados);
   };
 
   // Funções para Fornecedores
-  const adicionarFornecedor = (novoFornecedor: Omit<Fornecedor, "id" | "dataCriacao">) => {
+  const adicionarFornecedor = (
+    novoFornecedor: Omit<Fornecedor, "id" | "dataCriacao">,
+  ) => {
     const fornecedor: Fornecedor = {
       ...novoFornecedor,
       id: Date.now().toString(),
@@ -265,21 +327,28 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     };
     const novosFornecedores = [...fornecedores, fornecedor];
     setFornecedores(novosFornecedores);
-    salvarEntidadeNoStorage('fornecedores', novosFornecedores);
+    salvarEntidadeNoStorage("fornecedores", novosFornecedores);
   };
 
-  const editarFornecedor = (id: string, dadosAtualizados: Partial<Fornecedor>) => {
+  const editarFornecedor = (
+    id: string,
+    dadosAtualizados: Partial<Fornecedor>,
+  ) => {
     const fornecedoresAtualizados = fornecedores.map((fornecedor) =>
-      fornecedor.id === id ? { ...fornecedor, ...dadosAtualizados } : fornecedor,
+      fornecedor.id === id
+        ? { ...fornecedor, ...dadosAtualizados }
+        : fornecedor,
     );
     setFornecedores(fornecedoresAtualizados);
-    salvarEntidadeNoStorage('fornecedores', fornecedoresAtualizados);
+    salvarEntidadeNoStorage("fornecedores", fornecedoresAtualizados);
   };
 
   const excluirFornecedor = (id: string) => {
-    const fornecedoresAtualizados = fornecedores.filter((fornecedor) => fornecedor.id !== id);
+    const fornecedoresAtualizados = fornecedores.filter(
+      (fornecedor) => fornecedor.id !== id,
+    );
     setFornecedores(fornecedoresAtualizados);
-    salvarEntidadeNoStorage('fornecedores', fornecedoresAtualizados);
+    salvarEntidadeNoStorage("fornecedores", fornecedoresAtualizados);
   };
 
   // Funções para Setores
@@ -291,7 +360,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     };
     const novosSetores = [...setores, setor];
     setSetores(novosSetores);
-    salvarEntidadeNoStorage('setores', novosSetores);
+    salvarEntidadeNoStorage("setores", novosSetores);
   };
 
   const editarSetor = (id: string, dadosAtualizados: Partial<Setor>) => {
@@ -299,13 +368,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setor.id === id ? { ...setor, ...dadosAtualizados } : setor,
     );
     setSetores(setoresAtualizados);
-    salvarEntidadeNoStorage('setores', setoresAtualizados);
+    salvarEntidadeNoStorage("setores", setoresAtualizados);
   };
 
   const excluirSetor = (id: string) => {
     const setoresAtualizados = setores.filter((setor) => setor.id !== id);
     setSetores(setoresAtualizados);
-    salvarEntidadeNoStorage('setores', setoresAtualizados);
+    salvarEntidadeNoStorage("setores", setoresAtualizados);
   };
 
   // Funç��es para Cidades
@@ -317,7 +386,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     };
     const novasCidades = [...cidades, cidade];
     setCidades(novasCidades);
-    salvarEntidadeNoStorage('cidades', novasCidades);
+    salvarEntidadeNoStorage("cidades", novasCidades);
   };
 
   const editarCidade = (id: string, dadosAtualizados: Partial<Cidade>) => {
@@ -325,13 +394,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       cidade.id === id ? { ...cidade, ...dadosAtualizados } : cidade,
     );
     setCidades(cidadesAtualizadas);
-    salvarEntidadeNoStorage('cidades', cidadesAtualizadas);
+    salvarEntidadeNoStorage("cidades", cidadesAtualizadas);
   };
 
   const excluirCidade = (id: string) => {
     const cidadesAtualizadas = cidades.filter((cidade) => cidade.id !== id);
     setCidades(cidadesAtualizadas);
-    salvarEntidadeNoStorage('cidades', cidadesAtualizadas);
+    salvarEntidadeNoStorage("cidades", cidadesAtualizadas);
   };
 
   const value = {

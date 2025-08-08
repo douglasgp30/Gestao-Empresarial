@@ -24,18 +24,18 @@ const ClientesContext = createContext<ClientesContextType | undefined>(
 // Função para carregar clientes reais do localStorage
 function carregarClientesReais(): Cliente[] {
   try {
-    const clientes = localStorage.getItem('clientes');
+    const clientes = localStorage.getItem("clientes");
     if (clientes) {
       const parsedClientes = JSON.parse(clientes);
       // Converter strings de data de volta para objetos Date
       return parsedClientes.map((c: any) => ({
         ...c,
-        dataCriacao: new Date(c.dataCriacao)
+        dataCriacao: new Date(c.dataCriacao),
       }));
     }
     return [];
   } catch (error) {
-    console.warn('Erro ao carregar clientes do localStorage:', error);
+    console.warn("Erro ao carregar clientes do localStorage:", error);
     return [];
   }
 }
@@ -108,9 +108,15 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
           endereco.complemento.toLowerCase().includes(termoLower)
         )
           return true;
-        if (endereco.bairro && endereco.bairro.toLowerCase().includes(termoLower))
+        if (
+          endereco.bairro &&
+          endereco.bairro.toLowerCase().includes(termoLower)
+        )
           return true;
-        if (endereco.cidade && endereco.cidade.toLowerCase().includes(termoLower))
+        if (
+          endereco.cidade &&
+          endereco.cidade.toLowerCase().includes(termoLower)
+        )
           return true;
         if (endereco.cep && endereco.cep.includes(termo)) return true;
       }
