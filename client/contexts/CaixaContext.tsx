@@ -149,6 +149,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     setCampanhas((prev) => [...prev, campanha]);
   };
 
+  // Persist lancamentos to localStorage whenever they change
+  useEffect(() => {
+    if (lancamentos.length > 0) {
+      localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+    }
+  }, [lancamentos]);
+
+  // Persist campanhas to localStorage whenever they change
+  useEffect(() => {
+    if (campanhas.length > 0) {
+      localStorage.setItem("campanhas", JSON.stringify(campanhas));
+    }
+  }, [campanhas]);
+
   // Calcular totais baseados nos filtros
   const totais = React.useMemo(() => {
     const lancamentosFiltrados = lancamentos.filter((lancamento) => {

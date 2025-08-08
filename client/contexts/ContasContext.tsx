@@ -143,6 +143,13 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  // Persist contas to localStorage whenever they change
+  useEffect(() => {
+    if (contas.length > 0) {
+      localStorage.setItem("contas", JSON.stringify(contas));
+    }
+  }, [contas]);
+
   // Atualizar status das contas automaticamente
   useEffect(() => {
     const interval = setInterval(() => {
