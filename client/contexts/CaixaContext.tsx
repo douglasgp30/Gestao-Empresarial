@@ -400,8 +400,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Persist lancamentos to localStorage whenever they change
   useEffect(() => {
+    console.log("🔄 useEffect para persistência executado:", {
+      totalLancamentos: lancamentos.length,
+      primeiroLancamento: lancamentos[0]?.id
+    });
+
     if (lancamentos.length > 0) {
       try {
+        console.log("💾 Iniciando salvamento...");
+
         // Limpeza de backups antigos (manter apenas os 5 mais recentes)
         const allKeys = Object.keys(localStorage);
         const autoBackupKeys = allKeys
@@ -413,18 +420,32 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         if (autoBackupKeys.length > 5) {
           const keysToRemove = autoBackupKeys.slice(5);
           keysToRemove.forEach(key => localStorage.removeItem(key));
+          console.log(`🧹 Removidos ${keysToRemove.length} backups antigos`);
         }
 
         // Backup antes de salvar
         const backupKey = `lancamentos_auto_${Date.now()}`;
         localStorage.setItem(backupKey, JSON.stringify(lancamentos));
 
-        localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+        // Salvamento principal
+        const dadosParaSalvar = JSON.stringify(lancamentos);
+        localStorage.setItem("lancamentos", dadosParaSalvar);
+
+        // Verificação de integridade
+        const dadosRecuperados = localStorage.getItem("lancamentos");
+        const integridadeOk = dadosRecuperados && dadosRecuperados === dadosParaSalvar;
+
         console.log(`💾 Dados salvos: ${lancamentos.length} lançamentos (backup: ${backupKey})`);
+        console.log(`✅ Integridade: ${integridadeOk ? "OK" : "FALHOU"}`);
+
+        if (!integridadeOk) {
+          console.error("❌ Falha na verifica��ão de integridade!");
+        }
       } catch (error) {
-        console.error("Erro ao salvar dados:", error);
+        console.error("❌ Erro ao salvar dados:", error);
         // Se falhar por quota, tentar limpar mais backups
         if (error.name === 'QuotaExceededError') {
+          console.log("🧹 Limpeza de emergência por quota excedida...");
           const allKeys = Object.keys(localStorage);
           const backupKeys = allKeys.filter(key =>
             key.startsWith('lancamentos_auto_') ||
@@ -442,6 +463,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           }
         }
       }
+    } else {
+      console.log("⚠️ Nenhum lançamento para salvar");
     }
 
     // Debounce para evitar eventos múltiplos em sequência
