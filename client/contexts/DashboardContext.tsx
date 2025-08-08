@@ -270,17 +270,25 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       );
     }
 
-    // LINHA 1 - Totais do Módulo Caixa (usar dados calculados pelo CaixaContext)
-    const totalReceitasCaixa = caixaContext?.totais?.receitas || 0;
-    const totalDespesasCaixa = caixaContext?.totais?.despesas || 0;
-    const saldoCaixa = caixaContext?.totais?.saldo || 0;
+    // LINHA 1 - Totais do Módulo Caixa (calcular a partir dos dados filtrados)
+    const totalReceitasCaixa = lancamentosFiltrados
+      .filter((l) => l.tipo === "receita")
+      .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+
+    const totalDespesasCaixa = lancamentosFiltrados
+      .filter((l) => l.tipo === "despesa")
+      .reduce((total, l) => total + l.valor, 0);
+
+    const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
     // Debug essencial apenas
     console.log(
-      "Dashboard: Usando totais do CaixaContext. Receitas:",
+      "Dashboard: Calculando totais dos dados filtrados. Receitas:",
       totalReceitasCaixa,
       "Despesas:",
       totalDespesasCaixa,
+      "Dados filtrados:",
+      lancamentosFiltrados.length,
     );
 
     // LINHA 2 - Totais de Contas (usar dados calculados pelo ContasContext)
