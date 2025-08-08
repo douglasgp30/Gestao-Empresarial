@@ -120,33 +120,59 @@ export default function FormularioReceita() {
     e.preventDefault();
 
     const valor = parseFloat(formData.valor);
-    if (!valor || valor <= 0) return;
+    if (!valor || valor <= 0) {
+      toast({
+        title: "Erro de validação",
+        description: "Por favor, informe um valor válido maior que zero.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.formaPagamento) {
+      toast({
+        title: "Erro de validação",
+        description: "Por favor, selecione uma forma de pagamento.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (!formData.descricaoServico.trim()) {
-      alert("Por favor, selecione ou cadastre uma descrição do serviço.");
+      toast({
+        title: "Erro de validação",
+        description: "Por favor, selecione ou cadastre uma descrição do serviço.",
+        variant: "destructive",
+      });
       return;
     }
 
     if (formData.notaFiscal && !notaFiscalProcessada) {
-      alert(
-        "Por favor, aguarde a emissão da nota fiscal antes de lançar a receita.",
-      );
+      toast({
+        title: "Nota fiscal pendente",
+        description: "Por favor, aguarde a emissão da nota fiscal antes de lançar a receita.",
+        variant: "destructive",
+      });
       return;
     }
 
     if (formData.notaFiscal && notaFiscalProcessada && !notaFiscalArquivada) {
-      alert(
-        "Por favor, faça o upload da nota fiscal em PDF antes de lançar a receita.",
-      );
+      toast({
+        title: "Upload pendente",
+        description: "Por favor, faça o upload da nota fiscal em PDF antes de lançar a receita.",
+        variant: "destructive",
+      });
       return;
     }
 
     // Verificar se o valor que entrou é obrigatório para cartões
     if (formData.formaPagamento.includes("Cartão")) {
       if (!formData.valorEntrou || parseFloat(formData.valorEntrou) <= 0) {
-        alert(
-          "Para pagamentos com cartão, é obrigatório informar o valor que entrou.",
-        );
+        toast({
+          title: "Valor obrigatório",
+          description: "Para pagamentos com cartão, é obrigatório informar o valor que entrou.",
+          variant: "destructive",
+        });
         return;
       }
     }
