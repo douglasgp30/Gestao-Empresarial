@@ -243,7 +243,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     if (aplicarFiltrosCaixa && caixaContext?.filtros) {
       // Usar filtros específicos do Caixa para cálculos dinâmicos
-      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter(
+      lancamentosFiltrados = lancamentosData.filter(
         (lancamento) => {
           const dataLancamento = new Date(lancamento.data);
           // Normalizar datas para comparação (apenas ano, mês, dia)
@@ -304,7 +304,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     } else {
       // Usar filtros do dashboard (período básico)
 
-      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter(
+      lancamentosFiltrados = lancamentosData.filter(
         (lancamento) => {
           const dataLancamento = new Date(lancamento.data);
           // Normalizar datas para comparação (apenas ano, mês, dia)
