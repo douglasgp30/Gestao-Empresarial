@@ -111,7 +111,7 @@ export default function FiltrosRelatoriosCompacto() {
 
   const contarFiltrosAtivos = () => {
     let count = 0;
-    if (filtros.tipo && filtros.tipo !== "todos") count++;
+    if (filtros.tipo && filtros.tipo !== "ambos") count++;
     if (filtros.formaPagamento && filtros.formaPagamento !== "todas") count++;
     if (filtros.tecnico && filtros.tecnico !== "todos") count++;
     if (filtros.setor && filtros.setor !== "todos") count++;
