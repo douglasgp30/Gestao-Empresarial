@@ -29,6 +29,7 @@ import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
 import { TesteFiltros } from "../components/ui/teste-filtros";
 import { TesteDatas } from "../components/ui/teste-datas";
 import { StatusCorrecoes } from "../components/ui/status-correcoes";
+import { ResumoFinalCorrecoes } from "../components/ui/resumo-final-correcoes";
 import { formatDate, formatDateRange } from "../lib/dateUtils";
 import {
   DollarSign,
@@ -641,6 +642,7 @@ export default function Dashboard() {
 
         {/* Componente de Teste dos Filtros */}
         <div className="flex flex-col items-center gap-6">
+          <ResumoFinalCorrecoes />
           <StatusCorrecoes />
           <TesteFiltros />
           <TesteDatas />
