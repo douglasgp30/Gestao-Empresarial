@@ -519,10 +519,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(false);
   }, [
-    filtros,
-    filtros.__timestamp, // Força re-render quando timestamp muda
-    filtros.dataInicio?.getTime(), // Força re-render quando data início muda
-    filtros.dataFim?.getTime(), // Força re-render quando data fim muda
+    filtros, // Includes __timestamp, dataInicio, dataFim already
     metaMes, // Recalcula restante da meta quando meta muda
     aplicarFiltrosCaixa,
     caixaContext?.lancamentos,
