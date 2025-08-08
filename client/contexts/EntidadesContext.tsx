@@ -141,7 +141,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
   const [tecnicos, setTecnicos] = useState<any[]>([]);
   const [setores, setSetores] = useState<Setor[]>([]);
-  const [cidades, setCidades] = useState<string[]>([]);
+  const [cidades, setCidades] = useState<Cidade[]>([]);
 
   // Estados para entidades no localStorage (temporário)
   const [categorias, setCategorias] = useState<Categoria[]>([]);
