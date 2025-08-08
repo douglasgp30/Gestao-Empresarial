@@ -278,6 +278,17 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Função de teste para debug
   const testarLancamento = () => {
     console.log("🧪 TESTE: Adicionando lançamento de teste...");
+
+    // Teste direto do localStorage primeiro
+    try {
+      const testData = { teste: "dados", timestamp: Date.now() };
+      localStorage.setItem("teste_salvamento", JSON.stringify(testData));
+      const retrieved = localStorage.getItem("teste_salvamento");
+      console.log("✅ LocalStorage funcionando:", retrieved ? "SIM" : "NÃO");
+    } catch (error) {
+      console.error("❌ Erro no localStorage:", error);
+    }
+
     const lancamentoTeste = {
       tipo: "receita" as const,
       data: new Date(),
@@ -286,6 +297,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       descricao: "Teste do sistema",
       notaFiscal: false,
     };
+
+    console.log("📋 Dados que serão enviados:", lancamentoTeste);
     adicionarLancamento(lancamentoTeste);
   };
 
