@@ -65,14 +65,16 @@ model FormaPagamento {
 }
 
 model Cliente {
-  id          Int      @id @default(autoincrement())
-  nome        String
-  cpf         String?
-  telefone1   String
-  telefone2   String?
-  email       String?
-  endereco    String?
-  dataCriacao DateTime @default(now())
+  id                 Int      @id @default(autoincrement()) // CodigoCliente
+  nome               String   // Nome do cliente (obrigatório)
+  cpf                String?  // CPF do cliente (opcional)
+  telefonePrincipal  String   // Telefone principal (obrigatório)
+  telefoneSecundario String?  // Telefone secundário (opcional)
+  email              String?  // E-mail (opcional)
+  cep                String?  // CEP (opcional)
+  logradouro         String?  // Preenchido automaticamente a partir do CEP
+  complemento        String?  // Complemento do endereço (opcional)
+  dataCriacao        DateTime @default(now())
 
   // Relacionamentos
   agendamentos Agendamento[]
