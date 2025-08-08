@@ -29,6 +29,31 @@ function CaixaContent() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Debug Info */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+        <h3 className="font-bold text-yellow-800 mb-2">🔧 Debug do Sistema</h3>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <strong>Lançamentos no estado:</strong> {lancamentos.length}
+          </div>
+          <div>
+            <strong>Total de receitas:</strong> R$ {totais.receitas.toFixed(2)}
+          </div>
+          <div>
+            <strong>Total de despesas:</strong> R$ {totais.despesas.toFixed(2)}
+          </div>
+          <div>
+            <strong>Saldo:</strong> R$ {totais.saldo.toFixed(2)}
+          </div>
+        </div>
+        <div className="mt-2 text-xs text-yellow-700">
+          <strong>LocalStorage:</strong> {localStorage.getItem('lancamentos') ?
+            `${JSON.parse(localStorage.getItem('lancamentos') || '[]').length} itens` :
+            'Vazio'
+          }
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
