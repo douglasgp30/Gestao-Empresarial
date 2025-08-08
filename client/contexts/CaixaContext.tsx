@@ -342,12 +342,47 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Persist lancamentos to localStorage whenever they change
   useEffect(() => {
     if (lancamentos.length > 0) {
-      // Backup antes de salvar
-      const backupKey = `lancamentos_auto_${Date.now()}`;
-      localStorage.setItem(backupKey, JSON.stringify(lancamentos));
+      try {
+        // Limpeza de backups antigos (manter apenas os 5 mais recentes)
+        const allKeys = Object.keys(localStorage);
+        const autoBackupKeys = allKeys
+          .filter(key => key.startsWith('lancamentos_auto_'))
+          .sort()
+          .reverse(); // Mais recentes primeiro
 
-      localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
-      console.log(`💾 Dados salvos: ${lancamentos.length} lançamentos (backup: ${backupKey})`);
+        // Remover backups antigos se houver mais de 5
+        if (autoBackupKeys.length > 5) {
+          const keysToRemove = autoBackupKeys.slice(5);
+          keysToRemove.forEach(key => localStorage.removeItem(key));
+        }
+
+        // Backup antes de salvar
+        const backupKey = `lancamentos_auto_${Date.now()}`;
+        localStorage.setItem(backupKey, JSON.stringify(lancamentos));
+
+        localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+        console.log(`💾 Dados salvos: ${lancamentos.length} lançamentos (backup: ${backupKey})`);
+      } catch (error) {
+        console.error("Erro ao salvar dados:", error);
+        // Se falhar por quota, tentar limpar mais backups
+        if (error.name === 'QuotaExceededError') {
+          const allKeys = Object.keys(localStorage);
+          const backupKeys = allKeys.filter(key =>
+            key.startsWith('lancamentos_auto_') ||
+            key.startsWith('lancamentos_backup_') ||
+            key.startsWith('emergency_backup_')
+          );
+          backupKeys.forEach(key => localStorage.removeItem(key));
+
+          // Tentar salvar novamente
+          try {
+            localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+            console.log("💾 Dados salvos após limpeza de emergência");
+          } catch (retryError) {
+            console.error("❌ Falha crítica ao salvar dados:", retryError);
+          }
+        }
+      }
     }
 
     // Debounce para evitar eventos múltiplos em sequência
