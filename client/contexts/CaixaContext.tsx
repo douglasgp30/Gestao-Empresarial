@@ -90,10 +90,14 @@ function carregarCampanhasReais(): Campanha[] {
 }
 
 export function CaixaProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const authContext = useAuth();
+  // Fallback para garantir que sempre temos um usuário válido
+  const user = authContext?.user || { id: "1", nomeCompleto: "Usuário Padrão" };
   const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>([]);
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  console.log("🏗️ CaixaProvider inicializado com usuário:", user);
   const [filtros, setFiltros] = useState(() => {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
