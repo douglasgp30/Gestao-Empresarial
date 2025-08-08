@@ -56,6 +56,11 @@ export default function ModalLembrete({
     onFechar();
   };
 
+  const handleConcluir = () => {
+    concluirAgendamento(agendamento.id);
+    onFechar();
+  };
+
   const formatarDataHora = () => {
     const data = new Date(agendamento.dataServico);
     const dataFormatada = data.toLocaleDateString("pt-BR");
