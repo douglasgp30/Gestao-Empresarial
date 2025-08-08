@@ -457,6 +457,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     adicionarCampanha,
     setFiltros,
     isLoading,
+    testarLancamento, // Para debug
   };
 
   return (
