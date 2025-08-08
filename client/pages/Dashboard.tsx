@@ -213,7 +213,7 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center w-full lg:w-auto gap-4 sm:gap-8">
-            {/* Espaçador à esquerda para equilibrar o layout */}
+            {/* Espa��ador à esquerda para equilibrar o layout */}
             <div className="flex-1"></div>
 
             {/* Centro: Meta do Mês, Total Alcançado e Restante */}
@@ -469,117 +469,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* LINHA 1 - Totais do Módulo Caixa */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <Wallet className="h-5 w-5" />
-            <span>📊 Totais do Caixa</span>
-            <Badge variant="outline">Dinâmico com filtros</Badge>
-          </h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            <StatCard
-              title="Total de Receitas"
-              value={formatCurrency(stats.totalReceitasCaixa)}
-              description="Serviços lançados no caixa"
-              icon={TrendingUp}
-              trend="up"
-              isLoading={isLoading}
-              variant="success"
-            />
-            <StatCard
-              title="Total de Despesas"
-              value={formatCurrency(stats.totalDespesasCaixa)}
-              description="Despesas lançadas no caixa"
-              icon={TrendingDown}
-              trend="down"
-              isLoading={isLoading}
-              variant="danger"
-            />
-            <StatCard
-              title="Saldo (Caixa)"
-              value={formatCurrency(stats.saldoCaixa)}
-              description="Receitas - Despesas do caixa"
-              icon={DollarSign}
-              trend={stats.saldoCaixa >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant="highlight"
-            />
-          </div>
-        </div>
-
-        {/* LINHA 2 - Totais de Contas Recebidas e Pagas */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <Receipt className="h-5 w-5" />
-            <span>📊 Totais de Contas Recebidas e Pagas</span>
-          </h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            <StatCard
-              title="Total de Contas Recebidas"
-              value={formatCurrency(stats.totalContasRecebidas)}
-              description="Contas a receber que foram marcadas como recebidas"
-              icon={TrendingUp}
-              trend="up"
-              isLoading={isLoading}
-              variant="success"
-            />
-            <StatCard
-              title="Total de Contas Pagas"
-              value={formatCurrency(stats.totalContasPagas)}
-              description="Contas a pagar que foram marcadas como pagas"
-              icon={TrendingDown}
-              trend="down"
-              isLoading={isLoading}
-              variant="danger"
-            />
-            <StatCard
-              title="Saldo (Contas Processadas)"
-              value={formatCurrency(stats.saldoContasPagas)}
-              description="Recebidas - pagas (já processadas)"
-              icon={DollarSign}
-              trend={stats.saldoContasPagas >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant="highlight"
-            />
-          </div>
-        </div>
-
-        {/* LINHA 3 - Totais de Contas a Receber e a Pagar */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <FileText className="h-5 w-5" />
-            <span>📊 Totais de Contas a Receber e a Pagar</span>
-          </h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            <StatCard
-              title="Total a Receber"
-              value={formatCurrency(stats.totalContasAReceber)}
-              description="Contas a receber ainda não recebidas"
-              icon={Target}
-              trend="up"
-              isLoading={isLoading}
-              variant="success"
-            />
-            <StatCard
-              title="Total a Pagar"
-              value={formatCurrency(stats.totalContasAPagar)}
-              description="Contas a pagar ainda não pagas"
-              icon={CreditCard}
-              trend="down"
-              isLoading={isLoading}
-              variant="danger"
-            />
-            <StatCard
-              title="Saldo Geral das Contas"
-              value={formatCurrency(stats.saldoGeralContas)}
-              description="Total a receber - total a pagar"
-              icon={Banknote}
-              trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant="default"
-            />
-          </div>
-        </div>
 
 
         {/* Content Grid */}
