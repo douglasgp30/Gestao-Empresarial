@@ -13,6 +13,20 @@ import { DollarSign, Bug } from "lucide-react";
 import { Button } from "../components/ui/button";
 
 function CaixaContent() {
+  const { testarLancamento, lancamentos, totais } = useCaixa();
+
+  const handleTeste = () => {
+    console.log("🧪 Executando teste do sistema...");
+    testarLancamento();
+  };
+
+  const verificarEstado = () => {
+    console.log("🔍 Estado atual do caixa:");
+    console.log("📊 Lançamentos:", lancamentos);
+    console.log("💰 Totais:", totais);
+    console.log("🗄️ LocalStorage:", localStorage.getItem('lancamentos'));
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -27,6 +41,13 @@ function CaixaContent() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button onClick={handleTeste} variant="outline" size="sm">
+            <Bug className="h-4 w-4 mr-2" />
+            Teste Sistema
+          </Button>
+          <Button onClick={verificarEstado} variant="outline" size="sm">
+            🔍 Debug Estado
+          </Button>
           <FormularioReceita />
           <FormularioDespesa />
           <ModalCampanhas />
