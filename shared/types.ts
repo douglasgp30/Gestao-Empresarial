@@ -137,6 +137,11 @@ export interface DashboardStats {
   totalGeralAReceber: number; // Todas as contas a receber (pagas + pendentes)
   totalGeralAPagar: number; // Todas as contas a pagar (pagas + pendentes)
 
+  // Campos para período (compatibilidade com layout anterior)
+  receitasPeriodo?: number;
+  despesasPeriodo?: number;
+  saldoPeriodo?: number;
+
   // Contas Atrasadas
   valorContasPagarAtrasadas: number;
   qtdContasPagarAtrasadas: number;
