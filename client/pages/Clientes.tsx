@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useClientes } from "../contexts/ClientesContext";
 import { useCaixa } from "../contexts/CaixaContext";
 import { Button } from "../components/ui/button";
