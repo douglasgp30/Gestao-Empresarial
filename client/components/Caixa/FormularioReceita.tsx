@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useCaixa, formatarMoeda } from "../../contexts/CaixaContext";
+import { useFuncionarios } from "../../contexts/FuncionariosContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { useContas } from "../../contexts/ContasContext";
 import { Button } from "../ui/button";
