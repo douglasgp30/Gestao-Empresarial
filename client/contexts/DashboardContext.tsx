@@ -172,7 +172,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    if (!caixaContext.lancamentos || caixaContext.lancamentos.length === 0) {
+    if (!caixaContext?.lancamentos || caixaContext?.lancamentos?.length === 0) {
       return;
     }
 
@@ -182,20 +182,20 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     // Filtrar lançamentos do caixa - usar filtros do dashboard ou do caixa
     let lancamentosFiltrados;
 
-    if (aplicarFiltrosCaixa && caixaContext.filtros) {
+    if (aplicarFiltrosCaixa && caixaContext?.filtros) {
       // Usar filtros específicos do Caixa para cálculos dinâmicos
-      lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
+      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter((lancamento) => {
         const dataLancamento = new Date(lancamento.data);
         // Normalizar datas para comparação (apenas ano, mês, dia)
         const dataInicio = new Date(
-          caixaContext.filtros.dataInicio.getFullYear(),
-          caixaContext.filtros.dataInicio.getMonth(),
-          caixaContext.filtros.dataInicio.getDate(),
+          caixaContext?.filtros?.dataInicio?.getFullYear() || new Date().getFullYear(),
+          caixaContext?.filtros?.dataInicio?.getMonth() || new Date().getMonth(),
+          caixaContext?.filtros?.dataInicio?.getDate() || new Date().getDate(),
         );
         const dataFim = new Date(
-          caixaContext.filtros.dataFim.getFullYear(),
-          caixaContext.filtros.dataFim.getMonth(),
-          caixaContext.filtros.dataFim.getDate(),
+          caixaContext?.filtros?.dataFim?.getFullYear() || new Date().getFullYear(),
+          caixaContext?.filtros?.dataFim?.getMonth() || new Date().getMonth(),
+          caixaContext?.filtros?.dataFim?.getDate() || new Date().getDate(),
         );
         const dataLancNorm = new Date(
           dataLancamento.getFullYear(),
@@ -206,25 +206,25 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         const dentroDataInicio = dataLancNorm >= dataInicio;
         const dentroDataFim = dataLancNorm <= dataFim;
         const tipoCorreto =
-          !caixaContext.filtros.tipo ||
-          caixaContext.filtros.tipo === "todos" ||
-          lancamento.tipo === caixaContext.filtros.tipo;
+          !caixaContext?.filtros?.tipo ||
+          caixaContext?.filtros?.tipo === "todos" ||
+          lancamento.tipo === caixaContext?.filtros?.tipo;
         const formaPagamentoCorreta =
-          !caixaContext.filtros.formaPagamento ||
-          caixaContext.filtros.formaPagamento === "todas" ||
-          lancamento.formaPagamento === caixaContext.filtros.formaPagamento;
+          !caixaContext?.filtros?.formaPagamento ||
+          caixaContext?.filtros?.formaPagamento === "todas" ||
+          lancamento.formaPagamento === caixaContext?.filtros?.formaPagamento;
         const tecnicoCorreto =
-          !caixaContext.filtros.tecnico ||
-          caixaContext.filtros.tecnico === "todos" ||
-          lancamento.tecnicoResponsavel === caixaContext.filtros.tecnico;
+          !caixaContext?.filtros?.tecnico ||
+          caixaContext?.filtros?.tecnico === "todos" ||
+          lancamento.tecnicoResponsavel === caixaContext?.filtros?.tecnico;
         const campanhaCorreta =
-          !caixaContext.filtros.campanha ||
-          caixaContext.filtros.campanha === "todas" ||
-          lancamento.campanha === caixaContext.filtros.campanha;
+          !caixaContext?.filtros?.campanha ||
+          caixaContext?.filtros?.campanha === "todas" ||
+          lancamento.campanha === caixaContext?.filtros?.campanha;
         const setorCorreto =
-          !caixaContext.filtros.setor ||
-          caixaContext.filtros.setor === "todos" ||
-          lancamento.setor === caixaContext.filtros.setor;
+          !caixaContext?.filtros?.setor ||
+          caixaContext?.filtros?.setor === "todos" ||
+          lancamento.setor === caixaContext?.filtros?.setor;
 
         return (
           dentroDataInicio &&
@@ -239,7 +239,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     } else {
       // Usar filtros do dashboard (período básico)
 
-      lancamentosFiltrados = caixaContext.lancamentos.filter((lancamento) => {
+      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter((lancamento) => {
         const dataLancamento = new Date(lancamento.data);
         // Normalizar datas para comparação (apenas ano, mês, dia)
         const dataInicio = new Date(
@@ -263,9 +263,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }
 
     // LINHA 1 - Totais do Módulo Caixa (usar dados calculados pelo CaixaContext)
-    const totalReceitasCaixa = caixaContext.totais.receitas;
-    const totalDespesasCaixa = caixaContext.totais.despesas;
-    const saldoCaixa = caixaContext.totais.saldo;
+    const totalReceitasCaixa = caixaContext?.totais?.receitas || 0;
+    const totalDespesasCaixa = caixaContext?.totais?.despesas || 0;
+    const saldoCaixa = caixaContext?.totais?.saldo || 0;
 
     // Debug essencial apenas
     console.log(
@@ -276,12 +276,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     );
 
     // LINHA 2 - Totais de Contas (usar dados calculados pelo ContasContext)
-    const totalContasRecebidas = contasContext.totais.totalContasRecebidas; // Contas recebidas (pagas)
-    const totalContasPagas = contasContext.totais.totalContasPagas; // Contas pagas (despesas)
+    const totalContasRecebidas = contasContext?.totais?.totalContasRecebidas || 0; // Contas recebidas (pagas)
+    const totalContasPagas = contasContext?.totais?.totalContasPagas || 0; // Contas pagas (despesas)
     const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
     // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
-    const totalContasAReceber = contasContext.contas
+    const totalContasAReceber = (contasContext?.contas || [])
       .filter((c) => {
         if (c.tipo !== "receber" || c.status === "paga") return false;
         const dataVencimento = new Date(c.dataVencimento);
@@ -305,7 +305,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       })
       .reduce((total, c) => total + c.valor, 0);
 
-    const totalContasAPagar = contasContext.contas
+    const totalContasAPagar = (contasContext?.contas || [])
       .filter((c) => {
         if (c.tipo !== "pagar" || c.status === "paga") return false;
         const dataVencimento = new Date(c.dataVencimento);
@@ -332,28 +332,28 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const saldoGeralContas = totalContasAReceber - totalContasAPagar;
 
     // Totais gerais para compatibilidade
-    const totalGeralAReceber = contasContext.contas
+    const totalGeralAReceber = (contasContext?.contas || [])
       .filter((c) => c.tipo === "receber")
       .reduce((total, c) => total + c.valor, 0);
 
-    const totalGeralAPagar = contasContext.contas
+    const totalGeralAPagar = (contasContext?.contas || [])
       .filter((c) => c.tipo === "pagar")
       .reduce((total, c) => total + c.valor, 0);
 
     // Contas Atrasadas (em vermelho)
-    const valorContasPagarAtrasadas = contasContext.contas
+    const valorContasPagarAtrasadas = (contasContext?.contas || [])
       .filter((c) => c.tipo === "pagar" && c.status === "atrasada")
       .reduce((total, c) => total + c.valor, 0);
 
-    const qtdContasPagarAtrasadas = contasContext.contas.filter(
+    const qtdContasPagarAtrasadas = (contasContext?.contas || []).filter(
       (c) => c.tipo === "pagar" && c.status === "atrasada",
     ).length;
 
-    const valorContasReceberAtrasadas = contasContext.contas
+    const valorContasReceberAtrasadas = (contasContext?.contas || [])
       .filter((c) => c.tipo === "receber" && c.status === "atrasada")
       .reduce((total, c) => total + c.valor, 0);
 
-    const qtdContasReceberAtrasadas = contasContext.contas.filter(
+    const qtdContasReceberAtrasadas = (contasContext?.contas || []).filter(
       (c) => c.tipo === "receber" && c.status === "atrasada",
     ).length;
 
@@ -373,7 +373,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const fimMesAtual = getFimDoMes();
 
     // 1. Receitas do caixa do mês atual (independente dos filtros)
-    const receitasCaixaMesAtual = caixaContext.lancamentos
+    const receitasCaixaMesAtual = (caixaContext?.lancamentos || [])
       .filter((l) => {
         if (l.tipo !== "receita") return false;
         const dataLancamento = new Date(l.data);
@@ -400,7 +400,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     // 2. Contas a receber que foram CRIADAS no mês atual
     // Como não temos dataCadastro, vamos usar dataVencimento como proxy
     // Em uma implementação real, seria melhor ter um campo dataCriacao
-    const contasAReceberCriadasMesAtual = contasContext.contas
+    const contasAReceberCriadasMesAtual = (contasContext?.contas || [])
       .filter((c) => {
         if (c.tipo !== "receber") return false;
         // Simular data de criação usando dataVencimento
@@ -421,12 +421,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setRestanteParaMeta(novoRestanteParaMeta);
 
     // Estatísticas gerais para compatibilidade
-    const contasVencendoHoje = contasContext.contas.filter((c) => {
+    const contasVencendoHoje = (contasContext?.contas || []).filter((c) => {
       const dataVenc = new Date(c.dataVencimento);
       return dataVenc.toDateString() === hoje.toDateString();
     }).length;
 
-    const contasAtrasadas = contasContext.contas.filter(
+    const contasAtrasadas = (contasContext?.contas || []).filter(
       (c) => c.status === "atrasada",
     ).length;
 
@@ -459,7 +459,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   }, [
     filtros,
     filtros.__timestamp, // Força re-render quando timestamp muda
-    filtros.dataInicio?.getTime(), // For��a re-render quando data início muda
+    filtros.dataInicio?.getTime(), // Força re-render quando data início muda
     filtros.dataFim?.getTime(), // Força re-render quando data fim muda
     metaMes, // Recalcula restante da meta quando meta muda
     aplicarFiltrosCaixa,
@@ -473,19 +473,19 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     if (!aplicarFiltrosCaixa && caixaContext && contasContext) {
       // Sincronizar filtros do Dashboard com outros contextos
       const novosFiltrosCaixa = {
-        ...caixaContext.filtros,
+        ...caixaContext?.filtros,
         dataInicio: filtros.dataInicio,
         dataFim: filtros.dataFim,
       };
 
       const novosFiltrosContas = {
-        ...contasContext.filtros,
+        ...contasContext?.filtros,
         dataInicio: filtros.dataInicio,
         dataFim: filtros.dataFim,
       };
 
-      caixaContext.setFiltros(novosFiltrosCaixa);
-      contasContext.setFiltros(novosFiltrosContas);
+      caixaContext?.setFiltros?.(novosFiltrosCaixa);
+      contasContext?.setFiltros?.(novosFiltrosContas);
     }
   }, [filtros.dataInicio, filtros.dataFim, aplicarFiltrosCaixa]);
 
