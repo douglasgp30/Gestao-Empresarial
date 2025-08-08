@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCaixa } from "../../contexts/CaixaContext";
+import { useCaixa, formatarMoeda } from "../../contexts/CaixaContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -100,7 +100,7 @@ export default function FiltrosCaixa() {
                 <p className="text-2xl font-bold text-green-600">
                   {isLoading
                     ? "..."
-                    : `R$ ${totais.receitas.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+                    : formatarMoeda(totais.receitas)}
                 </p>
               </div>
               <div className="bg-green-100 p-2 rounded-full">
@@ -118,7 +118,7 @@ export default function FiltrosCaixa() {
                 <p className="text-2xl font-bold text-red-600">
                   {isLoading
                     ? "..."
-                    : `R$ ${totais.despesas.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+                    : formatarMoeda(totais.despesas)}
                 </p>
               </div>
               <div className="bg-red-100 p-2 rounded-full">
@@ -144,7 +144,7 @@ export default function FiltrosCaixa() {
                 >
                   {isLoading
                     ? "..."
-                    : `R$ ${totais.saldo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+                    : formatarMoeda(totais.saldo)}
                 </p>
               </div>
               <div
@@ -178,7 +178,7 @@ export default function FiltrosCaixa() {
                 <p className="text-2xl font-bold text-blue-600">
                   {isLoading
                     ? "..."
-                    : `R$ ${totais.comissoes.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+                    : formatarMoeda(totais.comissoes)}
                 </p>
               </div>
               <div className="bg-blue-100 p-2 rounded-full">
