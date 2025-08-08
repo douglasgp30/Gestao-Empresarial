@@ -240,6 +240,12 @@ export default function FormularioReceita() {
       observacoes: formData.observacoes || undefined,
     });
 
+    // Feedback de sucesso
+    toast({
+      title: "Receita lançada",
+      description: "A receita foi lançada com sucesso no caixa.",
+    });
+
     // Reset form
     setFormData({
       data: new Date().toISOString().split("T")[0],
