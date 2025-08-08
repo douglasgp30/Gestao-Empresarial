@@ -179,10 +179,8 @@ export interface Categoria {
 }
 
 export interface FormaPagamento {
-  id: string;
-  nome: string;
-  tipo: "receita" | "despesa" | "ambos";
-  ativa?: boolean;
+  id: string;               // CodigoForma
+  nome: string;            // FormaPagamento (obrigatório)
   dataCriacao: Date;
 }
 
