@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useContas } from "../../contexts/ContasContext";
+import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
