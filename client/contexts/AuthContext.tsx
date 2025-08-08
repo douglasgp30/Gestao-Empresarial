@@ -18,31 +18,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock data for demonstration - in a real app this would be from a database
-const mockFuncionarios: Funcionario[] = [
-  {
-    id: "1",
-    nomeCompleto: "Administrador do Sistema",
-    login: "admin",
-    senha: "admin123",
-    permissaoAcesso: true,
-    tipoAcesso: "Administrador",
-    percentualComissao: 0,
-    dataCadastro: new Date(),
-    ativo: true,
-  },
-  {
-    id: "2",
-    nomeCompleto: "João Silva",
-    login: "joao",
-    senha: "123456",
-    permissaoAcesso: true,
-    tipoAcesso: "Operador",
-    percentualComissao: 15,
-    dataCadastro: new Date(),
-    ativo: true,
-  },
-];
+// Usuário admin padrão do sistema - necessário para login inicial
+const adminPadrao: Funcionario = {
+  id: "1",
+  nomeCompleto: "Administrador do Sistema",
+  login: "admin",
+  senha: "admin123",
+  permissaoAcesso: true,
+  tipoAcesso: "Administrador",
+  percentualComissao: 0,
+  dataCadastro: new Date(),
+  ativo: true,
+};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
