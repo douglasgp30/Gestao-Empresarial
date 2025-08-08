@@ -462,19 +462,19 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       .reduce((total, c) => total + c.valor, 0);
 
     // Contas Atrasadas (em vermelho)
-    const valorContasPagarAtrasadas = (contasContext?.contas || [])
+    const valorContasPagarAtrasadas = contasData
       .filter((c) => c.tipo === "pagar" && c.status === "atrasada")
       .reduce((total, c) => total + c.valor, 0);
 
-    const qtdContasPagarAtrasadas = (contasContext?.contas || []).filter(
+    const qtdContasPagarAtrasadas = contasData.filter(
       (c) => c.tipo === "pagar" && c.status === "atrasada",
     ).length;
 
-    const valorContasReceberAtrasadas = (contasContext?.contas || [])
+    const valorContasReceberAtrasadas = contasData
       .filter((c) => c.tipo === "receber" && c.status === "atrasada")
       .reduce((total, c) => total + c.valor, 0);
 
-    const qtdContasReceberAtrasadas = (contasContext?.contas || []).filter(
+    const qtdContasReceberAtrasadas = contasData.filter(
       (c) => c.tipo === "receber" && c.status === "atrasada",
     ).length;
 
