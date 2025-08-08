@@ -32,9 +32,6 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("pt-BR");
-}
 
 function formatCurrency(value: number): string {
   return value.toLocaleString("pt-BR", {
