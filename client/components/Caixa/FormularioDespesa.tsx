@@ -95,13 +95,17 @@ export default function FormularioDespesa() {
     if (!formData.descricaoServico.trim()) {
       toast({
         title: "Erro de validação",
-        description: "Por favor, selecione ou cadastre uma descrição da despesa.",
+        description:
+          "Por favor, selecione ou cadastre uma descrição da despesa.",
         variant: "destructive",
       });
       return;
     }
 
-    console.log("🚀 Iniciando lançamento de despesa:", { valor, formaPagamento: formData.formaPagamento });
+    console.log("🚀 Iniciando lançamento de despesa:", {
+      valor,
+      formaPagamento: formData.formaPagamento,
+    });
 
     adicionarLancamento({
       tipo: "despesa",

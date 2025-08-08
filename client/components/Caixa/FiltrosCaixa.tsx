@@ -50,7 +50,9 @@ export default function FiltrosCaixa() {
   const { funcionarios } = useFuncionarios();
 
   // Lista dinâmica de técnicos
-  const tecnicos = funcionarios.filter(f => f.ativo).map(f => f.nomeCompleto);
+  const tecnicos = funcionarios
+    .filter((f) => f.ativo)
+    .map((f) => f.nomeCompleto);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [tempDataInicio, setTempDataInicio] = useState<Date | undefined>(
     filtros.dataInicio,
@@ -98,9 +100,7 @@ export default function FiltrosCaixa() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Receitas</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {isLoading
-                    ? "..."
-                    : formatarMoeda(totais.receitas)}
+                  {isLoading ? "..." : formatarMoeda(totais.receitas)}
                 </p>
               </div>
               <div className="bg-green-100 p-2 rounded-full">
@@ -116,9 +116,7 @@ export default function FiltrosCaixa() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Despesas</p>
                 <p className="text-2xl font-bold text-red-600">
-                  {isLoading
-                    ? "..."
-                    : formatarMoeda(totais.despesas)}
+                  {isLoading ? "..." : formatarMoeda(totais.despesas)}
                 </p>
               </div>
               <div className="bg-red-100 p-2 rounded-full">
@@ -142,9 +140,7 @@ export default function FiltrosCaixa() {
                         : "text-foreground"
                   }`}
                 >
-                  {isLoading
-                    ? "..."
-                    : formatarMoeda(totais.saldo)}
+                  {isLoading ? "..." : formatarMoeda(totais.saldo)}
                 </p>
               </div>
               <div
@@ -176,9 +172,7 @@ export default function FiltrosCaixa() {
               <div>
                 <p className="text-sm text-muted-foreground">Comissões</p>
                 <p className="text-2xl font-bold text-blue-600">
-                  {isLoading
-                    ? "..."
-                    : formatarMoeda(totais.comissoes)}
+                  {isLoading ? "..." : formatarMoeda(totais.comissoes)}
                 </p>
               </div>
               <div className="bg-blue-100 p-2 rounded-full">

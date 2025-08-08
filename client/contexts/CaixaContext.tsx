@@ -13,9 +13,9 @@ import { DataRecoveryService } from "../utils/dataRecovery";
 
 // Utilitário para formatação em Reais
 export const formatarMoeda = (valor: number): string => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
   }).format(valor);
 };
 
@@ -104,7 +104,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     nomeCompleto: "Usuário Padrão",
     login: "admin",
     tipoAcesso: "Administrador" as const,
-    permissaoAcesso: true
+    permissaoAcesso: true,
   };
 
   const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>([]);
@@ -112,7 +112,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   console.log("🏗️ CaixaProvider inicializado com usuário:", user);
-  console.log("🔐 Auth Context:", authContext ? "Disponível" : "Não disponível");
+  console.log(
+    "🔐 Auth Context:",
+    authContext ? "Disponível" : "Não disponível",
+  );
   const [filtros, setFiltros] = useState(() => {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -143,11 +146,17 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(storedData);
 
         // CORRIGIDO: Remover APENAS dados mock, preservar dados reais
-        const dadosReais = parsed.filter((item: any) => !item.id?.startsWith("ex"));
-        const dadosMock = parsed.filter((item: any) => item.id?.startsWith("ex"));
+        const dadosReais = parsed.filter(
+          (item: any) => !item.id?.startsWith("ex"),
+        );
+        const dadosMock = parsed.filter((item: any) =>
+          item.id?.startsWith("ex"),
+        );
 
         if (dadosMock.length > 0) {
-          console.log(`🧹 Removendo ${dadosMock.length} dados mock, preservando ${dadosReais.length} dados reais`);
+          console.log(
+            `🧹 Removendo ${dadosMock.length} dados mock, preservando ${dadosReais.length} dados reais`,
+          );
           if (dadosReais.length > 0) {
             localStorage.setItem("lancamentos", JSON.stringify(dadosReais));
           } else {
@@ -173,18 +182,23 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
           if (recovery.found && recovery.recovered.length > 0) {
             console.log(`🎉 DADOS RECUPERADOS COM SUCESSO!`);
-            console.log(`��� ${recovery.recovered.length} lançamentos recuperados`);
-            console.log(`📁 Fontes: ${recovery.sources.join(', ')}`);
+            console.log(
+              `��� ${recovery.recovered.length} lançamentos recuperados`,
+            );
+            console.log(`📁 Fontes: ${recovery.sources.join(", ")}`);
 
             const dadosRecuperados = recovery.recovered;
 
             // Salvar dados recuperados
-            localStorage.setItem("lancamentos", JSON.stringify(dadosRecuperados));
+            localStorage.setItem(
+              "lancamentos",
+              JSON.stringify(dadosRecuperados),
+            );
 
             // Criar backup de segurança dos dados recuperados
             DataRecoveryService.createEmergencyBackup(
               dadosRecuperados,
-              `Recuperação automática - ${recovery.sources.join(', ')}`
+              `Recuperação automática - ${recovery.sources.join(", ")}`,
             );
 
             // Atualizar estado com dados recuperados
@@ -192,7 +206,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
             // Notificar usuário
             setTimeout(() => {
-              alert(`🎉 DADOS RECUPERADOS!\n\n${recovery.recovered.length} lançamentos foram recuperados automaticamente.\n\nFontes: ${recovery.sources.join(', ')}`);
+              alert(
+                `🎉 DADOS RECUPERADOS!\n\n${recovery.recovered.length} lançamentos foram recuperados automaticamente.\n\nFontes: ${recovery.sources.join(", ")}`,
+              );
             }, 1000);
           } else {
             console.log("🔍 Nenhum dado para recuperar encontrado");
@@ -207,9 +223,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
 
     if (lancamentosReais.length === 0) {
-      console.log("💡 Sistema iniciado sem dados - adicione lançamentos reais usando os formulários");
+      console.log(
+        "💡 Sistema iniciado sem dados - adicione lançamentos reais usando os formulários",
+      );
     } else {
-      console.log(`📊 Carregados ${lancamentosReais.length} lançamentos reais do localStorage`);
+      console.log(
+        `📊 Carregados ${lancamentosReais.length} lançamentos reais do localStorage`,
+      );
     }
 
     setLancamentos(lancamentosReais);
@@ -220,7 +240,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     console.log("📊 Estado final:", {
       lancamentos: lancamentosReais.length,
       campanhas: campanhasReais.length,
-      isLoading: false
+      isLoading: false,
     });
   }, []);
 
@@ -259,12 +279,22 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("  - Lançamentos anteriores:", prev.length);
       console.log("  - Novos lançamentos:", novosLancamentos.length);
       console.log("  - Último ID:", lancamento.id);
-      console.log("  - Lista completa:", novosLancamentos.map(l => ({ id: l.id, tipo: l.tipo, valor: l.valor })));
+      console.log(
+        "  - Lista completa:",
+        novosLancamentos.map((l) => ({
+          id: l.id,
+          tipo: l.tipo,
+          valor: l.valor,
+        })),
+      );
 
       // Verificar se o estado foi realmente atualizado
       setTimeout(() => {
-        const storageData = localStorage.getItem('lancamentos');
-        console.log("🗄️ Dados no localStorage após setState:", storageData ? JSON.parse(storageData).length : 0);
+        const storageData = localStorage.getItem("lancamentos");
+        console.log(
+          "🗄️ Dados no localStorage após setState:",
+          storageData ? JSON.parse(storageData).length : 0,
+        );
       }, 100);
 
       console.log("🔥 === FIM DO LANÇAMENTO ===");
@@ -288,7 +318,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const excluirLancamento = (id: string) => {
     // PROTEÇÃO: Backup antes de exclusão
     const backupKey = `lancamento_excluido_${id}_${Date.now()}`;
-    const lancamentoParaExcluir = lancamentos.find(l => l.id === id);
+    const lancamentoParaExcluir = lancamentos.find((l) => l.id === id);
     if (lancamentoParaExcluir) {
       localStorage.setItem(backupKey, JSON.stringify(lancamentoParaExcluir));
       console.log(`🗑️ Lançamento ${id} excluído com backup em ${backupKey}`);
@@ -360,30 +390,42 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const dentroDataFim = dataLancNorm <= dataFim;
 
       // Filtro por tipo
-      const tipoCorreto = filtros.tipo === "todos" || lancamento.tipo === filtros.tipo;
+      const tipoCorreto =
+        filtros.tipo === "todos" || lancamento.tipo === filtros.tipo;
 
       // Filtro por forma de pagamento
-      const formaPagamentoCorreta = !filtros.formaPagamento ||
+      const formaPagamentoCorreta =
+        !filtros.formaPagamento ||
         filtros.formaPagamento === "todas" ||
         lancamento.formaPagamento === filtros.formaPagamento;
 
       // Filtro por técnico
-      const tecnicoCorreto = !filtros.tecnico ||
+      const tecnicoCorreto =
+        !filtros.tecnico ||
         filtros.tecnico === "todos" ||
         lancamento.tecnicoResponsavel === filtros.tecnico;
 
       // Filtro por campanha
-      const campanhaCorreta = !filtros.campanha ||
+      const campanhaCorreta =
+        !filtros.campanha ||
         filtros.campanha === "todas" ||
         lancamento.campanha === filtros.campanha;
 
       // Filtro por setor
-      const setorCorreto = !filtros.setor ||
+      const setorCorreto =
+        !filtros.setor ||
         filtros.setor === "todos" ||
         lancamento.setor === filtros.setor;
 
-      return dentroDataInicio && dentroDataFim && tipoCorreto &&
-             formaPagamentoCorreta && tecnicoCorreto && campanhaCorreta && setorCorreto;
+      return (
+        dentroDataInicio &&
+        dentroDataFim &&
+        tipoCorreto &&
+        formaPagamentoCorreta &&
+        tecnicoCorreto &&
+        campanhaCorreta &&
+        setorCorreto
+      );
     });
 
     // Para receitas, sempre usar valor líquido (valor real recebido)
@@ -409,13 +451,16 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   }, [lancamentos, filtros]);
 
   // Memoizar dados formatados para evitar re-criação desnecessaria
-  const totaisFormatados = useMemo(() => ({
-    ...totais,
-    receitasFormatado: formatarMoeda(totais.receitas),
-    despesasFormatado: formatarMoeda(totais.despesas),
-    saldoFormatado: formatarMoeda(totais.saldo),
-    comissoesFormatado: formatarMoeda(totais.comissoes)
-  }), [totais]);
+  const totaisFormatados = useMemo(
+    () => ({
+      ...totais,
+      receitasFormatado: formatarMoeda(totais.receitas),
+      despesasFormatado: formatarMoeda(totais.despesas),
+      saldoFormatado: formatarMoeda(totais.saldo),
+      comissoesFormatado: formatarMoeda(totais.comissoes),
+    }),
+    [totais],
+  );
 
   // Debounce para sincronização entre contextos
   const syncDebounceRef = useRef<NodeJS.Timeout>();
@@ -424,7 +469,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log("🔄 useEffect para persistência executado:", {
       totalLancamentos: lancamentos.length,
-      primeiroLancamento: lancamentos[0]?.id
+      primeiroLancamento: lancamentos[0]?.id,
     });
 
     if (lancamentos.length > 0) {
@@ -434,14 +479,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         // Limpeza de backups antigos (manter apenas os 5 mais recentes)
         const allKeys = Object.keys(localStorage);
         const autoBackupKeys = allKeys
-          .filter(key => key.startsWith('lancamentos_auto_'))
+          .filter((key) => key.startsWith("lancamentos_auto_"))
           .sort()
           .reverse(); // Mais recentes primeiro
 
         // Remover backups antigos se houver mais de 5
         if (autoBackupKeys.length > 5) {
           const keysToRemove = autoBackupKeys.slice(5);
-          keysToRemove.forEach(key => localStorage.removeItem(key));
+          keysToRemove.forEach((key) => localStorage.removeItem(key));
           console.log(`🧹 Removidos ${keysToRemove.length} backups antigos`);
         }
 
@@ -455,9 +500,12 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
         // Verificação de integridade
         const dadosRecuperados = localStorage.getItem("lancamentos");
-        const integridadeOk = dadosRecuperados && dadosRecuperados === dadosParaSalvar;
+        const integridadeOk =
+          dadosRecuperados && dadosRecuperados === dadosParaSalvar;
 
-        console.log(`💾 Dados salvos: ${lancamentos.length} lançamentos (backup: ${backupKey})`);
+        console.log(
+          `💾 Dados salvos: ${lancamentos.length} lançamentos (backup: ${backupKey})`,
+        );
         console.log(`✅ Integridade: ${integridadeOk ? "OK" : "FALHOU"}`);
 
         if (!integridadeOk) {
@@ -466,15 +514,16 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("❌ Erro ao salvar dados:", error);
         // Se falhar por quota, tentar limpar mais backups
-        if (error.name === 'QuotaExceededError') {
+        if (error.name === "QuotaExceededError") {
           console.log("🧹 Limpeza de emergência por quota excedida...");
           const allKeys = Object.keys(localStorage);
-          const backupKeys = allKeys.filter(key =>
-            key.startsWith('lancamentos_auto_') ||
-            key.startsWith('lancamentos_backup_') ||
-            key.startsWith('emergency_backup_')
+          const backupKeys = allKeys.filter(
+            (key) =>
+              key.startsWith("lancamentos_auto_") ||
+              key.startsWith("lancamentos_backup_") ||
+              key.startsWith("emergency_backup_"),
           );
-          backupKeys.forEach(key => localStorage.removeItem(key));
+          backupKeys.forEach((key) => localStorage.removeItem(key));
 
           // Tentar salvar novamente
           try {
@@ -493,12 +542,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     clearTimeout(syncDebounceRef.current);
     syncDebounceRef.current = setTimeout(() => {
       // Notify other contexts of data changes with formatted totals
-      window.dispatchEvent(new CustomEvent('caixaDataChanged', {
-        detail: {
-          lancamentos,
-          totais: totaisFormatados
-        }
-      }));
+      window.dispatchEvent(
+        new CustomEvent("caixaDataChanged", {
+          detail: {
+            lancamentos,
+            totais: totaisFormatados,
+          },
+        }),
+      );
     }, 50); // 50ms debounce
   }, [lancamentos, totaisFormatados]);
 

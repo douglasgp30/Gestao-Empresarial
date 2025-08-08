@@ -152,9 +152,8 @@ export default function Dashboard() {
     metaMes,
     totalMetaMes,
     restanteParaMeta,
-    setMetaMes
+    setMetaMes,
   } = useDashboard();
-
 
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [novaMetaValue, setNovaMetaValue] = useState(metaMes.toString());
@@ -164,14 +163,23 @@ export default function Dashboard() {
     .filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
       // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-      const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
-
-      return (
-        dataLancNorm >= dataInicio &&
-        dataLancNorm <= dataFim
+      const dataInicio = new Date(
+        filtros.dataInicio.getFullYear(),
+        filtros.dataInicio.getMonth(),
+        filtros.dataInicio.getDate(),
       );
+      const dataFim = new Date(
+        filtros.dataFim.getFullYear(),
+        filtros.dataFim.getMonth(),
+        filtros.dataFim.getDate(),
+      );
+      const dataLancNorm = new Date(
+        dataLancamento.getFullYear(),
+        dataLancamento.getMonth(),
+        dataLancamento.getDate(),
+      );
+
+      return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
     })
     .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
     .slice(0, 5);
@@ -184,7 +192,9 @@ export default function Dashboard() {
   };
 
   const handleSalvarMeta = () => {
-    const novaMetaNum = parseFloat(novaMetaValue.replace(/[^\d,]/g, '').replace(',', '.'));
+    const novaMetaNum = parseFloat(
+      novaMetaValue.replace(/[^\d,]/g, "").replace(",", "."),
+    );
     if (!isNaN(novaMetaNum) && novaMetaNum > 0) {
       setMetaMes(novaMetaNum);
       setIsEditingMeta(false);
@@ -197,7 +207,7 @@ export default function Dashboard() {
   };
 
   const formatCurrencyInput = (value: string) => {
-    const numValue = value.replace(/[^\d,]/g, '').replace(',', '.');
+    const numValue = value.replace(/[^\d,]/g, "").replace(",", ".");
     return numValue;
   };
 
@@ -207,10 +217,10 @@ export default function Dashboard() {
         {/* Header com Saldo Geral e Meta do Mês */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Visão geral financeira
-            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+              Dashboard
+            </h1>
+            <p className="text-muted-foreground">Visão geral financeira</p>
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center w-full lg:w-auto gap-4 sm:gap-8">
             {/* Espa��ador à esquerda para equilibrar o layout */}
@@ -227,7 +237,10 @@ export default function Dashboard() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <Dialog open={isEditingMeta} onOpenChange={setIsEditingMeta}>
+                    <Dialog
+                      open={isEditingMeta}
+                      onOpenChange={setIsEditingMeta}
+                    >
                       <DialogTrigger asChild>
                         <span className="text-lg font-bold text-primary cursor-pointer hover:bg-accent/50 px-2 py-1 rounded transition-colors">
                           {formatCurrency(metaMes)}
@@ -237,7 +250,8 @@ export default function Dashboard() {
                         <DialogHeader>
                           <DialogTitle>Editar Meta do Mês</DialogTitle>
                           <DialogDescription>
-                            Defina sua meta de receitas para o mês atual. Este valor será usado para calcular o progresso da meta.
+                            Defina sua meta de receitas para o mês atual. Este
+                            valor será usado para calcular o progresso da meta.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -250,14 +264,22 @@ export default function Dashboard() {
                                 id="meta"
                                 placeholder="Ex: 15000"
                                 value={novaMetaValue}
-                                onChange={(e) => setNovaMetaValue(formatCurrencyInput(e.target.value))}
+                                onChange={(e) =>
+                                  setNovaMetaValue(
+                                    formatCurrencyInput(e.target.value),
+                                  )
+                                }
                                 className="w-full"
                               />
                             </div>
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="button" variant="outline" onClick={handleCancelarEdicao}>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleCancelarEdicao}
+                          >
                             Cancelar
                           </Button>
                           <Button type="button" onClick={handleSalvarMeta}>
@@ -266,7 +288,10 @@ export default function Dashboard() {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    <Edit3 className="h-3 w-3 text-muted-foreground cursor-pointer" onClick={() => setIsEditingMeta(true)} />
+                    <Edit3
+                      className="h-3 w-3 text-muted-foreground cursor-pointer"
+                      onClick={() => setIsEditingMeta(true)}
+                    />
                   </div>
                 )}
               </div>
@@ -288,9 +313,15 @@ export default function Dashboard() {
                         <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p className="font-medium mb-1">Total Alcançado da Meta:</p>
+                        <p className="font-medium mb-1">
+                          Total Alcançado da Meta:
+                        </p>
                         <p className="text-xs">
-                          <strong>Sempre do mês atual, independente dos filtros.</strong> Receitas do Caixa + Contas a Receber criadas no mês atual.
+                          <strong>
+                            Sempre do mês atual, independente dos filtros.
+                          </strong>{" "}
+                          Receitas do Caixa + Contas a Receber criadas no mês
+                          atual.
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -314,7 +345,9 @@ export default function Dashboard() {
                           : "text-orange-600 dark:text-orange-400"
                       }`}
                     >
-                      {restanteParaMeta <= 0 ? "Meta Atingida!" : formatCurrency(restanteParaMeta)}
+                      {restanteParaMeta <= 0
+                        ? "Meta Atingida!"
+                        : formatCurrency(restanteParaMeta)}
                     </span>
                     {restanteParaMeta <= 0 && (
                       <Trophy className="h-4 w-4 text-success" />
@@ -326,10 +359,10 @@ export default function Dashboard() {
                       <TooltipContent className="max-w-xs">
                         <p className="font-medium mb-1">Restante para Meta:</p>
                         <p className="text-xs">
-                          <strong>Sempre do mês atual.</strong> {restanteParaMeta <= 0
+                          <strong>Sempre do mês atual.</strong>{" "}
+                          {restanteParaMeta <= 0
                             ? "Parabéns! Você atingiu ou superou a meta do mês!"
-                            : "Valor que ainda falta para atingir a meta estabelecida."
-                          }
+                            : "Valor que ainda falta para atingir a meta estabelecida."}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -363,7 +396,9 @@ export default function Dashboard() {
                       <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      <p className="font-medium mb-1">Cálculo do Saldo Geral:</p>
+                      <p className="font-medium mb-1">
+                        Cálculo do Saldo Geral:
+                      </p>
                       <p className="text-xs">
                         (Receitas do Caixa + Contas Recebidas) - (Despesas do
                         Caixa + Contas Pagas)
@@ -398,7 +433,7 @@ export default function Dashboard() {
               dados={{
                 receitas: stats.totalReceitasCaixa || 0,
                 despesas: stats.totalDespesasCaixa || 0,
-                saldo: stats.saldoCaixa || 0
+                saldo: stats.saldoCaixa || 0,
               }}
             />
           </div>
@@ -468,8 +503,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
-
 
         {/* Content Grid */}
         <div className="grid gap-6 lg:grid-cols-2">

@@ -1,5 +1,11 @@
 import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
 import { formatarMoeda } from "../../contexts/CaixaContext";
 
@@ -14,7 +20,10 @@ interface GraficoSimplesProps {
   className?: string;
 }
 
-export default function GraficoSimples({ dados, className }: GraficoSimplesProps) {
+export default function GraficoSimples({
+  dados,
+  className,
+}: GraficoSimplesProps) {
   const { receitas, despesas, saldo } = dados;
 
   // Calcular percentuais para as barras com proteção contra NaN
@@ -25,7 +34,7 @@ export default function GraficoSimples({ dados, className }: GraficoSimplesProps
   const total = receitasSeguras + despesasSeguras;
   const percentualReceitas = total > 0 ? (receitasSeguras / total) * 100 : 0;
   const percentualDespesas = total > 0 ? (despesasSeguras / total) * 100 : 0;
-  
+
   return (
     <Card className={className}>
       <CardHeader className="pb-3">
@@ -42,23 +51,31 @@ export default function GraficoSimples({ dados, className }: GraficoSimplesProps
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-green-600 font-medium">Receitas</span>
-            <span className="text-green-600 font-medium">{formatarMoeda(receitasSeguras)}</span>
+            <span className="text-green-600 font-medium">
+              {formatarMoeda(receitasSeguras)}
+            </span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-green-500 rounded-full transition-all duration-300"
-              style={{ width: `${isNaN(percentualReceitas) ? 0 : percentualReceitas}%` }}
+              style={{
+                width: `${isNaN(percentualReceitas) ? 0 : percentualReceitas}%`,
+              }}
             />
           </div>
 
           <div className="flex items-center justify-between text-sm">
             <span className="text-red-600 font-medium">Despesas</span>
-            <span className="text-red-600 font-medium">{formatarMoeda(despesasSeguras)}</span>
+            <span className="text-red-600 font-medium">
+              {formatarMoeda(despesasSeguras)}
+            </span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-red-500 rounded-full transition-all duration-300"
-              style={{ width: `${isNaN(percentualDespesas) ? 0 : percentualDespesas}%` }}
+              style={{
+                width: `${isNaN(percentualDespesas) ? 0 : percentualDespesas}%`,
+              }}
             />
           </div>
         </div>
@@ -74,14 +91,15 @@ export default function GraficoSimples({ dados, className }: GraficoSimplesProps
               )}
               <span className="font-medium text-sm">Saldo</span>
             </div>
-            <span className={`font-bold ${
-              saldoSeguro >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
+            <span
+              className={`font-bold ${
+                saldoSeguro >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
               {formatarMoeda(saldoSeguro)}
             </span>
           </div>
         </div>
-
       </CardContent>
     </Card>
   );

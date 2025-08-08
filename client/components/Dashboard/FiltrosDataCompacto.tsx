@@ -34,7 +34,7 @@ export default function FiltrosDataCompacto() {
     console.log("📅 Filtros atuais:", {
       dataInicio: filtros.dataInicio.toISOString().split("T")[0],
       dataFim: filtros.dataFim.toISOString().split("T")[0],
-      timestamp: filtros.__timestamp
+      timestamp: filtros.__timestamp,
     }); // Debug
 
     const novosFiltros = {
@@ -45,7 +45,7 @@ export default function FiltrosDataCompacto() {
     console.log("✨ Aplicando novos filtros:", {
       dataInicio: novosFiltros.dataInicio.toISOString().split("T")[0],
       dataFim: novosFiltros.dataFim.toISOString().split("T")[0],
-      timestamp: novosFiltros.__timestamp
+      timestamp: novosFiltros.__timestamp,
     }); // Debug
 
     setFiltros(novosFiltros);
@@ -71,7 +71,7 @@ export default function FiltrosDataCompacto() {
 
     console.log("🔄 Filtros limpos:", {
       dataInicio: filtrosLimpos.dataInicio.toISOString().split("T")[0],
-      dataFim: filtrosLimpos.dataFim.toISOString().split("T")[0]
+      dataFim: filtrosLimpos.dataFim.toISOString().split("T")[0],
     });
 
     setFiltros(filtrosLimpos);

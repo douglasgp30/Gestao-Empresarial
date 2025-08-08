@@ -32,7 +32,8 @@ export default function ModalLembrete({
   agendamento,
   onFechar,
 }: ModalLembreteProps) {
-  const { marcarLembreteComoLido, adiarLembrete, concluirAgendamento } = useAgendamentos();
+  const { marcarLembreteComoLido, adiarLembrete, concluirAgendamento } =
+    useAgendamentos();
   const [animacao, setAnimacao] = useState(false);
 
   useEffect(() => {

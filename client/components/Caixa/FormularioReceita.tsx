@@ -32,7 +32,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { DollarSign, TrendingUp, Calculator, Upload, FileText, X } from "lucide-react";
+import {
+  DollarSign,
+  TrendingUp,
+  Calculator,
+  Upload,
+  FileText,
+  X,
+} from "lucide-react";
 import { toast } from "../../hooks/use-toast";
 
 const formasPagamento = [
@@ -61,7 +68,9 @@ export default function FormularioReceita() {
   const { adicionarConta } = useContas();
 
   // Criar lista de técnicos a partir dos funcionários ativos
-  const tecnicos = funcionarios.filter(f => f.ativo).map(f => f.nomeCompleto);
+  const tecnicos = funcionarios
+    .filter((f) => f.ativo)
+    .map((f) => f.nomeCompleto);
   const [isOpen, setIsOpen] = useState(false);
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
   const [isNewSetorOpen, setIsNewSetorOpen] = useState(false);
@@ -141,7 +150,8 @@ export default function FormularioReceita() {
     if (!formData.descricaoServico.trim()) {
       toast({
         title: "Erro de validação",
-        description: "Por favor, selecione ou cadastre uma descrição do serviço.",
+        description:
+          "Por favor, selecione ou cadastre uma descrição do serviço.",
         variant: "destructive",
       });
       return;
@@ -150,7 +160,8 @@ export default function FormularioReceita() {
     if (formData.notaFiscal && !notaFiscalProcessada) {
       toast({
         title: "Nota fiscal pendente",
-        description: "Por favor, aguarde a emissão da nota fiscal antes de lançar a receita.",
+        description:
+          "Por favor, aguarde a emissão da nota fiscal antes de lançar a receita.",
         variant: "destructive",
       });
       return;
@@ -159,7 +170,8 @@ export default function FormularioReceita() {
     if (formData.notaFiscal && notaFiscalProcessada && !notaFiscalArquivada) {
       toast({
         title: "Upload pendente",
-        description: "Por favor, faça o upload da nota fiscal em PDF antes de lançar a receita.",
+        description:
+          "Por favor, faça o upload da nota fiscal em PDF antes de lançar a receita.",
         variant: "destructive",
       });
       return;
@@ -170,14 +182,18 @@ export default function FormularioReceita() {
       if (!formData.valorEntrou || parseFloat(formData.valorEntrou) <= 0) {
         toast({
           title: "Valor obrigatório",
-          description: "Para pagamentos com cartão, é obrigatório informar o valor que entrou.",
+          description:
+            "Para pagamentos com cartão, é obrigatório informar o valor que entrou.",
           variant: "destructive",
         });
         return;
       }
     }
 
-    console.log("🚀 Iniciando lançamento de receita:", { valor, formaPagamento: formData.formaPagamento });
+    console.log("🚀 Iniciando lançamento de receita:", {
+      valor,
+      formaPagamento: formData.formaPagamento,
+    });
 
     // Calcular valor líquido (valor real que fica para a empresa após todas as deduções)
     let valorLiquido = valor;
@@ -229,11 +245,13 @@ export default function FormularioReceita() {
       tecnicoResponsavel: formData.tecnicoResponsavel,
       comissao: comissaoFuncionario, // Valor da comissão calculada
       notaFiscal: formData.notaFiscal,
-      notaFiscalArquivo: uploadedFile ? {
-        nome: uploadedFile.name,
-        tamanho: uploadedFile.size,
-        dataUpload: new Date(),
-      } : undefined,
+      notaFiscalArquivo: uploadedFile
+        ? {
+            nome: uploadedFile.name,
+            tamanho: uploadedFile.size,
+            dataUpload: new Date(),
+          }
+        : undefined,
       descontoImposto: formData.notaFiscal ? descontoImposto : undefined,
       setor: formData.setor,
       cidade: formData.cidade,
@@ -381,11 +399,13 @@ export default function FormularioReceita() {
       formaPagamento: "Boleto",
       tecnicoResponsavel: formData.tecnicoResponsavel,
       notaFiscal: formData.notaFiscal,
-      notaFiscalArquivo: uploadedFile ? {
-        nome: uploadedFile.name,
-        tamanho: uploadedFile.size,
-        dataUpload: new Date(),
-      } : undefined,
+      notaFiscalArquivo: uploadedFile
+        ? {
+            nome: uploadedFile.name,
+            tamanho: uploadedFile.size,
+            dataUpload: new Date(),
+          }
+        : undefined,
       descontoImposto: formData.notaFiscal
         ? boletoData.valorTotal * 0.06
         : undefined,
@@ -462,7 +482,7 @@ export default function FormularioReceita() {
 
   const calcularComissao = () => {
     const valorSemComissao = calcularValorSemComissao();
-    return valorSemComissao * 0.50; // 50% de comissão
+    return valorSemComissao * 0.5; // 50% de comissão
   };
 
   const calcularValorLiquidoFinal = () => {
@@ -1016,11 +1036,13 @@ export default function FormularioReceita() {
                   ⏳ Aguardando emissão da nota fiscal...
                 </span>
               )}
-              {formData.notaFiscal && notaFiscalProcessada && !notaFiscalArquivada && (
-                <span className="text-blue-600 text-sm">
-                  📄 Nota emitida - Aguardando upload do PDF
-                </span>
-              )}
+              {formData.notaFiscal &&
+                notaFiscalProcessada &&
+                !notaFiscalArquivada && (
+                  <span className="text-blue-600 text-sm">
+                    📄 Nota emitida - Aguardando upload do PDF
+                  </span>
+                )}
               {formData.notaFiscal && notaFiscalArquivada && (
                 <span className="text-green-600 text-sm flex items-center gap-1">
                   ✅ Nota fiscal arquivada
@@ -1082,10 +1104,14 @@ export default function FormularioReceita() {
                             ):
                           </span>
                           <span>
-                            {formatarMoeda(-((parseFloat(formData.valor) || 0) *
-                              (formData.formaPagamento === "Cartão de Débito"
-                                ? 0.02
-                                : 0.035)))}
+                            {formatarMoeda(
+                              -(
+                                (parseFloat(formData.valor) || 0) *
+                                (formData.formaPagamento === "Cartão de Débito"
+                                  ? 0.02
+                                  : 0.035)
+                              ),
+                            )}
                           </span>
                         </div>
                       )}
@@ -1110,9 +1136,7 @@ export default function FormularioReceita() {
                         <span>
                           Comissão {formData.tecnicoResponsavel} (15%):
                         </span>
-                        <span>
-                          {formatarMoeda(-calcularComissao())}
-                        </span>
+                        <span>{formatarMoeda(-calcularComissao())}</span>
                       </div>
                     )}
                     <Separator />
@@ -1139,7 +1163,10 @@ export default function FormularioReceita() {
               <Button
                 type="submit"
                 className="flex-1"
-                disabled={formData.notaFiscal && (!notaFiscalProcessada || !notaFiscalArquivada)}
+                disabled={
+                  formData.notaFiscal &&
+                  (!notaFiscalProcessada || !notaFiscalArquivada)
+                }
               >
                 {formData.notaFiscal && !notaFiscalProcessada
                   ? "Aguardando Nota Fiscal..."

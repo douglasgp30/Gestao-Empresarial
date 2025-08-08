@@ -68,9 +68,12 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
 
   // Verificar lembretes periodicamente
   useEffect(() => {
-    const intervalo = setInterval(() => {
-      verificarLembretes();
-    }, 2 * 60 * 1000); // Verifica a cada 2 minutos (melhor performance)
+    const intervalo = setInterval(
+      () => {
+        verificarLembretes();
+      },
+      2 * 60 * 1000,
+    ); // Verifica a cada 2 minutos (melhor performance)
 
     return () => clearInterval(intervalo);
   }, [agendamentos]);

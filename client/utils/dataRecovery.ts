@@ -19,11 +19,11 @@ export class DataRecoveryService {
     sources: string[];
   }> {
     console.log("🔍 Iniciando verificação de dados perdidos...");
-    
+
     const result = {
       found: false,
       recovered: [] as LancamentoCaixa[],
-      sources: [] as string[]
+      sources: [] as string[],
     };
 
     // 1. Verificar localStorage principal
@@ -49,7 +49,8 @@ export class DataRecoveryService {
     }
 
     if (deletedRecords.length > 0) {
-      const recoveredFromDeleted = await this.recoverFromDeleted(deletedRecords);
+      const recoveredFromDeleted =
+        await this.recoverFromDeleted(deletedRecords);
       if (recoveredFromDeleted.length > 0) {
         result.found = true;
         result.recovered.push(...recoveredFromDeleted);
@@ -60,8 +61,10 @@ export class DataRecoveryService {
     // 5. Remover duplicatas baseado no ID
     result.recovered = this.removeDuplicates(result.recovered);
 
-    console.log(`✅ Recuperação concluída: ${result.recovered.length} registros únicos`);
-    
+    console.log(
+      `✅ Recuperação concluída: ${result.recovered.length} registros únicos`,
+    );
+
     return result;
   }
 
@@ -75,7 +78,9 @@ export class DataRecoveryService {
         return JSON.parse(data).map((l: any) => ({
           ...l,
           data: new Date(l.data),
-          dataPagamento: l.dataPagamento ? new Date(l.dataPagamento) : undefined,
+          dataPagamento: l.dataPagamento
+            ? new Date(l.dataPagamento)
+            : undefined,
         }));
       }
     } catch (error) {
@@ -87,9 +92,9 @@ export class DataRecoveryService {
   /**
    * Encontrar todos os backups disponíveis
    */
-  private static findBackups(): Array<{key: string, timestamp: number}> {
-    const backups: Array<{key: string, timestamp: number}> = [];
-    
+  private static findBackups(): Array<{ key: string; timestamp: number }> {
+    const backups: Array<{ key: string; timestamp: number }> = [];
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith(this.BACKUP_PREFIX)) {
@@ -108,9 +113,12 @@ export class DataRecoveryService {
   /**
    * Encontrar registros excluídos recentemente
    */
-  private static findDeletedRecords(): Array<{key: string, timestamp: number}> {
-    const deleted: Array<{key: string, timestamp: number}> = [];
-    
+  private static findDeletedRecords(): Array<{
+    key: string;
+    timestamp: number;
+  }> {
+    const deleted: Array<{ key: string; timestamp: number }> = [];
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith(this.DELETED_PREFIX)) {
@@ -130,9 +138,11 @@ export class DataRecoveryService {
   /**
    * Recuperar dados de backups
    */
-  private static async recoverFromBackups(backups: Array<{key: string, timestamp: number}>): Promise<LancamentoCaixa[]> {
+  private static async recoverFromBackups(
+    backups: Array<{ key: string; timestamp: number }>,
+  ): Promise<LancamentoCaixa[]> {
     const recovered: LancamentoCaixa[] = [];
-    
+
     for (const backup of backups) {
       try {
         const data = localStorage.getItem(backup.key);
@@ -143,10 +153,14 @@ export class DataRecoveryService {
             .map((l: any) => ({
               ...l,
               data: new Date(l.data),
-              dataPagamento: l.dataPagamento ? new Date(l.dataPagamento) : undefined,
+              dataPagamento: l.dataPagamento
+                ? new Date(l.dataPagamento)
+                : undefined,
             }));
-          
-          console.log(`📂 Backup ${backup.key}: ${lancamentosReais.length} lançamentos reais`);
+
+          console.log(
+            `📂 Backup ${backup.key}: ${lancamentosReais.length} lançamentos reais`,
+          );
           recovered.push(...lancamentosReais);
         }
       } catch (error) {
@@ -160,9 +174,11 @@ export class DataRecoveryService {
   /**
    * Recuperar dados de registros excluídos
    */
-  private static async recoverFromDeleted(deleted: Array<{key: string, timestamp: number}>): Promise<LancamentoCaixa[]> {
+  private static async recoverFromDeleted(
+    deleted: Array<{ key: string; timestamp: number }>,
+  ): Promise<LancamentoCaixa[]> {
     const recovered: LancamentoCaixa[] = [];
-    
+
     for (const record of deleted) {
       try {
         const data = localStorage.getItem(record.key);
@@ -173,14 +189,19 @@ export class DataRecoveryService {
             const processedLancamento = {
               ...lancamento,
               data: new Date(lancamento.data),
-              dataPagamento: lancamento.dataPagamento ? new Date(lancamento.dataPagamento) : undefined,
+              dataPagamento: lancamento.dataPagamento
+                ? new Date(lancamento.dataPagamento)
+                : undefined,
             };
             recovered.push(processedLancamento);
             console.log(`🔄 Recuperado lançamento excluído: ${lancamento.id}`);
           }
         }
       } catch (error) {
-        console.error(`Erro ao processar registro excluído ${record.key}:`, error);
+        console.error(
+          `Erro ao processar registro excluído ${record.key}:`,
+          error,
+        );
       }
     }
 
@@ -190,9 +211,11 @@ export class DataRecoveryService {
   /**
    * Remover duplicatas baseado no ID
    */
-  private static removeDuplicates(lancamentos: LancamentoCaixa[]): LancamentoCaixa[] {
+  private static removeDuplicates(
+    lancamentos: LancamentoCaixa[],
+  ): LancamentoCaixa[] {
     const seen = new Set<string>();
-    return lancamentos.filter(lancamento => {
+    return lancamentos.filter((lancamento) => {
       if (seen.has(lancamento.id)) {
         return false;
       }
@@ -204,19 +227,24 @@ export class DataRecoveryService {
   /**
    * Criar backup de emergência antes de qualquer operação crítica
    */
-  static createEmergencyBackup(data: LancamentoCaixa[], reason: string): string {
+  static createEmergencyBackup(
+    data: LancamentoCaixa[],
+    reason: string,
+  ): string {
     const timestamp = Date.now();
     const key = `emergency_backup_${timestamp}`;
     const backupData = {
       timestamp,
       reason,
       data: data,
-      count: data.length
+      count: data.length,
     };
-    
+
     localStorage.setItem(key, JSON.stringify(backupData));
-    console.log(`🚨 Backup de emergência criado: ${key} (${data.length} registros)`);
-    
+    console.log(
+      `🚨 Backup de emergência criado: ${key} (${data.length} registros)`,
+    );
+
     return key;
   }
 
@@ -227,30 +255,30 @@ export class DataRecoveryService {
     key: string;
     timestamp: number;
     date: string;
-    type: 'backup' | 'deleted' | 'emergency';
+    type: "backup" | "deleted" | "emergency";
     count?: number;
   }> {
     const backups: Array<any> = [];
-    
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (!key) continue;
-      
-      let type: 'backup' | 'deleted' | 'emergency' | null = null;
-      let timestampStr = '';
-      
+
+      let type: "backup" | "deleted" | "emergency" | null = null;
+      let timestampStr = "";
+
       if (key.startsWith(this.BACKUP_PREFIX)) {
-        type = 'backup';
+        type = "backup";
         timestampStr = key.replace(this.BACKUP_PREFIX, "");
       } else if (key.startsWith(this.DELETED_PREFIX)) {
-        type = 'deleted';
+        type = "deleted";
         const parts = key.split("_");
         timestampStr = parts[parts.length - 1];
       } else if (key.startsWith("emergency_backup_")) {
-        type = 'emergency';
+        type = "emergency";
         timestampStr = key.replace("emergency_backup_", "");
       }
-      
+
       if (type && timestampStr) {
         const timestamp = parseInt(timestampStr);
         if (!isNaN(timestamp)) {
@@ -258,19 +286,21 @@ export class DataRecoveryService {
           const item = {
             key,
             timestamp,
-            date: date.toLocaleString('pt-BR'),
-            type
+            date: date.toLocaleString("pt-BR"),
+            type,
           };
-          
+
           // Tentar obter contagem se for backup
-          if (type === 'backup' || type === 'emergency') {
+          if (type === "backup" || type === "emergency") {
             try {
               const data = localStorage.getItem(key);
               if (data) {
                 const parsed = JSON.parse(data);
-                if (type === 'backup') {
-                  item.count = parsed.filter((item: any) => !item.id?.startsWith("ex")).length;
-                } else if (type === 'emergency') {
+                if (type === "backup") {
+                  item.count = parsed.filter(
+                    (item: any) => !item.id?.startsWith("ex"),
+                  ).length;
+                } else if (type === "emergency") {
                   item.count = parsed.count || parsed.data?.length || 0;
                 }
               }
@@ -278,12 +308,12 @@ export class DataRecoveryService {
               console.warn(`Erro ao ler ${key}:`, error);
             }
           }
-          
+
           backups.push(item);
         }
       }
     }
-    
+
     return backups.sort((a, b) => b.timestamp - a.timestamp);
   }
 }

@@ -110,11 +110,12 @@ export default function FormularioAgendamento({
       const dataServico = new Date(formData.dataServico);
       const [hora, minutos] = formData.horaServico.split(":");
       dataServico.setHours(parseInt(hora), parseInt(minutos));
-      
+
       const agora = new Date();
-      
+
       if (dataServico < agora) {
-        novosErros.dataServico = "Não é possível agendar para uma data/hora anterior ao momento atual";
+        novosErros.dataServico =
+          "Não é possível agendar para uma data/hora anterior ao momento atual";
         novosErros.horaServico = "Horário deve ser no futuro";
       }
     }

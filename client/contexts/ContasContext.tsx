@@ -91,7 +91,9 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       try {
         const parsed = JSON.parse(storedData);
         // Verificar se são dados mock (IDs começam com "conta")
-        const temDadosMock = parsed.some((item: any) => item.id?.startsWith("conta"));
+        const temDadosMock = parsed.some((item: any) =>
+          item.id?.startsWith("conta"),
+        );
         if (temDadosMock) {
           console.log("🧹 Removendo dados mock de contas antigos...");
           localStorage.removeItem("contas");
@@ -105,9 +107,13 @@ export function ContasProvider({ children }: { children: ReactNode }) {
 
     // Não criar dados de exemplo - apenas usar dados reais
     if (contasReais.length === 0) {
-      console.log("💡 Sistema iniciado sem contas - adicione contas reais usando os formulários");
+      console.log(
+        "💡 Sistema iniciado sem contas - adicione contas reais usando os formulários",
+      );
     } else {
-      console.log(`📊 Carregadas ${contasReais.length} contas reais do localStorage`);
+      console.log(
+        `📊 Carregadas ${contasReais.length} contas reais do localStorage`,
+      );
     }
 
     const contasComStatus = contasReais.map((conta) => ({
@@ -269,9 +275,11 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     clearTimeout(syncDebounceRef.current);
     syncDebounceRef.current = setTimeout(() => {
       // Notify other contexts of data changes
-      window.dispatchEvent(new CustomEvent('contasDataChanged', {
-        detail: { contas, totais }
-      }));
+      window.dispatchEvent(
+        new CustomEvent("contasDataChanged", {
+          detail: { contas, totais },
+        }),
+      );
     }, 50); // 50ms debounce
   }, [contas, totais]);
 

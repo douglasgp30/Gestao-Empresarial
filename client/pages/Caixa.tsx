@@ -24,7 +24,7 @@ function CaixaContent() {
     console.log("🔍 Estado atual do caixa:");
     console.log("📊 Lançamentos:", lancamentos);
     console.log("💰 Totais:", totais);
-    console.log("🗄️ LocalStorage:", localStorage.getItem('lancamentos'));
+    console.log("🗄️ LocalStorage:", localStorage.getItem("lancamentos"));
   };
 
   return (
@@ -47,10 +47,10 @@ function CaixaContent() {
           </div>
         </div>
         <div className="mt-2 text-xs text-yellow-700">
-          <strong>LocalStorage:</strong> {localStorage.getItem('lancamentos') ?
-            `${JSON.parse(localStorage.getItem('lancamentos') || '[]').length} itens` :
-            'Vazio'
-          }
+          <strong>LocalStorage:</strong>{" "}
+          {localStorage.getItem("lancamentos")
+            ? `${JSON.parse(localStorage.getItem("lancamentos") || "[]").length} itens`
+            : "Vazio"}
         </div>
       </div>
 

@@ -180,7 +180,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Force refresh function for immediate updates
   const forceRefresh = useCallback(() => {
-    setFiltros(prev => ({ ...prev, __timestamp: Date.now() }));
+    setFiltros((prev) => ({ ...prev, __timestamp: Date.now() }));
   }, []);
 
   // Listen for cross-context data changes
@@ -195,12 +195,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       forceRefresh();
     };
 
-    window.addEventListener('caixaDataChanged', handleCaixaChange);
-    window.addEventListener('contasDataChanged', handleContasChange);
+    window.addEventListener("caixaDataChanged", handleCaixaChange);
+    window.addEventListener("contasDataChanged", handleContasChange);
 
     return () => {
-      window.removeEventListener('caixaDataChanged', handleCaixaChange);
-      window.removeEventListener('contasDataChanged', handleContasChange);
+      window.removeEventListener("caixaDataChanged", handleCaixaChange);
+      window.removeEventListener("contasDataChanged", handleContasChange);
     };
   }, [forceRefresh]);
 
@@ -209,7 +209,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     console.log("🔄 DashboardContext: Recalculando valores..."); // Debug
     console.log("📅 Período selecionado:", {
       inicio: filtros.dataInicio.toISOString().split("T")[0],
-      fim: filtros.dataFim.toISOString().split("T")[0]
+      fim: filtros.dataFim.toISOString().split("T")[0],
     }); // Debug
 
     // Fallback to localStorage if contexts aren't available
@@ -240,7 +240,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           contasData = parsed.map((c: any) => ({
             ...c,
             dataVencimento: new Date(c.dataVencimento),
-            dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
+            dataPagamento: c.dataPagamento
+              ? new Date(c.dataPagamento)
+              : undefined,
           }));
         }
       } catch (error) {
@@ -248,7 +250,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    console.log("Dados disponíveis - Lançamentos:", lancamentosData.length, "Contas:", contasData.length);
+    console.log(
+      "Dados disponíveis - Lançamentos:",
+      lancamentosData.length,
+      "Contas:",
+      contasData.length,
+    );
 
     setIsLoading(true);
 
@@ -258,122 +265,132 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     if (aplicarFiltrosCaixa && caixaContext?.filtros) {
       // Usar filtros específicos do Caixa para cálculos dinâmicos
-      lancamentosFiltrados = lancamentosData.filter(
-        (lancamento) => {
-          const dataLancamento = new Date(lancamento.data);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(
-            caixaContext?.filtros?.dataInicio?.getFullYear() ||
-              new Date().getFullYear(),
-            caixaContext?.filtros?.dataInicio?.getMonth() ||
-              new Date().getMonth(),
-            caixaContext?.filtros?.dataInicio?.getDate() ||
-              new Date().getDate(),
-          );
-          const dataFim = new Date(
-            caixaContext?.filtros?.dataFim?.getFullYear() ||
-              new Date().getFullYear(),
-            caixaContext?.filtros?.dataFim?.getMonth() || new Date().getMonth(),
-            caixaContext?.filtros?.dataFim?.getDate() || new Date().getDate(),
-          );
-          const dataLancNorm = new Date(
-            dataLancamento.getFullYear(),
-            dataLancamento.getMonth(),
-            dataLancamento.getDate(),
-          );
+      lancamentosFiltrados = lancamentosData.filter((lancamento) => {
+        const dataLancamento = new Date(lancamento.data);
+        // Normalizar datas para comparação (apenas ano, mês, dia)
+        const dataInicio = new Date(
+          caixaContext?.filtros?.dataInicio?.getFullYear() ||
+            new Date().getFullYear(),
+          caixaContext?.filtros?.dataInicio?.getMonth() ||
+            new Date().getMonth(),
+          caixaContext?.filtros?.dataInicio?.getDate() || new Date().getDate(),
+        );
+        const dataFim = new Date(
+          caixaContext?.filtros?.dataFim?.getFullYear() ||
+            new Date().getFullYear(),
+          caixaContext?.filtros?.dataFim?.getMonth() || new Date().getMonth(),
+          caixaContext?.filtros?.dataFim?.getDate() || new Date().getDate(),
+        );
+        const dataLancNorm = new Date(
+          dataLancamento.getFullYear(),
+          dataLancamento.getMonth(),
+          dataLancamento.getDate(),
+        );
 
-          const dentroDataInicio = dataLancNorm >= dataInicio;
-          const dentroDataFim = dataLancNorm <= dataFim;
-          const tipoCorreto =
-            !caixaContext?.filtros?.tipo ||
-            caixaContext?.filtros?.tipo === "todos" ||
-            lancamento.tipo === caixaContext?.filtros?.tipo;
-          const formaPagamentoCorreta =
-            !caixaContext?.filtros?.formaPagamento ||
-            caixaContext?.filtros?.formaPagamento === "todas" ||
-            lancamento.formaPagamento === caixaContext?.filtros?.formaPagamento;
-          const tecnicoCorreto =
-            !caixaContext?.filtros?.tecnico ||
-            caixaContext?.filtros?.tecnico === "todos" ||
-            lancamento.tecnicoResponsavel === caixaContext?.filtros?.tecnico;
-          const campanhaCorreta =
-            !caixaContext?.filtros?.campanha ||
-            caixaContext?.filtros?.campanha === "todas" ||
-            lancamento.campanha === caixaContext?.filtros?.campanha;
-          const setorCorreto =
-            !caixaContext?.filtros?.setor ||
-            caixaContext?.filtros?.setor === "todos" ||
-            lancamento.setor === caixaContext?.filtros?.setor;
+        const dentroDataInicio = dataLancNorm >= dataInicio;
+        const dentroDataFim = dataLancNorm <= dataFim;
+        const tipoCorreto =
+          !caixaContext?.filtros?.tipo ||
+          caixaContext?.filtros?.tipo === "todos" ||
+          lancamento.tipo === caixaContext?.filtros?.tipo;
+        const formaPagamentoCorreta =
+          !caixaContext?.filtros?.formaPagamento ||
+          caixaContext?.filtros?.formaPagamento === "todas" ||
+          lancamento.formaPagamento === caixaContext?.filtros?.formaPagamento;
+        const tecnicoCorreto =
+          !caixaContext?.filtros?.tecnico ||
+          caixaContext?.filtros?.tecnico === "todos" ||
+          lancamento.tecnicoResponsavel === caixaContext?.filtros?.tecnico;
+        const campanhaCorreta =
+          !caixaContext?.filtros?.campanha ||
+          caixaContext?.filtros?.campanha === "todas" ||
+          lancamento.campanha === caixaContext?.filtros?.campanha;
+        const setorCorreto =
+          !caixaContext?.filtros?.setor ||
+          caixaContext?.filtros?.setor === "todos" ||
+          lancamento.setor === caixaContext?.filtros?.setor;
 
-          return (
-            dentroDataInicio &&
-            dentroDataFim &&
-            tipoCorreto &&
-            formaPagamentoCorreta &&
-            tecnicoCorreto &&
-            campanhaCorreta &&
-            setorCorreto
-          );
-        },
-      );
+        return (
+          dentroDataInicio &&
+          dentroDataFim &&
+          tipoCorreto &&
+          formaPagamentoCorreta &&
+          tecnicoCorreto &&
+          campanhaCorreta &&
+          setorCorreto
+        );
+      });
     } else {
       // Usar filtros do dashboard (período básico)
 
-      lancamentosFiltrados = lancamentosData.filter(
-        (lancamento) => {
-          const dataLancamento = new Date(lancamento.data);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(
-            filtros.dataInicio.getFullYear(),
-            filtros.dataInicio.getMonth(),
-            filtros.dataInicio.getDate(),
-          );
-          const dataFim = new Date(
-            filtros.dataFim.getFullYear(),
-            filtros.dataFim.getMonth(),
-            filtros.dataFim.getDate(),
-          );
-          const dataLancNorm = new Date(
-            dataLancamento.getFullYear(),
-            dataLancamento.getMonth(),
-            dataLancamento.getDate(),
-          );
+      lancamentosFiltrados = lancamentosData.filter((lancamento) => {
+        const dataLancamento = new Date(lancamento.data);
+        // Normalizar datas para comparação (apenas ano, mês, dia)
+        const dataInicio = new Date(
+          filtros.dataInicio.getFullYear(),
+          filtros.dataInicio.getMonth(),
+          filtros.dataInicio.getDate(),
+        );
+        const dataFim = new Date(
+          filtros.dataFim.getFullYear(),
+          filtros.dataFim.getMonth(),
+          filtros.dataFim.getDate(),
+        );
+        const dataLancNorm = new Date(
+          dataLancamento.getFullYear(),
+          dataLancamento.getMonth(),
+          dataLancamento.getDate(),
+        );
 
-          return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
-        },
-      );
+        return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
+      });
     }
 
     // LINHA 1 - Totais do Módulo Caixa (calcular a partir dos dados filtrados)
-    const receitasFiltradas = lancamentosFiltrados.filter((l) => l.tipo === "receita");
-    const despesasFiltradas = lancamentosFiltrados.filter((l) => l.tipo === "despesa");
+    const receitasFiltradas = lancamentosFiltrados.filter(
+      (l) => l.tipo === "receita",
+    );
+    const despesasFiltradas = lancamentosFiltrados.filter(
+      (l) => l.tipo === "despesa",
+    );
 
-    const totalReceitasCaixa = receitasFiltradas
-      .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    const totalReceitasCaixa = receitasFiltradas.reduce(
+      (total, l) => total + (l.valorLiquido || l.valor),
+      0,
+    );
 
-    const totalDespesasCaixa = despesasFiltradas
-      .reduce((total, l) => total + l.valor, 0);
+    const totalDespesasCaixa = despesasFiltradas.reduce(
+      (total, l) => total + l.valor,
+      0,
+    );
 
     const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
 
     // Debug detalhado dos cálculos
     console.log("💰 CÁLCULOS DO DASHBOARD:");
-    console.log(`📈 Receitas: ${receitasFiltradas.length} lançamentos = R$ ${totalReceitasCaixa.toFixed(2)}`);
-    console.log(`📉 Despesas: ${despesasFiltradas.length} lançamentos = R$ ${totalDespesasCaixa.toFixed(2)}`);
+    console.log(
+      `📈 Receitas: ${receitasFiltradas.length} lançamentos = R$ ${totalReceitasCaixa.toFixed(2)}`,
+    );
+    console.log(
+      `📉 Despesas: ${despesasFiltradas.length} lançamentos = R$ ${totalDespesasCaixa.toFixed(2)}`,
+    );
     console.log(`💵 Saldo: R$ ${saldoCaixa.toFixed(2)}`);
     console.log(`🔍 Total de dados filtrados: ${lancamentosFiltrados.length}`);
 
     if (lancamentosFiltrados.length > 0) {
       console.log("📋 Lançamentos no período:");
-      lancamentosFiltrados.forEach(l => {
-        console.log(`  - ${l.tipo}: R$ ${l.valor} em ${l.data.toISOString().split("T")[0]} (${l.descricao})`);
+      lancamentosFiltrados.forEach((l) => {
+        console.log(
+          `  - ${l.tipo}: R$ ${l.valor} em ${l.data.toISOString().split("T")[0]} (${l.descricao})`,
+        );
       });
     }
 
     // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data de pagamento)
     const totalContasRecebidas = contasData
       .filter((c) => {
-        if (c.tipo !== "receber" || c.status !== "paga" || !c.dataPagamento) return false;
+        if (c.tipo !== "receber" || c.status !== "paga" || !c.dataPagamento)
+          return false;
         const dataPagamento = new Date(c.dataPagamento);
         // Normalizar datas para comparação (apenas ano, mês, dia)
         const dataInicio = new Date(
@@ -397,7 +414,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     const totalContasPagas = contasData
       .filter((c) => {
-        if (c.tipo !== "pagar" || c.status !== "paga" || !c.dataPagamento) return false;
+        if (c.tipo !== "pagar" || c.status !== "paga" || !c.dataPagamento)
+          return false;
         const dataPagamento = new Date(c.dataPagamento);
         // Normalizar datas para comparação (apenas ano, mês, dia)
         const dataInicio = new Date(
@@ -621,7 +639,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         contasDataForVencendo = parsed.map((c: any) => ({
           ...c,
           dataVencimento: new Date(c.dataVencimento),
-          dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
+          dataPagamento: c.dataPagamento
+            ? new Date(c.dataPagamento)
+            : undefined,
         }));
       }
     } catch (error) {
