@@ -291,10 +291,55 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       lancamentosFiltrados.length,
     );
 
-    // LINHA 2 - Totais de Contas (usar dados calculados pelo ContasContext)
-    const totalContasRecebidas =
-      contasContext?.totais?.totalContasRecebidas || 0; // Contas recebidas (pagas)
-    const totalContasPagas = contasContext?.totais?.totalContasPagas || 0; // Contas pagas (despesas)
+    // LINHA 2 - Totais de Contas Recebidas e Pagas (filtradas por data de pagamento)
+    const totalContasRecebidas = (contasContext?.contas || [])
+      .filter((c) => {
+        if (c.tipo !== "receber" || c.status !== "paga" || !c.dataPagamento) return false;
+        const dataPagamento = new Date(c.dataPagamento);
+        // Normalizar datas para comparação (apenas ano, mês, dia)
+        const dataInicio = new Date(
+          filtros.dataInicio.getFullYear(),
+          filtros.dataInicio.getMonth(),
+          filtros.dataInicio.getDate(),
+        );
+        const dataFim = new Date(
+          filtros.dataFim.getFullYear(),
+          filtros.dataFim.getMonth(),
+          filtros.dataFim.getDate(),
+        );
+        const dataPagNorm = new Date(
+          dataPagamento.getFullYear(),
+          dataPagamento.getMonth(),
+          dataPagamento.getDate(),
+        );
+        return dataPagNorm >= dataInicio && dataPagNorm <= dataFim;
+      })
+      .reduce((total, c) => total + c.valor, 0);
+
+    const totalContasPagas = (contasContext?.contas || [])
+      .filter((c) => {
+        if (c.tipo !== "pagar" || c.status !== "paga" || !c.dataPagamento) return false;
+        const dataPagamento = new Date(c.dataPagamento);
+        // Normalizar datas para comparação (apenas ano, mês, dia)
+        const dataInicio = new Date(
+          filtros.dataInicio.getFullYear(),
+          filtros.dataInicio.getMonth(),
+          filtros.dataInicio.getDate(),
+        );
+        const dataFim = new Date(
+          filtros.dataFim.getFullYear(),
+          filtros.dataFim.getMonth(),
+          filtros.dataFim.getDate(),
+        );
+        const dataPagNorm = new Date(
+          dataPagamento.getFullYear(),
+          dataPagamento.getMonth(),
+          dataPagamento.getDate(),
+        );
+        return dataPagNorm >= dataInicio && dataPagNorm <= dataFim;
+      })
+      .reduce((total, c) => total + c.valor, 0);
+
     const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
     // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
