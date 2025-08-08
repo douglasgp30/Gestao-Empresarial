@@ -395,10 +395,9 @@ export default function Dashboard() {
           <div className="lg:col-span-1">
             <GraficoSimples
               dados={{
-                receitas: stats.receitasPeriodo,
-                despesas: stats.despesasPeriodo,
-                saldo: stats.saldoPeriodo,
-                meta: metaMes
+                receitas: stats.totalReceitasCaixa || 0,
+                despesas: stats.totalDespesasCaixa || 0,
+                saldo: stats.saldoCaixa || 0
               }}
             />
           </div>
