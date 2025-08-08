@@ -32,7 +32,8 @@ export interface Funcionario {
   nomeCompleto: string;
   login?: string;
   senha?: string;
-  temAcessoSistema: boolean;
+  temAcessoSistema?: boolean;
+  permissaoAcesso?: boolean;
   tipoAcesso?: "Administrador" | "Operador";
   permissoes?: FuncionarioPermissoes;
   percentualComissao: number;
@@ -101,6 +102,7 @@ export interface AuthUser {
   login: string;
   tipoAcesso: "Administrador" | "Operador";
   permissaoAcesso: boolean;
+  permissoes?: FuncionarioPermissoes;
 }
 
 export interface LoginCredentials {
@@ -149,6 +151,7 @@ export interface RelatorioFiltros {
   periodo: {
     dataInicio: Date;
     dataFim: Date;
+    __timestamp?: number;
   };
   tipo?: "receitas" | "despesas" | "ambos";
   formaPagamento?: string;
@@ -176,7 +179,8 @@ export interface Categoria {
 export interface FormaPagamento {
   id: string;
   nome: string;
-  ativa: boolean;
+  tipo: "receita" | "despesa" | "ambos";
+  ativa?: boolean;
   dataCriacao: Date;
 }
 
@@ -215,6 +219,7 @@ export interface Setor {
 export interface Cidade {
   id: string;
   nome: string;
+  estado?: string;
   dataCriacao: Date;
 }
 
@@ -239,9 +244,10 @@ export interface Agendamento {
   horaServico: string; // formato HH:mm
   descricaoServico: string;
   setor: string;
-  cidade: string;
+  cidade?: string;
   tecnicoResponsavel?: string;
-  finalTelefoneCliente: string; // 4 dígitos
+  telefoneCliente?: string; // Compatibilidade com código existente
+  finalTelefoneCliente?: string; // 4 dígitos
   tempoLembrete: number; // em minutos
   status: "agendado" | "concluido" | "cancelado";
   dataCriacao: Date;
@@ -255,6 +261,7 @@ export interface FiltrosAgendamento {
   setor?: string;
   tecnico?: string;
   status: "todos" | "agendado" | "concluido" | "cancelado";
+  __timestamp?: number;
 }
 
 export interface LembreteAgendamento {
