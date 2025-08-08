@@ -1,23 +1,113 @@
 import "dotenv/config";
-import express from "express";
+import express, { Express } from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 
-export function createServer() {
+// Importar rotas do banco de dados
+import { 
+  getCampanhas, 
+  createCampanha, 
+  updateCampanha, 
+  deleteCampanha 
+} from "./routes/campanhas";
+
+import { 
+  getDescricoes, 
+  createDescricao, 
+  updateDescricao, 
+  deleteDescricao 
+} from "./routes/descricoes";
+
+import { 
+  getFormasPagamento, 
+  createFormaPagamento, 
+  updateFormaPagamento, 
+  deleteFormaPagamento 
+} from "./routes/formas-pagamento";
+
+import { 
+  getFuncionarios, 
+  getTecnicos, 
+  createFuncionario, 
+  updateFuncionario, 
+  deleteFuncionario 
+} from "./routes/funcionarios";
+
+import { 
+  getSetores, 
+  getCidades, 
+  createSetor, 
+  updateSetor, 
+  deleteSetor 
+} from "./routes/setores";
+
+import { 
+  getLancamentos, 
+  createLancamento, 
+  updateLancamento, 
+  deleteLancamento, 
+  getTotaisCaixa 
+} from "./routes/caixa";
+
+export function createServer(): Express {
   const app = express();
 
-  // Middleware
   app.use(cors());
   app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
 
-  // Example API routes
-  app.get("/api/ping", (_req, res) => {
-    const ping = process.env.PING_MESSAGE ?? "ping";
-    res.json({ message: ping });
+  // Rotas existentes
+  app.get("/api/ping", (req, res) => {
+    res.json({ message: "pong", timestamp: new Date().toISOString() });
   });
-
   app.get("/api/demo", handleDemo);
 
+  // Rotas de Campanhas
+  app.get("/api/campanhas", getCampanhas);
+  app.post("/api/campanhas", createCampanha);
+  app.put("/api/campanhas/:id", updateCampanha);
+  app.delete("/api/campanhas/:id", deleteCampanha);
+
+  // Rotas de Descrições
+  app.get("/api/descricoes", getDescricoes);
+  app.post("/api/descricoes", createDescricao);
+  app.put("/api/descricoes/:id", updateDescricao);
+  app.delete("/api/descricoes/:id", deleteDescricao);
+
+  // Rotas de Formas de Pagamento
+  app.get("/api/formas-pagamento", getFormasPagamento);
+  app.post("/api/formas-pagamento", createFormaPagamento);
+  app.put("/api/formas-pagamento/:id", updateFormaPagamento);
+  app.delete("/api/formas-pagamento/:id", deleteFormaPagamento);
+
+  // Rotas de Funcionários
+  app.get("/api/funcionarios", getFuncionarios);
+  app.get("/api/tecnicos", getTecnicos);
+  app.post("/api/funcionarios", createFuncionario);
+  app.put("/api/funcionarios/:id", updateFuncionario);
+  app.delete("/api/funcionarios/:id", deleteFuncionario);
+
+  // Rotas de Setores e Cidades
+  app.get("/api/setores", getSetores);
+  app.get("/api/cidades", getCidades);
+  app.post("/api/setores", createSetor);
+  app.put("/api/setores/:id", updateSetor);
+  app.delete("/api/setores/:id", deleteSetor);
+
+  // Rotas de Caixa
+  app.get("/api/caixa/lancamentos", getLancamentos);
+  app.get("/api/caixa/totais", getTotaisCaixa);
+  app.post("/api/caixa/lancamentos", createLancamento);
+  app.put("/api/caixa/lancamentos/:id", updateLancamento);
+  app.delete("/api/caixa/lancamentos/:id", deleteLancamento);
+
   return app;
+}
+
+const app = createServer();
+const port = process.env.PORT || 8080;
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
+  });
 }
