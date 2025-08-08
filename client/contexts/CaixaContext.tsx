@@ -200,6 +200,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const adicionarLancamento = (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
+    console.log("📝 CaixaContext.adicionarLancamento chamado:", novoLancamento);
+
     const id = Date.now().toString();
     const lancamento: LancamentoCaixa = {
       ...novoLancamento,
