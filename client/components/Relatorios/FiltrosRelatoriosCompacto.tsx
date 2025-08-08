@@ -100,7 +100,7 @@ export default function FiltrosRelatoriosCompacto() {
         dataInicio: inicioMes,
         dataFim: hoje,
       },
-      tipo: "todos",
+      tipo: "ambos",
       formaPagamento: "todas",
       tecnico: "todos",
       setor: "todos",
