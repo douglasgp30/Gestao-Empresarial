@@ -82,23 +82,6 @@ export default function GraficoSimples({ dados, className }: GraficoSimplesProps
           </div>
         </div>
 
-        {/* Mini insights */}
-        <div className="pt-2 border-t">
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="text-center p-2 bg-muted/50 rounded">
-              <div className="font-medium text-green-600">
-                {isNaN(percentualReceitas) ? '0.0' : percentualReceitas.toFixed(1)}%
-              </div>
-              <div className="text-muted-foreground">Receitas</div>
-            </div>
-            <div className="text-center p-2 bg-muted/50 rounded">
-              <div className="font-medium text-red-600">
-                {isNaN(percentualDespesas) ? '0.0' : percentualDespesas.toFixed(1)}%
-              </div>
-              <div className="text-muted-foreground">Despesas</div>
-            </div>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
