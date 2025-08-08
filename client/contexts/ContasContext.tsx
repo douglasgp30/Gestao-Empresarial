@@ -163,7 +163,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       // Normalizar datas para comparaç��o (apenas ano, mês, dia)
       const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
       const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-      const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
+      const dataRefNorm = new Date(dataReferencia.getFullYear(), dataReferencia.getMonth(), dataReferencia.getDate());
 
       const dentroDataInicio = dataVencNorm >= dataInicio;
       const dentroDataFim = dataVencNorm <= dataFim;
