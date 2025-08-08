@@ -168,7 +168,7 @@ export default function FormularioReceita() {
 
     // 👷 Comissão do funcionário: abater do valor líquido
     if (formData.tecnicoResponsavel) {
-      const percentualComissao = 15; // 15% de comissão padrão (pode vir das configurações)
+      const percentualComissao = 50; // 50% de comissão padrão
       comissaoFuncionario = valorLiquido * (percentualComissao / 100);
       valorLiquido = valorLiquido - comissaoFuncionario; // Abater comissão do valor da empresa
     }
