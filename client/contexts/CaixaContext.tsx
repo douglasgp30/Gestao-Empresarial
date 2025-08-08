@@ -92,6 +92,16 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     setor: "todos",
   });
 
+  // Carregar dados reais do localStorage
+  useEffect(() => {
+    const lancamentosReais = carregarLancamentosReais();
+    const campanhasReais = carregarCampanhasReais();
+
+    setLancamentos(lancamentosReais);
+    setCampanhas(campanhasReais);
+    setIsLoading(false);
+  }, []);
+
   const adicionarLancamento = (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
