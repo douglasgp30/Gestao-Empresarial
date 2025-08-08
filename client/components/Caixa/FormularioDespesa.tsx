@@ -113,6 +113,12 @@ export default function FormularioDespesa() {
       notaFiscal: false, // Despesas geralmente não têm nota fiscal
     });
 
+    // Feedback de sucesso
+    toast({
+      title: "Despesa lançada",
+      description: "A despesa foi lançada com sucesso no caixa.",
+    });
+
     // Reset form
     setFormData({
       data: new Date().toISOString().split("T")[0],
