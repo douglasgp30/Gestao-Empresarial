@@ -27,6 +27,7 @@ import {
 } from "../components/ui/dialog";
 import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
 import { TesteFiltros } from "../components/ui/teste-filtros";
+import { formatDate, formatDateRange } from "../lib/dateUtils";
 import {
   DollarSign,
   TrendingUp,
@@ -53,9 +54,6 @@ function formatCurrency(value: number) {
   });
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("pt-BR");
-}
 
 function getStatusColor(status: string) {
   switch (status) {
