@@ -120,7 +120,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    const funcionario = mockFuncionarios.find(
+    // Buscar funcionários do localStorage e incluir admin padrão
+    let funcionarios: Funcionario[] = [adminPadrao];
+    try {
+      const funcionariosStorage = localStorage.getItem('funcionarios');
+      if (funcionariosStorage) {
+        const funcionariosReais = JSON.parse(funcionariosStorage);
+        funcionarios = [...funcionarios, ...funcionariosReais];
+      }
+    } catch (error) {
+      console.warn('Erro ao carregar funcionários para login:', error);
+    }
+
+    const funcionario = funcionarios.find(
       (f) =>
         f.login === credentials.login &&
         f.senha === credentials.senha &&
