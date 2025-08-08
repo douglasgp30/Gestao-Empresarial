@@ -242,6 +242,8 @@ export default function FormularioReceita() {
       observacoes: formData.observacoes || undefined,
     });
 
+    console.log("✅ Receita adicionada com sucesso");
+
     // Feedback de sucesso
     toast({
       title: "Receita lançada",
