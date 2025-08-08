@@ -173,6 +173,25 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setFiltros(novoFiltro);
   };
 
+  // Listen for cross-context data changes
+  useEffect(() => {
+    const handleCaixaChange = () => {
+      setFiltros(prev => ({ ...prev, __timestamp: Date.now() }));
+    };
+
+    const handleContasChange = () => {
+      setFiltros(prev => ({ ...prev, __timestamp: Date.now() }));
+    };
+
+    window.addEventListener('caixaDataChanged', handleCaixaChange);
+    window.addEventListener('contasDataChanged', handleContasChange);
+
+    return () => {
+      window.removeEventListener('caixaDataChanged', handleCaixaChange);
+      window.removeEventListener('contasDataChanged', handleContasChange);
+    };
+  }, []);
+
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
     console.log("DashboardContext: useEffect chamado"); // Debug
