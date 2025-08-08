@@ -39,18 +39,14 @@ export function ModalReceita() {
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split('T')[0],
     valor: "",
-    valorQueEntrou: "",
-    valorLiquido: "",
-    comissao: "",
-    imposto: "",
+    valorRecebido: "",     // Novo campo obrigatório para cartão
+    conta: "",             // Novo campo obrigatório (empresa/pessoal)
     descricao: "",
+    subdescricao: "",      // Novo campo opcional
     formaPagamento: "",
     tecnicoResponsavel: "",
     setor: "",
     campanha: "",
-    observacoes: "",
-    numeroNota: "",
-    arquivoNota: "",
   });
 
   const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
