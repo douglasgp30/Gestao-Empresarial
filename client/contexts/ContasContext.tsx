@@ -84,11 +84,29 @@ export function ContasProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados reais do localStorage
   useEffect(() => {
+    // Limpar dados mock antigos se existirem
+    const storedData = localStorage.getItem("contas");
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        // Verificar se são dados mock (IDs começam com "conta")
+        const temDadosMock = parsed.some((item: any) => item.id?.startsWith("conta"));
+        if (temDadosMock) {
+          console.log("🧹 Removendo dados mock de contas antigos...");
+          localStorage.removeItem("contas");
+        }
+      } catch (error) {
+        console.warn("Erro ao verificar dados mock de contas:", error);
+      }
+    }
+
     let contasReais = carregarContasReais();
 
     // Não criar dados de exemplo - apenas usar dados reais
     if (contasReais.length === 0) {
-      console.log("Sistema iniciado sem contas - usuário deve adicionar contas reais");
+      console.log("💡 Sistema iniciado sem contas - adicione contas reais usando os formulários");
+    } else {
+      console.log(`📊 Carregadas ${contasReais.length} contas reais do localStorage`);
     }
 
     const contasComStatus = contasReais.map((conta) => ({
