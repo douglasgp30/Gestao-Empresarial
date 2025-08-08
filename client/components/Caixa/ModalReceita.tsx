@@ -65,7 +65,6 @@ export function ModalReceita() {
       setor: "",
       campanha: "",
     });
-    setMostrarCamposAvancados(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
