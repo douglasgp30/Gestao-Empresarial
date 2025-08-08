@@ -44,56 +44,56 @@ const App = () => (
               <FuncionariosProvider>
                 <AgendamentosProvider>
                   <CaixaProvider>
-                  <ContasProvider>
-                    <RelatoriosProvider>
-                      <DashboardProvider>
-                        <BrowserRouter>
-                          <Routes>
-                            <Route path="/login" element={<Login />} />
-                            <Route
-                              path="/"
-                              element={
-                                <ProtectedRoute>
-                                  <MainLayout />
-                                </ProtectedRoute>
-                              }
-                            >
-                              <Route index element={<Dashboard />} />
-                              <Route path="caixa" element={<Caixa />} />
-                              <Route path="contas" element={<Contas />} />
+                    <ContasProvider>
+                      <RelatoriosProvider>
+                        <DashboardProvider>
+                          <BrowserRouter>
+                            <Routes>
+                              <Route path="/login" element={<Login />} />
                               <Route
-                                path="agendamentos"
-                                element={<Agendamentos />}
-                              />
-                              <Route path="clientes" element={<Clientes />} />
-                              <Route
-                                path="funcionarios"
+                                path="/"
                                 element={
-                                  <ProtectedRoute requireAdmin>
-                                    <Funcionarios />
+                                  <ProtectedRoute>
+                                    <MainLayout />
                                   </ProtectedRoute>
                                 }
-                              />
-                              <Route
-                                path="relatorios"
-                                element={<Relatorios />}
-                              />
-                              <Route
-                                path="configuracoes"
-                                element={
-                                  <ProtectedRoute requireAdmin>
-                                    <Configuracoes />
-                                  </ProtectedRoute>
-                                }
-                              />
-                              <Route path="*" element={<NotFound />} />
-                            </Route>
-                          </Routes>
-                          <GerenciadorLembretes />
-                        </BrowserRouter>
-                      </DashboardProvider>
-                    </RelatoriosProvider>
-                  </ContasProvider>
+                              >
+                                <Route index element={<Dashboard />} />
+                                <Route path="caixa" element={<Caixa />} />
+                                <Route path="contas" element={<Contas />} />
+                                <Route
+                                  path="agendamentos"
+                                  element={<Agendamentos />}
+                                />
+                                <Route path="clientes" element={<Clientes />} />
+                                <Route
+                                  path="funcionarios"
+                                  element={
+                                    <ProtectedRoute requireAdmin>
+                                      <Funcionarios />
+                                    </ProtectedRoute>
+                                  }
+                                />
+                                <Route
+                                  path="relatorios"
+                                  element={<Relatorios />}
+                                />
+                                <Route
+                                  path="configuracoes"
+                                  element={
+                                    <ProtectedRoute requireAdmin>
+                                      <Configuracoes />
+                                    </ProtectedRoute>
+                                  }
+                                />
+                                <Route path="*" element={<NotFound />} />
+                              </Route>
+                            </Routes>
+                            <GerenciadorLembretes />
+                          </BrowserRouter>
+                        </DashboardProvider>
+                      </RelatoriosProvider>
+                    </ContasProvider>
                   </CaixaProvider>
                 </AgendamentosProvider>
               </FuncionariosProvider>
