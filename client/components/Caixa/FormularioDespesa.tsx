@@ -74,10 +74,30 @@ export default function FormularioDespesa() {
     e.preventDefault();
 
     const valor = parseFloat(formData.valor);
-    if (!valor || valor <= 0) return;
+    if (!valor || valor <= 0) {
+      toast({
+        title: "Erro de validação",
+        description: "Por favor, informe um valor válido maior que zero.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.formaPagamento) {
+      toast({
+        title: "Erro de validação",
+        description: "Por favor, selecione uma forma de pagamento.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (!formData.descricaoServico.trim()) {
-      alert("Por favor, selecione ou cadastre uma descrição da despesa.");
+      toast({
+        title: "Erro de validação",
+        description: "Por favor, selecione ou cadastre uma descrição da despesa.",
+        variant: "destructive",
+      });
       return;
     }
 
