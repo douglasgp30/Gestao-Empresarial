@@ -28,8 +28,8 @@ function CaixaContent() {
         </div>
         <div className="flex flex-wrap gap-2">
           <SeedButton />
-          <FormularioReceita />
-          <FormularioDespesa />
+          <ModalReceita />
+          <ModalDespesa />
           <ModalCampanhas />
           <ModalDescricoesAvancado />
           <ModalCidades />
