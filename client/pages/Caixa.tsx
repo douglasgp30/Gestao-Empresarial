@@ -1,5 +1,5 @@
 import React from "react";
-import { CaixaProvider } from "../contexts/CaixaContext";
+import { CaixaProvider, useCaixa } from "../contexts/CaixaContext";
 import { EntidadesProvider } from "../contexts/EntidadesContext";
 import FormularioReceita from "../components/Caixa/FormularioReceita";
 import FormularioDespesa from "../components/Caixa/FormularioDespesa";
@@ -9,7 +9,8 @@ import ModalCidades from "../components/Caixa/ModalCidades";
 import ModalSetores from "../components/Caixa/ModalSetores";
 import FiltrosCaixaCompacto from "../components/Caixa/FiltrosCaixaCompacto";
 import ListaLancamentosSimples from "../components/Caixa/ListaLancamentosSimples";
-import { DollarSign } from "lucide-react";
+import { DollarSign, Bug } from "lucide-react";
+import { Button } from "../components/ui/button";
 
 function CaixaContent() {
   return (
