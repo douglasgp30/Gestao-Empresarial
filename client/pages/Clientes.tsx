@@ -43,9 +43,7 @@ function formatCurrency(value: number) {
   });
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("pt-BR");
-}
+import { formatDate } from "../lib/dateUtils";
 
 export default function Clientes() {
   const { clientes, filtrarClientes, isLoading } = useClientes();
