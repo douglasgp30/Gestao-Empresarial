@@ -62,7 +62,7 @@ export default function FiltrosRelatoriosCompacto() {
       periodo: {
         ...filtros.periodo,
         dataInicio: novaData,
-        __timestamp: Date.now() // Força re-render
+        __timestamp: Date.now(), // Força re-render
       },
     });
   };
@@ -76,7 +76,7 @@ export default function FiltrosRelatoriosCompacto() {
       periodo: {
         ...filtros.periodo,
         dataFim: novaData,
-        __timestamp: Date.now() // Força re-render
+        __timestamp: Date.now(), // Força re-render
       },
     });
   };
@@ -87,8 +87,8 @@ export default function FiltrosRelatoriosCompacto() {
       ...filtros,
       periodo: {
         ...filtros.periodo,
-        __timestamp: Date.now() // Força re-render
-      }
+        __timestamp: Date.now(), // Força re-render
+      },
     });
   };
 

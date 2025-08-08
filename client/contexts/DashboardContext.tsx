@@ -89,14 +89,14 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   try {
     caixaContext = useCaixa();
   } catch (error) {
-    console.warn('CaixaContext não disponível no DashboardProvider:', error);
+    console.warn("CaixaContext não disponível no DashboardProvider:", error);
     caixaContext = null;
   }
 
   try {
     contasContext = useContas();
   } catch (error) {
-    console.warn('ContasContext não disponível no DashboardProvider:', error);
+    console.warn("ContasContext não disponível no DashboardProvider:", error);
     contasContext = null;
   }
 
@@ -184,82 +184,90 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     if (aplicarFiltrosCaixa && caixaContext?.filtros) {
       // Usar filtros específicos do Caixa para cálculos dinâmicos
-      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter((lancamento) => {
-        const dataLancamento = new Date(lancamento.data);
-        // Normalizar datas para comparação (apenas ano, mês, dia)
-        const dataInicio = new Date(
-          caixaContext?.filtros?.dataInicio?.getFullYear() || new Date().getFullYear(),
-          caixaContext?.filtros?.dataInicio?.getMonth() || new Date().getMonth(),
-          caixaContext?.filtros?.dataInicio?.getDate() || new Date().getDate(),
-        );
-        const dataFim = new Date(
-          caixaContext?.filtros?.dataFim?.getFullYear() || new Date().getFullYear(),
-          caixaContext?.filtros?.dataFim?.getMonth() || new Date().getMonth(),
-          caixaContext?.filtros?.dataFim?.getDate() || new Date().getDate(),
-        );
-        const dataLancNorm = new Date(
-          dataLancamento.getFullYear(),
-          dataLancamento.getMonth(),
-          dataLancamento.getDate(),
-        );
+      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter(
+        (lancamento) => {
+          const dataLancamento = new Date(lancamento.data);
+          // Normalizar datas para comparação (apenas ano, mês, dia)
+          const dataInicio = new Date(
+            caixaContext?.filtros?.dataInicio?.getFullYear() ||
+              new Date().getFullYear(),
+            caixaContext?.filtros?.dataInicio?.getMonth() ||
+              new Date().getMonth(),
+            caixaContext?.filtros?.dataInicio?.getDate() ||
+              new Date().getDate(),
+          );
+          const dataFim = new Date(
+            caixaContext?.filtros?.dataFim?.getFullYear() ||
+              new Date().getFullYear(),
+            caixaContext?.filtros?.dataFim?.getMonth() || new Date().getMonth(),
+            caixaContext?.filtros?.dataFim?.getDate() || new Date().getDate(),
+          );
+          const dataLancNorm = new Date(
+            dataLancamento.getFullYear(),
+            dataLancamento.getMonth(),
+            dataLancamento.getDate(),
+          );
 
-        const dentroDataInicio = dataLancNorm >= dataInicio;
-        const dentroDataFim = dataLancNorm <= dataFim;
-        const tipoCorreto =
-          !caixaContext?.filtros?.tipo ||
-          caixaContext?.filtros?.tipo === "todos" ||
-          lancamento.tipo === caixaContext?.filtros?.tipo;
-        const formaPagamentoCorreta =
-          !caixaContext?.filtros?.formaPagamento ||
-          caixaContext?.filtros?.formaPagamento === "todas" ||
-          lancamento.formaPagamento === caixaContext?.filtros?.formaPagamento;
-        const tecnicoCorreto =
-          !caixaContext?.filtros?.tecnico ||
-          caixaContext?.filtros?.tecnico === "todos" ||
-          lancamento.tecnicoResponsavel === caixaContext?.filtros?.tecnico;
-        const campanhaCorreta =
-          !caixaContext?.filtros?.campanha ||
-          caixaContext?.filtros?.campanha === "todas" ||
-          lancamento.campanha === caixaContext?.filtros?.campanha;
-        const setorCorreto =
-          !caixaContext?.filtros?.setor ||
-          caixaContext?.filtros?.setor === "todos" ||
-          lancamento.setor === caixaContext?.filtros?.setor;
+          const dentroDataInicio = dataLancNorm >= dataInicio;
+          const dentroDataFim = dataLancNorm <= dataFim;
+          const tipoCorreto =
+            !caixaContext?.filtros?.tipo ||
+            caixaContext?.filtros?.tipo === "todos" ||
+            lancamento.tipo === caixaContext?.filtros?.tipo;
+          const formaPagamentoCorreta =
+            !caixaContext?.filtros?.formaPagamento ||
+            caixaContext?.filtros?.formaPagamento === "todas" ||
+            lancamento.formaPagamento === caixaContext?.filtros?.formaPagamento;
+          const tecnicoCorreto =
+            !caixaContext?.filtros?.tecnico ||
+            caixaContext?.filtros?.tecnico === "todos" ||
+            lancamento.tecnicoResponsavel === caixaContext?.filtros?.tecnico;
+          const campanhaCorreta =
+            !caixaContext?.filtros?.campanha ||
+            caixaContext?.filtros?.campanha === "todas" ||
+            lancamento.campanha === caixaContext?.filtros?.campanha;
+          const setorCorreto =
+            !caixaContext?.filtros?.setor ||
+            caixaContext?.filtros?.setor === "todos" ||
+            lancamento.setor === caixaContext?.filtros?.setor;
 
-        return (
-          dentroDataInicio &&
-          dentroDataFim &&
-          tipoCorreto &&
-          formaPagamentoCorreta &&
-          tecnicoCorreto &&
-          campanhaCorreta &&
-          setorCorreto
-        );
-      });
+          return (
+            dentroDataInicio &&
+            dentroDataFim &&
+            tipoCorreto &&
+            formaPagamentoCorreta &&
+            tecnicoCorreto &&
+            campanhaCorreta &&
+            setorCorreto
+          );
+        },
+      );
     } else {
       // Usar filtros do dashboard (período básico)
 
-      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter((lancamento) => {
-        const dataLancamento = new Date(lancamento.data);
-        // Normalizar datas para comparação (apenas ano, mês, dia)
-        const dataInicio = new Date(
-          filtros.dataInicio.getFullYear(),
-          filtros.dataInicio.getMonth(),
-          filtros.dataInicio.getDate(),
-        );
-        const dataFim = new Date(
-          filtros.dataFim.getFullYear(),
-          filtros.dataFim.getMonth(),
-          filtros.dataFim.getDate(),
-        );
-        const dataLancNorm = new Date(
-          dataLancamento.getFullYear(),
-          dataLancamento.getMonth(),
-          dataLancamento.getDate(),
-        );
+      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter(
+        (lancamento) => {
+          const dataLancamento = new Date(lancamento.data);
+          // Normalizar datas para comparação (apenas ano, mês, dia)
+          const dataInicio = new Date(
+            filtros.dataInicio.getFullYear(),
+            filtros.dataInicio.getMonth(),
+            filtros.dataInicio.getDate(),
+          );
+          const dataFim = new Date(
+            filtros.dataFim.getFullYear(),
+            filtros.dataFim.getMonth(),
+            filtros.dataFim.getDate(),
+          );
+          const dataLancNorm = new Date(
+            dataLancamento.getFullYear(),
+            dataLancamento.getMonth(),
+            dataLancamento.getDate(),
+          );
 
-        return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
-      });
+          return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
+        },
+      );
     }
 
     // LINHA 1 - Totais do Módulo Caixa (usar dados calculados pelo CaixaContext)
@@ -276,7 +284,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     );
 
     // LINHA 2 - Totais de Contas (usar dados calculados pelo ContasContext)
-    const totalContasRecebidas = contasContext?.totais?.totalContasRecebidas || 0; // Contas recebidas (pagas)
+    const totalContasRecebidas =
+      contasContext?.totais?.totalContasRecebidas || 0; // Contas recebidas (pagas)
     const totalContasPagas = contasContext?.totais?.totalContasPagas || 0; // Contas pagas (despesas)
     const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
