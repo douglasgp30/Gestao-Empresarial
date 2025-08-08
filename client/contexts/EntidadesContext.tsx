@@ -606,6 +606,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     editarSetor,
     excluirSetor,
 
+    // Funções para Cidades
+    adicionarCidade,
+
     // Funções para Clientes (localStorage)
     adicionarCliente,
     editarCliente,
