@@ -101,6 +101,8 @@ export default function FormularioDespesa() {
       return;
     }
 
+    console.log("🚀 Iniciando lançamento de despesa:", { valor, formaPagamento: formData.formaPagamento });
+
     adicionarLancamento({
       tipo: "despesa",
       data: new Date(formData.data),
