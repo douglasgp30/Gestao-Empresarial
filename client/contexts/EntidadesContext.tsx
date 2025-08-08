@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import {
   Descricao,
   Categoria,
@@ -67,498 +73,312 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Mock data inicial - Categorias
-const mockCategorias: Categoria[] = [
-  // Categorias de Receitas
-  {
-    id: "1",
-    nome: "Serviços",
-    tipo: "receita",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "2",
-    nome: "Taxas",
-    tipo: "receita",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "3",
-    nome: "Emergência",
-    tipo: "receita",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  // Categorias de Despesas
-  {
-    id: "4",
-    nome: "Operacional",
-    tipo: "despesa",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "5",
-    nome: "Administrativo",
-    tipo: "despesa",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "6",
-    nome: "Manutenção",
-    tipo: "despesa",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-];
+// Entidades essenciais básicas - apenas o mínimo necessário para funcionamento
+const entidadesEssenciais = {
+  categorias: [
+    { id: "1", nome: "Serviços", tipo: "receita" as const, dataCriacao: new Date() },
+    { id: "2", nome: "Operacional", tipo: "despesa" as const, dataCriacao: new Date() },
+  ],
+  formasPagamento: [
+    { id: "1", nome: "Dinheiro", tipo: "ambos" as const, dataCriacao: new Date() },
+    { id: "2", nome: "Pix", tipo: "ambos" as const, dataCriacao: new Date() },
+    { id: "3", nome: "Cartão", tipo: "ambos" as const, dataCriacao: new Date() },
+  ],
+  setores: [
+    { id: "1", nome: "Residencial", dataCriacao: new Date() },
+    { id: "2", nome: "Comercial", dataCriacao: new Date() },
+  ],
+  cidades: [
+    { id: "1", nome: "Goiânia", estado: "GO", dataCriacao: new Date() },
+  ],
+};
 
-// Mock data inicial - Descrições
-const mockDescricoes: Descricao[] = [
-  // Descrições de Receitas
-  {
-    id: "1",
-    nome: "Desentupimento de pia",
-    tipo: "receita",
-    categoria: "Serviços",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "2",
-    nome: "Desentupimento de vaso sanitário",
-    tipo: "receita",
-    categoria: "Serviços",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "3",
-    nome: "Limpeza de caixa d'água",
-    tipo: "receita",
-    categoria: "Serviços",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "4",
-    nome: "Dedetização",
-    tipo: "receita",
-    categoria: "Serviços",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "5",
-    nome: "Taxa de urgência",
-    tipo: "receita",
-    categoria: "Taxas",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  // Descrições de Despesas
-  {
-    id: "6",
-    nome: "Combustível",
-    tipo: "despesa",
-    categoria: "Operacional",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "7",
-    nome: "Almoço da equipe",
-    tipo: "despesa",
-    categoria: "Administrativo",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "8",
-    nome: "Manutenção do equipamento",
-    tipo: "despesa",
-    categoria: "Manutenção",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "9",
-    nome: "Material de limpeza",
-    tipo: "despesa",
-    categoria: "Operacional",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-];
+// Funções para carregar dados do localStorage
+function carregarEntidadeDoStorage<T>(key: string, defaultValue: T[] = []): T[] {
+  try {
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return parsed.map((item: any) => ({
+        ...item,
+        dataCriacao: new Date(item.dataCriacao)
+      }));
+    }
+    return defaultValue;
+  } catch (error) {
+    console.warn(`Erro ao carregar ${key} do localStorage:`, error);
+    return defaultValue;
+  }
+}
 
-const mockFormasPagamento: FormaPagamento[] = [
-  {
-    id: "1",
-    nome: "Dinheiro",
-    ativa: true,
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "2",
-    nome: "Pix",
-    ativa: true,
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "3",
-    nome: "Cartão de Débito",
-    ativa: true,
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "4",
-    nome: "Cartão de Crédito",
-    ativa: true,
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "5",
-    nome: "Boleto",
-    ativa: true,
-    dataCriacao: new Date(2024, 10, 1),
-  },
-];
-
-const mockClientes: Cliente[] = [
-  {
-    id: "1",
-    nome: "Maria Silva Santos",
-    cpf: "123.456.789-01",
-    telefone1: "(11) 99999-1111",
-    telefone2: "(11) 3333-1111",
-    email: "maria@email.com",
-    endereco: "Rua das Flores, 123 - São Paulo/SP",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "2",
-    nome: "Empresa XYZ Ltda",
-    telefone1: "(11) 99999-2222",
-    email: "contato@empresaxyz.com",
-    endereco: "Av. Paulista, 1000 - São Paulo/SP",
-    dataCriacao: new Date(2024, 10, 2),
-  },
-  {
-    id: "3",
-    nome: "Condomínio Residencial Verde",
-    telefone1: "(11) 99999-3333",
-    endereco: "Rua Verde, 500 - São Paulo/SP",
-    dataCriacao: new Date(2024, 10, 3),
-  },
-];
-
-const mockFornecedores: Fornecedor[] = [
-  {
-    id: "1",
-    nome: "Posto de Gasolina ABC",
-    telefone: "(11) 99999-4444",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "2",
-    nome: "Fornecedor de Materiais Silva",
-    telefone: "(11) 99999-5555",
-    dataCriacao: new Date(2024, 10, 2),
-  },
-  {
-    id: "3",
-    nome: "Oficina do João - Manutenção",
-    telefone: "(11) 99999-6666",
-    dataCriacao: new Date(2024, 10, 3),
-  },
-];
-
-const mockSetores: Setor[] = [
-  {
-    id: "1",
-    nome: "Residencial",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "2",
-    nome: "Comercial",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "3",
-    nome: "Industrial",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "4",
-    nome: "Condomínio",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "5",
-    nome: "Emergência",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-];
-
-const mockCidades: Cidade[] = [
-  {
-    id: "1",
-    nome: "São Paulo",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "2",
-    nome: "Santos",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "3",
-    nome: "São Bernardo do Campo",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "4",
-    nome: "Santo André",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-  {
-    id: "5",
-    nome: "Diadema",
-    dataCriacao: new Date(2024, 10, 1),
-  },
-];
+function salvarEntidadeNoStorage<T>(key: string, data: T[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.warn(`Erro ao salvar ${key} no localStorage:`, error);
+  }
+}
 
 export function EntidadesProvider({ children }: { children: ReactNode }) {
-  const [descricoes, setDescricoes] = useState<Descricao[]>(mockDescricoes);
-  const [categorias, setCategorias] = useState<Categoria[]>(mockCategorias);
-  const [formasPagamento, setFormasPagamento] =
-    useState<FormaPagamento[]>(mockFormasPagamento);
-  const [clientes, setClientes] = useState<Cliente[]>(mockClientes);
-  const [fornecedores, setFornecedores] =
-    useState<Fornecedor[]>(mockFornecedores);
-  const [setores, setSetores] = useState<Setor[]>(mockSetores);
-  const [cidades, setCidades] = useState<Cidade[]>(mockCidades);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Estados para todas as entidades
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [descricoes, setDescricoes] = useState<Descricao[]>([]);
+  const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
+  const [setores, setSetores] = useState<Setor[]>([]);
+  const [cidades, setCidades] = useState<Cidade[]>([]);
 
-  // Descrições
-  const adicionarDescricao = (
-    novaDescricao: Omit<Descricao, "id" | "dataCriacao">,
-  ) => {
-    const id = Date.now().toString();
-    const descricao: Descricao = {
-      ...novaDescricao,
-      id,
-      dataCriacao: new Date(),
-    };
-    setDescricoes((prev) => [...prev, descricao]);
-  };
+  // Carregar dados do localStorage na inicialização
+  useEffect(() => {
+    const categoriasStorage = carregarEntidadeDoStorage<Categoria>('categorias', entidadesEssenciais.categorias);
+    const descricoesStorage = carregarEntidadeDoStorage<Descricao>('descricoes');
+    const formasStorage = carregarEntidadeDoStorage<FormaPagamento>('formasPagamento', entidadesEssenciais.formasPagamento);
+    const clientesStorage = carregarEntidadeDoStorage<Cliente>('clientes');
+    const fornecedoresStorage = carregarEntidadeDoStorage<Fornecedor>('fornecedores');
+    const setoresStorage = carregarEntidadeDoStorage<Setor>('setores', entidadesEssenciais.setores);
+    const cidadesStorage = carregarEntidadeDoStorage<Cidade>('cidades', entidadesEssenciais.cidades);
 
-  const editarDescricao = (
-    id: string,
-    dadosAtualizados: Partial<Descricao>,
-  ) => {
-    setDescricoes((prev) =>
-      prev.map((descricao) =>
-        descricao.id === id ? { ...descricao, ...dadosAtualizados } : descricao,
-      ),
-    );
-  };
+    setCategorias(categoriasStorage);
+    setDescricoes(descricoesStorage);
+    setFormasPagamento(formasStorage);
+    setClientes(clientesStorage);
+    setFornecedores(fornecedoresStorage);
+    setSetores(setoresStorage);
+    setCidades(cidadesStorage);
+    
+    setIsLoading(false);
+  }, []);
 
-  const excluirDescricao = (id: string) => {
-    setDescricoes((prev) => prev.filter((descricao) => descricao.id !== id));
-  };
-
-  // Categorias
-  const adicionarCategoria = (
-    novaCategoria: Omit<Categoria, "id" | "dataCriacao">,
-  ) => {
-    const id = Date.now().toString();
+  // Funções para Categorias
+  const adicionarCategoria = (novaCategoria: Omit<Categoria, "id" | "dataCriacao">) => {
     const categoria: Categoria = {
       ...novaCategoria,
-      id,
+      id: Date.now().toString(),
       dataCriacao: new Date(),
     };
-    setCategorias((prev) => [...prev, categoria]);
+    const novasCategorias = [...categorias, categoria];
+    setCategorias(novasCategorias);
+    salvarEntidadeNoStorage('categorias', novasCategorias);
   };
 
-  const editarCategoria = (
-    id: string,
-    dadosAtualizados: Partial<Categoria>,
-  ) => {
-    setCategorias((prev) =>
-      prev.map((categoria) =>
-        categoria.id === id ? { ...categoria, ...dadosAtualizados } : categoria,
-      ),
+  const editarCategoria = (id: string, dadosAtualizados: Partial<Categoria>) => {
+    const categoriasAtualizadas = categorias.map((categoria) =>
+      categoria.id === id ? { ...categoria, ...dadosAtualizados } : categoria,
     );
+    setCategorias(categoriasAtualizadas);
+    salvarEntidadeNoStorage('categorias', categoriasAtualizadas);
   };
 
   const excluirCategoria = (id: string) => {
-    setCategorias((prev) => prev.filter((categoria) => categoria.id !== id));
+    const categoriasAtualizadas = categorias.filter((categoria) => categoria.id !== id);
+    setCategorias(categoriasAtualizadas);
+    salvarEntidadeNoStorage('categorias', categoriasAtualizadas);
   };
 
-  // Formas de Pagamento
-  const adicionarFormaPagamento = (
-    novaForma: Omit<FormaPagamento, "id" | "dataCriacao">,
-  ) => {
-    const id = Date.now().toString();
-    const forma: FormaPagamento = {
-      ...novaForma,
-      id,
+  // Funções para Descrições
+  const adicionarDescricao = (novaDescricao: Omit<Descricao, "id" | "dataCriacao">) => {
+    const descricao: Descricao = {
+      ...novaDescricao,
+      id: Date.now().toString(),
       dataCriacao: new Date(),
     };
-    setFormasPagamento((prev) => [...prev, forma]);
+    const novasDescricoes = [...descricoes, descricao];
+    setDescricoes(novasDescricoes);
+    salvarEntidadeNoStorage('descricoes', novasDescricoes);
   };
 
-  const editarFormaPagamento = (
-    id: string,
-    dadosAtualizados: Partial<FormaPagamento>,
-  ) => {
-    setFormasPagamento((prev) =>
-      prev.map((forma) =>
-        forma.id === id ? { ...forma, ...dadosAtualizados } : forma,
-      ),
+  const editarDescricao = (id: string, dadosAtualizados: Partial<Descricao>) => {
+    const descricoesAtualizadas = descricoes.map((descricao) =>
+      descricao.id === id ? { ...descricao, ...dadosAtualizados } : descricao,
     );
+    setDescricoes(descricoesAtualizadas);
+    salvarEntidadeNoStorage('descricoes', descricoesAtualizadas);
+  };
+
+  const excluirDescricao = (id: string) => {
+    const descricoesAtualizadas = descricoes.filter((descricao) => descricao.id !== id);
+    setDescricoes(descricoesAtualizadas);
+    salvarEntidadeNoStorage('descricoes', descricoesAtualizadas);
+  };
+
+  // Funções para Formas de Pagamento
+  const adicionarFormaPagamento = (novaForma: Omit<FormaPagamento, "id" | "dataCriacao">) => {
+    const forma: FormaPagamento = {
+      ...novaForma,
+      id: Date.now().toString(),
+      dataCriacao: new Date(),
+    };
+    const novasFormas = [...formasPagamento, forma];
+    setFormasPagamento(novasFormas);
+    salvarEntidadeNoStorage('formasPagamento', novasFormas);
+  };
+
+  const editarFormaPagamento = (id: string, dadosAtualizados: Partial<FormaPagamento>) => {
+    const formasAtualizadas = formasPagamento.map((forma) =>
+      forma.id === id ? { ...forma, ...dadosAtualizados } : forma,
+    );
+    setFormasPagamento(formasAtualizadas);
+    salvarEntidadeNoStorage('formasPagamento', formasAtualizadas);
   };
 
   const excluirFormaPagamento = (id: string) => {
-    setFormasPagamento((prev) => prev.filter((forma) => forma.id !== id));
+    const formasAtualizadas = formasPagamento.filter((forma) => forma.id !== id);
+    setFormasPagamento(formasAtualizadas);
+    salvarEntidadeNoStorage('formasPagamento', formasAtualizadas);
   };
 
-  // Clientes
-  const adicionarCliente = (
-    novoCliente: Omit<Cliente, "id" | "dataCriacao">,
-  ) => {
-    const id = Date.now().toString();
+  // Funções para Clientes
+  const adicionarCliente = (novoCliente: Omit<Cliente, "id" | "dataCriacao">) => {
     const cliente: Cliente = {
       ...novoCliente,
-      id,
+      id: Date.now().toString(),
       dataCriacao: new Date(),
     };
-    setClientes((prev) => [...prev, cliente]);
+    const novosClientes = [...clientes, cliente];
+    setClientes(novosClientes);
+    salvarEntidadeNoStorage('clientes', novosClientes);
   };
 
   const editarCliente = (id: string, dadosAtualizados: Partial<Cliente>) => {
-    setClientes((prev) =>
-      prev.map((cliente) =>
-        cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
-      ),
+    const clientesAtualizados = clientes.map((cliente) =>
+      cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
     );
+    setClientes(clientesAtualizados);
+    salvarEntidadeNoStorage('clientes', clientesAtualizados);
   };
 
   const excluirCliente = (id: string) => {
-    setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+    const clientesAtualizados = clientes.filter((cliente) => cliente.id !== id);
+    setClientes(clientesAtualizados);
+    salvarEntidadeNoStorage('clientes', clientesAtualizados);
   };
 
-  // Fornecedores
-  const adicionarFornecedor = (
-    novoFornecedor: Omit<Fornecedor, "id" | "dataCriacao">,
-  ) => {
-    const id = Date.now().toString();
+  // Funções para Fornecedores
+  const adicionarFornecedor = (novoFornecedor: Omit<Fornecedor, "id" | "dataCriacao">) => {
     const fornecedor: Fornecedor = {
       ...novoFornecedor,
-      id,
+      id: Date.now().toString(),
       dataCriacao: new Date(),
     };
-    setFornecedores((prev) => [...prev, fornecedor]);
+    const novosFornecedores = [...fornecedores, fornecedor];
+    setFornecedores(novosFornecedores);
+    salvarEntidadeNoStorage('fornecedores', novosFornecedores);
   };
 
-  const editarFornecedor = (
-    id: string,
-    dadosAtualizados: Partial<Fornecedor>,
-  ) => {
-    setFornecedores((prev) =>
-      prev.map((fornecedor) =>
-        fornecedor.id === id
-          ? { ...fornecedor, ...dadosAtualizados }
-          : fornecedor,
-      ),
+  const editarFornecedor = (id: string, dadosAtualizados: Partial<Fornecedor>) => {
+    const fornecedoresAtualizados = fornecedores.map((fornecedor) =>
+      fornecedor.id === id ? { ...fornecedor, ...dadosAtualizados } : fornecedor,
     );
+    setFornecedores(fornecedoresAtualizados);
+    salvarEntidadeNoStorage('fornecedores', fornecedoresAtualizados);
   };
 
   const excluirFornecedor = (id: string) => {
-    setFornecedores((prev) =>
-      prev.filter((fornecedor) => fornecedor.id !== id),
-    );
+    const fornecedoresAtualizados = fornecedores.filter((fornecedor) => fornecedor.id !== id);
+    setFornecedores(fornecedoresAtualizados);
+    salvarEntidadeNoStorage('fornecedores', fornecedoresAtualizados);
   };
 
-  // Setores
+  // Funções para Setores
   const adicionarSetor = (novoSetor: Omit<Setor, "id" | "dataCriacao">) => {
-    const id = Date.now().toString();
     const setor: Setor = {
       ...novoSetor,
-      id,
+      id: Date.now().toString(),
       dataCriacao: new Date(),
     };
-    setSetores((prev) => [...prev, setor]);
+    const novosSetores = [...setores, setor];
+    setSetores(novosSetores);
+    salvarEntidadeNoStorage('setores', novosSetores);
   };
 
   const editarSetor = (id: string, dadosAtualizados: Partial<Setor>) => {
-    setSetores((prev) =>
-      prev.map((setor) =>
-        setor.id === id ? { ...setor, ...dadosAtualizados } : setor,
-      ),
+    const setoresAtualizados = setores.map((setor) =>
+      setor.id === id ? { ...setor, ...dadosAtualizados } : setor,
     );
+    setSetores(setoresAtualizados);
+    salvarEntidadeNoStorage('setores', setoresAtualizados);
   };
 
   const excluirSetor = (id: string) => {
-    setSetores((prev) => prev.filter((setor) => setor.id !== id));
+    const setoresAtualizados = setores.filter((setor) => setor.id !== id);
+    setSetores(setoresAtualizados);
+    salvarEntidadeNoStorage('setores', setoresAtualizados);
   };
 
-  // Cidades
+  // Funç��es para Cidades
   const adicionarCidade = (novaCidade: Omit<Cidade, "id" | "dataCriacao">) => {
-    const id = Date.now().toString();
     const cidade: Cidade = {
       ...novaCidade,
-      id,
+      id: Date.now().toString(),
       dataCriacao: new Date(),
     };
-    setCidades((prev) => [...prev, cidade]);
+    const novasCidades = [...cidades, cidade];
+    setCidades(novasCidades);
+    salvarEntidadeNoStorage('cidades', novasCidades);
   };
 
   const editarCidade = (id: string, dadosAtualizados: Partial<Cidade>) => {
-    setCidades((prev) =>
-      prev.map((cidade) =>
-        cidade.id === id ? { ...cidade, ...dadosAtualizados } : cidade,
-      ),
+    const cidadesAtualizadas = cidades.map((cidade) =>
+      cidade.id === id ? { ...cidade, ...dadosAtualizados } : cidade,
     );
+    setCidades(cidadesAtualizadas);
+    salvarEntidadeNoStorage('cidades', cidadesAtualizadas);
   };
 
   const excluirCidade = (id: string) => {
-    setCidades((prev) => prev.filter((cidade) => cidade.id !== id));
+    const cidadesAtualizadas = cidades.filter((cidade) => cidade.id !== id);
+    setCidades(cidadesAtualizadas);
+    salvarEntidadeNoStorage('cidades', cidadesAtualizadas);
   };
 
   const value = {
-    // Descrições
-    descricoes,
-    adicionarDescricao,
-    editarDescricao,
-    excluirDescricao,
-
-    // Categorias
+    // Estados
     categorias,
+    descricoes,
+    formasPagamento,
+    clientes,
+    fornecedores,
+    setores,
+    cidades,
+    isLoading,
+
+    // Funções para Categorias
     adicionarCategoria,
     editarCategoria,
     excluirCategoria,
 
-    // Formas de Pagamento
-    formasPagamento,
+    // Funções para Descrições
+    adicionarDescricao,
+    editarDescricao,
+    excluirDescricao,
+
+    // Funções para Formas de Pagamento
     adicionarFormaPagamento,
     editarFormaPagamento,
     excluirFormaPagamento,
 
-    // Clientes
-    clientes,
+    // Funções para Clientes
     adicionarCliente,
     editarCliente,
     excluirCliente,
 
-    // Fornecedores
-    fornecedores,
+    // Funções para Fornecedores
     adicionarFornecedor,
     editarFornecedor,
     excluirFornecedor,
 
-    // Setores
-    setores,
+    // Funções para Setores
     adicionarSetor,
     editarSetor,
     excluirSetor,
 
-    // Cidades
-    cidades,
+    // Funções para Cidades
     adicionarCidade,
     editarCidade,
     excluirCidade,
-
-    isLoading,
   };
 
   return (
@@ -571,7 +391,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 export function useEntidades() {
   const context = useContext(EntidadesContext);
   if (context === undefined) {
-    throw new Error("useEntidades must be used within an EntidadesProvider");
+    throw new Error("useEntidades must be used within a EntidadesProvider");
   }
   return context;
 }
