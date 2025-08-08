@@ -273,10 +273,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   }, [campanhas]);
 
-  // Calcular totais baseados nos filtros
+  // Calcular totais baseados em TODOS os filtros (corrigido para sincronizar com lista)
   const totais = React.useMemo(() => {
     const lancamentosFiltrados = lancamentos.filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
+
       // Normalizar datas para comparação (apenas ano, mês, dia)
       const dataInicio = new Date(
         filtros.dataInicio.getFullYear(),
@@ -294,12 +295,35 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         dataLancamento.getDate(),
       );
 
+      // Filtros de data
       const dentroDataInicio = dataLancNorm >= dataInicio;
       const dentroDataFim = dataLancNorm <= dataFim;
-      const tipoCorreto =
-        filtros.tipo === "todos" || lancamento.tipo === filtros.tipo;
 
-      return dentroDataInicio && dentroDataFim && tipoCorreto;
+      // Filtro por tipo
+      const tipoCorreto = filtros.tipo === "todos" || lancamento.tipo === filtros.tipo;
+
+      // Filtro por forma de pagamento
+      const formaPagamentoCorreta = !filtros.formaPagamento ||
+        filtros.formaPagamento === "todas" ||
+        lancamento.formaPagamento === filtros.formaPagamento;
+
+      // Filtro por técnico
+      const tecnicoCorreto = !filtros.tecnico ||
+        filtros.tecnico === "todos" ||
+        lancamento.tecnicoResponsavel === filtros.tecnico;
+
+      // Filtro por campanha
+      const campanhaCorreta = !filtros.campanha ||
+        filtros.campanha === "todas" ||
+        lancamento.campanha === filtros.campanha;
+
+      // Filtro por setor
+      const setorCorreto = !filtros.setor ||
+        filtros.setor === "todos" ||
+        lancamento.setor === filtros.setor;
+
+      return dentroDataInicio && dentroDataFim && tipoCorreto &&
+             formaPagamentoCorreta && tecnicoCorreto && campanhaCorreta && setorCorreto;
     });
 
     // Para receitas, sempre usar valor líquido (valor real recebido)
