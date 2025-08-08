@@ -165,8 +165,8 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
       const dataRefNorm = new Date(dataReferencia.getFullYear(), dataReferencia.getMonth(), dataReferencia.getDate());
 
-      const dentroDataInicio = dataVencNorm >= dataInicio;
-      const dentroDataFim = dataVencNorm <= dataFim;
+      const dentroDataInicio = dataRefNorm >= dataInicio;
+      const dentroDataFim = dataRefNorm <= dataFim;
       const tipoCorreto =
         filtros.tipo === "ambos" || conta.tipo === filtros.tipo;
       const statusCorreto =
