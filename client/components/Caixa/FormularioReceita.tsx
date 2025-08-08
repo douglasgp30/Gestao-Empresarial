@@ -140,7 +140,17 @@ export default function FormularioReceita() {
       return;
     }
 
-    // Verificar se o valor que entrou é obrigatório para cartões\n    if (formData.formaPagamento.includes(\"Cartão\")) {\n      if (!formData.valorEntrou || parseFloat(formData.valorEntrou) <= 0) {\n        alert(\n          \"Para pagamentos com cartão, é obrigatório informar o valor que entrou.\",\n        );\n        return;\n      }\n    }\n\n    // Calcular valor líquido (valor real que fica para a empresa após todas as deduções)
+    // Verificar se o valor que entrou é obrigatório para cartões
+    if (formData.formaPagamento.includes("Cartão")) {
+      if (!formData.valorEntrou || parseFloat(formData.valorEntrou) <= 0) {
+        alert(
+          "Para pagamentos com cartão, é obrigatório informar o valor que entrou.",
+        );
+        return;
+      }
+    }
+
+    // Calcular valor líquido (valor real que fica para a empresa após todas as deduções)
     let valorLiquido = valor;
     let descontoImposto = 0;
     let comissaoFuncionario = 0;
