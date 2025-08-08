@@ -100,26 +100,65 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados reais do localStorage
   useEffect(() => {
-    // Limpar dados mock antigos se existirem
+    // BACKUP CRÍTICO: Fazer backup antes de qualquer operação
     const storedData = localStorage.getItem("lancamentos");
     if (storedData) {
       try {
+        // BACKUP DE SEGURANÇA
+        const backupKey = `lancamentos_backup_${Date.now()}`;
+        localStorage.setItem(backupKey, storedData);
+        console.log(`🔒 Backup de segurança criado: ${backupKey}`);
+
         const parsed = JSON.parse(storedData);
-        // Verificar se são dados mock (IDs começam com "ex")
-        const temDadosMock = parsed.some((item: any) => item.id?.startsWith("ex"));
-        if (temDadosMock) {
-          console.log("🧹 Removendo dados mock antigos...");
-          localStorage.removeItem("lancamentos");
+
+        // CORRIGIDO: Remover APENAS dados mock, preservar dados reais
+        const dadosReais = parsed.filter((item: any) => !item.id?.startsWith("ex"));
+        const dadosMock = parsed.filter((item: any) => item.id?.startsWith("ex"));
+
+        if (dadosMock.length > 0) {
+          console.log(`🧹 Removendo ${dadosMock.length} dados mock, preservando ${dadosReais.length} dados reais`);
+          if (dadosReais.length > 0) {
+            localStorage.setItem("lancamentos", JSON.stringify(dadosReais));
+          } else {
+            localStorage.removeItem("lancamentos");
+          }
         }
       } catch (error) {
-        console.warn("Erro ao verificar dados mock:", error);
+        console.error("⚠️ ERRO CRÍTICO ao processar dados:", error);
       }
     }
 
     let lancamentosReais = carregarLancamentosReais();
     const campanhasReais = carregarCampanhasReais();
 
-    // Não criar dados de exemplo - apenas usar dados reais
+    // Tentar recuperar de backups se não há dados
+    if (lancamentosReais.length === 0) {
+      console.log("🔍 Tentando recuperar dados de backups...");
+      const backupKeys = Object.keys(localStorage).filter(key => key.startsWith('lancamentos_backup_'));
+
+      if (backupKeys.length > 0) {
+        const latestBackup = backupKeys.sort().pop();
+        try {
+          const backupData = localStorage.getItem(latestBackup!);
+          if (backupData) {
+            const parsedBackup = JSON.parse(backupData);
+            const dadosReaisRecuperados = parsedBackup.filter((item: any) => !item.id?.startsWith("ex"));
+            if (dadosReaisRecuperados.length > 0) {
+              console.log(`🔄 RECUPERADOS ${dadosReaisRecuperados.length} lançamentos do backup ${latestBackup}`);
+              lancamentosReais = dadosReaisRecuperados.map((l: any) => ({
+                ...l,
+                data: new Date(l.data),
+                dataPagamento: l.dataPagamento ? new Date(l.dataPagamento) : undefined,
+              }));
+              localStorage.setItem("lancamentos", JSON.stringify(lancamentosReais));
+            }
+          }
+        } catch (error) {
+          console.error("Erro ao recuperar backup:", error);
+        }
+      }
+    }
+
     if (lancamentosReais.length === 0) {
       console.log("💡 Sistema iniciado sem dados - adicione lançamentos reais usando os formulários");
     } else {
@@ -166,6 +205,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   const excluirLancamento = (id: string) => {
+    // PROTEÇÃO: Backup antes de exclusão
+    const backupKey = `lancamento_excluido_${id}_${Date.now()}`;
+    const lancamentoParaExcluir = lancamentos.find(l => l.id === id);
+    if (lancamentoParaExcluir) {
+      localStorage.setItem(backupKey, JSON.stringify(lancamentoParaExcluir));
+      console.log(`🗑️ Lançamento ${id} excluído com backup em ${backupKey}`);
+    }
+
     setLancamentos((prev) => prev.filter((lancamento) => lancamento.id !== id));
   };
 
