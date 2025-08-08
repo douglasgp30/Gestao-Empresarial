@@ -42,12 +42,7 @@ const formasPagamento = [
   "Transferência",
 ];
 
-const tecnicos = [
-  "João Silva",
-  "Carlos Santos",
-  "Roberto Lima",
-  "Fernando Costa",
-];
+// Técnicos removidos - agora vem de funcionários
 
 export default function FormularioReceita() {
   const { adicionarLancamento, campanhas, adicionarCampanha } = useCaixa();
