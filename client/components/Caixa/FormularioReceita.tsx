@@ -455,7 +455,7 @@ export default function FormularioReceita() {
 
   const calcularComissao = () => {
     const valorSemComissao = calcularValorSemComissao();
-    return valorSemComissao * 0.15; // 15% de comissão
+    return valorSemComissao * 0.50; // 50% de comissão
   };
 
   const calcularValorLiquidoFinal = () => {
