@@ -195,6 +195,10 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     if (contas.length > 0) {
       localStorage.setItem("contas", JSON.stringify(contas));
     }
+    // Notify other contexts of data changes
+    window.dispatchEvent(new CustomEvent('contasDataChanged', {
+      detail: { contas, totais }
+    }));
   }, [contas]);
 
   // Atualizar status das contas automaticamente

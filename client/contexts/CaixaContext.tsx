@@ -226,6 +226,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     if (lancamentos.length > 0) {
       localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
     }
+    // Notify other contexts of data changes
+    window.dispatchEvent(new CustomEvent('caixaDataChanged', {
+      detail: { lancamentos, totais }
+    }));
   }, [lancamentos]);
 
   // Persist campanhas to localStorage whenever they change
