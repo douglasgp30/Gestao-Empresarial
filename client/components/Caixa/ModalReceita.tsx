@@ -177,7 +177,7 @@ export function ModalReceita() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Campos básicos */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="data">Data *</Label>
                 <Input
@@ -201,7 +201,51 @@ export function ModalReceita() {
                   required
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="conta">Conta *</Label>
+                <Select
+                  value={formData.conta}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, conta: value }))}
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a conta" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="empresa">Empresa</SelectItem>
+                    <SelectItem value="pessoal">Pessoal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+
+            {/* Campo valorRecebido (condicional para cartão) */}
+            {(() => {
+              const formaPagamentoSelecionada = formasPagamento.find(f => f.id.toString() === formData.formaPagamento);
+              const isCartao = formaPagamentoSelecionada ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome) : false;
+
+              if (isCartao) {
+                return (
+                  <div className="space-y-2">
+                    <Label htmlFor="valorRecebido">Valor Recebido (R$) *</Label>
+                    <Input
+                      id="valorRecebido"
+                      type="number"
+                      step="0.01"
+                      placeholder="0,00"
+                      value={formData.valorRecebido}
+                      onChange={(e) => setFormData(prev => ({ ...prev, valorRecebido: e.target.value }))}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Obrigatório para pagamentos no cartão
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })()}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
