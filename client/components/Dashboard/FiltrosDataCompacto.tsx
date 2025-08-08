@@ -57,17 +57,24 @@ export default function FiltrosDataCompacto() {
   };
 
   const handleLimpar = () => {
+    console.log("🧹 Limpando filtros - voltando para HOJE");
     const hoje = new Date();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-    // Normalize times
-    inicioMes.setHours(0, 0, 0, 0);
-    fimMes.setHours(23, 59, 59, 999);
-    setFiltros({
-      dataInicio: inicioMes,
-      dataFim: fimMes,
+    hoje.setHours(0, 0, 0, 0);
+    const fimHoje = new Date();
+    fimHoje.setHours(23, 59, 59, 999);
+
+    const filtrosLimpos = {
+      dataInicio: hoje,
+      dataFim: fimHoje,
       __timestamp: Date.now(), // Force re-render
+    };
+
+    console.log("🔄 Filtros limpos:", {
+      dataInicio: filtrosLimpos.dataInicio.toISOString().split("T")[0],
+      dataFim: filtrosLimpos.dataFim.toISOString().split("T")[0]
     });
+
+    setFiltros(filtrosLimpos);
   };
 
   return (
