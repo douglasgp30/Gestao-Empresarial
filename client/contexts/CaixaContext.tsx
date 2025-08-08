@@ -7,6 +7,15 @@ import React, {
 } from "react";
 import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
+import { DataRecoveryService } from "../utils/dataRecovery";
+
+// Utilitário para formatação em Reais
+export const formatarMoeda = (valor: number): string => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  }).format(valor);
+};
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
@@ -131,31 +140,38 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     let lancamentosReais = carregarLancamentosReais();
     const campanhasReais = carregarCampanhasReais();
 
-    // Tentar recuperar de backups se não há dados
+    // SISTEMA DE RECUPERAÇÃO AUTÔMTICA DE DADOS PERDIDOS
     if (lancamentosReais.length === 0) {
-      console.log("🔍 Tentando recuperar dados de backups...");
-      const backupKeys = Object.keys(localStorage).filter(key => key.startsWith('lancamentos_backup_'));
+      console.log("🔍 EXECUTANDO RECUPERAÇÃO AUTOMÁTICA...");
 
-      if (backupKeys.length > 0) {
-        const latestBackup = backupKeys.sort().pop();
-        try {
-          const backupData = localStorage.getItem(latestBackup!);
-          if (backupData) {
-            const parsedBackup = JSON.parse(backupData);
-            const dadosReaisRecuperados = parsedBackup.filter((item: any) => !item.id?.startsWith("ex"));
-            if (dadosReaisRecuperados.length > 0) {
-              console.log(`🔄 RECUPERADOS ${dadosReaisRecuperados.length} lançamentos do backup ${latestBackup}`);
-              lancamentosReais = dadosReaisRecuperados.map((l: any) => ({
-                ...l,
-                data: new Date(l.data),
-                dataPagamento: l.dataPagamento ? new Date(l.dataPagamento) : undefined,
-              }));
-              localStorage.setItem("lancamentos", JSON.stringify(lancamentosReais));
-            }
-          }
-        } catch (error) {
-          console.error("Erro ao recuperar backup:", error);
+      try {
+        const recovery = await DataRecoveryService.checkAndRecoverLostData();
+
+        if (recovery.found && recovery.recovered.length > 0) {
+          console.log(`🎉 DADOS RECUPERADOS COM SUCESSO!`);
+          console.log(`📊 ${recovery.recovered.length} lançamentos recuperados`);
+          console.log(`📁 Fontes: ${recovery.sources.join(', ')}`);
+
+          lancamentosReais = recovery.recovered;
+
+          // Salvar dados recuperados
+          localStorage.setItem("lancamentos", JSON.stringify(lancamentosReais));
+
+          // Criar backup de segurança dos dados recuperados
+          DataRecoveryService.createEmergencyBackup(
+            lancamentosReais,
+            `Recuperação automática - ${recovery.sources.join(', ')}`
+          );
+
+          // Notificar usuário
+          setTimeout(() => {
+            alert(`🎉 DADOS RECUPERADOS!\n\n${recovery.recovered.length} lançamentos foram recuperados automaticamente.\n\nFontes: ${recovery.sources.join(', ')}`);
+          }, 1000);
+        } else {
+          console.log("🔍 Nenhum dado para recuperar encontrado");
         }
+      } catch (error) {
+        console.error("⚠️ Erro durante recuperação:", error);
       }
     }
 
@@ -228,13 +244,27 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Persist lancamentos to localStorage whenever they change
   useEffect(() => {
     if (lancamentos.length > 0) {
+      // Backup antes de salvar
+      const backupKey = `lancamentos_auto_${Date.now()}`;
+      localStorage.setItem(backupKey, JSON.stringify(lancamentos));
+
       localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+      console.log(`💾 Dados salvos: ${lancamentos.length} lançamentos (backup: ${backupKey})`);
     }
-    // Notify other contexts of data changes
+    // Notify other contexts of data changes with formatted totals
     window.dispatchEvent(new CustomEvent('caixaDataChanged', {
-      detail: { lancamentos, totais }
+      detail: {
+        lancamentos,
+        totais: {
+          ...totais,
+          receitasFormatado: formatarMoeda(totais.receitas),
+          despesasFormatado: formatarMoeda(totais.despesas),
+          saldoFormatado: formatarMoeda(totais.saldo),
+          comissoesFormatado: formatarMoeda(totais.comissoes)
+        }
+      }
     }));
-  }, [lancamentos]);
+  }, [lancamentos, totais]);
 
   // Persist campanhas to localStorage whenever they change
   useEffect(() => {
