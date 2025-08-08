@@ -94,8 +94,58 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados reais do localStorage
   useEffect(() => {
-    const lancamentosReais = carregarLancamentosReais();
+    let lancamentosReais = carregarLancamentosReais();
     const campanhasReais = carregarCampanhasReais();
+
+    // Se não há dados, criar alguns dados de exemplo
+    if (lancamentosReais.length === 0) {
+      console.log("Criando dados de exemplo para demonstração");
+      const hoje = new Date();
+      const ontem = new Date(hoje.getTime() - 24 * 60 * 60 * 1000);
+      const anteontem = new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000);
+
+      const dadosExemplo: LancamentoCaixa[] = [
+        {
+          id: "ex1",
+          tipo: "receita",
+          valor: 150.00,
+          valorLiquido: 150.00,
+          data: hoje,
+          descricao: "Serviço de Exemplo",
+          setor: "Geral",
+          tecnicoResponsavel: "Técnico 1",
+          formaPagamento: "Dinheiro",
+          funcionarioId: "1",
+          campanha: "Exemplo"
+        },
+        {
+          id: "ex2",
+          tipo: "receita",
+          valor: 200.00,
+          valorLiquido: 200.00,
+          data: ontem,
+          descricao: "Outro Serviço",
+          setor: "Geral",
+          tecnicoResponsavel: "Técnico 2",
+          formaPagamento: "Cartão",
+          funcionarioId: "1",
+          campanha: "Exemplo"
+        },
+        {
+          id: "ex3",
+          tipo: "despesa",
+          valor: 50.00,
+          data: anteontem,
+          descricao: "Despesa de Exemplo",
+          categoria: "Material",
+          funcionarioId: "1"
+        }
+      ];
+
+      lancamentosReais = dadosExemplo;
+      // Salvar os dados de exemplo
+      localStorage.setItem("lancamentos", JSON.stringify(dadosExemplo));
+    }
 
     setLancamentos(lancamentosReais);
     setCampanhas(campanhasReais);
