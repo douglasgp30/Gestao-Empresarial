@@ -521,7 +521,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     // 2. Contas a receber que foram CRIADAS no mês atual
     // Como não temos dataCadastro, vamos usar dataVencimento como proxy
     // Em uma implementação real, seria melhor ter um campo dataCriacao
-    const contasAReceberCriadasMesAtual = (contasContext?.contas || [])
+    const contasAReceberCriadasMesAtual = contasData
       .filter((c) => {
         if (c.tipo !== "receber") return false;
         // Simular data de criação usando dataVencimento
@@ -542,12 +542,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setRestanteParaMeta(novoRestanteParaMeta);
 
     // Estatísticas gerais para compatibilidade
-    const contasVencendoHoje = (contasContext?.contas || []).filter((c) => {
+    const contasVencendoHoje = contasData.filter((c) => {
       const dataVenc = new Date(c.dataVencimento);
       return dataVenc.toDateString() === hoje.toDateString();
     }).length;
 
-    const contasAtrasadas = (contasContext?.contas || []).filter(
+    const contasAtrasadas = contasData.filter(
       (c) => c.status === "atrasada",
     ).length;
 
