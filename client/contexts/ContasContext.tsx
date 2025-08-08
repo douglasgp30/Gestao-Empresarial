@@ -256,6 +256,42 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     };
   }, [contas, filtros]);
 
+  // Persist contas to localStorage whenever they change
+  // Debounce para sincronização entre contextos
+  const syncDebounceRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (contas.length > 0) {
+      localStorage.setItem("contas", JSON.stringify(contas));
+    }
+
+    // Debounce para evitar eventos múltiplos
+    clearTimeout(syncDebounceRef.current);
+    syncDebounceRef.current = setTimeout(() => {
+      // Notify other contexts of data changes
+      window.dispatchEvent(new CustomEvent('contasDataChanged', {
+        detail: { contas, totais }
+      }));
+    }, 50); // 50ms debounce
+  }, [contas, totais]);
+
+  // Atualizar status das contas automaticamente
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setContas((prev) =>
+        prev.map((conta) => ({
+          ...conta,
+          status:
+            conta.status === "paga"
+              ? "paga"
+              : getStatusConta(conta.dataVencimento, conta.status),
+        })),
+      );
+    }, 60000); // Atualizar a cada minuto
+
+    return () => clearInterval(interval);
+  }, []);
+
   const value = {
     contas,
     filtros,
