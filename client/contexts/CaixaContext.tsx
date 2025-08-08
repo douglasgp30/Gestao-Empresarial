@@ -100,12 +100,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados reais do localStorage
   useEffect(() => {
+    // Limpar dados mock antigos se existirem
+    const storedData = localStorage.getItem("lancamentos");
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        // Verificar se são dados mock (IDs começam com "ex")
+        const temDadosMock = parsed.some((item: any) => item.id?.startsWith("ex"));
+        if (temDadosMock) {
+          console.log("🧹 Removendo dados mock antigos...");
+          localStorage.removeItem("lancamentos");
+        }
+      } catch (error) {
+        console.warn("Erro ao verificar dados mock:", error);
+      }
+    }
+
     let lancamentosReais = carregarLancamentosReais();
     const campanhasReais = carregarCampanhasReais();
 
     // Não criar dados de exemplo - apenas usar dados reais
     if (lancamentosReais.length === 0) {
-      console.log("Sistema iniciado sem dados - usuário deve adicionar lançamentos reais");
+      console.log("💡 Sistema iniciado sem dados - adicione lançamentos reais usando os formulários");
+    } else {
+      console.log(`📊 Carregados ${lancamentosReais.length} lançamentos reais do localStorage`);
     }
 
     setLancamentos(lancamentosReais);
