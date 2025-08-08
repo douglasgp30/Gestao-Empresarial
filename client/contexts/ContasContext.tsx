@@ -158,7 +158,8 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   // Calcular totais baseados nos filtros
   const totais = React.useMemo(() => {
     const contasFiltradas = contas.filter((conta) => {
-      const dataVencimento = new Date(conta.dataVencimento);
+      // Para contas pagas, usar dataPagamento. Para pendentes, usar dataVencimento
+      const dataReferencia = conta.dataPagamento ? new Date(conta.dataPagamento) : new Date(conta.dataVencimento);
       // Normalizar datas para comparaç��o (apenas ano, mês, dia)
       const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
       const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
