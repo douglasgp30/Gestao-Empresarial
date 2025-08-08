@@ -203,16 +203,16 @@ export default function Dashboard() {
 
   return (
     <TooltipProvider>
-      <div className="p-6 space-y-6">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header com Saldo Geral e Meta do Mês */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground">
               Visão geral financeira
             </p>
           </div>
-          <div className="flex items-center w-full gap-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center w-full lg:w-auto gap-4 sm:gap-8">
             {/* Espaçador à esquerda para equilibrar o layout */}
             <div className="flex-1"></div>
 
