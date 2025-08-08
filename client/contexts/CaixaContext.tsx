@@ -153,7 +153,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
           if (recovery.found && recovery.recovered.length > 0) {
             console.log(`🎉 DADOS RECUPERADOS COM SUCESSO!`);
-            console.log(`📊 ${recovery.recovered.length} lançamentos recuperados`);
+            console.log(`��� ${recovery.recovered.length} lançamentos recuperados`);
             console.log(`📁 Fontes: ${recovery.sources.join(', ')}`);
 
             const dadosRecuperados = recovery.recovered;
@@ -268,6 +268,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
 
     setLancamentos((prev) => prev.filter((lancamento) => lancamento.id !== id));
+  };
+
+  // Função de teste para debug
+  const testarLancamento = () => {
+    console.log("🧪 TESTE: Adicionando lançamento de teste...");
+    const lancamentoTeste = {
+      tipo: "receita" as const,
+      data: new Date(),
+      valor: 100,
+      formaPagamento: "Dinheiro",
+      descricao: "Teste do sistema",
+      notaFiscal: false,
+    };
+    adicionarLancamento(lancamentoTeste);
   };
 
   const adicionarCampanha = (novaCampanha: Omit<Campanha, "id">) => {
