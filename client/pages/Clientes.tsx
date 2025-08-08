@@ -70,9 +70,9 @@ export default function Clientes() {
     setClientesFiltradosPeriodo(clientesResultado);
   }, [clientes, filtrosPeriodo]);
 
-  const handleFiltrosPeriodoChange = (dataInicio: Date, dataFim: Date) => {
+  const handleFiltrosPeriodoChange = useCallback((dataInicio: Date, dataFim: Date) => {
     setFiltrosPeriodo({ dataInicio, dataFim });
-  };
+  }, []);
 
   // Filtrar clientes baseado no termo de pesquisa E período
   const clientesFiltrados = clientesFiltradosPeriodo.filter((cliente) => {
