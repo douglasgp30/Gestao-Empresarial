@@ -23,6 +23,8 @@ interface ContasContextType {
     totalVencendoHoje: number;
     totalAtrasadas: number;
     totalPagas: number;
+    totalContasRecebidas: number;
+    totalContasPagas: number;
   };
   adicionarConta: (conta: Omit<Conta, "id" | "funcionarioId">) => void;
   editarConta: (id: string, conta: Partial<Conta>) => void;
