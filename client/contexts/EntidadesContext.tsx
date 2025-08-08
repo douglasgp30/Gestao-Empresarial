@@ -459,16 +459,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   // === FUNÇÃO PARA CIDADES ===
-  const adicionarCidade = (novaCidade: Omit<Cidade, "id" | "dataCriacao">) => {
-    const cidade: Cidade = {
-      ...novaCidade,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    const novasCidades = [...cidades, cidade];
-    setCidades(novasCidades);
-    // Nota: As cidades são gerenciadas no localStorage por enquanto
-    // Posteriormente, pode ser integrado com a API quando necessário
+  const adicionarCidade = (novaCidade: { nome: string }) => {
+    if (!cidades.includes(novaCidade.nome)) {
+      const novasCidades = [...cidades, novaCidade.nome];
+      setCidades(novasCidades);
+    }
   };
 
   // === FUNÇÕES PARA CATEGORIAS (localStorage - temporário) ===
