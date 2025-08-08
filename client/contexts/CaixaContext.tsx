@@ -82,14 +82,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>([]);
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filtros, setFiltros] = useState({
-    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-    dataFim: new Date(),
-    tipo: "todos" as "receita" | "despesa" | "todos",
-    formaPagamento: "todas",
-    tecnico: "todos",
-    campanha: "todas",
-    setor: "todos",
+  const [filtros, setFiltros] = useState(() => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const fimHoje = new Date();
+    fimHoje.setHours(23, 59, 59, 999);
+    return {
+      dataInicio: hoje,
+      dataFim: fimHoje,
+      tipo: "todos" as "receita" | "despesa" | "todos",
+      formaPagamento: "todas",
+      tecnico: "todos",
+      campanha: "todas",
+      setor: "todos",
+    };
   });
 
   // Carregar dados reais do localStorage
