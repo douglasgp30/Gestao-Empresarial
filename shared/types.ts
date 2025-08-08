@@ -80,6 +80,10 @@ export interface Conta {
   funcionarioId: string;
 }
 
+// Tipos de campanha simplificados para apenas identificação de origem
+export type TipoCampanha = "Meta ADS" | "Google ADS" | "TikTok ADS" | "";
+
+// Interface de campanha mantida para compatibilidade
 export interface Campanha {
   id: string;
   nome: string;
