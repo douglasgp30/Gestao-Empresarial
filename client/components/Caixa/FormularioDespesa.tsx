@@ -88,6 +88,7 @@ export default function FormularioDespesa() {
       categoria: formData.categoria,
       descricao: formData.descricaoServico,
       tipoDespesa: formData.tipoDespesa,
+      observacoes: formData.observacoes || undefined,
       notaFiscal: false, // Despesas geralmente não têm nota fiscal
     });
 
