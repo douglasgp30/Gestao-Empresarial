@@ -36,7 +36,7 @@ export default function FiltrosPeriodoCompacto({
 
   // Função para forçar re-render
   const triggerForceUpdate = useCallback(() => {
-    setForceUpdate(prev => prev + 1);
+    setForceUpdate((prev) => prev + 1);
   }, []);
 
   // Sync com props quando mudam externamente
@@ -325,26 +325,32 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "hoje" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log('Clicou em Hoje'); // Debug
+              console.log("Clicou em Hoje"); // Debug
               const hoje = new Date();
               const dataFormatada = hoje.toISOString().split("T")[0];
-              console.log('Data formatada:', dataFormatada); // Debug
+              console.log("Data formatada:", dataFormatada); // Debug
 
               // Atualizar estado local primeiro
               setLocalDataInicio(dataFormatada);
               setLocalDataFim(dataFormatada);
 
               // Forçar atualização dos inputs
-              const inputInicio = inputInicioRef.current || document.getElementById('dataInicio') as HTMLInputElement;
-              const inputFim = inputFimRef.current || document.getElementById('dataFim') as HTMLInputElement;
+              const inputInicio =
+                inputInicioRef.current ||
+                (document.getElementById("dataInicio") as HTMLInputElement);
+              const inputFim =
+                inputFimRef.current ||
+                (document.getElementById("dataFim") as HTMLInputElement);
 
               if (inputInicio) {
                 inputInicio.value = dataFormatada;
-                inputInicio.dispatchEvent(new Event('input', { bubbles: true }));
+                inputInicio.dispatchEvent(
+                  new Event("input", { bubbles: true }),
+                );
               }
               if (inputFim) {
                 inputFim.value = dataFormatada;
-                inputFim.dispatchEvent(new Event('input', { bubbles: true }));
+                inputFim.dispatchEvent(new Event("input", { bubbles: true }));
               }
 
               // Chamar callbacks externos
@@ -369,7 +375,7 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "esta-semana" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log('Clicou em Esta Semana'); // Debug
+              console.log("Clicou em Esta Semana"); // Debug
               const hoje = new Date();
               const inicioSemana = new Date(hoje);
               const dia = hoje.getDay();
@@ -378,7 +384,12 @@ export default function FiltrosPeriodoCompacto({
 
               const dataInicioSemana = inicioSemana.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
-              console.log('Esta Semana - Início:', dataInicioSemana, 'Fim:', dataHoje); // Debug
+              console.log(
+                "Esta Semana - Início:",
+                dataInicioSemana,
+                "Fim:",
+                dataHoje,
+              ); // Debug
 
               // Atualizar estado local primeiro
               setLocalDataInicio(dataInicioSemana);
@@ -412,12 +423,19 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-7" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log('Clicou em Últimos 7 Dias'); // Debug
+              console.log("Clicou em Últimos 7 Dias"); // Debug
               const hoje = new Date();
-              const ultimos7 = new Date(hoje.getTime() - 6 * 24 * 60 * 60 * 1000);
+              const ultimos7 = new Date(
+                hoje.getTime() - 6 * 24 * 60 * 60 * 1000,
+              );
               const dataInicio7 = ultimos7.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
-              console.log('Últimos 7 Dias - Início:', dataInicio7, 'Fim:', dataHoje); // Debug
+              console.log(
+                "Últimos 7 Dias - Início:",
+                dataInicio7,
+                "Fim:",
+                dataHoje,
+              ); // Debug
 
               // Atualizar estado local primeiro
               setLocalDataInicio(dataInicio7);
@@ -451,12 +469,19 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-15" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log('Clicou em Últimos 15 Dias'); // Debug
+              console.log("Clicou em Últimos 15 Dias"); // Debug
               const hoje = new Date();
-              const ultimos15 = new Date(hoje.getTime() - 14 * 24 * 60 * 60 * 1000);
+              const ultimos15 = new Date(
+                hoje.getTime() - 14 * 24 * 60 * 60 * 1000,
+              );
               const dataInicio15 = ultimos15.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
-              console.log('Últimos 15 Dias - Início:', dataInicio15, 'Fim:', dataHoje); // Debug
+              console.log(
+                "Últimos 15 Dias - Início:",
+                dataInicio15,
+                "Fim:",
+                dataHoje,
+              ); // Debug
 
               // Atualizar estado local primeiro
               setLocalDataInicio(dataInicio15);
@@ -490,12 +515,19 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-30" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log('Clicou em Últimos 30 Dias'); // Debug
+              console.log("Clicou em Últimos 30 Dias"); // Debug
               const hoje = new Date();
-              const ultimos30 = new Date(hoje.getTime() - 29 * 24 * 60 * 60 * 1000);
+              const ultimos30 = new Date(
+                hoje.getTime() - 29 * 24 * 60 * 60 * 1000,
+              );
               const dataInicio30 = ultimos30.toISOString().split("T")[0];
               const dataHoje = hoje.toISOString().split("T")[0];
-              console.log('Últimos 30 Dias - Início:', dataInicio30, 'Fim:', dataHoje); // Debug
+              console.log(
+                "Últimos 30 Dias - Início:",
+                dataInicio30,
+                "Fim:",
+                dataHoje,
+              ); // Debug
 
               // Atualizar estado local primeiro
               setLocalDataInicio(dataInicio30);
@@ -529,13 +561,26 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "este-mes" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log('Clicou em Este Mês'); // Debug
+              console.log("Clicou em Este Mês"); // Debug
               const hoje = new Date();
-              const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-              const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+              const inicioMes = new Date(
+                hoje.getFullYear(),
+                hoje.getMonth(),
+                1,
+              );
+              const fimMes = new Date(
+                hoje.getFullYear(),
+                hoje.getMonth() + 1,
+                0,
+              );
               const dataInicioMes = inicioMes.toISOString().split("T")[0];
               const dataFimMes = fimMes.toISOString().split("T")[0];
-              console.log('Este Mês - Início:', dataInicioMes, 'Fim:', dataFimMes); // Debug
+              console.log(
+                "Este Mês - Início:",
+                dataInicioMes,
+                "Fim:",
+                dataFimMes,
+              ); // Debug
 
               // Atualizar estado local primeiro
               setLocalDataInicio(dataInicioMes);

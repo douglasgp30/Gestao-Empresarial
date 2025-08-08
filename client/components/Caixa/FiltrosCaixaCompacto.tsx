@@ -40,41 +40,41 @@ export default function FiltrosCaixaCompacto() {
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
   const handleDataInicioChange = (data: string) => {
-    console.log('handleDataInicioChange chamado com:', data); // Debug
+    console.log("handleDataInicioChange chamado com:", data); // Debug
     const novaData = new Date(data);
     // Normalizar para início do dia
     novaData.setHours(0, 0, 0, 0);
-    console.log('Nova data início criada:', novaData); // Debug
+    console.log("Nova data início criada:", novaData); // Debug
 
     setFiltros({
       ...filtros,
       dataInicio: novaData,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     });
   };
 
   const handleDataFimChange = (data: string) => {
-    console.log('handleDataFimChange chamado com:', data); // Debug
+    console.log("handleDataFimChange chamado com:", data); // Debug
     const novaData = new Date(data);
     // Normalizar para fim do dia
     novaData.setHours(23, 59, 59, 999);
-    console.log('Nova data fim criada:', novaData); // Debug
+    console.log("Nova data fim criada:", novaData); // Debug
 
     setFiltros({
       ...filtros,
       dataFim: novaData,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     });
   };
 
   const handleAplicarPeriodo = () => {
-    console.log('handleAplicarPeriodo chamado'); // Debug
-    console.log('Filtros atuais:', filtros); // Debug
+    console.log("handleAplicarPeriodo chamado"); // Debug
+    console.log("Filtros atuais:", filtros); // Debug
 
     // Força atualização com novos filtros criando nova referência
     setFiltros({
       ...filtros,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     });
   };
 

@@ -12,14 +12,14 @@ export default function FiltrosDataCompacto() {
     const novosFiltros = {
       ...filtros,
       dataInicio: novaData,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     };
     setFiltros(novosFiltros);
     // Forçar aplicação imediata
     setTimeout(() => {
       setFiltros({
         ...novosFiltros,
-        __timestamp: Date.now() + 1
+        __timestamp: Date.now() + 1,
       });
     }, 50);
   };
@@ -31,14 +31,14 @@ export default function FiltrosDataCompacto() {
     const novosFiltros = {
       ...filtros,
       dataFim: novaData,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     };
     setFiltros(novosFiltros);
     // Forçar aplicação imediata
     setTimeout(() => {
       setFiltros({
         ...novosFiltros,
-        __timestamp: Date.now() + 1
+        __timestamp: Date.now() + 1,
       });
     }, 50);
   };
@@ -46,7 +46,7 @@ export default function FiltrosDataCompacto() {
   const handleAplicar = () => {
     const novosFiltros = {
       ...filtros,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     };
     setFiltros(novosFiltros);
   };
