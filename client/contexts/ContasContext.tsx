@@ -34,83 +34,25 @@ interface ContasContextType {
 
 const ContasContext = createContext<ContasContextType | undefined>(undefined);
 
-// Mock data inicial - datas variadas para teste dos filtros
-const hoje = new Date();
-const amanha = new Date(hoje.getTime() + 24 * 60 * 60 * 1000);
-const doisdiasfrente = new Date(hoje.getTime() + 2 * 24 * 60 * 60 * 1000);
-const cincofuturo = new Date(hoje.getTime() + 5 * 24 * 60 * 60 * 1000);
-const dezvencido = new Date(hoje.getTime() - 10 * 24 * 60 * 60 * 1000);
-const vintevencido = new Date(hoje.getTime() - 20 * 24 * 60 * 60 * 1000);
-
-const mockContas: Conta[] = [
-  {
-    id: "1",
-    tipo: "pagar",
-    dataVencimento: hoje,
-    fornecedorCliente: "Posto de Gasolina ABC",
-    tipoPagamento: "Boleto",
-    valor: 350.0,
-    status: "vence_hoje",
-    observacoes: "Pagamento mensal combustível",
-    funcionarioId: "1",
-  },
-  {
-    id: "2",
-    tipo: "receber",
-    dataVencimento: dezvencido,
-    fornecedorCliente: "Empresa XYZ Ltda",
-    tipoPagamento: "Boleto",
-    valor: 1200.0,
-    status: "atrasada",
-    observacoes: "Serviço de desentupimento comercial",
-    funcionarioId: "1",
-  },
-  {
-    id: "3",
-    tipo: "pagar",
-    dataVencimento: cincofuturo,
-    fornecedorCliente: "Fornecedor de Materiais Silva",
-    tipoPagamento: "Pix",
-    valor: 580.0,
-    status: "pendente",
-    observacoes: "Compra de ferramentas e materiais",
-    funcionarioId: "1",
-  },
-  {
-    id: "4",
-    tipo: "receber",
-    dataVencimento: amanha,
-    fornecedorCliente: "Condomínio Residencial Verde",
-    tipoPagamento: "Transferência",
-    valor: 750.0,
-    status: "pendente",
-    observacoes: "Manutenção preventiva sistema de esgoto",
-    funcionarioId: "1",
-  },
-  {
-    id: "5",
-    tipo: "pagar",
-    dataVencimento: vintevencido,
-    fornecedorCliente: "Oficina do João - Manutenção",
-    tipoPagamento: "Dinheiro",
-    valor: 420.0,
-    status: "paga",
-    observacoes: "Manutenção da van",
-    dataPagamento: new Date(vintevencido.getTime() - 24 * 60 * 60 * 1000),
-    funcionarioId: "1",
-  },
-  {
-    id: "6",
-    tipo: "receber",
-    dataVencimento: doisdiasfrente,
-    fornecedorCliente: "Restaurante Bom Sabor",
-    tipoPagamento: "Cartão",
-    valor: 320.0,
-    status: "pendente",
-    observacoes: "Desentupimento cozinha industrial",
-    funcionarioId: "1",
-  },
-];
+// Função para carregar contas reais do localStorage
+function carregarContasReais(): Conta[] {
+  try {
+    const contas = localStorage.getItem('contas');
+    if (contas) {
+      const parsedContas = JSON.parse(contas);
+      // Converter strings de data de volta para objetos Date
+      return parsedContas.map((c: any) => ({
+        ...c,
+        dataVencimento: new Date(c.dataVencimento),
+        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.warn('Erro ao carregar contas do localStorage:', error);
+    return [];
+  }
+}
 
 function getStatusConta(dataVencimento: Date, status: string): string {
   if (status === "paga") return "paga";
@@ -127,13 +69,8 @@ function getStatusConta(dataVencimento: Date, status: string): string {
 
 export function ContasProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [contas, setContas] = useState<Conta[]>(
-    mockContas.map((conta) => ({
-      ...conta,
-      status: getStatusConta(conta.dataVencimento, conta.status),
-    })),
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const [contas, setContas] = useState<Conta[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filtros, setFiltros] = useState({
     dataInicio: new Date(),
     dataFim: new Date(),
