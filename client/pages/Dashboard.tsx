@@ -387,6 +387,51 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Gráfico Resumo Financeiro */}
+        <div className="grid gap-4 lg:grid-cols-4">
+          <div className="lg:col-span-1">
+            <GraficoSimples
+              dados={{
+                receitas: stats.receitasPeriodo,
+                despesas: stats.despesasPeriodo,
+                saldo: stats.saldoPeriodo,
+                meta: metaMes
+              }}
+            />
+          </div>
+
+          {/* Cards rápidos de totais */}
+          <div className="lg:col-span-3 grid gap-4 md:grid-cols-3">
+            <StatCard
+              title="Receitas do Período"
+              value={formatCurrency(stats.receitasPeriodo)}
+              description="Baseado nos filtros"
+              icon={TrendingUp}
+              trend="up"
+              isLoading={isLoading}
+              variant="success"
+            />
+            <StatCard
+              title="Despesas do Período"
+              value={formatCurrency(stats.despesasPeriodo)}
+              description="Baseado nos filtros"
+              icon={TrendingDown}
+              trend="down"
+              isLoading={isLoading}
+              variant="destructive"
+            />
+            <StatCard
+              title="Saldo do Período"
+              value={formatCurrency(stats.saldoPeriodo)}
+              description="Baseado nos filtros"
+              icon={Wallet}
+              trend={stats.saldoPeriodo >= 0 ? "up" : "down"}
+              isLoading={isLoading}
+              variant={stats.saldoPeriodo >= 0 ? "success" : "destructive"}
+            />
+          </div>
+        </div>
+
         {/* LINHA 1 - Totais do Módulo Caixa */}
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
