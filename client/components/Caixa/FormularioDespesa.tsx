@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { TrendingDown, Receipt } from "lucide-react";
+import { toast } from "../../hooks/use-toast";
 
 const formasPagamento = [
   "Dinheiro",
