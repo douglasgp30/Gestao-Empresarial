@@ -84,8 +84,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const contasContext = useContas();
 
   const [filtros, setFiltros] = useState<FiltrosPeriodo>({
-    dataInicio: getHoje(),
-    dataFim: getHoje(),
+    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
+    dataFim: new Date(),
   });
 
   console.log('DashboardContext: Estado inicial dos filtros:', {
@@ -414,7 +414,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   }, [
     filtros,
     filtros.__timestamp, // Força re-render quando timestamp muda
-    filtros.dataInicio?.getTime(), // Força re-render quando data início muda
+    filtros.dataInicio?.getTime(), // For��a re-render quando data início muda
     filtros.dataFim?.getTime(), // Força re-render quando data fim muda
     metaMes, // Recalcula restante da meta quando meta muda
     aplicarFiltrosCaixa,
