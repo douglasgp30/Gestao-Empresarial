@@ -27,6 +27,7 @@ import {
 } from "../components/ui/dialog";
 import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
 import { TesteFiltros } from "../components/ui/teste-filtros";
+import { TesteDatas } from "../components/ui/teste-datas";
 import { formatDate, formatDateRange } from "../lib/dateUtils";
 import {
   DollarSign,
@@ -638,8 +639,9 @@ export default function Dashboard() {
         </div>
 
         {/* Componente de Teste dos Filtros */}
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center gap-6">
           <TesteFiltros />
+          <TesteDatas />
         </div>
       </div>
     </TooltipProvider>
