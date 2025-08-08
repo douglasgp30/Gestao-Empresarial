@@ -327,6 +327,49 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, [lancamentos, filtros]);
 
+  // Memoizar dados formatados para evitar re-criação desnecessaria
+  const totaisFormatados = useMemo(() => ({
+    ...totais,
+    receitasFormatado: formatarMoeda(totais.receitas),
+    despesasFormatado: formatarMoeda(totais.despesas),
+    saldoFormatado: formatarMoeda(totais.saldo),
+    comissoesFormatado: formatarMoeda(totais.comissoes)
+  }), [totais]);
+
+  // Debounce para sincronização entre contextos
+  const syncDebounceRef = useRef<NodeJS.Timeout>();
+
+  // Persist lancamentos to localStorage whenever they change
+  useEffect(() => {
+    if (lancamentos.length > 0) {
+      // Backup antes de salvar
+      const backupKey = `lancamentos_auto_${Date.now()}`;
+      localStorage.setItem(backupKey, JSON.stringify(lancamentos));
+
+      localStorage.setItem("lancamentos", JSON.stringify(lancamentos));
+      console.log(`💾 Dados salvos: ${lancamentos.length} lançamentos (backup: ${backupKey})`);
+    }
+
+    // Debounce para evitar eventos múltiplos em sequência
+    clearTimeout(syncDebounceRef.current);
+    syncDebounceRef.current = setTimeout(() => {
+      // Notify other contexts of data changes with formatted totals
+      window.dispatchEvent(new CustomEvent('caixaDataChanged', {
+        detail: {
+          lancamentos,
+          totais: totaisFormatados
+        }
+      }));
+    }, 50); // 50ms debounce
+  }, [lancamentos, totaisFormatados]);
+
+  // Persist campanhas to localStorage whenever they change
+  useEffect(() => {
+    if (campanhas.length > 0) {
+      localStorage.setItem("campanhas", JSON.stringify(campanhas));
+    }
+  }, [campanhas]);
+
   const value = {
     lancamentos,
     campanhas,
