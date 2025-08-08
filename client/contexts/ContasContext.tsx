@@ -3,6 +3,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useRef,
   ReactNode,
 } from "react";
 import { Conta } from "@shared/types";
@@ -168,15 +169,23 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   };
 
   // Persist contas to localStorage whenever they change
+  // Debounce para sincronização entre contextos
+  const syncDebounceRef = useRef<NodeJS.Timeout>();
+
   useEffect(() => {
     if (contas.length > 0) {
       localStorage.setItem("contas", JSON.stringify(contas));
     }
-    // Notify other contexts of data changes
-    window.dispatchEvent(new CustomEvent('contasDataChanged', {
-      detail: { contas, totais }
-    }));
-  }, [contas]);
+
+    // Debounce para evitar eventos múltiplos
+    clearTimeout(syncDebounceRef.current);
+    syncDebounceRef.current = setTimeout(() => {
+      // Notify other contexts of data changes
+      window.dispatchEvent(new CustomEvent('contasDataChanged', {
+        detail: { contas, totais }
+      }));
+    }, 50); // 50ms debounce
+  }, [contas, totais]);
 
   // Atualizar status das contas automaticamente
   useEffect(() => {
@@ -263,7 +272,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       .filter((c) => c.status === "paga")
       .reduce((total, c) => total + c.valor, 0);
 
-    // Totais específicos para contas recebidas e pagas separadamente
+    // Totais espec��ficos para contas recebidas e pagas separadamente
     const totalContasRecebidas = contasFiltradas
       .filter((c) => c.tipo === "receber" && c.status === "paga")
       .reduce((total, c) => total + c.valor, 0);
