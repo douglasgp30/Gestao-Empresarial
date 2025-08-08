@@ -76,12 +76,11 @@ export interface Conta {
 }
 
 export interface Campanha {
-  id: string;
-  nome: string;
-  descricao?: string;
-  ativa: boolean;
-  dataInicio: Date;
-  dataFim?: Date;
+  id: string;               // CodigoCampanha
+  nome: string;            // NomeCampanha (obrigatório)
+  dataInicio: Date;        // DataInicio (obrigatório)
+  dataFim: Date;          // DataFim (obrigatório)
+  dataCriacao: Date;
 }
 
 export interface Configuracao {
