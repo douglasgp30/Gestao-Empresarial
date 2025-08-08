@@ -26,14 +26,20 @@ function CaixaContent() {
             Controle completo de receitas e despesas da empresa
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <SeedButton />
-          <ModalReceita />
-          <ModalDespesa />
-          <ModalCampanhas />
-          <ModalDescricoesAvancado />
-          <ModalCidades />
-          <ModalSetores />
+        <div className="flex flex-col gap-3">
+          {/* Botões principais */}
+          <div className="flex gap-2">
+            <ModalReceita />
+            <ModalDespesa />
+          </div>
+          {/* Botões de configuração */}
+          <div className="flex flex-wrap gap-2 justify-end">
+            <SeedButton />
+            <ModalCampanhas />
+            <ModalDescricoesAvancado />
+            <ModalCidades />
+            <ModalSetores />
+          </div>
         </div>
       </div>
 
