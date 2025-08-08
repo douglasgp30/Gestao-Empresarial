@@ -148,6 +148,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     qtdContasReceberAtrasadas: 0,
     contasVencendoHoje: 0,
     contasAtrasadas: 0,
+    receitasPeriodo: 0,
+    despesasPeriodo: 0,
+    saldoPeriodo: 0,
   });
 
   const setFiltroRapido = (
