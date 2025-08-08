@@ -125,6 +125,11 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  // Persist clientes to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+  }, [clientes]);
+
   const value = {
     clientes,
     adicionarCliente,

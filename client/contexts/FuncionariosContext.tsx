@@ -212,6 +212,11 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     };
   }, [funcionarios, filtros]);
 
+  // Persist funcionarios to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
+  }, [funcionarios]);
+
   const value = {
     funcionarios,
     filtros,
