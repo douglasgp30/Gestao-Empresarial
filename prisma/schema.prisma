@@ -112,10 +112,9 @@ model Funcionario {
 }
 
 model Setor {
-  id          Int      @id @default(autoincrement())
-  nome        String
-  cidade      String
-  ativo       Boolean  @default(true)
+  id          Int      @id @default(autoincrement()) // CodigoSetor
+  cidade      String   // Cidade (obrigatório)
+  nome        String   // Setor/bairro (obrigatório)
   dataCriacao DateTime @default(now())
 
   // Relacionamentos
