@@ -90,13 +90,8 @@ function carregarCampanhasReais(): Campanha[] {
 }
 
 export function CaixaProvider({ children }: { children: ReactNode }) {
-  let authContext;
-  try {
-    authContext = useAuth();
-  } catch (error) {
-    console.warn("⚠️ AuthContext não disponível, usando usuário padrão");
-    authContext = null;
-  }
+  // Usar useAuth sempre, mas usar fallback seguro
+  const authContext = useAuth();
 
   // Fallback para garantir que sempre temos um usuário válido
   const user = authContext?.user || {
@@ -164,7 +159,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (error) {
-        console.error("⚠️ ERRO CRÍTICO ao processar dados:", error);
+        console.error("��️ ERRO CRÍTICO ao processar dados:", error);
       }
     }
 
