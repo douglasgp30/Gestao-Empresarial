@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { FuncionariosProvider } from "../contexts/FuncionariosContext";
 import FormularioFuncionario from "../components/Funcionarios/FormularioFuncionario";
 import FiltrosFuncionariosCompacto from "../components/Funcionarios/FiltrosFuncionariosCompacto";
