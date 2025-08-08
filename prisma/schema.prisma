@@ -12,177 +12,177 @@ datasource db {
 
 model Campanha {
   id          Int      @id @default(autoincrement())
-  nome        String   @db.Text
-  descricao   String?  @db.Text
+  nome        String
+  descricao   String?
   ativa       Boolean  @default(true)
   dataInicio  DateTime?
   dataFim     DateTime?
   dataCriacao DateTime @default(now())
-  
+
   // Relacionamentos
   lancamentos LancamentoCaixa[]
-  
+
   @@map("campanhas")
 }
 
 model Descricao {
   id          Int      @id @default(autoincrement())
-  nome        String   @db.Text
-  categoria   String?  @db.Text
+  nome        String
+  categoria   String?
   tipo        String   @default("receita") // "receita" ou "despesa"
   dataCriacao DateTime @default(now())
-  
+
   // Relacionamentos
   lancamentos LancamentoCaixa[]
-  
+
   @@map("descricoes")
 }
 
 model FormaPagamento {
   id          Int      @id @default(autoincrement())
-  nome        String   @db.Text
+  nome        String
   ativa       Boolean  @default(true)
   dataCriacao DateTime @default(now())
-  
+
   // Relacionamentos
   lancamentos LancamentoCaixa[]
-  
+
   @@map("formas_pagamento")
 }
 
 model Cliente {
   id          Int      @id @default(autoincrement())
-  nome        String   @db.Text
-  cpf         String?  @db.Text
-  telefone1   String   @db.Text
-  telefone2   String?  @db.Text
-  email       String?  @db.Text
-  endereco    String?  @db.Text
+  nome        String
+  cpf         String?
+  telefone1   String
+  telefone2   String?
+  email       String?
+  endereco    String?
   dataCriacao DateTime @default(now())
-  
+
   // Relacionamentos
   agendamentos Agendamento[]
-  
+
   @@map("clientes")
 }
 
 model Fornecedor {
   id          Int      @id @default(autoincrement())
-  nome        String   @db.Text
-  telefone    String?  @db.Text
+  nome        String
+  telefone    String?
   dataCriacao DateTime @default(now())
-  
+
   @@map("fornecedores")
 }
 
 model Funcionario {
   id               Int      @id @default(autoincrement())
-  nome             String   @db.Text
-  email            String?  @db.Text
-  telefone         String?  @db.Text
-  cargo            String?  @db.Text
+  nome             String
+  email            String?
+  telefone         String?
+  cargo            String?
   salario          Float?
   temAcessoSistema Boolean  @default(false)
-  login            String?  @unique @db.Text
-  senha            String?  @db.Text
-  permissoes       String?  @db.Text // JSON das permissões
+  login            String?  @unique
+  senha            String?
+  permissoes       String? // JSON das permissões
   dataCriacao      DateTime @default(now())
-  
+
   // Relacionamentos
   lancamentos  LancamentoCaixa[]
   agendamentos Agendamento[]
-  
+
   @@map("funcionarios")
 }
 
 model Setor {
   id          Int      @id @default(autoincrement())
-  nome        String   @db.Text
-  cidade      String   @db.Text
+  nome        String
+  cidade      String
   ativo       Boolean  @default(true)
   dataCriacao DateTime @default(now())
-  
+
   // Relacionamentos
   lancamentos  LancamentoCaixa[]
   agendamentos Agendamento[]
-  
+
   @@map("setores")
 }
 
 model LancamentoCaixa {
   id                Int      @id @default(autoincrement())
   data              DateTime
-  tipo              String   @db.Text // "receita" ou "despesa"
+  tipo              String // "receita" ou "despesa"
   valor             Float
   valorLiquido      Float?
   comissao          Float?
   imposto           Float?
   valorQueEntrou    Float?
-  observacoes       String?  @db.Text
-  numeroNota        String?  @db.Text
-  arquivoNota       String?  @db.Text
+  observacoes       String?
+  numeroNota        String?
+  arquivoNota       String?
   dataCriacao       DateTime @default(now())
-  
+
   // Chaves estrangeiras
   descricaoId       Int
   formaPagamentoId  Int
   funcionarioId     Int?
   setorId           Int?
   campanhaId        Int?
-  
+
   // Relacionamentos
   descricao      Descricao      @relation(fields: [descricaoId], references: [id])
   formaPagamento FormaPagamento @relation(fields: [formaPagamentoId], references: [id])
   funcionario    Funcionario?   @relation(fields: [funcionarioId], references: [id])
   setor          Setor?         @relation(fields: [setorId], references: [id])
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
-  
+
   @@map("lancamentos_caixa")
 }
 
 model Conta {
   id            Int      @id @default(autoincrement())
-  tipo          String   @db.Text // "pagar" ou "receber"
-  descricao     String   @db.Text
+  tipo          String // "pagar" ou "receber"
+  descricao     String
   valor         Float
   dataVencimento DateTime
   dataPagamento DateTime?
-  status        String   @default("pendente") @db.Text // "pendente", "pago", "atrasado"
-  observacoes   String?  @db.Text
-  categoria     String?  @db.Text
+  status        String   @default("pendente") // "pendente", "pago", "atrasado"
+  observacoes   String?
+  categoria     String?
   dataCriacao   DateTime @default(now())
-  
+
   @@map("contas")
 }
 
 model Agendamento {
   id          Int      @id @default(autoincrement())
   data        DateTime
-  horario     String   @db.Text
-  servico     String   @db.Text
-  observacoes String?  @db.Text
-  status      String   @default("agendado") @db.Text // "agendado", "realizado", "cancelado"
+  horario     String
+  servico     String
+  observacoes String?
+  status      String   @default("agendado") // "agendado", "realizado", "cancelado"
   dataCriacao DateTime @default(now())
-  
+
   // Chaves estrangeiras
   clienteId     Int
   funcionarioId Int?
   setorId       Int?
-  
+
   // Relacionamentos
   cliente     Cliente      @relation(fields: [clienteId], references: [id])
   funcionario Funcionario? @relation(fields: [funcionarioId], references: [id])
   setor       Setor?       @relation(fields: [setorId], references: [id])
-  
+
   @@map("agendamentos")
 }
 
 model Configuracao {
   id           Int      @id @default(autoincrement())
-  chave        String   @unique @db.Text
-  valor        String   @db.Text
-  descricao    String?  @db.Text
+  chave        String   @unique
+  valor        String
+  descricao    String?
   dataAlteracao DateTime @default(now())
-  
+
   @@map("configuracoes")
 }
