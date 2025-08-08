@@ -3,6 +3,7 @@ import { FuncionariosProvider } from "../contexts/FuncionariosContext";
 import FormularioFuncionario from "../components/Funcionarios/FormularioFuncionario";
 import FiltrosFuncionariosCompacto from "../components/Funcionarios/FiltrosFuncionariosCompacto";
 import ListaFuncionarios from "../components/Funcionarios/ListaFuncionarios";
+import { FiltrosPeriodo } from "../components/ui/filtros-periodo";
 import { Users } from "lucide-react";
 
 function FuncionariosContent() {
@@ -23,6 +24,16 @@ function FuncionariosContent() {
           <FormularioFuncionario />
         </div>
       </div>
+
+      {/* Filtros de Período */}
+      <FiltrosPeriodo
+        titulo="Filtrar por Data de Cadastro"
+        periodoInicialDias={90}
+        onFiltroChange={(dataInicio, dataFim) => {
+          // A lógica será implementada quando integrarmos com a API
+          console.log('Filtrar funcionários por período:', dataInicio, dataFim);
+        }}
+      />
 
       {/* Filtros */}
       <FiltrosFuncionariosCompacto />
