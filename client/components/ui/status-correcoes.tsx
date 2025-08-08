@@ -12,14 +12,56 @@ export function StatusCorrecoes() {
       detalhes: "Lida com Date, string, null, undefined e datas inválidas"
     },
     {
-      arquivo: "ModalCampanhas.tsx", 
+      arquivo: "ModalCampanhas.tsx",
       status: "corrigido",
       descricao: "Função formatDate atualizada para usar utilitário",
       detalhes: "TypeError: date.toLocaleDateString corrigido"
     },
     {
+      arquivo: "ModalDescricoesAvancado.tsx",
+      status: "corrigido",
+      descricao: "Função formatDate local removida",
+      detalhes: "Erro na linha 471 corrigido"
+    },
+    {
+      arquivo: "ModalCidades.tsx",
+      status: "corrigido",
+      descricao: "Função formatDate local removida",
+      detalhes: "Erro de undefined.toLocaleDateString corrigido"
+    },
+    {
+      arquivo: "ModalSetores.tsx",
+      status: "corrigido",
+      descricao: "Função formatDate local removida",
+      detalhes: "Erro de date.toLocaleDateString corrigido"
+    },
+    {
+      arquivo: "ModalDescricoes.tsx",
+      status: "corrigido",
+      descricao: "Função formatDate atualizada",
+      detalhes: "Prevenção de erros de formatação"
+    },
+    {
+      arquivo: "ListaContas.tsx",
+      status: "corrigido",
+      descricao: "Função formatDate local substituída",
+      detalhes: "Formatação segura de datas de vencimento"
+    },
+    {
+      arquivo: "FiltrosContas.tsx",
+      status: "corrigido",
+      descricao: "Import da função utilitária adicionado",
+      detalhes: "Formatação consistente nos filtros"
+    },
+    {
+      arquivo: "ListaFuncionarios.tsx",
+      status: "corrigido",
+      descricao: "Função formatDate local removida",
+      detalhes: "Formatação segura de datas de cadastro"
+    },
+    {
       arquivo: "ListaLancamentosSimples.tsx",
-      status: "corrigido", 
+      status: "corrigido",
       descricao: "Função formatarData substituída por formatDate seguro",
       detalhes: "Evita erros com datas vindas da API"
     },
