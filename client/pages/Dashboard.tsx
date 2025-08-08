@@ -638,6 +638,11 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Componente de Teste dos Filtros */}
+        <div className="flex justify-center">
+          <TesteFiltros />
+        </div>
       </div>
     </TooltipProvider>
   );
