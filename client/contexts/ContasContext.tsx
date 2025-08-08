@@ -86,50 +86,9 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let contasReais = carregarContasReais();
 
-    // Se não há dados, criar alguns dados de exemplo
+    // Não criar dados de exemplo - apenas usar dados reais
     if (contasReais.length === 0) {
-      console.log("Criando contas de exemplo para demonstração");
-      const hoje = new Date();
-      const proximaSemana = new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000);
-      const mesPassado = new Date(hoje.getTime() - 15 * 24 * 60 * 60 * 1000);
-
-      const contasExemplo: Conta[] = [
-        {
-          id: "conta1",
-          tipo: "receber",
-          valor: 500.00,
-          fornecedorCliente: "Cliente Exemplo",
-          descricao: "Serviço prestado",
-          dataVencimento: proximaSemana,
-          status: "pendente",
-          funcionarioId: "1"
-        },
-        {
-          id: "conta2",
-          tipo: "receber",
-          valor: 300.00,
-          fornecedorCliente: "Outro Cliente",
-          descricao: "Conta já recebida",
-          dataVencimento: mesPassado,
-          dataPagamento: hoje,
-          status: "paga",
-          funcionarioId: "1"
-        },
-        {
-          id: "conta3",
-          tipo: "pagar",
-          valor: 100.00,
-          fornecedorCliente: "Fornecedor ABC",
-          descricao: "Material comprado",
-          dataVencimento: proximaSemana,
-          status: "pendente",
-          funcionarioId: "1"
-        }
-      ];
-
-      contasReais = contasExemplo;
-      // Salvar os dados de exemplo
-      localStorage.setItem("contas", JSON.stringify(contasExemplo));
+      console.log("Sistema iniciado sem contas - usuário deve adicionar contas reais");
     }
 
     const contasComStatus = contasReais.map((conta) => ({
