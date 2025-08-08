@@ -196,20 +196,44 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log("DashboardContext: useEffect chamado"); // Debug
     console.log("Filtros:", filtros); // Debug
-    console.log("CaixaContext disponível:", !!caixaContext); // Debug
-    console.log("ContasContext disponível:", !!contasContext); // Debug
 
-    if (!caixaContext || !contasContext) {
-      console.log("Contextos não disponíveis ainda"); // Debug
-      return;
+    // Fallback to localStorage if contexts aren't available
+    let lancamentosData = caixaContext?.lancamentos || [];
+    let contasData = contasContext?.contas || [];
+
+    // If contexts don't have data, load directly from localStorage
+    if (lancamentosData.length === 0) {
+      try {
+        const storedLancamentos = localStorage.getItem("lancamentos");
+        if (storedLancamentos) {
+          const parsed = JSON.parse(storedLancamentos);
+          lancamentosData = parsed.map((l: any) => ({
+            ...l,
+            data: new Date(l.data),
+          }));
+        }
+      } catch (error) {
+        console.warn("Failed to load lancamentos from localStorage:", error);
+      }
     }
 
-    console.log("Lançamentos disponíveis:", caixaContext?.lancamentos?.length || 0); // Debug
-
-    if (!caixaContext?.lancamentos || caixaContext?.lancamentos?.length === 0) {
-      console.log("Nenhum lançamento encontrado"); // Debug
-      return;
+    if (contasData.length === 0) {
+      try {
+        const storedContas = localStorage.getItem("contas");
+        if (storedContas) {
+          const parsed = JSON.parse(storedContas);
+          contasData = parsed.map((c: any) => ({
+            ...c,
+            dataVencimento: new Date(c.dataVencimento),
+            dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
+          }));
+        }
+      } catch (error) {
+        console.warn("Failed to load contas from localStorage:", error);
+      }
     }
+
+    console.log("Dados disponíveis - Lançamentos:", lancamentosData.length, "Contas:", contasData.length);
 
     setIsLoading(true);
 
