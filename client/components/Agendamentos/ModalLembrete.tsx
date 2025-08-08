@@ -38,7 +38,7 @@ export default function ModalLembrete({
   useEffect(() => {
     if (aberto) {
       setAnimacao(true);
-      // Parar animação após alguns segundos
+      // Parar animaç��o após alguns segundos
       const timer = setTimeout(() => setAnimacao(false), 3000);
       return () => clearTimeout(timer);
     }
@@ -167,10 +167,18 @@ export default function ModalLembrete({
             </h4>
             <div className="space-y-2">
               <Button
-                onClick={handleMarcarComoLido}
-                className="w-full bg-green-600 hover:bg-green-700"
+                onClick={handleConcluir}
+                className="w-full bg-blue-600 hover:bg-blue-700"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
+                Marcar como Concluído
+              </Button>
+
+              <Button
+                onClick={handleMarcarComoLido}
+                variant="outline"
+                className="w-full"
+              >
                 Marcar como Lido
               </Button>
 
