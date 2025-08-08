@@ -590,8 +590,26 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Dashboard now calculates independently without affecting other contexts
 
   // Filtrar contas que precisam de atenção (vencendo hoje e atrasadas)
+  // Use fallback data if context not available
+  let contasDataForVencendo = contasContext?.contas || [];
+  if (contasDataForVencendo.length === 0) {
+    try {
+      const storedContas = localStorage.getItem("contas");
+      if (storedContas) {
+        const parsed = JSON.parse(storedContas);
+        contasDataForVencendo = parsed.map((c: any) => ({
+          ...c,
+          dataVencimento: new Date(c.dataVencimento),
+          dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
+        }));
+      }
+    } catch (error) {
+      console.warn("Failed to load contas for contasVencendo:", error);
+    }
+  }
+
   const contasVencendo =
-    contasContext?.contas
+    contasDataForVencendo
       ?.filter((conta) => {
         const hoje = new Date();
         const hojeNorm = new Date(
