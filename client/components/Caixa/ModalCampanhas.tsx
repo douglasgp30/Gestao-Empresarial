@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
+import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -56,16 +57,6 @@ import {
   Pause,
 } from "lucide-react";
 
-function formatDate(date: Date | string | null | undefined): string {
-  if (!date) return "-";
-
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-
-  // Verificar se é uma data válida
-  if (isNaN(dateObj.getTime())) return "-";
-
-  return dateObj.toLocaleDateString("pt-BR");
-}
 
 export default function ModalCampanhas() {
   const { campanhas, adicionarCampanha } = useCaixa();
