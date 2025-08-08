@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useContas } from "../../contexts/ContasContext";
+import { formatDate } from "../../lib/dateUtils";
 import {
   Card,
   CardContent,
@@ -51,9 +52,6 @@ import {
   ArrowDown,
 } from "lucide-react";
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("pt-BR");
-}
 
 function formatCurrency(value: number): string {
   return value.toLocaleString("pt-BR", {
