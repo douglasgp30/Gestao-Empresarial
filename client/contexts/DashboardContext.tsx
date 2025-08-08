@@ -100,9 +100,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasContext = null;
   }
 
-  const [filtros, setFiltros] = useState<FiltrosPeriodo>({
-    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-    dataFim: new Date(),
+  const [filtros, setFiltros] = useState<FiltrosPeriodo>(() => {
+    const hoje = new Date();
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    inicioMes.setHours(0, 0, 0, 0);
+    fimMes.setHours(23, 59, 59, 999);
+    return {
+      dataInicio: inicioMes,
+      dataFim: fimMes,
+    };
   });
 
   console.log("DashboardContext: Estado inicial dos filtros:", {
