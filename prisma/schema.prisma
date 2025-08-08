@@ -26,16 +26,30 @@ model Campanha {
 }
 
 model Descricao {
-  id          Int      @id @default(autoincrement())
-  nome        String
+  id          Int      @id @default(autoincrement()) // CodigoDescricao
+  nome        String   // Descrição (obrigatório)
   categoria   String?
   tipo        String   @default("receita") // "receita" ou "despesa"
   dataCriacao DateTime @default(now())
 
   // Relacionamentos
-  lancamentos LancamentoCaixa[]
+  lancamentos    LancamentoCaixa[]
+  subdescricoes  Subdescricao[]
 
   @@map("descricoes")
+}
+
+model Subdescricao {
+  id          Int      @id @default(autoincrement()) // CodigoSubdescricao
+  nome        String   // Subdescricao (obrigatório)
+  descricaoId Int      // CodigoDescricao (FK obrigatório)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  descricao   Descricao         @relation(fields: [descricaoId], references: [id])
+  lancamentos LancamentoCaixa[]
+
+  @@map("subdescricoes")
 }
 
 model FormaPagamento {
