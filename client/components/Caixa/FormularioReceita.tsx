@@ -246,6 +246,9 @@ export default function FormularioReceita() {
       description: "A receita foi lançada com sucesso no caixa.",
     });
 
+    // Fechar modal
+    setIsOpen(false);
+
     // Reset form
     setFormData({
       data: new Date().toISOString().split("T")[0],
