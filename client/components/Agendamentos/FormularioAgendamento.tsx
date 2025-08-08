@@ -86,6 +86,7 @@ export default function FormularioAgendamento({
   const tecnicos = funcionarios.filter((f) => f.ativo);
 
   const opcoesLembrete = [
+    { valor: 0, label: "Na hora exata" },
     { valor: 10, label: "10 minutos antes" },
     { valor: 15, label: "15 minutos antes" },
     { valor: 30, label: "30 minutos antes" },
@@ -102,6 +103,20 @@ export default function FormularioAgendamento({
 
     if (!formData.horaServico) {
       novosErros.horaServico = "Hora do serviço é obrigatória";
+    }
+
+    // Validar se data/hora não é anterior ao momento atual
+    if (formData.dataServico && formData.horaServico) {
+      const dataServico = new Date(formData.dataServico);
+      const [hora, minutos] = formData.horaServico.split(":");
+      dataServico.setHours(parseInt(hora), parseInt(minutos));
+      
+      const agora = new Date();
+      
+      if (dataServico < agora) {
+        novosErros.dataServico = "Não é possível agendar para uma data/hora anterior ao momento atual";
+        novosErros.horaServico = "Horário deve ser no futuro";
+      }
     }
 
     if (!formData.descricaoServico.trim()) {
