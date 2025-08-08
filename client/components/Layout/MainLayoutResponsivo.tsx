@@ -150,7 +150,7 @@ function MobileNav({
             <Button
               variant="ghost"
               className="w-full justify-start gap-3"
-              onClick={() => {}}
+              onClick={logout}
             >
               <LogOut className="h-4 w-4" />
               Sair
@@ -192,7 +192,7 @@ function DesktopSidebar({
         <Button
           variant="ghost"
           className="w-full justify-start gap-3"
-          onClick={() => {}}
+          onClick={logout}
         >
           <LogOut className="h-4 w-4" />
           Sair do Sistema
