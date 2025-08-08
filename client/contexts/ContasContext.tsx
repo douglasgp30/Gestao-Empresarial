@@ -56,7 +56,7 @@ function carregarContasReais(): Conta[] {
   }
 }
 
-function getStatusConta(dataVencimento: Date, status: string): string {
+function getStatusConta(dataVencimento: Date, status: string): "paga" | "atrasada" | "vence_hoje" | "pendente" {
   if (status === "paga") return "paga";
 
   const hoje = new Date();
