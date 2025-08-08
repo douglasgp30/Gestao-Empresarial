@@ -209,12 +209,23 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       .filter((c) => c.status === "paga")
       .reduce((total, c) => total + c.valor, 0);
 
+    // Totais específicos para contas recebidas e pagas separadamente
+    const totalContasRecebidas = contasFiltradas
+      .filter((c) => c.tipo === "receber" && c.status === "paga")
+      .reduce((total, c) => total + c.valor, 0);
+
+    const totalContasPagas = contasFiltradas
+      .filter((c) => c.tipo === "pagar" && c.status === "paga")
+      .reduce((total, c) => total + c.valor, 0);
+
     return {
       totalPagar,
       totalReceber,
       totalVencendoHoje,
       totalAtrasadas,
       totalPagas,
+      totalContasRecebidas,
+      totalContasPagas,
     };
   }, [contas, filtros]);
 
