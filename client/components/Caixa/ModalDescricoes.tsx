@@ -95,6 +95,7 @@ export default function ModalDescricoes() {
     adicionarDescricao({
       nome: formData.nome.trim(),
       categoria: formData.categoria || undefined,
+      tipo: "receita", // Default para receita, pode ser alterado posteriormente
     });
 
     resetForm();
