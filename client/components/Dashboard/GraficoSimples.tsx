@@ -7,7 +7,6 @@ interface DadosGrafico {
   receitas: number;
   despesas: number;
   saldo: number;
-  meta?: number;
 }
 
 interface GraficoSimplesProps {
