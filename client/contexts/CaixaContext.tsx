@@ -45,6 +45,7 @@ interface CaixaContextType {
   adicionarCampanha: (campanha: Omit<Campanha, "id">) => void;
   setFiltros: (filtros: any) => void;
   isLoading: boolean;
+  testarLancamento: () => void; // Para debug
 }
 
 const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
