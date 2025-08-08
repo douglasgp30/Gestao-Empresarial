@@ -145,13 +145,17 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     const novosAgendamentos = [...agendamentos, novoAgendamento];
     salvarAgendamentos(novosAgendamentos);
 
-    // Criar lembrete
+    // Criar lembrete - calcular hora corretamente
     const dataHoraLembrete = new Date(novoAgendamento.dataServico);
     const [hora, minutos] = novoAgendamento.horaServico.split(":");
-    dataHoraLembrete.setHours(parseInt(hora), parseInt(minutos));
-    dataHoraLembrete.setMinutes(
-      dataHoraLembrete.getMinutes() - dadosAgendamento.tempoLembrete,
-    );
+    dataHoraLembrete.setHours(parseInt(hora), parseInt(minutos), 0, 0);
+
+    // Se tempoLembrete for 0, avisar na hora exata
+    if (dadosAgendamento.tempoLembrete > 0) {
+      dataHoraLembrete.setMinutes(
+        dataHoraLembrete.getMinutes() - dadosAgendamento.tempoLembrete,
+      );
+    }
 
     const novoLembrete: LembreteAgendamento = {
       agendamentoId: novoAgendamento.id,
