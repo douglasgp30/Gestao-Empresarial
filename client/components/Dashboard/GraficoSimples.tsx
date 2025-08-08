@@ -67,7 +67,7 @@ export default function GraficoSimples({ dados, className }: GraficoSimplesProps
         <div className="pt-2 border-t">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {saldo >= 0 ? (
+              {saldoSeguro >= 0 ? (
                 <TrendingUp className="h-4 w-4 text-green-600" />
               ) : (
                 <TrendingDown className="h-4 w-4 text-red-600" />
@@ -75,45 +75,12 @@ export default function GraficoSimples({ dados, className }: GraficoSimplesProps
               <span className="font-medium text-sm">Saldo</span>
             </div>
             <span className={`font-bold ${
-              saldo >= 0 ? 'text-green-600' : 'text-red-600'
+              saldoSeguro >= 0 ? 'text-green-600' : 'text-red-600'
             }`}>
-              {formatarMoeda(saldo)}
+              {formatarMoeda(saldoSeguro)}
             </span>
           </div>
         </div>
-
-        {/* Meta do Mês (se disponível) */}
-        {meta && meta > 0 && (
-          <div className="pt-2 border-t">
-            <div className="flex items-center justify-between text-sm mb-2">
-              <span className="font-medium">Meta do Mês</span>
-              <span className="text-muted-foreground">
-                {formatarMoeda(receitas)} / {formatarMoeda(meta)}
-              </span>
-            </div>
-            <div className="h-2 bg-muted rounded-full overflow-hidden">
-              <div 
-                className={`h-full rounded-full transition-all duration-300 ${
-                  progressoMeta >= 100 ? 'bg-green-500' : 
-                  progressoMeta >= 75 ? 'bg-blue-500' :
-                  progressoMeta >= 50 ? 'bg-yellow-500' : 'bg-orange-500'
-                }`}
-                style={{ width: `${progressoMeta}%` }}
-              />
-            </div>
-            <div className="flex items-center justify-between text-xs mt-1">
-              <span className="text-muted-foreground">
-                {progressoMeta.toFixed(1)}% da meta
-              </span>
-              <span className={`font-medium ${
-                progressoMeta >= 100 ? 'text-green-600' : 'text-muted-foreground'
-              }`}>
-                {progressoMeta >= 100 ? '✓ Meta atingida!' : 
-                 `Faltam ${formatarMoeda(meta - receitas)}`}
-              </span>
-            </div>
-          </div>
-        )}
 
         {/* Mini insights */}
         <div className="pt-2 border-t">
