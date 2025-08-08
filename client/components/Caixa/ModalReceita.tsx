@@ -47,28 +47,10 @@ export function ModalReceita() {
     campanha: "",
   });
 
-  const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filtrar descrições de receita
   const descricoesReceita = descricoes.filter(d => d.tipo === 'receita');
-
-  // Calcular campos automaticamente
-  useEffect(() => {
-    const valor = parseFloat(formData.valor) || 0;
-    const valorQueEntrou = parseFloat(formData.valorQueEntrou) || valor;
-    const imposto = parseFloat(formData.imposto) || 0;
-    const valorLiquido = valorQueEntrou - imposto;
-    
-    // Calcular comissão (15% do valor líquido se houver técnico)
-    const comissao = formData.tecnicoResponsavel ? valorLiquido * 0.15 : 0;
-
-    setFormData(prev => ({
-      ...prev,
-      valorLiquido: valorLiquido.toFixed(2),
-      comissao: comissao.toFixed(2)
-    }));
-  }, [formData.valor, formData.valorQueEntrou, formData.imposto, formData.tecnicoResponsavel]);
 
   const resetForm = () => {
     setFormData({
