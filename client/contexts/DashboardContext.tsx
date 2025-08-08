@@ -173,14 +173,21 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setFiltros(novoFiltro);
   };
 
+  // Force refresh function for immediate updates
+  const forceRefresh = useCallback(() => {
+    setFiltros(prev => ({ ...prev, __timestamp: Date.now() }));
+  }, []);
+
   // Listen for cross-context data changes
   useEffect(() => {
     const handleCaixaChange = () => {
-      setFiltros(prev => ({ ...prev, __timestamp: Date.now() }));
+      console.log("Dashboard: Received caixaDataChanged event");
+      forceRefresh();
     };
 
     const handleContasChange = () => {
-      setFiltros(prev => ({ ...prev, __timestamp: Date.now() }));
+      console.log("Dashboard: Received contasDataChanged event");
+      forceRefresh();
     };
 
     window.addEventListener('caixaDataChanged', handleCaixaChange);
@@ -190,7 +197,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('caixaDataChanged', handleCaixaChange);
       window.removeEventListener('contasDataChanged', handleContasChange);
     };
-  }, []);
+  }, [forceRefresh]);
 
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
