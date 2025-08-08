@@ -91,17 +91,18 @@ model Fornecedor {
 }
 
 model Funcionario {
-  id               Int      @id @default(autoincrement())
-  nome             String
-  email            String?
-  telefone         String?
-  cargo            String?
-  salario          Float?
-  temAcessoSistema Boolean  @default(false)
-  login            String?  @unique
-  senha            String?
-  permissoes       String? // JSON das permissões
-  dataCriacao      DateTime @default(now())
+  id                Int      @id @default(autoincrement()) // CodigoTecnico
+  nome              String   // NomeTecnico (obrigatório)
+  percentualServico Float?   // PercentualServico (obrigatório)
+  email             String?
+  telefone          String?
+  cargo             String?
+  salario           Float?
+  temAcessoSistema  Boolean  @default(false)
+  login             String?  @unique
+  senha             String?
+  permissoes        String? // JSON das permissões
+  dataCriacao       DateTime @default(now())
 
   // Relacionamentos
   lancamentos  LancamentoCaixa[]
