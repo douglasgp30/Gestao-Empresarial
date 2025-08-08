@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCaixa } from "../../contexts/CaixaContext";
+import { useCaixa, formatarMoeda } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { useContas } from "../../contexts/ContasContext";
 import { Button } from "../ui/button";
@@ -440,7 +440,7 @@ export default function FormularioReceita() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-green-600" />
-              Lançar Receita (Serviço Realizado)
+              Lan��ar Receita (Serviço Realizado)
             </DialogTitle>
             <DialogDescription>
               Registre um serviço de desentupimento realizado
