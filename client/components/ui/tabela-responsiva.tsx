@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "./table";
 import { Badge } from "./badge";
+import { formatDate } from "../../lib/dateUtils";
 import { Card, CardContent } from "./card";
 import { Button } from "./button";
 import {
