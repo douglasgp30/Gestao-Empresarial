@@ -217,7 +217,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         (percentualComissao / 100);
     }
 
-    setLancamentos((prev) => [...prev, lancamento]);
+    setLancamentos((prev) => {
+      const novosLancamentos = [...prev, lancamento];
+      console.log("💾 Estado atualizado:", { totalLancamentos: novosLancamentos.length, ultimoId: lancamento.id });
+      return novosLancamentos;
+    });
   };
 
   const editarLancamento = (
