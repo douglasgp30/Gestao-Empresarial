@@ -21,71 +21,35 @@ const ClientesContext = createContext<ClientesContextType | undefined>(
   undefined,
 );
 
-// Mock data inicial
-const mockClientes: Cliente[] = [
-  {
-    id: "1",
-    nome: "João Silva Santos",
-    cpf: "123.456.789-00",
-    telefone1: "(62) 99999-1234",
-    telefone2: "(62) 3333-5678",
-    email: "joao.silva@email.com",
-    endereco: {
-      cep: "74000-000",
-      rua: "Rua das Flores",
-      numero: "123",
-      complemento: "Apto 45",
-      bairro: "Centro",
-      cidade: "Goiânia",
-      estado: "GO",
-    },
-    dataCriacao: new Date("2024-01-15"),
-  },
-  {
-    id: "2",
-    nome: "Maria Oliveira Costa",
-    cpf: "987.654.321-00",
-    telefone1: "(62) 88888-5678",
-    email: "maria.oliveira@email.com",
-    endereco: {
-      cep: "74100-100",
-      rua: "Avenida Central",
-      numero: "456",
-      bairro: "Setor Norte",
-      cidade: "Goiânia",
-      estado: "GO",
-    },
-    dataCriacao: new Date("2024-02-20"),
-  },
-  {
-    id: "3",
-    nome: "Carlos Ferreira Lima",
-    telefone1: "(62) 77777-9012",
-    dataCriacao: new Date("2024-03-10"),
-  },
-  {
-    id: "4",
-    nome: "Ana Paula Rodrigues",
-    cpf: "456.789.123-00",
-    telefone1: "(62) 66666-3456",
-    telefone2: "(62) 2222-8765",
-    email: "ana.rodrigues@email.com",
-    endereco: {
-      cep: "74200-200",
-      rua: "Rua São João",
-      numero: "789",
-      complemento: "Casa",
-      bairro: "Jardim América",
-      cidade: "Goiânia",
-      estado: "GO",
-    },
-    dataCriacao: new Date("2024-03-25"),
-  },
-];
+// Função para carregar clientes reais do localStorage
+function carregarClientesReais(): Cliente[] {
+  try {
+    const clientes = localStorage.getItem('clientes');
+    if (clientes) {
+      const parsedClientes = JSON.parse(clientes);
+      // Converter strings de data de volta para objetos Date
+      return parsedClientes.map((c: any) => ({
+        ...c,
+        dataCriacao: new Date(c.dataCriacao)
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.warn('Erro ao carregar clientes do localStorage:', error);
+    return [];
+  }
+}
 
 export function ClientesProvider({ children }: { children: ReactNode }) {
-  const [clientes, setClientes] = useState<Cliente[]>(mockClientes);
-  const [isLoading, setIsLoading] = useState(false);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Carregar dados reais do localStorage
+  useEffect(() => {
+    const clientesReais = carregarClientesReais();
+    setClientes(clientesReais);
+    setIsLoading(false);
+  }, []);
 
   const adicionarCliente = (
     novoCliente: Omit<Cliente, "id" | "dataCriacao">,
