@@ -440,7 +440,7 @@ export default function FormularioReceita() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-green-600" />
-              Lan��ar Receita (Serviço Realizado)
+              Lançar Receita (Serviço Realizado)
             </DialogTitle>
             <DialogDescription>
               Registre um serviço de desentupimento realizado
@@ -1016,21 +1016,14 @@ export default function FormularioReceita() {
                     <div className="flex justify-between">
                       <span>Valor Bruto:</span>
                       <span className="font-bold">
-                        R${" "}
-                        {parseFloat(formData.valor).toLocaleString("pt-BR", {
-                          minimumFractionDigits: 2,
-                        })}
+                        {formatarMoeda(parseFloat(formData.valor))}
                       </span>
                     </div>
                     {formData.notaFiscal && (
                       <div className="flex justify-between text-red-600">
                         <span>Desconto Imposto (6%):</span>
                         <span>
-                          - R${" "}
-                          {(parseFloat(formData.valor) * 0.06).toLocaleString(
-                            "pt-BR",
-                            { minimumFractionDigits: 2 },
-                          )}
+                          {formatarMoeda(-(parseFloat(formData.valor) * 0.06))}
                         </span>
                       </div>
                     )}
@@ -1045,15 +1038,10 @@ export default function FormularioReceita() {
                             ):
                           </span>
                           <span>
-                            - R${" "}
-                            {(
-                              (parseFloat(formData.valor) || 0) *
+                            {formatarMoeda(-((parseFloat(formData.valor) || 0) *
                               (formData.formaPagamento === "Cartão de Débito"
                                 ? 0.02
-                                : 0.035)
-                            ).toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                            })}
+                                : 0.035)))}
                           </span>
                         </div>
                       )}
@@ -1062,13 +1050,7 @@ export default function FormularioReceita() {
                         <div className="flex justify-between text-blue-600">
                           <span>Valor que Entrou:</span>
                           <span>
-                            R${" "}
-                            {parseFloat(formData.valorEntrou).toLocaleString(
-                              "pt-BR",
-                              {
-                                minimumFractionDigits: 2,
-                              },
-                            )}
+                            {formatarMoeda(parseFloat(formData.valorEntrou))}
                           </span>
                         </div>
                       )}
@@ -1076,10 +1058,7 @@ export default function FormularioReceita() {
                     <div className="flex justify-between text-lg">
                       <span>Valor Antes da Comissão:</span>
                       <span className="text-blue-600">
-                        R${" "}
-                        {calcularValorSemComissao().toLocaleString("pt-BR", {
-                          minimumFractionDigits: 2,
-                        })}
+                        {formatarMoeda(calcularValorSemComissao())}
                       </span>
                     </div>
                     {formData.tecnicoResponsavel && (
@@ -1088,10 +1067,7 @@ export default function FormularioReceita() {
                           Comissão {formData.tecnicoResponsavel} (15%):
                         </span>
                         <span>
-                          - R${" "}
-                          {calcularComissao().toLocaleString("pt-BR", {
-                            minimumFractionDigits: 2,
-                          })}
+                          {formatarMoeda(-calcularComissao())}
                         </span>
                       </div>
                     )}
@@ -1099,10 +1075,7 @@ export default function FormularioReceita() {
                     <div className="flex justify-between text-lg font-bold">
                       <span>Valor Líquido Final (Empresa):</span>
                       <span className="text-green-600">
-                        R${" "}
-                        {calcularValorLiquidoFinal().toLocaleString("pt-BR", {
-                          minimumFractionDigits: 2,
-                        })}
+                        {formatarMoeda(calcularValorLiquidoFinal())}
                       </span>
                     </div>
                   </CardContent>
