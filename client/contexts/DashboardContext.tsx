@@ -402,7 +402,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
     // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
-    const totalContasAReceber = (contasContext?.contas || [])
+    const totalContasAReceber = contasData
       .filter((c) => {
         if (c.tipo !== "receber" || c.status === "paga") return false;
         const dataVencimento = new Date(c.dataVencimento);
@@ -426,7 +426,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       })
       .reduce((total, c) => total + c.valor, 0);
 
-    const totalContasAPagar = (contasContext?.contas || [])
+    const totalContasAPagar = contasData
       .filter((c) => {
         if (c.tipo !== "pagar" || c.status === "paga") return false;
         const dataVencimento = new Date(c.dataVencimento);
