@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useClientes } from "../contexts/ClientesContext";
 import { useCaixa } from "../contexts/CaixaContext";
 import { Button } from "../components/ui/button";
@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/table";
+import { FiltrosPeriodo } from "../components/ui/filtros-periodo";
 import ModalCadastroCliente from "../components/Clientes/ModalCadastroCliente";
 import {
   Users,
