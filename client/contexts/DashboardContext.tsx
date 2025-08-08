@@ -83,8 +83,22 @@ function getUltimos30Dias(): Date {
 }
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
-  const caixaContext = useCaixa();
-  const contasContext = useContas();
+  // Verificar se os contextos estão disponíveis antes de usar
+  let caixaContext, contasContext;
+
+  try {
+    caixaContext = useCaixa();
+  } catch (error) {
+    console.warn('CaixaContext não disponível no DashboardProvider:', error);
+    caixaContext = null;
+  }
+
+  try {
+    contasContext = useContas();
+  } catch (error) {
+    console.warn('ContasContext não disponível no DashboardProvider:', error);
+    contasContext = null;
+  }
 
   const [filtros, setFiltros] = useState<FiltrosPeriodo>({
     dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
