@@ -230,9 +230,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       console.log('Dashboard: Usando totais do CaixaContext. Receitas:', totalReceitasCaixa, 'Despesas:', totalDespesasCaixa);
 
       // LINHA 2 - Totais de Contas (usar dados calculados pelo ContasContext)
-      const totalContasRecebidas = contasContext.totais.totalPagas; // Contas que foram pagas (receitas e despesas)
-      const totalContasPagas = contasContext.totais.totalPagas; // Total de contas pagas
-      const saldoContasPagas = contasContext.totais.totalReceber - contasContext.totais.totalPagar;
+      const totalContasRecebidas = contasContext.totais.totalContasRecebidas; // Contas recebidas (pagas)
+      const totalContasPagas = contasContext.totais.totalContasPagas; // Contas pagas (despesas)
+      const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
       // LINHA 3 - Totais de Contas a Receber e a Pagar (não processadas, filtradas por data)
       const totalContasAReceber = contasContext.contas
@@ -406,7 +406,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           new Date(b.dataVencimento).getTime(),
       ) || [];
 
-  // Função para atualizar meta do m��s com persistência
+  // Função para atualizar meta do mês com persistência
   const handleSetMetaMes = (valor: number) => {
     setMetaMes(valor);
     const mesAtual = new Date().toISOString().slice(0, 7); // YYYY-MM
