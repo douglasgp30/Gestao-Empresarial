@@ -663,6 +663,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     totalMetaMes,
     restanteParaMeta,
     setMetaMes: handleSetMetaMes,
+    forceRefresh, // Expose force refresh function
   };
 
   return (
