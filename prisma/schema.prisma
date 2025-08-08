@@ -11,12 +11,10 @@ datasource db {
 }
 
 model Campanha {
-  id          Int      @id @default(autoincrement())
-  nome        String
-  descricao   String?
-  ativa       Boolean  @default(true)
-  dataInicio  DateTime?
-  dataFim     DateTime?
+  id          Int      @id @default(autoincrement()) // CodigoCampanha
+  nome        String   // NomeCampanha (obrigatório)
+  dataInicio  DateTime // DataInicio (obrigatório)
+  dataFim     DateTime // DataFim (obrigatório)
   dataCriacao DateTime @default(now())
 
   // Relacionamentos
