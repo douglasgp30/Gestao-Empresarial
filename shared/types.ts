@@ -157,10 +157,17 @@ export interface RelatorioFiltros {
 }
 
 export interface Descricao {
-  id: string;
-  nome: string;
+  id: string;               // CodigoDescricao
+  nome: string;            // Descrição (obrigatório)
   tipo: "receita" | "despesa";
   categoria?: string;
+  dataCriacao: Date;
+}
+
+export interface Subdescricao {
+  id: string;              // CodigoSubdescricao
+  nome: string;           // Subdescricao (obrigatório)
+  descricaoId: number;    // CodigoDescricao (FK obrigatório)
   dataCriacao: Date;
 }
 
