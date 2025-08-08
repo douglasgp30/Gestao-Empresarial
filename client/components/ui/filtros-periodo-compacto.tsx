@@ -357,7 +357,12 @@ export default function FiltrosPeriodoCompacto({
               onDataInicioChange(dataFormatada);
               onDataFimChange(dataFormatada);
               setFiltroAtivo("hoje");
-              onAplicar();
+
+              // Força aplicação imediata para sincronização em tempo real
+              setTimeout(() => {
+                onAplicar();
+                console.log("✅ Filtro Hoje aplicado com sucesso em tempo real");
+              }, 10);
 
               triggerForceUpdate();
             }}
