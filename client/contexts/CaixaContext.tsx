@@ -142,39 +142,48 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     let lancamentosReais = carregarLancamentosReais();
     const campanhasReais = carregarCampanhasReais();
 
-    // SISTEMA DE RECUPERAÇÃO AUTÔMTICA DE DADOS PERDIDOS
+    // SISTEMA DE RECUPERAÇÃO AUTOMÁTICA DE DADOS PERDIDOS
     if (lancamentosReais.length === 0) {
       console.log("🔍 EXECUTANDO RECUPERAÇÃO AUTOMÁTICA...");
 
-      try {
-        const recovery = await DataRecoveryService.checkAndRecoverLostData();
+      // Criar função async para recuperação de dados
+      const recuperarDados = async () => {
+        try {
+          const recovery = await DataRecoveryService.checkAndRecoverLostData();
 
-        if (recovery.found && recovery.recovered.length > 0) {
-          console.log(`🎉 DADOS RECUPERADOS COM SUCESSO!`);
-          console.log(`📊 ${recovery.recovered.length} lançamentos recuperados`);
-          console.log(`📁 Fontes: ${recovery.sources.join(', ')}`);
+          if (recovery.found && recovery.recovered.length > 0) {
+            console.log(`🎉 DADOS RECUPERADOS COM SUCESSO!`);
+            console.log(`📊 ${recovery.recovered.length} lançamentos recuperados`);
+            console.log(`📁 Fontes: ${recovery.sources.join(', ')}`);
 
-          lancamentosReais = recovery.recovered;
+            const dadosRecuperados = recovery.recovered;
 
-          // Salvar dados recuperados
-          localStorage.setItem("lancamentos", JSON.stringify(lancamentosReais));
+            // Salvar dados recuperados
+            localStorage.setItem("lancamentos", JSON.stringify(dadosRecuperados));
 
-          // Criar backup de segurança dos dados recuperados
-          DataRecoveryService.createEmergencyBackup(
-            lancamentosReais,
-            `Recuperação automática - ${recovery.sources.join(', ')}`
-          );
+            // Criar backup de segurança dos dados recuperados
+            DataRecoveryService.createEmergencyBackup(
+              dadosRecuperados,
+              `Recuperação automática - ${recovery.sources.join(', ')}`
+            );
 
-          // Notificar usuário
-          setTimeout(() => {
-            alert(`🎉 DADOS RECUPERADOS!\n\n${recovery.recovered.length} lançamentos foram recuperados automaticamente.\n\nFontes: ${recovery.sources.join(', ')}`);
-          }, 1000);
-        } else {
-          console.log("🔍 Nenhum dado para recuperar encontrado");
+            // Atualizar estado com dados recuperados
+            setLancamentos(dadosRecuperados);
+
+            // Notificar usuário
+            setTimeout(() => {
+              alert(`🎉 DADOS RECUPERADOS!\n\n${recovery.recovered.length} lançamentos foram recuperados automaticamente.\n\nFontes: ${recovery.sources.join(', ')}`);
+            }, 1000);
+          } else {
+            console.log("🔍 Nenhum dado para recuperar encontrado");
+          }
+        } catch (error) {
+          console.error("⚠️ Erro durante recuperação:", error);
         }
-      } catch (error) {
-        console.error("⚠️ Erro durante recuperação:", error);
-      }
+      };
+
+      // Executar recuperação
+      recuperarDados();
     }
 
     if (lancamentosReais.length === 0) {
