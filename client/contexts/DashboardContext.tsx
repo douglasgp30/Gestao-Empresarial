@@ -530,26 +530,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasContext?.contas,
   ]);
 
-  // Sincronizar filtros com outros contextos quando não estiver aplicando filtros específicos do caixa
-  useEffect(() => {
-    if (!aplicarFiltrosCaixa && caixaContext && contasContext) {
-      // Sincronizar filtros do Dashboard com outros contextos
-      const novosFiltrosCaixa = {
-        ...caixaContext?.filtros,
-        dataInicio: filtros.dataInicio,
-        dataFim: filtros.dataFim,
-      };
-
-      const novosFiltrosContas = {
-        ...contasContext?.filtros,
-        dataInicio: filtros.dataInicio,
-        dataFim: filtros.dataFim,
-      };
-
-      caixaContext?.setFiltros?.(novosFiltrosCaixa);
-      contasContext?.setFiltros?.(novosFiltrosContas);
-    }
-  }, [filtros.dataInicio, filtros.dataFim, aplicarFiltrosCaixa]);
+  // Removed problematic filter synchronization to avoid circular dependencies
+  // Dashboard now calculates independently without affecting other contexts
 
   // Filtrar contas que precisam de atenção (vencendo hoje e atrasadas)
   const contasVencendo =
