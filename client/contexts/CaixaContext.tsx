@@ -201,6 +201,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
     console.log("📝 CaixaContext.adicionarLancamento chamado:", novoLancamento);
+    console.log("👤 Usuário atual:", user);
+
+    if (!user) {
+      console.warn("⚠️ Usuário não está logado, mas prosseguindo com ID padrão");
+    }
 
     const id = Date.now().toString();
     const lancamento: LancamentoCaixa = {
