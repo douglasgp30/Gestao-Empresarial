@@ -177,6 +177,8 @@ export default function FormularioReceita() {
       }
     }
 
+    console.log("🚀 Iniciando lançamento de receita:", { valor, formaPagamento: formData.formaPagamento });
+
     // Calcular valor líquido (valor real que fica para a empresa após todas as deduções)
     let valorLiquido = valor;
     let descontoImposto = 0;
