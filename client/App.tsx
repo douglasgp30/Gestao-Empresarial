@@ -28,6 +28,7 @@ import Relatorios from "./pages/Relatorios";
 import Agendamentos from "./pages/Agendamentos";
 import Clientes from "./pages/Clientes";
 import Configuracoes from "./pages/Configuracoes";
+import Campanhas from "./pages/Campanhas";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,7 @@ const App = () => (
                                   element={<Agendamentos />}
                                 />
                                 <Route path="clientes" element={<Clientes />} />
+                                <Route path="campanhas" element={<Campanhas />} />
                                 <Route
                                   path="funcionarios"
                                   element={
