@@ -90,11 +90,25 @@ export function ModalReceita() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.valor || !formData.descricao || !formData.formaPagamento) {
+
+    // Validações básicas obrigatórias
+    if (!formData.valor || !formData.descricao || !formData.formaPagamento || !formData.conta) {
       toast({
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios",
+        description: "Preencha todos os campos obrigatórios (Valor, Descrição, Forma de Pagamento, Conta)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validação específica: valorRecebido obrigatório para cartão
+    const formaPagamentoSelecionada = formasPagamento.find(f => f.id.toString() === formData.formaPagamento);
+    const isCartao = formaPagamentoSelecionada ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome) : false;
+
+    if (isCartao && !formData.valorRecebido) {
+      toast({
+        title: "Erro",
+        description: "Valor recebido é obrigatório para pagamentos no cartão",
         variant: "destructive"
       });
       return;
@@ -104,21 +118,17 @@ export function ModalReceita() {
 
     try {
       await adicionarLancamento({
-        data: new Date(formData.data),
+        dataHora: gerarDataHoraAutomatica(),
         tipo: "receita",
         valor: parseFloat(formData.valor),
-        valorLiquido: parseFloat(formData.valorLiquido) || parseFloat(formData.valor),
-        valorQueEntrou: parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
-        comissao: parseFloat(formData.comissao) || 0,
-        imposto: parseFloat(formData.imposto) || 0,
-        descricao: formData.descricao,
-        formaPagamento: formData.formaPagamento,
-        tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
-        setor: formData.setor || undefined,
-        campanha: formData.campanha || undefined,
-        observacoes: formData.observacoes || undefined,
-        numeroNota: formData.numeroNota || undefined,
-        arquivoNota: formData.arquivoNota || undefined,
+        valorRecebido: formData.valorRecebido ? parseFloat(formData.valorRecebido) : undefined,
+        conta: formData.conta as "empresa" | "pessoal",
+        descricaoId: parseInt(formData.descricao),
+        subdescricaoId: formData.subdescricao ? parseInt(formData.subdescricao) : undefined,
+        formaPagamentoId: parseInt(formData.formaPagamento),
+        funcionarioId: formData.tecnicoResponsavel ? parseInt(formData.tecnicoResponsavel) : undefined,
+        setorId: formData.setor ? parseInt(formData.setor) : undefined,
+        campanhaId: formData.campanha ? parseInt(formData.campanha) : undefined,
       });
 
       toast({
