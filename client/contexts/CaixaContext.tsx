@@ -200,19 +200,23 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const adicionarLancamento = (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
+    console.log("🔥 === INÍCIO DO LANÇAMENTO ===");
     console.log("📝 CaixaContext.adicionarLancamento chamado:", novoLancamento);
     console.log("👤 Usuário atual:", user);
+    console.log("📊 Lançamentos atuais:", lancamentos.length);
 
     if (!user) {
-      console.warn("⚠️ Usuário não está logado, mas prosseguindo com ID padrão");
+      console.warn("⚠️ USUÁRIO NÃO LOGADO - usando ID padrão '1'");
     }
 
-    const id = Date.now().toString();
+    const id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
     const lancamento: LancamentoCaixa = {
       ...novoLancamento,
       id,
       funcionarioId: user?.id || "1",
     };
+
+    console.log("📋 Lançamento criado:", lancamento);
 
     // Calcular comissão se for receita
     if (lancamento.tipo === "receita" && lancamento.tecnicoResponsavel) {
