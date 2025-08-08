@@ -55,10 +55,11 @@ interface EntidadesContextType {
 
   // Setores
   setores: Setor[];
-  cidades: string[];
+  cidades: Cidade[];
   adicionarSetor: (setor: Omit<Setor, "id" | "dataCriacao">) => Promise<void>;
   editarSetor: (id: string, setor: Partial<Setor>) => Promise<void>;
   excluirSetor: (id: string) => Promise<void>;
+  adicionarCidade: (cidade: Omit<Cidade, "id" | "dataCriacao">) => void;
 
   // Clientes (mantém localStorage)
   clientes: Cliente[];
