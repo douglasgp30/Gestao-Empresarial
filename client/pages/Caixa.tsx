@@ -1,14 +1,15 @@
 import React from "react";
 import { CaixaProvider } from "../contexts/CaixaContext";
 import { EntidadesProvider } from "../contexts/EntidadesContext";
-import FormularioReceita from "../components/Caixa/FormularioReceita";
-import FormularioDespesa from "../components/Caixa/FormularioDespesa";
+import { FormularioReceita } from "../components/Caixa/FormularioReceita";
+import { FormularioDespesa } from "../components/Caixa/FormularioDespesa";
 import ModalCampanhas from "../components/Caixa/ModalCampanhas";
 import ModalDescricoesAvancado from "../components/Caixa/ModalDescricoesAvancado";
 import ModalCidades from "../components/Caixa/ModalCidades";
 import ModalSetores from "../components/Caixa/ModalSetores";
-import FiltrosCaixaCompacto from "../components/Caixa/FiltrosCaixaCompacto";
-import ListaLancamentosSimples from "../components/Caixa/ListaLancamentosSimples";
+import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
+import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
+import { SeedButton } from "../components/ui/seed-button";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
@@ -26,6 +27,7 @@ function CaixaContent() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <SeedButton />
           <FormularioReceita />
           <FormularioDespesa />
           <ModalCampanhas />
