@@ -26,6 +26,7 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
+import { TesteFiltros } from "../components/ui/teste-filtros";
 import {
   DollarSign,
   TrendingUp,
