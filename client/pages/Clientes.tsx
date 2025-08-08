@@ -135,6 +135,13 @@ export default function Clientes() {
         />
       </div>
 
+      {/* Filtros de Período */}
+      <FiltrosPeriodo
+        onFiltroChange={handleFiltrosPeriodoChange}
+        titulo="Filtrar por Data de Cadastro"
+        periodoInicialDias={90}
+      />
+
       {/* Pesquisa */}
       <Card>
         <CardHeader>
