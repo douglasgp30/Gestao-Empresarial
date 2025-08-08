@@ -17,6 +17,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -52,6 +53,11 @@ const sidebarItems: SidebarItem[] = [
     title: "Clientes",
     href: "/clientes",
     icon: UserCheck,
+  },
+  {
+    title: "Campanhas",
+    href: "/campanhas",
+    icon: Megaphone,
   },
   {
     title: "Funcionários",
