@@ -202,8 +202,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
-    console.log("DashboardContext: useEffect chamado"); // Debug
-    console.log("Filtros:", filtros); // Debug
+    console.log("🔄 DashboardContext: Recalculando valores..."); // Debug
+    console.log("📅 Período selecionado:", {
+      inicio: filtros.dataInicio.toISOString().split("T")[0],
+      fim: filtros.dataFim.toISOString().split("T")[0]
+    }); // Debug
 
     // Fallback to localStorage if contexts aren't available
     let lancamentosData = caixaContext?.lancamentos || [];
