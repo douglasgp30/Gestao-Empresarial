@@ -1,4 +1,5 @@
 import "./global.css";
+import "./utils/resizeObserverFix"; // Fix ResizeObserver warnings
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
