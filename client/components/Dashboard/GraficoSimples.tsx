@@ -15,15 +15,16 @@ interface GraficoSimplesProps {
 }
 
 export default function GraficoSimples({ dados, className }: GraficoSimplesProps) {
-  const { receitas, despesas, saldo, meta } = dados;
-  
-  // Calcular percentuais para as barras
-  const total = receitas + despesas;
-  const percentualReceitas = total > 0 ? (receitas / total) * 100 : 0;
-  const percentualDespesas = total > 0 ? (despesas / total) * 100 : 0;
-  
-  // Calcular progresso da meta se existir
-  const progressoMeta = meta && meta > 0 ? Math.min((receitas / meta) * 100, 100) : 0;
+  const { receitas, despesas, saldo } = dados;
+
+  // Calcular percentuais para as barras com proteção contra NaN
+  const receitasSeguras = receitas || 0;
+  const despesasSeguras = despesas || 0;
+  const saldoSeguro = saldo || 0;
+
+  const total = receitasSeguras + despesasSeguras;
+  const percentualReceitas = total > 0 ? (receitasSeguras / total) * 100 : 0;
+  const percentualDespesas = total > 0 ? (despesasSeguras / total) * 100 : 0;
   
   return (
     <Card className={className}>
