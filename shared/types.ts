@@ -205,8 +205,9 @@ export interface Fornecedor {
 }
 
 export interface Setor {
-  id: string;
-  nome: string;
+  id: string;               // CodigoSetor
+  cidade: string;          // Cidade (obrigatório)
+  nome: string;           // Setor/bairro (obrigatório)
   dataCriacao: Date;
 }
 
