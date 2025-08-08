@@ -494,7 +494,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const fimMesAtual = getFimDoMes();
 
     // 1. Receitas do caixa do mês atual (independente dos filtros)
-    const receitasCaixaMesAtual = (caixaContext?.lancamentos || [])
+    const receitasCaixaMesAtual = lancamentosData
       .filter((l) => {
         if (l.tipo !== "receita") return false;
         const dataLancamento = new Date(l.data);
