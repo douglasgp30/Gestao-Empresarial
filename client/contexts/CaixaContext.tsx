@@ -111,7 +111,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           valor: 150.00,
           valorLiquido: 150.00,
           data: hoje,
-          descricao: "Serviço de Exemplo",
+          descricao: "Serviço de Hoje",
           setor: "Geral",
           tecnicoResponsavel: "Técnico 1",
           formaPagamento: "Dinheiro",
@@ -124,7 +124,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           valor: 200.00,
           valorLiquido: 200.00,
           data: ontem,
-          descricao: "Outro Serviço",
+          descricao: "Serviço de Ontem",
           setor: "Geral",
           tecnicoResponsavel: "Técnico 2",
           formaPagamento: "Cartão",
@@ -136,8 +136,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           tipo: "despesa",
           valor: 50.00,
           data: anteontem,
-          descricao: "Despesa de Exemplo",
+          descricao: "Despesa de Anteontem",
           categoria: "Material",
+          funcionarioId: "1"
+        },
+        {
+          id: "ex4",
+          tipo: "receita",
+          valor: 350.00,
+          valorLiquido: 350.00,
+          data: new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000),
+          descricao: "Serviço da Semana Passada",
+          setor: "Especializado",
+          tecnicoResponsavel: "Técnico 1",
+          formaPagamento: "PIX",
+          funcionarioId: "1",
+          campanha: "Exemplo"
+        },
+        {
+          id: "ex5",
+          tipo: "despesa",
+          valor: 120.00,
+          data: new Date(hoje.getTime() - 5 * 24 * 60 * 60 * 1000),
+          descricao: "Compra de Material",
+          categoria: "Equipamentos",
           funcionarioId: "1"
         }
       ];
