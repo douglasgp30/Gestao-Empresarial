@@ -85,7 +85,10 @@ export default function FiltrosRelatoriosCompacto() {
     // Força atualização com novos filtros criando nova referência
     setFiltros({
       ...filtros,
-      __timestamp: Date.now() // Força re-render
+      periodo: {
+        ...filtros.periodo,
+        __timestamp: Date.now() // Força re-render
+      }
     });
   };
 
