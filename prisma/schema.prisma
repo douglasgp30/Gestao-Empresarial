@@ -53,9 +53,8 @@ model Subdescricao {
 }
 
 model FormaPagamento {
-  id          Int      @id @default(autoincrement())
-  nome        String
-  ativa       Boolean  @default(true)
+  id          Int      @id @default(autoincrement()) // CodigoForma
+  nome        String   // FormaPagamento (obrigatório)
   dataCriacao DateTime @default(now())
 
   // Relacionamentos
