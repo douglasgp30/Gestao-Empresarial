@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
+import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import {
   Table,
@@ -50,9 +51,6 @@ export function ListaLancamentosSimples() {
     }).format(valor);
   };
 
-  const formatarData = (data: Date) => {
-    return new Intl.DateTimeFormat('pt-BR').format(new Date(data));
-  };
 
   const handleExcluir = async () => {
     if (!lancamentoParaExcluir) return;
@@ -142,7 +140,7 @@ export function ListaLancamentosSimples() {
                 {lancamentos.map((lancamento) => (
                   <TableRow key={lancamento.id}>
                     <TableCell>
-                      {formatarData(lancamento.data)}
+                      {formatDate(lancamento.data)}
                     </TableCell>
                     <TableCell>
                       <Badge 
