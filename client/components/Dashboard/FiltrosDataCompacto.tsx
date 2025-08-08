@@ -30,10 +30,13 @@ export default function FiltrosDataCompacto() {
   };
 
   const handleAplicar = () => {
+    console.log("Dashboard handleAplicar chamado"); // Debug
+    console.log("Filtros atuais:", filtros); // Debug
     const novosFiltros = {
       ...filtros,
       __timestamp: Date.now(), // Força re-render
     };
+    console.log("Novos filtros:", novosFiltros); // Debug
     setFiltros(novosFiltros);
   };
 
