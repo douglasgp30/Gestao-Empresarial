@@ -76,18 +76,14 @@ export function ModalReceita() {
     setFormData({
       data: new Date().toISOString().split('T')[0],
       valor: "",
-      valorQueEntrou: "",
-      valorLiquido: "",
-      comissao: "",
-      imposto: "",
+      valorRecebido: "",
+      conta: "",
       descricao: "",
+      subdescricao: "",
       formaPagamento: "",
       tecnicoResponsavel: "",
       setor: "",
       campanha: "",
-      observacoes: "",
-      numeroNota: "",
-      arquivoNota: "",
     });
     setMostrarCamposAvancados(false);
   };
