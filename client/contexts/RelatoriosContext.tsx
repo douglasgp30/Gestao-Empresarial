@@ -170,14 +170,8 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [filtros, setFiltros] = useState<RelatorioFiltros>({
     periodo: {
-      dataInicio: (() => {
-        const hoje = new Date();
-        return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-      })(),
-      dataFim: (() => {
-        const hoje = new Date();
-        return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-      })(),
+      dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
+      dataFim: new Date(),
     },
   });
 
