@@ -110,29 +110,28 @@ model Setor {
 }
 
 model LancamentoCaixa {
-  id                Int      @id @default(autoincrement())
-  data              DateTime
-  tipo              String // "receita" ou "despesa"
-  valor             Float
-  valorLiquido      Float?
-  comissao          Float?
-  imposto           Float?
-  valorQueEntrou    Float?
-  observacoes       String?
-  numeroNota        String?
-  arquivoNota       String?
+  id                Int      @id @default(autoincrement()) // CodLançamentoCX
+  dataHora          String   // Data e hora no formato DD-MM-AAAA HH:MM:SS
+  valor             Float    // Valor do lançamento (obrigatório)
+  valorRecebido     Float?   // Valor efetivamente recebido (obrigatório para cartão)
+  conta             String   // "empresa" ou "pessoal" (obrigatório)
+  tipo              String   // "receita" ou "despesa" (obrigatório)
   dataCriacao       DateTime @default(now())
 
-  // Chaves estrangeiras
-  descricaoId       Int
-  formaPagamentoId  Int
-  funcionarioId     Int?
-  setorId           Int?
-  campanhaId        Int?
+  // Chaves estrangeiras obrigatórias
+  descricaoId       Int      // Puxa da tabela Descrição
+  formaPagamentoId  Int      // Puxa da tabela Forma de Pagamento
+
+  // Chaves estrangeiras opcionais
+  subdescricaoId    Int?     // Puxa da tabela Subdescrição
+  funcionarioId     Int?     // Puxa da tabela Técnicos
+  setorId           Int?     // Puxa da tabela Cidades e Setores
+  campanhaId        Int?     // Puxa da tabela Campanhas
 
   // Relacionamentos
   descricao      Descricao      @relation(fields: [descricaoId], references: [id])
   formaPagamento FormaPagamento @relation(fields: [formaPagamentoId], references: [id])
+  subdescricao   Subdescricao?  @relation(fields: [subdescricaoId], references: [id])
   funcionario    Funcionario?   @relation(fields: [funcionarioId], references: [id])
   setor          Setor?         @relation(fields: [setorId], references: [id])
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
