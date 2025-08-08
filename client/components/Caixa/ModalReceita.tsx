@@ -23,6 +23,7 @@ import {
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
 import { TrendingUp } from "lucide-react";
+import { gerarDataHoraAutomatica, isFormaPagamentoCartao } from "../../lib/dateUtils";
 
 export function ModalReceita() {
   const { adicionarLancamento, campanhas, isLoading: caixaLoading } = useCaixa();
