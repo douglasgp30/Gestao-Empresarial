@@ -36,87 +36,92 @@ const FuncionariosContext = createContext<FuncionariosContextType | undefined>(
   undefined,
 );
 
-// Mock data inicial
-const mockFuncionarios: Funcionario[] = [
-  {
-    id: "1",
-    nomeCompleto: "Administrador do Sistema",
-    login: "admin",
-    senha: "admin123",
-    temAcessoSistema: true,
-    tipoAcesso: "Administrador",
-    permissoes: {
-      acessarDashboard: true,
-      verCaixa: true,
-      lancarReceita: true,
-      lancarDespesa: true,
-      editarLancamentos: true,
-      verContas: true,
-      lancarContasPagar: true,
-      lancarContasReceber: true,
-      marcarContasPagas: true,
-      acessarConfiguracoes: true,
-      fazerBackupManual: true,
-      gerarRelatorios: true,
-      verCadastros: true,
-      gerenciarFuncionarios: true,
-      alterarPermissoes: true,
-    },
-    percentualComissao: 0,
-    dataCadastro: new Date(2024, 0, 1),
-    ativo: true,
-  },
-  {
-    id: "2",
-    nomeCompleto: "João Silva",
-    login: "joao",
-    senha: "123456",
-    permissaoAcesso: true,
-    tipoAcesso: "Operador",
-    percentualComissao: 15,
-    dataCadastro: new Date(2024, 1, 15),
-    ativo: true,
-  },
-  {
-    id: "3",
-    nomeCompleto: "Carlos Santos",
-    login: "carlos",
-    senha: "carlos123",
-    permissaoAcesso: true,
-    tipoAcesso: "Operador",
-    percentualComissao: 12,
-    dataCadastro: new Date(2024, 2, 10),
-    ativo: true,
-  },
-  {
-    id: "4",
-    nomeCompleto: "Roberto Lima",
-    login: "roberto",
-    senha: "roberto123",
-    permissaoAcesso: true,
-    tipoAcesso: "Operador",
-    percentualComissao: 18,
-    dataCadastro: new Date(2024, 3, 5),
-    ativo: true,
-  },
-  {
-    id: "5",
-    nomeCompleto: "Fernando Costa",
-    login: "fernando",
-    senha: "fernando123",
-    permissaoAcesso: false,
-    tipoAcesso: "Operador",
-    percentualComissao: 10,
-    dataCadastro: new Date(2024, 4, 20),
-    ativo: false,
-  },
-];
+// Função para carregar funcionarios reais do localStorage
+function carregarFuncionariosReais(): Funcionario[] {
+  try {
+    const funcionarios = localStorage.getItem('funcionarios');
+    if (funcionarios) {
+      const parsedFuncionarios = JSON.parse(funcionarios);
+      // Converter strings de data de volta para objetos Date
+      return parsedFuncionarios.map((f: any) => ({
+        ...f,
+        dataCadastro: new Date(f.dataCadastro)
+      }));
+    }
+    // Se não houver funcionarios salvos, criar apenas o admin padrão
+    return [{
+      id: "1",
+      nomeCompleto: "Administrador do Sistema",
+      login: "admin",
+      senha: "admin123",
+      temAcessoSistema: true,
+      tipoAcesso: "Administrador",
+      permissoes: {
+        acessarDashboard: true,
+        verCaixa: true,
+        lancarReceita: true,
+        lancarDespesa: true,
+        editarLancamentos: true,
+        verContas: true,
+        lancarContasPagar: true,
+        lancarContasReceber: true,
+        marcarContasPagas: true,
+        acessarConfiguracoes: true,
+        fazerBackupManual: true,
+        gerarRelatorios: true,
+        verCadastros: true,
+        gerenciarFuncionarios: true,
+        alterarPermissoes: true,
+      },
+      percentualComissao: 0,
+      dataCadastro: new Date(),
+      ativo: true,
+    }];
+  } catch (error) {
+    console.warn('Erro ao carregar funcionarios do localStorage:', error);
+    // Retornar admin padrão em caso de erro
+    return [{
+      id: "1",
+      nomeCompleto: "Administrador do Sistema",
+      login: "admin",
+      senha: "admin123",
+      temAcessoSistema: true,
+      tipoAcesso: "Administrador",
+      permissoes: {
+        acessarDashboard: true,
+        verCaixa: true,
+        lancarReceita: true,
+        lancarDespesa: true,
+        editarLancamentos: true,
+        verContas: true,
+        lancarContasPagar: true,
+        lancarContasReceber: true,
+        marcarContasPagas: true,
+        acessarConfiguracoes: true,
+        fazerBackupManual: true,
+        gerarRelatorios: true,
+        verCadastros: true,
+        gerenciarFuncionarios: true,
+        alterarPermissoes: true,
+      },
+      percentualComissao: 0,
+      dataCadastro: new Date(),
+      ativo: true,
+    }];
+  }
+}
 
 export function FuncionariosProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [funcionarios, setFuncionarios] =
-    useState<Funcionario[]>(mockFuncionarios);
-  const [isLoading, setIsLoading] = useState(false);
+  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Carregar dados reais do localStorage
+  useEffect(() => {
+    const funcionariosReais = carregarFuncionariosReais();
+    setFuncionarios(funcionariosReais);
+    setIsLoading(false);
+  }, []);
   const [filtros, setFiltros] = useState({
     tipoAcesso: "todos" as "Administrador" | "Operador" | "todos",
     status: "todos" as "ativo" | "inativo" | "todos",
