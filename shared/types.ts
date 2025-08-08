@@ -42,29 +42,24 @@ export interface Funcionario {
 }
 
 export interface LancamentoCaixa {
-  id: string;
-  data: Date;
-  tipo: "receita" | "despesa";
-  valor: number;
-  valorLiquido?: number;
-  formaPagamento: string;
-  tecnicoResponsavel?: string;
-  comissao?: number;
-  notaFiscal: boolean;
-  notaFiscalArquivo?: {
-    nome: string;
-    tamanho: number;
-    dataUpload: Date;
-  };
-  descontoImposto?: number;
-  setor?: string;
-  cidade?: string;
-  campanha?: string;
-  categoria?: string;
-  descricao?: string;
-  tipoDespesa?: "empresa" | "pessoal"; // Apenas para despesas
-  cliente?: string; // Nome do cliente para receitas
-  funcionarioId: string;
+  id: string;                    // CodLançamentoCX
+  dataHora: string;             // Data e hora no formato DD-MM-AAAA HH:MM:SS
+  valor: number;                // Valor do lançamento (obrigatório)
+  valorRecebido?: number;       // Valor efetivamente recebido (obrigatório para cartão)
+  conta: "empresa" | "pessoal"; // Define se é Empresa ou Pessoal (obrigatório)
+  tipo: "receita" | "despesa";  // Receita ou Despesa (obrigatório)
+
+  // Relacionamentos obrigatórios
+  descricaoId: number;          // FK para tabela Descrição
+  formaPagamentoId: number;     // FK para tabela Forma de Pagamento
+
+  // Relacionamentos opcionais
+  subdescricaoId?: number;      // FK para tabela Subdescrição
+  funcionarioId?: number;       // FK para tabela Técnicos
+  setorId?: number;            // FK para tabela Cidades e Setores
+  campanhaId?: number;         // FK para tabela Campanhas
+
+  dataCriacao: Date;
 }
 
 export interface Conta {
