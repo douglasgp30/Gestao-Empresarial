@@ -33,6 +33,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { DollarSign, TrendingUp, Calculator, Upload, FileText, X } from "lucide-react";
+import { toast } from "../../hooks/use-toast";
 
 const formasPagamento = [
   "Dinheiro",
