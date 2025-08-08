@@ -228,7 +228,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     setLancamentos((prev) => {
       const novosLancamentos = [...prev, lancamento];
-      console.log("💾 Estado atualizado:", { totalLancamentos: novosLancamentos.length, ultimoId: lancamento.id });
+      console.log("🔄 ATUALIZANDO ESTADO:");
+      console.log("  - Lançamentos anteriores:", prev.length);
+      console.log("  - Novos lançamentos:", novosLancamentos.length);
+      console.log("  - Último ID:", lancamento.id);
+      console.log("  - Lista completa:", novosLancamentos.map(l => ({ id: l.id, tipo: l.tipo, valor: l.valor })));
+
+      // Verificar se o estado foi realmente atualizado
+      setTimeout(() => {
+        const storageData = localStorage.getItem('lancamentos');
+        console.log("🗄️ Dados no localStorage após setState:", storageData ? JSON.parse(storageData).length : 0);
+      }, 100);
+
+      console.log("🔥 === FIM DO LANÇAMENTO ===");
       return novosLancamentos;
     });
   };
