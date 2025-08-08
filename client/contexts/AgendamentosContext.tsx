@@ -54,11 +54,9 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Filtros padrão
-  const hoje = new Date();
-
   const [filtros, setFiltros] = useState<FiltrosAgendamento>({
-    dataInicio: hoje,
-    dataFim: hoje,
+    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
+    dataFim: new Date(),
     status: "todos",
   });
 
