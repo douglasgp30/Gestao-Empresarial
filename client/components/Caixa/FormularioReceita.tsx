@@ -162,18 +162,10 @@ export default function FormularioReceita() {
       valorLiquido = valor - descontoImposto;
     }
 
-    // 💳 Cartão de crédito/débito: usar valor que entrou ou calcular taxa
+    // 💳 Cartão de crédito/débito: usar valor que entrou (já validado como obrigatório)
     if (formData.formaPagamento.includes("Cartão")) {
-      if (formData.valorEntrou && parseFloat(formData.valorEntrou) > 0) {
-        // Usar o valor que realmente entrou
-        valorLiquido = parseFloat(formData.valorEntrou);
-      } else {
-        // Calcular com taxa padrão
-        const taxaCartao =
-          formData.formaPagamento === "Cartão de Débito" ? 2 : 3.5;
-        const desconto = valorLiquido * (taxaCartao / 100);
-        valorLiquido = valorLiquido - desconto;
-      }
+      // Usar o valor que realmente entrou (já validado como obrigatório acima)
+      valorLiquido = parseFloat(formData.valorEntrou);
     }
 
     // 👷 Comissão do funcionário: abater do valor líquido
