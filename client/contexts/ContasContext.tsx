@@ -77,6 +77,18 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     tipo: "ambos" as "pagar" | "receber" | "ambos",
   });
 
+  // Carregar dados reais do localStorage
+  useEffect(() => {
+    const contasReais = carregarContasReais();
+    const contasComStatus = contasReais.map((conta) => ({
+      ...conta,
+      status: getStatusConta(conta.dataVencimento, conta.status),
+    }));
+
+    setContas(contasComStatus);
+    setIsLoading(false);
+  }, []);
+
   const adicionarConta = (novaConta: Omit<Conta, "id" | "funcionarioId">) => {
     const id = Date.now().toString();
     const conta: Conta = {
