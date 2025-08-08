@@ -42,23 +42,23 @@ export default function GraficoSimples({ dados, className }: GraficoSimplesProps
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-green-600 font-medium">Receitas</span>
-            <span className="text-green-600 font-medium">{formatarMoeda(receitas)}</span>
+            <span className="text-green-600 font-medium">{formatarMoeda(receitasSeguras)}</span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full bg-green-500 rounded-full transition-all duration-300"
-              style={{ width: `${percentualReceitas}%` }}
+              style={{ width: `${isNaN(percentualReceitas) ? 0 : percentualReceitas}%` }}
             />
           </div>
-          
+
           <div className="flex items-center justify-between text-sm">
             <span className="text-red-600 font-medium">Despesas</span>
-            <span className="text-red-600 font-medium">{formatarMoeda(despesas)}</span>
+            <span className="text-red-600 font-medium">{formatarMoeda(despesasSeguras)}</span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full bg-red-500 rounded-full transition-all duration-300"
-              style={{ width: `${percentualDespesas}%` }}
+              style={{ width: `${isNaN(percentualDespesas) ? 0 : percentualDespesas}%` }}
             />
           </div>
         </div>
