@@ -177,7 +177,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         observacoes: "",
         numeroNota: "",
         arquivoNota: "",
+        temNotaFiscal: false,
       });
+      setNotaFiscalEmitida(false);
 
       onSuccess?.();
     } catch (error) {
