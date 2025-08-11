@@ -336,7 +336,7 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione a subdescrição (opcional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Nenhuma</SelectItem>
+                    <SelectItem value="none">Nenhuma</SelectItem>
                     {/* TODO: Filtrar subdescricoes baseado na descricao selecionada */}
                     {/* Por enquanto mostrando placeholder até implementar a API de subdescricoes */}
                   </SelectContent>
