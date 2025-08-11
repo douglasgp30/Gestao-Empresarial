@@ -167,7 +167,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         formasPagamentoApi.listar(true), // apenas ativas
         funcionariosApi.listar(),
         funcionariosApi.listarTecnicos(),
-        setoresApi.listar(true), // apenas ativos
+        setoresApi.listar(),
         setoresApi.listarCidades()
       ]);
 
