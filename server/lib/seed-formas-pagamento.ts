@@ -3,13 +3,13 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const formasPagamentoPadrao = [
-  { nome: 'Pix', descricao: 'Transferência instantânea via PIX' },
-  { nome: 'Transferência', descricao: 'Transferência bancária' },
-  { nome: 'Boleto', descricao: 'Pagamento via boleto bancário' },
-  { nome: 'Cartão de crédito', descricao: 'Pagamento com cartão de crédito' },
-  { nome: 'Cartão de débito', descricao: 'Pagamento com cartão de débito' },
-  { nome: 'Cheque', descricao: 'Pagamento em cheque' },
-  { nome: 'Dinheiro', descricao: 'Pagamento em espécie' }
+  'Pix',
+  'Transferência',
+  'Boleto',
+  'Cartão de crédito',
+  'Cartão de débito',
+  'Cheque',
+  'Dinheiro'
 ];
 
 export async function seedFormasPagamento() {
