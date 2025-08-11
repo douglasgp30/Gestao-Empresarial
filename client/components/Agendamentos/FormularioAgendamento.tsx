@@ -24,6 +24,7 @@ import {
 } from "../ui/dialog";
 import { Calendar, Clock, Plus, User } from "lucide-react";
 import { toast } from "../../hooks/use-toast";
+import SelectWithAdd from "../ui/select-with-add";
 
 interface FormularioAgendamentoProps {
   children?: React.ReactNode;
