@@ -138,7 +138,11 @@ export default function SelectWithAdd({
           </SelectTrigger>
           <SelectContent>
             {items
-              .filter((item) => item.id != null && item.id !== "" && item.id !== 0)
+              .filter((item) => {
+                // Filtrar itens com IDs inválidos
+                const id = item.id;
+                return id != null && id !== "" && id !== 0 && id.toString().trim() !== "";
+              })
               .map((item) => (
                 <SelectItem key={item.id} value={item.id.toString()}>
                   {renderItem(item)}
