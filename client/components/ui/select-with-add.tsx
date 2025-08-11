@@ -61,6 +61,21 @@ export default function SelectWithAdd({
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [newlyCreatedItemName, setNewlyCreatedItemName] = useState<string | null>(null);
 
+  // Auto-selecionar item recém-criado
+  useEffect(() => {
+    if (newlyCreatedItemName) {
+      // Procurar o item recém-criado na lista
+      const newItem = items.find(item =>
+        item.nome?.toLowerCase() === newlyCreatedItemName.toLowerCase()
+      );
+
+      if (newItem && !value) {
+        onValueChange(newItem.id.toString());
+        setNewlyCreatedItemName(null);
+      }
+    }
+  }, [items, newlyCreatedItemName, value, onValueChange]);
+
   const handleAddNew = async () => {
     // Validar campos obrigatórios
     const requiredFields = addNewFields.filter((field) => field.required);
