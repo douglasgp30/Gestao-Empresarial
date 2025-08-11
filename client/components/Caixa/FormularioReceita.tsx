@@ -352,6 +352,73 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
+          {/* Observações - Campo básico */}
+          <div className="space-y-2">
+            <Label htmlFor="observacoes">Observações</Label>
+            <Textarea
+              id="observacoes"
+              placeholder="Informações adicionais sobre a receita..."
+              value={formData.observacoes}
+              onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
+              rows={3}
+            />
+          </div>
+
+          {/* Nota Fiscal */}
+          <div className="space-y-3 p-4 bg-blue-50 rounded-lg border">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="nota-fiscal"
+                checked={formData.temNotaFiscal}
+                onCheckedChange={(checked) => {
+                  setFormData(prev => ({ ...prev, temNotaFiscal: checked }));
+                  if (!checked) {
+                    setFormData(prev => ({ ...prev, numeroNota: "" }));
+                    setNotaFiscalEmitida(false);
+                  }
+                }}
+              />
+              <Label htmlFor="nota-fiscal" className="font-medium">
+                Há nota fiscal para esta receita?
+              </Label>
+            </div>
+
+            {formData.temNotaFiscal && (
+              <div className="space-y-3 pl-6">
+                <div className="text-sm text-blue-600">
+                  Para emitir a nota fiscal, clique no botão abaixo. Após a emissão, preencha o número da nota.
+                </div>
+
+                <Button
+                  type="button"
+                  onClick={emitirNotaFiscal}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Emitir Nota Fiscal
+                </Button>
+
+                {(notaFiscalEmitida || formData.numeroNota) && (
+                  <div className="space-y-2">
+                    <Label htmlFor="numeroNotaObrigatorio">Número da Nota Fiscal *</Label>
+                    <Input
+                      id="numeroNotaObrigatorio"
+                      placeholder="Ex: 12345"
+                      value={formData.numeroNota}
+                      onChange={(e) => setFormData(prev => ({ ...prev, numeroNota: e.target.value }))}
+                      required={formData.temNotaFiscal}
+                      className={formData.temNotaFiscal && !formData.numeroNota ? "border-red-500" : ""}
+                    />
+                    {formData.temNotaFiscal && !formData.numeroNota && (
+                      <p className="text-sm text-red-500">Número da nota fiscal é obrigatório</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Campos avançados */}
           <div className="flex items-center space-x-2">
             <Switch
