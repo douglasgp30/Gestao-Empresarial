@@ -119,9 +119,19 @@ export default function ModalDescricoes() {
   const handleExcluir = async (id: string) => {
     try {
       await excluirDescricao(id);
+      toast({
+        title: "Sucesso",
+        description: "Descrição excluída com sucesso!",
+        variant: "default",
+      });
       setDescricaoParaExcluir(null);
     } catch (error) {
       console.error('Erro ao excluir descrição:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir descrição. Tente novamente.",
+        variant: "destructive",
+      });
       // Manter o dialog aberto em caso de erro para o usuário tentar novamente
     }
   };
