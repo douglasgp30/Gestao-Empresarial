@@ -30,7 +30,6 @@ export const getCidades: RequestHandler = async (req, res) => {
     const cidades = await prisma.setor.findMany({
       select: { cidade: true },
       distinct: ['cidade'],
-      where: { ativo: true },
       orderBy: { cidade: 'asc' }
     });
     
