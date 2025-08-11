@@ -165,6 +165,19 @@ export default function ModalSetores() {
                     </button>
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="cidade">Cidade *</Label>
+                    <Input
+                      id="cidade"
+                      value={formData.cidade}
+                      onChange={(e) =>
+                        setFormData({ ...formData, cidade: e.target.value })
+                      }
+                      placeholder="Ex: São Paulo"
+                      required
+                    />
+                  </div>
+
                   {!isCadastroMassa ? (
                     <div className="space-y-2">
                       <Label htmlFor="nome">Nome do Setor *</Label>
