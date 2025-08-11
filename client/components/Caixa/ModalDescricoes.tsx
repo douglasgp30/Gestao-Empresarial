@@ -100,9 +100,14 @@ export default function ModalDescricoes() {
     setIsNewDescricaoOpen(false);
   };
 
-  const handleExcluir = (id: string) => {
-    excluirDescricao(id);
-    setDescricaoParaExcluir(null);
+  const handleExcluir = async (id: string) => {
+    try {
+      await excluirDescricao(id);
+      setDescricaoParaExcluir(null);
+    } catch (error) {
+      console.error('Erro ao excluir descrição:', error);
+      // Manter o dialog aberto em caso de erro para o usuário tentar novamente
+    }
   };
 
   return (
