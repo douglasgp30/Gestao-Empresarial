@@ -376,57 +376,39 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     // CÁLCULO TOTAL ALCANÇADO DA META
     // IMPORTANTE: Meta é SEMPRE do mês atual, independente dos filtros de data selecionados
-    // Baseado apenas em receitas do mês atual + contas a receber criadas no mês atual
+    // Baseado apenas em receitas do caixa no mês atual
     const hoje = new Date();
     const inicioMesAtual = getInicioDoMes();
     const fimMesAtual = getFimDoMes();
 
-    // 1. Receitas do caixa do mês atual (independente dos filtros)
+    // Receitas do caixa do mês atual (independente dos filtros)
     const receitasCaixaMesAtual = (caixaContext?.lancamentos || [])
       .filter((l) => {
         if (l.tipo !== "receita") return false;
-        const dataLancamento = new Date(l.data);
-        // Normalizar datas para comparação do mês atual
-        const dataLancNorm = new Date(
-          dataLancamento.getFullYear(),
-          dataLancamento.getMonth(),
-          dataLancamento.getDate(),
-        );
-        const inicioMesNorm = new Date(
-          inicioMesAtual.getFullYear(),
-          inicioMesAtual.getMonth(),
-          inicioMesAtual.getDate(),
-        );
-        const fimMesNorm = new Date(
-          fimMesAtual.getFullYear(),
-          fimMesAtual.getMonth(),
-          fimMesAtual.getDate(),
-        );
-        return dataLancNorm >= inicioMesNorm && dataLancNorm <= fimMesNorm;
+
+        // Tentar converter a dataHora que está no formato DD-MM-AAAA HH:MM:SS
+        let dataLancamento: Date;
+        if (typeof l.dataHora === 'string' && l.dataHora.includes('-')) {
+          // Formato brasileiro DD-MM-AAAA HH:MM:SS
+          const [datePart] = l.dataHora.split(' ');
+          const [dia, mes, ano] = datePart.split('-');
+          dataLancamento = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+        } else {
+          // Fallback para l.data se existir
+          dataLancamento = new Date(l.data || l.dataHora);
+        }
+
+        // Verificar se é do mês atual
+        return isMesmoMes(dataLancamento, hoje);
       })
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-    // 2. Contas a receber que foram CRIADAS no mês atual
-    // Como não temos dataCadastro, vamos usar dataVencimento como proxy
-    // Em uma implementação real, seria melhor ter um campo dataCriacao
-    const contasAReceberCriadasMesAtual = (contasContext?.contas || [])
-      .filter((c) => {
-        if (c.tipo !== "receber") return false;
-        // Simular data de criação usando dataVencimento
-        // Na prática, você deveria ter um campo dataCriacao ou dataCadastro
-        const dataVencimento = new Date(c.dataVencimento);
-        return isMesmoMes(dataVencimento, hoje);
-      })
-      .reduce((total, c) => total + c.valor, 0);
-
-    // Total alcançado da meta = apenas receitas + contas a receber criadas no mês
-    // NÃO inclui contas recebidas de meses anteriores
-    const novoTotalMetaMes =
-      receitasCaixaMesAtual + contasAReceberCriadasMesAtual;
+    // Total alcançado da meta = apenas receitas do mês atual
+    const novoTotalMetaMes = receitasCaixaMesAtual;
     setTotalMetaMes(novoTotalMetaMes);
 
-    // Restante para bater a meta
-    const novoRestanteParaMeta = metaMes - novoTotalMetaMes;
+    // Restante para bater a meta (Meta Restante = Meta do Mês - Total Alcançado)
+    const novoRestanteParaMeta = Math.max(0, metaMes - novoTotalMetaMes);
     setRestanteParaMeta(novoRestanteParaMeta);
 
     // Estatísticas gerais para compatibilidade
