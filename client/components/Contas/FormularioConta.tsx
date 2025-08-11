@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useContas } from "../../contexts/ContasContext";
+import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -20,20 +21,13 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import SelectWithAdd from "../ui/select-with-add";
 import { Plus, TrendingDown, TrendingUp } from "lucide-react";
 
-const tiposPagamento = [
-  "Dinheiro",
-  "Pix",
-  "Cartão de Débito",
-  "Cartão de Crédito",
-  "Boleto",
-  "Transferência",
-  "Cheque",
-];
 
 export default function FormularioConta() {
   const { adicionarConta } = useContas();
+  const { formasPagamento, adicionarFormaPagamento } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("pagar");
 
