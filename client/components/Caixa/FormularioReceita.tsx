@@ -154,10 +154,20 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.valor || !formData.descricao || !formData.formaPagamento) {
+    if (!formData.valor || !formData.categoria || !formData.descricao || !formData.formaPagamento) {
       toast({
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios",
+        description: "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar valor recebido para pagamentos com cartão
+    if (isFormaPagamentoCartao && !formData.valorQueEntrou) {
+      toast({
+        title: "Erro",
+        description: "Para pagamentos com cartão, é obrigatório informar o valor recebido",
         variant: "destructive",
       });
       return;
