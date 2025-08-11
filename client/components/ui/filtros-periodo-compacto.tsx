@@ -529,23 +529,19 @@ export default function FiltrosPeriodoCompacto({
                 dataHoje,
               ); // Debug
 
-              // Atualizar estado local primeiro
+              // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicio30);
               setLocalDataFim(dataHoje);
+              setFiltroAtivo("ultimos-30");
 
-              // Forçar inputs
-              const inputInicio = inputInicioRef.current;
-              const inputFim = inputFimRef.current;
-
-              if (inputInicio) inputInicio.value = dataInicio30;
-              if (inputFim) inputFim.value = dataHoje;
-
+              // Aplicar tudo de uma vez para evitar múltiplas atualizações
               onDataInicioChange(dataInicio30);
               onDataFimChange(dataHoje);
-              setFiltroAtivo("ultimos-30");
-              onAplicar();
 
-              triggerForceUpdate();
+              // Aguardar um tick para garantir que os dados foram atualizados
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "ultimos-30"
