@@ -78,8 +78,9 @@ export default function FiltrosData() {
     switch (tipo) {
       case 'mesAtual': {
         const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
         return filtros.dataInicio.toDateString() === inicioMes.toDateString() &&
-               filtros.dataFim.toDateString() === hoje.toDateString();
+               filtros.dataFim.toDateString() === fimMes.toDateString();
       }
       case 'ultimos7dias': {
         const inicio7dias = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 6);
