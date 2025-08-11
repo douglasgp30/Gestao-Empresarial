@@ -163,7 +163,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     
     const receitas = await prisma.lancamentoCaixa.aggregate({
       where: { ...where, tipo: 'receita' },
-      _sum: { valor: true, valorLiquido: true, comissao: true }
+      _sum: { valor: true, valorRecebido: true }
     });
     
     const despesas = await prisma.lancamentoCaixa.aggregate({
