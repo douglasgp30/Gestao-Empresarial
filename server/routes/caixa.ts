@@ -63,7 +63,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
         setor: true,
         campanha: true
       },
-      orderBy: { data: 'desc' }
+      orderBy: { dataHora: 'desc' }
     });
     
     res.json(lancamentos);
