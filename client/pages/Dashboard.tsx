@@ -210,12 +210,13 @@ export default function Dashboard() {
 
   return (
     <TooltipProvider>
-      <div className="p-6 space-y-6">
-        {/* Header com Saldo Geral e Meta do Mês */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">Visão geral financeira</p>
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+        {/* Header - Mobile First */}
+        <div className="space-y-4">
+          {/* Título */}
+          <div className="text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Visão geral financeira</p>
           </div>
           <div className="flex items-center w-full gap-8">
             {/* Espaçador à esquerda para equilibrar o layout */}
