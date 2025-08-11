@@ -198,6 +198,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Erro ao carregar entidades:", error);
       setError("Erro ao carregar dados do servidor");
+
+      // Definir dados padrão em caso de erro para evitar crashes
+      setDescricoes([]);
+      setFormasPagamento([]);
+      setFuncionarios([]);
+      setTecnicos([]);
+      setSetores([]);
+      setCidades([]);
     } finally {
       setIsLoading(false);
     }
