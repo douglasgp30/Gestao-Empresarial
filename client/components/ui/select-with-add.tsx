@@ -80,6 +80,10 @@ export default function SelectWithAdd({
     setIsSubmitting(true);
     try {
       await onAddNew(formData);
+
+      // Marcar o nome do item criado para seleção automática
+      setNewlyCreatedItemName(formData.nome || formData.name || "");
+
       toast({
         title: "Sucesso",
         description: `${addNewTitle} criado com sucesso!`,
