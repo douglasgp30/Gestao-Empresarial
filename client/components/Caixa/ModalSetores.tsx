@@ -54,6 +54,15 @@ export default function ModalSetores() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!formData.cidade.trim()) {
+      toast({
+        title: "Erro",
+        description: "Cidade é obrigatória",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (isCadastroMassa) {
       // Cadastro em massa
       if (!formData.setoresEmMassa.trim()) return;
@@ -66,6 +75,7 @@ export default function ModalSetores() {
       setores.forEach(nomeSetor => {
         adicionarSetor({
           nome: nomeSetor,
+          cidade: formData.cidade
         });
       });
 
@@ -76,6 +86,7 @@ export default function ModalSetores() {
 
       adicionarSetor({
         nome: formData.nome.trim(),
+        cidade: formData.cidade
       });
     }
 
