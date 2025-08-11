@@ -364,7 +364,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                       <SelectValue placeholder="Selecione a campanha" />
                     </SelectTrigger>
                     <SelectContent>
-                      {campanhas.filter(c => c.ativa).map((campanha) => (
+                      {campanhas.map((campanha) => (
                         <SelectItem key={campanha.id} value={campanha.id.toString()}>
                           {campanha.nome}
                         </SelectItem>
