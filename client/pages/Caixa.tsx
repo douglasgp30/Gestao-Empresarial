@@ -12,26 +12,30 @@ import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-            <DollarSign className="h-8 w-8 text-primary" />
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+      {/* Header - Mobile First */}
+      <div className="space-y-4">
+        {/* Título */}
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center justify-center sm:justify-start gap-2">
+            <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             Caixa
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Controle completo de receitas e despesas da empresa
           </p>
         </div>
-        <div className="flex flex-col gap-3">
-          {/* Botões principais */}
-          <div className="flex gap-2">
+
+        {/* Botões - Empilhados no mobile */}
+        <div className="space-y-3">
+          {/* Botões principais - Largura total no mobile */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <ModalReceita />
             <ModalDespesa />
           </div>
-          {/* Botões de configuração */}
-          <div className="flex flex-wrap gap-2 justify-end">
+
+          {/* Botões de configuração - Grid responsivo */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
             <ModalCampanhas />
             <ModalDescricoesAvancado />
             <ModalCidadeSetor />
