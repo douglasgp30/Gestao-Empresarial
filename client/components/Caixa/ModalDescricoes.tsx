@@ -86,19 +86,34 @@ export default function ModalDescricoes() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.nome.trim()) return;
 
-    adicionarDescricao({
-      nome: formData.nome.trim(),
-      categoria: formData.categoria || undefined,
-      tipo: "receita", // Default para receita, pode ser alterado posteriormente
-    });
+    try {
+      await adicionarDescricao({
+        nome: formData.nome.trim(),
+        categoria: formData.categoria || undefined,
+        tipo: "receita", // Default para receita, pode ser alterado posteriormente
+      });
 
-    resetForm();
-    setIsNewDescricaoOpen(false);
+      toast({
+        title: "Sucesso",
+        description: "Descrição criada com sucesso!",
+        variant: "default",
+      });
+
+      resetForm();
+      setIsNewDescricaoOpen(false);
+    } catch (error) {
+      console.error('Erro ao criar descrição:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao criar descrição. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleExcluir = async (id: string) => {
