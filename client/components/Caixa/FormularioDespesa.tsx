@@ -217,47 +217,35 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SelectWithAdd
-              value={formData.setor}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
-              placeholder="Selecione o setor"
-              label="Setor/Região"
-              required={false}
-              items={setores}
-              onAddNew={async (data) => {
-                await adicionarSetor({
-                  nome: data.nome,
-                  cidade: data.cidade
-                });
-              }}
-              addNewTitle="Novo Setor/Região"
-              addNewDescription="Adicione um novo setor ou região."
-              addNewFields={[
-                {
-                  key: 'nome',
-                  label: 'Nome do Setor',
-                  required: true
-                },
-                {
-                  key: 'cidade',
-                  label: 'Cidade',
-                  required: true
-                }
-              ]}
-              renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
-            />
-
-            <div className="space-y-2">
-              <Label htmlFor="numeroNota">Número da Nota</Label>
-              <Input
-                id="numeroNota"
-                placeholder="Ex: NF-001"
-                value={formData.numeroNota}
-                onChange={(e) => setFormData(prev => ({ ...prev, numeroNota: e.target.value }))}
-              />
-            </div>
-          </div>
+          <SelectWithAdd
+            value={formData.setor}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
+            placeholder="Selecione o setor"
+            label="Setor/Região"
+            required={false}
+            items={setores}
+            onAddNew={async (data) => {
+              await adicionarSetor({
+                nome: data.nome,
+                cidade: data.cidade
+              });
+            }}
+            addNewTitle="Novo Setor/Região"
+            addNewDescription="Adicione um novo setor ou região."
+            addNewFields={[
+              {
+                key: 'nome',
+                label: 'Nome do Setor',
+                required: true
+              },
+              {
+                key: 'cidade',
+                label: 'Cidade',
+                required: true
+              }
+            ]}
+            renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
