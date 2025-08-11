@@ -173,10 +173,9 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     
     const totais = {
       receitas: receitas._sum.valor || 0,
-      receitasLiquidas: receitas._sum.valorLiquido || 0,
-      comissoes: receitas._sum.comissao || 0,
+      receitasRecebidas: receitas._sum.valorRecebido || 0,
       despesas: despesas._sum.valor || 0,
-      saldo: (receitas._sum.valorLiquido || 0) - (despesas._sum.valor || 0)
+      saldo: (receitas._sum.valorRecebido || receitas._sum.valor || 0) - (despesas._sum.valor || 0)
     };
     
     res.json(totais);
