@@ -134,7 +134,7 @@ export function ModalReceita() {
           : undefined,
         conta: formData.conta as "empresa" | "pessoal",
         descricaoId: parseInt(formData.descricao),
-        subdescricaoId: formData.subdescricao
+        subdescricaoId: formData.subdescricao && formData.subdescricao !== "none"
           ? parseInt(formData.subdescricao)
           : undefined,
         formaPagamentoId: parseInt(formData.formaPagamento),
