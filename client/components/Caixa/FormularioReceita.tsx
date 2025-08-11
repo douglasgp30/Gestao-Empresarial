@@ -66,6 +66,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     observacoes: "",
     numeroNota: "",
     arquivoNota: "",
+    temNotaFiscal: false,
   });
 
   const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
