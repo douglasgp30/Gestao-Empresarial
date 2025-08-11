@@ -61,7 +61,7 @@ function formatCurrency(value: number) {
 function getStatusColor(status: string) {
   switch (status) {
     case "paga":
-      return "bg-success text-success-foreground";
+      return "bg-green-100 text-green-800";
     case "atrasada":
       return "bg-destructive text-destructive-foreground";
     case "vence_hoje":
