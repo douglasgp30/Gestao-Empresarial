@@ -17,17 +17,24 @@ export function SeedButton() {
       });
 
       if (response.ok) {
-        const result = await response.json();
         toast({
           title: "Sucesso!",
           description: "Banco de dados populado com dados iniciais.",
         });
-        
+
         // Recarregar página para atualizar contextos
         window.location.reload();
       } else {
-        const error = await response.json();
-        throw new Error(error.error || 'Erro desconhecido');
+        // Tentar ler o JSON de erro, mas com fallback seguro
+        let errorMessage = 'Erro desconhecido';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (jsonError) {
+          // Se não conseguir ler o JSON, usar status text
+          errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error('Erro ao popular banco:', error);
