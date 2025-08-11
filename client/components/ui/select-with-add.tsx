@@ -59,6 +59,7 @@ export default function SelectWithAdd({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [newlyCreatedItemName, setNewlyCreatedItemName] = useState<string | null>(null);
 
   const handleAddNew = async () => {
     // Validar campos obrigatórios
