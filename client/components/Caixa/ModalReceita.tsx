@@ -314,11 +314,13 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione a forma" />
                   </SelectTrigger>
                   <SelectContent>
-                    {formasPagamento.map((forma) => (
-                      <SelectItem key={forma.id} value={forma.id.toString()}>
-                        {forma.nome}
-                      </SelectItem>
-                    ))}
+                    {formasPagamento
+                      .filter((forma) => forma.id != null && forma.id !== "" && forma.id !== 0)
+                      .map((forma) => (
+                        <SelectItem key={forma.id} value={forma.id.toString()}>
+                          {forma.nome}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
