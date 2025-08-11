@@ -348,7 +348,7 @@ export default function Dashboard() {
                   <span
                     className={`text-lg font-bold ${
                       stats.saldoGeralConsolidado > 0
-                        ? "text-success"
+                        ? "text-green-600 dark:text-green-400"
                         : stats.saldoGeralConsolidado < 0
                           ? "text-destructive"
                           : "text-foreground"
