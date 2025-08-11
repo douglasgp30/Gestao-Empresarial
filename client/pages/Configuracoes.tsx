@@ -844,6 +844,20 @@ export default function Configuracoes() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="testes" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>🧪 Testes do Sistema</CardTitle>
+              <CardDescription>
+                Execute testes automatizados para verificar a integridade das funcionalidades principais
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SystemTester />
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
