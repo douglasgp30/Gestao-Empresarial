@@ -45,6 +45,7 @@ export default function ModalSetores() {
   const resetForm = () => {
     setFormData({
       nome: "",
+      cidade: "",
       setoresEmMassa: "",
     });
     setIsCadastroMassa(false);
