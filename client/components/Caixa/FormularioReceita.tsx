@@ -105,6 +105,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       return;
     }
 
+    // Validar número da nota se nota fiscal foi marcada
+    if (formData.temNotaFiscal && !formData.numeroNota) {
+      toast({
+        title: "Erro",
+        description: "Número da nota fiscal é obrigatório quando há nota fiscal",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
