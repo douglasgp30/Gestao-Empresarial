@@ -75,7 +75,7 @@ export default function Campanhas() {
     return {
       totalReceitas,
       totalLancamentos,
-      campanhasAtivas: campanhasFiltradas.filter(c => c.ativa).length,
+      campanhasAtivas: campanhasFiltradas.length,
       totalCampanhas: campanhasFiltradas.length
     };
   };
