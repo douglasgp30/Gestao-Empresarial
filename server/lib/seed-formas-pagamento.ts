@@ -44,7 +44,7 @@ export async function seedFormasPagamento() {
 }
 
 // Executar se chamado diretamente
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   seedFormasPagamento()
     .catch((error) => {
       console.error(error);
