@@ -100,9 +100,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasContext = null;
   }
 
+  // CORRIGIDO: Estado inicial do Dashboard é "Este Mês" (dia 1 até hoje)
   const [filtros, setFiltros] = useState<FiltrosPeriodo>({
-    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-    dataFim: new Date(),
+    dataInicio: getInicioDoMes(),
+    dataFim: getHoje(),
   });
 
   console.log("DashboardContext: Estado inicial dos filtros:", {
@@ -157,7 +158,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         novoFiltro = { dataInicio: getUltimos30Dias(), dataFim: getHoje() };
         break;
       case "mesAtual":
-        novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getFimDoMes() };
+        // CORRIGIDO: "Este Mês" é do dia 1 até hoje (não até fim do mês)
+        novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getHoje() };
         break;
       default:
         novoFiltro = filtros;
