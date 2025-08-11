@@ -133,7 +133,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       
       // Preparar dados para a API
       const dadosApi = {
-        data: novoLancamento.data.toISOString().split('T')[0],
+        // dataHora será gerada automaticamente no backend
         tipo: novoLancamento.tipo,
         valor: novoLancamento.valor,
         valorLiquido: novoLancamento.valorLiquido,
