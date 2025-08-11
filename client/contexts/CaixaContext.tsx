@@ -102,7 +102,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         // Converter datas de string para Date
         const lancamentosFormatados = (response.data || []).map((lancamento: any) => ({
           ...lancamento,
-          data: new Date(lancamento.data),
+          dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
           dataCriacao: new Date(lancamento.dataCriacao)
         }));
         setLancamentos(lancamentosFormatados);
