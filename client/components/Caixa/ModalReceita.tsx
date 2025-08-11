@@ -176,13 +176,13 @@ export function ModalReceita() {
           Lançar Receita
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-green-600">
-            <TrendingUp className="h-5 w-5" />
+          <DialogTitle className="flex items-center gap-2 text-green-600 text-lg sm:text-xl">
+            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
             Lançar Receita
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm">
             Registre uma nova entrada no caixa
           </DialogDescription>
         </DialogHeader>
