@@ -528,15 +528,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="observacoes">Observações</Label>
-                <Textarea
-                  id="observacoes"
-                  placeholder="Informações adicionais..."
-                  value={formData.observacoes}
-                  onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
-                />
-              </div>
             </div>
           )}
 
