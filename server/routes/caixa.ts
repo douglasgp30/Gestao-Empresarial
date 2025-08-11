@@ -150,9 +150,15 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     
     const where: any = {};
     if (dataInicio || dataFim) {
-      where.data = {};
-      if (dataInicio) where.data.gte = new Date(dataInicio as string);
-      if (dataFim) where.data.lte = new Date(dataFim as string);
+      where.dataHora = {};
+      if (dataInicio) {
+        const [dia, mes, ano] = (dataInicio as string).split('-');
+        where.dataHora.gte = `${dia}-${mes}-${ano} 00:00:00`;
+      }
+      if (dataFim) {
+        const [dia, mes, ano] = (dataFim as string).split('-');
+        where.dataHora.lte = `${dia}-${mes}-${ano} 23:59:59`;
+      }
     }
     
     const receitas = await prisma.lancamentoCaixa.aggregate({
