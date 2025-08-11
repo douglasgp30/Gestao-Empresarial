@@ -2,23 +2,36 @@ import { RequestHandler } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
 
+// Schema com validação customizada para valorRecebido
 const LancamentoCaixaSchema = z.object({
-  data: z.string(),
-  tipo: z.enum(["receita", "despesa"]),
   valor: z.number().positive("Valor deve ser positivo"),
-  valorLiquido: z.number().optional(),
-  comissao: z.number().optional(),
-  imposto: z.number().optional(),
-  valorQueEntrou: z.number().optional(),
-  observacoes: z.string().optional(),
-  numeroNota: z.string().optional(),
-  arquivoNota: z.string().optional(),
+  valorRecebido: z.number().optional(),
+  conta: z.enum(["empresa", "pessoal"], { required_error: "Conta é obrigatória" }),
+  tipo: z.enum(["receita", "despesa"], { required_error: "Tipo é obrigatório" }),
+  
+  // Campos obrigatórios
   descricaoId: z.number().positive("Descrição é obrigatória"),
   formaPagamentoId: z.number().positive("Forma de pagamento é obrigatória"),
+  
+  // Campos opcionais
+  subdescricaoId: z.number().positive().optional(),
   funcionarioId: z.number().positive().optional(),
   setorId: z.number().positive().optional(),
   campanhaId: z.number().positive().optional()
 });
+
+// Função para gerar dataHora no formato DD-MM-AAAA HH:MM:SS
+function gerarDataHora(): string {
+  const agora = new Date();
+  const dia = agora.getDate().toString().padStart(2, '0');
+  const mes = (agora.getMonth() + 1).toString().padStart(2, '0');
+  const ano = agora.getFullYear();
+  const horas = agora.getHours().toString().padStart(2, '0');
+  const minutos = agora.getMinutes().toString().padStart(2, '0');
+  const segundos = agora.getSeconds().toString().padStart(2, '0');
+  
+  return `${dia}-${mes}-${ano} ${horas}:${minutos}:${segundos}`;
+}
 
 export const getLancamentos: RequestHandler = async (req, res) => {
   try {
@@ -29,10 +42,23 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       funcionarioId, 
       setorId, 
       campanhaId, 
-      formaPagamentoId 
+      formaPagamentoId,
+      descricaoId,
+      subdescricaoId,
+      conta
     } = req.query;
     
     const where: any = {};
+    
+    // Filtros
+    if (tipo) where.tipo = tipo;
+    if (conta) where.conta = conta;
+    if (funcionarioId) where.funcionarioId = parseInt(funcionarioId as string);
+    if (setorId) where.setorId = parseInt(setorId as string);
+    if (campanhaId) where.campanhaId = parseInt(campanhaId as string);
+    if (formaPagamentoId) where.formaPagamentoId = parseInt(formaPagamentoId as string);
+    if (descricaoId) where.descricaoId = parseInt(descricaoId as string);
+    if (subdescricaoId) where.subdescricaoId = parseInt(subdescricaoId as string);
     
     // Filtros de data baseados em dataHora string
     if (dataInicio || dataFim) {
@@ -47,23 +73,17 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       }
     }
     
-    // Outros filtros
-    if (tipo) where.tipo = tipo;
-    if (funcionarioId) where.funcionarioId = parseInt(funcionarioId as string);
-    if (setorId) where.setorId = parseInt(setorId as string);
-    if (campanhaId) where.campanhaId = parseInt(campanhaId as string);
-    if (formaPagamentoId) where.formaPagamentoId = parseInt(formaPagamentoId as string);
-    
     const lancamentos = await prisma.lancamentoCaixa.findMany({
       where,
       include: {
         descricao: true,
+        subdescricao: true,
         formaPagamento: true,
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
         campanha: true
       },
-      orderBy: { dataHora: 'desc' }
+      orderBy: { id: 'desc' }
     });
     
     res.json(lancamentos);
@@ -77,13 +97,30 @@ export const createLancamento: RequestHandler = async (req, res) => {
   try {
     const data = LancamentoCaixaSchema.parse(req.body);
     
+    // Validação customizada para valorRecebido quando forma de pagamento for cartão
+    if (data.formaPagamentoId) {
+      const formaPagamento = await prisma.formaPagamento.findUnique({
+        where: { id: data.formaPagamentoId }
+      });
+      
+      if (formaPagamento?.nome.toLowerCase().includes('cartão') || 
+          formaPagamento?.nome.toLowerCase().includes('cartao')) {
+        if (!data.valorRecebido || data.valorRecebido <= 0) {
+          return res.status(400).json({ 
+            error: 'Valor recebido é obrigatório quando a forma de pagamento for cartão' 
+          });
+        }
+      }
+    }
+    
     const lancamento = await prisma.lancamentoCaixa.create({
       data: {
         ...data,
-        data: new Date(data.data)
+        dataHora: gerarDataHora()
       },
       include: {
         descricao: true,
+        subdescricao: true,
         formaPagamento: true,
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
@@ -107,14 +144,12 @@ export const updateLancamento: RequestHandler = async (req, res) => {
     const id = parseInt(req.params.id);
     const data = LancamentoCaixaSchema.partial().parse(req.body);
     
-    const updateData: any = { ...data };
-    if (data.data) updateData.data = new Date(data.data);
-    
     const lancamento = await prisma.lancamentoCaixa.update({
       where: { id },
-      data: updateData,
+      data,
       include: {
         descricao: true,
+        subdescricao: true,
         formaPagamento: true,
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
@@ -146,9 +181,12 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
 
 export const getTotaisCaixa: RequestHandler = async (req, res) => {
   try {
-    const { dataInicio, dataFim } = req.query;
+    const { dataInicio, dataFim, conta } = req.query;
     
     const where: any = {};
+    if (conta) where.conta = conta;
+    
+    // Filtros de data baseados em dataHora string
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
