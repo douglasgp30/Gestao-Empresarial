@@ -185,7 +185,16 @@ export default function FormularioAgendamento({
   };
 
   const handleAdicionarSetor = () => {
-    if (novoSetor.trim() && formData.cidade) {
+    if (!formData.cidade) {
+      toast({
+        title: "Erro",
+        description: "Selecione uma cidade antes de adicionar um setor.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (novoSetor.trim()) {
       adicionarSetor({
         nome: novoSetor.trim(),
         cidade: formData.cidade
