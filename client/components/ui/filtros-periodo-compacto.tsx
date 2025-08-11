@@ -330,36 +330,19 @@ export default function FiltrosPeriodoCompacto({
               const dataFormatada = hoje.toISOString().split("T")[0];
               console.log("Data formatada:", dataFormatada); // Debug
 
-              // Atualizar estado local primeiro
+              // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataFormatada);
               setLocalDataFim(dataFormatada);
+              setFiltroAtivo("hoje");
 
-              // Forçar atualização dos inputs
-              const inputInicio =
-                inputInicioRef.current ||
-                (document.getElementById("dataInicio") as HTMLInputElement);
-              const inputFim =
-                inputFimRef.current ||
-                (document.getElementById("dataFim") as HTMLInputElement);
-
-              if (inputInicio) {
-                inputInicio.value = dataFormatada;
-                inputInicio.dispatchEvent(
-                  new Event("input", { bubbles: true }),
-                );
-              }
-              if (inputFim) {
-                inputFim.value = dataFormatada;
-                inputFim.dispatchEvent(new Event("input", { bubbles: true }));
-              }
-
-              // Chamar callbacks externos
+              // Aplicar tudo de uma vez para evitar múltiplas atualizações
               onDataInicioChange(dataFormatada);
               onDataFimChange(dataFormatada);
-              setFiltroAtivo("hoje");
-              onAplicar();
 
-              triggerForceUpdate();
+              // Aguardar um tick para garantir que os dados foram atualizados
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "hoje"
@@ -391,23 +374,19 @@ export default function FiltrosPeriodoCompacto({
                 dataHoje,
               ); // Debug
 
-              // Atualizar estado local primeiro
+              // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicioSemana);
               setLocalDataFim(dataHoje);
+              setFiltroAtivo("esta-semana");
 
-              // Forçar inputs
-              const inputInicio = inputInicioRef.current;
-              const inputFim = inputFimRef.current;
-
-              if (inputInicio) inputInicio.value = dataInicioSemana;
-              if (inputFim) inputFim.value = dataHoje;
-
+              // Aplicar tudo de uma vez para evitar múltiplas atualizações
               onDataInicioChange(dataInicioSemana);
               onDataFimChange(dataHoje);
-              setFiltroAtivo("esta-semana");
-              onAplicar();
 
-              triggerForceUpdate();
+              // Aguardar um tick para garantir que os dados foram atualizados
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "esta-semana"
@@ -437,23 +416,19 @@ export default function FiltrosPeriodoCompacto({
                 dataHoje,
               ); // Debug
 
-              // Atualizar estado local primeiro
+              // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicio7);
               setLocalDataFim(dataHoje);
+              setFiltroAtivo("ultimos-7");
 
-              // Forçar inputs
-              const inputInicio = inputInicioRef.current;
-              const inputFim = inputFimRef.current;
-
-              if (inputInicio) inputInicio.value = dataInicio7;
-              if (inputFim) inputFim.value = dataHoje;
-
+              // Aplicar tudo de uma vez para evitar múltiplas atualizações
               onDataInicioChange(dataInicio7);
               onDataFimChange(dataHoje);
-              setFiltroAtivo("ultimos-7");
-              onAplicar();
 
-              triggerForceUpdate();
+              // Aguardar um tick para garantir que os dados foram atualizados
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "ultimos-7"
@@ -483,23 +458,19 @@ export default function FiltrosPeriodoCompacto({
                 dataHoje,
               ); // Debug
 
-              // Atualizar estado local primeiro
+              // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicio15);
               setLocalDataFim(dataHoje);
+              setFiltroAtivo("ultimos-15");
 
-              // Forçar inputs
-              const inputInicio = inputInicioRef.current;
-              const inputFim = inputFimRef.current;
-
-              if (inputInicio) inputInicio.value = dataInicio15;
-              if (inputFim) inputFim.value = dataHoje;
-
+              // Aplicar tudo de uma vez para evitar múltiplas atualizações
               onDataInicioChange(dataInicio15);
               onDataFimChange(dataHoje);
-              setFiltroAtivo("ultimos-15");
-              onAplicar();
 
-              triggerForceUpdate();
+              // Aguardar um tick para garantir que os dados foram atualizados
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "ultimos-15"
@@ -578,23 +549,19 @@ export default function FiltrosPeriodoCompacto({
                 dataFimMes,
               ); // Debug
 
-              // Atualizar estado local primeiro
+              // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicioMes);
               setLocalDataFim(dataFimMes);
+              setFiltroAtivo("este-mes");
 
-              // Forçar inputs
-              const inputInicio = inputInicioRef.current;
-              const inputFim = inputFimRef.current;
-
-              if (inputInicio) inputInicio.value = dataInicioMes;
-              if (inputFim) inputFim.value = dataFimMes;
-
+              // Aplicar tudo de uma vez para evitar múltiplas atualizações
               onDataInicioChange(dataInicioMes);
               onDataFimChange(dataFimMes);
-              setFiltroAtivo("este-mes");
-              onAplicar();
 
-              triggerForceUpdate();
+              // Aguardar um tick para garantir que os dados foram atualizados
+              setTimeout(() => {
+                onAplicar();
+              }, 10);
             }}
             className={`text-xs h-7 px-2 sm:px-3 transition-all duration-200 ${
               filtroAtivo === "este-mes"
