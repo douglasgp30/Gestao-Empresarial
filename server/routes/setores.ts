@@ -9,10 +9,9 @@ const SetorSchema = z.object({
 
 export const getSetores: RequestHandler = async (req, res) => {
   try {
-    const { ativos, cidade } = req.query;
+    const { cidade } = req.query;
     const where: any = {};
-    
-    if (ativos === 'true') where.ativo = true;
+
     if (cidade) where.cidade = cidade as string;
     
     const setores = await prisma.setor.findMany({
