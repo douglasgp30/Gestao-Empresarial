@@ -70,6 +70,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     valorLiquido: "",
     comissao: "",
     imposto: "",
+    categoria: "",
     descricao: "",
     formaPagamento: "",
     tecnicoResponsavel: "",
@@ -87,6 +88,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // Filtrar descrições de receita
   const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
+
+  // Filtrar descrições pela categoria selecionada
+  const descricoesFiltradas = formData.categoria
+    ? descricoesReceita.filter((d) => d.categoria === formData.categoria)
+    : [];
+
+  // Obter categorias únicas das descrições de receita
+  const categoriasReceita = [...new Set(
+    descricoesReceita
+      .map((d) => d.categoria)
+      .filter((categoria) => categoria && categoria.trim() !== "")
+  )].sort();
+
+  // Verificar se forma de pagamento é cartão
+  const isFormaPagamentoCartao = formData.formaPagamento &&
+    formasPagamento.find(f => f.id.toString() === formData.formaPagamento)?.nome?.toLowerCase().includes('cartão');
 
   // Calcular campos automaticamente
   useEffect(() => {
@@ -194,6 +211,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         valorLiquido: "",
         comissao: "",
         imposto: "",
+        categoria: "",
         descricao: "",
         formaPagamento: "",
         tecnicoResponsavel: "",
@@ -274,19 +292,46 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="categoria">Categoria *</Label>
+              <Select
+                value={formData.categoria}
+                onValueChange={(value) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    categoria: value,
+                    descricao: "" // Limpar descrição quando categoria muda
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoriasReceita.map((categoria) => (
+                    <SelectItem key={categoria} value={categoria}>
+                      {categoria}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <SelectWithAdd
               value={formData.descricao}
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, descricao: value }))
               }
-              placeholder="Selecione a descrição"
+              placeholder={formData.categoria ? "Selecione a descrição" : "Primeiro selecione uma categoria"}
               label="Descrição do Serviço"
               required={true}
-              items={descricoesReceita}
+              disabled={!formData.categoria}
+              items={descricoesFiltradas}
               onAddNew={async (data) => {
                 await adicionarDescricao({
                   nome: data.nome,
                   tipo: "receita",
+                  categoria: formData.categoria,
                 });
               }}
               addNewTitle="Nova Descrição de Receita"
@@ -331,6 +376,31 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               ]}
             />
           </div>
+
+          {/* Campo Valor Recebido para Cartão - aparece logo após forma de pagamento */}
+          {isFormaPagamentoCartao && (
+            <div className="space-y-2">
+              <Label htmlFor="valorQueEntrou">Valor Recebido (R$) *</Label>
+              <Input
+                id="valorQueEntrou"
+                type="number"
+                step="0.01"
+                placeholder="Quanto realmente entrou na conta"
+                value={formData.valorQueEntrou}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    valorQueEntrou: e.target.value,
+                  }))
+                }
+                className="bg-yellow-50 border-yellow-300"
+                required
+              />
+              <p className="text-sm text-yellow-600">
+                Para pagamentos com cartão, informe o valor que realmente entrou na conta (após taxas)
+              </p>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -491,22 +561,24 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {mostrarCamposAvancados && (
             <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="valorQueEntrou">Valor que Entrou (R$)</Label>
-                  <Input
-                    id="valorQueEntrou"
-                    type="number"
-                    step="0.01"
-                    placeholder="0,00"
-                    value={formData.valorQueEntrou}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        valorQueEntrou: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
+                {!isFormaPagamentoCartao && (
+                  <div className="space-y-2">
+                    <Label htmlFor="valorQueEntrouAvancado">Valor que Entrou (R$)</Label>
+                    <Input
+                      id="valorQueEntrouAvancado"
+                      type="number"
+                      step="0.01"
+                      placeholder="0,00"
+                      value={formData.valorQueEntrou}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          valorQueEntrou: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="imposto">Desconto/Taxa (R$)</Label>
