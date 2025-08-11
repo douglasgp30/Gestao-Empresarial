@@ -18,8 +18,21 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import { Calendar, Filter, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { 
+  Calendar, 
+  Filter, 
+  TrendingUp, 
+  TrendingDown, 
+  DollarSign, 
+  ChevronDown,
+  X 
+} from "lucide-react";
 
 export function FiltrosCaixaCompacto() {
   const { 
@@ -38,6 +51,7 @@ export function FiltrosCaixaCompacto() {
   } = useEntidades();
 
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
+  const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
   // Atualizar filtros locais quando os filtros do contexto mudarem
   useEffect(() => {
@@ -69,175 +83,223 @@ export function FiltrosCaixaCompacto() {
     }).format(valor);
   };
 
+  // Contar filtros ativos (além das datas)
+  const contarFiltrosAtivos = () => {
+    let count = 0;
+    if (filtrosLocal.tipo !== "todos") count++;
+    if (filtrosLocal.formaPagamento !== "todas") count++;
+    if (filtrosLocal.tecnico !== "todos") count++;
+    if (filtrosLocal.setor !== "todos") count++;
+    if (filtrosLocal.campanha !== "todas") count++;
+    return count;
+  };
+
+  const filtrosAtivos = contarFiltrosAtivos();
   const isLoading = caixaLoading || entidadesLoading;
 
   return (
-    <div className="space-y-6">
-      {/* Filtros */}
+    <div className="space-y-4">
+      {/* Filtros Básicos */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            Filtros
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Período */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="dataInicio">Data Início</Label>
-              <Input
-                id="dataInicio"
-                type="date"
-                value={filtrosLocal.dataInicio.toISOString().split('T')[0]}
-                onChange={(e) => setFiltrosLocal(prev => ({
-                  ...prev,
-                  dataInicio: new Date(e.target.value)
-                }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="dataFim">Data Fim</Label>
-              <Input
-                id="dataFim"
-                type="date"
-                value={filtrosLocal.dataFim.toISOString().split('T')[0]}
-                onChange={(e) => setFiltrosLocal(prev => ({
-                  ...prev,
-                  dataFim: new Date(e.target.value)
-                }))}
-              />
-            </div>
-          </div>
-
-          {/* Filtros complementares */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="tipo">Tipo</Label>
-              <Select
-                value={filtrosLocal.tipo}
-                onValueChange={(value: "todos" | "receita" | "despesa") => 
-                  setFiltrosLocal(prev => ({ ...prev, tipo: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="receita">Receitas</SelectItem>
-                  <SelectItem value="despesa">Despesas</SelectItem>
-                </SelectContent>
-              </Select>
+        <CardContent className="p-4">
+          {/* Período e Tipo - Sempre visíveis */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="dataInicio" className="text-xs">Data Início</Label>
+                <Input
+                  id="dataInicio"
+                  type="date"
+                  value={filtrosLocal.dataInicio.toISOString().split('T')[0]}
+                  onChange={(e) => setFiltrosLocal(prev => ({
+                    ...prev,
+                    dataInicio: new Date(e.target.value)
+                  }))}
+                  className="h-8"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="dataFim" className="text-xs">Data Fim</Label>
+                <Input
+                  id="dataFim"
+                  type="date"
+                  value={filtrosLocal.dataFim.toISOString().split('T')[0]}
+                  onChange={(e) => setFiltrosLocal(prev => ({
+                    ...prev,
+                    dataFim: new Date(e.target.value)
+                  }))}
+                  className="h-8"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="tipo" className="text-xs">Tipo</Label>
+                <Select
+                  value={filtrosLocal.tipo}
+                  onValueChange={(value: "todos" | "receita" | "despesa") => 
+                    setFiltrosLocal(prev => ({ ...prev, tipo: value }))
+                  }
+                >
+                  <SelectTrigger className="h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="receita">Receitas</SelectItem>
+                    <SelectItem value="despesa">Despesas</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="formaPagamento">Forma de Pagamento</Label>
-              <Select
-                value={filtrosLocal.formaPagamento}
-                onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, formaPagamento: value }))}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todas">Todas</SelectItem>
-                  {formasPagamento.map((forma) => (
-                    <SelectItem key={forma.id} value={forma.id.toString()}>
-                      {forma.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="tecnico">Técnico</Label>
-              <Select
-                value={filtrosLocal.tecnico}
-                onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, tecnico: value }))}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  {tecnicos.map((tecnico) => (
-                    <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
-                      {tecnico.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="setor">Setor</Label>
-              <Select
-                value={filtrosLocal.setor}
-                onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, setor: value }))}
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  {setores.map((setor) => (
-                    <SelectItem key={setor.id} value={setor.id.toString()}>
-                      {setor.nome} - {setor.cidade}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Campanha */}
-          <div className="space-y-2">
-            <Label htmlFor="campanha">Campanha</Label>
-            <Select
-              value={filtrosLocal.campanha}
-              onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, campanha: value }))}
-              disabled={isLoading}
+            {/* Filtros Avançados Colapsáveis */}
+            <Collapsible
+              open={filtrosAvancadosAbertos}
+              onOpenChange={setFiltrosAvancadosAbertos}
             >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todas">Todas</SelectItem>
-                {campanhas.map((campanha) => (
-                  <SelectItem key={campanha.id} value={campanha.id.toString()}>
-                    {campanha.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              <div className="flex items-center justify-between">
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filtros Avançados
+                    {filtrosAtivos > 0 && (
+                      <Badge variant="secondary" className="h-5 px-2 text-xs">
+                        {filtrosAtivos}
+                      </Badge>
+                    )}
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${
+                        filtrosAvancadosAbertos ? "rotate-180" : ""
+                      }`}
+                    />
+                  </Button>
+                </CollapsibleTrigger>
 
-          {/* Botões */}
-          <div className="flex gap-2">
-            <Button onClick={aplicarFiltros} className="flex-1">
-              Aplicar Filtros
-            </Button>
-            <Button onClick={limparFiltros} variant="outline">
-              Limpar
-            </Button>
+                {filtrosAtivos > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={limparFiltros}
+                    className="gap-1 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                    Limpar
+                  </Button>
+                )}
+              </div>
+
+              <CollapsibleContent className="mt-3">
+                <div className="bg-muted/30 rounded-lg p-3 border">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <Label htmlFor="formaPagamento" className="text-xs">Forma de Pagamento</Label>
+                      <Select
+                        value={filtrosLocal.formaPagamento}
+                        onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, formaPagamento: value }))}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {formasPagamento.map((forma) => (
+                            <SelectItem key={forma.id} value={forma.id.toString()}>
+                              {forma.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="tecnico" className="text-xs">Técnico</Label>
+                      <Select
+                        value={filtrosLocal.tecnico}
+                        onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, tecnico: value }))}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          {tecnicos.map((tecnico) => (
+                            <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
+                              {tecnico.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="setor" className="text-xs">Setor</Label>
+                      <Select
+                        value={filtrosLocal.setor}
+                        onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, setor: value }))}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          {setores.map((setor) => (
+                            <SelectItem key={setor.id} value={setor.id.toString()}>
+                              {setor.nome} - {setor.cidade}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1 md:col-span-2 lg:col-span-3">
+                      <Label htmlFor="campanha" className="text-xs">Campanha</Label>
+                      <Select
+                        value={filtrosLocal.campanha}
+                        onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, campanha: value }))}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {campanhas.map((campanha) => (
+                            <SelectItem key={campanha.id} value={campanha.id.toString()}>
+                              {campanha.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Botões de Ação */}
+            <div className="flex gap-2">
+              <Button onClick={aplicarFiltros} size="sm" className="flex-1">
+                Aplicar Filtros
+              </Button>
+              <Button onClick={limparFiltros} variant="outline" size="sm">
+                Limpar Tudo
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Totais */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
+      {/* Totais - Mais compactos */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Card className="border-l-4 border-l-green-500">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-green-600" />
-              <div className="space-y-1">
-                <p className="text-sm text-gray-600">Receitas</p>
-                <p className="text-2xl font-bold text-green-600">
+              <div>
+                <p className="text-xs text-muted-foreground">Receitas</p>
+                <p className="text-lg font-bold text-green-600">
                   {formatarMoeda(totais.receitas)}
                 </p>
               </div>
@@ -245,13 +307,13 @@ export function FiltrosCaixaCompacto() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
+        <Card className="border-l-4 border-l-red-500">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
               <TrendingDown className="h-4 w-4 text-red-600" />
-              <div className="space-y-1">
-                <p className="text-sm text-gray-600">Despesas</p>
-                <p className="text-2xl font-bold text-red-600">
+              <div>
+                <p className="text-xs text-muted-foreground">Despesas</p>
+                <p className="text-lg font-bold text-red-600">
                   {formatarMoeda(totais.despesas)}
                 </p>
               </div>
@@ -259,14 +321,14 @@ export function FiltrosCaixaCompacto() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
+        <Card className={`border-l-4 ${totais.saldo >= 0 ? 'border-l-blue-500' : 'border-l-red-500'}`}>
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-blue-600" />
-              <div className="space-y-1">
-                <p className="text-sm text-gray-600">Saldo</p>
-                <p className={`text-2xl font-bold ${
-                  totais.saldo >= 0 ? 'text-green-600' : 'text-red-600'
+              <div>
+                <p className="text-xs text-muted-foreground">Saldo</p>
+                <p className={`text-lg font-bold ${
+                  totais.saldo >= 0 ? 'text-blue-600' : 'text-red-600'
                 }`}>
                   {formatarMoeda(totais.saldo)}
                 </p>
@@ -275,13 +337,13 @@ export function FiltrosCaixaCompacto() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-2">
+        <Card className="border-l-4 border-l-orange-500">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-orange-600" />
-              <div className="space-y-1">
-                <p className="text-sm text-gray-600">Comissões</p>
-                <p className="text-2xl font-bold text-orange-600">
+              <div>
+                <p className="text-xs text-muted-foreground">Comissões</p>
+                <p className="text-lg font-bold text-orange-600">
                   {formatarMoeda(totais.comissoes)}
                 </p>
               </div>
@@ -292,13 +354,9 @@ export function FiltrosCaixaCompacto() {
 
       {/* Status de carregamento */}
       {isLoading && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center text-gray-600">
-              Carregando dados...
-            </div>
-          </CardContent>
-        </Card>
+        <div className="text-center text-sm text-muted-foreground p-4">
+          Carregando dados...
+        </div>
       )}
     </div>
   );
