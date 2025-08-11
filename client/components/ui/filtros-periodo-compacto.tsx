@@ -183,13 +183,13 @@ export default function FiltrosPeriodoCompacto({
   const handleDataInicioChangeInterno = (data: string) => {
     onDataInicioChange(data);
     // Aplicar filtros automaticamente quando data é alterada manualmente
-    setTimeout(() => onAplicar(), 100);
+    setTimeout(() => onAplicar(), 50);
   };
 
   const handleDataFimChangeInterno = (data: string) => {
     onDataFimChange(data);
     // Aplicar filtros automaticamente quando data é alterada manualmente
-    setTimeout(() => onAplicar(), 100);
+    setTimeout(() => onAplicar(), 50);
   };
 
   // Funções auxiliares para aplicar filtros
