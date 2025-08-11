@@ -626,7 +626,7 @@ export default function Configuracoes() {
                       Status da conexão com o banco
                     </p>
                   </div>
-                  <Badge className="bg-success text-success-foreground">
+                  <Badge className="bg-green-100 text-green-800">
                     Conectado
                   </Badge>
                 </div>
