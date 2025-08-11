@@ -403,7 +403,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       
       // Recarregar setores e cidades
       const [setoresResponse, cidadesResponse] = await Promise.all([
-        setoresApi.listar(true),
+        setoresApi.listar(),
         setoresApi.listarCidades()
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
@@ -425,7 +425,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       
       // Recarregar setores e cidades
       const [setoresResponse, cidadesResponse] = await Promise.all([
-        setoresApi.listar(true),
+        setoresApi.listar(),
         setoresApi.listarCidades()
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
@@ -447,7 +447,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       
       // Recarregar setores e cidades
       const [setoresResponse, cidadesResponse] = await Promise.all([
-        setoresApi.listar(true),
+        setoresApi.listar(),
         setoresApi.listarCidades()
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
