@@ -98,15 +98,15 @@ export function FiltrosCaixaCompacto() {
   const isLoading = caixaLoading || entidadesLoading;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Filtros Básicos */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           {/* Período e Tipo - Sempre visíveis */}
           <div className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="dataInicio" className="text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="dataInicio" className="text-sm font-medium">
                   Data Início
                 </Label>
                 <Input
@@ -119,11 +119,11 @@ export function FiltrosCaixaCompacto() {
                       dataInicio: new Date(e.target.value),
                     }))
                   }
-                  className="h-8"
+                  className="h-10 sm:h-9"
                 />
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="dataFim" className="text-xs">
+              <div className="space-y-2">
+                <Label htmlFor="dataFim" className="text-sm font-medium">
                   Data Fim
                 </Label>
                 <Input
@@ -136,11 +136,11 @@ export function FiltrosCaixaCompacto() {
                       dataFim: new Date(e.target.value),
                     }))
                   }
-                  className="h-8"
+                  className="h-10 sm:h-9"
                 />
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="tipo" className="text-xs">
+              <div className="space-y-2 sm:col-span-2 lg:col-span-1">
+                <Label htmlFor="tipo" className="text-sm font-medium">
                   Tipo
                 </Label>
                 <Select
@@ -149,7 +149,7 @@ export function FiltrosCaixaCompacto() {
                     setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
                   }
                 >
-                  <SelectTrigger className="h-8">
+                  <SelectTrigger className="h-10 sm:h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -168,9 +168,10 @@ export function FiltrosCaixaCompacto() {
             >
               <div className="flex items-center justify-between">
                 <CollapsibleTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" size="sm" className="gap-2 h-10 text-sm">
                     <Filter className="h-4 w-4" />
-                    Filtros Avançados
+                    <span className="hidden xs:inline">Filtros Avançados</span>
+                    <span className="xs:hidden">Filtros</span>
                     {filtrosAtivos > 0 && (
                       <Badge variant="secondary" className="h-5 px-2 text-xs">
                         {filtrosAtivos}
@@ -189,19 +190,19 @@ export function FiltrosCaixaCompacto() {
                     variant="ghost"
                     size="sm"
                     onClick={limparFiltros}
-                    className="gap-1 text-muted-foreground hover:text-foreground"
+                    className="gap-1 text-muted-foreground hover:text-foreground h-10 px-3"
                   >
-                    <X className="h-3 w-3" />
-                    Limpar
+                    <X className="h-4 w-4" />
+                    <span className="hidden xs:inline">Limpar</span>
                   </Button>
                 )}
               </div>
 
               <CollapsibleContent className="mt-3">
-                <div className="bg-muted/30 rounded-lg p-3 border">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <div className="space-y-1">
-                      <Label htmlFor="formaPagamento" className="text-xs">
+                <div className="bg-muted/30 rounded-lg p-3 sm:p-4 border">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="formaPagamento" className="text-sm font-medium">
                         Forma de Pagamento
                       </Label>
                       <Select
@@ -214,7 +215,7 @@ export function FiltrosCaixaCompacto() {
                         }
                         disabled={isLoading}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger className="h-10 sm:h-9">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -326,11 +327,11 @@ export function FiltrosCaixaCompacto() {
             </Collapsible>
 
             {/* Botões de Ação */}
-            <div className="flex gap-2">
-              <Button onClick={aplicarFiltros} size="sm" className="flex-1">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <Button onClick={aplicarFiltros} size="sm" className="flex-1 h-10 text-sm">
                 Aplicar Filtros
               </Button>
-              <Button onClick={limparFiltros} variant="outline" size="sm">
+              <Button onClick={limparFiltros} variant="outline" size="sm" className="h-10 text-sm sm:w-auto">
                 Limpar Tudo
               </Button>
             </div>
@@ -339,9 +340,9 @@ export function FiltrosCaixaCompacto() {
       </Card>
 
       {/* Totais - Mais compactos */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         <Card className="border-l-4 border-l-green-500">
-          <CardContent className="p-3">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-green-600" />
               <div>
