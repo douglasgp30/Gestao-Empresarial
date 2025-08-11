@@ -6,13 +6,19 @@ import { z } from "zod";
 const LancamentoCaixaSchema = z.object({
   valor: z.number().positive("Valor deve ser positivo"),
   valorRecebido: z.number().optional(),
-  conta: z.enum(["empresa", "pessoal"], { required_error: "Conta é obrigatória" }),
+  valorLiquido: z.number().optional(),
+  comissao: z.number().optional(),
+  imposto: z.number().optional(),
+  observacoes: z.string().optional(),
+  numeroNota: z.string().optional(),
+  arquivoNota: z.string().optional(),
+  conta: z.enum(["empresa", "pessoal"]).default("empresa"),
   tipo: z.enum(["receita", "despesa"], { required_error: "Tipo é obrigatório" }),
-  
+
   // Campos obrigatórios
   descricaoId: z.number().positive("Descrição é obrigatória"),
   formaPagamentoId: z.number().positive("Forma de pagamento é obrigatória"),
-  
+
   // Campos opcionais
   subdescricaoId: z.number().positive().optional(),
   funcionarioId: z.number().positive().optional(),
