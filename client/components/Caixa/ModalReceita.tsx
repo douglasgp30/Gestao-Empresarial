@@ -416,14 +416,16 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione a campanha" />
                   </SelectTrigger>
                   <SelectContent>
-                    {campanhas.map((campanha) => (
-                      <SelectItem
-                        key={campanha.id}
-                        value={campanha.id.toString()}
-                      >
-                        {campanha.nome}
-                      </SelectItem>
-                    ))}
+                    {campanhas
+                      .filter((campanha) => campanha.id != null && campanha.id !== "" && campanha.id !== 0)
+                      .map((campanha) => (
+                        <SelectItem
+                          key={campanha.id}
+                          value={campanha.id.toString()}
+                        >
+                          {campanha.nome}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
