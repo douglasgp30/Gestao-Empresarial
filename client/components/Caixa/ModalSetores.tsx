@@ -36,6 +36,7 @@ export default function ModalSetores() {
 
   const [formData, setFormData] = useState({
     nome: "",
+    cidade: "",
     setoresEmMassa: "",
   });
 
