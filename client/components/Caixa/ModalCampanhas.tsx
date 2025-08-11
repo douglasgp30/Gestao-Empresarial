@@ -4,8 +4,6 @@ import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { Switch } from "../ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -22,13 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Badge } from "../ui/badge";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "../ui/card";
 import {
   DropdownMenu,
@@ -52,58 +46,153 @@ import {
   MoreVertical,
   Edit,
   Trash2,
-  Calendar,
-  Play,
-  Pause,
 } from "lucide-react";
-
+import { campanhasApi } from "../../lib/apiService";
+import { toast } from "../ui/use-toast";
 
 export default function ModalCampanhas() {
-  const { campanhas, adicionarCampanha } = useCaixa();
+  const { campanhas, carregarDados } = useCaixa();
   const [isOpen, setIsOpen] = useState(false);
   const [isNewCampanhaOpen, setIsNewCampanhaOpen] = useState(false);
-  const [campanhaParaExcluir, setCampanhaParaExcluir] = useState<string | null>(
-    null,
-  );
+  const [isEditCampanhaOpen, setIsEditCampanhaOpen] = useState(false);
+  const [campanhaParaExcluir, setCampanhaParaExcluir] = useState<any>(null);
+  const [campanhaParaEditar, setCampanhaParaEditar] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     nome: "",
-    descricao: "",
-    ativa: true,
-    dataInicio: new Date().toISOString().split("T")[0],
-    dataFim: "",
   });
 
   const resetForm = () => {
     setFormData({
       nome: "",
-      descricao: "",
-      ativa: true,
-      dataInicio: new Date().toISOString().split("T")[0],
-      dataFim: "",
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.nome.trim()) return;
+    if (!formData.nome.trim()) {
+      toast({
+        title: "Erro",
+        description: "Nome da campanha é obrigatório",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    adicionarCampanha({
-      nome: formData.nome.trim(),
-      descricao: formData.descricao.trim() || undefined,
-      ativa: formData.ativa,
-      dataInicio: new Date(formData.dataInicio),
-      dataFim: formData.dataFim ? new Date(formData.dataFim) : undefined,
-    });
+    try {
+      const response = await campanhasApi.criar({
+        nome: formData.nome.trim(),
+      });
 
-    resetForm();
-    setIsNewCampanhaOpen(false);
+      if (response.error) {
+        toast({
+          title: "Erro",
+          description: response.error,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Campanha criada com sucesso!",
+      });
+
+      resetForm();
+      setIsNewCampanhaOpen(false);
+      await carregarDados();
+    } catch (error) {
+      console.error('Erro ao criar campanha:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao criar campanha. Tente novamente.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleExcluir = (id: string) => {
-    // Implementar exclusão
-    setCampanhaParaExcluir(null);
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.nome.trim() || !campanhaParaEditar) {
+      toast({
+        title: "Erro",
+        description: "Nome da campanha é obrigatório",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const response = await campanhasApi.atualizar(campanhaParaEditar.id, {
+        nome: formData.nome.trim(),
+      });
+
+      if (response.error) {
+        toast({
+          title: "Erro",
+          description: response.error,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Campanha atualizada com sucesso!",
+      });
+
+      resetForm();
+      setIsEditCampanhaOpen(false);
+      setCampanhaParaEditar(null);
+      await carregarDados();
+    } catch (error) {
+      console.error('Erro ao editar campanha:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao editar campanha. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleExcluir = async (campanha: any) => {
+    try {
+      const response = await campanhasApi.excluir(campanha.id);
+
+      if (response.error) {
+        toast({
+          title: "Erro",
+          description: response.error,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Campanha excluída com sucesso!",
+      });
+
+      setCampanhaParaExcluir(null);
+      await carregarDados();
+    } catch (error) {
+      console.error('Erro ao excluir campanha:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir campanha. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const abrirEdicao = (campanha: any) => {
+    setCampanhaParaEditar(campanha);
+    setFormData({
+      nome: campanha.nome,
+    });
+    setIsEditCampanhaOpen(true);
   };
 
   return (
@@ -149,7 +238,7 @@ export default function ModalCampanhas() {
                   <DialogHeader>
                     <DialogTitle>Criar Nova Campanha</DialogTitle>
                     <DialogDescription>
-                      Preencha os dados da nova campanha de marketing
+                      Preencha o nome da nova campanha de marketing
                     </DialogDescription>
                   </DialogHeader>
 
@@ -162,70 +251,9 @@ export default function ModalCampanhas() {
                         onChange={(e) =>
                           setFormData({ ...formData, nome: e.target.value })
                         }
-                        placeholder="Ex: Promoção Janeiro 2024"
+                        placeholder="Ex: Google Ads, Facebook, Instagram"
                         required
                       />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="descricao">Descrição</Label>
-                      <Textarea
-                        id="descricao"
-                        value={formData.descricao}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            descricao: e.target.value,
-                          })
-                        }
-                        placeholder="Descreva os detalhes da campanha..."
-                        rows={3}
-                      />
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="dataInicio">Data de Início</Label>
-                        <Input
-                          id="dataInicio"
-                          type="date"
-                          value={formData.dataInicio}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              dataInicio: e.target.value,
-                            })
-                          }
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="dataFim">Data de Fim (Opcional)</Label>
-                        <Input
-                          id="dataFim"
-                          type="date"
-                          value={formData.dataFim}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              dataFim: e.target.value,
-                            })
-                          }
-                          min={formData.dataInicio}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="ativa"
-                        checked={formData.ativa}
-                        onCheckedChange={(checked) =>
-                          setFormData({ ...formData, ativa: checked })
-                        }
-                      />
-                      <Label htmlFor="ativa">Campanha ativa</Label>
                     </div>
 
                     <div className="flex gap-2 pt-4">
@@ -265,9 +293,7 @@ export default function ModalCampanhas() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nome</TableHead>
-                      <TableHead>Período</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Descrição</TableHead>
+                      <TableHead>Data de Criação</TableHead>
                       <TableHead className="w-[50px]"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -284,36 +310,8 @@ export default function ModalCampanhas() {
                         </TableCell>
 
                         <TableCell>
-                          <div className="text-sm">
-                            <div className="flex items-center space-x-1">
-                              <Calendar className="h-3 w-3 text-muted-foreground" />
-                              <span>{formatDate(campanha.dataInicio)}</span>
-                            </div>
-                            {campanha.dataFim && (
-                              <div className="text-muted-foreground">
-                                até {formatDate(campanha.dataFim)}
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-
-                        <TableCell>
-                          <Badge
-                            variant={campanha.ativa ? "default" : "secondary"}
-                            className="flex items-center space-x-1 w-fit"
-                          >
-                            {campanha.ativa ? (
-                              <Play className="h-3 w-3" />
-                            ) : (
-                              <Pause className="h-3 w-3" />
-                            )}
-                            <span>{campanha.ativa ? "Ativa" : "Inativa"}</span>
-                          </Badge>
-                        </TableCell>
-
-                        <TableCell>
                           <span className="text-sm text-muted-foreground">
-                            {campanha.descricao || "Sem descrição"}
+                            {formatDate(campanha.dataCriacao)}
                           </span>
                         </TableCell>
 
@@ -325,15 +323,13 @@ export default function ModalCampanhas() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => abrirEdicao(campanha)}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Editar
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 className="text-red-600"
-                                onClick={() =>
-                                  setCampanhaParaExcluir(campanha.id)
-                                }
+                                onClick={() => setCampanhaParaExcluir(campanha)}
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Excluir
@@ -351,6 +347,51 @@ export default function ModalCampanhas() {
         </DialogContent>
       </Dialog>
 
+      {/* Dialog de edição */}
+      <Dialog open={isEditCampanhaOpen} onOpenChange={setIsEditCampanhaOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Campanha</DialogTitle>
+            <DialogDescription>
+              Altere o nome da campanha
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleEdit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="nomeEdit">Nome da Campanha *</Label>
+              <Input
+                id="nomeEdit"
+                value={formData.nome}
+                onChange={(e) =>
+                  setFormData({ ...formData, nome: e.target.value })
+                }
+                placeholder="Ex: Google Ads, Facebook, Instagram"
+                required
+              />
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsEditCampanhaOpen(false);
+                  setCampanhaParaEditar(null);
+                  resetForm();
+                }}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" className="flex-1">
+                Salvar Alterações
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* Dialog de confirmação de exclusão */}
       <AlertDialog
         open={!!campanhaParaExcluir}
@@ -360,16 +401,13 @@ export default function ModalCampanhas() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir esta campanha? Esta ação não pode
-              ser desfeita.
+              Tem certeza que deseja excluir a campanha "{campanhaParaExcluir?.nome}"? Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() =>
-                campanhaParaExcluir && handleExcluir(campanhaParaExcluir)
-              }
+              onClick={() => campanhaParaExcluir && handleExcluir(campanhaParaExcluir)}
               className="bg-red-600 hover:bg-red-700"
             >
               Excluir
