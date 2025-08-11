@@ -161,8 +161,10 @@ export default function FiltrosPeriodoCompacto({
   // Detectar filtro ativo baseado nas datas atuais
   React.useEffect(() => {
     const filtroCalculado = determinarFiltroAtivo();
-    setFiltroAtivo(filtroCalculado);
-  }, [dataInicio, dataFim]);
+    if (filtroCalculado !== filtroAtivo) {
+      setFiltroAtivo(filtroCalculado);
+    }
+  }, [dataInicio, dataFim, filtroAtivo]);
 
   // Aplicar filtro inicial automaticamente na primeira renderização
   React.useEffect(() => {
