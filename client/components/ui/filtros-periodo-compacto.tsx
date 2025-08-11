@@ -34,11 +34,6 @@ export default function FiltrosPeriodoCompacto({
   const inputInicioRef = useRef<HTMLInputElement>(null);
   const inputFimRef = useRef<HTMLInputElement>(null);
 
-  // Função para forçar re-render
-  const triggerForceUpdate = useCallback(() => {
-    setForceUpdate((prev) => prev + 1);
-  }, []);
-
   // Sync com props quando mudam externamente
   React.useEffect(() => {
     setLocalDataInicio(dataInicio);
