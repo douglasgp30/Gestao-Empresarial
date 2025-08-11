@@ -246,13 +246,8 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   };
 
   const gerarRelatorioTecnicos = (): RelatorioTecnicos => {
-    const receitas = mockLancamentos.filter(
-      (l) =>
-        l.tipo === "receita" &&
-        l.tecnicoResponsavel &&
-        new Date(l.data) >= filtros.periodo.dataInicio &&
-        new Date(l.data) <= filtros.periodo.dataFim,
-    );
+    // Usar dados do CaixaContext quando disponível - por enquanto vazio sem dados fictícios
+    const receitas: LancamentoCaixa[] = [];
 
     const performanceTecnicos = receitas.reduce(
       (acc, r) => {
