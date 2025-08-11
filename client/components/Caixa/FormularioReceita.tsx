@@ -31,6 +31,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
+import SelectWithAdd from "../ui/select-with-add";
 import { DollarSign, TrendingUp, Calculator, Upload, FileText, X } from "lucide-react";
 
 interface FormularioReceitaProps {
@@ -38,13 +39,16 @@ interface FormularioReceitaProps {
 }
 
 export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
-  const { adicionarLancamento, campanhas, isLoading: caixaLoading } = useCaixa();
-  const { 
-    descricoes, 
-    formasPagamento, 
-    tecnicos, 
-    setores, 
-    isLoading: entidadesLoading 
+  const { adicionarLancamento, campanhas, adicionarCampanha, isLoading: caixaLoading } = useCaixa();
+  const {
+    descricoes,
+    formasPagamento,
+    tecnicos,
+    setores,
+    adicionarDescricao,
+    adicionarFormaPagamento,
+    adicionarSetor,
+    isLoading: entidadesLoading
   } = useEntidades();
 
   const [formData, setFormData] = useState({
@@ -210,45 +214,58 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="descricao">Descrição do Serviço *</Label>
-              <Select
-                value={formData.descricao}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, descricao: value }))}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a descrição" />
-                </SelectTrigger>
-                <SelectContent>
-                  {descricoesReceita.map((desc) => (
-                    <SelectItem key={desc.id} value={desc.id.toString()}>
-                      {desc.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithAdd
+              value={formData.descricao}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, descricao: value }))}
+              placeholder="Selecione a descrição"
+              label="Descrição do Serviço"
+              required={true}
+              items={descricoesReceita}
+              onAddNew={async (data) => {
+                await adicionarDescricao({
+                  nome: data.nome,
+                  tipo: 'receita'
+                });
+              }}
+              addNewTitle="Nova Descrição de Receita"
+              addNewDescription="Adicione uma nova descrição de serviço para receitas."
+              addNewFields={[
+                {
+                  key: 'nome',
+                  label: 'Nome da Descrição',
+                  required: true
+                }
+              ]}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
-              <Select
-                value={formData.formaPagamento}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, formaPagamento: value }))}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a forma" />
-                </SelectTrigger>
-                <SelectContent>
-                  {formasPagamento.map((forma) => (
-                    <SelectItem key={forma.id} value={forma.id.toString()}>
-                      {forma.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithAdd
+              value={formData.formaPagamento}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, formaPagamento: value }))}
+              placeholder="Selecione a forma"
+              label="Forma de Pagamento"
+              required={true}
+              items={formasPagamento}
+              onAddNew={async (data) => {
+                await adicionarFormaPagamento({
+                  nome: data.nome,
+                  descricao: data.descricao || ''
+                });
+              }}
+              addNewTitle="Nova Forma de Pagamento"
+              addNewDescription="Adicione uma nova forma de pagamento."
+              addNewFields={[
+                {
+                  key: 'nome',
+                  label: 'Nome da Forma de Pagamento',
+                  required: true
+                },
+                {
+                  key: 'descricao',
+                  label: 'Descrição (opcional)',
+                  required: false
+                }
+              ]}
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -271,24 +288,35 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="setor">Setor/Região</Label>
-              <Select
-                value={formData.setor}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o setor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {setores.map((setor) => (
-                    <SelectItem key={setor.id} value={setor.id.toString()}>
-                      {setor.nome} - {setor.cidade}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithAdd
+              value={formData.setor}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
+              placeholder="Selecione o setor"
+              label="Setor/Região"
+              required={false}
+              items={setores}
+              onAddNew={async (data) => {
+                await adicionarSetor({
+                  nome: data.nome,
+                  cidade: data.cidade
+                });
+              }}
+              addNewTitle="Novo Setor/Região"
+              addNewDescription="Adicione um novo setor ou região."
+              addNewFields={[
+                {
+                  key: 'nome',
+                  label: 'Nome do Setor',
+                  required: true
+                },
+                {
+                  key: 'cidade',
+                  label: 'Cidade',
+                  required: true
+                }
+              ]}
+              renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
+            />
           </div>
 
           {/* Campos avançados */}
@@ -354,24 +382,28 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="campanha">Campanha</Label>
-                  <Select
-                    value={formData.campanha}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, campanha: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a campanha" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {campanhas.map((campanha) => (
-                        <SelectItem key={campanha.id} value={campanha.id.toString()}>
-                          {campanha.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <SelectWithAdd
+                  value={formData.campanha}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, campanha: value }))}
+                  placeholder="Selecione a campanha"
+                  label="Campanha"
+                  required={false}
+                  items={campanhas}
+                  onAddNew={async (data) => {
+                    await adicionarCampanha({
+                      nome: data.nome
+                    });
+                  }}
+                  addNewTitle="Nova Campanha"
+                  addNewDescription="Adicione uma nova campanha de marketing."
+                  addNewFields={[
+                    {
+                      key: 'nome',
+                      label: 'Nome da Campanha',
+                      required: true
+                    }
+                  ]}
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
