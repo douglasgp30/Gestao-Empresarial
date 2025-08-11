@@ -274,15 +274,15 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-green-600">
-          <TrendingUp className="h-5 w-5" />
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-green-600 text-lg sm:text-xl">
+          <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
           Lançar Receita
         </CardTitle>
-        <CardDescription>Registre uma nova entrada no caixa</CardDescription>
+        <CardDescription className="text-sm">Registre uma nova entrada no caixa</CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <CardContent className="p-4 sm:p-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Campos básicos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
