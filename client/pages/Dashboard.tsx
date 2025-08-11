@@ -511,13 +511,15 @@ export default function Dashboard() {
         )}
 
         {/* LINHA 1 - Totais do Módulo Caixa */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <Wallet className="h-5 w-5" />
-            <span>📊 Totais do Caixa</span>
-            <Badge variant="outline">Dinâmico com filtros</Badge>
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+            <div className="flex items-center space-x-2">
+              <Wallet className="h-5 w-5" />
+              <span>📊 Totais do Caixa</span>
+            </div>
+            <Badge variant="outline" className="w-fit">Dinâmico com filtros</Badge>
           </h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard
               title="Total de Receitas"
               value={formatCurrency(stats.totalReceitasCaixa)}
