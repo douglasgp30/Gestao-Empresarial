@@ -637,7 +637,7 @@ export default function Configuracoes() {
                       Sistema de atualização automática
                     </p>
                   </div>
-                  <Badge className="bg-success text-success-foreground">
+                  <Badge className="bg-green-100 text-green-800">
                     Atualizado
                   </Badge>
                 </div>
