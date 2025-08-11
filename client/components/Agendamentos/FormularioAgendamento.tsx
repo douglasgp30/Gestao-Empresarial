@@ -185,8 +185,11 @@ export default function FormularioAgendamento({
   };
 
   const handleAdicionarSetor = () => {
-    if (novoSetor.trim()) {
-      adicionarSetor(novoSetor.trim());
+    if (novoSetor.trim() && formData.cidade) {
+      adicionarSetor({
+        nome: novoSetor.trim(),
+        cidade: formData.cidade
+      });
       setFormData({ ...formData, setor: novoSetor.trim() });
       setNovoSetor("");
       setMostrarNovoSetor(false);
