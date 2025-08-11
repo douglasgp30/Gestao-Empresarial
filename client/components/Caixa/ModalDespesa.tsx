@@ -62,11 +62,26 @@ export function ModalDespesa() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.valor || !formData.descricao || !formData.formaPagamento) {
+
+    // Validações robustas
+    const erros = [];
+
+    if (!formData.valor || parseFloat(formData.valor) <= 0) {
+      erros.push("Valor deve ser maior que zero");
+    }
+
+    if (!formData.descricao) {
+      erros.push("Descrição é obrigatória");
+    }
+
+    if (!formData.formaPagamento) {
+      erros.push("Forma de pagamento é obrigatória");
+    }
+
+    if (erros.length > 0) {
       toast({
-        title: "Erro",
-        description: "Preencha todos os campos obrigatórios",
+        title: "Erro de Validação",
+        description: erros.join(". "),
         variant: "destructive"
       });
       return;
