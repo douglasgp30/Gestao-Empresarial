@@ -277,7 +277,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
       
       // Recarregar formas de pagamento
-      const formasResponse = await formasPagamentoApi.listar(true);
+      const formasResponse = await formasPagamentoApi.listar();
       if (formasResponse.data) setFormasPagamento(formasResponse.data);
     } catch (error) {
       console.error('Erro ao adicionar forma de pagamento:', error);
@@ -298,7 +298,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
       
       // Recarregar formas de pagamento
-      const formasResponse = await formasPagamentoApi.listar(true);
+      const formasResponse = await formasPagamentoApi.listar();
       if (formasResponse.data) setFormasPagamento(formasResponse.data);
     } catch (error) {
       console.error('Erro ao editar forma de pagamento:', error);
@@ -316,7 +316,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
       
       // Recarregar formas de pagamento
-      const formasResponse = await formasPagamentoApi.listar(true);
+      const formasResponse = await formasPagamentoApi.listar();
       if (formasResponse.data) setFormasPagamento(formasResponse.data);
     } catch (error) {
       console.error('Erro ao excluir forma de pagamento:', error);
