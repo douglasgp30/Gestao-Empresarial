@@ -124,8 +124,9 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
                 <Link
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
+                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors touch-manipulation",
                     "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    "min-h-[44px]", // Ensure touch target is at least 44px
                     isActive &&
                       "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90",
                   )}
@@ -159,6 +160,7 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
           onClick={logout}
           className={cn(
             "text-sidebar-foreground hover:bg-destructive hover:text-destructive-foreground",
+            "min-h-[44px] touch-manipulation", // Ensure touch target size
             collapsed ? "w-full justify-center" : "w-full justify-start",
           )}
         >
@@ -192,7 +194,7 @@ export default function MainLayout() {
 
       {/* Mobile Sidebar */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="left" className="p-0 w-64">
+        <SheetContent side="left" className="p-0 w-72 sm:w-80">
           <Sidebar
             collapsed={false}
             onToggle={() => setMobileMenuOpen(false)}
@@ -202,10 +204,10 @@ export default function MainLayout() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Mobile Header */}
-          <div className="md:hidden bg-background border-b px-4 py-3 flex items-center justify-between">
-            <EmpresaLogo variant="default" size="md" showSubtitle={false} />
+          <div className="md:hidden bg-background border-b px-3 py-2 flex items-center justify-between sticky top-0 z-50">
+            <EmpresaLogo variant="default" size="sm" showSubtitle={false} />
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="h-10 w-10">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
