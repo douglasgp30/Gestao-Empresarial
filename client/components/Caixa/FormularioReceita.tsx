@@ -279,14 +279,18 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
           Lançar Receita
         </CardTitle>
-        <CardDescription className="text-sm">Registre uma nova entrada no caixa</CardDescription>
+        <CardDescription className="text-sm">
+          Registre uma nova entrada no caixa
+        </CardDescription>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Campos básicos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
-              <Label htmlFor="data" className="text-sm font-medium">Data *</Label>
+              <Label htmlFor="data" className="text-sm font-medium">
+                Data *
+              </Label>
               <Input
                 id="data"
                 type="date"

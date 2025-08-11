@@ -168,7 +168,11 @@ export function FiltrosCaixaCompacto() {
             >
               <div className="flex items-center justify-between">
                 <CollapsibleTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2 h-10 text-sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 h-10 text-sm"
+                  >
                     <Filter className="h-4 w-4" />
                     <span className="hidden xs:inline">Filtros Avançados</span>
                     <span className="xs:hidden">Filtros</span>
@@ -202,7 +206,10 @@ export function FiltrosCaixaCompacto() {
                 <div className="bg-muted/30 rounded-lg p-3 sm:p-4 border">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="formaPagamento" className="text-sm font-medium">
+                      <Label
+                        htmlFor="formaPagamento"
+                        className="text-sm font-medium"
+                      >
                         Forma de Pagamento
                       </Label>
                       <Select
@@ -328,10 +335,19 @@ export function FiltrosCaixaCompacto() {
 
             {/* Botões de Ação */}
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <Button onClick={aplicarFiltros} size="sm" className="flex-1 h-10 text-sm">
+              <Button
+                onClick={aplicarFiltros}
+                size="sm"
+                className="flex-1 h-10 text-sm"
+              >
                 Aplicar Filtros
               </Button>
-              <Button onClick={limparFiltros} variant="outline" size="sm" className="h-10 text-sm sm:w-auto">
+              <Button
+                onClick={limparFiltros}
+                variant="outline"
+                size="sm"
+                className="h-10 text-sm sm:w-auto"
+              >
                 Limpar Tudo
               </Button>
             </div>

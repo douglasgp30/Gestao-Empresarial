@@ -215,8 +215,12 @@ export default function Dashboard() {
         <div className="space-y-4">
           {/* Título */}
           <div className="text-center sm:text-left">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Visão geral financeira</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+              Dashboard
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Visão geral financeira
+            </p>
           </div>
           <div className="flex items-center w-full gap-8">
             {/* Espaçador à esquerda para equilibrar o layout */}
@@ -437,7 +441,9 @@ export default function Dashboard() {
 
             {/* Meta do Mês Mobile */}
             <div className="bg-accent/20 px-4 py-4 rounded-lg border">
-              <h3 className="text-lg font-semibold text-center mb-4">Meta do Mês</h3>
+              <h3 className="text-lg font-semibold text-center mb-4">
+                Meta do Mês
+              </h3>
 
               <div className="grid grid-cols-1 gap-4">
                 {/* Meta do Mês */}
@@ -517,7 +523,9 @@ export default function Dashboard() {
               <Wallet className="h-5 w-5" />
               <span>📊 Totais do Caixa</span>
             </div>
-            <Badge variant="outline" className="w-fit">Dinâmico com filtros</Badge>
+            <Badge variant="outline" className="w-fit">
+              Dinâmico com filtros
+            </Badge>
           </h2>
           <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard

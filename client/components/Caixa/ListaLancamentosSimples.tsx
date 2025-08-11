@@ -37,24 +37,32 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { toast } from "../ui/use-toast";
-import { MoreHorizontal, Edit, Trash2, Eye, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Eye,
+  TrendingUp,
+  TrendingDown,
+} from "lucide-react";
 
 export function ListaLancamentosSimples() {
   const { lancamentos, excluirLancamento, isLoading, error } = useCaixa();
-  const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<string | null>(null);
+  const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
+    string | null
+  >(null);
   const [excluindo, setExcluindo] = useState(false);
 
   const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(valor);
   };
 
-
   const handleExcluir = async () => {
     if (!lancamentoParaExcluir) return;
-    
+
     setExcluindo(true);
     try {
       await excluirLancamento(lancamentoParaExcluir);
@@ -63,11 +71,11 @@ export function ListaLancamentosSimples() {
         description: "Lançamento excluído com sucesso!",
       });
     } catch (error) {
-      console.error('Erro ao excluir lançamento:', error);
+      console.error("Erro ao excluir lançamento:", error);
       toast({
         title: "Erro",
         description: "Erro ao excluir lançamento. Tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setExcluindo(false);
@@ -141,40 +149,48 @@ export function ListaLancamentosSimples() {
                 <TableBody>
                   {lancamentos.map((lancamento) => (
                     <TableRow key={lancamento.id}>
-                      <TableCell>
-                        {formatDate(lancamento.data)}
-                      </TableCell>
+                      <TableCell>{formatDate(lancamento.data)}</TableCell>
                       <TableCell>
                         <Badge
-                          variant={lancamento.tipo === 'receita' ? 'default' : 'destructive'}
+                          variant={
+                            lancamento.tipo === "receita"
+                              ? "default"
+                              : "destructive"
+                          }
                           className={
-                            lancamento.tipo === 'receita'
-                              ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                              : 'bg-red-100 text-red-700 hover:bg-red-200'
+                            lancamento.tipo === "receita"
+                              ? "bg-green-100 text-green-700 hover:bg-green-200"
+                              : "bg-red-100 text-red-700 hover:bg-red-200"
                           }
                         >
-                          {lancamento.tipo === 'receita' ? (
+                          {lancamento.tipo === "receita" ? (
                             <TrendingUp className="w-3 h-3 mr-1" />
                           ) : (
                             <TrendingDown className="w-3 h-3 mr-1" />
                           )}
-                          {lancamento.tipo === 'receita' ? 'Receita' : 'Despesa'}
+                          {lancamento.tipo === "receita"
+                            ? "Receita"
+                            : "Despesa"}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {lancamento.descricao?.nome || 'N/A'}
+                        {lancamento.descricao?.nome || "N/A"}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {formatarMoeda(lancamento.valorLiquido || lancamento.valor)}
+                        {formatarMoeda(
+                          lancamento.valorLiquido || lancamento.valor,
+                        )}
                       </TableCell>
                       <TableCell>
-                        {lancamento.formaPagamento?.nome || 'N/A'}
+                        {lancamento.formaPagamento?.nome || "N/A"}
                       </TableCell>
                       <TableCell>
-                        {lancamento.funcionario?.nome || '-'}
+                        {lancamento.funcionario?.nome || "-"}
                       </TableCell>
                       <TableCell>
-                        {lancamento.setor ? `${lancamento.setor.nome} - ${lancamento.setor.cidade}` : '-'}
+                        {lancamento.setor
+                          ? `${lancamento.setor.nome} - ${lancamento.setor.cidade}`
+                          : "-"}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
@@ -187,12 +203,20 @@ export function ListaLancamentosSimples() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Ações</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleEditar(lancamento.id.toString())}>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleEditar(lancamento.id.toString())
+                              }
+                            >
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => setLancamentoParaExcluir(lancamento.id.toString())}
+                              onClick={() =>
+                                setLancamentoParaExcluir(
+                                  lancamento.id.toString(),
+                                )
+                              }
                               className="text-red-600"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
@@ -218,42 +242,60 @@ export function ListaLancamentosSimples() {
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <Badge
-                              variant={lancamento.tipo === 'receita' ? 'default' : 'destructive'}
+                              variant={
+                                lancamento.tipo === "receita"
+                                  ? "default"
+                                  : "destructive"
+                              }
                               className={
-                                lancamento.tipo === 'receita'
-                                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                  : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                lancamento.tipo === "receita"
+                                  ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                  : "bg-red-100 text-red-700 hover:bg-red-200"
                               }
                             >
-                              {lancamento.tipo === 'receita' ? (
+                              {lancamento.tipo === "receita" ? (
                                 <TrendingUp className="w-3 h-3 mr-1" />
                               ) : (
                                 <TrendingDown className="w-3 h-3 mr-1" />
                               )}
-                              {lancamento.tipo === 'receita' ? 'Receita' : 'Despesa'}
+                              {lancamento.tipo === "receita"
+                                ? "Receita"
+                                : "Despesa"}
                             </Badge>
                             <span className="text-sm text-gray-500">
                               {formatDate(lancamento.data)}
                             </span>
                           </div>
                           <p className="font-medium text-sm">
-                            {lancamento.descricao?.nome || 'N/A'}
+                            {lancamento.descricao?.nome || "N/A"}
                           </p>
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                            >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditar(lancamento.id.toString())}>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleEditar(lancamento.id.toString())
+                              }
+                            >
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
-                              onClick={() => setLancamentoParaExcluir(lancamento.id.toString())}
+                              onClick={() =>
+                                setLancamentoParaExcluir(
+                                  lancamento.id.toString(),
+                                )
+                              }
                               className="text-red-600"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
@@ -265,10 +307,16 @@ export function ListaLancamentosSimples() {
 
                       {/* Valor em destaque */}
                       <div className="text-right">
-                        <span className={`text-lg font-bold ${
-                          lancamento.tipo === 'receita' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {formatarMoeda(lancamento.valorLiquido || lancamento.valor)}
+                        <span
+                          className={`text-lg font-bold ${
+                            lancamento.tipo === "receita"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {formatarMoeda(
+                            lancamento.valorLiquido || lancamento.valor,
+                          )}
                         </span>
                       </div>
 
@@ -277,19 +325,26 @@ export function ListaLancamentosSimples() {
                         {lancamento.formaPagamento?.nome && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">Forma:</span>
-                            <span className="font-medium">{lancamento.formaPagamento.nome}</span>
+                            <span className="font-medium">
+                              {lancamento.formaPagamento.nome}
+                            </span>
                           </div>
                         )}
                         {lancamento.funcionario?.nome && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">Técnico:</span>
-                            <span className="font-medium">{lancamento.funcionario.nome}</span>
+                            <span className="font-medium">
+                              {lancamento.funcionario.nome}
+                            </span>
                           </div>
                         )}
                         {lancamento.setor && (
                           <div className="flex justify-between">
                             <span className="text-gray-500">Setor:</span>
-                            <span className="font-medium">{lancamento.setor.nome} - {lancamento.setor.cidade}</span>
+                            <span className="font-medium">
+                              {lancamento.setor.nome} -{" "}
+                              {lancamento.setor.cidade}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -303,19 +358,21 @@ export function ListaLancamentosSimples() {
       </CardContent>
 
       {/* Dialog de confirmação de exclusão */}
-      <AlertDialog open={!!lancamentoParaExcluir} onOpenChange={() => setLancamentoParaExcluir(null)}>
+      <AlertDialog
+        open={!!lancamentoParaExcluir}
+        onOpenChange={() => setLancamentoParaExcluir(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir este lançamento? Esta ação não pode
+              ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={excluindo}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogCancel disabled={excluindo}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
               onClick={handleExcluir}
               disabled={excluindo}
               className="bg-red-600 hover:bg-red-700"
