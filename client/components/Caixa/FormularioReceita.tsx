@@ -95,15 +95,21 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     : [];
 
   // Obter categorias únicas das descrições de receita
-  const categoriasReceita = [...new Set(
-    descricoesReceita
-      .map((d) => d.categoria)
-      .filter((categoria) => categoria && categoria.trim() !== "")
-  )].sort();
+  const categoriasReceita = [
+    ...new Set(
+      descricoesReceita
+        .map((d) => d.categoria)
+        .filter((categoria) => categoria && categoria.trim() !== ""),
+    ),
+  ].sort();
 
   // Verificar se forma de pagamento é cartão
-  const isFormaPagamentoCartao = formData.formaPagamento &&
-    formasPagamento.find(f => f.id.toString() === formData.formaPagamento)?.nome?.toLowerCase().includes('cartão');
+  const isFormaPagamentoCartao =
+    formData.formaPagamento &&
+    formasPagamento
+      .find((f) => f.id.toString() === formData.formaPagamento)
+      ?.nome?.toLowerCase()
+      .includes("cartão");
 
   // Calcular campos automaticamente
   useEffect(() => {
@@ -154,10 +160,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.valor || !formData.categoria || !formData.descricao || !formData.formaPagamento) {
+    if (
+      !formData.valor ||
+      !formData.categoria ||
+      !formData.descricao ||
+      !formData.formaPagamento
+    ) {
       toast({
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
+        description:
+          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
         variant: "destructive",
       });
       return;
@@ -167,7 +179,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     if (isFormaPagamentoCartao && !formData.valorQueEntrou) {
       toast({
         title: "Erro",
-        description: "Para pagamentos com cartão, é obrigatório informar o valor recebido",
+        description:
+          "Para pagamentos com cartão, é obrigatório informar o valor recebido",
         variant: "destructive",
       });
       return;
@@ -310,7 +323,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   setFormData((prev) => ({
                     ...prev,
                     categoria: value,
-                    descricao: "" // Limpar descrição quando categoria muda
+                    descricao: "", // Limpar descrição quando categoria muda
                   }));
                 }}
               >
@@ -332,7 +345,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, descricao: value }))
               }
-              placeholder={formData.categoria ? "Selecione a descrição" : "Primeiro selecione uma categoria"}
+              placeholder={
+                formData.categoria
+                  ? "Selecione a descrição"
+                  : "Primeiro selecione uma categoria"
+              }
               label="Descrição do Serviço"
               required={true}
               disabled={!formData.categoria}
@@ -407,7 +424,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 required
               />
               <p className="text-sm text-yellow-600">
-                Para pagamentos com cartão, informe o valor que realmente entrou na conta (após taxas)
+                Para pagamentos com cartão, informe o valor que realmente entrou
+                na conta (após taxas)
               </p>
             </div>
           )}
@@ -429,9 +447,17 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {tecnicos
-                    .filter((tecnico) => tecnico.id != null && tecnico.id !== "" && tecnico.id !== 0)
+                    .filter(
+                      (tecnico) =>
+                        tecnico.id != null &&
+                        tecnico.id !== "" &&
+                        tecnico.id !== 0,
+                    )
                     .map((tecnico) => (
-                      <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
+                      <SelectItem
+                        key={tecnico.id}
+                        value={tecnico.id.toString()}
+                      >
                         {tecnico.nome}
                       </SelectItem>
                     ))}
@@ -573,7 +599,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {!isFormaPagamentoCartao && (
                   <div className="space-y-2">
-                    <Label htmlFor="valorQueEntrouAvancado">Valor que Entrou (R$)</Label>
+                    <Label htmlFor="valorQueEntrouAvancado">
+                      Valor que Entrou (R$)
+                    </Label>
                     <Input
                       id="valorQueEntrouAvancado"
                       type="number"

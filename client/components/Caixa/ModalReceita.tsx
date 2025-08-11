@@ -134,9 +134,10 @@ export function ModalReceita() {
           : undefined,
         conta: formData.conta as "empresa" | "pessoal",
         descricaoId: parseInt(formData.descricao),
-        subdescricaoId: formData.subdescricao && formData.subdescricao !== "none"
-          ? parseInt(formData.subdescricao)
-          : undefined,
+        subdescricaoId:
+          formData.subdescricao && formData.subdescricao !== "none"
+            ? parseInt(formData.subdescricao)
+            : undefined,
         formaPagamentoId: parseInt(formData.formaPagamento),
         funcionarioId: formData.tecnicoResponsavel
           ? parseInt(formData.tecnicoResponsavel)
@@ -291,7 +292,10 @@ export function ModalReceita() {
                   </SelectTrigger>
                   <SelectContent>
                     {descricoesReceita
-                      .filter((desc) => desc.id != null && desc.id !== "" && desc.id !== 0)
+                      .filter(
+                        (desc) =>
+                          desc.id != null && desc.id !== "" && desc.id !== 0,
+                      )
                       .map((desc) => (
                         <SelectItem key={desc.id} value={desc.id.toString()}>
                           {desc.nome}
@@ -315,7 +319,10 @@ export function ModalReceita() {
                   </SelectTrigger>
                   <SelectContent>
                     {formasPagamento
-                      .filter((forma) => forma.id != null && forma.id !== "" && forma.id !== 0)
+                      .filter(
+                        (forma) =>
+                          forma.id != null && forma.id !== "" && forma.id !== 0,
+                      )
                       .map((forma) => (
                         <SelectItem key={forma.id} value={forma.id.toString()}>
                           {forma.nome}
@@ -368,7 +375,12 @@ export function ModalReceita() {
                   </SelectTrigger>
                   <SelectContent>
                     {tecnicos
-                      .filter((tecnico) => tecnico.id != null && tecnico.id !== "" && tecnico.id !== 0)
+                      .filter(
+                        (tecnico) =>
+                          tecnico.id != null &&
+                          tecnico.id !== "" &&
+                          tecnico.id !== 0,
+                      )
                       .map((tecnico) => (
                         <SelectItem
                           key={tecnico.id}
@@ -394,7 +406,10 @@ export function ModalReceita() {
                   </SelectTrigger>
                   <SelectContent>
                     {setores
-                      .filter((setor) => setor.id != null && setor.id !== "" && setor.id !== 0)
+                      .filter(
+                        (setor) =>
+                          setor.id != null && setor.id !== "" && setor.id !== 0,
+                      )
                       .map((setor) => (
                         <SelectItem key={setor.id} value={setor.id.toString()}>
                           {setor.nome} - {setor.cidade}
@@ -417,7 +432,12 @@ export function ModalReceita() {
                   </SelectTrigger>
                   <SelectContent>
                     {campanhas
-                      .filter((campanha) => campanha.id != null && campanha.id !== "" && campanha.id !== 0)
+                      .filter(
+                        (campanha) =>
+                          campanha.id != null &&
+                          campanha.id !== "" &&
+                          campanha.id !== 0,
+                      )
                       .map((campanha) => (
                         <SelectItem
                           key={campanha.id}

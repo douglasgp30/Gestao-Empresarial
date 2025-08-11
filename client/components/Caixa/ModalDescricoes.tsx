@@ -65,7 +65,6 @@ const categorias = [
   "Outros",
 ];
 
-
 export default function ModalDescricoes() {
   const { descricoes, adicionarDescricao, excluirDescricao } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
@@ -107,7 +106,7 @@ export default function ModalDescricoes() {
       resetForm();
       setIsNewDescricaoOpen(false);
     } catch (error) {
-      console.error('Erro ao criar descrição:', error);
+      console.error("Erro ao criar descrição:", error);
       toast({
         title: "Erro",
         description: "Erro ao criar descrição. Tente novamente.",
@@ -126,7 +125,7 @@ export default function ModalDescricoes() {
       });
       setDescricaoParaExcluir(null);
     } catch (error) {
-      console.error('Erro ao excluir descrição:', error);
+      console.error("Erro ao excluir descrição:", error);
       toast({
         title: "Erro",
         description: "Erro ao excluir descrição. Tente novamente.",

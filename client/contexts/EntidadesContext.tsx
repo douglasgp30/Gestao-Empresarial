@@ -495,7 +495,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         const cidadesResponse = await setoresApi.listarCidades();
         if (cidadesResponse.data) setCidades(cidadesResponse.data);
       } catch (error) {
-        console.error('Erro ao recarregar cidades:', error);
+        console.error("Erro ao recarregar cidades:", error);
       }
     }
   };

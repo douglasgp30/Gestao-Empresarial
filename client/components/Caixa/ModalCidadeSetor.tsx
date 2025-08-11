@@ -63,13 +63,8 @@ import { toast } from "../ui/use-toast";
 import { formatDate } from "../../lib/dateUtils";
 
 export default function ModalCidadeSetor() {
-  const {
-    setores,
-    cidades,
-    adicionarSetor,
-    adicionarCidade,
-    excluirSetor,
-  } = useEntidades();
+  const { setores, cidades, adicionarSetor, adicionarCidade, excluirSetor } =
+    useEntidades();
 
   const [isMainOpen, setIsMainOpen] = useState(false);
   const [isNovaCidadeOpen, setIsNovaCidadeOpen] = useState(false);
@@ -303,8 +298,8 @@ export default function ModalCidadeSetor() {
                       >
                         Cancelar
                       </Button>
-                      <Button 
-                        type="submit" 
+                      <Button
+                        type="submit"
                         className="flex-1"
                         disabled={cidades.length === 0}
                       >
@@ -335,7 +330,8 @@ export default function ModalCidadeSetor() {
                       Nenhuma cidade cadastrada
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Clique em "Nova Cidade" para adicionar sua primeira cidade.
+                      Clique em "Nova Cidade" para adicionar sua primeira
+                      cidade.
                     </p>
                   </div>
                 ) : (
@@ -395,11 +391,16 @@ export default function ModalCidadeSetor() {
                                 <div className="bg-primary/10 p-2 rounded-full">
                                   <MapPin className="h-4 w-4 text-primary" />
                                 </div>
-                                <span className="font-medium">{setor.nome}</span>
+                                <span className="font-medium">
+                                  {setor.nome}
+                                </span>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Badge variant="outline" className="flex items-center space-x-1 w-fit">
+                              <Badge
+                                variant="outline"
+                                className="flex items-center space-x-1 w-fit"
+                              >
                                 <Building className="h-3 w-3" />
                                 <span>{setor.cidade}</span>
                               </Badge>

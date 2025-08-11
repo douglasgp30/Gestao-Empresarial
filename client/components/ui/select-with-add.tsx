@@ -61,14 +61,17 @@ export default function SelectWithAdd({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
-  const [newlyCreatedItemName, setNewlyCreatedItemName] = useState<string | null>(null);
+  const [newlyCreatedItemName, setNewlyCreatedItemName] = useState<
+    string | null
+  >(null);
 
   // Auto-selecionar item recém-criado
   useEffect(() => {
     if (newlyCreatedItemName) {
       // Procurar o item recém-criado na lista
-      const newItem = items.find(item =>
-        item.nome?.toLowerCase() === newlyCreatedItemName.toLowerCase()
+      const newItem = items.find(
+        (item) =>
+          item.nome?.toLowerCase() === newlyCreatedItemName.toLowerCase(),
       );
 
       if (newItem && !value) {
@@ -134,7 +137,12 @@ export default function SelectWithAdd({
       )}
 
       <div className="flex gap-2">
-        <Select value={value} onValueChange={onValueChange} required={required} disabled={disabled}>
+        <Select
+          value={value}
+          onValueChange={onValueChange}
+          required={required}
+          disabled={disabled}
+        >
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
@@ -143,7 +151,12 @@ export default function SelectWithAdd({
               .filter((item) => {
                 // Filtrar itens com IDs inválidos
                 const id = item.id;
-                return id != null && id !== "" && id !== 0 && id.toString().trim() !== "";
+                return (
+                  id != null &&
+                  id !== "" &&
+                  id !== 0 &&
+                  id.toString().trim() !== ""
+                );
               })
               .map((item) => (
                 <SelectItem key={item.id} value={item.id.toString()}>

@@ -1,26 +1,26 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 const formasPagamentoPadrao = [
-  'Pix',
-  'Transferência',
-  'Boleto',
-  'Cartão de crédito',
-  'Cartão de débito',
-  'Cheque',
-  'Dinheiro'
+  "Pix",
+  "Transferência",
+  "Boleto",
+  "Cartão de crédito",
+  "Cartão de débito",
+  "Cheque",
+  "Dinheiro",
 ];
 
 export async function seedFormasPagamento() {
   try {
-    console.log('🌱 Iniciando seed das formas de pagamento...');
+    console.log("🌱 Iniciando seed das formas de pagamento...");
 
     // Verificar se já existem formas de pagamento
     const existingCount = await prisma.formaPagamento.count();
-    
+
     if (existingCount > 0) {
-      console.log('ℹ️ Formas de pagamento já existem. Pulando seed...');
+      console.log("ℹ️ Formas de pagamento já existem. Pulando seed...");
       return;
     }
 
@@ -35,9 +35,9 @@ export async function seedFormasPagamento() {
       console.log(`✅ Criada forma de pagamento: ${nomeForma}`);
     }
 
-    console.log('🎉 Seed das formas de pagamento concluído!');
+    console.log("🎉 Seed das formas de pagamento concluído!");
   } catch (error) {
-    console.error('❌ Erro no seed das formas de pagamento:', error);
+    console.error("❌ Erro no seed das formas de pagamento:", error);
     throw error;
   }
 }
