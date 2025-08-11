@@ -173,10 +173,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       
       const dadosApi: any = { ...dadosAtualizados };
       
-      // Converter campos para o formato da API
-      if (dadosAtualizados.data) {
-        dadosApi.data = dadosAtualizados.data.toISOString().split('T')[0];
-      }
+      // DataHora não pode ser editada - é gerada automaticamente no backend
       if (dadosAtualizados.descricao) {
         dadosApi.descricaoId = parseInt(dadosAtualizados.descricao);
         delete dadosApi.descricao;
