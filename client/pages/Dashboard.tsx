@@ -222,8 +222,8 @@ export default function Dashboard() {
             {/* Espaçador à esquerda para equilibrar o layout */}
             <div className="flex-1"></div>
 
-            {/* Centro: Meta do Mês, Total Alcançado e Restante */}
-            <div className="flex items-start space-x-8 bg-accent/20 px-6 py-4 rounded-lg border mx-auto">
+            {/* Centro: Meta do Mês, Total Alcançado e Restante - Responsivo */}
+            <div className="hidden sm:flex items-start space-x-8 bg-accent/20 px-6 py-4 rounded-lg border mx-auto">
               {/* Meta do Mês */}
               <div className="flex flex-col items-center space-y-2 min-w-0">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
