@@ -348,11 +348,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <SelectValue placeholder="Selecione o técnico" />
                 </SelectTrigger>
                 <SelectContent>
-                  {tecnicos.map((tecnico) => (
-                    <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
-                      {tecnico.nome}
-                    </SelectItem>
-                  ))}
+                  {tecnicos
+                    .filter((tecnico) => tecnico.id != null && tecnico.id !== "" && tecnico.id !== 0)
+                    .map((tecnico) => (
+                      <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
+                        {tecnico.nome}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
