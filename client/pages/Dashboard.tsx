@@ -408,6 +408,95 @@ export default function Dashboard() {
             {/* Espaçador à direita para equilibrar o layout */}
             <div className="flex-1"></div>
           </div>
+
+          {/* Versão Mobile da Meta do Mês */}
+          <div className="sm:hidden space-y-4">
+            {/* Saldo Geral Mobile */}
+            <div className="flex justify-center">
+              <div className="flex items-center space-x-3 bg-accent/20 px-4 py-2 rounded-lg border">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Saldo Geral:
+                </span>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <span
+                    className={`text-lg font-bold ${
+                      stats.saldoGeralConsolidado > 0
+                        ? "text-green-600 dark:text-green-400"
+                        : stats.saldoGeralConsolidado < 0
+                          ? "text-destructive"
+                          : "text-foreground"
+                    }`}
+                  >
+                    {formatCurrency(stats.saldoGeralConsolidado)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Meta do Mês Mobile */}
+            <div className="bg-accent/20 px-4 py-4 rounded-lg border">
+              <h3 className="text-lg font-semibold text-center mb-4">Meta do Mês</h3>
+
+              <div className="grid grid-cols-1 gap-4">
+                {/* Meta do Mês */}
+                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Meta do Mês
+                  </span>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <span className="text-xl font-bold text-primary">
+                      {formatCurrency(metaMes)}
+                    </span>
+                  )}
+                </div>
+
+                {/* Total Alcançado */}
+                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
+                  <span className="text-sm font-medium text-muted-foreground text-center">
+                    Total Alcançado
+                  </span>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <span className="text-xl font-bold text-blue-600">
+                      {formatCurrency(totalMetaMes)}
+                    </span>
+                  )}
+                </div>
+
+                {/* Restante para Meta */}
+                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
+                  <span className="text-sm font-medium text-muted-foreground text-center">
+                    Restante para Meta
+                  </span>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`text-xl font-bold ${
+                          restanteParaMeta <= 0
+                            ? "text-green-600"
+                            : "text-orange-600"
+                        }`}
+                      >
+                        {restanteParaMeta <= 0
+                          ? "Meta Atingida!"
+                          : formatCurrency(restanteParaMeta)}
+                      </span>
+                      {restanteParaMeta <= 0 && (
+                        <Trophy className="h-5 w-5 text-green-600" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Filtros de Data */}
