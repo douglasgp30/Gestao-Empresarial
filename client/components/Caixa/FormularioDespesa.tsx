@@ -46,7 +46,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     formaPagamento: "",
     setor: "",
     observacoes: "",
-    numeroNota: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,7 +76,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         formaPagamento: formData.formaPagamento,
         setor: formData.setor || undefined,
         observacoes: formData.observacoes || undefined,
-        numeroNota: formData.numeroNota || undefined,
       });
 
       toast({
@@ -94,7 +92,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         formaPagamento: "",
         setor: "",
         observacoes: "",
-        numeroNota: "",
       });
 
       onSuccess?.();
