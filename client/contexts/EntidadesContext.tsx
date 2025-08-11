@@ -59,7 +59,7 @@ interface EntidadesContextType {
   adicionarSetor: (setor: Omit<Setor, "id" | "dataCriacao">) => Promise<void>;
   editarSetor: (id: string, setor: Partial<Setor>) => Promise<void>;
   excluirSetor: (id: string) => Promise<void>;
-  adicionarCidade: (cidade: { nome: string }) => void;
+  adicionarCidade: (cidade: { nome: string }) => Promise<void>;
 
   // Clientes (mantém localStorage)
   clientes: Cliente[];
@@ -204,7 +204,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     carregarDados();
   }, []);
 
-  // === FUNÇÕES PARA DESCRI��ÕES (API) ===
+  // === FUNÇÕES PARA DESCRIÇÕES (API) ===
   const adicionarDescricao = async (
     novaDescricao: Omit<Descricao, "id" | "dataCriacao">,
   ) => {
