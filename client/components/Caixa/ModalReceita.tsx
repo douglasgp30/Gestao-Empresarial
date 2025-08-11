@@ -71,23 +71,36 @@ export function ModalReceita() {
     e.preventDefault();
 
     // Validações básicas obrigatórias
-    if (!formData.valor || !formData.descricao || !formData.formaPagamento || !formData.conta) {
-      toast({
-        title: "Erro",
-        description: "Preencha todos os campos obrigatórios (Valor, Descrição, Forma de Pagamento, Conta)",
-        variant: "destructive"
-      });
-      return;
+    const erros = [];
+
+    if (!formData.valor || parseFloat(formData.valor) <= 0) {
+      erros.push("Valor deve ser maior que zero");
+    }
+
+    if (!formData.descricao) {
+      erros.push("Descrição é obrigatória");
+    }
+
+    if (!formData.formaPagamento) {
+      erros.push("Forma de pagamento é obrigatória");
+    }
+
+    if (!formData.conta) {
+      erros.push("Conta é obrigatória");
     }
 
     // Validação específica: valorRecebido obrigatório para cartão
     const formaPagamentoSelecionada = formasPagamento.find(f => f.id.toString() === formData.formaPagamento);
     const isCartao = formaPagamentoSelecionada ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome) : false;
 
-    if (isCartao && !formData.valorRecebido) {
+    if (isCartao && (!formData.valorRecebido || parseFloat(formData.valorRecebido) <= 0)) {
+      erros.push("Valor recebido é obrigatório e deve ser maior que zero para pagamentos no cartão");
+    }
+
+    if (erros.length > 0) {
       toast({
-        title: "Erro",
-        description: "Valor recebido é obrigatório para pagamentos no cartão",
+        title: "Erro de Validação",
+        description: erros.join(". "),
         variant: "destructive"
       });
       return;
