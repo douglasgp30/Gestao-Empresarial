@@ -20,6 +20,7 @@ import {
 } from "../ui/card";
 import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
+import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
 
 interface FormularioDespesaProps {
@@ -28,11 +29,14 @@ interface FormularioDespesaProps {
 
 export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
-  const { 
-    descricoes, 
-    formasPagamento, 
-    setores, 
-    isLoading: entidadesLoading 
+  const {
+    descricoes,
+    formasPagamento,
+    setores,
+    adicionarDescricao,
+    adicionarFormaPagamento,
+    adicionarSetor,
+    isLoading: entidadesLoading
   } = useEntidades();
 
   const [formData, setFormData] = useState({
@@ -159,66 +163,90 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="descricao">Descrição da Despesa *</Label>
-              <Select
-                value={formData.descricao}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, descricao: value }))}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a descrição" />
-                </SelectTrigger>
-                <SelectContent>
-                  {descricoesDespesa.map((desc) => (
-                    <SelectItem key={desc.id} value={desc.id.toString()}>
-                      {desc.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithAdd
+              value={formData.descricao}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, descricao: value }))}
+              placeholder="Selecione a descrição"
+              label="Descrição da Despesa"
+              required={true}
+              items={descricoesDespesa}
+              onAddNew={async (data) => {
+                await adicionarDescricao({
+                  nome: data.nome,
+                  tipo: 'despesa'
+                });
+              }}
+              addNewTitle="Nova Descrição de Despesa"
+              addNewDescription="Adicione uma nova descrição para despesas."
+              addNewFields={[
+                {
+                  key: 'nome',
+                  label: 'Nome da Descrição',
+                  required: true
+                }
+              ]}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
-              <Select
-                value={formData.formaPagamento}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, formaPagamento: value }))}
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a forma" />
-                </SelectTrigger>
-                <SelectContent>
-                  {formasPagamento.map((forma) => (
-                    <SelectItem key={forma.id} value={forma.id.toString()}>
-                      {forma.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithAdd
+              value={formData.formaPagamento}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, formaPagamento: value }))}
+              placeholder="Selecione a forma"
+              label="Forma de Pagamento"
+              required={true}
+              items={formasPagamento}
+              onAddNew={async (data) => {
+                await adicionarFormaPagamento({
+                  nome: data.nome,
+                  descricao: data.descricao || ''
+                });
+              }}
+              addNewTitle="Nova Forma de Pagamento"
+              addNewDescription="Adicione uma nova forma de pagamento."
+              addNewFields={[
+                {
+                  key: 'nome',
+                  label: 'Nome da Forma de Pagamento',
+                  required: true
+                },
+                {
+                  key: 'descricao',
+                  label: 'Descrição (opcional)',
+                  required: false
+                }
+              ]}
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="setor">Setor/Região</Label>
-              <Select
-                value={formData.setor}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o setor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {setores.map((setor) => (
-                    <SelectItem key={setor.id} value={setor.id.toString()}>
-                      {setor.nome} - {setor.cidade}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithAdd
+              value={formData.setor}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
+              placeholder="Selecione o setor"
+              label="Setor/Região"
+              required={false}
+              items={setores}
+              onAddNew={async (data) => {
+                await adicionarSetor({
+                  nome: data.nome,
+                  cidade: data.cidade
+                });
+              }}
+              addNewTitle="Novo Setor/Região"
+              addNewDescription="Adicione um novo setor ou região."
+              addNewFields={[
+                {
+                  key: 'nome',
+                  label: 'Nome do Setor',
+                  required: true
+                },
+                {
+                  key: 'cidade',
+                  label: 'Cidade',
+                  required: true
+                }
+              ]}
+              renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="numeroNota">Número da Nota</Label>
