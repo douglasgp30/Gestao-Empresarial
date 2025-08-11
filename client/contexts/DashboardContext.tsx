@@ -390,11 +390,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
         // Tentar converter a dataHora que está no formato DD-MM-AAAA HH:MM:SS
         let dataLancamento: Date;
-        if (typeof l.dataHora === 'string' && l.dataHora.includes('-')) {
+        if (typeof l.dataHora === "string" && l.dataHora.includes("-")) {
           // Formato brasileiro DD-MM-AAAA HH:MM:SS
-          const [datePart] = l.dataHora.split(' ');
-          const [dia, mes, ano] = datePart.split('-');
-          dataLancamento = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+          const [datePart] = l.dataHora.split(" ");
+          const [dia, mes, ano] = datePart.split("-");
+          dataLancamento = new Date(
+            parseInt(ano),
+            parseInt(mes) - 1,
+            parseInt(dia),
+          );
         } else {
           // Fallback para l.data se existir
           dataLancamento = new Date(l.data || l.dataHora);

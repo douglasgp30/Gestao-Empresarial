@@ -14,11 +14,11 @@ import {
   Setor,
   Cidade,
 } from "@shared/types";
-import { 
+import {
   descricoesApi,
   formasPagamentoApi,
   funcionariosApi,
-  setoresApi
+  setoresApi,
 } from "../lib/apiService";
 
 interface EntidadesContextType {
@@ -43,7 +43,10 @@ interface EntidadesContextType {
   adicionarFormaPagamento: (
     forma: Omit<FormaPagamento, "id" | "dataCriacao">,
   ) => Promise<void>;
-  editarFormaPagamento: (id: string, forma: Partial<FormaPagamento>) => Promise<void>;
+  editarFormaPagamento: (
+    id: string,
+    forma: Partial<FormaPagamento>,
+  ) => Promise<void>;
   excluirFormaPagamento: (id: string) => Promise<void>;
 
   // Funcionários/Técnicos
@@ -99,7 +102,7 @@ const entidadesEssenciais = {
       tipo: "despesa" as const,
       dataCriacao: new Date(),
     },
-  ]
+  ],
 };
 
 // Funções para localStorage (para entidades que ainda não migraram)
@@ -161,19 +164,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         funcionariosResponse,
         tecnicosResponse,
         setoresResponse,
-        cidadesResponse
+        cidadesResponse,
       ] = await Promise.all([
         descricoesApi.listar(),
         formasPagamentoApi.listar(),
         funcionariosApi.listar(),
         funcionariosApi.listarTecnicos(),
         setoresApi.listar(),
-        setoresApi.listarCidades()
+        setoresApi.listarCidades(),
       ]);
 
       // Atualizar estados com dados do banco
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
-      if (formasPagamentoResponse.data) setFormasPagamento(formasPagamentoResponse.data);
+      if (formasPagamentoResponse.data)
+        setFormasPagamento(formasPagamentoResponse.data);
       if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
       if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
       if (setoresResponse.data) setSetores(setoresResponse.data);
@@ -185,15 +189,15 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         entidadesEssenciais.categorias,
       );
       const clientesStorage = carregarEntidadeDoStorage<Cliente>("clientes");
-      const fornecedoresStorage = carregarEntidadeDoStorage<Fornecedor>("fornecedores");
+      const fornecedoresStorage =
+        carregarEntidadeDoStorage<Fornecedor>("fornecedores");
 
       setCategorias(categoriasStorage);
       setClientes(clientesStorage);
       setFornecedores(fornecedoresStorage);
-
     } catch (error) {
-      console.error('Erro ao carregar entidades:', error);
-      setError('Erro ao carregar dados do servidor');
+      console.error("Erro ao carregar entidades:", error);
+      setError("Erro ao carregar dados do servidor");
     } finally {
       setIsLoading(false);
     }
@@ -215,12 +219,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar descrições
       const descricoesResponse = await descricoesApi.listar();
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
     } catch (error) {
-      console.error('Erro ao adicionar descrição:', error);
+      console.error("Erro ao adicionar descrição:", error);
       throw error;
     }
   };
@@ -231,17 +235,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      const response = await descricoesApi.atualizar(parseInt(id), dadosAtualizados);
+      const response = await descricoesApi.atualizar(
+        parseInt(id),
+        dadosAtualizados,
+      );
       if (response.error) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar descrições
       const descricoesResponse = await descricoesApi.listar();
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
     } catch (error) {
-      console.error('Erro ao editar descrição:', error);
+      console.error("Erro ao editar descrição:", error);
       throw error;
     }
   };
@@ -254,12 +261,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar descrições
       const descricoesResponse = await descricoesApi.listar();
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
     } catch (error) {
-      console.error('Erro ao excluir descrição:', error);
+      console.error("Erro ao excluir descrição:", error);
       throw error;
     }
   };
@@ -275,12 +282,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar formas de pagamento
       const formasResponse = await formasPagamentoApi.listar();
       if (formasResponse.data) setFormasPagamento(formasResponse.data);
     } catch (error) {
-      console.error('Erro ao adicionar forma de pagamento:', error);
+      console.error("Erro ao adicionar forma de pagamento:", error);
       throw error;
     }
   };
@@ -291,17 +298,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      const response = await formasPagamentoApi.atualizar(parseInt(id), dadosAtualizados);
+      const response = await formasPagamentoApi.atualizar(
+        parseInt(id),
+        dadosAtualizados,
+      );
       if (response.error) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar formas de pagamento
       const formasResponse = await formasPagamentoApi.listar();
       if (formasResponse.data) setFormasPagamento(formasResponse.data);
     } catch (error) {
-      console.error('Erro ao editar forma de pagamento:', error);
+      console.error("Erro ao editar forma de pagamento:", error);
       throw error;
     }
   };
@@ -314,12 +324,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar formas de pagamento
       const formasResponse = await formasPagamentoApi.listar();
       if (formasResponse.data) setFormasPagamento(formasResponse.data);
     } catch (error) {
-      console.error('Erro ao excluir forma de pagamento:', error);
+      console.error("Erro ao excluir forma de pagamento:", error);
       throw error;
     }
   };
@@ -333,16 +343,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar funcionários e técnicos
       const [funcionariosResponse, tecnicosResponse] = await Promise.all([
         funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos()
+        funcionariosApi.listarTecnicos(),
       ]);
       if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
       if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
     } catch (error) {
-      console.error('Erro ao adicionar funcionário:', error);
+      console.error("Erro ao adicionar funcionário:", error);
       throw error;
     }
   };
@@ -350,21 +360,24 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const editarFuncionario = async (id: string, dadosAtualizados: any) => {
     try {
       setError(null);
-      const response = await funcionariosApi.atualizar(parseInt(id), dadosAtualizados);
+      const response = await funcionariosApi.atualizar(
+        parseInt(id),
+        dadosAtualizados,
+      );
       if (response.error) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar funcionários e técnicos
       const [funcionariosResponse, tecnicosResponse] = await Promise.all([
         funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos()
+        funcionariosApi.listarTecnicos(),
       ]);
       if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
       if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
     } catch (error) {
-      console.error('Erro ao editar funcionário:', error);
+      console.error("Erro ao editar funcionário:", error);
       throw error;
     }
   };
@@ -377,22 +390,24 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar funcionários e técnicos
       const [funcionariosResponse, tecnicosResponse] = await Promise.all([
         funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos()
+        funcionariosApi.listarTecnicos(),
       ]);
       if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
       if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
     } catch (error) {
-      console.error('Erro ao excluir funcionário:', error);
+      console.error("Erro ao excluir funcionário:", error);
       throw error;
     }
   };
 
   // === FUNÇÕES PARA SETORES (API) ===
-  const adicionarSetor = async (novoSetor: Omit<Setor, "id" | "dataCriacao">) => {
+  const adicionarSetor = async (
+    novoSetor: Omit<Setor, "id" | "dataCriacao">,
+  ) => {
     try {
       setError(null);
       const response = await setoresApi.criar(novoSetor);
@@ -400,16 +415,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar setores e cidades
       const [setoresResponse, cidadesResponse] = await Promise.all([
         setoresApi.listar(),
-        setoresApi.listarCidades()
+        setoresApi.listarCidades(),
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
       if (cidadesResponse.data) setCidades(cidadesResponse.data);
     } catch (error) {
-      console.error('Erro ao adicionar setor:', error);
+      console.error("Erro ao adicionar setor:", error);
       throw error;
     }
   };
@@ -417,21 +432,24 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const editarSetor = async (id: string, dadosAtualizados: Partial<Setor>) => {
     try {
       setError(null);
-      const response = await setoresApi.atualizar(parseInt(id), dadosAtualizados);
+      const response = await setoresApi.atualizar(
+        parseInt(id),
+        dadosAtualizados,
+      );
       if (response.error) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar setores e cidades
       const [setoresResponse, cidadesResponse] = await Promise.all([
         setoresApi.listar(),
-        setoresApi.listarCidades()
+        setoresApi.listarCidades(),
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
       if (cidadesResponse.data) setCidades(cidadesResponse.data);
     } catch (error) {
-      console.error('Erro ao editar setor:', error);
+      console.error("Erro ao editar setor:", error);
       throw error;
     }
   };
@@ -444,16 +462,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setError(response.error);
         throw new Error(response.error);
       }
-      
+
       // Recarregar setores e cidades
       const [setoresResponse, cidadesResponse] = await Promise.all([
         setoresApi.listar(),
-        setoresApi.listarCidades()
+        setoresApi.listarCidades(),
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
       if (cidadesResponse.data) setCidades(cidadesResponse.data);
     } catch (error) {
-      console.error('Erro ao excluir setor:', error);
+      console.error("Erro ao excluir setor:", error);
       throw error;
     }
   };

@@ -497,7 +497,6 @@ export default function Configuracoes() {
           </Card>
         </TabsContent>
 
-
         <TabsContent value="usuarios" className="space-y-6">
           <Card>
             <CardHeader>
@@ -850,7 +849,8 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle>🧪 Testes do Sistema</CardTitle>
               <CardDescription>
-                Execute testes automatizados para verificar a integridade das funcionalidades principais
+                Execute testes automatizados para verificar a integridade das
+                funcionalidades principais
               </CardDescription>
             </CardHeader>
             <CardContent>

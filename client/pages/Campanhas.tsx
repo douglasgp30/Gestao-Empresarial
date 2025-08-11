@@ -18,18 +18,18 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/table";
-import { Link } from 'react-router-dom';
-import { 
-  Target, 
-  TrendingUp, 
-  Users, 
-  DollarSign, 
+import { Link } from "react-router-dom";
+import {
+  Target,
+  TrendingUp,
+  Users,
+  DollarSign,
   Calendar,
   ArrowRight,
   Zap,
   BarChart3,
   Megaphone,
-  Eye
+  Eye,
 } from "lucide-react";
 
 export default function Campanhas() {
@@ -54,29 +54,36 @@ export default function Campanhas() {
     setCampanhasFiltradas(campanhasResultado);
   }, [campanhas, filtrosPeriodo]);
 
-  const handleFiltrosPeriodoChange = useCallback((dataInicio: Date, dataFim: Date) => {
-    setFiltrosPeriodo({ dataInicio, dataFim });
-  }, []);
+  const handleFiltrosPeriodoChange = useCallback(
+    (dataInicio: Date, dataFim: Date) => {
+      setFiltrosPeriodo({ dataInicio, dataFim });
+    },
+    [],
+  );
 
   // Calcular estatísticas das campanhas no período
   const calcularEstatisticasCampanhas = () => {
-    const lancamentosPeriodo = lancamentos.filter(lancamento => {
+    const lancamentosPeriodo = lancamentos.filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
-      return dataLancamento >= filtrosPeriodo.dataInicio && 
-             dataLancamento <= filtrosPeriodo.dataFim;
+      return (
+        dataLancamento >= filtrosPeriodo.dataInicio &&
+        dataLancamento <= filtrosPeriodo.dataFim
+      );
     });
 
     const totalReceitas = lancamentosPeriodo
-      .filter(l => l.tipo === 'receita' && l.campanha)
+      .filter((l) => l.tipo === "receita" && l.campanha)
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-    const totalLancamentos = lancamentosPeriodo.filter(l => l.campanha).length;
+    const totalLancamentos = lancamentosPeriodo.filter(
+      (l) => l.campanha,
+    ).length;
 
     return {
       totalReceitas,
       totalLancamentos,
       campanhasAtivas: campanhasFiltradas.length,
-      totalCampanhas: campanhasFiltradas.length
+      totalCampanhas: campanhasFiltradas.length,
     };
   };
 
@@ -84,14 +91,15 @@ export default function Campanhas() {
 
   // Calcular estatísticas por campanha
   const obterEstatisticasCampanha = (campanhaId: string) => {
-    const lancamentosCampanha = lancamentos.filter(l => 
-      l.campanha === campanhaId &&
-      new Date(l.data) >= filtrosPeriodo.dataInicio &&
-      new Date(l.data) <= filtrosPeriodo.dataFim
+    const lancamentosCampanha = lancamentos.filter(
+      (l) =>
+        l.campanha === campanhaId &&
+        new Date(l.data) >= filtrosPeriodo.dataInicio &&
+        new Date(l.data) <= filtrosPeriodo.dataFim,
     );
 
     const receitas = lancamentosCampanha
-      .filter(l => l.tipo === 'receita')
+      .filter((l) => l.tipo === "receita")
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
     return {
@@ -101,14 +109,14 @@ export default function Campanhas() {
   };
 
   const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat('pt-BR', { 
-      style: 'currency', 
-      currency: 'BRL' 
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(valor);
   };
 
   const formatarData = (data: Date) => {
-    return new Date(data).toLocaleDateString('pt-BR');
+    return new Date(data).toLocaleDateString("pt-BR");
   };
 
   return (
@@ -133,7 +141,7 @@ export default function Campanhas() {
       </div>
 
       {/* Filtros de Período */}
-      <FiltrosPeriodo 
+      <FiltrosPeriodo
         onFiltroChange={handleFiltrosPeriodoChange}
         titulo="Filtrar Campanhas por Período"
         periodoInicialDias={90}
@@ -147,7 +155,9 @@ export default function Campanhas() {
               <Target className="h-4 w-4 text-blue-600" />
               <div className="space-y-1">
                 <p className="text-sm text-gray-600">Campanhas Ativas</p>
-                <p className="text-2xl font-bold text-blue-600">{estatisticas.campanhasAtivas}</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {estatisticas.campanhasAtivas}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -173,7 +183,9 @@ export default function Campanhas() {
               <Users className="h-4 w-4 text-purple-600" />
               <div className="space-y-1">
                 <p className="text-sm text-gray-600">Lançamentos</p>
-                <p className="text-2xl font-bold text-purple-600">{estatisticas.totalLancamentos}</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {estatisticas.totalLancamentos}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -185,7 +197,9 @@ export default function Campanhas() {
               <BarChart3 className="h-4 w-4 text-orange-600" />
               <div className="space-y-1">
                 <p className="text-sm text-gray-600">Total Campanhas</p>
-                <p className="text-2xl font-bold text-orange-600">{estatisticas.totalCampanhas}</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {estatisticas.totalCampanhas}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -235,29 +249,37 @@ export default function Campanhas() {
                 </TableHeader>
                 <TableBody>
                   {campanhasFiltradas.map((campanha) => {
-                    const stats = obterEstatisticasCampanha(campanha.id.toString());
+                    const stats = obterEstatisticasCampanha(
+                      campanha.id.toString(),
+                    );
                     return (
                       <TableRow key={campanha.id}>
                         <TableCell className="font-medium">
                           {campanha.nome}
                         </TableCell>
                         <TableCell>
-                          <Badge 
+                          <Badge
                             variant={campanha.ativa ? "default" : "secondary"}
-                            className={campanha.ativa ? "bg-green-100 text-green-700" : ""}
+                            className={
+                              campanha.ativa
+                                ? "bg-green-100 text-green-700"
+                                : ""
+                            }
                           >
                             {campanha.ativa ? "Ativa" : "Inativa"}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          {campanha.dataInicio ? formatarData(campanha.dataInicio) : "-"}
+                          {campanha.dataInicio
+                            ? formatarData(campanha.dataInicio)
+                            : "-"}
                         </TableCell>
                         <TableCell>
-                          {campanha.dataFim ? formatarData(campanha.dataFim) : "-"}
+                          {campanha.dataFim
+                            ? formatarData(campanha.dataFim)
+                            : "-"}
                         </TableCell>
-                        <TableCell>
-                          {stats.totalLancamentos}
-                        </TableCell>
+                        <TableCell>{stats.totalLancamentos}</TableCell>
                         <TableCell className="font-medium">
                           {formatarMoeda(stats.totalReceitas)}
                         </TableCell>
@@ -283,15 +305,24 @@ export default function Campanhas() {
           <div className="space-y-3 text-blue-700">
             <div className="flex items-start space-x-2">
               <ArrowRight className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <span>As campanhas são criadas durante o lançamento de receitas no módulo Caixa</span>
+              <span>
+                As campanhas são criadas durante o lançamento de receitas no
+                módulo Caixa
+              </span>
             </div>
             <div className="flex items-start space-x-2">
               <ArrowRight className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <span>Cada serviço pode ser vinculado a uma campanha para tracking de performance</span>
+              <span>
+                Cada serviço pode ser vinculado a uma campanha para tracking de
+                performance
+              </span>
             </div>
             <div className="flex items-start space-x-2">
               <ArrowRight className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <span>Relatórios detalhados de ROI e conversões ficam disponíveis no módulo Relatórios</span>
+              <span>
+                Relatórios detalhados de ROI e conversões ficam disponíveis no
+                módulo Relatórios
+              </span>
             </div>
           </div>
         </CardContent>

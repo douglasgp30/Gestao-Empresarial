@@ -32,14 +32,26 @@ import {
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
-import { DollarSign, TrendingUp, Calculator, Upload, FileText, X } from "lucide-react";
+import {
+  DollarSign,
+  TrendingUp,
+  Calculator,
+  Upload,
+  FileText,
+  X,
+} from "lucide-react";
 
 interface FormularioReceitaProps {
   onSuccess?: () => void;
 }
 
 export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
-  const { adicionarLancamento, campanhas, adicionarCampanha, isLoading: caixaLoading } = useCaixa();
+  const {
+    adicionarLancamento,
+    campanhas,
+    adicionarCampanha,
+    isLoading: caixaLoading,
+  } = useCaixa();
   const {
     descricoes,
     formasPagamento,
@@ -48,11 +60,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     adicionarDescricao,
     adicionarFormaPagamento,
     adicionarSetor,
-    isLoading: entidadesLoading
+    isLoading: entidadesLoading,
   } = useEntidades();
 
   const [formData, setFormData] = useState({
-    data: new Date().toISOString().split('T')[0],
+    data: new Date().toISOString().split("T")[0],
     valor: "",
     valorQueEntrou: "",
     valorLiquido: "",
@@ -74,7 +86,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
   // Filtrar descrições de receita
-  const descricoesReceita = descricoes.filter(d => d.tipo === 'receita');
+  const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
 
   // Calcular campos automaticamente
   useEffect(() => {
@@ -82,21 +94,31 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     const valorQueEntrou = parseFloat(formData.valorQueEntrou) || valor;
     const imposto = parseFloat(formData.imposto) || 0;
     const valorLiquido = valorQueEntrou - imposto;
-    
+
     // Calcular comissão (15% do valor líquido se houver técnico)
     const comissao = formData.tecnicoResponsavel ? valorLiquido * 0.15 : 0;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       valorLiquido: valorLiquido.toFixed(2),
-      comissao: comissao.toFixed(2)
+      comissao: comissao.toFixed(2),
     }));
-  }, [formData.valor, formData.valorQueEntrou, formData.imposto, formData.tecnicoResponsavel]);
+  }, [
+    formData.valor,
+    formData.valorQueEntrou,
+    formData.imposto,
+    formData.tecnicoResponsavel,
+  ]);
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
-    const urlNotaFiscal = "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=e813ef4862bf420ee0c3b8a62347579b68773380001&dth=20250811115913";
-    const janelaNotaFiscal = window.open(urlNotaFiscal, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    const urlNotaFiscal =
+      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=e813ef4862bf420ee0c3b8a62347579b68773380001&dth=20250811115913";
+    const janelaNotaFiscal = window.open(
+      urlNotaFiscal,
+      "_blank",
+      "width=1200,height=800,scrollbars=yes,resizable=yes",
+    );
 
     // Monitorar quando a janela for fechada
     const interval = setInterval(() => {
@@ -106,7 +128,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         toast({
           title: "Nota Fiscal",
           description: "Preencha o número da nota fiscal emitida",
-          variant: "default"
+          variant: "default",
         });
       }
     }, 1000);
@@ -114,12 +136,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.valor || !formData.descricao || !formData.formaPagamento) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos obrigatórios",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -128,8 +150,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     if (formData.temNotaFiscal && !formData.numeroNota) {
       toast({
         title: "Erro",
-        description: "Número da nota fiscal é obrigatório quando há nota fiscal",
-        variant: "destructive"
+        description:
+          "Número da nota fiscal é obrigatório quando há nota fiscal",
+        variant: "destructive",
       });
       return;
     }
@@ -141,8 +164,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         data: new Date(formData.data),
         tipo: "receita",
         valor: parseFloat(formData.valor),
-        valorLiquido: parseFloat(formData.valorLiquido) || parseFloat(formData.valor),
-        valorQueEntrou: parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
+        valorLiquido:
+          parseFloat(formData.valorLiquido) || parseFloat(formData.valor),
+        valorQueEntrou:
+          parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
         comissao: parseFloat(formData.comissao) || 0,
         imposto: parseFloat(formData.imposto) || 0,
         descricao: formData.descricao,
@@ -158,12 +183,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       toast({
         title: "Sucesso",
         description: "Receita lançada com sucesso!",
-        variant: "default"
+        variant: "default",
       });
 
       // Resetar formulário
       setFormData({
-        data: new Date().toISOString().split('T')[0],
+        data: new Date().toISOString().split("T")[0],
         valor: "",
         valorQueEntrou: "",
         valorLiquido: "",
@@ -183,11 +208,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
       onSuccess?.();
     } catch (error) {
-      console.error('Erro ao lançar receita:', error);
+      console.error("Erro ao lançar receita:", error);
       toast({
         title: "Erro",
         description: "Erro ao lançar receita. Tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -213,9 +238,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           <TrendingUp className="h-5 w-5" />
           Lançar Receita
         </CardTitle>
-        <CardDescription>
-          Registre uma nova entrada no caixa
-        </CardDescription>
+        <CardDescription>Registre uma nova entrada no caixa</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -227,7 +250,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 id="data"
                 type="date"
                 value={formData.data}
-                onChange={(e) => setFormData(prev => ({ ...prev, data: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, data: e.target.value }))
+                }
                 required
               />
             </div>
@@ -240,7 +265,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 step="0.01"
                 placeholder="0,00"
                 value={formData.valor}
-                onChange={(e) => setFormData(prev => ({ ...prev, valor: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, valor: e.target.value }))
+                }
                 required
               />
             </div>
@@ -249,7 +276,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectWithAdd
               value={formData.descricao}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, descricao: value }))}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, descricao: value }))
+              }
               placeholder="Selecione a descrição"
               label="Descrição do Serviço"
               required={true}
@@ -257,23 +286,25 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               onAddNew={async (data) => {
                 await adicionarDescricao({
                   nome: data.nome,
-                  tipo: 'receita'
+                  tipo: "receita",
                 });
               }}
               addNewTitle="Nova Descrição de Receita"
               addNewDescription="Adicione uma nova descrição de serviço para receitas."
               addNewFields={[
                 {
-                  key: 'nome',
-                  label: 'Nome da Descrição',
-                  required: true
-                }
+                  key: "nome",
+                  label: "Nome da Descrição",
+                  required: true,
+                },
               ]}
             />
 
             <SelectWithAdd
               value={formData.formaPagamento}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, formaPagamento: value }))}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, formaPagamento: value }))
+              }
               placeholder="Selecione a forma"
               label="Forma de Pagamento"
               required={true}
@@ -281,22 +312,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               onAddNew={async (data) => {
                 await adicionarFormaPagamento({
                   nome: data.nome,
-                  descricao: data.descricao || ''
+                  descricao: data.descricao || "",
                 });
               }}
               addNewTitle="Nova Forma de Pagamento"
               addNewDescription="Adicione uma nova forma de pagamento."
               addNewFields={[
                 {
-                  key: 'nome',
-                  label: 'Nome da Forma de Pagamento',
-                  required: true
+                  key: "nome",
+                  label: "Nome da Forma de Pagamento",
+                  required: true,
                 },
                 {
-                  key: 'descricao',
-                  label: 'Descrição (opcional)',
-                  required: false
-                }
+                  key: "descricao",
+                  label: "Descrição (opcional)",
+                  required: false,
+                },
               ]}
             />
           </div>
@@ -306,7 +337,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
               <Select
                 value={formData.tecnicoResponsavel}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, tecnicoResponsavel: value }))}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    tecnicoResponsavel: value,
+                  }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o técnico" />
@@ -323,7 +359,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
             <SelectWithAdd
               value={formData.setor}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, setor: value }))
+              }
               placeholder="Selecione o setor"
               label="Setor/Região"
               required={false}
@@ -331,22 +369,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               onAddNew={async (data) => {
                 await adicionarSetor({
                   nome: data.nome,
-                  cidade: data.cidade
+                  cidade: data.cidade,
                 });
               }}
               addNewTitle="Novo Setor/Região"
               addNewDescription="Adicione um novo setor ou região."
               addNewFields={[
                 {
-                  key: 'nome',
-                  label: 'Nome do Setor',
-                  required: true
+                  key: "nome",
+                  label: "Nome do Setor",
+                  required: true,
                 },
                 {
-                  key: 'cidade',
-                  label: 'Cidade',
-                  required: true
-                }
+                  key: "cidade",
+                  label: "Cidade",
+                  required: true,
+                },
               ]}
               renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
             />
@@ -359,7 +397,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               id="observacoes"
               placeholder="Informações adicionais sobre a receita..."
               value={formData.observacoes}
-              onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  observacoes: e.target.value,
+                }))
+              }
               rows={3}
             />
           </div>
@@ -371,9 +414,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 id="nota-fiscal"
                 checked={formData.temNotaFiscal}
                 onCheckedChange={(checked) => {
-                  setFormData(prev => ({ ...prev, temNotaFiscal: checked }));
+                  setFormData((prev) => ({ ...prev, temNotaFiscal: checked }));
                   if (!checked) {
-                    setFormData(prev => ({ ...prev, numeroNota: "" }));
+                    setFormData((prev) => ({ ...prev, numeroNota: "" }));
                     setNotaFiscalEmitida(false);
                   }
                 }}
@@ -386,7 +429,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             {formData.temNotaFiscal && (
               <div className="space-y-3 pl-6">
                 <div className="text-sm text-blue-600">
-                  Para emitir a nota fiscal, clique no botão abaixo. Após a emissão, preencha o número da nota.
+                  Para emitir a nota fiscal, clique no botão abaixo. Após a
+                  emissão, preencha o número da nota.
                 </div>
 
                 <Button
@@ -401,17 +445,30 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
                 {(notaFiscalEmitida || formData.numeroNota) && (
                   <div className="space-y-2">
-                    <Label htmlFor="numeroNotaObrigatorio">Número da Nota Fiscal *</Label>
+                    <Label htmlFor="numeroNotaObrigatorio">
+                      Número da Nota Fiscal *
+                    </Label>
                     <Input
                       id="numeroNotaObrigatorio"
                       placeholder="Ex: 12345"
                       value={formData.numeroNota}
-                      onChange={(e) => setFormData(prev => ({ ...prev, numeroNota: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          numeroNota: e.target.value,
+                        }))
+                      }
                       required={formData.temNotaFiscal}
-                      className={formData.temNotaFiscal && !formData.numeroNota ? "border-red-500" : ""}
+                      className={
+                        formData.temNotaFiscal && !formData.numeroNota
+                          ? "border-red-500"
+                          : ""
+                      }
                     />
                     {formData.temNotaFiscal && !formData.numeroNota && (
-                      <p className="text-sm text-red-500">Número da nota fiscal é obrigatório</p>
+                      <p className="text-sm text-red-500">
+                        Número da nota fiscal é obrigatório
+                      </p>
                     )}
                   </div>
                 )}
@@ -440,7 +497,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     step="0.01"
                     placeholder="0,00"
                     value={formData.valorQueEntrou}
-                    onChange={(e) => setFormData(prev => ({ ...prev, valorQueEntrou: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        valorQueEntrou: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
@@ -452,7 +514,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     step="0.01"
                     placeholder="0,00"
                     value={formData.imposto}
-                    onChange={(e) => setFormData(prev => ({ ...prev, imposto: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        imposto: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
@@ -484,24 +551,26 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
                 <SelectWithAdd
                   value={formData.campanha}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, campanha: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, campanha: value }))
+                  }
                   placeholder="Selecione a campanha"
                   label="Campanha"
                   required={false}
                   items={campanhas}
                   onAddNew={async (data) => {
                     await adicionarCampanha({
-                      nome: data.nome
+                      nome: data.nome,
                     });
                   }}
                   addNewTitle="Nova Campanha"
                   addNewDescription="Adicione uma nova campanha de marketing."
                   addNewFields={[
                     {
-                      key: 'nome',
-                      label: 'Nome da Campanha',
-                      required: true
-                    }
+                      key: "nome",
+                      label: "Nome da Campanha",
+                      required: true,
+                    },
                   ]}
                 />
               </div>
@@ -513,7 +582,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     id="numeroNota"
                     placeholder="Ex: NF-001"
                     value={formData.numeroNota}
-                    onChange={(e) => setFormData(prev => ({ ...prev, numeroNota: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        numeroNota: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
@@ -523,43 +597,59 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     id="arquivoNota"
                     placeholder="URL do arquivo"
                     value={formData.arquivoNota}
-                    onChange={(e) => setFormData(prev => ({ ...prev, arquivoNota: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        arquivoNota: e.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
-
             </div>
           )}
 
           {/* Resumo financeiro */}
           {formData.valor && (
             <div className="p-4 bg-green-50 rounded-lg">
-              <h4 className="font-medium text-green-800 mb-2">Resumo Financeiro</h4>
+              <h4 className="font-medium text-green-800 mb-2">
+                Resumo Financeiro
+              </h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                 <div>
                   <span className="text-gray-600">Valor Total:</span>
-                  <div className="font-medium">R$ {parseFloat(formData.valor || "0").toFixed(2)}</div>
+                  <div className="font-medium">
+                    R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                  </div>
                 </div>
                 <div>
                   <span className="text-gray-600">Valor Líquido:</span>
-                  <div className="font-medium">R$ {parseFloat(formData.valorLiquido || "0").toFixed(2)}</div>
+                  <div className="font-medium">
+                    R$ {parseFloat(formData.valorLiquido || "0").toFixed(2)}
+                  </div>
                 </div>
                 <div>
                   <span className="text-gray-600">Comissão:</span>
-                  <div className="font-medium">R$ {parseFloat(formData.comissao || "0").toFixed(2)}</div>
+                  <div className="font-medium">
+                    R$ {parseFloat(formData.comissao || "0").toFixed(2)}
+                  </div>
                 </div>
                 <div>
                   <span className="text-gray-600">Para Empresa:</span>
                   <div className="font-medium text-green-600">
-                    R$ {(parseFloat(formData.valorLiquido || "0") - parseFloat(formData.comissao || "0")).toFixed(2)}
+                    R${" "}
+                    {(
+                      parseFloat(formData.valorLiquido || "0") -
+                      parseFloat(formData.comissao || "0")
+                    ).toFixed(2)}
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={isSubmitting}
           >

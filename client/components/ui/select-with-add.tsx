@@ -62,14 +62,16 @@ export default function SelectWithAdd({
 
   const handleAddNew = async () => {
     // Validar campos obrigatórios
-    const requiredFields = addNewFields.filter(field => field.required);
-    const missingFields = requiredFields.filter(field => !formData[field.key]);
-    
+    const requiredFields = addNewFields.filter((field) => field.required);
+    const missingFields = requiredFields.filter(
+      (field) => !formData[field.key],
+    );
+
     if (missingFields.length > 0) {
       toast({
         title: "Erro",
-        description: `Preencha todos os campos obrigatórios: ${missingFields.map(f => f.label).join(', ')}`,
-        variant: "destructive"
+        description: `Preencha todos os campos obrigatórios: ${missingFields.map((f) => f.label).join(", ")}`,
+        variant: "destructive",
       });
       return;
     }
@@ -80,16 +82,16 @@ export default function SelectWithAdd({
       toast({
         title: "Sucesso",
         description: `${addNewTitle} criado com sucesso!`,
-        variant: "default"
+        variant: "default",
       });
       setIsDialogOpen(false);
       setFormData({});
     } catch (error) {
-      console.error('Erro ao criar item:', error);
+      console.error("Erro ao criar item:", error);
       toast({
         title: "Erro",
         description: `Erro ao criar ${addNewTitle.toLowerCase()}. Tente novamente.`,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -108,13 +110,9 @@ export default function SelectWithAdd({
           {label} {required && "*"}
         </Label>
       )}
-      
+
       <div className="flex gap-2">
-        <Select
-          value={value}
-          onValueChange={onValueChange}
-          required={required}
-        >
+        <Select value={value} onValueChange={onValueChange} required={required}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
@@ -129,9 +127,9 @@ export default function SelectWithAdd({
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               size="icon"
               className="shrink-0"
             >
@@ -141,27 +139,27 @@ export default function SelectWithAdd({
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>{addNewTitle}</DialogTitle>
-              <DialogDescription>
-                {addNewDescription}
-              </DialogDescription>
+              <DialogDescription>{addNewDescription}</DialogDescription>
             </DialogHeader>
-            
+
             <div className="grid gap-4 py-4">
               {addNewFields.map((field) => (
                 <div key={field.key} className="grid gap-2">
                   <Label htmlFor={field.key}>
                     {field.label} {field.required && "*"}
                   </Label>
-                  
+
                   {field.type === "select" && field.options ? (
                     <Select
                       value={formData[field.key] || ""}
-                      onValueChange={(value) => 
-                        setFormData(prev => ({ ...prev, [field.key]: value }))
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({ ...prev, [field.key]: value }))
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder={`Selecione ${field.label.toLowerCase()}`} />
+                        <SelectValue
+                          placeholder={`Selecione ${field.label.toLowerCase()}`}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {field.options.map((option) => (
@@ -177,14 +175,17 @@ export default function SelectWithAdd({
                       placeholder={`Digite ${field.label.toLowerCase()}`}
                       value={formData[field.key] || ""}
                       onChange={(e) =>
-                        setFormData(prev => ({ ...prev, [field.key]: e.target.value }))
+                        setFormData((prev) => ({
+                          ...prev,
+                          [field.key]: e.target.value,
+                        }))
                       }
                     />
                   )}
                 </div>
               ))}
             </div>
-            
+
             <DialogFooter>
               <Button
                 type="button"

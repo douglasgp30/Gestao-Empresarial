@@ -23,12 +23,7 @@ import {
 } from "../ui/table";
 import { Card, CardContent } from "../ui/card";
 import { toast } from "../ui/use-toast";
-import {
-  Building,
-  Calendar,
-  Plus,
-} from "lucide-react";
-
+import { Building, Calendar, Plus } from "lucide-react";
 
 export default function ModalSetores() {
   const { setores, adicionarSetor } = useEntidades();
@@ -59,7 +54,7 @@ export default function ModalSetores() {
       toast({
         title: "Erro",
         description: "Cidade é obrigatória",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -69,14 +64,14 @@ export default function ModalSetores() {
       if (!formData.setoresEmMassa.trim()) return;
 
       const setores = formData.setoresEmMassa
-        .split('\n')
-        .map(linha => linha.trim())
-        .filter(linha => linha.length > 0);
+        .split("\n")
+        .map((linha) => linha.trim())
+        .filter((linha) => linha.length > 0);
 
-      setores.forEach(nomeSetor => {
+      setores.forEach((nomeSetor) => {
         adicionarSetor({
           nome: nomeSetor,
-          cidade: formData.cidade
+          cidade: formData.cidade,
         });
       });
 
@@ -87,7 +82,7 @@ export default function ModalSetores() {
 
       adicionarSetor({
         nome: formData.nome.trim(),
-        cidade: formData.cidade
+        cidade: formData.cidade,
       });
     }
 
@@ -110,7 +105,8 @@ export default function ModalSetores() {
             Setores Cadastrados
           </DialogTitle>
           <DialogDescription>
-            Visualize todos os setores de serviços. Para cadastrar novos setores, adicione-os ao lançar uma receita.
+            Visualize todos os setores de serviços. Para cadastrar novos
+            setores, adicione-os ao lançar uma receita.
           </DialogDescription>
         </DialogHeader>
 
@@ -193,19 +189,25 @@ export default function ModalSetores() {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Label htmlFor="setoresEmMassa">Setores (um por linha) *</Label>
+                      <Label htmlFor="setoresEmMassa">
+                        Setores (um por linha) *
+                      </Label>
                       <Textarea
                         id="setoresEmMassa"
                         value={formData.setoresEmMassa}
                         onChange={(e) =>
-                          setFormData({ ...formData, setoresEmMassa: e.target.value })
+                          setFormData({
+                            ...formData,
+                            setoresEmMassa: e.target.value,
+                          })
                         }
                         placeholder="Desentupimento\nEletricidade\nHidráulica\nLimpeza de Caixa d'Água"
                         rows={6}
                         required
                       />
                       <p className="text-xs text-muted-foreground">
-                        Digite cada setor em uma linha separada. Linhas vazias serão ignoradas.
+                        Digite cada setor em uma linha separada. Linhas vazias
+                        serão ignoradas.
                       </p>
                     </div>
                   )}
@@ -237,7 +239,8 @@ export default function ModalSetores() {
                   Nenhum setor cadastrado
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Os setores serão automaticamente cadastrados ao lançar receitas com novos tipos de serviço.
+                  Os setores serão automaticamente cadastrados ao lançar
+                  receitas com novos tipos de serviço.
                 </p>
               </CardContent>
             </Card>

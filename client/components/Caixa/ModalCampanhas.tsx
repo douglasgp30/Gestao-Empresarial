@@ -20,10 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import {
-  Card,
-  CardContent,
-} from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,13 +37,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import {
-  Megaphone,
-  Plus,
-  MoreVertical,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { Megaphone, Plus, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { campanhasApi } from "../../lib/apiService";
 import { toast } from "../ui/use-toast";
 
@@ -75,7 +66,7 @@ export default function ModalCampanhas() {
       toast({
         title: "Erro",
         description: "Nome da campanha é obrigatório",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -89,7 +80,7 @@ export default function ModalCampanhas() {
         toast({
           title: "Erro",
           description: response.error,
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -103,11 +94,11 @@ export default function ModalCampanhas() {
       setIsNewCampanhaOpen(false);
       await carregarDados();
     } catch (error) {
-      console.error('Erro ao criar campanha:', error);
+      console.error("Erro ao criar campanha:", error);
       toast({
         title: "Erro",
         description: "Erro ao criar campanha. Tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -119,7 +110,7 @@ export default function ModalCampanhas() {
       toast({
         title: "Erro",
         description: "Nome da campanha é obrigatório",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -133,7 +124,7 @@ export default function ModalCampanhas() {
         toast({
           title: "Erro",
           description: response.error,
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -148,11 +139,11 @@ export default function ModalCampanhas() {
       setCampanhaParaEditar(null);
       await carregarDados();
     } catch (error) {
-      console.error('Erro ao editar campanha:', error);
+      console.error("Erro ao editar campanha:", error);
       toast({
         title: "Erro",
         description: "Erro ao editar campanha. Tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -165,7 +156,7 @@ export default function ModalCampanhas() {
         toast({
           title: "Erro",
           description: response.error,
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -178,11 +169,11 @@ export default function ModalCampanhas() {
       setCampanhaParaExcluir(null);
       await carregarDados();
     } catch (error) {
-      console.error('Erro ao excluir campanha:', error);
+      console.error("Erro ao excluir campanha:", error);
       toast({
         title: "Erro",
         description: "Erro ao excluir campanha. Tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -323,7 +314,9 @@ export default function ModalCampanhas() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => abrirEdicao(campanha)}>
+                              <DropdownMenuItem
+                                onClick={() => abrirEdicao(campanha)}
+                              >
                                 <Edit className="h-4 w-4 mr-2" />
                                 Editar
                               </DropdownMenuItem>
@@ -352,9 +345,7 @@ export default function ModalCampanhas() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Editar Campanha</DialogTitle>
-            <DialogDescription>
-              Altere o nome da campanha
-            </DialogDescription>
+            <DialogDescription>Altere o nome da campanha</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleEdit} className="space-y-4">
@@ -401,13 +392,16 @@ export default function ModalCampanhas() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir a campanha "{campanhaParaExcluir?.nome}"? Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir a campanha "
+              {campanhaParaExcluir?.nome}"? Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => campanhaParaExcluir && handleExcluir(campanhaParaExcluir)}
+              onClick={() =>
+                campanhaParaExcluir && handleExcluir(campanhaParaExcluir)
+              }
               className="bg-red-600 hover:bg-red-700"
             >
               Excluir

@@ -24,30 +24,30 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import { 
-  Calendar, 
-  Filter, 
-  TrendingUp, 
-  TrendingDown, 
-  DollarSign, 
+import {
+  Calendar,
+  Filter,
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
   ChevronDown,
-  X 
+  X,
 } from "lucide-react";
 
 export function FiltrosCaixaCompacto() {
-  const { 
-    filtros, 
-    setFiltros, 
-    totais, 
+  const {
+    filtros,
+    setFiltros,
+    totais,
     campanhas,
-    isLoading: caixaLoading 
+    isLoading: caixaLoading,
   } = useCaixa();
-  
-  const { 
-    formasPagamento, 
-    tecnicos, 
-    setores, 
-    isLoading: entidadesLoading 
+
+  const {
+    formasPagamento,
+    tecnicos,
+    setores,
+    isLoading: entidadesLoading,
   } = useEntidades();
 
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
@@ -77,9 +77,9 @@ export function FiltrosCaixaCompacto() {
   };
 
   const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(valor);
   };
 
@@ -106,37 +106,47 @@ export function FiltrosCaixaCompacto() {
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <Label htmlFor="dataInicio" className="text-xs">Data Início</Label>
+                <Label htmlFor="dataInicio" className="text-xs">
+                  Data Início
+                </Label>
                 <Input
                   id="dataInicio"
                   type="date"
-                  value={filtrosLocal.dataInicio.toISOString().split('T')[0]}
-                  onChange={(e) => setFiltrosLocal(prev => ({
-                    ...prev,
-                    dataInicio: new Date(e.target.value)
-                  }))}
+                  value={filtrosLocal.dataInicio.toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    setFiltrosLocal((prev) => ({
+                      ...prev,
+                      dataInicio: new Date(e.target.value),
+                    }))
+                  }
                   className="h-8"
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="dataFim" className="text-xs">Data Fim</Label>
+                <Label htmlFor="dataFim" className="text-xs">
+                  Data Fim
+                </Label>
                 <Input
                   id="dataFim"
                   type="date"
-                  value={filtrosLocal.dataFim.toISOString().split('T')[0]}
-                  onChange={(e) => setFiltrosLocal(prev => ({
-                    ...prev,
-                    dataFim: new Date(e.target.value)
-                  }))}
+                  value={filtrosLocal.dataFim.toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    setFiltrosLocal((prev) => ({
+                      ...prev,
+                      dataFim: new Date(e.target.value),
+                    }))
+                  }
                   className="h-8"
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="tipo" className="text-xs">Tipo</Label>
+                <Label htmlFor="tipo" className="text-xs">
+                  Tipo
+                </Label>
                 <Select
                   value={filtrosLocal.tipo}
-                  onValueChange={(value: "todos" | "receita" | "despesa") => 
-                    setFiltrosLocal(prev => ({ ...prev, tipo: value }))
+                  onValueChange={(value: "todos" | "receita" | "despesa") =>
+                    setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
                   }
                 >
                   <SelectTrigger className="h-8">
@@ -191,10 +201,17 @@ export function FiltrosCaixaCompacto() {
                 <div className="bg-muted/30 rounded-lg p-3 border">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div className="space-y-1">
-                      <Label htmlFor="formaPagamento" className="text-xs">Forma de Pagamento</Label>
+                      <Label htmlFor="formaPagamento" className="text-xs">
+                        Forma de Pagamento
+                      </Label>
                       <Select
                         value={filtrosLocal.formaPagamento}
-                        onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, formaPagamento: value }))}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            formaPagamento: value,
+                          }))
+                        }
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8">
@@ -203,7 +220,10 @@ export function FiltrosCaixaCompacto() {
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
                           {formasPagamento.map((forma) => (
-                            <SelectItem key={forma.id} value={forma.id.toString()}>
+                            <SelectItem
+                              key={forma.id}
+                              value={forma.id.toString()}
+                            >
                               {forma.nome}
                             </SelectItem>
                           ))}
@@ -212,10 +232,17 @@ export function FiltrosCaixaCompacto() {
                     </div>
 
                     <div className="space-y-1">
-                      <Label htmlFor="tecnico" className="text-xs">Técnico</Label>
+                      <Label htmlFor="tecnico" className="text-xs">
+                        Técnico
+                      </Label>
                       <Select
                         value={filtrosLocal.tecnico}
-                        onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, tecnico: value }))}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            tecnico: value,
+                          }))
+                        }
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8">
@@ -224,7 +251,10 @@ export function FiltrosCaixaCompacto() {
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
                           {tecnicos.map((tecnico) => (
-                            <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
+                            <SelectItem
+                              key={tecnico.id}
+                              value={tecnico.id.toString()}
+                            >
                               {tecnico.nome}
                             </SelectItem>
                           ))}
@@ -233,10 +263,14 @@ export function FiltrosCaixaCompacto() {
                     </div>
 
                     <div className="space-y-1">
-                      <Label htmlFor="setor" className="text-xs">Setor</Label>
+                      <Label htmlFor="setor" className="text-xs">
+                        Setor
+                      </Label>
                       <Select
                         value={filtrosLocal.setor}
-                        onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, setor: value }))}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({ ...prev, setor: value }))
+                        }
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8">
@@ -245,7 +279,10 @@ export function FiltrosCaixaCompacto() {
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
                           {setores.map((setor) => (
-                            <SelectItem key={setor.id} value={setor.id.toString()}>
+                            <SelectItem
+                              key={setor.id}
+                              value={setor.id.toString()}
+                            >
                               {setor.nome} - {setor.cidade}
                             </SelectItem>
                           ))}
@@ -254,10 +291,17 @@ export function FiltrosCaixaCompacto() {
                     </div>
 
                     <div className="space-y-1 md:col-span-2 lg:col-span-3">
-                      <Label htmlFor="campanha" className="text-xs">Campanha</Label>
+                      <Label htmlFor="campanha" className="text-xs">
+                        Campanha
+                      </Label>
                       <Select
                         value={filtrosLocal.campanha}
-                        onValueChange={(value) => setFiltrosLocal(prev => ({ ...prev, campanha: value }))}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            campanha: value,
+                          }))
+                        }
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8">
@@ -266,7 +310,10 @@ export function FiltrosCaixaCompacto() {
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
                           {campanhas.map((campanha) => (
-                            <SelectItem key={campanha.id} value={campanha.id.toString()}>
+                            <SelectItem
+                              key={campanha.id}
+                              value={campanha.id.toString()}
+                            >
                               {campanha.nome}
                             </SelectItem>
                           ))}
@@ -321,15 +368,19 @@ export function FiltrosCaixaCompacto() {
           </CardContent>
         </Card>
 
-        <Card className={`border-l-4 ${totais.saldo >= 0 ? 'border-l-blue-500' : 'border-l-red-500'}`}>
+        <Card
+          className={`border-l-4 ${totais.saldo >= 0 ? "border-l-blue-500" : "border-l-red-500"}`}
+        >
           <CardContent className="p-3">
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-blue-600" />
               <div>
                 <p className="text-xs text-muted-foreground">Saldo</p>
-                <p className={`text-lg font-bold ${
-                  totais.saldo >= 0 ? 'text-blue-600' : 'text-red-600'
-                }`}>
+                <p
+                  className={`text-lg font-bold ${
+                    totais.saldo >= 0 ? "text-blue-600" : "text-red-600"
+                  }`}
+                >
                   {formatarMoeda(totais.saldo)}
                 </p>
               </div>

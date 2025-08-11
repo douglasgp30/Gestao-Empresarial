@@ -24,7 +24,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import SelectWithAdd from "../ui/select-with-add";
 import { Plus, TrendingDown, TrendingUp } from "lucide-react";
 
-
 export default function FormularioConta() {
   const { adicionarConta } = useContas();
   const { formasPagamento, adicionarFormaPagamento } = useEntidades();
@@ -159,22 +158,22 @@ export default function FormularioConta() {
                 onAddNew={async (data) => {
                   await adicionarFormaPagamento({
                     nome: data.nome,
-                    descricao: data.descricao || ''
+                    descricao: data.descricao || "",
                   });
                 }}
                 addNewTitle="Nova Forma de Pagamento"
                 addNewDescription="Adicione uma nova forma de pagamento."
                 addNewFields={[
                   {
-                    key: 'nome',
-                    label: 'Nome da Forma de Pagamento',
-                    required: true
+                    key: "nome",
+                    label: "Nome da Forma de Pagamento",
+                    required: true,
                   },
                   {
-                    key: 'descricao',
-                    label: 'Descrição (opcional)',
-                    required: false
-                  }
+                    key: "descricao",
+                    label: "Descrição (opcional)",
+                    required: false,
+                  },
                 ]}
               />
 
@@ -270,22 +269,22 @@ export default function FormularioConta() {
                 onAddNew={async (data) => {
                   await adicionarFormaPagamento({
                     nome: data.nome,
-                    descricao: data.descricao || ''
+                    descricao: data.descricao || "",
                   });
                 }}
                 addNewTitle="Nova Forma de Pagamento"
                 addNewDescription="Adicione uma nova forma de pagamento."
                 addNewFields={[
                   {
-                    key: 'nome',
-                    label: 'Nome da Forma de Pagamento',
-                    required: true
+                    key: "nome",
+                    label: "Nome da Forma de Pagamento",
+                    required: true,
                   },
                   {
-                    key: 'descricao',
-                    label: 'Descrição (opcional)',
-                    required: false
-                  }
+                    key: "descricao",
+                    label: "Descrição (opcional)",
+                    required: false,
+                  },
                 ]}
               />
 

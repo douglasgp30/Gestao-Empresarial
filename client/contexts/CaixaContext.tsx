@@ -30,7 +30,10 @@ interface CaixaContextType {
   adicionarLancamento: (
     lancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => Promise<void>;
-  editarLancamento: (id: string, lancamento: Partial<LancamentoCaixa>) => Promise<void>;
+  editarLancamento: (
+    id: string,
+    lancamento: Partial<LancamentoCaixa>,
+  ) => Promise<void>;
   excluirLancamento: (id: string) => Promise<void>;
   adicionarCampanha: (campanha: Omit<Campanha, "id">) => Promise<void>;
   setFiltros: (filtros: any) => void;
@@ -68,17 +71,16 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Carregar campanhas
       const campanhasResponse = await campanhasApi.listar();
       if (campanhasResponse.error) {
-        console.error('Erro ao carregar campanhas:', campanhasResponse.error);
+        console.error("Erro ao carregar campanhas:", campanhasResponse.error);
       } else {
         setCampanhas(campanhasResponse.data || []);
       }
 
       // Carregar lançamentos com filtros atuais
       await carregarLancamentos();
-
     } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      setError('Erro ao carregar dados do servidor');
+      console.error("Erro ao carregar dados:", error);
+      setError("Erro ao carregar dados do servidor");
     } finally {
       setIsLoading(false);
     }
@@ -93,8 +95,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Função para formatar data para o servidor (DD-MM-AAAA)
   const formatarDataParaServidor = (data: Date): string => {
-    const dia = data.getDate().toString().padStart(2, '0');
-    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const dia = data.getDate().toString().padStart(2, "0");
+    const mes = (data.getMonth() + 1).toString().padStart(2, "0");
     const ano = data.getFullYear();
     return `${dia}-${mes}-${ano}`;
   };
@@ -107,7 +109,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         dataFim: formatarDataParaServidor(filtros.dataFim),
         ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
         ...(filtros.conta !== "todas" && { conta: filtros.conta }),
-        ...(filtros.cidade !== "todas" && { cidade: filtros.cidade })
+        ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
       };
 
       // Adicionar filtros numéricos apenas se válidos
@@ -126,16 +128,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         setError(response.error);
       } else {
         // Converter datas de string para Date
-        const lancamentosFormatados = (response.data || []).map((lancamento: any) => ({
-          ...lancamento,
-          dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
-          dataCriacao: new Date(lancamento.dataCriacao)
-        }));
+        const lancamentosFormatados = (response.data || []).map(
+          (lancamento: any) => ({
+            ...lancamento,
+            dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
+            dataCriacao: new Date(lancamento.dataCriacao),
+          }),
+        );
         setLancamentos(lancamentosFormatados);
       }
     } catch (error) {
-      console.error('Erro ao carregar lançamentos:', error);
-      setError('Erro ao carregar lançamentos');
+      console.error("Erro ao carregar lançamentos:", error);
+      setError("Erro ao carregar lançamentos");
     }
   };
 
@@ -156,7 +160,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      
+
       // Preparar dados para a API
       const dadosApi = {
         // dataHora será gerada automaticamente no backend
@@ -172,9 +176,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         conta: "empresa", // Campo obrigatório
         descricaoId: parseInt(novoLancamento.descricao),
         formaPagamentoId: parseInt(novoLancamento.formaPagamento),
-        funcionarioId: novoLancamento.tecnicoResponsavel ? parseInt(novoLancamento.tecnicoResponsavel) : undefined,
-        setorId: novoLancamento.setor ? parseInt(novoLancamento.setor) : undefined,
-        campanhaId: novoLancamento.campanha ? parseInt(novoLancamento.campanha) : undefined
+        funcionarioId: novoLancamento.tecnicoResponsavel
+          ? parseInt(novoLancamento.tecnicoResponsavel)
+          : undefined,
+        setorId: novoLancamento.setor
+          ? parseInt(novoLancamento.setor)
+          : undefined,
+        campanhaId: novoLancamento.campanha
+          ? parseInt(novoLancamento.campanha)
+          : undefined,
       };
 
       const response = await caixaApi.criarLancamento(dadosApi);
@@ -186,7 +196,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Recarregar lançamentos
       await carregarLancamentos();
     } catch (error) {
-      console.error('Erro ao adicionar lançamento:', error);
+      console.error("Erro ao adicionar lançamento:", error);
       throw error;
     }
   };
@@ -197,9 +207,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      
+
       const dadosApi: any = { ...dadosAtualizados };
-      
+
       // DataHora não pode ser editada - é gerada automaticamente no backend
       if (dadosAtualizados.descricao) {
         dadosApi.descricaoId = parseInt(dadosAtualizados.descricao);
@@ -222,7 +232,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         delete dadosApi.campanha;
       }
 
-      const response = await caixaApi.atualizarLancamento(parseInt(id), dadosApi);
+      const response = await caixaApi.atualizarLancamento(
+        parseInt(id),
+        dadosApi,
+      );
       if (response.error) {
         setError(response.error);
         throw new Error(response.error);
@@ -231,7 +244,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Recarregar lançamentos
       await carregarLancamentos();
     } catch (error) {
-      console.error('Erro ao editar lançamento:', error);
+      console.error("Erro ao editar lançamento:", error);
       throw error;
     }
   };
@@ -239,7 +252,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const excluirLancamento = async (id: string) => {
     try {
       setError(null);
-      
+
       const response = await caixaApi.excluirLancamento(parseInt(id));
       if (response.error) {
         setError(response.error);
@@ -249,7 +262,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Recarregar lançamentos
       await carregarLancamentos();
     } catch (error) {
-      console.error('Erro ao excluir lançamento:', error);
+      console.error("Erro ao excluir lançamento:", error);
       throw error;
     }
   };
@@ -257,11 +270,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const adicionarCampanha = async (novaCampanha: Omit<Campanha, "id">) => {
     try {
       setError(null);
-      
+
       const dadosApi = {
         nome: novaCampanha.nome,
-        dataInicio: novaCampanha.dataInicio?.toISOString().split('T')[0],
-        dataFim: novaCampanha.dataFim?.toISOString().split('T')[0]
+        dataInicio: novaCampanha.dataInicio?.toISOString().split("T")[0],
+        dataFim: novaCampanha.dataFim?.toISOString().split("T")[0],
       };
 
       const response = await campanhasApi.criar(dadosApi);
@@ -276,7 +289,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         setCampanhas(campanhasResponse.data);
       }
     } catch (error) {
-      console.error('Erro ao adicionar campanha:', error);
+      console.error("Erro ao adicionar campanha:", error);
       throw error;
     }
   };

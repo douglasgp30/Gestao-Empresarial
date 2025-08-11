@@ -190,7 +190,7 @@ export default function FormularioAgendamento({
       toast({
         title: "Erro",
         description: "Selecione uma cidade antes de adicionar um setor.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -199,11 +199,13 @@ export default function FormularioAgendamento({
       try {
         await adicionarSetor({
           nome: novoSetor.trim(),
-          cidade: formData.cidade
+          cidade: formData.cidade,
         });
 
         // Buscar o setor recém-criado para obter o ID correto
-        const setorCriado = setores.find(s => s.nome === novoSetor.trim() && s.cidade === formData.cidade);
+        const setorCriado = setores.find(
+          (s) => s.nome === novoSetor.trim() && s.cidade === formData.cidade,
+        );
         if (setorCriado) {
           setFormData({ ...formData, setor: setorCriado.id.toString() });
         }
@@ -218,7 +220,7 @@ export default function FormularioAgendamento({
         toast({
           title: "Erro",
           description: "Erro ao adicionar setor. Tente novamente.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     }
@@ -239,7 +241,7 @@ export default function FormularioAgendamento({
         toast({
           title: "Erro",
           description: "Erro ao adicionar cidade. Tente novamente.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     }
@@ -374,12 +376,15 @@ export default function FormularioAgendamento({
                 </SelectTrigger>
                 <SelectContent>
                   {setores
-                    .filter(setor => !formData.cidade || setor.cidade === formData.cidade)
+                    .filter(
+                      (setor) =>
+                        !formData.cidade || setor.cidade === formData.cidade,
+                    )
                     .map((setor) => (
-                    <SelectItem key={setor.id} value={setor.id.toString()}>
-                      {setor.nome} - {setor.cidade}
-                    </SelectItem>
-                  ))}
+                      <SelectItem key={setor.id} value={setor.id.toString()}>
+                        {setor.nome} - {setor.cidade}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
               <Button
@@ -428,7 +433,10 @@ export default function FormularioAgendamento({
                 </SelectTrigger>
                 <SelectContent>
                   {cidades.map((cidade, index) => (
-                    <SelectItem key={`cidade-${index}-${cidade}`} value={cidade}>
+                    <SelectItem
+                      key={`cidade-${index}-${cidade}`}
+                      value={cidade}
+                    >
                       {cidade}
                     </SelectItem>
                   ))}

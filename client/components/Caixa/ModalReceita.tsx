@@ -21,26 +21,33 @@ import {
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
 import { TrendingUp } from "lucide-react";
-import { gerarDataHoraAutomatica, isFormaPagamentoCartao } from "../../lib/dateUtils";
+import {
+  gerarDataHoraAutomatica,
+  isFormaPagamentoCartao,
+} from "../../lib/dateUtils";
 
 export function ModalReceita() {
-  const { adicionarLancamento, campanhas, isLoading: caixaLoading } = useCaixa();
-  const { 
-    descricoes, 
-    formasPagamento, 
-    tecnicos, 
-    setores, 
-    isLoading: entidadesLoading 
+  const {
+    adicionarLancamento,
+    campanhas,
+    isLoading: caixaLoading,
+  } = useCaixa();
+  const {
+    descricoes,
+    formasPagamento,
+    tecnicos,
+    setores,
+    isLoading: entidadesLoading,
   } = useEntidades();
 
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
-    data: new Date().toISOString().split('T')[0],
+    data: new Date().toISOString().split("T")[0],
     valor: "",
-    valorRecebido: "",     // Novo campo obrigatório para cartão
-    conta: "",             // Novo campo obrigatório (empresa/pessoal)
+    valorRecebido: "", // Novo campo obrigatório para cartão
+    conta: "", // Novo campo obrigatório (empresa/pessoal)
     descricao: "",
-    subdescricao: "",      // Novo campo opcional
+    subdescricao: "", // Novo campo opcional
     formaPagamento: "",
     tecnicoResponsavel: "",
     setor: "",
@@ -50,11 +57,11 @@ export function ModalReceita() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filtrar descrições de receita
-  const descricoesReceita = descricoes.filter(d => d.tipo === 'receita');
+  const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
 
   const resetForm = () => {
     setFormData({
-      data: new Date().toISOString().split('T')[0],
+      data: new Date().toISOString().split("T")[0],
       valor: "",
       valorRecebido: "",
       conta: "",
@@ -90,18 +97,27 @@ export function ModalReceita() {
     }
 
     // Validação específica: valorRecebido obrigatório para cartão
-    const formaPagamentoSelecionada = formasPagamento.find(f => f.id.toString() === formData.formaPagamento);
-    const isCartao = formaPagamentoSelecionada ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome) : false;
+    const formaPagamentoSelecionada = formasPagamento.find(
+      (f) => f.id.toString() === formData.formaPagamento,
+    );
+    const isCartao = formaPagamentoSelecionada
+      ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome)
+      : false;
 
-    if (isCartao && (!formData.valorRecebido || parseFloat(formData.valorRecebido) <= 0)) {
-      erros.push("Valor recebido é obrigatório e deve ser maior que zero para pagamentos no cartão");
+    if (
+      isCartao &&
+      (!formData.valorRecebido || parseFloat(formData.valorRecebido) <= 0)
+    ) {
+      erros.push(
+        "Valor recebido é obrigatório e deve ser maior que zero para pagamentos no cartão",
+      );
     }
 
     if (erros.length > 0) {
       toast({
         title: "Erro de Validação",
         description: erros.join(". "),
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -113,12 +129,18 @@ export function ModalReceita() {
         dataHora: gerarDataHoraAutomatica(),
         tipo: "receita",
         valor: parseFloat(formData.valor),
-        valorRecebido: formData.valorRecebido ? parseFloat(formData.valorRecebido) : undefined,
+        valorRecebido: formData.valorRecebido
+          ? parseFloat(formData.valorRecebido)
+          : undefined,
         conta: formData.conta as "empresa" | "pessoal",
         descricaoId: parseInt(formData.descricao),
-        subdescricaoId: formData.subdescricao ? parseInt(formData.subdescricao) : undefined,
+        subdescricaoId: formData.subdescricao
+          ? parseInt(formData.subdescricao)
+          : undefined,
         formaPagamentoId: parseInt(formData.formaPagamento),
-        funcionarioId: formData.tecnicoResponsavel ? parseInt(formData.tecnicoResponsavel) : undefined,
+        funcionarioId: formData.tecnicoResponsavel
+          ? parseInt(formData.tecnicoResponsavel)
+          : undefined,
         setorId: formData.setor ? parseInt(formData.setor) : undefined,
         campanhaId: formData.campanha ? parseInt(formData.campanha) : undefined,
       });
@@ -126,17 +148,17 @@ export function ModalReceita() {
       toast({
         title: "Sucesso",
         description: "Receita lançada com sucesso!",
-        variant: "default"
+        variant: "default",
       });
 
       resetForm();
       setIsOpen(false);
     } catch (error) {
-      console.error('Erro ao lançar receita:', error);
+      console.error("Erro ao lançar receita:", error);
       toast({
         title: "Erro",
         description: "Erro ao lançar receita. Tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -176,7 +198,9 @@ export function ModalReceita() {
                   id="data"
                   type="date"
                   value={formData.data}
-                  onChange={(e) => setFormData(prev => ({ ...prev, data: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, data: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -189,7 +213,9 @@ export function ModalReceita() {
                   step="0.01"
                   placeholder="0,00"
                   value={formData.valor}
-                  onChange={(e) => setFormData(prev => ({ ...prev, valor: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, valor: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -198,7 +224,9 @@ export function ModalReceita() {
                 <Label htmlFor="conta">Conta *</Label>
                 <Select
                   value={formData.conta}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, conta: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, conta: value }))
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -214,8 +242,12 @@ export function ModalReceita() {
 
             {/* Campo valorRecebido (condicional para cartão) */}
             {(() => {
-              const formaPagamentoSelecionada = formasPagamento.find(f => f.id.toString() === formData.formaPagamento);
-              const isCartao = formaPagamentoSelecionada ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome) : false;
+              const formaPagamentoSelecionada = formasPagamento.find(
+                (f) => f.id.toString() === formData.formaPagamento,
+              );
+              const isCartao = formaPagamentoSelecionada
+                ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome)
+                : false;
 
               if (isCartao) {
                 return (
@@ -227,7 +259,12 @@ export function ModalReceita() {
                       step="0.01"
                       placeholder="0,00"
                       value={formData.valorRecebido}
-                      onChange={(e) => setFormData(prev => ({ ...prev, valorRecebido: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          valorRecebido: e.target.value,
+                        }))
+                      }
                       required
                     />
                     <p className="text-xs text-muted-foreground">
@@ -244,7 +281,9 @@ export function ModalReceita() {
                 <Label htmlFor="descricao">Descrição do Serviço *</Label>
                 <Select
                   value={formData.descricao}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, descricao: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, descricao: value }))
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -264,7 +303,9 @@ export function ModalReceita() {
                 <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
                 <Select
                   value={formData.formaPagamento}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, formaPagamento: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, formaPagamento: value }))
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -287,7 +328,9 @@ export function ModalReceita() {
                 <Label htmlFor="subdescricao">Subdescrição</Label>
                 <Select
                   value={formData.subdescricao}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, subdescricao: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, subdescricao: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a subdescrição (opcional)" />
@@ -309,14 +352,22 @@ export function ModalReceita() {
                 <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
                 <Select
                   value={formData.tecnicoResponsavel}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, tecnicoResponsavel: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      tecnicoResponsavel: value,
+                    }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o técnico" />
                   </SelectTrigger>
                   <SelectContent>
                     {tecnicos.map((tecnico) => (
-                      <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
+                      <SelectItem
+                        key={tecnico.id}
+                        value={tecnico.id.toString()}
+                      >
                         {tecnico.nome}
                       </SelectItem>
                     ))}
@@ -328,7 +379,9 @@ export function ModalReceita() {
                 <Label htmlFor="setor">Setor/Região</Label>
                 <Select
                   value={formData.setor}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, setor: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o setor" />
@@ -347,14 +400,19 @@ export function ModalReceita() {
                 <Label htmlFor="campanha">Campanha</Label>
                 <Select
                   value={formData.campanha}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, campanha: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, campanha: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a campanha" />
                   </SelectTrigger>
                   <SelectContent>
                     {campanhas.map((campanha) => (
-                      <SelectItem key={campanha.id} value={campanha.id.toString()}>
+                      <SelectItem
+                        key={campanha.id}
+                        value={campanha.id.toString()}
+                      >
                         {campanha.nome}
                       </SelectItem>
                     ))}
@@ -366,38 +424,46 @@ export function ModalReceita() {
             {/* Resumo dos dados preenchidos */}
             {formData.valor && (
               <div className="p-4 bg-green-50 rounded-lg">
-                <h4 className="font-medium text-green-800 mb-2">Resumo do Lançamento</h4>
+                <h4 className="font-medium text-green-800 mb-2">
+                  Resumo do Lançamento
+                </h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
                   <div>
                     <span className="text-gray-600">Valor:</span>
-                    <div className="font-medium">R$ {parseFloat(formData.valor || "0").toFixed(2)}</div>
+                    <div className="font-medium">
+                      R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                    </div>
                   </div>
                   {formData.valorRecebido && (
                     <div>
                       <span className="text-gray-600">Valor Recebido:</span>
-                      <div className="font-medium">R$ {parseFloat(formData.valorRecebido || "0").toFixed(2)}</div>
+                      <div className="font-medium">
+                        R${" "}
+                        {parseFloat(formData.valorRecebido || "0").toFixed(2)}
+                      </div>
                     </div>
                   )}
                   <div>
                     <span className="text-gray-600">Conta:</span>
-                    <div className="font-medium capitalize">{formData.conta}</div>
+                    <div className="font-medium capitalize">
+                      {formData.conta}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
-
             <div className="flex gap-2 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => setIsOpen(false)}
                 className="flex-1"
               >
                 Cancelar
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="flex-1 bg-green-600 hover:bg-green-700"
                 disabled={isSubmitting}
               >

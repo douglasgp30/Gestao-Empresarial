@@ -25,16 +25,16 @@ import { TrendingDown } from "lucide-react";
 
 export function ModalDespesa() {
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
-  const { 
-    descricoes, 
-    formasPagamento, 
-    setores, 
-    isLoading: entidadesLoading 
+  const {
+    descricoes,
+    formasPagamento,
+    setores,
+    isLoading: entidadesLoading,
   } = useEntidades();
 
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
-    data: new Date().toISOString().split('T')[0],
+    data: new Date().toISOString().split("T")[0],
     valor: "",
     descricao: "",
     formaPagamento: "",
@@ -46,11 +46,11 @@ export function ModalDespesa() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filtrar descrições de despesa
-  const descricoesDespesa = descricoes.filter(d => d.tipo === 'despesa');
+  const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
 
   const resetForm = () => {
     setFormData({
-      data: new Date().toISOString().split('T')[0],
+      data: new Date().toISOString().split("T")[0],
       valor: "",
       descricao: "",
       formaPagamento: "",
@@ -82,7 +82,7 @@ export function ModalDespesa() {
       toast({
         title: "Erro de Validação",
         description: erros.join(". "),
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -104,17 +104,17 @@ export function ModalDespesa() {
       toast({
         title: "Sucesso",
         description: "Despesa lançada com sucesso!",
-        variant: "default"
+        variant: "default",
       });
 
       resetForm();
       setIsOpen(false);
     } catch (error) {
-      console.error('Erro ao lançar despesa:', error);
+      console.error("Erro ao lançar despesa:", error);
       toast({
         title: "Erro",
         description: "Erro ao lançar despesa. Tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -154,7 +154,9 @@ export function ModalDespesa() {
                   id="data"
                   type="date"
                   value={formData.data}
-                  onChange={(e) => setFormData(prev => ({ ...prev, data: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, data: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -167,7 +169,9 @@ export function ModalDespesa() {
                   step="0.01"
                   placeholder="0,00"
                   value={formData.valor}
-                  onChange={(e) => setFormData(prev => ({ ...prev, valor: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, valor: e.target.value }))
+                  }
                   required
                 />
               </div>
@@ -178,7 +182,9 @@ export function ModalDespesa() {
                 <Label htmlFor="descricao">Descrição da Despesa *</Label>
                 <Select
                   value={formData.descricao}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, descricao: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, descricao: value }))
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -198,7 +204,9 @@ export function ModalDespesa() {
                 <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
                 <Select
                   value={formData.formaPagamento}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, formaPagamento: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, formaPagamento: value }))
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -220,7 +228,9 @@ export function ModalDespesa() {
                 <Label htmlFor="setor">Setor/Região</Label>
                 <Select
                   value={formData.setor}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, setor: value }))
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o setor" />
@@ -241,7 +251,12 @@ export function ModalDespesa() {
                   id="numeroNota"
                   placeholder="Ex: NF-001"
                   value={formData.numeroNota}
-                  onChange={(e) => setFormData(prev => ({ ...prev, numeroNota: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      numeroNota: e.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -252,14 +267,21 @@ export function ModalDespesa() {
                 id="observacoes"
                 placeholder="Informações adicionais..."
                 value={formData.observacoes}
-                onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    observacoes: e.target.value,
+                  }))
+                }
               />
             </div>
 
             {/* Resumo financeiro */}
             {formData.valor && (
               <div className="p-4 bg-red-50 rounded-lg">
-                <h4 className="font-medium text-red-800 mb-2">Resumo da Despesa</h4>
+                <h4 className="font-medium text-red-800 mb-2">
+                  Resumo da Despesa
+                </h4>
                 <div className="text-sm">
                   <span className="text-gray-600">Valor a ser debitado:</span>
                   <div className="font-medium text-red-600 text-lg">
@@ -270,16 +292,16 @@ export function ModalDespesa() {
             )}
 
             <div className="flex gap-2 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => setIsOpen(false)}
                 className="flex-1"
               >
                 Cancelar
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="flex-1 bg-red-600 hover:bg-red-700"
                 disabled={isSubmitting}
               >

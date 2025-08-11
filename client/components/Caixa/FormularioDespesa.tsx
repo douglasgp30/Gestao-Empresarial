@@ -36,11 +36,11 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     adicionarDescricao,
     adicionarFormaPagamento,
     adicionarSetor,
-    isLoading: entidadesLoading
+    isLoading: entidadesLoading,
   } = useEntidades();
 
   const [formData, setFormData] = useState({
-    data: new Date().toISOString().split('T')[0],
+    data: new Date().toISOString().split("T")[0],
     valor: "",
     descricao: "",
     formaPagamento: "",
@@ -51,16 +51,16 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filtrar descrições de despesa
-  const descricoesDespesa = descricoes.filter(d => d.tipo === 'despesa');
+  const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.valor || !formData.descricao || !formData.formaPagamento) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos obrigatórios",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -81,12 +81,12 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       toast({
         title: "Sucesso",
         description: "Despesa lançada com sucesso!",
-        variant: "default"
+        variant: "default",
       });
 
       // Resetar formulário
       setFormData({
-        data: new Date().toISOString().split('T')[0],
+        data: new Date().toISOString().split("T")[0],
         valor: "",
         descricao: "",
         formaPagamento: "",
@@ -96,11 +96,11 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
       onSuccess?.();
     } catch (error) {
-      console.error('Erro ao lançar despesa:', error);
+      console.error("Erro ao lançar despesa:", error);
       toast({
         title: "Erro",
         description: "Erro ao lançar despesa. Tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -126,9 +126,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
           <TrendingDown className="h-5 w-5" />
           Lançar Despesa
         </CardTitle>
-        <CardDescription>
-          Registre uma nova saída do caixa
-        </CardDescription>
+        <CardDescription>Registre uma nova saída do caixa</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -140,7 +138,9 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                 id="data"
                 type="date"
                 value={formData.data}
-                onChange={(e) => setFormData(prev => ({ ...prev, data: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, data: e.target.value }))
+                }
                 required
               />
             </div>
@@ -153,7 +153,9 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                 step="0.01"
                 placeholder="0,00"
                 value={formData.valor}
-                onChange={(e) => setFormData(prev => ({ ...prev, valor: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, valor: e.target.value }))
+                }
                 required
               />
             </div>
@@ -162,7 +164,9 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectWithAdd
               value={formData.descricao}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, descricao: value }))}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, descricao: value }))
+              }
               placeholder="Selecione a descrição"
               label="Descrição da Despesa"
               required={true}
@@ -170,23 +174,25 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               onAddNew={async (data) => {
                 await adicionarDescricao({
                   nome: data.nome,
-                  tipo: 'despesa'
+                  tipo: "despesa",
                 });
               }}
               addNewTitle="Nova Descrição de Despesa"
               addNewDescription="Adicione uma nova descrição para despesas."
               addNewFields={[
                 {
-                  key: 'nome',
-                  label: 'Nome da Descrição',
-                  required: true
-                }
+                  key: "nome",
+                  label: "Nome da Descrição",
+                  required: true,
+                },
               ]}
             />
 
             <SelectWithAdd
               value={formData.formaPagamento}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, formaPagamento: value }))}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, formaPagamento: value }))
+              }
               placeholder="Selecione a forma"
               label="Forma de Pagamento"
               required={true}
@@ -194,29 +200,31 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               onAddNew={async (data) => {
                 await adicionarFormaPagamento({
                   nome: data.nome,
-                  descricao: data.descricao || ''
+                  descricao: data.descricao || "",
                 });
               }}
               addNewTitle="Nova Forma de Pagamento"
               addNewDescription="Adicione uma nova forma de pagamento."
               addNewFields={[
                 {
-                  key: 'nome',
-                  label: 'Nome da Forma de Pagamento',
-                  required: true
+                  key: "nome",
+                  label: "Nome da Forma de Pagamento",
+                  required: true,
                 },
                 {
-                  key: 'descricao',
-                  label: 'Descrição (opcional)',
-                  required: false
-                }
+                  key: "descricao",
+                  label: "Descrição (opcional)",
+                  required: false,
+                },
               ]}
             />
           </div>
 
           <SelectWithAdd
             value={formData.setor}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, setor: value }))}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, setor: value }))
+            }
             placeholder="Selecione o setor"
             label="Setor/Região"
             required={false}
@@ -224,22 +232,22 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
             onAddNew={async (data) => {
               await adicionarSetor({
                 nome: data.nome,
-                cidade: data.cidade
+                cidade: data.cidade,
               });
             }}
             addNewTitle="Novo Setor/Região"
             addNewDescription="Adicione um novo setor ou região."
             addNewFields={[
               {
-                key: 'nome',
-                label: 'Nome do Setor',
-                required: true
+                key: "nome",
+                label: "Nome do Setor",
+                required: true,
               },
               {
-                key: 'cidade',
-                label: 'Cidade',
-                required: true
-              }
+                key: "cidade",
+                label: "Cidade",
+                required: true,
+              },
             ]}
             renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
           />
@@ -250,14 +258,21 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               id="observacoes"
               placeholder="Informações adicionais..."
               value={formData.observacoes}
-              onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  observacoes: e.target.value,
+                }))
+              }
             />
           </div>
 
           {/* Resumo financeiro */}
           {formData.valor && (
             <div className="p-4 bg-red-50 rounded-lg">
-              <h4 className="font-medium text-red-800 mb-2">Resumo da Despesa</h4>
+              <h4 className="font-medium text-red-800 mb-2">
+                Resumo da Despesa
+              </h4>
               <div className="text-sm">
                 <span className="text-gray-600">Valor a ser debitado:</span>
                 <div className="font-medium text-red-600 text-lg">
@@ -267,8 +282,8 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
             </div>
           )}
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full bg-red-600 hover:bg-red-700"
             disabled={isSubmitting}
           >

@@ -28,9 +28,9 @@ export interface FuncionarioPermissoes {
 }
 
 export interface Funcionario {
-  id: string;                     // CodigoTecnico
-  nome: string;                   // NomeTecnico (obrigatório)
-  percentualServico?: number;     // PercentualServico (obrigatório)
+  id: string; // CodigoTecnico
+  nome: string; // NomeTecnico (obrigatório)
+  percentualServico?: number; // PercentualServico (obrigatório)
   login?: string;
   senha?: string;
   temAcessoSistema?: boolean;
@@ -42,22 +42,22 @@ export interface Funcionario {
 }
 
 export interface LancamentoCaixa {
-  id: string;                    // CodLançamentoCX
-  dataHora: string;             // Data e hora no formato DD-MM-AAAA HH:MM:SS
-  valor: number;                // Valor do lançamento (obrigatório)
-  valorRecebido?: number;       // Valor efetivamente recebido (obrigatório para cartão)
+  id: string; // CodLançamentoCX
+  dataHora: string; // Data e hora no formato DD-MM-AAAA HH:MM:SS
+  valor: number; // Valor do lançamento (obrigatório)
+  valorRecebido?: number; // Valor efetivamente recebido (obrigatório para cartão)
   conta: "empresa" | "pessoal"; // Define se é Empresa ou Pessoal (obrigatório)
-  tipo: "receita" | "despesa";  // Receita ou Despesa (obrigatório)
+  tipo: "receita" | "despesa"; // Receita ou Despesa (obrigatório)
 
   // Relacionamentos obrigatórios
-  descricaoId: number;          // FK para tabela Descrição
-  formaPagamentoId: number;     // FK para tabela Forma de Pagamento
+  descricaoId: number; // FK para tabela Descrição
+  formaPagamentoId: number; // FK para tabela Forma de Pagamento
 
   // Relacionamentos opcionais
-  subdescricaoId?: number;      // FK para tabela Subdescrição
-  funcionarioId?: number;       // FK para tabela Técnicos
-  setorId?: number;            // FK para tabela Cidades e Setores
-  campanhaId?: number;         // FK para tabela Campanhas
+  subdescricaoId?: number; // FK para tabela Subdescrição
+  funcionarioId?: number; // FK para tabela Técnicos
+  setorId?: number; // FK para tabela Cidades e Setores
+  campanhaId?: number; // FK para tabela Campanhas
 
   dataCriacao: Date;
 }
@@ -76,8 +76,8 @@ export interface Conta {
 }
 
 export interface Campanha {
-  id: string;               // CodigoCampanha
-  nome: string;            // NomeCampanha (obrigatório)
+  id: string; // CodigoCampanha
+  nome: string; // NomeCampanha (obrigatório)
   dataCriacao: Date;
 }
 
@@ -154,17 +154,17 @@ export interface RelatorioFiltros {
 }
 
 export interface Descricao {
-  id: string;               // CodigoDescricao
-  nome: string;            // Descrição (obrigatório)
+  id: string; // CodigoDescricao
+  nome: string; // Descrição (obrigatório)
   tipo: "receita" | "despesa";
   categoria?: string;
   dataCriacao: Date;
 }
 
 export interface Subdescricao {
-  id: string;              // CodigoSubdescricao
-  nome: string;           // Subdescricao (obrigatório)
-  descricaoId: number;    // CodigoDescricao (FK obrigatório)
+  id: string; // CodigoSubdescricao
+  nome: string; // Subdescricao (obrigatório)
+  descricaoId: number; // CodigoDescricao (FK obrigatório)
   dataCriacao: Date;
 }
 
@@ -176,21 +176,21 @@ export interface Categoria {
 }
 
 export interface FormaPagamento {
-  id: string;               // CodigoForma
-  nome: string;            // FormaPagamento (obrigatório)
+  id: string; // CodigoForma
+  nome: string; // FormaPagamento (obrigatório)
   dataCriacao: Date;
 }
 
 export interface Cliente {
-  id: string;                 // CodigoCliente
-  nome: string;              // Nome do cliente (obrigatório)
-  cpf?: string;              // CPF do cliente (opcional)
+  id: string; // CodigoCliente
+  nome: string; // Nome do cliente (obrigatório)
+  cpf?: string; // CPF do cliente (opcional)
   telefonePrincipal: string; // Telefone principal (obrigatório)
   telefoneSecundario?: string; // Telefone secundário (opcional)
-  email?: string;            // E-mail (opcional)
-  cep?: string;              // CEP (opcional)
-  logradouro?: string;       // Preenchido automaticamente a partir do CEP
-  complemento?: string;      // Complemento do endereço (opcional)
+  email?: string; // E-mail (opcional)
+  cep?: string; // CEP (opcional)
+  logradouro?: string; // Preenchido automaticamente a partir do CEP
+  complemento?: string; // Complemento do endereço (opcional)
   dataCriacao: Date;
 }
 
@@ -202,9 +202,9 @@ export interface Fornecedor {
 }
 
 export interface Setor {
-  id: string;               // CodigoSetor
-  cidade: string;          // Cidade (obrigatório)
-  nome: string;           // Setor/bairro (obrigatório)
+  id: string; // CodigoSetor
+  cidade: string; // Cidade (obrigatório)
+  nome: string; // Setor/bairro (obrigatório)
   dataCriacao: Date;
 }
 
