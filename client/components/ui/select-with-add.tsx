@@ -27,6 +27,7 @@ interface SelectWithAddProps {
   placeholder: string;
   label?: string;
   required?: boolean;
+  disabled?: boolean;
   items: Array<{ id: string; nome: string; [key: string]: any }>;
   onAddNew: (item: any) => Promise<void>;
   addNewTitle: string;
@@ -48,6 +49,7 @@ export default function SelectWithAdd({
   placeholder,
   label,
   required = false,
+  disabled = false,
   items,
   onAddNew,
   addNewTitle,
@@ -132,7 +134,7 @@ export default function SelectWithAdd({
       )}
 
       <div className="flex gap-2">
-        <Select value={value} onValueChange={onValueChange} required={required}>
+        <Select value={value} onValueChange={onValueChange} required={required} disabled={disabled}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
@@ -158,6 +160,7 @@ export default function SelectWithAdd({
               variant="outline"
               size="icon"
               className="shrink-0"
+              disabled={disabled}
             >
               <Plus className="h-4 w-4" />
             </Button>
