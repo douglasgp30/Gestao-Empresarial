@@ -49,8 +49,6 @@ import {
   getTotaisCaixa
 } from "./routes/caixa";
 
-import { executeSeed } from "./routes/seed";
-
 export function createServer(): Express {
   const app = express();
 
@@ -101,11 +99,6 @@ export function createServer(): Express {
   app.post("/api/caixa/lancamentos", createLancamento);
   app.put("/api/caixa/lancamentos/:id", updateLancamento);
   app.delete("/api/caixa/lancamentos/:id", deleteLancamento);
-
-  // Rota de Seed (apenas para desenvolvimento)
-  if (process.env.NODE_ENV === "development") {
-    app.post("/api/seed", executeSeed);
-  }
 
   return app;
 }

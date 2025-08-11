@@ -9,7 +9,6 @@ import ModalCidades from "../components/Caixa/ModalCidades";
 import ModalSetores from "../components/Caixa/ModalSetores";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
-import { SeedButton } from "../components/ui/seed-button";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
@@ -34,7 +33,6 @@ function CaixaContent() {
           </div>
           {/* Botões de configuração */}
           <div className="flex flex-wrap gap-2 justify-end">
-            <SeedButton />
             <ModalCampanhas />
             <ModalDescricoesAvancado />
             <ModalCidades />
