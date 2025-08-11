@@ -71,6 +71,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
   // Filtrar descrições de receita
   const descricoesReceita = descricoes.filter(d => d.tipo === 'receita');
