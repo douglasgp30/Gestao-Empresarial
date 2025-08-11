@@ -93,6 +93,25 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }));
   }, [formData.valor, formData.valorQueEntrou, formData.imposto, formData.tecnicoResponsavel]);
 
+  // Função para emitir nota fiscal
+  const emitirNotaFiscal = () => {
+    const urlNotaFiscal = "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=e813ef4862bf420ee0c3b8a62347579b68773380001&dth=20250811115913";
+    const janelaNotaFiscal = window.open(urlNotaFiscal, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+
+    // Monitorar quando a janela for fechada
+    const interval = setInterval(() => {
+      if (janelaNotaFiscal?.closed) {
+        clearInterval(interval);
+        setNotaFiscalEmitida(true);
+        toast({
+          title: "Nota Fiscal",
+          description: "Preencha o número da nota fiscal emitida",
+          variant: "default"
+        });
+      }
+    }, 1000);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
