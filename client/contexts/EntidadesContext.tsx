@@ -479,8 +479,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === FUNÇÃO PARA CIDADES ===
   const adicionarCidade = async (novaCidade: { nome: string }) => {
     if (!cidades.includes(novaCidade.nome)) {
-      const novasCidades = [...cidades, novaCidade.nome];
+      const novasCidades = [...cidades, novaCidade.nome].sort();
       setCidades(novasCidades);
+
+      // Recarregar cidades do banco para manter sincronizado
+      try {
+        const cidadesResponse = await setoresApi.listarCidades();
+        if (cidadesResponse.data) setCidades(cidadesResponse.data);
+      } catch (error) {
+        console.error('Erro ao recarregar cidades:', error);
+      }
     }
   };
 
