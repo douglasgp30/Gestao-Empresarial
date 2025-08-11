@@ -137,11 +137,13 @@ export default function SelectWithAdd({
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
-            {items.map((item) => (
-              <SelectItem key={item.id} value={item.id.toString()}>
-                {renderItem(item)}
-              </SelectItem>
-            ))}
+            {items
+              .filter((item) => item.id != null && item.id !== "" && item.id !== 0)
+              .map((item) => (
+                <SelectItem key={item.id} value={item.id.toString()}>
+                  {renderItem(item)}
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
 
