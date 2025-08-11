@@ -233,8 +233,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       
       const dadosApi = {
         nome: novaCampanha.nome,
-        descricao: novaCampanha.descricao,
-        ativa: novaCampanha.ativa,
         dataInicio: novaCampanha.dataInicio?.toISOString().split('T')[0],
         dataFim: novaCampanha.dataFim?.toISOString().split('T')[0]
       };
