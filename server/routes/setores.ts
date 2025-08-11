@@ -4,8 +4,7 @@ import { z } from "zod";
 
 const SetorSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
-  cidade: z.string().min(1, "Cidade é obrigatória"),
-  ativo: z.boolean().default(true)
+  cidade: z.string().min(1, "Cidade é obrigatória")
 });
 
 export const getSetores: RequestHandler = async (req, res) => {
