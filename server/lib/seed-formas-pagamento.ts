@@ -25,15 +25,14 @@ export async function seedFormasPagamento() {
     }
 
     // Inserir formas de pagamento padrão
-    for (const forma of formasPagamentoPadrao) {
+    for (const nomeForma of formasPagamentoPadrao) {
       await prisma.formaPagamento.create({
         data: {
-          nome: forma.nome,
-          descricao: forma.descricao,
+          nome: nomeForma,
           dataCriacao: new Date(),
         },
       });
-      console.log(`✅ Criada forma de pagamento: ${forma.nome}`);
+      console.log(`✅ Criada forma de pagamento: ${nomeForma}`);
     }
 
     console.log('🎉 Seed das formas de pagamento concluído!');
