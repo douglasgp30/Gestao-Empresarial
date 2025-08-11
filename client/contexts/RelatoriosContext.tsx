@@ -139,26 +139,8 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   }, [filtros]);
 
   const gerarRelatorioFinanceiro = (): RelatorioFinanceiro => {
-    const lancamentosFiltrados = mockLancamentos.filter((l) => {
-      const data = new Date(l.data);
-      // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(
-        filtros.periodo.dataInicio.getFullYear(),
-        filtros.periodo.dataInicio.getMonth(),
-        filtros.periodo.dataInicio.getDate(),
-      );
-      const dataFim = new Date(
-        filtros.periodo.dataFim.getFullYear(),
-        filtros.periodo.dataFim.getMonth(),
-        filtros.periodo.dataFim.getDate(),
-      );
-      const dataNorm = new Date(
-        data.getFullYear(),
-        data.getMonth(),
-        data.getDate(),
-      );
-      return dataNorm >= dataInicio && dataNorm <= dataFim;
-    });
+    // Usar dados do CaixaContext quando disponível - por enquanto vazio sem dados fictícios
+    const lancamentosFiltrados: LancamentoCaixa[] = [];
 
     const receitas = lancamentosFiltrados.filter((l) => l.tipo === "receita");
     const despesas = lancamentosFiltrados.filter((l) => l.tipo === "despesa");
