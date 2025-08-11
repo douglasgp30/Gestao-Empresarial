@@ -164,7 +164,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         cidadesResponse
       ] = await Promise.all([
         descricoesApi.listar(),
-        formasPagamentoApi.listar(true), // apenas ativas
+        formasPagamentoApi.listar(),
         funcionariosApi.listar(),
         funcionariosApi.listarTecnicos(),
         setoresApi.listar(),
