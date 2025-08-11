@@ -55,6 +55,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     tecnico: "todos",
     campanha: "todas",
     setor: "todos",
+    cidade: "todas",
+    conta: "todas",
   });
 
   // Função para carregar todos os dados
@@ -82,18 +84,42 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função utilitária para conversão segura de string para número
+  const parseIntSafe = (value: string): number | undefined => {
+    if (!value || value === "todos" || value === "todas") return undefined;
+    const parsed = parseInt(value);
+    return isNaN(parsed) ? undefined : parsed;
+  };
+
+  // Função para formatar data para o servidor (DD-MM-AAAA)
+  const formatarDataParaServidor = (data: Date): string => {
+    const dia = data.getDate().toString().padStart(2, '0');
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const ano = data.getFullYear();
+    return `${dia}-${mes}-${ano}`;
+  };
+
   // Função para carregar lançamentos com base nos filtros
   const carregarLancamentos = async () => {
     try {
-      const filtrosApi = {
-        dataInicio: filtros.dataInicio.toISOString().split('T')[0],
-        dataFim: filtros.dataFim.toISOString().split('T')[0],
+      const filtrosApi: any = {
+        dataInicio: formatarDataParaServidor(filtros.dataInicio),
+        dataFim: formatarDataParaServidor(filtros.dataFim),
         ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
-        ...(filtros.tecnico !== "todos" && { funcionarioId: parseInt(filtros.tecnico) }),
-        ...(filtros.setor !== "todos" && { setorId: parseInt(filtros.setor) }),
-        ...(filtros.campanha !== "todas" && { campanhaId: parseInt(filtros.campanha) }),
-        ...(filtros.formaPagamento !== "todas" && { formaPagamentoId: parseInt(filtros.formaPagamento) })
+        ...(filtros.conta !== "todas" && { conta: filtros.conta }),
+        ...(filtros.cidade !== "todas" && { cidade: filtros.cidade })
       };
+
+      // Adicionar filtros numéricos apenas se válidos
+      const funcionarioId = parseIntSafe(filtros.tecnico);
+      const setorId = parseIntSafe(filtros.setor);
+      const campanhaId = parseIntSafe(filtros.campanha);
+      const formaPagamentoId = parseIntSafe(filtros.formaPagamento);
+
+      if (funcionarioId) filtrosApi.funcionarioId = funcionarioId;
+      if (setorId) filtrosApi.setorId = setorId;
+      if (campanhaId) filtrosApi.campanhaId = campanhaId;
+      if (formaPagamentoId) filtrosApi.formaPagamentoId = formaPagamentoId;
 
       const response = await caixaApi.listarLancamentos(filtrosApi);
       if (response.error) {
@@ -136,13 +162,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         // dataHora será gerada automaticamente no backend
         tipo: novoLancamento.tipo,
         valor: novoLancamento.valor,
+        valorRecebido: novoLancamento.valorQueEntrou, // Mapear corretamente
         valorLiquido: novoLancamento.valorLiquido,
         comissao: novoLancamento.comissao,
         imposto: novoLancamento.imposto,
-        valorQueEntrou: novoLancamento.valorQueEntrou,
         observacoes: novoLancamento.observacoes,
         numeroNota: novoLancamento.numeroNota,
         arquivoNota: novoLancamento.arquivoNota,
+        conta: "empresa", // Campo obrigatório
         descricaoId: parseInt(novoLancamento.descricao),
         formaPagamentoId: parseInt(novoLancamento.formaPagamento),
         funcionarioId: novoLancamento.tecnicoResponsavel ? parseInt(novoLancamento.tecnicoResponsavel) : undefined,
