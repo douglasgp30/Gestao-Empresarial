@@ -204,7 +204,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     carregarDados();
   }, []);
 
-  // === FUNÇÕES PARA DESCRIÇÕES (API) ===
+  // === FUNÇÕES PARA DESCRI��ÕES (API) ===
   const adicionarDescricao = async (
     novaDescricao: Omit<Descricao, "id" | "dataCriacao">,
   ) => {
@@ -459,7 +459,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   // === FUNÇÃO PARA CIDADES ===
-  const adicionarCidade = (novaCidade: { nome: string }) => {
+  const adicionarCidade = async (novaCidade: { nome: string }) => {
     if (!cidades.includes(novaCidade.nome)) {
       const novasCidades = [...cidades, novaCidade.nome];
       setCidades(novasCidades);
