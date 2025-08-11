@@ -9,11 +9,7 @@ const FormaPagamentoSchema = z.object({
 
 export const getFormasPagamento: RequestHandler = async (req, res) => {
   try {
-    const { ativas } = req.query;
-    const where = ativas === 'true' ? { ativa: true } : {};
-    
     const formasPagamento = await prisma.formaPagamento.findMany({
-      where,
       orderBy: { nome: 'asc' }
     });
     res.json(formasPagamento);
