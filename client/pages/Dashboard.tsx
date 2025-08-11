@@ -128,7 +128,7 @@ function StatCard({
         </div>
         <p className="text-xs text-muted-foreground flex items-center">
           {!isLoading && trend === "up" && (
-            <TrendingUp className="h-3 w-3 mr-1 text-success" />
+            <TrendingUp className="h-3 w-3 mr-1 text-green-600" />
           )}
           {!isLoading && trend === "down" && (
             <TrendingDown className="h-3 w-3 mr-1 text-destructive" />
@@ -308,14 +308,14 @@ export default function Dashboard() {
                     <span
                       className={`text-lg font-bold ${
                         restanteParaMeta <= 0
-                          ? "text-success"
+                          ? "text-green-600 dark:text-green-400"
                           : "text-orange-600 dark:text-orange-400"
                       }`}
                     >
                       {restanteParaMeta <= 0 ? "Meta Atingida!" : formatCurrency(restanteParaMeta)}
                     </span>
                     {restanteParaMeta <= 0 && (
-                      <Trophy className="h-4 w-4 text-success" />
+                      <Trophy className="h-4 w-4 text-green-600" />
                     )}
                     <Tooltip>
                       <TooltipTrigger>
@@ -527,7 +527,7 @@ export default function Dashboard() {
                         <div
                           className={`p-2 rounded-full ${
                             transaction.tipo === "receita"
-                              ? "bg-success/10 text-success"
+                              ? "bg-green-100 text-green-700"
                               : "bg-destructive/10 text-destructive"
                           }`}
                         >
@@ -557,7 +557,7 @@ export default function Dashboard() {
                         <p
                           className={`font-bold ${
                             transaction.tipo === "receita"
-                              ? "text-success"
+                              ? "text-green-600"
                               : "text-destructive"
                           }`}
                         >
