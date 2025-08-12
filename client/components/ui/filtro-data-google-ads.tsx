@@ -282,7 +282,7 @@ export default function FiltroDataGoogleAds({
       )}
       
       <div
-        className="relative filtro-data-google-ads w-full max-w-sm"
+        className="relative filtro-data-google-ads w-full max-w-xs"
         ref={dropdownRef}
       >
         <Button
