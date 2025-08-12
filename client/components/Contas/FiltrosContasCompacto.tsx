@@ -120,15 +120,7 @@ export default function FiltrosContasCompacto() {
   return (
     <div className="space-y-3">
       {/* Filtro de Data estilo Google Ads */}
-      <FiltroDataContas
-        dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
-        dataFim={filtros.dataFim.toISOString().split("T")[0]}
-        onDataInicioChange={handleDataInicioChange}
-        onDataFimChange={handleDataFimChange}
-        onAplicar={handleAplicarPeriodo}
-        onLimpar={limparFiltros}
-        isLoading={isLoading}
-      />
+      <FiltroDataContas />
 
       {/* Totais */}
       <div className="bg-background border rounded-lg p-3">
