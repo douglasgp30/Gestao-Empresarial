@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useContas } from "../../contexts/ContasContext";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import {
   Select,
   SelectContent,
@@ -8,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Card, CardContent } from "../ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,11 +21,10 @@ import {
   Filter,
   ChevronDown,
   X,
-  FileText,
+  Search,
   TrendingUp,
   TrendingDown,
   AlertTriangle,
-  CheckCircle2,
 } from "lucide-react";
 
 const statusOptions = [
@@ -31,15 +32,6 @@ const statusOptions = [
   { value: "paga", label: "Paga", color: "bg-green-500" },
   { value: "atrasada", label: "Atrasada", color: "bg-red-500" },
   { value: "vence_hoje", label: "Vence Hoje", color: "bg-orange-500" },
-];
-
-const formasPagamento = [
-  "Dinheiro",
-  "Pix",
-  "Boleto",
-  "Transferência",
-  "Cartão de Débito",
-  "Cartão de Crédito",
 ];
 
 function formatCurrency(value: number | undefined | null): string {
@@ -60,28 +52,6 @@ export default function FiltrosContasCompacto() {
   useEffect(() => {
     setFiltrosLocal(filtros);
   }, [filtros]);
-
-  const handleDataInicioChange = (data: string) => {
-    const novaData = new Date(data);
-    novaData.setHours(0, 0, 0, 0);
-    setFiltros({
-      ...filtros,
-      dataInicio: novaData,
-    });
-  };
-
-  const handleDataFimChange = (data: string) => {
-    const novaData = new Date(data);
-    novaData.setHours(23, 59, 59, 999);
-    setFiltros({
-      ...filtros,
-      dataFim: novaData,
-    });
-  };
-
-  const handleAplicarPeriodo = () => {
-    // Já aplicado automaticamente pelos handlers acima
-  };
 
   const aplicarFiltros = () => {
     setFiltros(filtrosLocal);
@@ -127,194 +97,213 @@ export default function FiltrosContasCompacto() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-4">
-      {/* Filtro de Data estilo Google Ads */}
-      <div className="max-w-sm">
-        <FiltroDataContas />
-      </div>
-
+    <div className="space-y-3">
       {/* Totais */}
-      <div className="bg-background border rounded-lg p-4 max-w-4xl">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-          <div className="text-center">
-            <div className="text-lg font-bold text-green-600">
-              {formatCurrency(totaisSeguro.totalReceber)}
+      <Card className="w-full max-w-4xl mx-auto">
+        <CardContent className="p-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-600">
+                {formatCurrency(totaisSeguro.totalReceber)}
+              </div>
+              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                <TrendingUp className="h-3 w-3" />A Receber
+              </div>
             </div>
-            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-              <TrendingUp className="h-3 w-3" />A Receber
+            <div className="text-center">
+              <div className="text-lg font-bold text-red-600">
+                {formatCurrency(totaisSeguro.totalPagar)}
+              </div>
+              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                <TrendingDown className="h-3 w-3" />A Pagar
+              </div>
+            </div>
+            <div className="text-center">
+              <div
+                className={`text-lg font-bold ${
+                  totaisSeguro.totalReceber - totaisSeguro.totalPagar >= 0
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {formatCurrency(
+                  totaisSeguro.totalReceber - totaisSeguro.totalPagar,
+                )}
+              </div>
+              <div className="text-xs text-muted-foreground">Saldo</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-orange-600">
+                {formatCurrency(totaisSeguro.totalAtrasadas)}
+              </div>
+              <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                Atrasadas
+              </div>
             </div>
           </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-red-600">
-              {formatCurrency(totaisSeguro.totalPagar)}
-            </div>
-            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-              <TrendingDown className="h-3 w-3" />A Pagar
-            </div>
-          </div>
-          <div className="text-center">
-            <div
-              className={`text-lg font-bold ${totaisSeguro.totalReceber - totaisSeguro.totalPagar >= 0 ? "text-green-600" : "text-red-600"}`}
-            >
-              {formatCurrency(
-                totaisSeguro.totalReceber - totaisSeguro.totalPagar,
-              )}
-            </div>
-            <div className="text-xs text-muted-foreground">Saldo</div>
-          </div>
-          <div className="text-center">
-            <div className="text-lg font-bold text-orange-600">
-              {formatCurrency(totaisSeguro.totalAtrasadas)}
-            </div>
-            <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-              <AlertTriangle className="h-3 w-3" />
-              Atrasadas
-            </div>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Filtros Básicos - Layout Compacto */}
-      <div className="bg-background border rounded-lg p-4 max-w-4xl">
-        <div className="space-y-4">
-          {/* Filtro de Tipo - Compacto */}
-          <div className="max-w-xs">
-            <label className="text-sm font-medium mb-2 block">
-              Tipo de Conta
-            </label>
-            <Select
-              value={filtrosLocal.tipo}
-              onValueChange={(value: "pagar" | "receber" | "ambos") =>
-                setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ambos">Todos os Tipos</SelectItem>
-                <SelectItem value="pagar">Contas a Pagar</SelectItem>
-                <SelectItem value="receber">Contas a Receber</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      {/* Filtros */}
+      <Card className="w-full max-w-4xl mx-auto">
+        <CardContent className="p-3">
+          <div className="space-y-3">
+            {/* Linha Principal: Tudo em uma linha compacta */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+              {/* Filtro de Data - 4 colunas */}
+              <div className="lg:col-span-4">
+                <FiltroDataContas />
+              </div>
 
-          {/* Filtros Avançados */}
-          <Collapsible
-            open={filtrosAvancadosAbertos}
-            onOpenChange={setFiltrosAvancadosAbertos}
-          >
-            <div className="flex items-center justify-between">
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Filter className="h-4 w-4" />
-                  Filtros Avançados
-                  {filtrosAtivos > 0 && (
-                    <Badge variant="secondary" className="h-5 px-2 text-xs">
-                      {filtrosAtivos}
-                    </Badge>
-                  )}
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${
-                      filtrosAvancadosAbertos ? "rotate-180" : ""
-                    }`}
-                  />
-                </Button>
-              </CollapsibleTrigger>
-
-              {filtrosAtivos > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={limparFiltros}
-                  className="gap-1 text-muted-foreground hover:text-foreground"
+              {/* Filtro de Tipo - 3 colunas */}
+              <div className="lg:col-span-3">
+                <label className="text-xs font-medium mb-1 block text-gray-600">
+                  Tipo
+                </label>
+                <Select
+                  value={filtrosLocal.tipo}
+                  onValueChange={(value: "pagar" | "receber" | "ambos") =>
+                    setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
+                  }
                 >
-                  <X className="h-4 w-4" />
-                  Limpar
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ambos">Todos</SelectItem>
+                    <SelectItem value="pagar">A Pagar</SelectItem>
+                    <SelectItem value="receber">A Receber</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Filtros Avançados - 3 colunas */}
+              <div className="lg:col-span-3">
+                <Collapsible
+                  open={filtrosAvancadosAbertos}
+                  onOpenChange={setFiltrosAvancadosAbertos}
+                >
+                  <CollapsibleTrigger asChild>
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Mais Filtros
+                      </label>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-8 text-xs justify-between"
+                      >
+                        <span className="flex items-center gap-1">
+                          <Filter className="h-3 w-3" />
+                          Avançados
+                          {filtrosAtivos > 0 && (
+                            <Badge
+                              variant="secondary"
+                              className="h-4 px-1 text-xs"
+                            >
+                              {filtrosAtivos}
+                            </Badge>
+                          )}
+                        </span>
+                        <ChevronDown
+                          className={`h-3 w-3 transition-transform ${
+                            filtrosAvancadosAbertos ? "rotate-180" : ""
+                          }`}
+                        />
+                      </Button>
+                    </div>
+                  </CollapsibleTrigger>
+                </Collapsible>
+              </div>
+
+              {/* Botões de Ação - 2 colunas */}
+              <div className="lg:col-span-2 flex gap-1">
+                <Button
+                  onClick={aplicarFiltros}
+                  size="sm"
+                  className="h-8 text-xs flex-1"
+                  disabled={isLoading}
+                >
+                  <Search className="h-3 w-3 mr-1" />
+                  Filtrar
                 </Button>
-              )}
+                <Button
+                  onClick={limparFiltros}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
 
-            <CollapsibleContent className="mt-4">
-              <div className="bg-muted/30 rounded-lg p-4 border">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Status</label>
-                    <Select
-                      value={filtrosLocal.status || ""}
-                      onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, status: value }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Todos os status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">Todos os Status</SelectItem>
-                        {statusOptions.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            <div className="flex items-center gap-2">
-                              <div
-                                className={`w-2 h-2 rounded-full ${status.color}`}
-                              />
-                              {status.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+            {/* Filtros Avançados Colapsáveis */}
+            <Collapsible
+              open={filtrosAvancadosAbertos}
+              onOpenChange={setFiltrosAvancadosAbertos}
+            >
+              <CollapsibleContent>
+                <div className="bg-gray-50 rounded p-3 mt-2 border">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Status */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Status
+                      </label>
+                      <Select
+                        value={filtrosLocal.status || "todos"}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            status: value === "todos" ? "" : value,
+                          }))
+                        }
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue placeholder="Todos os status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos os Status</SelectItem>
+                          {statusOptions?.map((status) => (
+                            <SelectItem key={status.value} value={status.value}>
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className={`w-2 h-2 rounded-full ${status.color}`}
+                                />
+                                {status.label}
+                              </div>
+                            </SelectItem>
+                          )) || []}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Fornecedor/Cliente
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Nome do fornecedor ou cliente"
-                      value={filtrosLocal.fornecedorCliente || ""}
-                      onChange={(e) =>
-                        setFiltrosLocal((prev) => ({
-                          ...prev,
-                          fornecedorCliente: e.target.value,
-                        }))
-                      }
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    />
+                    {/* Fornecedor/Cliente */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Fornecedor/Cliente
+                      </label>
+                      <Input
+                        placeholder="Nome do fornecedor ou cliente"
+                        value={filtrosLocal.fornecedorCliente || ""}
+                        onChange={(e) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            fornecedorCliente: e.target.value,
+                          }))
+                        }
+                        className="h-8 text-xs bg-white"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {/* Botões de Ação */}
-          <div className="flex gap-3 max-w-md">
-            <Button
-              onClick={aplicarFiltros}
-              size="sm"
-              className="flex-1"
-              disabled={isLoading}
-            >
-              Aplicar Filtros
-            </Button>
-            <Button
-              onClick={limparFiltros}
-              variant="outline"
-              size="sm"
-              className="px-6"
-            >
-              Limpar
-            </Button>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
-        </div>
-      </div>
-
-      {/* Status de carregamento */}
-      {isLoading && (
-        <div className="text-center text-sm text-muted-foreground p-4">
-          Carregando dados...
-        </div>
-      )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

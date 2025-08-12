@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { useClientes } from "../../contexts/ClientesContext";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import {
   Select,
   SelectContent,
@@ -31,8 +33,12 @@ export function FiltrosCaixaCompacto() {
     formasPagamento,
     tecnicos,
     setores,
+    descricoes,
+    cidades,
     isLoading: entidadesLoading,
   } = useEntidades();
+
+  const { clientes, isLoading: clientesLoading } = useClientes();
 
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
@@ -55,6 +61,12 @@ export function FiltrosCaixaCompacto() {
       tecnico: "todos",
       campanha: "todas",
       setor: "todos",
+      conta: "todas",
+      categoria: "todas",
+      descricao: "todas",
+      cliente: "todos",
+      cidade: "todas",
+      numeroNota: "",
     };
     setFiltrosLocal(filtrosLimpos);
     setFiltros(filtrosLimpos);
@@ -68,11 +80,33 @@ export function FiltrosCaixaCompacto() {
     if (filtrosLocal.tecnico !== "todos") count++;
     if (filtrosLocal.setor !== "todos") count++;
     if (filtrosLocal.campanha !== "todas") count++;
+    if (filtrosLocal.conta !== "todas") count++;
+    if (filtrosLocal.categoria !== "todas") count++;
+    if (filtrosLocal.descricao !== "todas") count++;
+    if (filtrosLocal.cliente !== "todos") count++;
+    if (filtrosLocal.cidade !== "todas") count++;
+    if (filtrosLocal.numeroNota && filtrosLocal.numeroNota.trim() !== "")
+      count++;
     return count;
   };
 
   const filtrosAtivos = contarFiltrosAtivos();
-  const isLoading = caixaLoading || entidadesLoading;
+  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
+
+  // Obter categorias únicas das descrições
+  const categorias = [
+    ...new Set(
+      descricoes
+        .map((d) => d.categoria)
+        .filter((categoria) => categoria && categoria.trim() !== ""),
+    ),
+  ].sort();
+
+  // Filtrar descrições pela categoria selecionada
+  const descricoesFiltradas =
+    filtrosLocal.categoria !== "todas"
+      ? descricoes.filter((d) => d.categoria === filtrosLocal.categoria)
+      : descricoes;
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -175,130 +209,312 @@ export function FiltrosCaixaCompacto() {
           >
             <CollapsibleContent>
               <div className="bg-gray-50 rounded p-3 mt-2 border">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  {/* Forma de Pagamento */}
-                  <div>
-                    <label className="text-xs font-medium mb-1 block text-gray-600">
-                      Forma Pagamento
-                    </label>
-                    <Select
-                      value={filtrosLocal.formaPagamento}
-                      onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({
-                          ...prev,
-                          formaPagamento: value,
-                        }))
-                      }
-                      disabled={isLoading}
-                    >
-                      <SelectTrigger className="h-8 text-xs bg-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todas">Todas</SelectItem>
-                        {formasPagamento.map((forma) => (
-                          <SelectItem
-                            key={forma.id}
-                            value={forma.id.toString()}
-                          >
-                            {forma.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                <div className="space-y-4">
+                  {/* Primeira linha de filtros */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {/* Forma de Pagamento */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Forma Pagamento
+                      </label>
+                      <Select
+                        value={filtrosLocal.formaPagamento}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            formaPagamento: value,
+                          }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {formasPagamento.map((forma) => (
+                            <SelectItem
+                              key={forma.id}
+                              value={forma.id.toString()}
+                            >
+                              {forma.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Técnico */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Técnico
+                      </label>
+                      <Select
+                        value={filtrosLocal.tecnico}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            tecnico: value,
+                          }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          {tecnicos.map((tecnico) => (
+                            <SelectItem
+                              key={tecnico.id}
+                              value={tecnico.id.toString()}
+                            >
+                              {tecnico.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Cidade */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Cidade
+                      </label>
+                      <Select
+                        value={filtrosLocal.cidade || "todas"}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            cidade: value,
+                          }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {cidades.map((cidade) => (
+                            <SelectItem key={cidade} value={cidade}>
+                              {cidade}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Setor */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Setor
+                      </label>
+                      <Select
+                        value={filtrosLocal.setor}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({ ...prev, setor: value }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          {setores.map((setor) => (
+                            <SelectItem
+                              key={setor.id}
+                              value={setor.id.toString()}
+                            >
+                              {setor.nome} - {setor.cidade}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
-                  {/* Técnico */}
-                  <div>
-                    <label className="text-xs font-medium mb-1 block text-gray-600">
-                      Técnico
-                    </label>
-                    <Select
-                      value={filtrosLocal.tecnico}
-                      onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({
-                          ...prev,
-                          tecnico: value,
-                        }))
-                      }
-                      disabled={isLoading}
-                    >
-                      <SelectTrigger className="h-8 text-xs bg-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        {tecnicos.map((tecnico) => (
-                          <SelectItem
-                            key={tecnico.id}
-                            value={tecnico.id.toString()}
-                          >
-                            {tecnico.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  {/* Segunda linha de filtros */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {/* Conta */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Conta
+                      </label>
+                      <Select
+                        value={filtrosLocal.conta || "todas"}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({ ...prev, conta: value }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          <SelectItem value="empresa">Empresa</SelectItem>
+                          <SelectItem value="pessoal">Pessoal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Categoria */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Categoria
+                      </label>
+                      <Select
+                        value={filtrosLocal.categoria || "todas"}
+                        onValueChange={(value) => {
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            categoria: value,
+                            descricao: "todas", // Limpar descrição quando categoria muda
+                          }));
+                        }}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {categorias.map((categoria) => (
+                            <SelectItem key={categoria} value={categoria}>
+                              {categoria}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Descrição */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Descrição
+                      </label>
+                      <Select
+                        value={filtrosLocal.descricao || "todas"}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            descricao: value,
+                          }))
+                        }
+                        disabled={
+                          isLoading || filtrosLocal.categoria === "todas"
+                        }
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue
+                            placeholder={
+                              filtrosLocal.categoria === "todas"
+                                ? "Selecione categoria primeiro"
+                                : "Todas"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {descricoesFiltradas.map((descricao) => (
+                            <SelectItem
+                              key={descricao.id}
+                              value={descricao.id.toString()}
+                            >
+                              {descricao.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Cliente */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Cliente
+                      </label>
+                      <Select
+                        value={filtrosLocal.cliente || "todos"}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            cliente: value,
+                          }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          {clientes.map((cliente) => (
+                            <SelectItem
+                              key={cliente.id}
+                              value={cliente.id.toString()}
+                            >
+                              {cliente.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
-                  {/* Setor */}
-                  <div>
-                    <label className="text-xs font-medium mb-1 block text-gray-600">
-                      Setor
-                    </label>
-                    <Select
-                      value={filtrosLocal.setor}
-                      onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, setor: value }))
-                      }
-                      disabled={isLoading}
-                    >
-                      <SelectTrigger className="h-8 text-xs bg-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        {setores.map((setor) => (
-                          <SelectItem
-                            key={setor.id}
-                            value={setor.id.toString()}
-                          >
-                            {setor.nome} - {setor.cidade}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Terceira linha - Campanha e Número da Nota */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {/* Campanha */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Campanha
+                      </label>
+                      <Select
+                        value={filtrosLocal.campanha}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            campanha: value,
+                          }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {campanhas.map((campanha) => (
+                            <SelectItem
+                              key={campanha.id}
+                              value={campanha.id.toString()}
+                            >
+                              {campanha.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  {/* Campanha */}
-                  <div>
-                    <label className="text-xs font-medium mb-1 block text-gray-600">
-                      Campanha
-                    </label>
-                    <Select
-                      value={filtrosLocal.campanha}
-                      onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({
-                          ...prev,
-                          campanha: value,
-                        }))
-                      }
-                      disabled={isLoading}
-                    >
-                      <SelectTrigger className="h-8 text-xs bg-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todas">Todas</SelectItem>
-                        {campanhas.map((campanha) => (
-                          <SelectItem
-                            key={campanha.id}
-                            value={campanha.id.toString()}
-                          >
-                            {campanha.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    {/* Número da Nota */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Número da Nota
+                      </label>
+                      <Input
+                        placeholder="Ex: 12345"
+                        value={filtrosLocal.numeroNota || ""}
+                        onChange={(e) =>
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            numeroNota: e.target.value,
+                          }))
+                        }
+                        className="h-8 text-xs bg-white"
+                        disabled={isLoading}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -312,6 +528,12 @@ export function FiltrosCaixaCompacto() {
                         tecnico: "todos",
                         campanha: "todas",
                         setor: "todos",
+                        conta: "todas",
+                        categoria: "todas",
+                        descricao: "todas",
+                        cliente: "todos",
+                        cidade: "todas",
+                        numeroNota: "",
                       }));
                     }}
                     variant="outline"

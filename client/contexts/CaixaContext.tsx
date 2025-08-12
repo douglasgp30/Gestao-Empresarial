@@ -20,6 +20,12 @@ interface CaixaContextType {
     tecnico?: string;
     campanha?: string;
     setor?: string;
+    conta?: string;
+    categoria?: string;
+    descricao?: string;
+    cliente?: string;
+    cidade?: string;
+    numeroNota?: string;
   };
   totais: {
     receitas: number;
@@ -60,6 +66,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     setor: "todos",
     cidade: "todas",
     conta: "todas",
+    categoria: "todas",
+    descricao: "todas",
+    cliente: "todos",
+    cidade: "todas",
+    numeroNota: "",
   });
 
   // Função para carregar todos os dados
@@ -111,6 +122,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
           ...(filtros.conta !== "todas" && { conta: filtros.conta }),
           ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
+          ...(filtros.numeroNota &&
+            filtros.numeroNota.trim() !== "" && {
+              numeroNota: filtros.numeroNota,
+            }),
         };
 
         // Adicionar filtros numéricos apenas se válidos
@@ -118,11 +133,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         const setorId = parseIntSafe(filtros.setor);
         const campanhaId = parseIntSafe(filtros.campanha);
         const formaPagamentoId = parseIntSafe(filtros.formaPagamento);
+        const descricaoId = parseIntSafe(filtros.descricao);
+        const clienteId = parseIntSafe(filtros.cliente);
 
         if (funcionarioId) filtrosApi.funcionarioId = funcionarioId;
         if (setorId) filtrosApi.setorId = setorId;
         if (campanhaId) filtrosApi.campanhaId = campanhaId;
         if (formaPagamentoId) filtrosApi.formaPagamentoId = formaPagamentoId;
+        if (descricaoId) filtrosApi.descricaoId = descricaoId;
+        if (clienteId) filtrosApi.clienteId = clienteId;
+
+        // Filtro por categoria (nome/string)
+        if (filtros.categoria && filtros.categoria !== "todas") {
+          filtrosApi.categoria = filtros.categoria;
+        }
 
         const response = await caixaApi.listarLancamentos(filtrosApi);
         if (response.error) {
@@ -178,6 +202,12 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.tecnico,
     filtros.campanha,
     filtros.setor,
+    filtros.conta,
+    filtros.categoria,
+    filtros.descricao,
+    filtros.cliente,
+    filtros.cidade,
+    filtros.numeroNota,
   ]);
 
   const adicionarLancamento = async (

@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Card, CardContent } from "../ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -16,7 +17,7 @@ import {
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import FiltroDataAgendamentos from "./FiltroDataAgendamentos";
-import { Filter, ChevronDown, X, Calendar } from "lucide-react";
+import { Filter, ChevronDown, X, Search } from "lucide-react";
 
 export default function FiltrosAgendamentosCompacto() {
   const { filtros, setFiltros, isLoading } = useAgendamentos();
@@ -58,125 +59,168 @@ export default function FiltrosAgendamentosCompacto() {
   const isLoadingGeral = isLoading || entidadesLoading;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-4">
-      {/* Filtro de Data estilo Google Ads */}
-      <div className="max-w-sm">
-        <FiltroDataAgendamentos />
-      </div>
+    <Card className="w-full max-w-4xl mx-auto">
+      <CardContent className="p-3">
+        <div className="space-y-3">
+          {/* Linha Principal: Tudo em uma linha compacta */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+            {/* Filtro de Data - 4 colunas */}
+            <div className="lg:col-span-4">
+              <FiltroDataAgendamentos />
+            </div>
 
-      {/* Filtros Básicos - Layout Compacto */}
-      <div className="bg-background border rounded-lg p-4 max-w-4xl">
-        <div className="space-y-4">
-          {/* Filtro de Status - Compacto */}
-          <div className="max-w-xs">
-            <label className="text-sm font-medium mb-2 block">
-              Status do Agendamento
-            </label>
-            <Select
-              value={filtrosLocal.status}
-              onValueChange={(
-                value: "todos" | "agendado" | "concluido" | "cancelado",
-              ) => setFiltrosLocal((prev) => ({ ...prev, status: value }))}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos os Status</SelectItem>
-                <SelectItem value="agendado">Agendado</SelectItem>
-                <SelectItem value="concluido">Concluído</SelectItem>
-                <SelectItem value="cancelado">Cancelado</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Filtro de Status - 3 colunas */}
+            <div className="lg:col-span-3">
+              <label className="text-xs font-medium mb-1 block text-gray-600">
+                Status
+              </label>
+              <Select
+                value={filtrosLocal.status}
+                onValueChange={(
+                  value: "todos" | "agendado" | "concluido" | "cancelado",
+                ) => setFiltrosLocal((prev) => ({ ...prev, status: value }))}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="agendado">Agendado</SelectItem>
+                  <SelectItem value="concluido">Concluído</SelectItem>
+                  <SelectItem value="cancelado">Cancelado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Filtros Avançados - 3 colunas */}
+            <div className="lg:col-span-3">
+              <Collapsible
+                open={filtrosAvancadosAbertos}
+                onOpenChange={setFiltrosAvancadosAbertos}
+              >
+                <CollapsibleTrigger asChild>
+                  <div>
+                    <label className="text-xs font-medium mb-1 block text-gray-600">
+                      Mais Filtros
+                    </label>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full h-8 text-xs justify-between"
+                    >
+                      <span className="flex items-center gap-1">
+                        <Filter className="h-3 w-3" />
+                        Avançados
+                        {filtrosAtivos > 0 && (
+                          <Badge
+                            variant="secondary"
+                            className="h-4 px-1 text-xs"
+                          >
+                            {filtrosAtivos}
+                          </Badge>
+                        )}
+                      </span>
+                      <ChevronDown
+                        className={`h-3 w-3 transition-transform ${
+                          filtrosAvancadosAbertos ? "rotate-180" : ""
+                        }`}
+                      />
+                    </Button>
+                  </div>
+                </CollapsibleTrigger>
+              </Collapsible>
+            </div>
+
+            {/* Botões de Ação - 2 colunas */}
+            <div className="lg:col-span-2 flex gap-1">
+              <Button
+                onClick={aplicarFiltros}
+                size="sm"
+                className="h-8 text-xs flex-1"
+                disabled={isLoadingGeral}
+              >
+                <Search className="h-3 w-3 mr-1" />
+                Filtrar
+              </Button>
+              <Button
+                onClick={limparFiltros}
+                variant="outline"
+                size="sm"
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
           </div>
 
-          {/* Filtros Avançados */}
+          {/* Filtros Avançados Colapsáveis */}
           <Collapsible
             open={filtrosAvancadosAbertos}
             onOpenChange={setFiltrosAvancadosAbertos}
           >
-            <div className="flex items-center justify-between">
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Filter className="h-4 w-4" />
-                  Filtros Avançados
-                  {filtrosAtivos > 0 && (
-                    <Badge variant="secondary" className="h-5 px-2 text-xs">
-                      {filtrosAtivos}
-                    </Badge>
-                  )}
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${
-                      filtrosAvancadosAbertos ? "rotate-180" : ""
-                    }`}
-                  />
-                </Button>
-              </CollapsibleTrigger>
-
-              {filtrosAtivos > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={limparFiltros}
-                  className="gap-1 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-4 w-4" />
-                  Limpar
-                </Button>
-              )}
-            </div>
-
-            <CollapsibleContent className="mt-4">
-              <div className="bg-muted/30 rounded-lg p-4 border">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Setor</label>
+            <CollapsibleContent>
+              <div className="bg-gray-50 rounded p-3 mt-2 border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Setor */}
+                  <div>
+                    <label className="text-xs font-medium mb-1 block text-gray-600">
+                      Setor
+                    </label>
                     <Select
-                      value={filtrosLocal.setor || ""}
+                      value={filtrosLocal.setor || "todos"}
                       onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, setor: value }))
+                        setFiltrosLocal((prev) => ({
+                          ...prev,
+                          setor: value === "todos" ? "" : value,
+                        }))
                       }
                       disabled={isLoadingGeral}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 text-xs bg-white">
                         <SelectValue placeholder="Todos os setores" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todos os Setores</SelectItem>
-                        {setores.map((setor) => (
+                        <SelectItem value="todos">Todos os Setores</SelectItem>
+                        {setores?.map((setor) => (
                           <SelectItem
                             key={setor.id}
                             value={setor.id.toString()}
                           >
                             {setor.nome} - {setor.cidade}
                           </SelectItem>
-                        ))}
+                        )) || []}
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Técnico</label>
+                  {/* Técnico */}
+                  <div>
+                    <label className="text-xs font-medium mb-1 block text-gray-600">
+                      Técnico
+                    </label>
                     <Select
-                      value={filtrosLocal.tecnico || ""}
+                      value={filtrosLocal.tecnico || "todos"}
                       onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, tecnico: value }))
+                        setFiltrosLocal((prev) => ({
+                          ...prev,
+                          tecnico: value === "todos" ? "" : value,
+                        }))
                       }
                       disabled={isLoadingGeral}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 text-xs bg-white">
                         <SelectValue placeholder="Todos os técnicos" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todos os Técnicos</SelectItem>
-                        {tecnicos.map((tecnico) => (
+                        <SelectItem value="todos">Todos os Técnicos</SelectItem>
+                        {tecnicos?.map((tecnico) => (
                           <SelectItem
                             key={tecnico.id}
                             value={tecnico.id.toString()}
                           >
                             {tecnico.nome}
                           </SelectItem>
-                        ))}
+                        )) || []}
                       </SelectContent>
                     </Select>
                   </div>
@@ -184,35 +228,8 @@ export default function FiltrosAgendamentosCompacto() {
               </div>
             </CollapsibleContent>
           </Collapsible>
-
-          {/* Botões de Ação */}
-          <div className="flex gap-3 max-w-md">
-            <Button
-              onClick={aplicarFiltros}
-              size="sm"
-              className="flex-1"
-              disabled={isLoadingGeral}
-            >
-              Aplicar Filtros
-            </Button>
-            <Button
-              onClick={limparFiltros}
-              variant="outline"
-              size="sm"
-              className="px-6"
-            >
-              Limpar
-            </Button>
-          </div>
         </div>
-      </div>
-
-      {/* Status de carregamento */}
-      {isLoadingGeral && (
-        <div className="text-center text-sm text-muted-foreground p-4">
-          Carregando dados...
-        </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 }
