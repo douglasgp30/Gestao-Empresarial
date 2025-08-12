@@ -25,6 +25,7 @@ import SelectWithAdd from "../ui/select-with-add";
 import { TrendingUp, FileText } from "lucide-react";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
+import { ModalCadastroClienteRapido } from "./ModalCadastroClienteRapido";
 
 interface FormularioReceitaProps {
   onSuccess?: () => void;
