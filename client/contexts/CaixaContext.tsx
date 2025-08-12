@@ -127,7 +127,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (response.error) {
         setError(response.error);
       } else {
-        // Converter datas de string para Date
+        // Converter datas de string para Date e manter relacionamentos
         const lancamentosFormatados = (response.data || []).map(
           (lancamento: any) => ({
             ...lancamento,
@@ -135,12 +135,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             data: new Date(lancamento.dataHora), // Criar campo data a partir de dataHora
             dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
             dataCriacao: new Date(lancamento.dataCriacao),
-            // Garantir que propriedades relacionadas estejam disponíveis
-            descricao: lancamento.descricao?.nome || lancamento.descricao,
-            formaPagamento: lancamento.formaPagamento?.nome || lancamento.formaPagamento,
-            tecnicoResponsavel: lancamento.funcionario?.nome || lancamento.tecnicoResponsavel,
-            setor: lancamento.setor?.nome || lancamento.setor,
-            campanha: lancamento.campanha?.nome || lancamento.campanha,
+            // Manter objetos relacionados e adicionar campos de compatibilidade
+            descricao: lancamento.descricao || { nome: "N/A" },
+            formaPagamento: lancamento.formaPagamento || { nome: "N/A" },
+            funcionario: lancamento.funcionario || null,
+            setor: lancamento.setor || null,
+            campanha: lancamento.campanha || null,
+            // Campos de compatibilidade para código antigo
+            tecnicoResponsavel: lancamento.funcionario?.nome || null,
           }),
         );
         setLancamentos(lancamentosFormatados);
