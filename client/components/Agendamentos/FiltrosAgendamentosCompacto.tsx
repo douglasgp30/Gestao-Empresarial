@@ -167,9 +167,9 @@ export default function FiltrosAgendamentosCompacto() {
                       Setor
                     </label>
                     <Select
-                      value={filtrosLocal.setor || ""}
+                      value={filtrosLocal.setor || "todos"}
                       onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, setor: value }))
+                        setFiltrosLocal((prev) => ({ ...prev, setor: value === "todos" ? "" : value }))
                       }
                       disabled={isLoadingGeral}
                     >
@@ -177,7 +177,7 @@ export default function FiltrosAgendamentosCompacto() {
                         <SelectValue placeholder="Todos os setores" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todos os Setores</SelectItem>
+                        <SelectItem value="todos">Todos os Setores</SelectItem>
                         {setores.map((setor) => (
                           <SelectItem
                             key={setor.id}
@@ -196,9 +196,9 @@ export default function FiltrosAgendamentosCompacto() {
                       Técnico
                     </label>
                     <Select
-                      value={filtrosLocal.tecnico || ""}
+                      value={filtrosLocal.tecnico || "todos"}
                       onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, tecnico: value }))
+                        setFiltrosLocal((prev) => ({ ...prev, tecnico: value === "todos" ? "" : value }))
                       }
                       disabled={isLoadingGeral}
                     >
@@ -206,7 +206,7 @@ export default function FiltrosAgendamentosCompacto() {
                         <SelectValue placeholder="Todos os técnicos" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Todos os Técnicos</SelectItem>
+                        <SelectItem value="todos">Todos os Técnicos</SelectItem>
                         {tecnicos.map((tecnico) => (
                           <SelectItem
                             key={tecnico.id}
