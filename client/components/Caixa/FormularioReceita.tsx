@@ -421,17 +421,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     </span>
                     <Input
                       id="valorQueEntrou"
-                      type="number"
-                      step="0.01"
-                      placeholder="0,00"
-                      value={formData.valorQueEntrou}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          valorQueEntrou: e.target.value,
-                        }))
-                      }
-                      className="bg-yellow-50 border-yellow-300 pl-8"
+                      {...valorQueEntrouInput.inputProps}
+                      className="bg-yellow-50 border-yellow-300"
                       required
                     />
                   </div>
