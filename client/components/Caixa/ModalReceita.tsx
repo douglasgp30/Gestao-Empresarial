@@ -282,7 +282,7 @@ export function ModalReceita() {
     }
   };
 
-  const isLoading = caixaLoading || entidadesLoading;
+  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
 
   return (
     <Dialog
