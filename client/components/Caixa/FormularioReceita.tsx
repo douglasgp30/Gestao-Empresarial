@@ -121,8 +121,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     const imposto = parseFloat(formData.imposto) || 0;
     const valorLiquido = valorQueEntrou - imposto;
 
-    // Calcular comissão (15% do valor líquido se houver técnico)
-    const comissao = formData.tecnicoResponsavel ? valorLiquido * 0.15 : 0;
+    // Calcular comissão baseada no percentual do técnico
+    let comissao = 0;
+    if (formData.tecnicoResponsavel) {
+      const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
+      if (tecnico && tecnico.percentualComissao) {
+        comissao = valorLiquido * (tecnico.percentualComissao / 100);
+      }
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -134,12 +140,23 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     formData.valorQueEntrou,
     formData.imposto,
     formData.tecnicoResponsavel,
+    tecnicos,
   ]);
+
+  // Resetar valorQueEntrou quando mudança de Cartão para outras formas
+  useEffect(() => {
+    if (!isFormaPagamentoCartao && formData.valorQueEntrou && formData.valorQueEntrou !== formData.valor) {
+      setFormData((prev) => ({
+        ...prev,
+        valorQueEntrou: "",
+      }));
+    }
+  }, [isFormaPagamentoCartao, formData.valorQueEntrou, formData.valor]);
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
     const urlNotaFiscal =
-      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=14ad51dc282888232e609798d07fcbd568773380001&dth=20250812083951";
+      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733";
     const janelaNotaFiscal = window.open(
       urlNotaFiscal,
       "_blank",
