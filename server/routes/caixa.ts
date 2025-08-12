@@ -16,6 +16,7 @@ const LancamentoCaixaSchema = z.object({
   tipo: z.enum(["receita", "despesa"], {
     required_error: "Tipo é obrigatório",
   }),
+  data: z.string().optional(), // Data no formato YYYY-MM-DD
 
   // Campos obrigatórios
   descricaoId: z.number().positive("Descrição é obrigatória"),
