@@ -76,8 +76,8 @@ export function ModalEditarLancamento({
         categoria: lancamento.descricao?.categoria || "",
         descricao: lancamento.descricao?.id?.toString() || "",
         formaPagamento: lancamento.formaPagamento?.id?.toString() || "",
-        tecnicoResponsavel: lancamento.funcionario?.id?.toString() || "",
-        setor: lancamento.setor?.id?.toString() || "",
+        tecnicoResponsavel: lancamento.funcionario?.id?.toString() || "none",
+        setor: lancamento.setor?.id?.toString() || "none",
         observacoes: lancamento.observacoes || "",
         conta: lancamento.conta || "empresa",
       });
