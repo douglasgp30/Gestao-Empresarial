@@ -335,25 +335,30 @@ export default function FormularioFuncionarioAvancado() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validarFormulario()) return;
 
-    adicionarFuncionario({
-      nomeCompleto: formData.nomeCompleto,
-      ehTecnico: formData.ehTecnico,
-      login: formData.temAcessoSistema ? formData.login : undefined,
-      senha: formData.temAcessoSistema ? formData.senha : undefined,
-      temAcessoSistema: formData.temAcessoSistema,
-      tipoAcesso: formData.temAcessoSistema ? formData.tipoAcesso : undefined,
-      permissoes: formData.temAcessoSistema ? permissoes : undefined,
-      percentualComissao: parseFloat(formData.percentualComissao),
-      ativo: formData.ativo,
-    });
+    try {
+      await adicionarFuncionario({
+        nomeCompleto: formData.nomeCompleto,
+        ehTecnico: formData.ehTecnico,
+        login: formData.temAcessoSistema ? formData.login : undefined,
+        senha: formData.temAcessoSistema ? formData.senha : undefined,
+        temAcessoSistema: formData.temAcessoSistema,
+        tipoAcesso: formData.temAcessoSistema ? formData.tipoAcesso : undefined,
+        permissoes: formData.temAcessoSistema ? permissoes : undefined,
+        percentualComissao: parseFloat(formData.percentualComissao),
+        ativo: formData.ativo,
+      });
 
-    resetForm();
-    setIsOpen(false);
+      resetForm();
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar funcionário:", error);
+      // TODO: Mostrar erro para o usuário
+    }
   };
 
   const contarPermissoesAtivas = () => {
