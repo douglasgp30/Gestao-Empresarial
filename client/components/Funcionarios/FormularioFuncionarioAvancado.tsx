@@ -426,7 +426,7 @@ export default function FormularioFuncionarioAvancado() {
 
               <div className="space-y-2">
                 <Label htmlFor="percentualComissao">
-                  Percentual de Comissão (%)
+                  Percentual de Comissão (%) *
                 </Label>
                 <div className="relative">
                   <Input
