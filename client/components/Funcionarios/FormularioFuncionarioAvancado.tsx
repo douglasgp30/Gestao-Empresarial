@@ -180,7 +180,7 @@ export default function FormularioFuncionarioAvancado() {
     senha: "",
     confirmarSenha: "",
     temAcessoSistema: false,
-    tipoAcesso: "Operador" as "Administrador" | "Operador",
+    tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
     percentualComissao: "15",
     ativo: true,
   });
