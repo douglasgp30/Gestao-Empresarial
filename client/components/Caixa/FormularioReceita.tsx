@@ -19,26 +19,12 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import {
-  DollarSign,
   TrendingUp,
-  Calculator,
-  Upload,
   FileText,
-  X,
 } from "lucide-react";
 
 interface FormularioReceitaProps {
@@ -81,7 +67,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     campanha: "",
     observacoes: "",
     numeroNota: "",
-    arquivoNota: "",
     temNotaFiscal: false,
   });
 
@@ -124,9 +109,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     // Calcular comissão baseada no percentual do técnico
     let comissao = 0;
     if (formData.tecnicoResponsavel) {
-      const tecnico = tecnicos.find(
-        (t) => t.id.toString() === formData.tecnicoResponsavel,
-      );
+      const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
       if (tecnico && tecnico.percentualComissao) {
         comissao = valorLiquido * (tecnico.percentualComissao / 100);
       }
@@ -147,11 +130,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
-    if (
-      !isFormaPagamentoCartao &&
-      formData.valorQueEntrou &&
-      formData.valorQueEntrou !== formData.valor
-    ) {
+    if (!isFormaPagamentoCartao && formData.valorQueEntrou && formData.valorQueEntrou !== formData.valor) {
       setFormData((prev) => ({
         ...prev,
         valorQueEntrou: "",
@@ -243,7 +222,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         campanha: formData.campanha || undefined,
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
-        arquivoNota: formData.arquivoNota || undefined,
       });
 
       toast({
@@ -268,7 +246,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         campanha: "",
         observacoes: "",
         numeroNota: "",
-        arquivoNota: "",
         temNotaFiscal: false,
       });
       setNotaFiscalEmitida(false);
@@ -303,7 +280,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="flex items-center gap-2 text-green-600 text-lg sm:text-xl">
           <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
-          Lan��ar Receita
+          Lançar Receita
         </CardTitle>
         <CardDescription className="text-sm">
           Registre uma nova entrada no caixa
@@ -401,7 +378,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 },
               ]}
             />
+          </div>
 
+          <div className="space-y-4">
             <SelectWithAdd
               value={formData.formaPagamento}
               onValueChange={(value) =>
@@ -414,7 +393,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               onAddNew={async (data) => {
                 await adicionarFormaPagamento({
                   nome: data.nome,
-                  descricao: data.descricao || "",
                 });
               }}
               addNewTitle="Nova Forma de Pagamento"
@@ -425,50 +403,43 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   label: "Nome da Forma de Pagamento",
                   required: true,
                 },
-                {
-                  key: "descricao",
-                  label: "Descrição (opcional)",
-                  required: false,
-                },
               ]}
             />
-          </div>
 
-          {/* Campo Valor Recebido para Cartão - compacto, logo após forma de pagamento */}
-          {isFormaPagamentoCartao && (
-            <div className="space-y-2 col-span-full">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="valorQueEntrou"
-                    className="text-sm font-medium text-yellow-700"
-                  >
-                    Valor Recebido (R$) *
-                  </Label>
-                  <Input
-                    id="valorQueEntrou"
-                    type="number"
-                    step="0.01"
-                    placeholder="Valor líquido"
-                    value={formData.valorQueEntrou}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        valorQueEntrou: e.target.value,
-                      }))
-                    }
-                    className="bg-yellow-50 border-yellow-300 text-sm h-9"
-                    required
-                  />
-                </div>
-                <div className="text-xs text-yellow-600 md:col-span-2">
-                  <strong>Importante:</strong> Para cartão, informe o valor
-                  líquido que entrou na conta (após descontar taxas da
-                  operadora).
+            {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
+            {isFormaPagamentoCartao && (
+              <div className="space-y-2">
+                <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
+                  Valor Recebido *
+                </Label>
+                <div className="flex items-center gap-2">
+                  <div className="relative w-40">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                      R$
+                    </span>
+                    <Input
+                      id="valorQueEntrou"
+                      type="number"
+                      step="0.01"
+                      placeholder="0,00"
+                      value={formData.valorQueEntrou}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          valorQueEntrou: e.target.value,
+                        }))
+                      }
+                      className="bg-yellow-50 border-yellow-300 pl-8"
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-yellow-600 flex-1">
+                    <strong>Importante:</strong> Valor líquido após taxas da operadora.
+                  </p>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -544,23 +515,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
-          {/* Observações - Campo básico */}
-          <div className="space-y-2">
-            <Label htmlFor="observacoes">Observações do Serviço</Label>
-            <Textarea
-              id="observacoes"
-              placeholder="Observações sobre o serviço prestado..."
-              value={formData.observacoes}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  observacoes: e.target.value,
-                }))
-              }
-              rows={3}
-            />
-          </div>
-
           {/* Nota Fiscal */}
           <div className="space-y-3 p-4 bg-blue-50 rounded-lg border">
             <div className="flex items-center space-x-2">
@@ -628,6 +582,23 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 )}
               </div>
             )}
+          </div>
+
+          {/* Observações - Campo no final */}
+          <div className="space-y-2">
+            <Label htmlFor="observacoes">Observações do Serviço</Label>
+            <Textarea
+              id="observacoes"
+              placeholder="Observações sobre o serviço prestado..."
+              value={formData.observacoes}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  observacoes: e.target.value,
+                }))
+              }
+              rows={3}
+            />
           </div>
 
           {/* Campos avançados */}
@@ -731,38 +702,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     },
                   ]}
                 />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="numeroNota">Número da Nota</Label>
-                  <Input
-                    id="numeroNota"
-                    placeholder="Ex: NF-001"
-                    value={formData.numeroNota}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        numeroNota: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="arquivoNota">Arquivo da Nota</Label>
-                  <Input
-                    id="arquivoNota"
-                    placeholder="URL do arquivo"
-                    value={formData.arquivoNota}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        arquivoNota: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
               </div>
             </div>
           )}
