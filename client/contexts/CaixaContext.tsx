@@ -166,14 +166,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         // dataHora será gerada automaticamente no backend
         tipo: novoLancamento.tipo,
         valor: novoLancamento.valor,
-        valorRecebido: novoLancamento.valorQueEntrou, // Mapear corretamente
+        valorRecebido: novoLancamento.valorQueEntrou || novoLancamento.valor, // Usar valor padrão se não tiver valorQueEntrou
         valorLiquido: novoLancamento.valorLiquido,
         comissao: novoLancamento.comissao,
         imposto: novoLancamento.imposto,
         observacoes: novoLancamento.observacoes,
         numeroNota: novoLancamento.numeroNota,
         arquivoNota: novoLancamento.arquivoNota,
-        conta: "empresa", // Campo obrigatório
+        conta: novoLancamento.conta || "empresa", // Usar conta do formulário ou padrão
         descricaoId: parseInt(novoLancamento.descricao),
         formaPagamentoId: parseInt(novoLancamento.formaPagamento),
         funcionarioId: novoLancamento.tecnicoResponsavel
