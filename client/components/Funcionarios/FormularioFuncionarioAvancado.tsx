@@ -342,6 +342,7 @@ export default function FormularioFuncionarioAvancado() {
 
     adicionarFuncionario({
       nomeCompleto: formData.nomeCompleto,
+      ehTecnico: formData.ehTecnico,
       login: formData.temAcessoSistema ? formData.login : undefined,
       senha: formData.temAcessoSistema ? formData.senha : undefined,
       temAcessoSistema: formData.temAcessoSistema,
