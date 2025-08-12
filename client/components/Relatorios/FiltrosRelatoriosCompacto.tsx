@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRelatorios } from "../../contexts/RelatoriosContext";
+import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
 import {
   Select,
@@ -19,340 +20,285 @@ import {
   Filter,
   ChevronDown,
   X,
-  BarChart3,
+  FileText,
   Download,
-  Users,
-  DollarSign,
+  Printer,
 } from "lucide-react";
 
-const tiposRelatorio = [
-  { value: "financeiro", label: "Financeiro", icon: DollarSign },
-  { value: "tecnicos", label: "Técnicos", icon: Users },
-  { value: "contas", label: "Contas", icon: BarChart3 },
-];
-
-const statusOptions = ["Todos", "Ativo", "Inativo", "Pendente", "Concluído"];
-
-const formasPagamento = [
-  "Dinheiro",
-  "Pix",
-  "Boleto",
-  "Transferência",
-  "Cartão de Débito",
-  "Cartão de Crédito",
-];
-
-const tecnicos = [
-  "João Silva",
-  "Carlos Santos",
-  "Roberto Lima",
-  "Fernando Costa",
-];
-
 export default function FiltrosRelatoriosCompacto() {
-  const { filtros, setFiltros, isLoading } = useRelatorios();
+  const { filtros, setFiltros, isLoading, exportarPDF, exportarExcel } = useRelatorios();
+  const { setores, tecnicos, campanhas, formasPagamento, isLoading: entidadesLoading } = useEntidades();
+  const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
-  const handleDataInicioChange = (data: string) => {
-    const novaData = new Date(data);
-    // Normalizar para início do dia
-    novaData.setHours(0, 0, 0, 0);
-    setFiltros({
-      ...filtros,
-      periodo: {
-        ...filtros.periodo,
-        dataInicio: novaData,
-        __timestamp: Date.now(), // Força re-render
-      },
-    });
-  };
+  useEffect(() => {
+    setFiltrosLocal(filtros);
+  }, [filtros]);
 
-  const handleDataFimChange = (data: string) => {
-    const novaData = new Date(data);
-    // Normalizar para fim do dia
-    novaData.setHours(23, 59, 59, 999);
-    setFiltros({
-      ...filtros,
-      periodo: {
-        ...filtros.periodo,
-        dataFim: novaData,
-        __timestamp: Date.now(), // Força re-render
-      },
-    });
-  };
-
-  const handleAplicarPeriodo = () => {
-    // Força atualização com novos filtros criando nova referência
-    setFiltros({
-      ...filtros,
-      periodo: {
-        ...filtros.periodo,
-        __timestamp: Date.now(), // Força re-render
-      },
-    });
+  const aplicarFiltros = () => {
+    setFiltros(filtrosLocal);
   };
 
   const limparFiltros = () => {
     const hoje = new Date();
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    setFiltros({
+    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    
+    const filtrosLimpos = {
       periodo: {
         dataInicio: inicioMes,
-        dataFim: hoje,
+        dataFim: fimMes,
       },
-      tipo: "ambos",
-      formaPagamento: "todas",
-      tecnico: "todos",
-      setor: "todos",
-      campanha: "todas",
-      status: "todos",
-    });
+      tipo: "ambos" as const,
+      formaPagamento: "",
+      tecnico: "",
+      setor: "",
+      campanha: "",
+      status: "",
+    };
+    setFiltrosLocal(filtrosLimpos);
+    setFiltros(filtrosLimpos);
   };
 
+  // Contar filtros ativos
   const contarFiltrosAtivos = () => {
     let count = 0;
-    if (filtros.tipo && filtros.tipo !== "ambos") count++;
-    if (filtros.formaPagamento && filtros.formaPagamento !== "todas") count++;
-    if (filtros.tecnico && filtros.tecnico !== "todos") count++;
-    if (filtros.setor && filtros.setor !== "todos") count++;
-    if (filtros.campanha && filtros.campanha !== "todas") count++;
-    if (filtros.status && filtros.status !== "todos") count++;
+    if (filtrosLocal.tipo && filtrosLocal.tipo !== "ambos") count++;
+    if (filtrosLocal.formaPagamento) count++;
+    if (filtrosLocal.tecnico) count++;
+    if (filtrosLocal.setor) count++;
+    if (filtrosLocal.campanha) count++;
+    if (filtrosLocal.status) count++;
     return count;
   };
 
   const filtrosAtivos = contarFiltrosAtivos();
-
-  const gerarRelatorio = () => {
-    // TODO: Implementar geração de relatório
-    console.log("Gerando relatório com filtros:", filtros);
-  };
-
-  const exportarRelatorio = (formato: "excel" | "pdf") => {
-    // TODO: Implementar exportação
-    console.log("Exportando relatório em:", formato);
-  };
+  const isLoadingGeral = isLoading || entidadesLoading;
 
   return (
-    <div className="space-y-3">
+    <div className="max-w-6xl mx-auto space-y-4">
       {/* Filtro de Data estilo Google Ads */}
-      <FiltroDataRelatorios />
+      <div className="max-w-sm">
+        <FiltroDataRelatorios />
+      </div>
 
-      {/* Ações Rápidas */}
-      <div className="bg-background border rounded-lg p-3">
+      {/* Ações de Relatório */}
+      <div className="bg-background border rounded-lg p-4 max-w-4xl">
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
           <div className="text-sm text-muted-foreground">
             Ações de Relatório:
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
-              onClick={gerarRelatorio}
-              size="sm"
-              className="gap-2"
-              disabled={isLoading}
-            >
-              <BarChart3 className="h-3 w-3" />
-              Gerar Relatório
-            </Button>
-            <Button
-              onClick={() => exportarRelatorio("excel")}
               variant="outline"
               size="sm"
+              onClick={() => exportarPDF("financeiro", {})}
               className="gap-2"
             >
-              <Download className="h-3 w-3" />
-              Excel
-            </Button>
-            <Button
-              onClick={() => exportarRelatorio("pdf")}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <Download className="h-3 w-3" />
+              <Printer className="h-4 w-4" />
               PDF
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportarExcel("financeiro", {})}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Excel
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Filtros Avançados */}
-      <Collapsible
-        open={filtrosAvancadosAbertos}
-        onOpenChange={setFiltrosAvancadosAbertos}
-      >
-        <div className="flex items-center justify-between">
-          <CollapsibleTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Filter className="h-4 w-4" />
-              Filtros Avançados
-              {filtrosAtivos > 0 && (
-                <Badge variant="secondary" className="h-5 px-2 text-xs">
-                  {filtrosAtivos}
-                </Badge>
-              )}
-              <ChevronDown
-                className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? "rotate-180" : ""}`}
-              />
-            </Button>
-          </CollapsibleTrigger>
-
-          {filtrosAtivos > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={limparFiltros}
-              className="gap-1 text-muted-foreground hover:text-foreground"
+      {/* Filtros Básicos - Layout Compacto */}
+      <div className="bg-background border rounded-lg p-4 max-w-4xl">
+        <div className="space-y-4">
+          {/* Filtro de Tipo - Compacto */}
+          <div className="max-w-xs">
+            <label className="text-sm font-medium mb-2 block">
+              Tipo de Movimento
+            </label>
+            <Select
+              value={filtrosLocal.tipo || "ambos"}
+              onValueChange={(value: "receitas" | "despesas" | "ambos") =>
+                setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
+              }
             >
-              <X className="h-3 w-3" />
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ambos">Todos os Tipos</SelectItem>
+                <SelectItem value="receitas">Apenas Receitas</SelectItem>
+                <SelectItem value="despesas">Apenas Despesas</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Filtros Avançados */}
+          <Collapsible
+            open={filtrosAvancadosAbertos}
+            onOpenChange={setFiltrosAvancadosAbertos}
+          >
+            <div className="flex items-center justify-between">
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filtros Avançados
+                  {filtrosAtivos > 0 && (
+                    <Badge variant="secondary" className="h-5 px-2 text-xs">
+                      {filtrosAtivos}
+                    </Badge>
+                  )}
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      filtrosAvancadosAbertos ? "rotate-180" : ""
+                    }`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+
+              {filtrosAtivos > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={limparFiltros}
+                  className="gap-1 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                  Limpar
+                </Button>
+              )}
+            </div>
+
+            <CollapsibleContent className="mt-4">
+              <div className="bg-muted/30 rounded-lg p-4 border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Forma de Pagamento</label>
+                    <Select
+                      value={filtrosLocal.formaPagamento || ""}
+                      onValueChange={(value) =>
+                        setFiltrosLocal((prev) => ({ ...prev, formaPagamento: value }))
+                      }
+                      disabled={isLoadingGeral}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Todas</SelectItem>
+                        {formasPagamento.map((forma) => (
+                          <SelectItem key={forma.id} value={forma.id.toString()}>
+                            {forma.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Técnico</label>
+                    <Select
+                      value={filtrosLocal.tecnico || ""}
+                      onValueChange={(value) =>
+                        setFiltrosLocal((prev) => ({ ...prev, tecnico: value }))
+                      }
+                      disabled={isLoadingGeral}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Todos</SelectItem>
+                        {tecnicos.map((tecnico) => (
+                          <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
+                            {tecnico.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Setor</label>
+                    <Select
+                      value={filtrosLocal.setor || ""}
+                      onValueChange={(value) =>
+                        setFiltrosLocal((prev) => ({ ...prev, setor: value }))
+                      }
+                      disabled={isLoadingGeral}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Todos</SelectItem>
+                        {setores.map((setor) => (
+                          <SelectItem key={setor.id} value={setor.id.toString()}>
+                            {setor.nome} - {setor.cidade}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Campanha</label>
+                    <Select
+                      value={filtrosLocal.campanha || ""}
+                      onValueChange={(value) =>
+                        setFiltrosLocal((prev) => ({ ...prev, campanha: value }))
+                      }
+                      disabled={isLoadingGeral}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Todas</SelectItem>
+                        {campanhas.map((campanha) => (
+                          <SelectItem key={campanha.id} value={campanha.id.toString()}>
+                            {campanha.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Botões de Ação */}
+          <div className="flex gap-3 max-w-md">
+            <Button
+              onClick={aplicarFiltros}
+              size="sm"
+              className="flex-1"
+              disabled={isLoadingGeral}
+            >
+              Aplicar Filtros
+            </Button>
+            <Button
+              onClick={limparFiltros}
+              variant="outline"
+              size="sm"
+              className="px-6"
+            >
               Limpar
             </Button>
-          )}
-        </div>
-
-        <CollapsibleContent className="mt-3">
-          <div className="bg-muted/30 rounded-lg p-3 border">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {/* Tipo de Relatório */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Tipo de Relatório
-                </label>
-                <Select
-                  value={filtros.tipo || ""}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      tipo: value === "" ? undefined : (value as any),
-                    })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Todos os tipos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos os tipos</SelectItem>
-                    <SelectItem value="receitas">Receitas</SelectItem>
-                    <SelectItem value="despesas">Despesas</SelectItem>
-                    <SelectItem value="ambos">Receitas e Despesas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Forma de Pagamento */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Forma de Pagamento
-                </label>
-                <Select
-                  value={filtros.formaPagamento || ""}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      formaPagamento: value === "" ? undefined : value,
-                    })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Todas" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todas">Todas</SelectItem>
-                    {formasPagamento.map((forma) => (
-                      <SelectItem key={forma} value={forma}>
-                        {forma}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Técnico */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Técnico
-                </label>
-                <Select
-                  value={filtros.tecnico || ""}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      tecnico: value === "" ? undefined : value,
-                    })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    {tecnicos.map((tecnico) => (
-                      <SelectItem key={tecnico} value={tecnico}>
-                        {tecnico}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Setor */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Setor
-                </label>
-                <Select
-                  value={filtros.setor || ""}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      setor: value === "" ? undefined : value,
-                    })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="Residencial">Residencial</SelectItem>
-                    <SelectItem value="Comercial">Comercial</SelectItem>
-                    <SelectItem value="Industrial">Industrial</SelectItem>
-                    <SelectItem value="Condomínio">Condomínio</SelectItem>
-                    <SelectItem value="Emergência">Emergência</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Status */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Status
-                </label>
-                <Select
-                  value={filtros.status || ""}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      status: value === "" ? undefined : value,
-                    })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    {statusOptions.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
           </div>
-        </CollapsibleContent>
-      </Collapsible>
+        </div>
+      </div>
+
+      {/* Status de carregamento */}
+      {isLoadingGeral && (
+        <div className="text-center text-sm text-muted-foreground p-4">
+          Carregando dados...
+        </div>
+      )}
     </div>
   );
 }
