@@ -14,6 +14,12 @@ import { useEntidades } from "../contexts/EntidadesContext";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
+  const { descricoes, formasPagamento, getTecnicos } = useEntidades();
+
+  // Verificar se há dados essenciais para mostrar alerta
+  const tecnicos = getTecnicos();
+  const temDadosEssenciais = descricoes.length > 0 && formasPagamento.length > 0 && tecnicos.length > 0;
+
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header - Mobile First */}
