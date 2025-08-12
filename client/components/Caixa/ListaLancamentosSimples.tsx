@@ -261,80 +261,14 @@ export function ListaLancamentosSimples() {
                 <TableBody>
                   {lancamentos.map((lancamento) => (
                     <TableRow key={lancamento.id}>
-                      <TableCell>{formatDate(lancamento.data)}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            lancamento.tipo === "receita"
-                              ? "default"
-                              : "destructive"
-                          }
-                          className={
-                            lancamento.tipo === "receita"
-                              ? "bg-green-100 text-green-700 hover:bg-green-200"
-                              : "bg-red-100 text-red-700 hover:bg-red-200"
-                          }
+                      {getVisibleColumns().map((column) => (
+                        <TableCell
+                          key={column.key}
+                          className={column.key === 'acoes' ? 'text-right' : ''}
                         >
-                          {lancamento.tipo === "receita" ? (
-                            <TrendingUp className="w-3 h-3 mr-1" />
-                          ) : (
-                            <TrendingDown className="w-3 h-3 mr-1" />
-                          )}
-                          {lancamento.tipo === "receita"
-                            ? "Receita"
-                            : "Despesa"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {lancamento.descricao?.nome || "N/A"}
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {formatarMoeda(
-                          lancamento.valorLiquido || lancamento.valor,
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {lancamento.formaPagamento?.nome || "N/A"}
-                      </TableCell>
-                      <TableCell>
-                        {lancamento.funcionario?.nome || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {lancamento.setor
-                          ? `${lancamento.setor.nome} - ${lancamento.setor.cidade}`
-                          : "-"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Abrir menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleEditar(lancamento)}
-                            >
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                setLancamentoParaExcluir(
-                                  lancamento.id.toString(),
-                                )
-                              }
-                              className="text-red-600"
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Excluir
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+                          {renderCellContent(lancamento, column.key)}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   ))}
                 </TableBody>
