@@ -33,6 +33,12 @@ async function apiRequest<T>(
       return { error: errorData.error || `Erro HTTP ${response.status}`, details: errorData.details };
     }
 
+    // Status 204 (No Content) não tem corpo de resposta
+    if (response.status === 204) {
+      console.log(`[ApiService] Resposta 204 - No Content`);
+      return { data: null };
+    }
+
     const data = await response.json();
     console.log(`[ApiService] Dados recebidos:`, data);
     return { data };
