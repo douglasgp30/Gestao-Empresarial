@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { useClientes } from "../../contexts/ClientesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -23,7 +24,8 @@ import {
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
-import { TrendingUp, FileText } from "lucide-react";
+import { TrendingUp, UserPlus } from "lucide-react";
+import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 
 export function ModalReceita() {
   const {
