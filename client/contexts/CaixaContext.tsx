@@ -24,6 +24,7 @@ interface CaixaContextType {
     categoria?: string;
     descricao?: string;
     cliente?: string;
+    cidade?: string;
     numeroNota?: string;
   };
   totais: {
@@ -68,6 +69,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     categoria: "todas",
     descricao: "todas",
     cliente: "todos",
+    cidade: "todas",
     numeroNota: "",
   });
 
@@ -119,6 +121,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           dataFim: formatarDataParaServidor(filtros.dataFim),
           ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
           ...(filtros.conta !== "todas" && { conta: filtros.conta }),
+          ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
           ...(filtros.numeroNota && filtros.numeroNota.trim() !== "" && { numeroNota: filtros.numeroNota }),
         };
 
@@ -200,6 +203,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.categoria,
     filtros.descricao,
     filtros.cliente,
+    filtros.cidade,
     filtros.numeroNota,
   ]);
 
