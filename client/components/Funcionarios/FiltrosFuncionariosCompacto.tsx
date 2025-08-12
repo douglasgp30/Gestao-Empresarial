@@ -270,31 +270,6 @@ export default function FiltrosFuncionariosCompacto() {
                     </div>
                   </div>
 
-                  {/* Botões dos Filtros Avançados */}
-                  <div className="flex justify-end gap-2 mt-3 pt-2 border-t border-gray-200">
-                    <Button
-                      onClick={() => {
-                        setFiltros({
-                          ...filtros,
-                          tipoAcesso: "todos",
-                          permissaoAcesso: undefined,
-                        });
-                      }}
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs px-2"
-                    >
-                      Limpar
-                    </Button>
-                    <Button
-                      onClick={() => {}} // Aplicação automática
-                      size="sm"
-                      className="h-7 text-xs px-3"
-                      disabled={isLoading}
-                    >
-                      Aplicado
-                    </Button>
-                  </div>
                 </div>
               </CollapsibleContent>
             </Collapsible>
