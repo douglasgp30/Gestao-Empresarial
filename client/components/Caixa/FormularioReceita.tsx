@@ -122,41 +122,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return 0;
   })();
 
-  // Atualizar campos calculados apenas quando necessário
-  useEffect(() => {
-    const novoValorLiquido = valorLiquidoCalculado.toFixed(2);
-    const novaComissao = comissaoCalculada.toFixed(2);
-
-    if (
-      formData.valorLiquido !== novoValorLiquido ||
-      formData.comissao !== novaComissao
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        valorLiquido: novoValorLiquido,
-        comissao: novaComissao,
-      }));
-    }
-  }, [
-    valorLiquidoCalculado,
-    comissaoCalculada,
-    formData.valorLiquido,
-    formData.comissao,
-  ]);
-
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
-    if (
-      !isFormaPagamentoCartao &&
-      formData.valorQueEntrou &&
-      formData.valorQueEntrou !== formData.valor
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        valorQueEntrou: "",
-      }));
+    if (!isFormaPagamentoCartao && valorQueEntrouInput.numericValue > 0) {
+      valorQueEntrouInput.reset();
     }
-  }, [isFormaPagamentoCartao]);
+  }, [isFormaPagamentoCartao, valorQueEntrouInput]);
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
