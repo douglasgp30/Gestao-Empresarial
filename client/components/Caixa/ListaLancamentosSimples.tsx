@@ -178,7 +178,7 @@ export function ListaLancamentosSimples() {
         return lancamento.numeroNota || "-";
 
       case 'cliente':
-        return lancamento.cliente || "-";
+        return lancamento.cliente?.nome || lancamento.cliente || "-";
 
       case 'acoes':
         return (
