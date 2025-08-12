@@ -12,7 +12,7 @@ interface FuncionariosContextType {
   funcionarios: Funcionario[];
   filtros: {
     busca?: string;
-    tipoAcesso?: "Administrador" | "Operador" | "todos";
+    tipoAcesso?: "Administrador" | "Operador" | "Técnico" | "todos";
     status?: "ativo" | "inativo" | "todos";
     permissaoAcesso?: boolean;
   };
@@ -120,14 +120,31 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Função para salvar funcionarios no localStorage
+  const salvarFuncionariosNoLocalStorage = (funcionarios: Funcionario[]) => {
+    try {
+      localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
+    } catch (error) {
+      console.warn("Erro ao salvar funcionarios no localStorage:", error);
+    }
+  };
+
   // Carregar dados reais do localStorage
   useEffect(() => {
     const funcionariosReais = carregarFuncionariosReais();
     setFuncionarios(funcionariosReais);
     setIsLoading(false);
   }, []);
+
+  // Salvar no localStorage sempre que funcionarios mudarem
+  useEffect(() => {
+    if (!isLoading) {
+      salvarFuncionariosNoLocalStorage(funcionarios);
+    }
+  }, [funcionarios, isLoading]);
+
   const [filtros, setFiltros] = useState({
-    tipoAcesso: "todos" as "Administrador" | "Operador" | "todos",
+    tipoAcesso: "todos" as "Administrador" | "Operador" | "Técnico" | "todos",
     status: "todos" as "ativo" | "inativo" | "todos",
   });
 
