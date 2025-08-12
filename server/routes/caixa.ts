@@ -100,6 +100,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
         campanha: true,
+        cliente: true,
       },
       orderBy: { id: "desc" },
     });
