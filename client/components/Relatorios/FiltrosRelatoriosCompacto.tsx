@@ -287,9 +287,9 @@ export default function FiltrosRelatoriosCompacto() {
                           Setor
                         </label>
                         <Select
-                          value={filtrosLocal.setor || ""}
+                          value={filtrosLocal.setor || "todos"}
                           onValueChange={(value) =>
-                            setFiltrosLocal((prev) => ({ ...prev, setor: value }))
+                            setFiltrosLocal((prev) => ({ ...prev, setor: value === "todos" ? "" : value }))
                           }
                           disabled={isLoadingGeral}
                         >
@@ -297,7 +297,7 @@ export default function FiltrosRelatoriosCompacto() {
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Todos</SelectItem>
+                            <SelectItem value="todos">Todos</SelectItem>
                             {setores.map((setor) => (
                               <SelectItem
                                 key={setor.id}
@@ -316,11 +316,11 @@ export default function FiltrosRelatoriosCompacto() {
                           Campanha
                         </label>
                         <Select
-                          value={filtrosLocal.campanha || ""}
+                          value={filtrosLocal.campanha || "todas"}
                           onValueChange={(value) =>
                             setFiltrosLocal((prev) => ({
                               ...prev,
-                              campanha: value,
+                              campanha: value === "todas" ? "" : value,
                             }))
                           }
                           disabled={isLoadingGeral}
@@ -329,7 +329,7 @@ export default function FiltrosRelatoriosCompacto() {
                             <SelectValue placeholder="Todas" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Todas</SelectItem>
+                            <SelectItem value="todas">Todas</SelectItem>
                             {campanhas.map((campanha) => (
                               <SelectItem
                                 key={campanha.id}
