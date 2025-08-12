@@ -280,7 +280,7 @@ export default function FormularioFuncionarioAvancado() {
         alterarPermissoes: false,
       });
     } else if (tipo === "Técnico") {
-      // Técnico tem permissões limitadas, focadas em lançamentos
+      // Técnico tem permiss��es limitadas, focadas em lançamentos
       setPermissoes({
         acessarDashboard: true,
         verCaixa: true,
@@ -400,6 +400,19 @@ export default function FormularioFuncionarioAvancado() {
                 {errors.nomeCompleto && (
                   <p className="text-sm text-red-500">{errors.nomeCompleto}</p>
                 )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="ehTecnico"
+                  checked={formData.ehTecnico}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, ehTecnico: checked === true })
+                  }
+                />
+                <Label htmlFor="ehTecnico" className="text-sm font-medium">
+                  Este funcionário é um técnico
+                </Label>
               </div>
 
               <div className="space-y-2">
