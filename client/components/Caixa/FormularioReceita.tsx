@@ -535,21 +535,35 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           <div className="space-y-2">
             <Label htmlFor="cliente">Cliente</Label>
             <div className="flex gap-2">
-              <Input
-                id="cliente"
-                placeholder="Nome do cliente"
+              <Select
                 value={formData.cliente}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, cliente: e.target.value }))
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, cliente: value }))
                 }
-                className="flex-1"
-              />
-              <ModalCadastroClienteRapido
-                onClienteAdicionado={(nomeCliente) => {
-                  setFormData((prev) => ({ ...prev, cliente: nomeCliente }));
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Selecione um cliente" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Nenhum cliente</SelectItem>
+                  {clientes.map((cliente) => (
+                    <SelectItem key={cliente.id} value={cliente.id}>
+                      {cliente.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <ModalCadastroCliente
+                trigger={
+                  <Button type="button" variant="outline" size="icon">
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
+                }
+                onClienteAdicionado={(cliente) => {
+                  setFormData((prev) => ({ ...prev, cliente: cliente.id }));
                   toast({
                     title: "Cliente Adicionado",
-                    description: `Cliente "${nomeCliente}" foi selecionado no campo.`,
+                    description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
                     variant: "default",
                   });
                 }}
