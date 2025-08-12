@@ -100,6 +100,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
         campanha: true,
+        cliente: { select: { id: true, nome: true, telefonePrincipal: true } },
       },
       orderBy: { id: "desc" },
     });
@@ -114,7 +115,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
 export const createLancamento: RequestHandler = async (req, res) => {
   try {
     console.log(
-      "[Caixa] Dados recebidos para criar lançamento:",
+      "[Caixa] Dados recebidos para criar lan��amento:",
       JSON.stringify(req.body, null, 2),
     );
     const data = LancamentoCaixaSchema.parse(req.body);
@@ -197,7 +198,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
     // Usar a data enviada pelo frontend ou a data atual como fallback
     let dataHoraLancamento: Date;
     if (req.body.data) {
-      // Se uma data específica foi enviada, usar ela às 12:00 para evitar problemas de timezone
+      // Se uma data espec��fica foi enviada, usar ela às 12:00 para evitar problemas de timezone
       const [ano, mes, dia] = req.body.data.split("-");
       dataHoraLancamento = new Date(
         parseInt(ano),
