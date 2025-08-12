@@ -9,6 +9,7 @@ const FuncionarioSchema = z.object({
   cargo: z.string().optional(),
   salario: z.number().optional(),
   temAcessoSistema: z.boolean().default(false),
+  tipoAcesso: z.string().optional(),
   login: z.string().optional(),
   senha: z.string().optional(),
   permissoes: z.string().optional()
