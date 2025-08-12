@@ -62,16 +62,16 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     if (subdescricaoId)
       where.subdescricaoId = parseInt(subdescricaoId as string);
 
-    // Filtros de data baseados em dataHora string
+    // Filtros de data baseados em dataHora DateTime
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
         const [dia, mes, ano] = (dataInicio as string).split("-");
-        where.dataHora.gte = `${dia}-${mes}-${ano} 00:00:00`;
+        where.dataHora.gte = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 0, 0, 0);
       }
       if (dataFim) {
         const [dia, mes, ano] = (dataFim as string).split("-");
-        where.dataHora.lte = `${dia}-${mes}-${ano} 23:59:59`;
+        where.dataHora.lte = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 23, 59, 59);
       }
     }
 
@@ -191,16 +191,16 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     const where: any = {};
     if (conta) where.conta = conta;
 
-    // Filtros de data baseados em dataHora string
+    // Filtros de data baseados em dataHora DateTime
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
         const [dia, mes, ano] = (dataInicio as string).split("-");
-        where.dataHora.gte = `${dia}-${mes}-${ano} 00:00:00`;
+        where.dataHora.gte = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 0, 0, 0);
       }
       if (dataFim) {
         const [dia, mes, ano] = (dataFim as string).split("-");
-        where.dataHora.lte = `${dia}-${mes}-${ano} 23:59:59`;
+        where.dataHora.lte = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 23, 59, 59);
       }
     }
 
