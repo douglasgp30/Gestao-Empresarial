@@ -545,7 +545,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <SelectValue placeholder="Selecione um cliente" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Nenhum cliente</SelectItem>
                   {clientes.map((cliente) => (
                     <SelectItem key={cliente.id} value={cliente.id}>
                       {cliente.nome}
