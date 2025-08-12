@@ -66,6 +66,7 @@ export function ModalReceita() {
     tecnicoResponsavel: "",
     setor: "",
     campanha: "",
+    cliente: "",
     observacoes: "",
     numeroNota: "",
     temNotaFiscal: false,
