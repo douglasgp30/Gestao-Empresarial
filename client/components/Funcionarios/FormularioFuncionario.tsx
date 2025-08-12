@@ -30,7 +30,7 @@ import {
 import { UserPlus, User, Shield, Percent } from "lucide-react";
 
 export default function FormularioFuncionario() {
-  const { adicionarFuncionario } = useFuncionarios();
+  const { adicionarFuncionario, funcionarios } = useFuncionarios();
   const [isOpen, setIsOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -74,6 +74,14 @@ export default function FormularioFuncionario() {
           "Login é obrigatório para funcionários com acesso ao sistema";
       } else if (formData.login.length < 3) {
         newErrors.login = "Login deve ter pelo menos 3 caracteres";
+      } else {
+        // Verificar se o login já existe
+        const loginExistente = funcionarios.find(
+          (func) => func.login?.toLowerCase() === formData.login.trim().toLowerCase()
+        );
+        if (loginExistente) {
+          newErrors.login = "Este login já está sendo usado por outro funcionário";
+        }
       }
 
       if (!formData.senha) {
