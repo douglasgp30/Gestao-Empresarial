@@ -181,7 +181,7 @@ export default function FormularioFuncionarioAvancado() {
     confirmarSenha: "",
     ehTecnico: false,
     temAcessoSistema: false,
-    tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
+    tipoAcesso: "Operador" as "Administrador" | "Operador",
     percentualComissao: "",
     ativo: true,
   });
