@@ -271,7 +271,7 @@ export default function FiltroDataGoogleAds({
   };
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={`relative filtro-data-google-ads ${className}`} ref={dropdownRef}>
       {label && (
         <Label className="text-sm font-medium mb-2 block">{label}</Label>
       )}
