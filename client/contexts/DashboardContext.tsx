@@ -144,7 +144,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasAtrasadas: 0,
   });
 
-  const setFiltroRapido = (
+  const setFiltroRapido = useCallback((
     tipo: "ultimos7dias" | "estaemana" | "ultimos30dias" | "mesAtual",
   ) => {
     let novoFiltro: FiltrosPeriodo;
@@ -164,19 +164,80 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getHoje() };
         break;
       default:
-        novoFiltro = filtros;
+        return; // Não fazer nada se tipo inválido
     }
 
     setFiltros(novoFiltro);
-  };
+  }, []);
+
+  // Memoize filtered data to avoid recalculations
+  const lancamentosFiltrados = useMemo(() => {
+    if (!caixaContext?.lancamentos) return [];
+
+    let filtro = filtros;
+    if (aplicarFiltrosCaixa && caixaContext?.filtros) {
+      filtro = {
+        dataInicio: caixaContext.filtros.dataInicio || filtros.dataInicio,
+        dataFim: caixaContext.filtros.dataFim || filtros.dataFim,
+      };
+    }
+
+    return caixaContext.lancamentos.filter((lancamento) => {
+      const dataLancamento = new Date(lancamento.data);
+      const dataInicio = new Date(
+        filtro.dataInicio.getFullYear(),
+        filtro.dataInicio.getMonth(),
+        filtro.dataInicio.getDate(),
+      );
+      const dataFim = new Date(
+        filtro.dataFim.getFullYear(),
+        filtro.dataFim.getMonth(),
+        filtro.dataFim.getDate(),
+      );
+      const dataLancNorm = new Date(
+        dataLancamento.getFullYear(),
+        dataLancamento.getMonth(),
+        dataLancamento.getDate(),
+      );
+
+      return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
+    });
+  }, [
+    caixaContext?.lancamentos,
+    filtros,
+    aplicarFiltrosCaixa,
+    caixaContext?.filtros?.dataInicio,
+    caixaContext?.filtros?.dataFim,
+  ]);
+
+  const contasFiltradas = useMemo(() => {
+    if (!contasContext?.contas) return [];
+
+    return contasContext.contas.filter((conta) => {
+      const dataReferencia = conta.dataPagamento || conta.dataVencimento;
+      const dataInicio = new Date(
+        filtros.dataInicio.getFullYear(),
+        filtros.dataInicio.getMonth(),
+        filtros.dataInicio.getDate(),
+      );
+      const dataFim = new Date(
+        filtros.dataFim.getFullYear(),
+        filtros.dataFim.getMonth(),
+        filtros.dataFim.getDate(),
+      );
+      const dataRefNorm = new Date(
+        dataReferencia.getFullYear(),
+        dataReferencia.getMonth(),
+        dataReferencia.getDate(),
+      );
+
+      return dataRefNorm >= dataInicio && dataRefNorm <= dataFim;
+    });
+  }, [contasContext?.contas, filtros]);
 
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
     if (!caixaContext || !contasContext) {
-      return;
-    }
-
-    if (!caixaContext?.lancamentos || caixaContext?.lancamentos?.length === 0) {
       return;
     }
 
