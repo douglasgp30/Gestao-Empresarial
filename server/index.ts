@@ -69,6 +69,33 @@ export function createServer(): Express {
     console.log('[Server] Ping recebido');
     res.json({ message: "pong", timestamp: new Date().toISOString() });
   });
+
+  // Endpoint temporário de debug
+  app.get("/api/debug/db-status", async (req, res) => {
+    try {
+      const { prisma } = await import("./lib/database");
+
+      const counts = {
+        descricoes: await prisma.descricao.count(),
+        formasPagamento: await prisma.formaPagamento.count(),
+        funcionarios: await prisma.funcionario.count(),
+        setores: await prisma.setor.count(),
+        campanhas: await prisma.campanha.count(),
+        lancamentos: await prisma.lancamentoCaixa.count(),
+      };
+
+      const samples = {
+        descricoes: await prisma.descricao.findMany({ take: 3 }),
+        formasPagamento: await prisma.formaPagamento.findMany({ take: 3 }),
+        funcionarios: await prisma.funcionario.findMany({ take: 3, select: { id: true, nome: true, tipoAcesso: true } }),
+      };
+
+      res.json({ counts, samples });
+    } catch (error) {
+      console.error('[Debug] Erro ao verificar status do banco:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
   app.get("/api/demo", handleDemo);
 
   // Rotas de Campanhas
