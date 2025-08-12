@@ -113,6 +113,7 @@ export const updateFuncionario: RequestHandler = async (req, res) => {
         cargo: true,
         salario: true,
         temAcessoSistema: true,
+        tipoAcesso: true,
         login: true,
         permissoes: true,
         dataCriacao: true
