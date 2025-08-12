@@ -14,11 +14,11 @@ function CaixaContent() {
 
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
-      {/* Header - Mobile First */}
-      <div className="space-y-4">
+      {/* Header com botões no topo direito */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         {/* Título */}
-        <div className="text-center sm:text-left">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center justify-center sm:justify-start gap-2">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-2">
             <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             Caixa
           </h1>
@@ -27,21 +27,18 @@ function CaixaContent() {
           </p>
         </div>
 
-        {/* Botões - Empilhados no mobile */}
-        <div className="space-y-3">
-          {/* Botões principais - Largura total no mobile */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <ModalReceita />
-            <ModalDespesa />
-          </div>
-
-          {/* Botões de configuração - Grid responsivo */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-            <ModalCampanhas />
-            <ModalDescricoesAvancado />
-            <ModalCidadeSetor />
-          </div>
+        {/* Botões principais - Compactos no canto direito */}
+        <div className="flex flex-wrap gap-2 lg:flex-nowrap">
+          <ModalReceita />
+          <ModalDespesa />
         </div>
+      </div>
+
+      {/* Botões de configuração - Menores */}
+      <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+        <ModalCampanhas />
+        <ModalDescricoesAvancado />
+        <ModalCidadeSetor />
       </div>
 
 
