@@ -381,24 +381,35 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       .filter((l) => {
         if (l.tipo !== "receita") return false;
 
-        // Tentar converter múltiplos formatos de data
+        // Converter dataHora para Date
         let dataLancamento: Date;
 
-        // Priorizar l.data se disponível (novo formato)
-        if (l.data) {
+        if (l.dataHora) {
+          if (typeof l.dataHora === "string") {
+            // Se for string, pode ser formato brasileiro DD-MM-AAAA HH:MM:SS ou ISO
+            if (l.dataHora.includes("-") && l.dataHora.split("-")[0].length === 2) {
+              // Formato brasileiro DD-MM-AAAA HH:MM:SS
+              const [datePart] = l.dataHora.split(" ");
+              const [dia, mes, ano] = datePart.split("-");
+              dataLancamento = new Date(
+                parseInt(ano),
+                parseInt(mes) - 1,
+                parseInt(dia),
+              );
+            } else {
+              // Formato ISO ou outro
+              dataLancamento = new Date(l.dataHora);
+            }
+          } else {
+            // Se já for Date
+            dataLancamento = new Date(l.dataHora);
+          }
+        } else if (l.data) {
+          // Fallback para campo data se existir
           dataLancamento = new Date(l.data);
-        } else if (typeof l.dataHora === "string" && l.dataHora.includes("-")) {
-          // Formato brasileiro DD-MM-AAAA HH:MM:SS
-          const [datePart] = l.dataHora.split(" ");
-          const [dia, mes, ano] = datePart.split("-");
-          dataLancamento = new Date(
-            parseInt(ano),
-            parseInt(mes) - 1,
-            parseInt(dia),
-          );
         } else {
-          // Fallback para outros formatos
-          dataLancamento = new Date(l.dataHora);
+          console.warn('[Dashboard] Lançamento sem data válida:', l);
+          return false;
         }
 
         const ehDoMesAtual = isMesmoMes(dataLancamento, hoje);
