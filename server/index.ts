@@ -168,8 +168,8 @@ export function createServer(): Express {
 const app = createServer();
 const port = process.env.PORT || 8080;
 
-// Só fazer listen quando rodando standalone (não no Vite)
-if (process.env.NODE_ENV === "production" || (process.env.NODE_ENV !== "test" && !module.parent)) {
+// Só fazer listen quando não estiver sendo usado pelo Vite (desenvolvimento)
+if (process.env.NODE_ENV !== "test" && process.env.NODE_ENV !== "development") {
   app.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
   });
