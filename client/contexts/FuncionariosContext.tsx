@@ -220,15 +220,25 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const excluirFuncionario = (id: string) => {
+  const excluirFuncionario = async (id: string) => {
     // Não permitir excluir o próprio usuário ou o admin principal
     if (id === user?.id || id === "1") {
       alert("Não é possível excluir este usuário.");
       return;
     }
-    setFuncionarios((prev) =>
-      prev.filter((funcionario) => funcionario.id !== id),
-    );
+
+    try {
+      const response = await funcionariosApi.excluir(parseInt(id));
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Recarregar lista de funcionários
+      await carregarFuncionarios();
+    } catch (error) {
+      console.error("Erro ao excluir funcionário:", error);
+      throw error;
+    }
   };
 
   const alterarStatusFuncionario = (id: string, ativo: boolean) => {
