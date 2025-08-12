@@ -8,7 +8,6 @@ import ModalDescricoesAvancado from "../components/Caixa/ModalDescricoesAvancado
 import ModalCidadeSetor from "../components/Caixa/ModalCidadeSetor";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
-import { ApiTest } from "../components/ui/api-test";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
@@ -48,9 +47,6 @@ function CaixaContent() {
 
       {/* Filtros e Totais */}
       <FiltrosCaixaCompacto />
-
-      {/* Teste de API temporário */}
-      <ApiTest />
 
       {/* Lista de Lançamentos */}
       <ListaLancamentosSimples />
