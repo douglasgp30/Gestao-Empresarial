@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Switch } from "../ui/switch";
 import { Textarea } from "../ui/textarea";
 import {
   Dialog,
@@ -22,7 +23,7 @@ import {
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, FileText } from "lucide-react";
 
 export function ModalReceita() {
   const {
@@ -50,6 +51,8 @@ export function ModalReceita() {
     data: new Date().toISOString().split("T")[0],
     valor: "",
     valorQueEntrou: "",
+    valorLiquido: "",
+    comissao: "",
     categoria: "",
     descricao: "",
     formaPagamento: "",
@@ -57,9 +60,12 @@ export function ModalReceita() {
     setor: "",
     campanha: "",
     observacoes: "",
+    numeroNota: "",
+    temNotaFiscal: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
   // Filtrar descrições de receita
   const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
@@ -86,11 +92,74 @@ export function ModalReceita() {
       ?.nome?.toLowerCase()
       .includes("cartão");
 
+  // Calcular campos automaticamente
+  useEffect(() => {
+    const valor = parseFloat(formData.valor) || 0;
+    const valorQueEntrou = parseFloat(formData.valorQueEntrou) || valor;
+    const valorLiquido = valorQueEntrou;
+
+    // Calcular comissão baseada no percentual do técnico
+    let comissao = 0;
+    if (formData.tecnicoResponsavel) {
+      const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
+      if (tecnico && tecnico.percentualComissao) {
+        comissao = valorLiquido * (tecnico.percentualComissao / 100);
+      }
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      valorLiquido: valorLiquido.toFixed(2),
+      comissao: comissao.toFixed(2),
+    }));
+  }, [
+    formData.valor,
+    formData.valorQueEntrou,
+    formData.tecnicoResponsavel,
+    tecnicos,
+  ]);
+
+  // Resetar valorQueEntrou quando mudança de Cartão para outras formas
+  useEffect(() => {
+    if (!isFormaPagamentoCartao && formData.valorQueEntrou && formData.valorQueEntrou !== formData.valor) {
+      setFormData((prev) => ({
+        ...prev,
+        valorQueEntrou: "",
+      }));
+    }
+  }, [isFormaPagamentoCartao, formData.valorQueEntrou, formData.valor]);
+
+  // Função para emitir nota fiscal
+  const emitirNotaFiscal = () => {
+    const urlNotaFiscal =
+      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733";
+    const janelaNotaFiscal = window.open(
+      urlNotaFiscal,
+      "_blank",
+      "width=1200,height=800,scrollbars=yes,resizable=yes",
+    );
+
+    // Monitorar quando a janela for fechada
+    const interval = setInterval(() => {
+      if (janelaNotaFiscal?.closed) {
+        clearInterval(interval);
+        setNotaFiscalEmitida(true);
+        toast({
+          title: "Nota Fiscal",
+          description: "Preencha o número da nota fiscal emitida",
+          variant: "default",
+        });
+      }
+    }, 1000);
+  };
+
   const resetForm = () => {
     setFormData({
       data: new Date().toISOString().split("T")[0],
       valor: "",
       valorQueEntrou: "",
+      valorLiquido: "",
+      comissao: "",
       categoria: "",
       descricao: "",
       formaPagamento: "",
@@ -98,7 +167,10 @@ export function ModalReceita() {
       setor: "",
       campanha: "",
       observacoes: "",
+      numeroNota: "",
+      temNotaFiscal: false,
     });
+    setNotaFiscalEmitida(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -130,6 +202,17 @@ export function ModalReceita() {
       return;
     }
 
+    // Validar número da nota se nota fiscal foi marcada
+    if (formData.temNotaFiscal && !formData.numeroNota) {
+      toast({
+        title: "Erro",
+        description:
+          "Número da nota fiscal é obrigatório quando há nota fiscal",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -137,14 +220,18 @@ export function ModalReceita() {
         data: new Date(formData.data),
         tipo: "receita",
         valor: parseFloat(formData.valor),
+        valorLiquido:
+          parseFloat(formData.valorLiquido) || parseFloat(formData.valor),
         valorQueEntrou:
           parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
+        comissao: parseFloat(formData.comissao) || 0,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         setor: formData.setor || undefined,
         campanha: formData.campanha || undefined,
         observacoes: formData.observacoes || undefined,
+        numeroNota: formData.numeroNota || undefined,
       });
 
       toast({
@@ -282,72 +369,66 @@ export function ModalReceita() {
               />
             </div>
 
-            <SelectWithAdd
-              value={formData.formaPagamento}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, formaPagamento: value }))
-              }
-              placeholder="Selecione a forma"
-              label="Forma de Pagamento"
-              required={true}
-              items={formasPagamento}
-              onAddNew={async (data) => {
-                await adicionarFormaPagamento({
-                  nome: data.nome,
-                  descricao: data.descricao || "",
-                });
-              }}
-              addNewTitle="Nova Forma de Pagamento"
-              addNewDescription="Adicione uma nova forma de pagamento."
-              addNewFields={[
-                {
-                  key: "nome",
-                  label: "Nome da Forma de Pagamento",
-                  required: true,
-                },
-                {
-                  key: "descricao",
-                  label: "Descrição (opcional)",
-                  required: false,
-                },
-              ]}
-            />
+            <div className="space-y-4">
+              <SelectWithAdd
+                value={formData.formaPagamento}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, formaPagamento: value }))
+                }
+                placeholder="Selecione a forma"
+                label="Forma de Pagamento"
+                required={true}
+                items={formasPagamento}
+                onAddNew={async (data) => {
+                  await adicionarFormaPagamento({
+                    nome: data.nome,
+                  });
+                }}
+                addNewTitle="Nova Forma de Pagamento"
+                addNewDescription="Adicione uma nova forma de pagamento."
+                addNewFields={[
+                  {
+                    key: "nome",
+                    label: "Nome da Forma de Pagamento",
+                    required: true,
+                  },
+                ]}
+              />
 
-            {/* Campo Valor Recebido para Cartão - compacto, logo após forma de pagamento */}
-            {isFormaPagamentoCartao && (
-              <div className="space-y-2 col-span-full">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="valorQueEntrou"
-                      className="text-sm font-medium text-yellow-700"
-                    >
-                      Valor Recebido (R$) *
-                    </Label>
-                    <Input
-                      id="valorQueEntrou"
-                      type="number"
-                      step="0.01"
-                      placeholder="Valor líquido"
-                      value={formData.valorQueEntrou}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          valorQueEntrou: e.target.value,
-                        }))
-                      }
-                      className="bg-yellow-50 border-yellow-300 text-sm h-9"
-                      required
-                    />
-                  </div>
-                  <div className="text-xs text-yellow-600 md:col-span-2">
-                    <strong>Importante:</strong> Para cartão, informe o valor
-                    líquido que entrou na conta (após descontar taxas da
-                    operadora).
+              {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
+              {isFormaPagamentoCartao && (
+                <div className="space-y-2">
+                  <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
+                    Valor Recebido *
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="relative w-40">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                        R$
+                      </span>
+                      <Input
+                        id="valorQueEntrou"
+                        type="number"
+                        step="0.01"
+                        placeholder="0,00"
+                        value={formData.valorQueEntrou}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            valorQueEntrou: e.target.value,
+                          }))
+                        }
+                        className="bg-yellow-50 border-yellow-300 pl-8"
+                        required
+                      />
+                    </div>
+                    <p className="text-xs text-yellow-600 flex-1">
+                      <strong>Importante:</strong> Valor líquido após taxas da operadora.
+                    </p>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -423,7 +504,76 @@ export function ModalReceita() {
               />
             </div>
 
-            {/* Observações - Campo básico */}
+            {/* Nota Fiscal */}
+            <div className="space-y-3 p-4 bg-blue-50 rounded-lg border">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="nota-fiscal"
+                  checked={formData.temNotaFiscal}
+                  onCheckedChange={(checked) => {
+                    setFormData((prev) => ({ ...prev, temNotaFiscal: checked }));
+                    if (!checked) {
+                      setFormData((prev) => ({ ...prev, numeroNota: "" }));
+                      setNotaFiscalEmitida(false);
+                    }
+                  }}
+                />
+                <Label htmlFor="nota-fiscal" className="font-medium">
+                  Há nota fiscal para esta receita?
+                </Label>
+              </div>
+
+              {formData.temNotaFiscal && (
+                <div className="space-y-3 pl-6">
+                  <div className="text-sm text-blue-600">
+                    Para emitir a nota fiscal, clique no botão abaixo. Após a
+                    emissão, preencha o número da nota.
+                  </div>
+
+                  <Button
+                    type="button"
+                    onClick={emitirNotaFiscal}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Emitir Nota Fiscal
+                  </Button>
+
+                  {(notaFiscalEmitida || formData.numeroNota) && (
+                    <div className="space-y-2">
+                      <Label htmlFor="numeroNotaObrigatorio">
+                        Número da Nota Fiscal *
+                      </Label>
+                      <Input
+                        id="numeroNotaObrigatorio"
+                        placeholder="Ex: 12345"
+                        value={formData.numeroNota}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            numeroNota: e.target.value,
+                          }))
+                        }
+                        required={formData.temNotaFiscal}
+                        className={
+                          formData.temNotaFiscal && !formData.numeroNota
+                            ? "border-red-500"
+                            : ""
+                        }
+                      />
+                      {formData.temNotaFiscal && !formData.numeroNota && (
+                        <p className="text-sm text-red-500">
+                          Número da nota fiscal é obrigatório
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Observações - Campo no final */}
             <div className="space-y-2">
               <Label htmlFor="observacoes">Observações do Serviço</Label>
               <Textarea
@@ -471,22 +621,35 @@ export function ModalReceita() {
                 <h4 className="font-medium text-green-800 mb-2">
                   Resumo Financeiro
                 </h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                   <div>
                     <span className="text-gray-600">Valor Total:</span>
                     <div className="font-medium">
                       R$ {parseFloat(formData.valor || "0").toFixed(2)}
                     </div>
                   </div>
-                  {formData.valorQueEntrou && (
-                    <div>
-                      <span className="text-gray-600">Valor Recebido:</span>
-                      <div className="font-medium">
-                        R${" "}
-                        {parseFloat(formData.valorQueEntrou || "0").toFixed(2)}
-                      </div>
+                  <div>
+                    <span className="text-gray-600">Valor Líquido:</span>
+                    <div className="font-medium">
+                      R$ {parseFloat(formData.valorLiquido || "0").toFixed(2)}
                     </div>
-                  )}
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Comissão:</span>
+                    <div className="font-medium">
+                      R$ {parseFloat(formData.comissao || "0").toFixed(2)}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Para Empresa:</span>
+                    <div className="font-medium text-green-600">
+                      R${" "}
+                      {(
+                        parseFloat(formData.valorLiquido || "0") -
+                        parseFloat(formData.comissao || "0")
+                      ).toFixed(2)}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
