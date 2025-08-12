@@ -105,9 +105,9 @@ export function FiltrosCaixaCompacto() {
           {/* Período e Tipo - Sempre visíveis */}
           <div className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="dataInicio" className="text-sm font-medium">
-                  Data Início
+              <div className="space-y-1">
+                <Label htmlFor="dataInicio" className="text-xs font-medium">
+                  De
                 </Label>
                 <Input
                   id="dataInicio"
@@ -119,12 +119,12 @@ export function FiltrosCaixaCompacto() {
                       dataInicio: new Date(e.target.value),
                     }))
                   }
-                  className="h-10 sm:h-9"
+                  className="h-8 text-xs"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="dataFim" className="text-sm font-medium">
-                  Data Fim
+              <div className="space-y-1">
+                <Label htmlFor="dataFim" className="text-xs font-medium">
+                  Até
                 </Label>
                 <Input
                   id="dataFim"
@@ -136,7 +136,7 @@ export function FiltrosCaixaCompacto() {
                       dataFim: new Date(e.target.value),
                     }))
                   }
-                  className="h-10 sm:h-9"
+                  className="h-8 text-xs"
                 />
               </div>
               <div className="space-y-2 sm:col-span-2 lg:col-span-1">
