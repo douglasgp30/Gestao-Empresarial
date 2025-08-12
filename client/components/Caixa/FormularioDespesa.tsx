@@ -30,6 +30,8 @@ interface FormularioDespesaProps {
 }
 
 export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
   const {
     descricoes,
@@ -39,9 +41,14 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     isLoading: entidadesLoading,
   } = useEntidades();
 
+  // Hook para Enter funcionar como Tab
+  useEnterAsTab(formRef);
+
+  // Hook para input de moeda
+  const valorInput = useCurrencyInput();
+
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
-    valor: "",
     conta: "empresa", // "empresa" ou "pessoal"
     categoria: "",
     descricao: "",
