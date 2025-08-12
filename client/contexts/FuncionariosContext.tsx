@@ -149,17 +149,36 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     status: "todos" as "ativo" | "inativo" | "todos",
   });
 
-  const adicionarFuncionario = (
+  const adicionarFuncionario = async (
     novoFuncionario: Omit<Funcionario, "id" | "dataCadastro">,
   ) => {
-    const id = Date.now().toString();
-    const funcionario: Funcionario = {
-      ...novoFuncionario,
-      id,
-      dataCadastro: new Date(),
-    };
+    try {
+      // Preparar dados para a API
+      const dadosApi = {
+        nome: novoFuncionario.nomeCompleto,
+        ehTecnico: novoFuncionario.ehTecnico || false,
+        email: novoFuncionario.email,
+        telefone: novoFuncionario.telefone,
+        cargo: novoFuncionario.cargo,
+        salario: novoFuncionario.salario,
+        temAcessoSistema: novoFuncionario.permissaoAcesso || false,
+        tipoAcesso: novoFuncionario.tipoAcesso,
+        login: novoFuncionario.login,
+        senha: novoFuncionario.senha,
+        permissoes: novoFuncionario.permissoes ? JSON.stringify(novoFuncionario.permissoes) : undefined,
+      };
 
-    setFuncionarios((prev) => [...prev, funcionario]);
+      const response = await funcionariosApi.criar(dadosApi);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Recarregar lista de funcionários
+      await carregarFuncionarios();
+    } catch (error) {
+      console.error("Erro ao adicionar funcionário:", error);
+      throw error;
+    }
   };
 
   const editarFuncionario = (
