@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Funcionario } from "@shared/types";
 import { useAuth } from "./AuthContext";
+import { funcionariosApi } from "../lib/apiService";
 
 interface FuncionariosContextType {
   funcionarios: Funcionario[];
