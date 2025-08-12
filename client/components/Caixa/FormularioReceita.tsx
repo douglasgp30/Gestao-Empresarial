@@ -314,13 +314,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               <Label htmlFor="valor">Valor (R$) *</Label>
               <Input
                 id="valor"
-                type="number"
-                step="0.01"
-                placeholder="0,00"
-                value={formData.valor}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, valor: e.target.value }))
-                }
+                {...valorInput.inputProps}
                 required
               />
             </div>
@@ -374,7 +368,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 });
               }}
               addNewTitle="Nova Descrição de Receita"
-              addNewDescription="Adicione uma nova descri��ão de serviço para receitas."
+              addNewDescription="Adicione uma nova descrição de serviço para receitas."
               addNewFields={[
                 {
                   key: "nome",
