@@ -288,7 +288,7 @@ export default function FiltroDataGoogleAds({
         <Button
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full justify-between h-10 px-3 text-sm font-normal"
+          className="w-full justify-between h-8 px-3 text-xs font-normal"
           disabled={isLoading}
         >
           <div className="flex items-center gap-2">
