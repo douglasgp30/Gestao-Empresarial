@@ -245,8 +245,18 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
     if (!caixaContext || !contasContext) {
+      console.log('Dashboard: Aguardando contextos...', {
+        caixa: !!caixaContext,
+        contas: !!contasContext
+      });
       return;
     }
+
+    console.log('Dashboard: Recalculando stats', {
+      lancamentos: caixaContext.lancamentos?.length || 0,
+      totaisCaixa: caixaContext.totais,
+      filtros: filtros
+    });
 
     setIsLoading(true);
 
