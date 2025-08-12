@@ -374,13 +374,20 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const fimMesAtual = getFimDoMes();
 
     // Receitas do caixa do mês atual (independente dos filtros)
+    console.log('[Dashboard] Calculando meta do mês atual...');
+    console.log('[Dashboard] Total de lançamentos:', caixaContext?.lancamentos?.length || 0);
+
     const receitasCaixaMesAtual = (caixaContext?.lancamentos || [])
       .filter((l) => {
         if (l.tipo !== "receita") return false;
 
-        // Tentar converter a dataHora que está no formato DD-MM-AAAA HH:MM:SS
+        // Tentar converter múltiplos formatos de data
         let dataLancamento: Date;
-        if (typeof l.dataHora === "string" && l.dataHora.includes("-")) {
+
+        // Priorizar l.data se disponível (novo formato)
+        if (l.data) {
+          dataLancamento = new Date(l.data);
+        } else if (typeof l.dataHora === "string" && l.dataHora.includes("-")) {
           // Formato brasileiro DD-MM-AAAA HH:MM:SS
           const [datePart] = l.dataHora.split(" ");
           const [dia, mes, ano] = datePart.split("-");
@@ -390,14 +397,28 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
             parseInt(dia),
           );
         } else {
-          // Fallback para l.data se existir
-          dataLancamento = new Date(l.data || l.dataHora);
+          // Fallback para outros formatos
+          dataLancamento = new Date(l.dataHora);
         }
 
-        // Verificar se é do mês atual
-        return isMesmoMes(dataLancamento, hoje);
+        const ehDoMesAtual = isMesmoMes(dataLancamento, hoje);
+
+        if (ehDoMesAtual) {
+          console.log('[Dashboard] Receita do mês encontrada:', {
+            id: l.id,
+            data: l.data,
+            dataHora: l.dataHora,
+            dataCalculada: dataLancamento,
+            valor: l.valor,
+            valorLiquido: l.valorLiquido
+          });
+        }
+
+        return ehDoMesAtual;
       })
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+
+    console.log('[Dashboard] Receitas do mês atual calculadas:', receitasCaixaMesAtual);
 
     // Total alcançado da meta = apenas receitas do mês atual
     const novoTotalMetaMes = receitasCaixaMesAtual;
