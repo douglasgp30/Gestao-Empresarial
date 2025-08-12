@@ -19,7 +19,6 @@ import {
   parseISO
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import "react-day-picker/dist/style.css";
 
 export interface FiltroDataGoogleAdsProps {
   dataInicio: string;
