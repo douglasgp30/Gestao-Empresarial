@@ -88,6 +88,84 @@ export function ListaLancamentosSimples() {
     }).format(valor);
   };
 
+  // Função para renderizar o conteúdo de cada célula
+  const renderCellContent = (lancamento: LancamentoCaixa, columnKey: string) => {
+    switch (columnKey) {
+      case 'data':
+        return formatDate(lancamento.data);
+
+      case 'tipo':
+        return (
+          <Badge
+            variant={lancamento.tipo === "receita" ? "default" : "destructive"}
+            className={
+              lancamento.tipo === "receita"
+                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                : "bg-red-100 text-red-700 hover:bg-red-200"
+            }
+          >
+            {lancamento.tipo === "receita" ? (
+              <TrendingUp className="w-3 h-3 mr-1" />
+            ) : (
+              <TrendingDown className="w-3 h-3 mr-1" />
+            )}
+            {lancamento.tipo === "receita" ? "Receita" : "Despesa"}
+          </Badge>
+        );
+
+      case 'descricao':
+        return lancamento.descricao?.nome || "N/A";
+
+      case 'valor':
+        return (
+          <span className="font-medium">
+            {formatarMoeda(lancamento.valorLiquido || lancamento.valor)}
+          </span>
+        );
+
+      case 'formaPagamento':
+        return lancamento.formaPagamento?.nome || "N/A";
+
+      case 'tecnico':
+        return lancamento.funcionario?.nome || "-";
+
+      case 'setor':
+        return lancamento.setor
+          ? `${lancamento.setor.nome} - ${lancamento.setor.cidade}`
+          : "-";
+
+      case 'acoes':
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleEditar(lancamento)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setLancamentoParaExcluir(lancamento.id.toString())}
+                className="text-red-600"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+
+      default:
+        return "-";
+    }
+  };
+
   const handleExcluir = async () => {
     if (!lancamentoParaExcluir) return;
 
