@@ -257,38 +257,32 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                 },
               ]}
             />
-
-            <SelectWithAdd
-              value={formData.formaPagamento}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, formaPagamento: value }))
-              }
-              placeholder="Selecione a forma"
-              label="Forma de Pagamento"
-              required={true}
-              items={formasPagamento}
-              onAddNew={async (data) => {
-                await adicionarFormaPagamento({
-                  nome: data.nome,
-                  descricao: data.descricao || "",
-                });
-              }}
-              addNewTitle="Nova Forma de Pagamento"
-              addNewDescription="Adicione uma nova forma de pagamento."
-              addNewFields={[
-                {
-                  key: "nome",
-                  label: "Nome da Forma de Pagamento",
-                  required: true,
-                },
-                {
-                  key: "descricao",
-                  label: "Descrição (opcional)",
-                  required: false,
-                },
-              ]}
-            />
           </div>
+
+          <SelectWithAdd
+            value={formData.formaPagamento}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, formaPagamento: value }))
+            }
+            placeholder="Selecione a forma"
+            label="Forma de Pagamento"
+            required={true}
+            items={formasPagamento}
+            onAddNew={async (data) => {
+              await adicionarFormaPagamento({
+                nome: data.nome,
+              });
+            }}
+            addNewTitle="Nova Forma de Pagamento"
+            addNewDescription="Adicione uma nova forma de pagamento."
+            addNewFields={[
+              {
+                key: "nome",
+                label: "Nome da Forma de Pagamento",
+                required: true,
+              },
+            ]}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
@@ -311,10 +305,18 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               <h4 className="font-medium text-red-800 mb-2">
                 Resumo da Despesa
               </h4>
-              <div className="text-sm">
-                <span className="text-gray-600">Valor a ser debitado:</span>
-                <div className="font-medium text-red-600 text-lg">
-                  R$ {parseFloat(formData.valor || "0").toFixed(2)}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600">Valor a ser debitado:</span>
+                  <div className="font-medium text-red-600 text-lg">
+                    R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-gray-600">Conta:</span>
+                  <div className="font-medium capitalize">
+                    {formData.conta}
+                  </div>
                 </div>
               </div>
             </div>
