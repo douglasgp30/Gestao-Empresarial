@@ -25,7 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog";
-import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
+import FiltroDataDashboard from "../components/Dashboard/FiltroDataDashboard";
 import { formatDate, formatDateRange } from "../lib/dateUtils";
 import {
   DollarSign,
@@ -502,7 +502,7 @@ export default function Dashboard() {
         </div>
 
         {/* Filtros de Data */}
-        <FiltrosDataCompacto />
+      <FiltroDataDashboard />
 
         {/* Loading State */}
         {isLoading && (
