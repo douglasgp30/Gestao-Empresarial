@@ -73,6 +73,7 @@ model Cliente {
 
   // Relacionamentos
   agendamentos Agendamento[]
+  lancamentos  LancamentoCaixa[]
 
   @@map("clientes")
   @@index([cpf])
