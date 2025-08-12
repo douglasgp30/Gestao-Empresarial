@@ -285,19 +285,18 @@ export default function FiltrosPeriodoCompacto({
         </div>
 
         {/* Botões de Ação */}
-        <div className="flex gap-2 sm:flex-shrink-0">
+        <div className="flex gap-1 sm:flex-shrink-0">
           <Button
             onClick={onAplicar}
             disabled={isLoading}
             size="sm"
-            className="flex-1 sm:flex-none gap-1"
+            className="h-8 px-3 text-xs"
           >
             {isLoading ? (
               <RefreshCw className="h-3 w-3 animate-spin" />
             ) : (
               <Check className="h-3 w-3" />
             )}
-            <span className="hidden sm:inline">Aplicar</span>
           </Button>
 
           {onLimpar && (
@@ -305,10 +304,9 @@ export default function FiltrosPeriodoCompacto({
               onClick={handleLimparInterno}
               variant="outline"
               size="sm"
-              className="flex-1 sm:flex-none"
+              className="h-8 px-3 text-xs"
             >
               <RefreshCw className="h-3 w-3" />
-              <span className="hidden sm:inline ml-1">Limpar</span>
             </Button>
           )}
         </div>
