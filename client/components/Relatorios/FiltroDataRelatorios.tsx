@@ -51,17 +51,18 @@ export default function FiltroDataRelatorios() {
   const dataFim = filtros.dataFim || new Date();
 
   return (
-    <FiltroDataGoogleAds
-      dataInicio={dataInicio.toISOString().split("T")[0]}
-      dataFim={dataFim.toISOString().split("T")[0]}
-      onDataInicioChange={handleDataInicioChange}
-      onDataFimChange={handleDataFimChange}
-      onAplicar={handleAplicar}
-      onLimpar={handleLimpar}
-      isLoading={isLoading}
-      className="mb-4"
-      placeholder="Selecionar período dos relatórios"
-      label="Período dos dados"
-    />
+    <div className="flex flex-col sm:flex-row sm:items-end gap-4 mb-4">
+      <FiltroDataGoogleAds
+        dataInicio={dataInicio.toISOString().split("T")[0]}
+        dataFim={dataFim.toISOString().split("T")[0]}
+        onDataInicioChange={handleDataInicioChange}
+        onDataFimChange={handleDataFimChange}
+        onAplicar={handleAplicar}
+        onLimpar={handleLimpar}
+        isLoading={isLoading}
+        placeholder="Selecionar período dos relatórios"
+        label="Período dos dados"
+      />
+    </div>
   );
 }
