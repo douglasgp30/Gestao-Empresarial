@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
@@ -22,6 +22,8 @@ import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
+import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
+import { useCurrencyInput } from "../../hooks/use-currency-input";
 
 interface FormularioDespesaProps {
   onSuccess?: () => void;
