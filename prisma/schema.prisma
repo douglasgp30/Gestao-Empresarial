@@ -62,10 +62,10 @@ model FormaPagamento {
 model Cliente {
   id                 Int      @id @default(autoincrement()) // CodigoCliente
   nome               String   // Nome do cliente (obrigatório)
-  cpf                String?  // CPF do cliente (opcional)
+  cpf                String?  @unique // CPF do cliente (opcional)
   telefonePrincipal  String   // Telefone principal (obrigatório)
   telefoneSecundario String?  // Telefone secundário (opcional)
-  email              String?  // E-mail (opcional)
+  email              String?  @unique // E-mail (opcional)
   cep                String?  // CEP (opcional)
   logradouro         String?  // Preenchido automaticamente a partir do CEP
   complemento        String?  // Complemento do endereço (opcional)
@@ -75,6 +75,8 @@ model Cliente {
   agendamentos Agendamento[]
 
   @@map("clientes")
+  @@index([cpf])
+  @@index([email])
 }
 
 model Fornecedor {
@@ -90,7 +92,7 @@ model Funcionario {
   id                Int      @id @default(autoincrement()) // CodigoTecnico
   nome              String   // NomeTecnico (obrigatório)
   percentualServico Float?   // PercentualServico (obrigatório)
-  email             String?
+  email             String?  @unique
   telefone          String?
   cargo             String?
   salario           Float?
@@ -106,6 +108,9 @@ model Funcionario {
   agendamentos Agendamento[]
 
   @@map("funcionarios")
+  @@index([email])
+  @@index([temAcessoSistema])
+  @@index([tipoAcesso])
 }
 
 model Setor {
@@ -123,7 +128,7 @@ model Setor {
 
 model LancamentoCaixa {
   id                Int      @id @default(autoincrement()) // CodLançamentoCX
-  dataHora          String   // Data e hora no formato DD-MM-AAAA HH:MM:SS
+  dataHora          DateTime // Data e hora do lançamento
   valor             Float    // Valor do lançamento (obrigatório)
   valorRecebido     Float?   // Valor efetivamente recebido (obrigatório para cartão)
   conta             String   // "empresa" ou "pessoal" (obrigatório)
@@ -149,6 +154,9 @@ model LancamentoCaixa {
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
 
   @@map("lancamentos_caixa")
+  @@index([dataHora])
+  @@index([conta, tipo])
+  @@index([funcionarioId])
 }
 
 model Conta {
@@ -164,6 +172,9 @@ model Conta {
   dataCriacao   DateTime @default(now())
 
   @@map("contas")
+  @@index([dataVencimento])
+  @@index([status])
+  @@index([tipo])
 }
 
 model Agendamento {
