@@ -326,9 +326,13 @@ export default function FormularioFuncionarioAvancado() {
       }
     }
 
-    const percentual = parseFloat(formData.percentualComissao);
-    if (isNaN(percentual) || percentual < 0 || percentual > 100) {
-      newErrors.percentualComissao = "Percentual deve estar entre 0 e 100";
+    if (!formData.percentualComissao.trim()) {
+      newErrors.percentualComissao = "Percentual de comissão é obrigatório";
+    } else {
+      const percentual = parseFloat(formData.percentualComissao);
+      if (isNaN(percentual) || percentual < 0 || percentual > 100) {
+        newErrors.percentualComissao = "Percentual deve estar entre 0 e 100";
+      }
     }
 
     setErrors(newErrors);
