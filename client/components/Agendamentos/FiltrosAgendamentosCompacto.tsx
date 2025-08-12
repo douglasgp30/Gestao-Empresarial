@@ -220,31 +220,6 @@ export default function FiltrosAgendamentosCompacto() {
                   </div>
                 </div>
 
-                {/* Botões dos Filtros Avançados */}
-                <div className="flex justify-end gap-2 mt-3 pt-2 border-t border-gray-200">
-                  <Button
-                    onClick={() => {
-                      setFiltrosLocal((prev) => ({
-                        ...prev,
-                        setor: "",
-                        tecnico: "",
-                      }));
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="h-7 text-xs px-2"
-                  >
-                    Limpar
-                  </Button>
-                  <Button
-                    onClick={aplicarFiltros}
-                    size="sm"
-                    className="h-7 text-xs px-3"
-                    disabled={isLoadingGeral}
-                  >
-                    Aplicar
-                  </Button>
-                </div>
               </div>
             </CollapsibleContent>
           </Collapsible>
