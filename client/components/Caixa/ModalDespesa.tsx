@@ -86,6 +86,14 @@ export function ModalDespesa() {
       erros.push("Valor deve ser maior que zero");
     }
 
+    if (!formData.conta) {
+      erros.push("Conta é obrigatória");
+    }
+
+    if (!formData.categoria) {
+      erros.push("Categoria é obrigatória");
+    }
+
     if (!formData.descricao) {
       erros.push("Descrição é obrigatória");
     }
@@ -109,10 +117,10 @@ export function ModalDespesa() {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "despesa",
+        conta: formData.conta,
         valor: parseFloat(formData.valor),
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
-        setor: formData.setor || undefined,
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
       });
