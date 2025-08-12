@@ -58,9 +58,11 @@ export function createServer(): Express {
   app.use(cors());
   app.use(express.json());
 
-  // Middleware de log para debug
+  // Middleware de log apenas para APIs (não assets estáticos)
   app.use((req, res, next) => {
-    console.log(`[Server] ${req.method} ${req.path}`);
+    if (req.path.startsWith('/api/')) {
+      console.log(`[Server] ${req.method} ${req.path}`);
+    }
     next();
   });
 
