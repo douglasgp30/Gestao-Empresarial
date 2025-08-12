@@ -44,6 +44,7 @@ export const getTecnicos: RequestHandler = async (req, res) => {
     const tecnicos = await prisma.funcionario.findMany({
       where: {
         OR: [
+          { tipoAcesso: 'Técnico' },
           { cargo: 'Técnico' },
           { cargo: { contains: 'técnico' } },
           { cargo: { contains: 'Técnico' } }
@@ -52,7 +53,8 @@ export const getTecnicos: RequestHandler = async (req, res) => {
       select: {
         id: true,
         nome: true,
-        cargo: true
+        cargo: true,
+        tipoAcesso: true
       },
       orderBy: { nome: 'asc' }
     });
