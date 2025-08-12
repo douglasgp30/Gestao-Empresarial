@@ -297,42 +297,19 @@ export function ModalDespesa() {
               </Select>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="setor">Setor/Região</Label>
-                <Select
-                  value={formData.setor}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, setor: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o setor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {setores.map((setor) => (
-                      <SelectItem key={setor.id} value={setor.id.toString()}>
-                        {setor.nome} - {setor.cidade}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="numeroNota">Número da Nota</Label>
-                <Input
-                  id="numeroNota"
-                  placeholder="Ex: NF-001"
-                  value={formData.numeroNota}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      numeroNota: e.target.value,
-                    }))
-                  }
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="numeroNota">Número da Nota</Label>
+              <Input
+                id="numeroNota"
+                placeholder="Ex: NF-001"
+                value={formData.numeroNota}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    numeroNota: e.target.value,
+                  }))
+                }
+              />
             </div>
 
             <div className="space-y-2">
