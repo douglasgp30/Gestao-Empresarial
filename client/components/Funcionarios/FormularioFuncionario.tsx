@@ -338,6 +338,9 @@ export default function FormularioFuncionario() {
                     {errors.percentualComissao}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  Use 0 para funcionários que não recebem comissão
+                </p>
                 <p className="text-sm text-muted-foreground">
                   Percentual aplicado sobre o valor líquido dos serviços
                   realizados
