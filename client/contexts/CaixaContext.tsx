@@ -200,6 +200,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         campanhaId: novoLancamento.campanha
           ? parseInt(novoLancamento.campanha)
           : undefined,
+        clienteId: novoLancamento.clienteId
+          ? parseInt(novoLancamento.clienteId)
+          : undefined,
       };
 
       const response = await caixaApi.criarLancamento(dadosApi);
