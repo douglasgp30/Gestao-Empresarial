@@ -15,10 +15,11 @@ export function AlertaDadosVazios({ show }: AlertaDadosVaziosProps) {
       initializeTestData();
       toast({
         title: "✅ Dados Inicializados!",
-        description: "Dados de teste criados. Agora você pode testar os formulários!",
+        description:
+          "Dados de teste criados. Agora você pode testar os formulários!",
         variant: "default",
       });
-      
+
       // Recarregar a página após 1 segundo
       setTimeout(() => {
         window.location.reload();
@@ -43,12 +44,13 @@ export function AlertaDadosVazios({ show }: AlertaDadosVaziosProps) {
       </AlertTitle>
       <AlertDescription className="text-yellow-700 space-y-3">
         <p>
-          Os formulários precisam de dados básicos (técnicos, categorias, formas de pagamento) 
-          para funcionar corretamente. Atualmente não há dados cadastrados.
+          Os formulários precisam de dados básicos (técnicos, categorias, formas
+          de pagamento) para funcionar corretamente. Atualmente não há dados
+          cadastrados.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button 
+          <Button
             onClick={handleInitData}
             className="bg-yellow-600 hover:bg-yellow-700 text-white"
             size="sm"
@@ -56,8 +58,8 @@ export function AlertaDadosVazios({ show }: AlertaDadosVaziosProps) {
             <Zap className="h-4 w-4 mr-2" />
             Gerar Dados de Teste Agora
           </Button>
-          
-          <Button 
+
+          <Button
             variant="outline"
             size="sm"
             onClick={() => {
@@ -67,10 +69,11 @@ export function AlertaDadosVazios({ show }: AlertaDadosVaziosProps) {
             Ou Cadastrar Manualmente
           </Button>
         </div>
-        
+
         <div className="text-xs text-yellow-600 mt-2">
-          <strong>Isso criará:</strong> 3 funcionários (incluindo técnicos), categorias (Serviços, Produtos, etc.), 
-          formas de pagamento (Dinheiro, Cartão, PIX) e outros dados essenciais.
+          <strong>Isso criará:</strong> 3 funcionários (incluindo técnicos),
+          categorias (Serviços, Produtos, etc.), formas de pagamento (Dinheiro,
+          Cartão, PIX) e outros dados essenciais.
         </div>
       </AlertDescription>
     </Alert>

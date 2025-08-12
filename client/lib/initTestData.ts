@@ -7,7 +7,7 @@ export function initializeTestData() {
       id: "1",
       nomeCompleto: "Administrador do Sistema",
       login: "admin",
-      senha: "admin123", 
+      senha: "admin123",
       temAcessoSistema: true,
       tipoAcesso: "Administrador",
       permissoes: {
@@ -86,7 +86,7 @@ export function initializeTestData() {
       percentualComissao: 12,
       dataCadastro: new Date(),
       ativo: true,
-    }
+    },
   ];
 
   // Categorias de teste para receitas e despesas
@@ -95,32 +95,32 @@ export function initializeTestData() {
       id: "1",
       nome: "Serviços",
       tipo: "receita",
-      dataCriacao: new Date()
+      dataCriacao: new Date(),
     },
     {
       id: "2",
       nome: "Produtos",
       tipo: "receita",
-      dataCriacao: new Date()
+      dataCriacao: new Date(),
     },
     {
       id: "3",
       nome: "Materiais",
-      tipo: "despesa", 
-      dataCriacao: new Date()
+      tipo: "despesa",
+      dataCriacao: new Date(),
     },
     {
       id: "4",
       nome: "Combustível",
       tipo: "despesa",
-      dataCriacao: new Date()
+      dataCriacao: new Date(),
     },
     {
       id: "5",
       nome: "Alimentação",
       tipo: "despesa",
-      dataCriacao: new Date()
-    }
+      dataCriacao: new Date(),
+    },
   ];
 
   // Clientes de teste
@@ -135,16 +135,16 @@ export function initializeTestData() {
       cep: "74000-000",
       logradouro: "Rua das Flores, 123",
       complemento: "Casa",
-      dataCriacao: new Date()
+      dataCriacao: new Date(),
     },
     {
-      id: "2", 
+      id: "2",
       nome: "Maria Santos",
       cpf: "987.654.321-00",
       telefonePrincipal: "(62) 88888-2222",
       email: "maria@email.com",
-      dataCriacao: new Date()
-    }
+      dataCriacao: new Date(),
+    },
   ];
 
   // Salvar no localStorage
@@ -154,13 +154,17 @@ export function initializeTestData() {
 
   console.log("✅ Dados de teste criados com sucesso:");
   console.log("- 3 funcionários (1 Admin + 2 Técnicos)");
-  console.log("- 5 categorias (Serviços, Produtos, Materiais, Combustível, Alimentação)");
+  console.log(
+    "- 5 categorias (Serviços, Produtos, Materiais, Combustível, Alimentação)",
+  );
   console.log("- 2 clientes de teste");
   console.log("- As formas de pagamento virão do servidor (incluindo Cartão)");
-  
+
   // Recarregar a página para refletir as mudanças
-  if (typeof window !== 'undefined') {
-    alert("Dados de teste criados! A página será recarregada para aplicar as mudanças.");
+  if (typeof window !== "undefined") {
+    alert(
+      "Dados de teste criados! A página será recarregada para aplicar as mudanças.",
+    );
     window.location.reload();
   }
 }
@@ -171,19 +175,23 @@ export function clearTestData() {
   localStorage.removeItem("categorias");
   localStorage.removeItem("clientes");
   console.log("🗑️ Dados de teste removidos");
-  
+
   // Recarregar a página para refletir as mudanças
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     alert("Dados de teste removidos! A página será recarregada.");
     window.location.reload();
   }
 }
 
 // Tornar funções disponíveis globalmente para fácil teste
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   (window as any).initializeTestData = initializeTestData;
   (window as any).clearTestData = clearTestData;
-  
-  console.log("💡 Dica: Execute 'initializeTestData()' no console para criar dados de teste");
-  console.log("💡 Dica: Execute 'clearTestData()' no console para limpar os dados de teste");
+
+  console.log(
+    "💡 Dica: Execute 'initializeTestData()' no console para criar dados de teste",
+  );
+  console.log(
+    "💡 Dica: Execute 'clearTestData()' no console para limpar os dados de teste",
+  );
 }

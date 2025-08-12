@@ -67,11 +67,25 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       where.dataHora = {};
       if (dataInicio) {
         const [dia, mes, ano] = (dataInicio as string).split("-");
-        where.dataHora.gte = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 0, 0, 0);
+        where.dataHora.gte = new Date(
+          parseInt(ano),
+          parseInt(mes) - 1,
+          parseInt(dia),
+          0,
+          0,
+          0,
+        );
       }
       if (dataFim) {
         const [dia, mes, ano] = (dataFim as string).split("-");
-        where.dataHora.lte = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 23, 59, 59);
+        where.dataHora.lte = new Date(
+          parseInt(ano),
+          parseInt(mes) - 1,
+          parseInt(dia),
+          23,
+          59,
+          59,
+        );
       }
     }
 
@@ -196,11 +210,25 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
       where.dataHora = {};
       if (dataInicio) {
         const [dia, mes, ano] = (dataInicio as string).split("-");
-        where.dataHora.gte = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 0, 0, 0);
+        where.dataHora.gte = new Date(
+          parseInt(ano),
+          parseInt(mes) - 1,
+          parseInt(dia),
+          0,
+          0,
+          0,
+        );
       }
       if (dataFim) {
         const [dia, mes, ano] = (dataFim as string).split("-");
-        where.dataHora.lte = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 23, 59, 59);
+        where.dataHora.lte = new Date(
+          parseInt(ano),
+          parseInt(mes) - 1,
+          parseInt(dia),
+          23,
+          59,
+          59,
+        );
       }
     }
 

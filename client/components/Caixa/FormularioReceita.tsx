@@ -124,7 +124,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     // Calcular comissão baseada no percentual do técnico
     let comissao = 0;
     if (formData.tecnicoResponsavel) {
-      const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
+      const tecnico = tecnicos.find(
+        (t) => t.id.toString() === formData.tecnicoResponsavel,
+      );
       if (tecnico && tecnico.percentualComissao) {
         comissao = valorLiquido * (tecnico.percentualComissao / 100);
       }
@@ -145,7 +147,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
-    if (!isFormaPagamentoCartao && formData.valorQueEntrou && formData.valorQueEntrou !== formData.valor) {
+    if (
+      !isFormaPagamentoCartao &&
+      formData.valorQueEntrou &&
+      formData.valorQueEntrou !== formData.valor
+    ) {
       setFormData((prev) => ({
         ...prev,
         valorQueEntrou: "",
@@ -433,7 +439,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             <div className="space-y-2 col-span-full">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 <div className="space-y-2">
-                  <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
+                  <Label
+                    htmlFor="valorQueEntrou"
+                    className="text-sm font-medium text-yellow-700"
+                  >
                     Valor Recebido (R$) *
                   </Label>
                   <Input
@@ -453,7 +462,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   />
                 </div>
                 <div className="text-xs text-yellow-600 md:col-span-2">
-                  <strong>Importante:</strong> Para cartão, informe o valor líquido que entrou na conta (após descontar taxas da operadora).
+                  <strong>Importante:</strong> Para cartão, informe o valor
+                  líquido que entrou na conta (após descontar taxas da
+                  operadora).
                 </div>
               </div>
             </div>

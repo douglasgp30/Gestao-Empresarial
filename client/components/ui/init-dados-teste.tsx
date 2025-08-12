@@ -9,7 +9,8 @@ export function InitDadosTeste() {
       initializeTestData();
       toast({
         title: "Sucesso!",
-        description: "Dados de teste inicializados. Recarregue a página para ver as mudanças.",
+        description:
+          "Dados de teste inicializados. Recarregue a página para ver as mudanças.",
         variant: "default",
       });
     } catch (error) {
@@ -24,7 +25,7 @@ export function InitDadosTeste() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <Button 
+      <Button
         onClick={handleInitData}
         className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
       >

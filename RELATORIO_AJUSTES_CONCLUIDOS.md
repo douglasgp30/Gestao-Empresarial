@@ -7,11 +7,13 @@
 ## 🎯 **1. AJUSTES NO CADASTRO DE RECEITA:**
 
 ### ✅ **"Descrição" e "Subdescrição" → "Categoria" e "Descrição"**
+
 - **STATUS**: ✅ **JÁ ESTAVA CORRETO**
 - **IMPLEMENTAÇÃO**: O formulário já usava categoria → descrição
 - **FLUXO**: Primeiro seleciona categoria, depois a descrição é filtrada pela categoria
 
 ### ✅ **Campo "Valor Recebido" para Cartão - Melhorado**
+
 - **STATUS**: ✅ **CORRIGIDO**
 - **MUDANÇAS FEITAS**:
   - Campo mais compacto (altura menor)
@@ -20,11 +22,13 @@
   - Texto explicativo mais conciso
 
 ### ✅ **Campo de Observações no Final**
+
 - **STATUS**: ✅ **JÁ ESTAVA IMPLEMENTADO**
 - **LOCALIZAÇÃO**: Campo "Observações do Serviço" no final do formulário
 - **FUNCIONALIDADE**: Textarea para observações sobre o serviço prestado
 
 ### ✅ **Técnicos Não Apareciam**
+
 - **STATUS**: ✅ **CORRIGIDO**
 - **PROBLEMA**: getTecnicos() não carregava do localStorage
 - **SOLUÇÃO**: Implementada verificação do localStorage quando funcionários não carregados
@@ -35,6 +39,7 @@
 ## 🎯 **2. AJUSTES NO LANÇAMENTO DE DESPESA:**
 
 ### ✅ **Opção Pessoal/Empresa**
+
 - **STATUS**: ✅ **IMPLEMENTADO**
 - **MUDANÇAS FEITAS**:
   - Adicionado campo "Conta" com opções "Empresa" e "Pessoal"
@@ -43,11 +48,13 @@
   - Layout ajustado (3 colunas: Data, Valor, Conta)
 
 ### ✅ **Categoria e Descrição**
+
 - **STATUS**: ✅ **JÁ ESTAVA CORRETO**
 - **FUNCIONALIDADE**: Fluxo categoria → descrição já implementado
 - **VALIDAÇÃO**: Ambos obrigatórios
 
 ### ✅ **Remover Campo Setor/Região**
+
 - **STATUS**: ✅ **REMOVIDO COMPLETAMENTE**
 - **MUDANÇAS FEITAS**:
   - Campo Setor/Região removido do formulário
@@ -60,6 +67,7 @@
 ## 📊 **RESUMO DAS CORREÇÕES TÉCNICAS:**
 
 ### **FormularioReceita.tsx:**
+
 ```typescript
 // ✅ Campo Valor Recebido compacto
 {isFormaPagamentoCartao && (
@@ -86,6 +94,7 @@
 ```
 
 ### **FormularioDespesa.tsx:**
+
 ```typescript
 // ✅ Campo Conta (Pessoal/Empresa) adicionado
 const [formData, setFormData] = useState({
@@ -110,11 +119,12 @@ const [formData, setFormData] = useState({
 ```
 
 ### **EntidadesContext.tsx:**
+
 ```typescript
 // ✅ getTecnicos() corrigido para carregar do localStorage
 const getTecnicos = () => {
   let funcionariosDisponiveis = funcionarios;
-  
+
   if (funcionariosDisponiveis.length === 0) {
     try {
       const funcionariosStorage = localStorage.getItem("funcionarios");
@@ -125,11 +135,11 @@ const getTecnicos = () => {
       console.warn("Erro ao carregar funcionários do localStorage:", error);
     }
   }
-  
-  const funcionariosTecnicos = funcionariosDisponiveis.filter(f => 
-    f.tipoAcesso === "Técnico" || f.cargo === "Técnico"
+
+  const funcionariosTecnicos = funcionariosDisponiveis.filter(
+    (f) => f.tipoAcesso === "Técnico" || f.cargo === "Técnico",
   );
-  
+
   // Combinar e remover duplicatas...
   return tecnicosUnicos;
 };
@@ -140,12 +150,14 @@ const getTecnicos = () => {
 ## 🎉 **STATUS FINAL:**
 
 ### **✅ RECEITA (100% CONFORME SOLICITADO):**
+
 - ✅ Categoria → Descrição (já estava correto)
 - ✅ Valor Recebido compacto logo após forma de pagamento
 - ✅ Campo observações no final (já estava implementado)
 - ✅ Técnicos aparecem após cadastro
 
 ### **✅ DESPESA (100% CONFORME SOLICITADO):**
+
 - ✅ Opção Pessoal/Empresa implementada
 - ✅ Categoria → Descrição (já estava correto)
 - ✅ Campo Setor/Região completamente removido

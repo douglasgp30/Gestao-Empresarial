@@ -361,16 +361,17 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
 
     // Filtrar funcionários que sejam do tipo "Técnico"
-    const funcionariosTecnicos = funcionariosDisponiveis.filter(f =>
-      f.tipoAcesso === "Técnico" || f.cargo === "Técnico"
+    const funcionariosTecnicos = funcionariosDisponiveis.filter(
+      (f) => f.tipoAcesso === "Técnico" || f.cargo === "Técnico",
     );
 
     // Combinar com técnicos da API
     const todosTecnicos = [...tecnicos, ...funcionariosTecnicos];
 
     // Remover duplicatas baseado no ID
-    const tecnicosUnicos = todosTecnicos.filter((tecnico, index, array) =>
-      array.findIndex(t => t.id === tecnico.id) === index
+    const tecnicosUnicos = todosTecnicos.filter(
+      (tecnico, index, array) =>
+        array.findIndex((t) => t.id === tecnico.id) === index,
     );
 
     return tecnicosUnicos;

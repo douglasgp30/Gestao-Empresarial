@@ -318,7 +318,10 @@ export function ModalReceita() {
               <div className="space-y-2 col-span-full">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                   <div className="space-y-2">
-                    <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
+                    <Label
+                      htmlFor="valorQueEntrou"
+                      className="text-sm font-medium text-yellow-700"
+                    >
                       Valor Recebido (R$) *
                     </Label>
                     <Input
@@ -338,7 +341,9 @@ export function ModalReceita() {
                     />
                   </div>
                   <div className="text-xs text-yellow-600 md:col-span-2">
-                    <strong>Importante:</strong> Para cartão, informe o valor líquido que entrou na conta (após descontar taxas da operadora).
+                    <strong>Importante:</strong> Para cartão, informe o valor
+                    líquido que entrou na conta (após descontar taxas da
+                    operadora).
                   </div>
                 </div>
               </div>
@@ -477,7 +482,8 @@ export function ModalReceita() {
                     <div>
                       <span className="text-gray-600">Valor Recebido:</span>
                       <div className="font-medium">
-                        R$ {parseFloat(formData.valorQueEntrou || "0").toFixed(2)}
+                        R${" "}
+                        {parseFloat(formData.valorQueEntrou || "0").toFixed(2)}
                       </div>
                     </div>
                   )}

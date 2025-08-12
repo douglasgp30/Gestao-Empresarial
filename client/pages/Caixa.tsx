@@ -18,7 +18,8 @@ function CaixaContent() {
 
   // Verificar se há dados essenciais para mostrar alerta
   const tecnicos = getTecnicos();
-  const temDadosEssenciais = descricoes.length > 0 && formasPagamento.length > 0 && tecnicos.length > 0;
+  const temDadosEssenciais =
+    descricoes.length > 0 && formasPagamento.length > 0 && tecnicos.length > 0;
 
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
