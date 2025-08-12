@@ -32,33 +32,9 @@ export async function seedBasicData() {
     console.log('[Seed] Formas de pagamento criadas');
   }
 
-  // Criar funcionários básicos se não existirem
+  // Não criar funcionários fictícios - apenas verificar se há funcionários
   const funcionariosCount = await prisma.funcionario.count();
-  if (funcionariosCount === 0) {
-    await prisma.funcionario.createMany({
-      data: [
-        {
-          nome: 'Administrador',
-          percentualComissao: 0,
-          tipoAcesso: 'Administrador',
-          temAcessoSistema: true,
-        },
-        {
-          nome: 'João Técnico',
-          percentualComissao: 15,
-          tipoAcesso: 'Técnico',
-          temAcessoSistema: true,
-        },
-        {
-          nome: 'Maria Técnica',
-          percentualComissao: 12,
-          tipoAcesso: 'Técnico',
-          temAcessoSistema: true,
-        },
-      ]
-    });
-    console.log('[Seed] Funcionários criados');
-  }
+  console.log(`[Seed] Funcionários no banco: ${funcionariosCount}`);
 
   // Criar setores básicos se não existirem
   const setoresCount = await prisma.setor.count();
