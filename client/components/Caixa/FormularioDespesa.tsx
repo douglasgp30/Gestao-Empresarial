@@ -32,10 +32,8 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   const {
     descricoes,
     formasPagamento,
-    setores,
     adicionarDescricao,
     adicionarFormaPagamento,
-    adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
 
@@ -291,38 +289,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               ]}
             />
           </div>
-
-          <SelectWithAdd
-            value={formData.setor}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, setor: value }))
-            }
-            placeholder="Selecione o setor"
-            label="Setor/Região"
-            required={false}
-            items={setores}
-            onAddNew={async (data) => {
-              await adicionarSetor({
-                nome: data.nome,
-                cidade: data.cidade,
-              });
-            }}
-            addNewTitle="Novo Setor/Região"
-            addNewDescription="Adicione um novo setor ou região."
-            addNewFields={[
-              {
-                key: "nome",
-                label: "Nome do Setor",
-                required: true,
-              },
-              {
-                key: "cidade",
-                label: "Cidade",
-                required: true,
-              },
-            ]}
-            renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
-          />
 
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
