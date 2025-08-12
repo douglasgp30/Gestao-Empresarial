@@ -163,7 +163,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     if (!isLoading) {
       carregarLancamentos();
     }
-  }, [filtros]);
+  }, [filtros, carregarLancamentos, isLoading]);
 
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
