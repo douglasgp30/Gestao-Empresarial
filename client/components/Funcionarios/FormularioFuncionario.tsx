@@ -109,24 +109,29 @@ export default function FormularioFuncionario() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validarFormulario()) return;
 
-    adicionarFuncionario({
-      nomeCompleto: formData.nomeCompleto.trim(),
-      ehTecnico: formData.ehTecnico,
-      login: formData.login.trim().toLowerCase(),
-      senha: formData.senha,
-      permissaoAcesso: formData.permissaoAcesso,
-      tipoAcesso: formData.tipoAcesso,
-      percentualComissao: parseFloat(formData.percentualComissao),
-      ativo: formData.ativo,
-    });
+    try {
+      await adicionarFuncionario({
+        nomeCompleto: formData.nomeCompleto.trim(),
+        ehTecnico: formData.ehTecnico,
+        login: formData.login.trim().toLowerCase(),
+        senha: formData.senha,
+        permissaoAcesso: formData.permissaoAcesso,
+        tipoAcesso: formData.tipoAcesso,
+        percentualComissao: parseFloat(formData.percentualComissao),
+        ativo: formData.ativo,
+      });
 
-    resetForm();
-    setIsOpen(false);
+      resetForm();
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar funcionário:", error);
+      // TODO: Mostrar erro para o usuário
+    }
   };
 
   return (
