@@ -193,6 +193,26 @@ export const createLancamento: RequestHandler = async (req, res) => {
       );
     }
 
+    // Verificar se o cliente existe (se especificado)
+    let clienteIdValido = data.clienteId;
+    if (data.clienteId) {
+      const cliente = await prisma.cliente.findUnique({
+        where: { id: data.clienteId },
+      });
+      console.log(
+        `[Caixa] Cliente ID ${data.clienteId}:`,
+        cliente ? "EXISTS" : "NOT FOUND",
+      );
+
+      // Se o cliente não existir, definir como null para não quebrar o foreign key
+      if (!cliente) {
+        console.log(
+          `[Caixa] Cliente ID ${data.clienteId} não encontrado. Definindo como null.`,
+        );
+        clienteIdValido = undefined;
+      }
+    }
+
     console.log("[Caixa] Tentando criar lançamento no banco...");
 
     // Usar a data enviada pelo frontend ou a data atual como fallback
