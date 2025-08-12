@@ -8,18 +8,9 @@ import ModalDescricoesAvancado from "../components/Caixa/ModalDescricoesAvancado
 import ModalCidadeSetor from "../components/Caixa/ModalCidadeSetor";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
-import { InitDadosTeste } from "../components/ui/init-dados-teste";
-import { AlertaDadosVazios } from "../components/ui/alerta-dados-vazios";
-import { useEntidades } from "../contexts/EntidadesContext";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
-  const { descricoes, formasPagamento, getTecnicos } = useEntidades();
-
-  // Verificar se há dados essenciais para mostrar alerta
-  const tecnicos = getTecnicos();
-  const temDadosEssenciais =
-    descricoes.length > 0 && formasPagamento.length > 0 && tecnicos.length > 0;
 
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
@@ -53,17 +44,12 @@ function CaixaContent() {
         </div>
       </div>
 
-      {/* Alerta para dados vazios */}
-      <AlertaDadosVazios show={!temDadosEssenciais} />
 
       {/* Filtros e Totais */}
       <FiltrosCaixaCompacto />
 
       {/* Lista de Lançamentos */}
       <ListaLancamentosSimples />
-
-      {/* Botão para inicializar dados de teste */}
-      <InitDadosTeste />
     </div>
   );
 }
