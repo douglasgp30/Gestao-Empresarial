@@ -30,7 +30,9 @@ export interface FuncionarioPermissoes {
 export interface Funcionario {
   id: string; // CodigoTecnico
   nome: string; // NomeTecnico (obrigatório)
+  nomeCompleto?: string; // Nome completo alternativo
   percentualServico?: number; // PercentualServico (obrigatório)
+  percentualComissao?: number; // Percentual de comissão do técnico
   login?: string;
   senha?: string;
   temAcessoSistema?: boolean;
