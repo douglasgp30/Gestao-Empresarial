@@ -190,8 +190,8 @@ export default function ModalCampanhas() {
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className="gap-2">
-            <Megaphone className="h-4 w-4" />
+          <Button variant="outline" size="sm" className="gap-1 text-xs">
+            <Megaphone className="h-3 w-3" />
             Campanhas
           </Button>
         </DialogTrigger>
