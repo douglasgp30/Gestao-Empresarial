@@ -119,7 +119,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       JSON.stringify(req.body, null, 2),
     );
     const data = LancamentoCaixaSchema.parse(req.body);
-    console.log("[Caixa] Dados ap��s validação:", JSON.stringify(data, null, 2));
+    console.log("[Caixa] Dados após validação:", JSON.stringify(data, null, 2));
 
     // Validação customizada para valorRecebido quando forma de pagamento for cartão
     if (data.formaPagamentoId) {
@@ -265,6 +265,7 @@ export const updateLancamento: RequestHandler = async (req, res) => {
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
         campanha: true,
+        cliente: true,
       },
     });
 
