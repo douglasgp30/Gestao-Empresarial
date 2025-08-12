@@ -374,11 +374,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const fimMesAtual = getFimDoMes();
 
     // Receitas do caixa do mês atual (independente dos filtros)
-    console.log("[Dashboard] Calculando meta do mês atual...");
-    console.log(
-      "[Dashboard] Total de lançamentos:",
-      caixaContext?.lancamentos?.length || 0,
-    );
+    // Meta do mês atual - baseada em receitas do caixa
 
     const receitasCaixaMesAtual = (caixaContext?.lancamentos || [])
       .filter((l) => {
