@@ -31,6 +31,8 @@ interface FormularioReceitaProps {
 }
 
 export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+
   const {
     adicionarLancamento,
     campanhas,
@@ -47,6 +49,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
+
+  // Hook para Enter funcionar como Tab
+  useEnterAsTab(formRef);
+
+  // Hook para input de moeda
+  const valorInput = useCurrencyInput();
+  const valorQueEntrouInput = useCurrencyInput();
+  const impostoInput = useCurrencyInput();
 
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
