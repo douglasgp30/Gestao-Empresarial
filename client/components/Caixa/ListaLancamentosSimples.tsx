@@ -37,6 +37,8 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { toast } from "../ui/use-toast";
+import { ModalEditarLancamento } from "./ModalEditarLancamento";
+import { LancamentoCaixa } from "@shared/types";
 import {
   MoreHorizontal,
   Edit,
