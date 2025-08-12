@@ -41,7 +41,6 @@ export function ModalDespesa() {
     descricao: "",
     formaPagamento: "",
     observacoes: "",
-    numeroNota: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,7 +71,6 @@ export function ModalDespesa() {
       descricao: "",
       formaPagamento: "",
       observacoes: "",
-      numeroNota: "",
     });
   };
 
@@ -122,7 +120,6 @@ export function ModalDespesa() {
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         observacoes: formData.observacoes || undefined,
-        numeroNota: formData.numeroNota || undefined,
       });
 
       toast({
@@ -297,20 +294,6 @@ export function ModalDespesa() {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="numeroNota">Número da Nota</Label>
-              <Input
-                id="numeroNota"
-                placeholder="Ex: NF-001"
-                value={formData.numeroNota}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    numeroNota: e.target.value,
-                  }))
-                }
-              />
-            </div>
 
             <div className="space-y-2">
               <Label htmlFor="observacoes">Observações</Label>
