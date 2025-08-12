@@ -316,7 +316,7 @@ export default function FormularioFuncionario() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="percentualComissao">
-                  Percentual de Comissão (%)
+                  Percentual de Comissão (%) *
                 </Label>
                 <Input
                   id="percentualComissao"
