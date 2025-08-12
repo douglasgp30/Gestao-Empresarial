@@ -59,6 +59,7 @@ export function ApiTest() {
   const runAllTests = async () => {
     setTestResults({});
     await testEndpoint('/api/ping', 'ping');
+    await testEndpoint('/api/debug/db-status', 'db-status');
     await testEndpoint('/api/campanhas', 'campanhas');
     await testEndpoint('/api/caixa/lancamentos', 'lancamentos');
   };
