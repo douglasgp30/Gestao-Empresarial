@@ -100,33 +100,35 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       .includes("cartão");
 
   // Calcular campos automaticamente
-  useEffect(() => {
-    const valor = parseFloat(formData.valor) || 0;
-    const valorQueEntrou = parseFloat(formData.valorQueEntrou) || valor;
-    const imposto = parseFloat(formData.imposto) || 0;
-    const valorLiquido = valorQueEntrou - imposto;
+  const valorCalculado = parseFloat(formData.valor) || 0;
+  const valorQueEntrouCalculado = parseFloat(formData.valorQueEntrou) || valorCalculado;
+  const impostoCalculado = parseFloat(formData.imposto) || 0;
+  const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
 
-    // Calcular comissão baseada no percentual do técnico
-    let comissao = 0;
+  // Calcular comissão baseada no percentual do técnico
+  const comissaoCalculada = (() => {
     if (formData.tecnicoResponsavel) {
       const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
       if (tecnico && tecnico.percentualComissao) {
-        comissao = valorLiquido * (tecnico.percentualComissao / 100);
+        return valorLiquidoCalculado * (tecnico.percentualComissao / 100);
       }
     }
+    return 0;
+  })();
 
-    setFormData((prev) => ({
-      ...prev,
-      valorLiquido: valorLiquido.toFixed(2),
-      comissao: comissao.toFixed(2),
-    }));
-  }, [
-    formData.valor,
-    formData.valorQueEntrou,
-    formData.imposto,
-    formData.tecnicoResponsavel,
-    tecnicos,
-  ]);
+  // Atualizar campos calculados apenas quando necessário
+  useEffect(() => {
+    const novoValorLiquido = valorLiquidoCalculado.toFixed(2);
+    const novaComissao = comissaoCalculada.toFixed(2);
+
+    if (formData.valorLiquido !== novoValorLiquido || formData.comissao !== novaComissao) {
+      setFormData((prev) => ({
+        ...prev,
+        valorLiquido: novoValorLiquido,
+        comissao: novaComissao,
+      }));
+    }
+  }, [valorLiquidoCalculado, comissaoCalculada, formData.valorLiquido, formData.comissao]);
 
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
@@ -136,7 +138,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         valorQueEntrou: "",
       }));
     }
-  }, [isFormaPagamentoCartao, formData.valorQueEntrou, formData.valor]);
+  }, [isFormaPagamentoCartao]);
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
