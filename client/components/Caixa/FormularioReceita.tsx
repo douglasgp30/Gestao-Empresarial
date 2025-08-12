@@ -136,7 +136,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
     const urlNotaFiscal =
-      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=e813ef4862bf420ee0c3b8a62347579b68773380001&dth=20250811115913";
+      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=14ad51dc282888232e609798d07fcbd568773380001&dth=20250812083951";
     const janelaNotaFiscal = window.open(
       urlNotaFiscal,
       "_blank",
