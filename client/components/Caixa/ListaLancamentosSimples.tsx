@@ -170,14 +170,14 @@ export function ListaLancamentosSimples() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Valor</TableHead>
-                    <TableHead>Forma de Pagamento</TableHead>
-                    <TableHead>Técnico</TableHead>
-                    <TableHead>Setor</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                    {getVisibleColumns().map((column) => (
+                      <TableHead
+                        key={column.key}
+                        className={column.key === 'acoes' ? 'text-right' : ''}
+                      >
+                        {column.label}
+                      </TableHead>
+                    ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
