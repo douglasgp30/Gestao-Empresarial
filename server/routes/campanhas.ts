@@ -39,14 +39,10 @@ export const updateCampanha: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const data = CampanhaSchema.partial().parse(req.body);
-    
+
     const campanha = await prisma.campanha.update({
       where: { id },
-      data: {
-        ...data,
-        dataInicio: data.dataInicio ? new Date(data.dataInicio) : undefined,
-        dataFim: data.dataFim ? new Date(data.dataFim) : undefined
-      }
+      data
     });
     res.json(campanha);
   } catch (error) {
