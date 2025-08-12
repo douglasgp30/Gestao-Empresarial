@@ -453,6 +453,9 @@ export default function FormularioFuncionarioAvancado() {
                     {errors.percentualComissao}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  Use 0 para funcionários que não recebem comissão
+                </p>
               </div>
 
               <div className="flex items-center space-x-2">
