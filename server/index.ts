@@ -52,13 +52,21 @@ import {
 import contasRouter from "./routes/contas";
 
 export function createServer(): Express {
+  console.log('[Server] Criando servidor Express...');
   const app = express();
 
   app.use(cors());
   app.use(express.json());
 
+  // Middleware de log para debug
+  app.use((req, res, next) => {
+    console.log(`[Server] ${req.method} ${req.path}`);
+    next();
+  });
+
   // Rotas existentes
   app.get("/api/ping", (req, res) => {
+    console.log('[Server] Ping recebido');
     res.json({ message: "pong", timestamp: new Date().toISOString() });
   });
   app.get("/api/demo", handleDemo);
@@ -105,6 +113,7 @@ export function createServer(): Express {
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
 
+  console.log('[Server] Servidor Express configurado com sucesso');
   return app;
 }
 
