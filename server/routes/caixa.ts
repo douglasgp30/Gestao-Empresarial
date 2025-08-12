@@ -68,7 +68,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
-        const [dia, mes, ano] = (dataInicio as string).split("-");
+        const [ano, mes, dia] = (dataInicio as string).split("-");
         where.dataHora.gte = new Date(
           parseInt(ano),
           parseInt(mes) - 1,
@@ -323,7 +323,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
-        const [dia, mes, ano] = (dataInicio as string).split("-");
+        const [ano, mes, dia] = (dataInicio as string).split("-");
         where.dataHora.gte = new Date(
           parseInt(ano),
           parseInt(mes) - 1,
