@@ -414,20 +414,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           return false;
         }
 
-        const ehDoMesAtual = isMesmoMes(dataLancamento, hoje);
-
-        if (ehDoMesAtual) {
-          console.log("[Dashboard] Receita do mês encontrada:", {
-            id: l.id,
-            data: l.data,
-            dataHora: l.dataHora,
-            dataCalculada: dataLancamento,
-            valor: l.valor,
-            valorLiquido: l.valorLiquido,
-          });
-        }
-
-        return ehDoMesAtual;
+        return isMesmoMes(dataLancamento, hoje);
       })
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
