@@ -35,7 +35,7 @@ export interface Funcionario {
   senha?: string;
   temAcessoSistema?: boolean;
   permissaoAcesso?: boolean;
-  tipoAcesso?: "Administrador" | "Operador";
+  tipoAcesso?: "Administrador" | "Operador" | "Técnico";
   permissoes?: FuncionarioPermissoes;
   dataCadastro: Date;
   ativo: boolean;
@@ -43,7 +43,7 @@ export interface Funcionario {
 
 export interface LancamentoCaixa {
   id: string; // CodLançamentoCX
-  dataHora: string; // Data e hora no formato DD-MM-AAAA HH:MM:SS
+  dataHora: Date; // Data e hora do lançamento
   valor: number; // Valor do lançamento (obrigatório)
   valorRecebido?: number; // Valor efetivamente recebido (obrigatório para cartão)
   conta: "empresa" | "pessoal"; // Define se é Empresa ou Pessoal (obrigatório)
@@ -65,14 +65,14 @@ export interface LancamentoCaixa {
 export interface Conta {
   id: string;
   tipo: "pagar" | "receber";
-  dataVencimento: Date;
-  fornecedorCliente: string;
-  tipoPagamento: string;
+  descricao: string;
   valor: number;
+  dataVencimento: Date;
+  dataPagamento?: Date;
   status: "paga" | "atrasada" | "vence_hoje" | "pendente";
   observacoes?: string;
-  dataPagamento?: Date;
-  funcionarioId: string;
+  categoria?: string;
+  dataCriacao: Date;
 }
 
 export interface Campanha {
@@ -92,7 +92,7 @@ export interface AuthUser {
   id: string;
   nomeCompleto: string;
   login: string;
-  tipoAcesso: "Administrador" | "Operador";
+  tipoAcesso: "Administrador" | "Operador" | "Técnico";
   permissaoAcesso: boolean;
   permissoes?: FuncionarioPermissoes;
 }
