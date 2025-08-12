@@ -646,6 +646,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     excluirFormaPagamento,
 
     // Funções para Funcionários (API)
+    getTecnicos,
     adicionarFuncionario,
     editarFuncionario,
     excluirFuncionario,
