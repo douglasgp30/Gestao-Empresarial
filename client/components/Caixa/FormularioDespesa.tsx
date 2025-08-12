@@ -178,7 +178,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         <CardDescription>Registre uma nova saída do caixa</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
           {/* Campos básicos */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
