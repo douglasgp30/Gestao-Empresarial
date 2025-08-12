@@ -44,6 +44,11 @@ export function ModalReceita() {
     adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
+  const {
+    clientes,
+    adicionarCliente,
+    isLoading: clientesLoading,
+  } = useClientes();
 
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
