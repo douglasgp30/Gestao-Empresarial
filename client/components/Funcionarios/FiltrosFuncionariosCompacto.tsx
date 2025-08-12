@@ -52,8 +52,8 @@ export default function FiltrosFuncionariosCompacto() {
 
   return (
     <div className="space-y-3">
-      {/* Busca e Filtros Básicos */}
-      <div className="bg-muted/30 rounded-lg p-3 border">
+      {/* Busca e Filtros B��sicos */}
+      <div className="bg-muted/30 rounded-lg p-2 border">
         <div className="flex flex-col sm:flex-row gap-2">
           {/* Busca */}
           <div className="flex-1 relative">
