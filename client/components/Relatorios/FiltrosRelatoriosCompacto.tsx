@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRelatorios } from "../../contexts/RelatoriosContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { useCaixa } from "../../contexts/CaixaContext";
 import { Button } from "../ui/button";
 import {
   Select,
@@ -32,10 +33,13 @@ export default function FiltrosRelatoriosCompacto() {
   const {
     setores,
     tecnicos,
-    campanhas,
     formasPagamento,
     isLoading: entidadesLoading,
   } = useEntidades();
+  const {
+    campanhas,
+    isLoading: caixaLoading,
+  } = useCaixa();
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
@@ -81,7 +85,7 @@ export default function FiltrosRelatoriosCompacto() {
   };
 
   const filtrosAtivos = contarFiltrosAtivos();
-  const isLoadingGeral = isLoading || entidadesLoading;
+  const isLoadingGeral = isLoading || entidadesLoading || caixaLoading;
 
   return (
     <div className="space-y-3">
