@@ -676,7 +676,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           )}
 
           {/* Resumo financeiro */}
-          {formData.valor && (
+          {valorInput.numericValue > 0 && (
             <div className="p-4 bg-green-50 rounded-lg">
               <h4 className="font-medium text-green-800 mb-2">
                 Resumo Financeiro
@@ -685,29 +685,25 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <div>
                   <span className="text-gray-600">Valor Total:</span>
                   <div className="font-medium">
-                    R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                    R$ {valorInput.numericValue.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
                 <div>
                   <span className="text-gray-600">Valor Líquido:</span>
                   <div className="font-medium">
-                    R$ {parseFloat(formData.valorLiquido || "0").toFixed(2)}
+                    R$ {valorLiquidoCalculado.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
                 <div>
                   <span className="text-gray-600">Comissão:</span>
                   <div className="font-medium">
-                    R$ {parseFloat(formData.comissao || "0").toFixed(2)}
+                    R$ {comissaoCalculada.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
                 <div>
                   <span className="text-gray-600">Para Empresa:</span>
                   <div className="font-medium text-green-600">
-                    R${" "}
-                    {(
-                      parseFloat(formData.valorLiquido || "0") -
-                      parseFloat(formData.comissao || "0")
-                    ).toFixed(2)}
+                    R$ {(valorLiquidoCalculado - comissaoCalculada).toFixed(2).replace('.', ',')}
                   </div>
                 </div>
               </div>
