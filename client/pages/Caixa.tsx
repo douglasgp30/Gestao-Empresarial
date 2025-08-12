@@ -9,6 +9,8 @@ import ModalCidadeSetor from "../components/Caixa/ModalCidadeSetor";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
 import { InitDadosTeste } from "../components/ui/init-dados-teste";
+import { AlertaDadosVazios } from "../components/ui/alerta-dados-vazios";
+import { useEntidades } from "../contexts/EntidadesContext";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
