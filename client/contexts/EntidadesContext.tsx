@@ -545,6 +545,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     const novosClientes = [...clientes, cliente];
     setClientes(novosClientes);
     salvarEntidadeNoStorage("clientes", novosClientes);
+    return cliente;
   };
 
   const editarCliente = (id: string, dadosAtualizados: Partial<Cliente>) => {
