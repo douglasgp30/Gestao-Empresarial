@@ -721,32 +721,71 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Resumo financeiro */}
           {valorInput.numericValue > 0 && (
             <div className="p-4 bg-green-50 rounded-lg">
-              <h4 className="font-medium text-green-800 mb-2">
-                Resumo Financeiro
+              <h4 className="font-medium text-green-800 mb-3">
+                Resumo Financeiro Detalhado
               </h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                <div>
-                  <span className="text-gray-600">Valor Total:</span>
-                  <div className="font-medium">
-                    R$ {valorInput.numericValue.toFixed(2).replace('.', ',')}
+              <div className="space-y-3">
+                {/* Primeira linha - valores base */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                  <div>
+                    <span className="text-gray-600">Valor Total:</span>
+                    <div className="font-medium">
+                      R$ {valorInput.numericValue.toFixed(2).replace('.', ',')}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Valor Recebido:</span>
+                    <div className="font-medium">
+                      R$ {valorQueEntrouCalculado.toFixed(2).replace('.', ',')}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Impostos/Taxas:</span>
+                    <div className="font-medium">
+                      R$ {impostoCalculado.toFixed(2).replace('.', ',')}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <span className="text-gray-600">Valor Líquido:</span>
-                  <div className="font-medium">
-                    R$ {valorLiquidoCalculado.toFixed(2).replace('.', ',')}
+
+                {/* Segunda linha - descontos */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm border-t pt-2">
+                  {formData.temNotaFiscal && (
+                    <div>
+                      <span className="text-gray-600">Desc. Nota Fiscal ({percentualNotaFiscal}%):</span>
+                      <div className="font-medium text-orange-600">
+                        - R$ {descontoNotaFiscal.toFixed(2).replace('.', ',')}
+                      </div>
+                    </div>
+                  )}
+                  {isFormaPagamentoCartao && (
+                    <div>
+                      <span className="text-gray-600">Taxa Cartão (3,5%):</span>
+                      <div className="font-medium text-orange-600">
+                        - R$ {taxaCartao.toFixed(2).replace('.', ',')}
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-gray-600">Comissão Técnico:</span>
+                    <div className="font-medium text-blue-600">
+                      R$ {comissaoCalculada.toFixed(2).replace('.', ',')}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <span className="text-gray-600">Comissão:</span>
-                  <div className="font-medium">
-                    R$ {comissaoCalculada.toFixed(2).replace('.', ',')}
+
+                {/* Terceira linha - resultados finais */}
+                <div className="grid grid-cols-2 gap-3 text-sm border-t pt-2">
+                  <div>
+                    <span className="text-gray-600">Valor Líquido:</span>
+                    <div className="font-medium text-blue-600">
+                      R$ {valorLiquidoCalculado.toFixed(2).replace('.', ',')}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <span className="text-gray-600">Para Empresa:</span>
-                  <div className="font-medium text-green-600">
-                    R$ {(valorLiquidoCalculado - comissaoCalculada).toFixed(2).replace('.', ',')}
+                  <div>
+                    <span className="text-gray-600">Para Empresa:</span>
+                    <div className="font-bold text-green-600">
+                      R$ {valorParaEmpresa.toFixed(2).replace('.', ',')}
+                    </div>
                   </div>
                 </div>
               </div>
