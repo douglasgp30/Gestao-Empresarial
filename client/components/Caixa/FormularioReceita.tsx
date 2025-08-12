@@ -408,29 +408,34 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
-          {/* Campo Valor Recebido para Cartão - aparece logo após forma de pagamento */}
+          {/* Campo Valor Recebido para Cartão - compacto, logo após forma de pagamento */}
           {isFormaPagamentoCartao && (
-            <div className="space-y-2">
-              <Label htmlFor="valorQueEntrou">Valor Recebido (R$) *</Label>
-              <Input
-                id="valorQueEntrou"
-                type="number"
-                step="0.01"
-                placeholder="Quanto realmente entrou na conta"
-                value={formData.valorQueEntrou}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    valorQueEntrou: e.target.value,
-                  }))
-                }
-                className="bg-yellow-50 border-yellow-300"
-                required
-              />
-              <p className="text-sm text-yellow-600">
-                Para pagamentos com cartão, informe o valor que realmente entrou
-                na conta (após taxas)
-              </p>
+            <div className="space-y-2 col-span-full">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div className="space-y-2">
+                  <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
+                    Valor Recebido (R$) *
+                  </Label>
+                  <Input
+                    id="valorQueEntrou"
+                    type="number"
+                    step="0.01"
+                    placeholder="Valor líquido"
+                    value={formData.valorQueEntrou}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        valorQueEntrou: e.target.value,
+                      }))
+                    }
+                    className="bg-yellow-50 border-yellow-300 text-sm h-9"
+                    required
+                  />
+                </div>
+                <div className="text-xs text-yellow-600 md:col-span-2">
+                  <strong>Importante:</strong> Para cartão, informe o valor líquido que entrou na conta (após descontar taxas da operadora).
+                </div>
+              </div>
             </div>
           )}
 

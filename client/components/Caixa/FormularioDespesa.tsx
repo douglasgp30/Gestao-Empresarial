@@ -42,10 +42,10 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
+    conta: "empresa", // "empresa" ou "pessoal"
     categoria: "",
     descricao: "",
     formaPagamento: "",
-    setor: "",
     observacoes: "",
   });
 
@@ -73,6 +73,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
     if (
       !formData.valor ||
+      !formData.conta ||
       !formData.categoria ||
       !formData.descricao ||
       !formData.formaPagamento
@@ -80,7 +81,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       toast({
         title: "Erro",
         description:
-          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
+          "Preencha todos os campos obrigatórios: Valor, Conta, Categoria, Descrição e Forma de Pagamento",
         variant: "destructive",
       });
       return;
@@ -92,10 +93,10 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "despesa",
+        conta: formData.conta,
         valor: parseFloat(formData.valor),
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
-        setor: formData.setor || undefined,
         observacoes: formData.observacoes || undefined,
       });
 
