@@ -128,9 +128,25 @@ export function ListaLancamentosSimples() {
       case 'valor':
         return (
           <span className="font-medium">
+            {formatarMoeda(lancamento.valor)}
+          </span>
+        );
+
+      case 'valorLiquido':
+        return (
+          <span className="font-medium text-green-600">
             {formatarMoeda(lancamento.valorLiquido || lancamento.valor)}
           </span>
         );
+
+      case 'valorRecebido':
+        return lancamento.valorRecebido ? formatarMoeda(lancamento.valorRecebido) : "-";
+
+      case 'comissao':
+        return lancamento.comissao ? formatarMoeda(lancamento.comissao) : "-";
+
+      case 'imposto':
+        return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
 
       case 'formaPagamento':
         return lancamento.formaPagamento?.nome || "N/A";
@@ -142,6 +158,27 @@ export function ListaLancamentosSimples() {
         return lancamento.setor
           ? `${lancamento.setor.nome} - ${lancamento.setor.cidade}`
           : "-";
+
+      case 'campanha':
+        return lancamento.campanha?.nome || "-";
+
+      case 'conta':
+        return lancamento.conta || "-";
+
+      case 'observacoes':
+        return lancamento.observacoes ? (
+          <span className="text-sm text-muted-foreground" title={lancamento.observacoes}>
+            {lancamento.observacoes.length > 30
+              ? `${lancamento.observacoes.substring(0, 30)}...`
+              : lancamento.observacoes}
+          </span>
+        ) : "-";
+
+      case 'numeroNota':
+        return lancamento.numeroNota || "-";
+
+      case 'cliente':
+        return lancamento.cliente || "-";
 
       case 'acoes':
         return (
