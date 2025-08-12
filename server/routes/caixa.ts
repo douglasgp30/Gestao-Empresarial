@@ -241,11 +241,12 @@ export const createLancamento: RequestHandler = async (req, res) => {
     }
 
     // Remover o campo 'data' do objeto que vai para o Prisma (ele não existe no schema)
-    const { data: dataFromRequest, ...dadosLancamento } = data;
+    const { data: dataFromRequest, clienteId, ...dadosLancamento } = data;
 
     const lancamento = await prisma.lancamentoCaixa.create({
       data: {
         ...dadosLancamento,
+        clienteId: clienteIdValido,
         dataHora: dataHoraLancamento,
       },
       include: {
