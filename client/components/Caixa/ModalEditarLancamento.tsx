@@ -127,7 +127,10 @@ export function ModalEditarLancamento({
         imposto: formData.imposto ? parseFloat(formData.imposto) : undefined,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
-        tecnicoResponsavel: formData.tecnicoResponsavel === "none" ? undefined : formData.tecnicoResponsavel,
+        tecnicoResponsavel:
+          formData.tecnicoResponsavel === "none"
+            ? undefined
+            : formData.tecnicoResponsavel,
         setor: formData.setor === "none" ? undefined : formData.setor,
         observacoes: formData.observacoes || undefined,
         conta: formData.conta,

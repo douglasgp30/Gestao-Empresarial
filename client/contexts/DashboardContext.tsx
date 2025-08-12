@@ -374,8 +374,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const fimMesAtual = getFimDoMes();
 
     // Receitas do caixa do mês atual (independente dos filtros)
-    console.log('[Dashboard] Calculando meta do mês atual...');
-    console.log('[Dashboard] Total de lançamentos:', caixaContext?.lancamentos?.length || 0);
+    console.log("[Dashboard] Calculando meta do mês atual...");
+    console.log(
+      "[Dashboard] Total de lançamentos:",
+      caixaContext?.lancamentos?.length || 0,
+    );
 
     const receitasCaixaMesAtual = (caixaContext?.lancamentos || [])
       .filter((l) => {
@@ -387,7 +390,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         if (l.dataHora) {
           if (typeof l.dataHora === "string") {
             // Se for string, pode ser formato brasileiro DD-MM-AAAA HH:MM:SS ou ISO
-            if (l.dataHora.includes("-") && l.dataHora.split("-")[0].length === 2) {
+            if (
+              l.dataHora.includes("-") &&
+              l.dataHora.split("-")[0].length === 2
+            ) {
               // Formato brasileiro DD-MM-AAAA HH:MM:SS
               const [datePart] = l.dataHora.split(" ");
               const [dia, mes, ano] = datePart.split("-");
@@ -408,20 +414,20 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           // Fallback para campo data se existir
           dataLancamento = new Date(l.data);
         } else {
-          console.warn('[Dashboard] Lançamento sem data válida:', l);
+          console.warn("[Dashboard] Lançamento sem data válida:", l);
           return false;
         }
 
         const ehDoMesAtual = isMesmoMes(dataLancamento, hoje);
 
         if (ehDoMesAtual) {
-          console.log('[Dashboard] Receita do mês encontrada:', {
+          console.log("[Dashboard] Receita do mês encontrada:", {
             id: l.id,
             data: l.data,
             dataHora: l.dataHora,
             dataCalculada: dataLancamento,
             valor: l.valor,
-            valorLiquido: l.valorLiquido
+            valorLiquido: l.valorLiquido,
           });
         }
 
@@ -429,7 +435,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       })
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-    console.log('[Dashboard] Receitas do mês atual calculadas:', receitasCaixaMesAtual);
+    console.log(
+      "[Dashboard] Receitas do mês atual calculadas:",
+      receitasCaixaMesAtual,
+    );
 
     // Total alcançado da meta = apenas receitas do mês atual
     const novoTotalMetaMes = receitasCaixaMesAtual;

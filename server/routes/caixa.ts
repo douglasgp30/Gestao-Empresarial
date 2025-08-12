@@ -197,9 +197,21 @@ export const createLancamento: RequestHandler = async (req, res) => {
     let dataHoraLancamento: Date;
     if (req.body.data) {
       // Se uma data específica foi enviada, usar ela às 12:00 para evitar problemas de timezone
-      const [ano, mes, dia] = req.body.data.split('-');
-      dataHoraLancamento = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia), 12, 0, 0);
-      console.log("[Caixa] Usando data do frontend:", req.body.data, "->", dataHoraLancamento);
+      const [ano, mes, dia] = req.body.data.split("-");
+      dataHoraLancamento = new Date(
+        parseInt(ano),
+        parseInt(mes) - 1,
+        parseInt(dia),
+        12,
+        0,
+        0,
+      );
+      console.log(
+        "[Caixa] Usando data do frontend:",
+        req.body.data,
+        "->",
+        dataHoraLancamento,
+      );
     } else {
       // Fallback para data/hora atual
       dataHoraLancamento = gerarDataHora();
