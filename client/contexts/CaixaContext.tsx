@@ -135,13 +135,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             data: new Date(lancamento.dataHora), // Criar campo data a partir de dataHora
             dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
             dataCriacao: new Date(lancamento.dataCriacao),
-            // Manter objetos relacionados e adicionar campos de compatibilidade
-            descricao: lancamento.descricao || { nome: "N/A" },
-            formaPagamento: lancamento.formaPagamento || { nome: "N/A" },
+            // Garantir que os relacionamentos estejam presentes corretamente
+            descricao: lancamento.descricao || { nome: "Sem descrição" },
+            formaPagamento: lancamento.formaPagamento || { nome: "Não informado" },
             funcionario: lancamento.funcionario || null,
             setor: lancamento.setor || null,
             campanha: lancamento.campanha || null,
-            // Campos de compatibilidade para código antigo
+            // Campos de compatibilidade para código que espera strings
             tecnicoResponsavel: lancamento.funcionario?.nome || null,
           }),
         );
