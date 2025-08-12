@@ -263,7 +263,7 @@ export default function FiltrosContasCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos os Status</SelectItem>
-                          {statusOptions.map((status) => (
+                          {statusOptions?.map((status) => (
                             <SelectItem key={status.value} value={status.value}>
                               <div className="flex items-center gap-2">
                                 <div
@@ -272,7 +272,7 @@ export default function FiltrosContasCompacto() {
                                 {status.label}
                               </div>
                             </SelectItem>
-                          ))}
+                          )) || []}
                         </SelectContent>
                       </Select>
                     </div>
