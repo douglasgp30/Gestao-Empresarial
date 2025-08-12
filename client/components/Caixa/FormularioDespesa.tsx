@@ -69,17 +69,34 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !formData.valor ||
-      !formData.conta ||
-      !formData.categoria ||
-      !formData.descricao ||
-      !formData.formaPagamento
-    ) {
+    // Validação completa dos campos obrigatórios
+    const camposObrigatorios = {
+      data: formData.data,
+      valor: formData.valor,
+      conta: formData.conta,
+      categoria: formData.categoria,
+      descricao: formData.descricao,
+      formaPagamento: formData.formaPagamento
+    };
+
+    const camposFaltando = Object.entries(camposObrigatorios)
+      .filter(([key, value]) => !value || value.toString().trim() === '')
+      .map(([key]) => {
+        const nomes = {
+          data: 'Data',
+          valor: 'Valor',
+          conta: 'Conta',
+          categoria: 'Categoria',
+          descricao: 'Descrição',
+          formaPagamento: 'Forma de Pagamento'
+        };
+        return nomes[key as keyof typeof nomes];
+      });
+
+    if (camposFaltando.length > 0) {
       toast({
-        title: "Erro",
-        description:
-          "Preencha todos os campos obrigatórios: Valor, Conta, Categoria, Descrição e Forma de Pagamento",
+        title: "Campos obrigatórios não preenchidos",
+        description: `Preencha os seguintes campos: ${camposFaltando.join(', ')}`,
         variant: "destructive",
       });
       return;
