@@ -454,6 +454,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Sincronizar filtros com outros contextos quando não estiver aplicando filtros específicos do caixa
   useEffect(() => {
     if (!aplicarFiltrosCaixa && caixaContext && contasContext) {
+      console.log('Dashboard: Sincronizando filtros com contextos', filtros);
+
       // Sincronizar filtros do Dashboard com outros contextos
       const novosFiltrosCaixa = {
         ...caixaContext?.filtros,
@@ -471,6 +473,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       contasContext?.setFiltros?.(novosFiltrosContas);
     }
   }, [filtros.dataInicio, filtros.dataFim, aplicarFiltrosCaixa]);
+
+  // Carregar dados iniciais na primeira renderização
+  useEffect(() => {
+    if (caixaContext && contasContext) {
+      console.log('Dashboard: Carregamento inicial detectado');
+      // Força um recálculo das estatísticas
+      setFiltros(prev => ({ ...prev, __timestamp: Date.now() }));
+    }
+  }, [!!caixaContext, !!contasContext]);
 
   // Filtrar contas que precisam de atenção (vencendo hoje e atrasadas)
   const contasVencendo =
