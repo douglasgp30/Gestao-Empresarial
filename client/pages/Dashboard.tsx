@@ -358,14 +358,13 @@ export default function Dashboard() {
 
         {/* SEÇÃO 1 - Totais do Caixa */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
             <div className="flex items-center space-x-2">
-              <Wallet className="h-5 w-5" />
-              <span>📊 Totais do Caixa</span>
+              <div className="bg-gray-100 p-2 rounded-lg">
+                <Wallet className="h-4 w-4" />
+              </div>
+              <span>Totais do Caixa</span>
             </div>
-            <Badge variant="outline" className="w-fit">
-              Dinâmico com filtros
-            </Badge>
           </h2>
           <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard
@@ -401,8 +400,12 @@ export default function Dashboard() {
         {/* SEÇÃO 2 - Totais de Contas Recebidas e Pagas */}
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <Receipt className="h-5 w-5" />
-            <span>📊 Totais de Contas Recebidas e Pagas</span>
+            <div className="flex items-center space-x-2">
+              <div className="bg-gray-100 p-2 rounded-lg">
+                <Receipt className="h-4 w-4" />
+              </div>
+              <span>Totais de Contas Recebidas e Pagas</span>
+            </div>
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
             <StatCard
@@ -438,8 +441,12 @@ export default function Dashboard() {
         {/* SEÇÃO 3 - Totais de Contas a Receber e a Pagar */}
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <CreditCard className="h-5 w-5" />
-            <span>📊 Totais de Contas a Receber e a Pagar</span>
+            <div className="flex items-center space-x-2">
+              <div className="bg-gray-100 p-2 rounded-lg">
+                <CreditCard className="h-4 w-4" />
+              </div>
+              <span>Totais de Contas a Receber e a Pagar</span>
+            </div>
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
             <StatCard
