@@ -25,16 +25,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../components/ui/dialog";
-import FiltroDataDashboard from "../components/Dashboard/FiltroDataDashboard";
-import { formatDate, formatDateRange } from "../lib/dateUtils";
 import {
   DollarSign,
   TrendingUp,
   TrendingDown,
   AlertTriangle,
-  Calendar,
-  FileText,
-  Target,
   Edit3,
   Trophy,
   Loader2,
@@ -138,9 +133,7 @@ function StatCard({
 export default function Dashboard() {
   const {
     stats,
-    lancamentos,
     contasVencendo,
-    filtros,
     isLoading,
     metaMes,
     totalMetaMes,
@@ -150,39 +143,6 @@ export default function Dashboard() {
 
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [novaMetaValue, setNovaMetaValue] = useState(metaMes.toString());
-
-  // Filtrar lançamentos pelo período selecionado para exibir nas movimentações recentes
-  const lancamentosRecentes = lancamentos
-    .filter((lancamento) => {
-      const dataLancamento = new Date(lancamento.data);
-      // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(
-        filtros.dataInicio.getFullYear(),
-        filtros.dataInicio.getMonth(),
-        filtros.dataInicio.getDate(),
-      );
-      const dataFim = new Date(
-        filtros.dataFim.getFullYear(),
-        filtros.dataFim.getMonth(),
-        filtros.dataFim.getDate(),
-      );
-      const dataLancNorm = new Date(
-        dataLancamento.getFullYear(),
-        dataLancamento.getMonth(),
-        dataLancamento.getDate(),
-      );
-
-      return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
-    })
-    .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
-    .slice(0, 5);
-
-  const getPeriodoDescricao = () => {
-    if (filtros.dataInicio.toDateString() === filtros.dataFim.toDateString()) {
-      return formatDate(filtros.dataInicio);
-    }
-    return `${formatDate(filtros.dataInicio)} - ${formatDate(filtros.dataFim)}`;
-  };
 
   const handleSalvarMeta = () => {
     const novaMetaNum = parseFloat(
@@ -207,9 +167,8 @@ export default function Dashboard() {
   return (
     <TooltipProvider>
       <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
-        {/* Header - Mobile First */}
+        {/* Header */}
         <div className="space-y-4">
-          {/* Título */}
           <div className="text-center sm:text-left">
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               Dashboard
@@ -218,13 +177,11 @@ export default function Dashboard() {
               Visão geral financeira
             </p>
           </div>
-          <div className="flex items-center w-full gap-8">
-            {/* Espaçador à esquerda para equilibrar o layout */}
-            <div className="flex-1"></div>
-
-            {/* Centro: Meta do Mês, Total Alcançado e Restante - Responsivo */}
-            <div className="hidden sm:flex items-start space-x-8 bg-accent/20 px-6 py-4 rounded-lg border mx-auto">
-              {/* Meta do Mês */}
+          
+          {/* Top Row - Meta e Saldo Geral */}
+          <div className="flex flex-col lg:flex-row items-center gap-6">
+            {/* Meta do Mês, Total Alcançado e Restante */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 bg-accent/20 px-6 py-4 rounded-lg border flex-grow">
               <div className="flex flex-col items-center space-y-2 min-w-0">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                   Meta do Mês
@@ -292,7 +249,6 @@ export default function Dashboard() {
                 )}
               </div>
 
-              {/* Total Alcançado da Meta */}
               <div className="flex flex-col items-center space-y-2 min-w-0">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                   Total Alcançado da Meta
@@ -325,7 +281,6 @@ export default function Dashboard() {
                 )}
               </div>
 
-              {/* Restante para Meta */}
               <div className="flex flex-col items-center space-y-2 min-w-0">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                   Restante para Meta
@@ -348,26 +303,12 @@ export default function Dashboard() {
                     {restanteParaMeta <= 0 && (
                       <Trophy className="h-4 w-4 text-green-600" />
                     )}
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <p className="font-medium mb-1">Restante para Meta:</p>
-                        <p className="text-xs">
-                          <strong>Sempre do mês atual.</strong>{" "}
-                          {restanteParaMeta <= 0
-                            ? "Parabéns! Você atingiu ou superou a meta do mês!"
-                            : "Valor que ainda falta para atingir a meta estabelecida."}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Lado Direito: Saldo Geral - Com espaçamento adequado */}
+            {/* Saldo Geral */}
             <div className="flex items-center space-x-3 bg-accent/20 px-4 py-2 rounded-lg border">
               <span className="text-sm font-medium text-muted-foreground">
                 Saldo Geral:
@@ -404,105 +345,8 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-
-            {/* Espaçador à direita para equilibrar o layout */}
-            <div className="flex-1"></div>
-          </div>
-
-          {/* Versão Mobile da Meta do Mês */}
-          <div className="sm:hidden space-y-4">
-            {/* Saldo Geral Mobile */}
-            <div className="flex justify-center">
-              <div className="flex items-center space-x-3 bg-accent/20 px-4 py-2 rounded-lg border">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Saldo Geral:
-                </span>
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <span
-                    className={`text-lg font-bold ${
-                      stats.saldoGeralConsolidado > 0
-                        ? "text-green-600 dark:text-green-400"
-                        : stats.saldoGeralConsolidado < 0
-                          ? "text-destructive"
-                          : "text-foreground"
-                    }`}
-                  >
-                    {formatCurrency(stats.saldoGeralConsolidado)}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Meta do Mês Mobile */}
-            <div className="bg-accent/20 px-4 py-4 rounded-lg border">
-              <h3 className="text-lg font-semibold text-center mb-4">
-                Meta do Mês
-              </h3>
-
-              <div className="grid grid-cols-1 gap-4">
-                {/* Meta do Mês */}
-                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Meta do Mês
-                  </span>
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <span className="text-xl font-bold text-primary">
-                      {formatCurrency(metaMes)}
-                    </span>
-                  )}
-                </div>
-
-                {/* Total Alcançado */}
-                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
-                  <span className="text-sm font-medium text-muted-foreground text-center">
-                    Total Alcançado
-                  </span>
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <span className="text-xl font-bold text-blue-600">
-                      {formatCurrency(totalMetaMes)}
-                    </span>
-                  )}
-                </div>
-
-                {/* Restante para Meta */}
-                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
-                  <span className="text-sm font-medium text-muted-foreground text-center">
-                    Restante para Meta
-                  </span>
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`text-xl font-bold ${
-                          restanteParaMeta <= 0
-                            ? "text-green-600"
-                            : "text-orange-600"
-                        }`}
-                      >
-                        {restanteParaMeta <= 0
-                          ? "Meta Atingida!"
-                          : formatCurrency(restanteParaMeta)}
-                      </span>
-                      {restanteParaMeta <= 0 && (
-                        <Trophy className="h-5 w-5 text-green-600" />
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
-
-        {/* Filtros de Data */}
-        <FiltroDataDashboard />
 
         {/* Loading State */}
         {isLoading && (
@@ -512,7 +356,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* LINHA 1 - Totais do Módulo Caixa */}
+        {/* SEÇÃO 1 - Totais do Caixa */}
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
             <div className="flex items-center space-x-2">
@@ -554,7 +398,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* LINHA 2 - Totais de Contas Recebidas e Pagas */}
+        {/* SEÇÃO 2 - Totais de Contas Recebidas e Pagas */}
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
             <Receipt className="h-5 w-5" />
@@ -591,10 +435,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* LINHA 3 - Totais de Contas a Receber e a Pagar */}
+        {/* SEÇÃO 3 - Totais de Contas a Receber e a Pagar */}
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <FileText className="h-5 w-5" />
+            <CreditCard className="h-5 w-5" />
             <span>📊 Totais de Contas a Receber e a Pagar</span>
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
@@ -602,7 +446,7 @@ export default function Dashboard() {
               title="Total a Receber"
               value={formatCurrency(stats.totalContasAReceber)}
               description="Contas a receber ainda não recebidas"
-              icon={Target}
+              icon={Calculator}
               trend="up"
               isLoading={isLoading}
               variant="success"
@@ -628,83 +472,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Content Grid */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Recent Transactions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Movimentações no Período</CardTitle>
-              <CardDescription>
-                Receitas e despesas do período selecionado
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {lancamentosRecentes.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>Nenhuma movimentação encontrada no período selecionado</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {lancamentosRecentes.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={`p-2 rounded-full ${
-                            transaction.tipo === "receita"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-destructive/10 text-destructive"
-                          }`}
-                        >
-                          {transaction.tipo === "receita" ? (
-                            <TrendingUp className="h-4 w-4" />
-                          ) : (
-                            <TrendingDown className="h-4 w-4" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">
-                            {transaction.tipo === "receita"
-                              ? `Serviço - ${transaction.setor || "Geral"}`
-                              : transaction.descricao}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {transaction.tipo === "receita" &&
-                              transaction.tecnicoResponsavel &&
-                              `Técnico: ${transaction.tecnicoResponsavel}`}
-                            {transaction.tipo === "despesa" &&
-                              transaction.categoria &&
-                              `Categoria: ${transaction.categoria}`}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p
-                          className={`font-bold ${
-                            transaction.tipo === "receita"
-                              ? "text-green-600"
-                              : "text-destructive"
-                          }`}
-                        >
-                          {transaction.tipo === "receita" ? "+" : "-"}
-                          {formatCurrency(
-                            transaction.valorLiquido || transaction.valor,
-                          )}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(transaction.data)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Contas Vencendo */}
+        {/* Content Grid - Contas Vencendo */}
+        <div className="grid gap-6 lg:grid-cols-1">
           <Card>
             <CardHeader>
               <CardTitle>Contas Vencendo</CardTitle>
@@ -743,7 +512,7 @@ export default function Dashboard() {
                             {conta.fornecedorCliente}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Vencimento: {formatDate(conta.dataVencimento)}
+                            Vencimento: {new Date(conta.dataVencimento).toLocaleDateString('pt-BR')}
                           </p>
                         </div>
                       </div>
@@ -767,8 +536,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Componente de Teste dos Filtros */}
-        {/* Espaço para futuros gráficos e relatórios */}
+        {/* Footer */}
         <div className="flex flex-col items-center gap-6">
           <Card className="w-full max-w-2xl">
             <CardContent className="p-6 text-center">
