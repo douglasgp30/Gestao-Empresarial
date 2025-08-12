@@ -94,6 +94,7 @@ model Funcionario {
   nome              String   // NomeTecnico (obrigatório)
   percentualServico Float?   // PercentualServico (obrigatório)
   percentualComissao Float?  // Percentual de comissão do técnico
+  ehTecnico         Boolean  @default(false) // Indica se o funcionário é técnico
   email             String?  @unique
   telefone          String?
   cargo             String?
