@@ -50,6 +50,18 @@ import {
   TrendingDown,
 } from "lucide-react";
 
+// Configuração das colunas padrão
+const defaultColumns: ColumnConfig[] = [
+  { key: 'data', label: 'Data', visible: true, order: 0 },
+  { key: 'tipo', label: 'Tipo', visible: true, order: 1 },
+  { key: 'descricao', label: 'Descrição', visible: true, order: 2 },
+  { key: 'valor', label: 'Valor', visible: true, order: 3 },
+  { key: 'formaPagamento', label: 'Forma de Pagamento', visible: true, order: 4 },
+  { key: 'tecnico', label: 'Técnico', visible: true, order: 5 },
+  { key: 'setor', label: 'Setor', visible: true, order: 6 },
+  { key: 'acoes', label: 'Ações', visible: true, order: 7 },
+];
+
 export function ListaLancamentosSimples() {
   const { lancamentos, excluirLancamento, isLoading, error } = useCaixa();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
@@ -58,6 +70,16 @@ export function ListaLancamentosSimples() {
   const [lancamentoParaEditar, setLancamentoParaEditar] =
     useState<LancamentoCaixa | null>(null);
   const [excluindo, setExcluindo] = useState(false);
+
+  // Hook para gerenciar colunas
+  const {
+    columns,
+    toggleColumnVisibility,
+    reorderColumns,
+    resetColumns,
+    getVisibleColumns,
+    getColumnByKey,
+  } = useTableColumns('lancamentos-caixa', defaultColumns);
 
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat("pt-BR", {
