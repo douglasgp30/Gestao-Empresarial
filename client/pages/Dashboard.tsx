@@ -367,33 +367,69 @@ export default function Dashboard() {
             </div>
           </h2>
           <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            <StatCard
-              title="Total de Receitas"
-              value={formatCurrency(stats.totalReceitasCaixa)}
-              description="Serviços lançados no caixa"
-              icon={TrendingUp}
-              trend="up"
-              isLoading={isLoading}
-              variant="success"
-            />
-            <StatCard
-              title="Total de Despesas"
-              value={formatCurrency(stats.totalDespesasCaixa)}
-              description="Despesas lançadas no caixa"
-              icon={TrendingDown}
-              trend="down"
-              isLoading={isLoading}
-              variant="danger"
-            />
-            <StatCard
-              title="Saldo (Caixa)"
-              value={formatCurrency(stats.saldoCaixa)}
-              description="Receitas - Despesas do caixa"
-              icon={DollarSign}
-              trend={stats.saldoCaixa >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant="highlight"
-            />
+            <Card className="bg-green-50 border-green-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total de Receitas</CardTitle>
+                <TrendingUp className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.totalReceitasCaixa)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Serviços lançados no caixa
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-red-50 border-red-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total de Despesas</CardTitle>
+                <TrendingDown className="h-4 w-4 text-red-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.totalDespesasCaixa)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Despesas lançadas no caixa
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-blue-50 border-blue-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Saldo (Caixa)</CardTitle>
+                <DollarSign className="h-4 w-4 text-blue-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.saldoCaixa)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Receitas - Despesas do caixa
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -408,33 +444,69 @@ export default function Dashboard() {
             </div>
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
-            <StatCard
-              title="Total de Contas Recebidas"
-              value={formatCurrency(stats.totalContasRecebidas)}
-              description="Contas a receber que foram marcadas como recebidas"
-              icon={TrendingUp}
-              trend="up"
-              isLoading={isLoading}
-              variant="success"
-            />
-            <StatCard
-              title="Total de Contas Pagas"
-              value={formatCurrency(stats.totalContasPagas)}
-              description="Contas a pagar que foram marcadas como pagas"
-              icon={TrendingDown}
-              trend="down"
-              isLoading={isLoading}
-              variant="danger"
-            />
-            <StatCard
-              title="Saldo (Contas Processadas)"
-              value={formatCurrency(stats.saldoContasPagas)}
-              description="Recebidas - pagas (já processadas)"
-              icon={DollarSign}
-              trend={stats.saldoContasPagas >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant="highlight"
-            />
+            <Card className="bg-green-50 border-green-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total de Contas Recebidas</CardTitle>
+                <TrendingUp className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.totalContasRecebidas)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Contas a receber que foram marcadas como recebidas
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-red-50 border-red-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total de Contas Pagas</CardTitle>
+                <TrendingDown className="h-4 w-4 text-red-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.totalContasPagas)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Contas a pagar que foram marcadas como pagas
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-blue-50 border-blue-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Saldo (Contas Processadas)</CardTitle>
+                <DollarSign className="h-4 w-4 text-blue-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.saldoContasPagas)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Recebidas - pagas (já processadas)
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -449,33 +521,69 @@ export default function Dashboard() {
             </div>
           </h2>
           <div className="grid gap-4 md:grid-cols-3">
-            <StatCard
-              title="Total a Receber"
-              value={formatCurrency(stats.totalContasAReceber)}
-              description="Contas a receber ainda não recebidas"
-              icon={Calculator}
-              trend="up"
-              isLoading={isLoading}
-              variant="success"
-            />
-            <StatCard
-              title="Total a Pagar"
-              value={formatCurrency(stats.totalContasAPagar)}
-              description="Contas a pagar ainda não pagas"
-              icon={CreditCard}
-              trend="down"
-              isLoading={isLoading}
-              variant="danger"
-            />
-            <StatCard
-              title="Saldo Geral das Contas"
-              value={formatCurrency(stats.saldoGeralContas)}
-              description="Total a receber - total a pagar"
-              icon={Banknote}
-              trend={stats.saldoGeralContas >= 0 ? "up" : "down"}
-              isLoading={isLoading}
-              variant={stats.saldoGeralContas >= 0 ? "success" : "danger"}
-            />
+            <Card className="bg-green-50 border-green-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total a Receber</CardTitle>
+                <Calculator className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.totalContasAReceber)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Contas a receber ainda não recebidas
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-red-50 border-red-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total a Pagar</CardTitle>
+                <CreditCard className="h-4 w-4 text-red-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.totalContasAPagar)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Contas a pagar ainda não pagas
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-blue-50 border-blue-200">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Saldo Geral das Contas</CardTitle>
+                <Banknote className="h-4 w-4 text-blue-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">
+                  {isLoading ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-muted-foreground">...</span>
+                    </div>
+                  ) : (
+                    formatCurrency(stats.saldoGeralContas)
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground flex items-center">
+                  Total a receber - total a pagar
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
