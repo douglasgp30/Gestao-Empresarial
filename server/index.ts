@@ -96,6 +96,18 @@ export function createServer(): Express {
       res.status(500).json({ error: error.message });
     }
   });
+
+  // Endpoint para criar dados básicos
+  app.post("/api/debug/seed-basic-data", async (req, res) => {
+    try {
+      const { seedBasicData } = await import("./lib/seed-basic-data");
+      await seedBasicData();
+      res.json({ message: "Dados básicos criados com sucesso!" });
+    } catch (error) {
+      console.error('[Debug] Erro ao criar dados básicos:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
   app.get("/api/demo", handleDemo);
 
   // Rotas de Campanhas
