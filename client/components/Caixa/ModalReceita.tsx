@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Textarea } from "../ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -20,38 +21,42 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
+import SelectWithAdd from "../ui/select-with-add";
 import { TrendingUp } from "lucide-react";
-import {
-  gerarDataHoraAutomatica,
-  isFormaPagamentoCartao,
-} from "../../lib/dateUtils";
 
 export function ModalReceita() {
   const {
     adicionarLancamento,
     campanhas,
+    adicionarCampanha,
     isLoading: caixaLoading,
   } = useCaixa();
   const {
     descricoes,
     formasPagamento,
-    tecnicos,
+    getTecnicos,
     setores,
+    adicionarDescricao,
+    adicionarFormaPagamento,
+    adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
+
+  // Carregar técnicos usando a função que verifica localStorage
+  const tecnicos = getTecnicos();
 
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
-    valorRecebido: "", // Novo campo obrigatório para cartão
-    conta: "", // Novo campo obrigatório (empresa/pessoal)
+    valorQueEntrou: "",
+    categoria: "",
     descricao: "",
-    subdescricao: "", // Novo campo opcional
     formaPagamento: "",
     tecnicoResponsavel: "",
     setor: "",
     campanha: "",
+    observacoes: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,64 +64,67 @@ export function ModalReceita() {
   // Filtrar descrições de receita
   const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
 
+  // Filtrar descrições pela categoria selecionada
+  const descricoesFiltradas = formData.categoria
+    ? descricoesReceita.filter((d) => d.categoria === formData.categoria)
+    : [];
+
+  // Obter categorias únicas das descrições de receita
+  const categoriasReceita = [
+    ...new Set(
+      descricoesReceita
+        .map((d) => d.categoria)
+        .filter((categoria) => categoria && categoria.trim() !== ""),
+    ),
+  ].sort();
+
+  // Verificar se forma de pagamento é cartão
+  const isFormaPagamentoCartao =
+    formData.formaPagamento &&
+    formasPagamento
+      .find((f) => f.id.toString() === formData.formaPagamento)
+      ?.nome?.toLowerCase()
+      .includes("cartão");
+
   const resetForm = () => {
     setFormData({
       data: new Date().toISOString().split("T")[0],
       valor: "",
-      valorRecebido: "",
-      conta: "",
+      valorQueEntrou: "",
+      categoria: "",
       descricao: "",
-      subdescricao: "",
       formaPagamento: "",
       tecnicoResponsavel: "",
       setor: "",
       campanha: "",
+      observacoes: "",
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validações básicas obrigatórias
-    const erros = [];
-
-    if (!formData.valor || parseFloat(formData.valor) <= 0) {
-      erros.push("Valor deve ser maior que zero");
-    }
-
-    if (!formData.descricao) {
-      erros.push("Descrição é obrigatória");
-    }
-
-    if (!formData.formaPagamento) {
-      erros.push("Forma de pagamento é obrigatória");
-    }
-
-    if (!formData.conta) {
-      erros.push("Conta é obrigatória");
-    }
-
-    // Validação específica: valorRecebido obrigatório para cartão
-    const formaPagamentoSelecionada = formasPagamento.find(
-      (f) => f.id.toString() === formData.formaPagamento,
-    );
-    const isCartao = formaPagamentoSelecionada
-      ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome)
-      : false;
-
     if (
-      isCartao &&
-      (!formData.valorRecebido || parseFloat(formData.valorRecebido) <= 0)
+      !formData.valor ||
+      !formData.categoria ||
+      !formData.descricao ||
+      !formData.formaPagamento
     ) {
-      erros.push(
-        "Valor recebido é obrigatório e deve ser maior que zero para pagamentos no cartão",
-      );
+      toast({
+        title: "Erro",
+        description:
+          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
+        variant: "destructive",
+      });
+      return;
     }
 
-    if (erros.length > 0) {
+    // Validar valor recebido para pagamentos com cartão
+    if (isFormaPagamentoCartao && !formData.valorQueEntrou) {
       toast({
-        title: "Erro de Validação",
-        description: erros.join(". "),
+        title: "Erro",
+        description:
+          "Para pagamentos com cartão, é obrigatório informar o valor recebido",
         variant: "destructive",
       });
       return;
@@ -126,24 +134,17 @@ export function ModalReceita() {
 
     try {
       await adicionarLancamento({
-        dataHora: gerarDataHoraAutomatica(),
+        data: new Date(formData.data),
         tipo: "receita",
         valor: parseFloat(formData.valor),
-        valorRecebido: formData.valorRecebido
-          ? parseFloat(formData.valorRecebido)
-          : undefined,
-        conta: formData.conta as "empresa" | "pessoal",
-        descricaoId: parseInt(formData.descricao),
-        subdescricaoId:
-          formData.subdescricao && formData.subdescricao !== "none"
-            ? parseInt(formData.subdescricao)
-            : undefined,
-        formaPagamentoId: parseInt(formData.formaPagamento),
-        funcionarioId: formData.tecnicoResponsavel
-          ? parseInt(formData.tecnicoResponsavel)
-          : undefined,
-        setorId: formData.setor ? parseInt(formData.setor) : undefined,
-        campanhaId: formData.campanha ? parseInt(formData.campanha) : undefined,
+        valorQueEntrou:
+          parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
+        descricao: formData.descricao,
+        formaPagamento: formData.formaPagamento,
+        tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
+        setor: formData.setor || undefined,
+        campanha: formData.campanha || undefined,
+        observacoes: formData.observacoes || undefined,
       });
 
       toast({
@@ -192,7 +193,7 @@ export function ModalReceita() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Campos básicos */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label htmlFor="data">Data *</Label>
                 <Input
@@ -220,145 +221,130 @@ export function ModalReceita() {
                   required
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="conta">Conta *</Label>
-                <Select
-                  value={formData.conta}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, conta: value }))
-                  }
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a conta" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="empresa">Empresa</SelectItem>
-                    <SelectItem value="pessoal">Pessoal</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
-
-            {/* Campo valorRecebido (condicional para cartão) */}
-            {(() => {
-              const formaPagamentoSelecionada = formasPagamento.find(
-                (f) => f.id.toString() === formData.formaPagamento,
-              );
-              const isCartao = formaPagamentoSelecionada
-                ? isFormaPagamentoCartao(formaPagamentoSelecionada.nome)
-                : false;
-
-              if (isCartao) {
-                return (
-                  <div className="space-y-2">
-                    <Label htmlFor="valorRecebido">Valor Recebido (R$) *</Label>
-                    <Input
-                      id="valorRecebido"
-                      type="number"
-                      step="0.01"
-                      placeholder="0,00"
-                      value={formData.valorRecebido}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          valorRecebido: e.target.value,
-                        }))
-                      }
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Obrigatório para pagamentos no cartão
-                    </p>
-                  </div>
-                );
-              }
-              return null;
-            })()}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição do Serviço *</Label>
+                <Label htmlFor="categoria">Categoria *</Label>
                 <Select
-                  value={formData.descricao}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, descricao: value }))
-                  }
-                  required
+                  value={formData.categoria}
+                  onValueChange={(value) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      categoria: value,
+                      descricao: "", // Limpar descrição quando categoria muda
+                    }));
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a descrição" />
+                    <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {descricoesReceita
-                      .filter(
-                        (desc) =>
-                          desc.id != null && desc.id !== "" && desc.id !== 0,
-                      )
-                      .map((desc) => (
-                        <SelectItem key={desc.id} value={desc.id.toString()}>
-                          {desc.nome}
-                        </SelectItem>
-                      ))}
+                    {categoriasReceita.map((categoria) => (
+                      <SelectItem key={categoria} value={categoria}>
+                        {categoria}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
-                <Select
-                  value={formData.formaPagamento}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, formaPagamento: value }))
-                  }
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a forma" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {formasPagamento
-                      .filter(
-                        (forma) =>
-                          forma.id != null && forma.id !== "" && forma.id !== 0,
-                      )
-                      .map((forma) => (
-                        <SelectItem key={forma.id} value={forma.id.toString()}>
-                          {forma.nome}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <SelectWithAdd
+                value={formData.descricao}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, descricao: value }))
+                }
+                placeholder={
+                  formData.categoria
+                    ? "Selecione a descrição"
+                    : "Primeiro selecione uma categoria"
+                }
+                label="Descrição do Serviço"
+                required={true}
+                disabled={!formData.categoria}
+                items={descricoesFiltradas}
+                onAddNew={async (data) => {
+                  await adicionarDescricao({
+                    nome: data.nome,
+                    tipo: "receita",
+                    categoria: formData.categoria,
+                  });
+                }}
+                addNewTitle="Nova Descrição de Receita"
+                addNewDescription="Adicione uma nova descrição de serviço para receitas."
+                addNewFields={[
+                  {
+                    key: "nome",
+                    label: "Nome da Descrição",
+                    required: true,
+                  },
+                ]}
+              />
             </div>
 
-            {/* Campo Subdescrição (opcional, dependente da descrição selecionada) */}
-            {formData.descricao && (
-              <div className="space-y-2">
-                <Label htmlFor="subdescricao">Subdescrição</Label>
-                <Select
-                  value={formData.subdescricao}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, subdescricao: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a subdescrição (opcional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Nenhuma</SelectItem>
-                    {/* TODO: Filtrar subdescricoes baseado na descricao selecionada */}
-                    {/* Por enquanto mostrando placeholder até implementar a API de subdescricoes */}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Detalhamento adicional da descrição (opcional)
-                </p>
+            <SelectWithAdd
+              value={formData.formaPagamento}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, formaPagamento: value }))
+              }
+              placeholder="Selecione a forma"
+              label="Forma de Pagamento"
+              required={true}
+              items={formasPagamento}
+              onAddNew={async (data) => {
+                await adicionarFormaPagamento({
+                  nome: data.nome,
+                  descricao: data.descricao || "",
+                });
+              }}
+              addNewTitle="Nova Forma de Pagamento"
+              addNewDescription="Adicione uma nova forma de pagamento."
+              addNewFields={[
+                {
+                  key: "nome",
+                  label: "Nome da Forma de Pagamento",
+                  required: true,
+                },
+                {
+                  key: "descricao",
+                  label: "Descrição (opcional)",
+                  required: false,
+                },
+              ]}
+            />
+
+            {/* Campo Valor Recebido para Cartão - compacto, logo após forma de pagamento */}
+            {isFormaPagamentoCartao && (
+              <div className="space-y-2 col-span-full">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                  <div className="space-y-2">
+                    <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
+                      Valor Recebido (R$) *
+                    </Label>
+                    <Input
+                      id="valorQueEntrou"
+                      type="number"
+                      step="0.01"
+                      placeholder="Valor líquido"
+                      value={formData.valorQueEntrou}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          valorQueEntrou: e.target.value,
+                        }))
+                      }
+                      className="bg-yellow-50 border-yellow-300 text-sm h-9"
+                      required
+                    />
+                  </div>
+                  <div className="text-xs text-yellow-600 md:col-span-2">
+                    <strong>Importante:</strong> Para cartão, informe o valor líquido que entrou na conta (após descontar taxas da operadora).
+                  </div>
+                </div>
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
                 <Select
@@ -374,111 +360,127 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione o técnico" />
                   </SelectTrigger>
                   <SelectContent>
-                    {tecnicos
-                      .filter(
-                        (tecnico) =>
-                          tecnico.id != null &&
-                          tecnico.id !== "" &&
-                          tecnico.id !== 0,
-                      )
-                      .map((tecnico) => (
-                        <SelectItem
-                          key={tecnico.id}
-                          value={tecnico.id.toString()}
-                        >
-                          {tecnico.nome}
-                        </SelectItem>
-                      ))}
+                    {tecnicos.length === 0 ? (
+                      <div className="px-2 py-1 text-sm text-gray-500">
+                        Nenhum técnico cadastrado
+                      </div>
+                    ) : (
+                      tecnicos
+                        .filter(
+                          (tecnico) =>
+                            tecnico.id != null &&
+                            tecnico.id !== "" &&
+                            tecnico.id !== 0,
+                        )
+                        .map((tecnico) => (
+                          <SelectItem
+                            key={tecnico.id}
+                            value={tecnico.id.toString()}
+                          >
+                            {tecnico.nome || tecnico.nomeCompleto}
+                          </SelectItem>
+                        ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="setor">Setor/Região</Label>
-                <Select
-                  value={formData.setor}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, setor: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o setor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {setores
-                      .filter(
-                        (setor) =>
-                          setor.id != null && setor.id !== "" && setor.id !== 0,
-                      )
-                      .map((setor) => (
-                        <SelectItem key={setor.id} value={setor.id.toString()}>
-                          {setor.nome} - {setor.cidade}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="campanha">Campanha</Label>
-                <Select
-                  value={formData.campanha}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, campanha: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a campanha" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {campanhas
-                      .filter(
-                        (campanha) =>
-                          campanha.id != null &&
-                          campanha.id !== "" &&
-                          campanha.id !== 0,
-                      )
-                      .map((campanha) => (
-                        <SelectItem
-                          key={campanha.id}
-                          value={campanha.id.toString()}
-                        >
-                          {campanha.nome}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <SelectWithAdd
+                value={formData.setor}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, setor: value }))
+                }
+                placeholder="Selecione o setor"
+                label="Setor/Região"
+                required={false}
+                items={setores}
+                onAddNew={async (data) => {
+                  await adicionarSetor({
+                    nome: data.nome,
+                    cidade: data.cidade,
+                  });
+                }}
+                addNewTitle="Novo Setor/Região"
+                addNewDescription="Adicione um novo setor ou região."
+                addNewFields={[
+                  {
+                    key: "nome",
+                    label: "Nome do Setor",
+                    required: true,
+                  },
+                  {
+                    key: "cidade",
+                    label: "Cidade",
+                    required: true,
+                  },
+                ]}
+                renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
+              />
             </div>
 
-            {/* Resumo dos dados preenchidos */}
+            {/* Observações - Campo básico */}
+            <div className="space-y-2">
+              <Label htmlFor="observacoes">Observações do Serviço</Label>
+              <Textarea
+                id="observacoes"
+                placeholder="Observações sobre o serviço prestado..."
+                value={formData.observacoes}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    observacoes: e.target.value,
+                  }))
+                }
+                rows={3}
+              />
+            </div>
+
+            <SelectWithAdd
+              value={formData.campanha}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, campanha: value }))
+              }
+              placeholder="Selecione a campanha"
+              label="Campanha"
+              required={false}
+              items={campanhas}
+              onAddNew={async (data) => {
+                await adicionarCampanha({
+                  nome: data.nome,
+                });
+              }}
+              addNewTitle="Nova Campanha"
+              addNewDescription="Adicione uma nova campanha de marketing."
+              addNewFields={[
+                {
+                  key: "nome",
+                  label: "Nome da Campanha",
+                  required: true,
+                },
+              ]}
+            />
+
+            {/* Resumo financeiro */}
             {formData.valor && (
               <div className="p-4 bg-green-50 rounded-lg">
                 <h4 className="font-medium text-green-800 mb-2">
-                  Resumo do Lançamento
+                  Resumo Financeiro
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
                   <div>
-                    <span className="text-gray-600">Valor:</span>
+                    <span className="text-gray-600">Valor Total:</span>
                     <div className="font-medium">
                       R$ {parseFloat(formData.valor || "0").toFixed(2)}
                     </div>
                   </div>
-                  {formData.valorRecebido && (
+                  {formData.valorQueEntrou && (
                     <div>
                       <span className="text-gray-600">Valor Recebido:</span>
                       <div className="font-medium">
-                        R${" "}
-                        {parseFloat(formData.valorRecebido || "0").toFixed(2)}
+                        R$ {parseFloat(formData.valorQueEntrou || "0").toFixed(2)}
                       </div>
                     </div>
                   )}
-                  <div>
-                    <span className="text-gray-600">Conta:</span>
-                    <div className="font-medium capitalize">
-                      {formData.conta}
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
