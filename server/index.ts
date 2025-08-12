@@ -111,6 +111,9 @@ export function createServer(): Express {
       res.status(500).json({ error: error.message });
     }
   });
+
+  // Limpeza de dados fictícios
+  app.post("/api/clean-fake-data", cleanFakeDataRoute);
   app.get("/api/demo", handleDemo);
 
   // Rotas de Campanhas
