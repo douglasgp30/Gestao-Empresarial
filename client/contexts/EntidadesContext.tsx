@@ -56,6 +56,7 @@ interface EntidadesContextType {
   adicionarFuncionario: (funcionario: any) => Promise<void>;
   editarFuncionario: (id: string, funcionario: any) => Promise<void>;
   excluirFuncionario: (id: string) => Promise<void>;
+  getTecnicos: () => any[];
 
   // Setores
   setores: Setor[];
