@@ -262,7 +262,7 @@ export default function FiltrosPeriodoCompacto({
             </div>
             <div className="space-y-1">
               <Label htmlFor="dataFim" className="text-xs font-medium">
-                Data Final
+                Até
               </Label>
               <div className="relative">
                 <Calendar className="absolute left-2 top-2.5 h-3 w-3 text-muted-foreground" />
