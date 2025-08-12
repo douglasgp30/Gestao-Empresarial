@@ -215,13 +215,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
-        valor: parseFloat(formData.valor),
-        valorLiquido:
-          parseFloat(formData.valorLiquido) || parseFloat(formData.valor),
-        valorQueEntrou:
-          parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
-        comissao: parseFloat(formData.comissao) || 0,
-        imposto: parseFloat(formData.imposto) || 0,
+        valor: valorInput.numericValue,
+        valorLiquido: valorLiquidoCalculado,
+        valorQueEntrou: valorQueEntrouCalculado,
+        comissao: comissaoCalculada,
+        imposto: impostoInput.numericValue,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
