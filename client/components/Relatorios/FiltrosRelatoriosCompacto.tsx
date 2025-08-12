@@ -26,8 +26,15 @@ import {
 } from "lucide-react";
 
 export default function FiltrosRelatoriosCompacto() {
-  const { filtros, setFiltros, isLoading, exportarPDF, exportarExcel } = useRelatorios();
-  const { setores, tecnicos, campanhas, formasPagamento, isLoading: entidadesLoading } = useEntidades();
+  const { filtros, setFiltros, isLoading, exportarPDF, exportarExcel } =
+    useRelatorios();
+  const {
+    setores,
+    tecnicos,
+    campanhas,
+    formasPagamento,
+    isLoading: entidadesLoading,
+  } = useEntidades();
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
@@ -43,7 +50,7 @@ export default function FiltrosRelatoriosCompacto() {
     const hoje = new Date();
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
     const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-    
+
     const filtrosLimpos = {
       periodo: {
         dataInicio: inicioMes,
@@ -176,11 +183,16 @@ export default function FiltrosRelatoriosCompacto() {
               <div className="bg-muted/30 rounded-lg p-4 border">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Forma de Pagamento</label>
+                    <label className="text-sm font-medium">
+                      Forma de Pagamento
+                    </label>
                     <Select
                       value={filtrosLocal.formaPagamento || ""}
                       onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, formaPagamento: value }))
+                        setFiltrosLocal((prev) => ({
+                          ...prev,
+                          formaPagamento: value,
+                        }))
                       }
                       disabled={isLoadingGeral}
                     >
@@ -190,7 +202,10 @@ export default function FiltrosRelatoriosCompacto() {
                       <SelectContent>
                         <SelectItem value="">Todas</SelectItem>
                         {formasPagamento.map((forma) => (
-                          <SelectItem key={forma.id} value={forma.id.toString()}>
+                          <SelectItem
+                            key={forma.id}
+                            value={forma.id.toString()}
+                          >
                             {forma.nome}
                           </SelectItem>
                         ))}
@@ -213,7 +228,10 @@ export default function FiltrosRelatoriosCompacto() {
                       <SelectContent>
                         <SelectItem value="">Todos</SelectItem>
                         {tecnicos.map((tecnico) => (
-                          <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
+                          <SelectItem
+                            key={tecnico.id}
+                            value={tecnico.id.toString()}
+                          >
                             {tecnico.nome}
                           </SelectItem>
                         ))}
@@ -236,7 +254,10 @@ export default function FiltrosRelatoriosCompacto() {
                       <SelectContent>
                         <SelectItem value="">Todos</SelectItem>
                         {setores.map((setor) => (
-                          <SelectItem key={setor.id} value={setor.id.toString()}>
+                          <SelectItem
+                            key={setor.id}
+                            value={setor.id.toString()}
+                          >
                             {setor.nome} - {setor.cidade}
                           </SelectItem>
                         ))}
@@ -249,7 +270,10 @@ export default function FiltrosRelatoriosCompacto() {
                     <Select
                       value={filtrosLocal.campanha || ""}
                       onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, campanha: value }))
+                        setFiltrosLocal((prev) => ({
+                          ...prev,
+                          campanha: value,
+                        }))
                       }
                       disabled={isLoadingGeral}
                     >
@@ -259,7 +283,10 @@ export default function FiltrosRelatoriosCompacto() {
                       <SelectContent>
                         <SelectItem value="">Todas</SelectItem>
                         {campanhas.map((campanha) => (
-                          <SelectItem key={campanha.id} value={campanha.id.toString()}>
+                          <SelectItem
+                            key={campanha.id}
+                            value={campanha.id.toString()}
+                          >
                             {campanha.nome}
                           </SelectItem>
                         ))}

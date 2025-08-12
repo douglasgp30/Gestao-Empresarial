@@ -9,10 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Card,
-  CardContent,
-} from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,12 +17,7 @@ import {
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import FiltroDataCaixa from "./FiltroDataCaixa";
-import {
-  Filter,
-  ChevronDown,
-  X,
-  Search,
-} from "lucide-react";
+import { Filter, ChevronDown, X, Search } from "lucide-react";
 
 export function FiltrosCaixaCompacto() {
   const {
@@ -92,7 +84,7 @@ export function FiltrosCaixaCompacto() {
             <div className="lg:col-span-4">
               <FiltroDataCaixa />
             </div>
-            
+
             {/* Filtro de Tipo - 3 colunas */}
             <div className="lg:col-span-3">
               <label className="text-xs font-medium mb-1 block text-gray-600">
@@ -135,7 +127,10 @@ export function FiltrosCaixaCompacto() {
                         <Filter className="h-3 w-3" />
                         Avançados
                         {filtrosAtivos > 0 && (
-                          <Badge variant="secondary" className="h-4 px-1 text-xs">
+                          <Badge
+                            variant="secondary"
+                            className="h-4 px-1 text-xs"
+                          >
                             {filtrosAtivos}
                           </Badge>
                         )}

@@ -74,9 +74,9 @@ export default function FiltrosAgendamentosCompacto() {
             </label>
             <Select
               value={filtrosLocal.status}
-              onValueChange={(value: "todos" | "agendado" | "concluido" | "cancelado") =>
-                setFiltrosLocal((prev) => ({ ...prev, status: value }))
-              }
+              onValueChange={(
+                value: "todos" | "agendado" | "concluido" | "cancelado",
+              ) => setFiltrosLocal((prev) => ({ ...prev, status: value }))}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -144,7 +144,10 @@ export default function FiltrosAgendamentosCompacto() {
                       <SelectContent>
                         <SelectItem value="">Todos os Setores</SelectItem>
                         {setores.map((setor) => (
-                          <SelectItem key={setor.id} value={setor.id.toString()}>
+                          <SelectItem
+                            key={setor.id}
+                            value={setor.id.toString()}
+                          >
                             {setor.nome} - {setor.cidade}
                           </SelectItem>
                         ))}
@@ -167,7 +170,10 @@ export default function FiltrosAgendamentosCompacto() {
                       <SelectContent>
                         <SelectItem value="">Todos os Técnicos</SelectItem>
                         {tecnicos.map((tecnico) => (
-                          <SelectItem key={tecnico.id} value={tecnico.id.toString()}>
+                          <SelectItem
+                            key={tecnico.id}
+                            value={tecnico.id.toString()}
+                          >
                             {tecnico.nome}
                           </SelectItem>
                         ))}

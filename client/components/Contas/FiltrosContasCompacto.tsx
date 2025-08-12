@@ -91,7 +91,7 @@ export default function FiltrosContasCompacto() {
     const hoje = new Date();
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
     const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-    
+
     const filtrosLimpos = {
       dataInicio: inicioMes,
       dataFim: fimMes,
@@ -99,7 +99,7 @@ export default function FiltrosContasCompacto() {
       status: "",
       fornecedorCliente: "",
     };
-    
+
     setFiltrosLocal(filtrosLimpos);
     setFiltros(filtrosLimpos);
   };

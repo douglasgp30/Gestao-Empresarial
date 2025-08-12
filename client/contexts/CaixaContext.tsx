@@ -95,7 +95,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Função para formatar data para o servidor (YYYY-MM-DD)
   const formatarDataParaServidor = (data: Date): string => {
-    return data.toISOString().split('T')[0];
+    return data.toISOString().split("T")[0];
   };
 
   // Função para carregar lançamentos com base nos filtros
@@ -177,7 +177,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.formaPagamento,
     filtros.tecnico,
     filtros.campanha,
-    filtros.setor
+    filtros.setor,
   ]);
 
   const adicionarLancamento = async (
