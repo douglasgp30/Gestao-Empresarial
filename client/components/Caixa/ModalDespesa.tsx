@@ -157,11 +157,11 @@ export function ModalDespesa() {
     >
       <DialogTrigger asChild>
         <Button
-          size="sm"
-          className="bg-red-600 hover:bg-red-700 text-white text-xs"
+          size="default"
+          className="bg-red-500 hover:bg-red-600 text-white font-medium px-6 py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
         >
-          <TrendingDown className="h-3 w-3 mr-1" />
-          Despesa
+          <TrendingDown className="h-4 w-4 mr-2" />
+          Despesas
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
