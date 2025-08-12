@@ -502,7 +502,7 @@ export default function Dashboard() {
         </div>
 
         {/* Filtros de Data */}
-      <FiltroDataDashboard />
+        <FiltroDataDashboard />
 
         {/* Loading State */}
         {isLoading && (

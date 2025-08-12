@@ -69,7 +69,9 @@ interface EntidadesContextType {
 
   // Clientes (API)
   clientes: Cliente[];
-  adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => Promise<void>;
+  adicionarCliente: (
+    cliente: Omit<Cliente, "id" | "dataCriacao">,
+  ) => Promise<void>;
   editarCliente: (id: string, cliente: Partial<Cliente>) => Promise<void>;
   excluirCliente: (id: string) => Promise<void>;
 

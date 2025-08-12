@@ -52,23 +52,28 @@ import {
 
 // Configuração das colunas padrão - todas as colunas do lançamento
 const defaultColumns: ColumnConfig[] = [
-  { key: 'data', label: 'Data', visible: true, order: 0 },
-  { key: 'tipo', label: 'Tipo', visible: true, order: 1 },
-  { key: 'descricao', label: 'Descrição', visible: true, order: 2 },
-  { key: 'valor', label: 'Valor', visible: true, order: 3 },
-  { key: 'valorLiquido', label: 'Valor Líquido', visible: false, order: 4 },
-  { key: 'valorRecebido', label: 'Valor Recebido', visible: false, order: 5 },
-  { key: 'comissao', label: 'Comissão', visible: false, order: 6 },
-  { key: 'imposto', label: 'Imposto/Taxa', visible: false, order: 7 },
-  { key: 'formaPagamento', label: 'Forma de Pagamento', visible: true, order: 8 },
-  { key: 'tecnico', label: 'Técnico', visible: true, order: 9 },
-  { key: 'setor', label: 'Setor', visible: true, order: 10 },
-  { key: 'campanha', label: 'Campanha', visible: false, order: 11 },
-  { key: 'conta', label: 'Conta', visible: false, order: 12 },
-  { key: 'observacoes', label: 'Observações', visible: false, order: 13 },
-  { key: 'numeroNota', label: 'Número da Nota', visible: false, order: 14 },
-  { key: 'cliente', label: 'Cliente', visible: false, order: 15 },
-  { key: 'acoes', label: 'Ações', visible: true, order: 16 },
+  { key: "data", label: "Data", visible: true, order: 0 },
+  { key: "tipo", label: "Tipo", visible: true, order: 1 },
+  { key: "descricao", label: "Descrição", visible: true, order: 2 },
+  { key: "valor", label: "Valor", visible: true, order: 3 },
+  { key: "valorLiquido", label: "Valor Líquido", visible: false, order: 4 },
+  { key: "valorRecebido", label: "Valor Recebido", visible: false, order: 5 },
+  { key: "comissao", label: "Comissão", visible: false, order: 6 },
+  { key: "imposto", label: "Imposto/Taxa", visible: false, order: 7 },
+  {
+    key: "formaPagamento",
+    label: "Forma de Pagamento",
+    visible: true,
+    order: 8,
+  },
+  { key: "tecnico", label: "Técnico", visible: true, order: 9 },
+  { key: "setor", label: "Setor", visible: true, order: 10 },
+  { key: "campanha", label: "Campanha", visible: false, order: 11 },
+  { key: "conta", label: "Conta", visible: false, order: 12 },
+  { key: "observacoes", label: "Observações", visible: false, order: 13 },
+  { key: "numeroNota", label: "Número da Nota", visible: false, order: 14 },
+  { key: "cliente", label: "Cliente", visible: false, order: 15 },
+  { key: "acoes", label: "Ações", visible: true, order: 16 },
 ];
 
 export function ListaLancamentosSimples() {
@@ -88,7 +93,7 @@ export function ListaLancamentosSimples() {
     resetColumns,
     getVisibleColumns,
     getColumnByKey,
-  } = useTableColumns('lancamentos-caixa', defaultColumns);
+  } = useTableColumns("lancamentos-caixa", defaultColumns);
 
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -98,12 +103,15 @@ export function ListaLancamentosSimples() {
   };
 
   // Função para renderizar o conteúdo de cada célula
-  const renderCellContent = (lancamento: LancamentoCaixa, columnKey: string) => {
+  const renderCellContent = (
+    lancamento: LancamentoCaixa,
+    columnKey: string,
+  ) => {
     switch (columnKey) {
-      case 'data':
+      case "data":
         return formatDate(lancamento.data);
 
-      case 'tipo':
+      case "tipo":
         return (
           <Badge
             variant={lancamento.tipo === "receita" ? "default" : "destructive"}
@@ -122,65 +130,70 @@ export function ListaLancamentosSimples() {
           </Badge>
         );
 
-      case 'descricao':
+      case "descricao":
         return lancamento.descricao?.nome || "N/A";
 
-      case 'valor':
+      case "valor":
         return (
-          <span className="font-medium">
-            {formatarMoeda(lancamento.valor)}
-          </span>
+          <span className="font-medium">{formatarMoeda(lancamento.valor)}</span>
         );
 
-      case 'valorLiquido':
+      case "valorLiquido":
         return (
           <span className="font-medium text-green-600">
             {formatarMoeda(lancamento.valorLiquido || lancamento.valor)}
           </span>
         );
 
-      case 'valorRecebido':
-        return lancamento.valorRecebido ? formatarMoeda(lancamento.valorRecebido) : "-";
+      case "valorRecebido":
+        return lancamento.valorRecebido
+          ? formatarMoeda(lancamento.valorRecebido)
+          : "-";
 
-      case 'comissao':
+      case "comissao":
         return lancamento.comissao ? formatarMoeda(lancamento.comissao) : "-";
 
-      case 'imposto':
+      case "imposto":
         return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
 
-      case 'formaPagamento':
+      case "formaPagamento":
         return lancamento.formaPagamento?.nome || "N/A";
 
-      case 'tecnico':
+      case "tecnico":
         return lancamento.funcionario?.nome || "-";
 
-      case 'setor':
+      case "setor":
         return lancamento.setor
           ? `${lancamento.setor.nome} - ${lancamento.setor.cidade}`
           : "-";
 
-      case 'campanha':
+      case "campanha":
         return lancamento.campanha?.nome || "-";
 
-      case 'conta':
+      case "conta":
         return lancamento.conta || "-";
 
-      case 'observacoes':
+      case "observacoes":
         return lancamento.observacoes ? (
-          <span className="text-sm text-muted-foreground" title={lancamento.observacoes}>
+          <span
+            className="text-sm text-muted-foreground"
+            title={lancamento.observacoes}
+          >
             {lancamento.observacoes.length > 30
               ? `${lancamento.observacoes.substring(0, 30)}...`
               : lancamento.observacoes}
           </span>
-        ) : "-";
+        ) : (
+          "-"
+        );
 
-      case 'numeroNota':
+      case "numeroNota":
         return lancamento.numeroNota || "-";
 
-      case 'cliente':
+      case "cliente":
         return lancamento.cliente?.nome || lancamento.cliente || "-";
 
-      case 'acoes':
+      case "acoes":
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -197,7 +210,9 @@ export function ListaLancamentosSimples() {
                 Editar
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => setLancamentoParaExcluir(lancamento.id.toString())}
+                onClick={() =>
+                  setLancamentoParaExcluir(lancamento.id.toString())
+                }
                 className="text-red-600"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -297,7 +312,7 @@ export function ListaLancamentosSimples() {
                     {getVisibleColumns().map((column) => (
                       <TableHead
                         key={column.key}
-                        className={column.key === 'acoes' ? 'text-right' : ''}
+                        className={column.key === "acoes" ? "text-right" : ""}
                       >
                         {column.label}
                       </TableHead>
@@ -310,7 +325,7 @@ export function ListaLancamentosSimples() {
                       {getVisibleColumns().map((column) => (
                         <TableCell
                           key={column.key}
-                          className={column.key === 'acoes' ? 'text-right' : ''}
+                          className={column.key === "acoes" ? "text-right" : ""}
                         >
                           {renderCellContent(lancamento, column.key)}
                         </TableCell>

@@ -191,7 +191,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         tipoAcesso: novoFuncionario.tipoAcesso,
         login: novoFuncionario.login,
         senha: novoFuncionario.senha,
-        permissoes: novoFuncionario.permissoes ? JSON.stringify(novoFuncionario.permissoes) : undefined,
+        permissoes: novoFuncionario.permissoes
+          ? JSON.stringify(novoFuncionario.permissoes)
+          : undefined,
       };
 
       const response = await funcionariosApi.criar(dadosApi);

@@ -35,7 +35,7 @@ export default function FiltrosAgendamentosCompacto() {
     setFiltros({
       ...filtros,
       dataInicio: novaData,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     });
   };
 
@@ -46,7 +46,7 @@ export default function FiltrosAgendamentosCompacto() {
     setFiltros({
       ...filtros,
       dataFim: novaData,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     });
   };
 
@@ -54,7 +54,7 @@ export default function FiltrosAgendamentosCompacto() {
     // Força atualização com novos filtros criando nova referência
     setFiltros({
       ...filtros,
-      __timestamp: Date.now() // Força re-render
+      __timestamp: Date.now(), // Força re-render
     });
   };
 

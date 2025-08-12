@@ -61,7 +61,6 @@ import {
   UserX,
 } from "lucide-react";
 
-
 export default function ListaFuncionarios() {
   const { user } = useAuth();
   const {

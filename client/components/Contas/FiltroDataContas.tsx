@@ -47,7 +47,8 @@ export default function FiltroDataContas() {
   };
 
   // Verificar se o contexto tem as propriedades de data de vencimento
-  const dataInicio = filtros.dataVencimentoInicio || filtros.dataInicio || new Date();
+  const dataInicio =
+    filtros.dataVencimentoInicio || filtros.dataInicio || new Date();
   const dataFim = filtros.dataVencimentoFim || filtros.dataFim || new Date();
 
   return (

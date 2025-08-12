@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Button } from './button';
-import { Label } from './label';
-import { Switch } from './switch';
+import React, { useState } from "react";
+import { Button } from "./button";
+import { Label } from "./label";
+import { Switch } from "./switch";
 import {
   Dialog,
   DialogContent,
@@ -10,21 +10,15 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
-} from './dialog';
+} from "./dialog";
 import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
-} from '@hello-pangea/dnd';
-import {
-  Settings,
-  GripVertical,
-  Eye,
-  EyeOff,
-  RotateCcw,
-} from 'lucide-react';
-import { ColumnConfig } from '../../hooks/use-table-columns';
+} from "@hello-pangea/dnd";
+import { Settings, GripVertical, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { ColumnConfig } from "../../hooks/use-table-columns";
 
 interface ColumnManagerProps {
   columns: ColumnConfig[];
@@ -47,7 +41,7 @@ export function ColumnManager({
     onReorderColumns(result.source.index, result.destination.index);
   };
 
-  const visibleCount = columns.filter(col => col.visible).length;
+  const visibleCount = columns.filter((col) => col.visible).length;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -61,7 +55,8 @@ export function ColumnManager({
         <DialogHeader>
           <DialogTitle>Gerenciar Colunas</DialogTitle>
           <DialogDescription>
-            Arraste para reordenar e use os switches para mostrar/ocultar colunas
+            Arraste para reordenar e use os switches para mostrar/ocultar
+            colunas
           </DialogDescription>
         </DialogHeader>
 
@@ -86,8 +81,8 @@ export function ColumnManager({
                           {...provided.draggableProps}
                           className={`flex items-center space-x-3 p-3 border rounded-lg ${
                             snapshot.isDragging
-                              ? 'shadow-lg bg-background'
-                              : 'bg-card'
+                              ? "shadow-lg bg-background"
+                              : "bg-card"
                           }`}
                         >
                           <div
@@ -111,7 +106,9 @@ export function ColumnManager({
                             )}
                             <Switch
                               checked={column.visible}
-                              onCheckedChange={() => onToggleVisibility(column.key)}
+                              onCheckedChange={() =>
+                                onToggleVisibility(column.key)
+                              }
                             />
                           </div>
                         </div>
@@ -130,9 +127,7 @@ export function ColumnManager({
             <RotateCcw className="h-4 w-4" />
             Restaurar Padrão
           </Button>
-          <Button onClick={() => setIsOpen(false)}>
-            Fechar
-          </Button>
+          <Button onClick={() => setIsOpen(false)}>Fechar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -18,7 +18,9 @@ interface ModalCadastroClienteRapidoProps {
   onClienteAdicionado?: (nomeCliente: string) => void;
 }
 
-export function ModalCadastroClienteRapido({ onClienteAdicionado }: ModalCadastroClienteRapidoProps) {
+export function ModalCadastroClienteRapido({
+  onClienteAdicionado,
+}: ModalCadastroClienteRapidoProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
@@ -44,10 +46,10 @@ export function ModalCadastroClienteRapido({ onClienteAdicionado }: ModalCadastr
     try {
       // Por enquanto, vamos simular o salvamento e apenas usar o nome
       // Em uma implementação real, aqui chamaria a API para salvar o cliente
-      
+
       // Simular delay de salvamento
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       toast({
         title: "Sucesso",
         description: `Cliente "${formData.nome}" cadastrado com sucesso!`,
@@ -80,12 +82,7 @@ export function ModalCadastroClienteRapido({ onClienteAdicionado }: ModalCadastr
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="px-3"
-        >
+        <Button type="button" variant="outline" size="sm" className="px-3">
           <Plus className="h-4 w-4" />
         </Button>
       </DialogTrigger>

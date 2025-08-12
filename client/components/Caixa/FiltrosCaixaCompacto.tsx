@@ -11,10 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Card,
-  CardContent,
-} from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -22,11 +19,7 @@ import {
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import FiltroDataCaixa from "./FiltroDataCaixa";
-import {
-  Filter,
-  ChevronDown,
-  X,
-} from "lucide-react";
+import { Filter, ChevronDown, X } from "lucide-react";
 
 export function FiltrosCaixaCompacto() {
   const {
@@ -68,7 +61,6 @@ export function FiltrosCaixaCompacto() {
     setFiltrosLocal(filtrosLimpos);
     setFiltros(filtrosLimpos);
   };
-
 
   // Contar filtros ativos (além das datas)
   const contarFiltrosAtivos = () => {
@@ -310,7 +302,6 @@ export function FiltrosCaixaCompacto() {
           </div>
         </CardContent>
       </Card>
-
 
       {/* Status de carregamento */}
       {isLoading && (

@@ -196,11 +196,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
             <div className="space-y-2">
               <Label htmlFor="valor">Valor (R$) *</Label>
-              <Input
-                id="valor"
-                {...valorInput.inputProps}
-                required
-              />
+              <Input id="valor" {...valorInput.inputProps} required />
             </div>
 
             <div className="space-y-2">

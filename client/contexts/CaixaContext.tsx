@@ -102,59 +102,64 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   // Função para carregar lançamentos com base nos filtros
-  const carregarLancamentos = React.useCallback(async (forceLoad = false) => {
-    try {
-      // Evitar múltiplas chamadas simultâneas, exceto quando forçado
-      if (isLoading && !forceLoad) return;
+  const carregarLancamentos = React.useCallback(
+    async (forceLoad = false) => {
+      try {
+        // Evitar múltiplas chamadas simultâneas, exceto quando forçado
+        if (isLoading && !forceLoad) return;
 
-      const filtrosApi: any = {
-        dataInicio: formatarDataParaServidor(filtros.dataInicio),
-        dataFim: formatarDataParaServidor(filtros.dataFim),
-        ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
-        ...(filtros.conta !== "todas" && { conta: filtros.conta }),
-        ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
-      };
+        const filtrosApi: any = {
+          dataInicio: formatarDataParaServidor(filtros.dataInicio),
+          dataFim: formatarDataParaServidor(filtros.dataFim),
+          ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
+          ...(filtros.conta !== "todas" && { conta: filtros.conta }),
+          ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
+        };
 
-      // Adicionar filtros numéricos apenas se válidos
-      const funcionarioId = parseIntSafe(filtros.tecnico);
-      const setorId = parseIntSafe(filtros.setor);
-      const campanhaId = parseIntSafe(filtros.campanha);
-      const formaPagamentoId = parseIntSafe(filtros.formaPagamento);
+        // Adicionar filtros numéricos apenas se válidos
+        const funcionarioId = parseIntSafe(filtros.tecnico);
+        const setorId = parseIntSafe(filtros.setor);
+        const campanhaId = parseIntSafe(filtros.campanha);
+        const formaPagamentoId = parseIntSafe(filtros.formaPagamento);
 
-      if (funcionarioId) filtrosApi.funcionarioId = funcionarioId;
-      if (setorId) filtrosApi.setorId = setorId;
-      if (campanhaId) filtrosApi.campanhaId = campanhaId;
-      if (formaPagamentoId) filtrosApi.formaPagamentoId = formaPagamentoId;
+        if (funcionarioId) filtrosApi.funcionarioId = funcionarioId;
+        if (setorId) filtrosApi.setorId = setorId;
+        if (campanhaId) filtrosApi.campanhaId = campanhaId;
+        if (formaPagamentoId) filtrosApi.formaPagamentoId = formaPagamentoId;
 
-      const response = await caixaApi.listarLancamentos(filtrosApi);
-      if (response.error) {
-        setError(response.error);
-      } else {
-        // Converter datas de string para Date e manter relacionamentos
-        const lancamentosFormatados = (response.data || []).map(
-          (lancamento: any) => ({
-            ...lancamento,
-            // Converter dataHora do banco para Date para compatibilidade
-            data: new Date(lancamento.dataHora), // Criar campo data a partir de dataHora
-            dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
-            dataCriacao: new Date(lancamento.dataCriacao),
-            // Garantir que os relacionamentos estejam presentes corretamente
-            descricao: lancamento.descricao || { nome: "Sem descrição" },
-            formaPagamento: lancamento.formaPagamento || { nome: "Não informado" },
-            funcionario: lancamento.funcionario || null,
-            setor: lancamento.setor || null,
-            campanha: lancamento.campanha || null,
-            // Campos de compatibilidade para código que espera strings
-            tecnicoResponsavel: lancamento.funcionario?.nome || null,
-          }),
-        );
-        setLancamentos(lancamentosFormatados);
+        const response = await caixaApi.listarLancamentos(filtrosApi);
+        if (response.error) {
+          setError(response.error);
+        } else {
+          // Converter datas de string para Date e manter relacionamentos
+          const lancamentosFormatados = (response.data || []).map(
+            (lancamento: any) => ({
+              ...lancamento,
+              // Converter dataHora do banco para Date para compatibilidade
+              data: new Date(lancamento.dataHora), // Criar campo data a partir de dataHora
+              dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
+              dataCriacao: new Date(lancamento.dataCriacao),
+              // Garantir que os relacionamentos estejam presentes corretamente
+              descricao: lancamento.descricao || { nome: "Sem descrição" },
+              formaPagamento: lancamento.formaPagamento || {
+                nome: "Não informado",
+              },
+              funcionario: lancamento.funcionario || null,
+              setor: lancamento.setor || null,
+              campanha: lancamento.campanha || null,
+              // Campos de compatibilidade para código que espera strings
+              tecnicoResponsavel: lancamento.funcionario?.nome || null,
+            }),
+          );
+          setLancamentos(lancamentosFormatados);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar lançamentos:", error);
+        setError("Erro ao carregar lançamentos");
       }
-    } catch (error) {
-      console.error("Erro ao carregar lançamentos:", error);
-      setError("Erro ao carregar lançamentos");
-    }
-  }, [filtros, isLoading]);
+    },
+    [filtros, isLoading],
+  );
 
   // Carregar dados na inicialização
   useEffect(() => {

@@ -6,7 +6,6 @@ import ListaFuncionarios from "../components/Funcionarios/ListaFuncionarios";
 import { Users } from "lucide-react";
 
 function FuncionariosContent() {
-
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -24,7 +23,6 @@ function FuncionariosContent() {
           <FormularioFuncionario />
         </div>
       </div>
-
 
       {/* Filtros */}
       <FiltrosFuncionariosCompacto />
