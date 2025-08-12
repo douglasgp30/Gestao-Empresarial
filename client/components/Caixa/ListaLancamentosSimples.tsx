@@ -140,13 +140,23 @@ export function ListaLancamentosSimples() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Eye className="h-5 w-5" />
-          Lançamentos
-        </CardTitle>
-        <CardDescription>
-          {lancamentos.length} lançamento(s) encontrado(s)
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Lançamentos
+            </CardTitle>
+            <CardDescription>
+              {lancamentos.length} lançamento(s) encontrado(s)
+            </CardDescription>
+          </div>
+          <ColumnManager
+            columns={columns}
+            onToggleVisibility={toggleColumnVisibility}
+            onReorderColumns={reorderColumns}
+            onReset={resetColumns}
+          />
+        </div>
       </CardHeader>
       <CardContent>
         {lancamentos.length === 0 ? (
