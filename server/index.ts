@@ -49,6 +49,8 @@ import {
   getTotaisCaixa
 } from "./routes/caixa";
 
+import contasRouter from "./routes/contas";
+
 export function createServer(): Express {
   const app = express();
 
@@ -99,6 +101,9 @@ export function createServer(): Express {
   app.post("/api/caixa/lancamentos", createLancamento);
   app.put("/api/caixa/lancamentos/:id", updateLancamento);
   app.delete("/api/caixa/lancamentos/:id", deleteLancamento);
+
+  // Rotas de Contas
+  app.use("/api/contas", contasRouter);
 
   return app;
 }
