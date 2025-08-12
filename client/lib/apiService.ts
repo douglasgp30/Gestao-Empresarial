@@ -221,3 +221,22 @@ export const caixaApi = {
       method: "DELETE",
     }),
 };
+
+// === CLIENTES ===
+export const clientesApi = {
+  listar: () => apiRequest<any[]>("/clientes"),
+  criar: (cliente: any) =>
+    apiRequest<any>("/clientes", {
+      method: "POST",
+      body: JSON.stringify(cliente),
+    }),
+  atualizar: (id: number, cliente: any) =>
+    apiRequest<any>(`/clientes/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(cliente),
+    }),
+  excluir: (id: number) =>
+    apiRequest<void>(`/clientes/${id}`, {
+      method: "DELETE",
+    }),
+};
