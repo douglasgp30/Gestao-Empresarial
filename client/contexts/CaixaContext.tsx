@@ -131,8 +131,16 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         const lancamentosFormatados = (response.data || []).map(
           (lancamento: any) => ({
             ...lancamento,
+            // Converter dataHora do banco para Date para compatibilidade
+            data: new Date(lancamento.dataHora), // Criar campo data a partir de dataHora
             dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
             dataCriacao: new Date(lancamento.dataCriacao),
+            // Garantir que propriedades relacionadas estejam disponíveis
+            descricao: lancamento.descricao?.nome || lancamento.descricao,
+            formaPagamento: lancamento.formaPagamento?.nome || lancamento.formaPagamento,
+            tecnicoResponsavel: lancamento.funcionario?.nome || lancamento.tecnicoResponsavel,
+            setor: lancamento.setor?.nome || lancamento.setor,
+            campanha: lancamento.campanha?.nome || lancamento.campanha,
           }),
         );
         setLancamentos(lancamentosFormatados);
