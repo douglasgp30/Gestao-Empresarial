@@ -291,11 +291,11 @@ export default function FiltroDataGoogleAds({
           className="w-full justify-between h-8 px-3 text-xs font-normal"
           disabled={isLoading}
         >
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+          <div className="flex items-center gap-1">
+            <Calendar className="h-3 w-3 text-muted-foreground" />
             <span className="truncate">{formatarPeriodoDisplay()}</span>
           </div>
-          <ChevronDown className="h-4 w-4 opacity-50" />
+          <ChevronDown className="h-3 w-3 opacity-50" />
         </Button>
 
         {isOpen && (
