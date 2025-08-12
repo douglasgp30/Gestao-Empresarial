@@ -14,7 +14,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import FiltrosPeriodoCompacto from "../ui/filtros-periodo-compacto";
+import FiltroDataContas from "./FiltroDataContas";
 import {
   Filter,
   ChevronDown,
@@ -119,8 +119,8 @@ export default function FiltrosContasCompacto() {
 
   return (
     <div className="space-y-3">
-      {/* Filtros de Período */}
-      <FiltrosPeriodoCompacto
+      {/* Filtro de Data estilo Google Ads */}
+      <FiltroDataContas
         dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
         dataFim={filtros.dataFim.toISOString().split("T")[0]}
         onDataInicioChange={handleDataInicioChange}
