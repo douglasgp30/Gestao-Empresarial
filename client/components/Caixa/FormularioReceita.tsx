@@ -108,7 +108,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorCalculado = valorInput.numericValue;
   const valorQueEntrouCalculado = valorQueEntrouInput.numericValue || valorCalculado;
   const impostoCalculado = impostoInput.numericValue;
-  const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
+
+  // Calcular descontos baseados nos percentuais
+  const percentualNotaFiscal = formData.temNotaFiscal ? 5 : 0; // 5% se houver nota fiscal
+  const descontoNotaFiscal = (valorQueEntrouCalculado * percentualNotaFiscal) / 100;
+
+  // Taxa do cartão - aplicar só se for forma de pagamento de cartão
+  const taxaCartao = isFormaPagamentoCartao ? (valorCalculado * 3.5) / 100 : 0; // 3.5% para cartão
+
+  // Valor líquido = valor recebido - impostos - desconto nota fiscal - taxa cartão
+  const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado - descontoNotaFiscal - taxaCartao;
 
   // Calcular comissão baseada no percentual do técnico
   const comissaoCalculada = (() => {
@@ -123,7 +132,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return 0;
   })();
 
-  // Resetar valorQueEntrou quando mudança de Cartão para outras formas
+  // Resetar valorQueEntrou quando mudança de Cart��o para outras formas
   useEffect(() => {
     if (!isFormaPagamentoCartao && valorQueEntrouInput.numericValue > 0) {
       valorQueEntrouInput.reset();
