@@ -342,7 +342,9 @@ export default function FiltroDataGoogleAds({
                         Data de início*
                       </label>
                       <div className="text-base font-medium text-gray-900">
-                        {dataInicio ? parseISO(dataInicio).toLocaleDateString('pt-BR') : '-'}
+                        {dataInicio
+                          ? parseISO(dataInicio).toLocaleDateString("pt-BR")
+                          : "-"}
                       </div>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg border">
@@ -350,7 +352,9 @@ export default function FiltroDataGoogleAds({
                         Data de término
                       </label>
                       <div className="text-base font-medium text-gray-900">
-                        {dataFim ? parseISO(dataFim).toLocaleDateString('pt-BR') : '-'}
+                        {dataFim
+                          ? parseISO(dataFim).toLocaleDateString("pt-BR")
+                          : "-"}
                       </div>
                     </div>
                   </div>
@@ -401,7 +405,9 @@ export default function FiltroDataGoogleAds({
                   >
                     ← Voltar
                   </Button>
-                  <h3 className="text-lg font-semibold">Datas personalizadas</h3>
+                  <h3 className="text-lg font-semibold">
+                    Datas personalizadas
+                  </h3>
                   <div></div>
                 </div>
 
@@ -444,7 +450,8 @@ export default function FiltroDataGoogleAds({
                       months:
                         "flex flex-col sm:flex-row space-y-6 sm:space-x-8 sm:space-y-0",
                       month: "space-y-5",
-                      caption: "flex justify-center pt-3 relative items-center mb-5",
+                      caption:
+                        "flex justify-center pt-3 relative items-center mb-5",
                       caption_label: "text-lg font-bold text-gray-800",
                       nav: "space-x-3 flex items-center",
                       nav_button:
@@ -460,7 +467,8 @@ export default function FiltroDataGoogleAds({
                       day: "h-11 w-11 p-0 font-medium aria-selected:opacity-100 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-150 text-base flex items-center justify-center border border-transparent hover:border-gray-200",
                       day_selected:
                         "bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white font-semibold border-blue-600 shadow-md",
-                      day_today: "bg-blue-100 text-blue-800 font-bold border-blue-300",
+                      day_today:
+                        "bg-blue-100 text-blue-800 font-bold border-blue-300",
                       day_outside: "text-gray-400 opacity-60",
                       day_disabled: "text-gray-300 opacity-40",
                       day_range_middle:

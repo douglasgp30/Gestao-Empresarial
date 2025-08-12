@@ -169,7 +169,10 @@ export default function FiltrosAgendamentosCompacto() {
                     <Select
                       value={filtrosLocal.setor || "todos"}
                       onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, setor: value === "todos" ? "" : value }))
+                        setFiltrosLocal((prev) => ({
+                          ...prev,
+                          setor: value === "todos" ? "" : value,
+                        }))
                       }
                       disabled={isLoadingGeral}
                     >
@@ -198,7 +201,10 @@ export default function FiltrosAgendamentosCompacto() {
                     <Select
                       value={filtrosLocal.tecnico || "todos"}
                       onValueChange={(value) =>
-                        setFiltrosLocal((prev) => ({ ...prev, tecnico: value === "todos" ? "" : value }))
+                        setFiltrosLocal((prev) => ({
+                          ...prev,
+                          tecnico: value === "todos" ? "" : value,
+                        }))
                       }
                       disabled={isLoadingGeral}
                     >
@@ -219,7 +225,6 @@ export default function FiltrosAgendamentosCompacto() {
                     </Select>
                   </div>
                 </div>
-
               </div>
             </CollapsibleContent>
           </Collapsible>

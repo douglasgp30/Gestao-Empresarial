@@ -85,7 +85,8 @@ export function FiltrosCaixaCompacto() {
     if (filtrosLocal.descricao !== "todas") count++;
     if (filtrosLocal.cliente !== "todos") count++;
     if (filtrosLocal.cidade !== "todas") count++;
-    if (filtrosLocal.numeroNota && filtrosLocal.numeroNota.trim() !== "") count++;
+    if (filtrosLocal.numeroNota && filtrosLocal.numeroNota.trim() !== "")
+      count++;
     return count;
   };
 
@@ -97,14 +98,15 @@ export function FiltrosCaixaCompacto() {
     ...new Set(
       descricoes
         .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== "")
+        .filter((categoria) => categoria && categoria.trim() !== ""),
     ),
   ].sort();
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = filtrosLocal.categoria !== "todas"
-    ? descricoes.filter((d) => d.categoria === filtrosLocal.categoria)
-    : descricoes;
+  const descricoesFiltradas =
+    filtrosLocal.categoria !== "todas"
+      ? descricoes.filter((d) => d.categoria === filtrosLocal.categoria)
+      : descricoes;
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -282,7 +284,10 @@ export function FiltrosCaixaCompacto() {
                       <Select
                         value={filtrosLocal.cidade || "todas"}
                         onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({ ...prev, cidade: value }))
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            cidade: value,
+                          }))
                         }
                         disabled={isLoading}
                       >
@@ -398,10 +403,18 @@ export function FiltrosCaixaCompacto() {
                             descricao: value,
                           }))
                         }
-                        disabled={isLoading || filtrosLocal.categoria === "todas"}
+                        disabled={
+                          isLoading || filtrosLocal.categoria === "todas"
+                        }
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue placeholder={filtrosLocal.categoria === "todas" ? "Selecione categoria primeiro" : "Todas"} />
+                          <SelectValue
+                            placeholder={
+                              filtrosLocal.categoria === "todas"
+                                ? "Selecione categoria primeiro"
+                                : "Todas"
+                            }
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
@@ -425,7 +438,10 @@ export function FiltrosCaixaCompacto() {
                       <Select
                         value={filtrosLocal.cliente || "todos"}
                         onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({ ...prev, cliente: value }))
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            cliente: value,
+                          }))
                         }
                         disabled={isLoading}
                       >

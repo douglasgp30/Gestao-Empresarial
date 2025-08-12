@@ -228,7 +228,9 @@ export default function FiltrosFuncionariosCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos os tipos</SelectItem>
-                          <SelectItem value="Administrador">Administrador</SelectItem>
+                          <SelectItem value="Administrador">
+                            Administrador
+                          </SelectItem>
                           <SelectItem value="Operador">Operador</SelectItem>
                         </SelectContent>
                       </Select>
@@ -244,12 +246,15 @@ export default function FiltrosFuncionariosCompacto() {
                           filtros.permissaoAcesso === undefined
                             ? "todos"
                             : filtros.permissaoAcesso
-                            ? "sim"
-                            : "nao"
+                              ? "sim"
+                              : "nao"
                         }
                         onValueChange={(value) => {
                           if (value === "todos") {
-                            setFiltros({ ...filtros, permissaoAcesso: undefined });
+                            setFiltros({
+                              ...filtros,
+                              permissaoAcesso: undefined,
+                            });
                           } else {
                             setFiltros({
                               ...filtros,
@@ -269,7 +274,6 @@ export default function FiltrosFuncionariosCompacto() {
                       </Select>
                     </div>
                   </div>
-
                 </div>
               </CollapsibleContent>
             </Collapsible>

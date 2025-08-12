@@ -61,7 +61,6 @@ function getStatusColor(status: string) {
   }
 }
 
-
 export default function Dashboard() {
   const {
     stats,
@@ -109,7 +108,7 @@ export default function Dashboard() {
               Visão geral financeira
             </p>
           </div>
-          
+
           {/* Top Row - Meta e Saldo Geral */}
           <div className="flex flex-col lg:flex-row items-center gap-6">
             {/* Meta do Mês, Total Alcançado e Restante */}
@@ -301,7 +300,9 @@ export default function Dashboard() {
           <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <Card className="bg-green-50 border-green-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Receitas</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total de Receitas
+                </CardTitle>
                 <TrendingUp className="h-4 w-4 text-green-600" />
               </CardHeader>
               <CardContent>
@@ -322,7 +323,9 @@ export default function Dashboard() {
             </Card>
             <Card className="bg-red-50 border-red-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Despesas</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total de Despesas
+                </CardTitle>
                 <TrendingDown className="h-4 w-4 text-red-600" />
               </CardHeader>
               <CardContent>
@@ -343,7 +346,9 @@ export default function Dashboard() {
             </Card>
             <Card className="bg-blue-50 border-blue-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Saldo (Caixa)</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Saldo (Caixa)
+                </CardTitle>
                 <DollarSign className="h-4 w-4 text-blue-600" />
               </CardHeader>
               <CardContent>
@@ -378,7 +383,9 @@ export default function Dashboard() {
           <div className="grid gap-4 md:grid-cols-3">
             <Card className="bg-green-50 border-green-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Contas Recebidas</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total de Contas Recebidas
+                </CardTitle>
                 <TrendingUp className="h-4 w-4 text-green-600" />
               </CardHeader>
               <CardContent>
@@ -399,7 +406,9 @@ export default function Dashboard() {
             </Card>
             <Card className="bg-red-50 border-red-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Contas Pagas</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total de Contas Pagas
+                </CardTitle>
                 <TrendingDown className="h-4 w-4 text-red-600" />
               </CardHeader>
               <CardContent>
@@ -420,7 +429,9 @@ export default function Dashboard() {
             </Card>
             <Card className="bg-blue-50 border-blue-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Saldo (Contas Processadas)</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Saldo (Contas Processadas)
+                </CardTitle>
                 <DollarSign className="h-4 w-4 text-blue-600" />
               </CardHeader>
               <CardContent>
@@ -455,7 +466,9 @@ export default function Dashboard() {
           <div className="grid gap-4 md:grid-cols-3">
             <Card className="bg-green-50 border-green-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total a Receber</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total a Receber
+                </CardTitle>
                 <Calculator className="h-4 w-4 text-green-600" />
               </CardHeader>
               <CardContent>
@@ -476,7 +489,9 @@ export default function Dashboard() {
             </Card>
             <Card className="bg-red-50 border-red-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total a Pagar</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total a Pagar
+                </CardTitle>
                 <CreditCard className="h-4 w-4 text-red-600" />
               </CardHeader>
               <CardContent>
@@ -497,7 +512,9 @@ export default function Dashboard() {
             </Card>
             <Card className="bg-blue-50 border-blue-200">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Saldo Geral das Contas</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Saldo Geral das Contas
+                </CardTitle>
                 <Banknote className="h-4 w-4 text-blue-600" />
               </CardHeader>
               <CardContent>
@@ -559,7 +576,10 @@ export default function Dashboard() {
                             {conta.fornecedorCliente}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Vencimento: {new Date(conta.dataVencimento).toLocaleDateString('pt-BR')}
+                            Vencimento:{" "}
+                            {new Date(conta.dataVencimento).toLocaleDateString(
+                              "pt-BR",
+                            )}
                           </p>
                         </div>
                       </div>

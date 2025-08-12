@@ -122,7 +122,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
           ...(filtros.conta !== "todas" && { conta: filtros.conta }),
           ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
-          ...(filtros.numeroNota && filtros.numeroNota.trim() !== "" && { numeroNota: filtros.numeroNota }),
+          ...(filtros.numeroNota &&
+            filtros.numeroNota.trim() !== "" && {
+              numeroNota: filtros.numeroNota,
+            }),
         };
 
         // Adicionar filtros numéricos apenas se válidos

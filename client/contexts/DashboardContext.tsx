@@ -124,17 +124,19 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const fimMesAtual = getFimDoMes();
 
     // LINHA 1 - Totais do Módulo Caixa do mês atual
-    const lancamentosMesAtual = (caixaContext?.lancamentos || []).filter((lancamento) => {
-      const dataLancamento = new Date(lancamento.data);
-      return isMesmoMes(dataLancamento, hoje);
-    });
+    const lancamentosMesAtual = (caixaContext?.lancamentos || []).filter(
+      (lancamento) => {
+        const dataLancamento = new Date(lancamento.data);
+        return isMesmoMes(dataLancamento, hoje);
+      },
+    );
 
     const totalReceitasCaixa = lancamentosMesAtual
-      .filter(l => l.tipo === "receita")
+      .filter((l) => l.tipo === "receita")
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
     const totalDespesasCaixa = lancamentosMesAtual
-      .filter(l => l.tipo === "despesa")
+      .filter((l) => l.tipo === "despesa")
       .reduce((total, l) => total + l.valor, 0);
 
     const saldoCaixa = totalReceitasCaixa - totalDespesasCaixa;
@@ -146,22 +148,22 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     });
 
     const totalContasRecebidas = contasMesAtual
-      .filter(c => c.tipo === "receber" && c.status === "paga")
+      .filter((c) => c.tipo === "receber" && c.status === "paga")
       .reduce((total, c) => total + c.valor, 0);
 
     const totalContasPagas = contasMesAtual
-      .filter(c => c.tipo === "pagar" && c.status === "paga")
+      .filter((c) => c.tipo === "pagar" && c.status === "paga")
       .reduce((total, c) => total + c.valor, 0);
 
     const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
     // LINHA 3 - Totais de Contas a Receber e a Pagar do mês atual (não processadas)
     const totalContasAReceber = contasMesAtual
-      .filter(c => c.tipo === "receber" && c.status !== "paga")
+      .filter((c) => c.tipo === "receber" && c.status !== "paga")
       .reduce((total, c) => total + c.valor, 0);
 
     const totalContasAPagar = contasMesAtual
-      .filter(c => c.tipo === "pagar" && c.status !== "paga")
+      .filter((c) => c.tipo === "pagar" && c.status !== "paga")
       .reduce((total, c) => total + c.valor, 0);
 
     const saldoGeralContas = totalContasAReceber - totalContasAPagar;
@@ -202,7 +204,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     // CÁLCULO TOTAL ALCANÇADO DA META
     // Meta é sempre do mês atual, baseado em receitas do caixa
     const receitasCaixaMesAtual = lancamentosMesAtual
-      .filter(l => l.tipo === "receita")
+      .filter((l) => l.tipo === "receita")
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
     console.log(

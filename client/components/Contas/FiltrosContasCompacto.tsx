@@ -255,7 +255,10 @@ export default function FiltrosContasCompacto() {
                       <Select
                         value={filtrosLocal.status || "todos"}
                         onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({ ...prev, status: value === "todos" ? "" : value }))
+                          setFiltrosLocal((prev) => ({
+                            ...prev,
+                            status: value === "todos" ? "" : value,
+                          }))
                         }
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
@@ -295,7 +298,6 @@ export default function FiltrosContasCompacto() {
                       />
                     </div>
                   </div>
-
                 </div>
               </CollapsibleContent>
             </Collapsible>

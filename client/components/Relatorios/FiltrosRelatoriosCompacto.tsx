@@ -36,10 +36,7 @@ export default function FiltrosRelatoriosCompacto() {
     formasPagamento,
     isLoading: entidadesLoading,
   } = useEntidades();
-  const {
-    campanhas,
-    isLoading: caixaLoading,
-  } = useCaixa();
+  const { campanhas, isLoading: caixaLoading } = useCaixa();
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
@@ -264,7 +261,10 @@ export default function FiltrosRelatoriosCompacto() {
                         <Select
                           value={filtrosLocal.tecnico || "todos"}
                           onValueChange={(value) =>
-                            setFiltrosLocal((prev) => ({ ...prev, tecnico: value === "todos" ? "" : value }))
+                            setFiltrosLocal((prev) => ({
+                              ...prev,
+                              tecnico: value === "todos" ? "" : value,
+                            }))
                           }
                           disabled={isLoadingGeral}
                         >
@@ -293,7 +293,10 @@ export default function FiltrosRelatoriosCompacto() {
                         <Select
                           value={filtrosLocal.setor || "todos"}
                           onValueChange={(value) =>
-                            setFiltrosLocal((prev) => ({ ...prev, setor: value === "todos" ? "" : value }))
+                            setFiltrosLocal((prev) => ({
+                              ...prev,
+                              setor: value === "todos" ? "" : value,
+                            }))
                           }
                           disabled={isLoadingGeral}
                         >
@@ -347,7 +350,6 @@ export default function FiltrosRelatoriosCompacto() {
                       </div>
                     </div>
                   </div>
-
                 </div>
               </CollapsibleContent>
             </Collapsible>
