@@ -189,6 +189,9 @@ export default function FormularioFuncionario() {
                     placeholder="Login para acesso"
                     className={errors.login ? "border-red-500" : ""}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    O login será convertido automaticamente para minúsculas
+                  </p>
                   {errors.login && (
                     <p className="text-sm text-red-500">{errors.login}</p>
                   )}
