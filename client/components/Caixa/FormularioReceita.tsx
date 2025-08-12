@@ -292,7 +292,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Campos básicos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
@@ -374,7 +374,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 });
               }}
               addNewTitle="Nova Descrição de Receita"
-              addNewDescription="Adicione uma nova descrição de serviço para receitas."
+              addNewDescription="Adicione uma nova descri��ão de serviço para receitas."
               addNewFields={[
                 {
                   key: "nome",
