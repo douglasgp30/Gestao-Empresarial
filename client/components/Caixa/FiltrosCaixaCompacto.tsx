@@ -68,12 +68,6 @@ export function FiltrosCaixaCompacto() {
     setFiltros(filtrosLimpos);
   };
 
-  const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valor);
-  };
 
   // Contar filtros ativos (além das datas)
   const contarFiltrosAtivos = () => {
