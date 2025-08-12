@@ -221,21 +221,24 @@ export function ModalDespesa() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição da Despesa *</Label>
+                <Label htmlFor="categoria">Categoria *</Label>
                 <Select
-                  value={formData.descricao}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, descricao: value }))
-                  }
-                  required
+                  value={formData.categoria}
+                  onValueChange={(value) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      categoria: value,
+                      descricao: "", // Limpar descrição quando categoria muda
+                    }));
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a descrição" />
+                    <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {descricoesDespesa.map((desc) => (
-                      <SelectItem key={desc.id} value={desc.id.toString()}>
-                        {desc.nome}
+                    {categoriasDespesa.map((categoria) => (
+                      <SelectItem key={categoria} value={categoria}>
+                        {categoria}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -243,26 +246,55 @@ export function ModalDespesa() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
+                <Label htmlFor="descricao">Descrição da Despesa *</Label>
                 <Select
-                  value={formData.formaPagamento}
+                  value={formData.descricao}
                   onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, formaPagamento: value }))
+                    setFormData((prev) => ({ ...prev, descricao: value }))
                   }
                   required
+                  disabled={!formData.categoria}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a forma" />
+                    <SelectValue
+                      placeholder={
+                        formData.categoria
+                          ? "Selecione a descrição"
+                          : "Primeiro selecione uma categoria"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {formasPagamento.map((forma) => (
-                      <SelectItem key={forma.id} value={forma.id.toString()}>
-                        {forma.nome}
+                    {descricoesFiltradas.map((desc) => (
+                      <SelectItem key={desc.id} value={desc.id.toString()}>
+                        {desc.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
+              <Select
+                value={formData.formaPagamento}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, formaPagamento: value }))
+                }
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a forma" />
+                </SelectTrigger>
+                <SelectContent>
+                  {formasPagamento.map((forma) => (
+                    <SelectItem key={forma.id} value={forma.id.toString()}>
+                      {forma.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
