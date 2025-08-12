@@ -179,6 +179,7 @@ export default function FormularioFuncionarioAvancado() {
     login: "",
     senha: "",
     confirmarSenha: "",
+    ehTecnico: false,
     temAcessoSistema: false,
     tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
     percentualComissao: "15",
@@ -473,7 +474,7 @@ export default function FormularioFuncionarioAvancado() {
                   }}
                 />
                 <Label htmlFor="temAcessoSistema">
-                  Este funcionário terá acesso ao sistema?
+                  Este funcionário ter�� acesso ao sistema?
                 </Label>
               </div>
 
