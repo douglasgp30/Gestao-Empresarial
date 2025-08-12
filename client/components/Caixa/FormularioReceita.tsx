@@ -245,6 +245,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         tecnicoResponsavel: "",
         setor: "",
         campanha: "",
+        cliente: "",
         observacoes: "",
         numeroNota: "",
         temNotaFiscal: false,
