@@ -95,6 +95,7 @@ model Funcionario {
   cargo             String?
   salario           Float?
   temAcessoSistema  Boolean  @default(false)
+  tipoAcesso        String?  // "Administrador", "Operador", "Técnico"
   login             String?  @unique
   senha             String?
   permissoes        String? // JSON das permissões
