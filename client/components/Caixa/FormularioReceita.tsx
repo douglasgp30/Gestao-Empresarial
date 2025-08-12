@@ -682,7 +682,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="comissao">Comissão (R$)</Label>
                   <Input
@@ -693,30 +693,32 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   />
                 </div>
 
-                <SelectWithAdd
-                  value={formData.campanha}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, campanha: value }))
-                  }
-                  placeholder="Selecione a campanha"
-                  label="Campanha"
-                  required={false}
-                  items={campanhas}
-                  onAddNew={async (data) => {
-                    await adicionarCampanha({
-                      nome: data.nome,
-                    });
-                  }}
-                  addNewTitle="Nova Campanha"
-                  addNewDescription="Adicione uma nova campanha de marketing."
-                  addNewFields={[
-                    {
-                      key: "nome",
-                      label: "Nome da Campanha",
-                      required: true,
-                    },
-                  ]}
-                />
+                <div className="md:col-span-2">
+                  <SelectWithAdd
+                    value={formData.campanha}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, campanha: value }))
+                    }
+                    placeholder="Selecione a campanha"
+                    label="Campanha"
+                    required={false}
+                    items={campanhas}
+                    onAddNew={async (data) => {
+                      await adicionarCampanha({
+                        nome: data.nome,
+                      });
+                    }}
+                    addNewTitle="Nova Campanha"
+                    addNewDescription="Adicione uma nova campanha de marketing."
+                    addNewFields={[
+                      {
+                        key: "nome",
+                        label: "Nome da Campanha",
+                        required: true,
+                      },
+                    ]}
+                  />
+                </div>
               </div>
             </div>
           )}
