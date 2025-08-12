@@ -38,6 +38,8 @@ import {
 } from "../ui/alert-dialog";
 import { toast } from "../ui/use-toast";
 import { ModalEditarLancamento } from "./ModalEditarLancamento";
+import { ColumnManager } from "../ui/column-manager";
+import { useTableColumns, ColumnConfig } from "../../hooks/use-table-columns";
 import { LancamentoCaixa } from "@shared/types";
 import {
   MoreHorizontal,
