@@ -59,7 +59,6 @@ import {
   Folder,
 } from "lucide-react";
 
-
 export default function ModalDescricoesAvancado() {
   const {
     descricoes,

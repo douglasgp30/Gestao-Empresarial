@@ -145,15 +145,21 @@ export function ModalDespesa() {
   const isLoading = caixaLoading || entidadesLoading;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      setIsOpen(open);
-      if (!open) {
-        // Ao fechar o dialog, sempre resetar o formulário
-        resetForm();
-      }
-    }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          // Ao fechar o dialog, sempre resetar o formulário
+          resetForm();
+        }
+      }}
+    >
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white text-xs">
+        <Button
+          size="sm"
+          className="bg-red-600 hover:bg-red-700 text-white text-xs"
+        >
           <TrendingDown className="h-3 w-3 mr-1" />
           Despesa
         </Button>
@@ -299,7 +305,6 @@ export function ModalDespesa() {
                 </SelectContent>
               </Select>
             </div>
-
 
             <div className="space-y-2">
               <Label htmlFor="observacoes">Observações</Label>

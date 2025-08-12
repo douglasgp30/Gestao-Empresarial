@@ -245,17 +245,17 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
     if (!caixaContext || !contasContext) {
-      console.log('Dashboard: Aguardando contextos...', {
+      console.log("Dashboard: Aguardando contextos...", {
         caixa: !!caixaContext,
-        contas: !!contasContext
+        contas: !!contasContext,
       });
       return;
     }
 
-    console.log('Dashboard: Recalculando stats', {
+    console.log("Dashboard: Recalculando stats", {
       lancamentos: caixaContext.lancamentos?.length || 0,
       totaisCaixa: caixaContext.totais,
-      filtros: filtros
+      filtros: filtros,
     });
 
     setIsLoading(true);
@@ -454,7 +454,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Sincronizar filtros com outros contextos quando não estiver aplicando filtros específicos do caixa
   useEffect(() => {
     if (!aplicarFiltrosCaixa && caixaContext && contasContext) {
-      console.log('Dashboard: Sincronizando filtros com contextos', filtros);
+      console.log("Dashboard: Sincronizando filtros com contextos", filtros);
 
       // Sincronizar filtros do Dashboard com outros contextos
       const novosFiltrosCaixa = {
@@ -477,9 +477,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Carregar dados iniciais na primeira renderização
   useEffect(() => {
     if (caixaContext && contasContext) {
-      console.log('Dashboard: Carregamento inicial detectado');
+      console.log("Dashboard: Carregamento inicial detectado");
       // Força um recálculo das estatísticas
-      setFiltros(prev => ({ ...prev, __timestamp: Date.now() }));
+      setFiltros((prev) => ({ ...prev, __timestamp: Date.now() }));
     }
   }, [!!caixaContext, !!contasContext]);
 

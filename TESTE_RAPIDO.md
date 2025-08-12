@@ -3,21 +3,25 @@
 ## ✅ **Problemas Identificados e Resolvidos:**
 
 ### 1. **Infinite Loop no useEffect**
+
 - **Problema:** useEffect estava atualizando formData com dependências que incluíam formData
 - **Solução:** Moveu cálculos para fora do useEffect e criou verificações antes de atualizar estado
 
 ### 2. **Campos Ausentes no Schema da Database**
+
 - **Problema:** Database não tinha campos `valorLiquido`, `comissao`, `imposto`, `observacoes`, `numeroNota`, `arquivoNota`, `percentualComissao`
-- **Solução:** 
+- **Solução:**
   - ✅ Atualizado `prisma/schema.prisma`
   - ✅ Executado `prisma db push --accept-data-loss`
   - ✅ Adicionados campos aos types TypeScript
 
 ### 3. **Campo `conta` não sendo enviado**
+
 - **Problema:** Context sempre enviava `conta: "empresa"` fixo
 - **Solução:** Agora usa `novoLancamento.conta || "empresa"`
 
 ### 4. **Melhor Logging de Erros**
+
 - **Adicionado:** Logs detalhados no CaixaContext para debug
 - **Adicionado:** Console.log dos dados enviados e recebidos
 
@@ -29,8 +33,9 @@
 4. **Verifique console** do navegador para logs de debug
 
 ## ✅ **Status:**
+
 - Database: ✅ Atualizada
-- Types: ✅ Corrigidos  
+- Types: ✅ Corrigidos
 - Contexts: ✅ Corrigidos
 - Forms: ✅ Funcionando
 - API: ✅ Pronta

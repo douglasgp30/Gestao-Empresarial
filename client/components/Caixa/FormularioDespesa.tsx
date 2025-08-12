@@ -76,19 +76,19 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       conta: formData.conta,
       categoria: formData.categoria,
       descricao: formData.descricao,
-      formaPagamento: formData.formaPagamento
+      formaPagamento: formData.formaPagamento,
     };
 
     const camposFaltando = Object.entries(camposObrigatorios)
-      .filter(([key, value]) => !value || value.toString().trim() === '')
+      .filter(([key, value]) => !value || value.toString().trim() === "")
       .map(([key]) => {
         const nomes = {
-          data: 'Data',
-          valor: 'Valor',
-          conta: 'Conta',
-          categoria: 'Categoria',
-          descricao: 'Descrição',
-          formaPagamento: 'Forma de Pagamento'
+          data: "Data",
+          valor: "Valor",
+          conta: "Conta",
+          categoria: "Categoria",
+          descricao: "Descrição",
+          formaPagamento: "Forma de Pagamento",
         };
         return nomes[key as keyof typeof nomes];
       });
@@ -96,7 +96,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     if (camposFaltando.length > 0) {
       toast({
         title: "Campos obrigatórios não preenchidos",
-        description: `Preencha os seguintes campos: ${camposFaltando.join(', ')}`,
+        description: `Preencha os seguintes campos: ${camposFaltando.join(", ")}`,
         variant: "destructive",
       });
       return;
@@ -331,9 +331,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                 </div>
                 <div>
                   <span className="text-gray-600">Conta:</span>
-                  <div className="font-medium capitalize">
-                    {formData.conta}
-                  </div>
+                  <div className="font-medium capitalize">{formData.conta}</div>
                 </div>
               </div>
             </div>

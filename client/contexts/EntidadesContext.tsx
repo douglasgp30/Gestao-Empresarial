@@ -346,9 +346,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === FUNÇÕES PARA FUNCIONÁRIOS (API) ===
   const getTecnicos = () => {
-    console.log('[EntidadesContext] getTecnicos chamado');
-    console.log('[EntidadesContext] Técnicos da API:', tecnicos.length);
-    console.log('[EntidadesContext] Funcionários carregados:', funcionarios.length);
+    console.log("[EntidadesContext] getTecnicos chamado");
+    console.log("[EntidadesContext] Técnicos da API:", tecnicos.length);
+    console.log(
+      "[EntidadesContext] Funcionários carregados:",
+      funcionarios.length,
+    );
 
     // Usar apenas dados da API (banco de dados) para evitar conflitos de ID
     // Filtrar funcionários que sejam do tipo "Técnico"
@@ -356,7 +359,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       (f) => f.tipoAcesso === "Técnico" || f.cargo === "Técnico",
     );
 
-    console.log('[EntidadesContext] Funcionários técnicos encontrados:', funcionariosTecnicos.length);
+    console.log(
+      "[EntidadesContext] Funcionários técnicos encontrados:",
+      funcionariosTecnicos.length,
+    );
 
     // Combinar técnicos específicos da API com funcionários marcados como técnicos
     const todosTecnicos = [...tecnicos, ...funcionariosTecnicos];
@@ -367,8 +373,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         array.findIndex((t) => t.id === tecnico.id) === index,
     );
 
-    console.log('[EntidadesContext] Total de técnicos únicos:', tecnicosUnicos.length);
-    console.log('[EntidadesContext] IDs dos técnicos:', tecnicosUnicos.map(t => t.id));
+    console.log(
+      "[EntidadesContext] Total de técnicos únicos:",
+      tecnicosUnicos.length,
+    );
+    console.log(
+      "[EntidadesContext] IDs dos técnicos:",
+      tecnicosUnicos.map((t) => t.id),
+    );
 
     return tecnicosUnicos;
   };

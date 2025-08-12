@@ -53,7 +53,7 @@ import contasRouter from "./routes/contas";
 import { cleanFakeDataRoute } from "./routes/clean";
 
 export function createServer(): Express {
-  console.log('[Server] Criando servidor Express...');
+  console.log("[Server] Criando servidor Express...");
   const app = express();
 
   app.use(cors());
@@ -61,7 +61,7 @@ export function createServer(): Express {
 
   // Middleware de log apenas para APIs (não assets estáticos)
   app.use((req, res, next) => {
-    if (req.path.startsWith('/api/')) {
+    if (req.path.startsWith("/api/")) {
       console.log(`[Server] ${req.method} ${req.path}`);
     }
     next();
@@ -69,7 +69,7 @@ export function createServer(): Express {
 
   // Rotas existentes
   app.get("/api/ping", (req, res) => {
-    console.log('[Server] Ping recebido');
+    console.log("[Server] Ping recebido");
     res.json({ message: "pong", timestamp: new Date().toISOString() });
   });
 
@@ -90,12 +90,15 @@ export function createServer(): Express {
       const samples = {
         descricoes: await prisma.descricao.findMany({ take: 3 }),
         formasPagamento: await prisma.formaPagamento.findMany({ take: 3 }),
-        funcionarios: await prisma.funcionario.findMany({ take: 3, select: { id: true, nome: true, tipoAcesso: true } }),
+        funcionarios: await prisma.funcionario.findMany({
+          take: 3,
+          select: { id: true, nome: true, tipoAcesso: true },
+        }),
       };
 
       res.json({ counts, samples });
     } catch (error) {
-      console.error('[Debug] Erro ao verificar status do banco:', error);
+      console.error("[Debug] Erro ao verificar status do banco:", error);
       res.status(500).json({ error: error.message });
     }
   });
@@ -107,7 +110,7 @@ export function createServer(): Express {
       await seedBasicData();
       res.json({ message: "Dados básicos criados com sucesso!" });
     } catch (error) {
-      console.error('[Debug] Erro ao criar dados básicos:', error);
+      console.error("[Debug] Erro ao criar dados básicos:", error);
       res.status(500).json({ error: error.message });
     }
   });
@@ -158,7 +161,7 @@ export function createServer(): Express {
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
 
-  console.log('[Server] Servidor Express configurado com sucesso');
+  console.log("[Server] Servidor Express configurado com sucesso");
   return app;
 }
 

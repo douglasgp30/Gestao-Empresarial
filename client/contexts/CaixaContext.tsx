@@ -163,7 +163,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Preparar dados para a API
       const dadosApi = {
-        data: novoLancamento.data ? novoLancamento.data.toISOString().split("T")[0] : new Date().toISOString().split("T")[0], // Enviar data do formulário ou data atual
+        data: novoLancamento.data
+          ? novoLancamento.data.toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0], // Enviar data do formulário ou data atual
         tipo: novoLancamento.tipo,
         valor: novoLancamento.valor,
         valorRecebido: novoLancamento.valorQueEntrou || novoLancamento.valor, // Usar valor padrão se não tiver valorQueEntrou

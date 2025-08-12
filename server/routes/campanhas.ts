@@ -8,7 +8,7 @@ const CampanhaSchema = z.object({
 
 export const getCampanhas: RequestHandler = async (req, res) => {
   try {
-    console.log('[Campanhas] Buscando campanhas...');
+    console.log("[Campanhas] Buscando campanhas...");
     const campanhas = await prisma.campanha.findMany({
       orderBy: { nome: "asc" },
     });

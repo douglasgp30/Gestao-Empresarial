@@ -12,13 +12,13 @@ export function ApiTest() {
     try {
       console.log(`Testando ${endpoint}...`);
       const response = await fetch(endpoint);
-      
+
       const result = {
         status: response.status,
         statusText: response.statusText,
         ok: response.ok,
         data: null as any,
-        error: null as any
+        error: null as any,
       };
 
       if (response.ok) {
@@ -35,21 +35,21 @@ export function ApiTest() {
         }
       }
 
-      setTestResults(prev => ({
+      setTestResults((prev) => ({
         ...prev,
-        [name]: result
+        [name]: result,
       }));
     } catch (error) {
       console.error(`Erro ao testar ${endpoint}:`, error);
-      setTestResults(prev => ({
+      setTestResults((prev) => ({
         ...prev,
         [name]: {
           status: 0,
-          statusText: 'Failed to fetch',
+          statusText: "Failed to fetch",
           ok: false,
           error: error.message,
-          data: null
-        }
+          data: null,
+        },
       }));
     } finally {
       setIsLoading(false);
@@ -58,27 +58,27 @@ export function ApiTest() {
 
   const runAllTests = async () => {
     setTestResults({});
-    await testEndpoint('/api/ping', 'ping');
-    await testEndpoint('/api/debug/db-status', 'db-status');
-    await testEndpoint('/api/campanhas', 'campanhas');
-    await testEndpoint('/api/caixa/lancamentos', 'lancamentos');
+    await testEndpoint("/api/ping", "ping");
+    await testEndpoint("/api/debug/db-status", "db-status");
+    await testEndpoint("/api/campanhas", "campanhas");
+    await testEndpoint("/api/caixa/lancamentos", "lancamentos");
   };
 
   const seedBasicData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/debug/seed-basic-data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+      const response = await fetch("/api/debug/seed-basic-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
 
       const result = await response.json();
-      console.log('Seed result:', result);
+      console.log("Seed result:", result);
 
       // Executar testes após seed
       await runAllTests();
     } catch (error) {
-      console.error('Erro ao executar seed:', error);
+      console.error("Erro ao executar seed:", error);
     } finally {
       setIsLoading(false);
     }
@@ -91,11 +91,7 @@ export function ApiTest() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
-          <Button
-            onClick={runAllTests}
-            disabled={isLoading}
-            className="flex-1"
-          >
+          <Button onClick={runAllTests} disabled={isLoading} className="flex-1">
             {isLoading ? "Testando..." : "Executar Testes"}
           </Button>
 
@@ -118,13 +114,13 @@ export function ApiTest() {
                   {result.status} {result.statusText}
                 </Badge>
               </div>
-              
+
               {result.ok && result.data && (
                 <div className="text-xs bg-green-50 p-2 rounded">
                   <pre>{JSON.stringify(result.data, null, 2)}</pre>
                 </div>
               )}
-              
+
               {!result.ok && result.error && (
                 <div className="text-xs bg-red-50 p-2 rounded text-red-700">
                   <pre>{JSON.stringify(result.error, null, 2)}</pre>

@@ -111,9 +111,12 @@ export const getLancamentos: RequestHandler = async (req, res) => {
 
 export const createLancamento: RequestHandler = async (req, res) => {
   try {
-    console.log('[Caixa] Dados recebidos para criar lançamento:', JSON.stringify(req.body, null, 2));
+    console.log(
+      "[Caixa] Dados recebidos para criar lançamento:",
+      JSON.stringify(req.body, null, 2),
+    );
     const data = LancamentoCaixaSchema.parse(req.body);
-    console.log('[Caixa] Dados após validação:', JSON.stringify(data, null, 2));
+    console.log("[Caixa] Dados após validação:", JSON.stringify(data, null, 2));
 
     // Validação customizada para valorRecebido quando forma de pagamento for cartão
     if (data.formaPagamentoId) {
@@ -135,34 +138,59 @@ export const createLancamento: RequestHandler = async (req, res) => {
     }
 
     // Verificar se os IDs de relacionamento existem
-    console.log('[Caixa] Verificando se os IDs de relacionamento existem...');
+    console.log("[Caixa] Verificando se os IDs de relacionamento existem...");
 
     if (data.descricaoId) {
-      const descricao = await prisma.descricao.findUnique({ where: { id: data.descricaoId } });
-      console.log(`[Caixa] Descrição ID ${data.descricaoId}:`, descricao ? 'EXISTS' : 'NOT FOUND');
+      const descricao = await prisma.descricao.findUnique({
+        where: { id: data.descricaoId },
+      });
+      console.log(
+        `[Caixa] Descrição ID ${data.descricaoId}:`,
+        descricao ? "EXISTS" : "NOT FOUND",
+      );
     }
 
     if (data.formaPagamentoId) {
-      const formaPagamento = await prisma.formaPagamento.findUnique({ where: { id: data.formaPagamentoId } });
-      console.log(`[Caixa] Forma Pagamento ID ${data.formaPagamentoId}:`, formaPagamento ? 'EXISTS' : 'NOT FOUND');
+      const formaPagamento = await prisma.formaPagamento.findUnique({
+        where: { id: data.formaPagamentoId },
+      });
+      console.log(
+        `[Caixa] Forma Pagamento ID ${data.formaPagamentoId}:`,
+        formaPagamento ? "EXISTS" : "NOT FOUND",
+      );
     }
 
     if (data.funcionarioId) {
-      const funcionario = await prisma.funcionario.findUnique({ where: { id: data.funcionarioId } });
-      console.log(`[Caixa] Funcionário ID ${data.funcionarioId}:`, funcionario ? 'EXISTS' : 'NOT FOUND');
+      const funcionario = await prisma.funcionario.findUnique({
+        where: { id: data.funcionarioId },
+      });
+      console.log(
+        `[Caixa] Funcionário ID ${data.funcionarioId}:`,
+        funcionario ? "EXISTS" : "NOT FOUND",
+      );
     }
 
     if (data.setorId) {
-      const setor = await prisma.setor.findUnique({ where: { id: data.setorId } });
-      console.log(`[Caixa] Setor ID ${data.setorId}:`, setor ? 'EXISTS' : 'NOT FOUND');
+      const setor = await prisma.setor.findUnique({
+        where: { id: data.setorId },
+      });
+      console.log(
+        `[Caixa] Setor ID ${data.setorId}:`,
+        setor ? "EXISTS" : "NOT FOUND",
+      );
     }
 
     if (data.campanhaId) {
-      const campanha = await prisma.campanha.findUnique({ where: { id: data.campanhaId } });
-      console.log(`[Caixa] Campanha ID ${data.campanhaId}:`, campanha ? 'EXISTS' : 'NOT FOUND');
+      const campanha = await prisma.campanha.findUnique({
+        where: { id: data.campanhaId },
+      });
+      console.log(
+        `[Caixa] Campanha ID ${data.campanhaId}:`,
+        campanha ? "EXISTS" : "NOT FOUND",
+      );
     }
 
-    console.log('[Caixa] Tentando criar lançamento no banco...');
+    console.log("[Caixa] Tentando criar lançamento no banco...");
     const lancamento = await prisma.lancamentoCaixa.create({
       data: {
         ...data,

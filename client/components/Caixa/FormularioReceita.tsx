@@ -22,10 +22,7 @@ import {
 import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
-import {
-  TrendingUp,
-  FileText,
-} from "lucide-react";
+import { TrendingUp, FileText } from "lucide-react";
 
 interface FormularioReceitaProps {
   onSuccess?: () => void;
@@ -101,14 +98,17 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // Calcular campos automaticamente
   const valorCalculado = parseFloat(formData.valor) || 0;
-  const valorQueEntrouCalculado = parseFloat(formData.valorQueEntrou) || valorCalculado;
+  const valorQueEntrouCalculado =
+    parseFloat(formData.valorQueEntrou) || valorCalculado;
   const impostoCalculado = parseFloat(formData.imposto) || 0;
   const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
 
   // Calcular comissão baseada no percentual do técnico
   const comissaoCalculada = (() => {
     if (formData.tecnicoResponsavel) {
-      const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
+      const tecnico = tecnicos.find(
+        (t) => t.id.toString() === formData.tecnicoResponsavel,
+      );
       if (tecnico && tecnico.percentualComissao) {
         return valorLiquidoCalculado * (tecnico.percentualComissao / 100);
       }
@@ -121,18 +121,30 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     const novoValorLiquido = valorLiquidoCalculado.toFixed(2);
     const novaComissao = comissaoCalculada.toFixed(2);
 
-    if (formData.valorLiquido !== novoValorLiquido || formData.comissao !== novaComissao) {
+    if (
+      formData.valorLiquido !== novoValorLiquido ||
+      formData.comissao !== novaComissao
+    ) {
       setFormData((prev) => ({
         ...prev,
         valorLiquido: novoValorLiquido,
         comissao: novaComissao,
       }));
     }
-  }, [valorLiquidoCalculado, comissaoCalculada, formData.valorLiquido, formData.comissao]);
+  }, [
+    valorLiquidoCalculado,
+    comissaoCalculada,
+    formData.valorLiquido,
+    formData.comissao,
+  ]);
 
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
-    if (!isFormaPagamentoCartao && formData.valorQueEntrou && formData.valorQueEntrou !== formData.valor) {
+    if (
+      !isFormaPagamentoCartao &&
+      formData.valorQueEntrou &&
+      formData.valorQueEntrou !== formData.valor
+    ) {
       setFormData((prev) => ({
         ...prev,
         valorQueEntrou: "",
@@ -173,18 +185,18 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       valor: formData.valor,
       categoria: formData.categoria,
       descricao: formData.descricao,
-      formaPagamento: formData.formaPagamento
+      formaPagamento: formData.formaPagamento,
     };
 
     const camposFaltando = Object.entries(camposObrigatorios)
-      .filter(([key, value]) => !value || value.toString().trim() === '')
+      .filter(([key, value]) => !value || value.toString().trim() === "")
       .map(([key]) => {
         const nomes = {
-          data: 'Data',
-          valor: 'Valor',
-          categoria: 'Categoria',
-          descricao: 'Descrição',
-          formaPagamento: 'Forma de Pagamento'
+          data: "Data",
+          valor: "Valor",
+          categoria: "Categoria",
+          descricao: "Descrição",
+          formaPagamento: "Forma de Pagamento",
         };
         return nomes[key as keyof typeof nomes];
       });
@@ -192,7 +204,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     if (camposFaltando.length > 0) {
       toast({
         title: "Campos obrigatórios não preenchidos",
-        description: `Preencha os seguintes campos: ${camposFaltando.join(', ')}`,
+        description: `Preencha os seguintes campos: ${camposFaltando.join(", ")}`,
         variant: "destructive",
       });
       return;
@@ -427,7 +439,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
             {isFormaPagamentoCartao && (
               <div className="space-y-2">
-                <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
+                <Label
+                  htmlFor="valorQueEntrou"
+                  className="text-sm font-medium text-yellow-700"
+                >
                   Valor Recebido *
                 </Label>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -452,7 +467,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     />
                   </div>
                   <p className="text-xs text-yellow-600 sm:flex-1">
-                    <strong>Importante:</strong> Valor líquido após taxas da operadora.
+                    <strong>Importante:</strong> Valor líquido após taxas da
+                    operadora.
                   </p>
                 </div>
               </div>
@@ -559,7 +575,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             {formData.temNotaFiscal && (
               <div className="space-y-3 pl-6">
                 <div className="text-xs text-blue-600">
-                  ℹ️ O site da nota fiscal foi aberto automaticamente. Após emitir, preencha o número abaixo.
+                  ℹ️ O site da nota fiscal foi aberto automaticamente. Após
+                  emitir, preencha o número abaixo.
                 </div>
 
                 <div className="space-y-2">

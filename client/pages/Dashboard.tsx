@@ -775,7 +775,9 @@ export default function Dashboard() {
               <div className="text-muted-foreground">
                 <Trophy className="h-8 w-8 mx-auto mb-2" />
                 <p className="text-sm">Sistema pronto para uso!</p>
-                <p className="text-xs mt-1">Utilize o menu para acessar as funções.</p>
+                <p className="text-xs mt-1">
+                  Utilize o menu para acessar as funções.
+                </p>
               </div>
             </CardContent>
           </Card>

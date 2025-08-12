@@ -94,13 +94,16 @@ export function ModalReceita() {
 
   // Calcular campos automaticamente
   const valorCalculado = parseFloat(formData.valor) || 0;
-  const valorQueEntrouCalculado = parseFloat(formData.valorQueEntrou) || valorCalculado;
+  const valorQueEntrouCalculado =
+    parseFloat(formData.valorQueEntrou) || valorCalculado;
   const valorLiquidoCalculado = valorQueEntrouCalculado;
 
   // Calcular comissão baseada no percentual do técnico
   const comissaoCalculada = (() => {
     if (formData.tecnicoResponsavel) {
-      const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
+      const tecnico = tecnicos.find(
+        (t) => t.id.toString() === formData.tecnicoResponsavel,
+      );
       if (tecnico && tecnico.percentualComissao) {
         return valorLiquidoCalculado * (tecnico.percentualComissao / 100);
       }
@@ -113,18 +116,30 @@ export function ModalReceita() {
     const novoValorLiquido = valorLiquidoCalculado.toFixed(2);
     const novaComissao = comissaoCalculada.toFixed(2);
 
-    if (formData.valorLiquido !== novoValorLiquido || formData.comissao !== novaComissao) {
+    if (
+      formData.valorLiquido !== novoValorLiquido ||
+      formData.comissao !== novaComissao
+    ) {
       setFormData((prev) => ({
         ...prev,
         valorLiquido: novoValorLiquido,
         comissao: novaComissao,
       }));
     }
-  }, [valorLiquidoCalculado, comissaoCalculada, formData.valorLiquido, formData.comissao]);
+  }, [
+    valorLiquidoCalculado,
+    comissaoCalculada,
+    formData.valorLiquido,
+    formData.comissao,
+  ]);
 
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
-    if (!isFormaPagamentoCartao && formData.valorQueEntrou && formData.valorQueEntrou !== formData.valor) {
+    if (
+      !isFormaPagamentoCartao &&
+      formData.valorQueEntrou &&
+      formData.valorQueEntrou !== formData.valor
+    ) {
       setFormData((prev) => ({
         ...prev,
         valorQueEntrou: "",
@@ -260,15 +275,21 @@ export function ModalReceita() {
   const isLoading = caixaLoading || entidadesLoading;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      setIsOpen(open);
-      if (!open) {
-        // Ao fechar o dialog, sempre resetar o formulário
-        resetForm();
-      }
-    }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          // Ao fechar o dialog, sempre resetar o formulário
+          resetForm();
+        }
+      }}
+    >
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
+        <Button
+          size="sm"
+          className="bg-green-600 hover:bg-green-700 text-white text-xs"
+        >
           <TrendingUp className="h-3 w-3 mr-1" />
           Receita
         </Button>
@@ -407,7 +428,10 @@ export function ModalReceita() {
               {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
               {isFormaPagamentoCartao && (
                 <div className="space-y-2">
-                  <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
+                  <Label
+                    htmlFor="valorQueEntrou"
+                    className="text-sm font-medium text-yellow-700"
+                  >
                     Valor Recebido *
                   </Label>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -432,7 +456,8 @@ export function ModalReceita() {
                       />
                     </div>
                     <p className="text-xs text-yellow-600 sm:flex-1">
-                      <strong>Importante:</strong> Valor líquido após taxas da operadora.
+                      <strong>Importante:</strong> Valor líquido após taxas da
+                      operadora.
                     </p>
                   </div>
                 </div>
@@ -520,7 +545,10 @@ export function ModalReceita() {
                   id="nota-fiscal"
                   checked={formData.temNotaFiscal}
                   onCheckedChange={(checked) => {
-                    setFormData((prev) => ({ ...prev, temNotaFiscal: checked }));
+                    setFormData((prev) => ({
+                      ...prev,
+                      temNotaFiscal: checked,
+                    }));
                     if (!checked) {
                       setFormData((prev) => ({ ...prev, numeroNota: "" }));
                       setNotaFiscalEmitida(false);
@@ -539,7 +567,8 @@ export function ModalReceita() {
               {formData.temNotaFiscal && (
                 <div className="space-y-3 pl-6">
                   <div className="text-xs text-blue-600">
-                    ℹ️ O site da nota fiscal foi aberto automaticamente. Após emitir, preencha o número abaixo.
+                    ℹ️ O site da nota fiscal foi aberto automaticamente. Após
+                    emitir, preencha o número abaixo.
                   </div>
 
                   <div className="space-y-2">

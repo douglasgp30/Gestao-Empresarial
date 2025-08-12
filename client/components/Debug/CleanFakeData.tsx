@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { toast } from '../ui/use-toast';
+import React, { useState } from "react";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { toast } from "../ui/use-toast";
 
 export function CleanFakeData() {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,12 +9,12 @@ export function CleanFakeData() {
   const cleanFakeData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/clean-fake-data', {
-        method: 'POST',
+      const response = await fetch("/api/clean-fake-data", {
+        method: "POST",
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         toast({
           title: "Sucesso",
@@ -22,10 +22,10 @@ export function CleanFakeData() {
           variant: "default",
         });
       } else {
-        throw new Error(data.error || 'Erro desconhecido');
+        throw new Error(data.error || "Erro desconhecido");
       }
     } catch (error) {
-      console.error('Erro ao limpar dados fictícios:', error);
+      console.error("Erro ao limpar dados fictícios:", error);
       toast({
         title: "Erro",
         description: "Erro ao limpar dados fictícios",
@@ -45,12 +45,12 @@ export function CleanFakeData() {
         <p className="text-sm text-gray-600 mb-4">
           Remove técnicos e funcionários fictícios do banco de dados.
         </p>
-        <Button 
+        <Button
           onClick={cleanFakeData}
           disabled={isLoading}
           variant="destructive"
         >
-          {isLoading ? 'Limpando...' : 'Limpar Dados Fictícios'}
+          {isLoading ? "Limpando..." : "Limpar Dados Fictícios"}
         </Button>
       </CardContent>
     </Card>

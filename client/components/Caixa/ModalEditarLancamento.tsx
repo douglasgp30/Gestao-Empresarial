@@ -117,8 +117,12 @@ export function ModalEditarLancamento({
     try {
       await editarLancamento(lancamento.id.toString(), {
         valor: parseFloat(formData.valor),
-        valorQueEntrou: formData.valorQueEntrou ? parseFloat(formData.valorQueEntrou) : undefined,
-        valorLiquido: formData.valorLiquido ? parseFloat(formData.valorLiquido) : undefined,
+        valorQueEntrou: formData.valorQueEntrou
+          ? parseFloat(formData.valorQueEntrou)
+          : undefined,
+        valorLiquido: formData.valorLiquido
+          ? parseFloat(formData.valorLiquido)
+          : undefined,
         comissao: formData.comissao ? parseFloat(formData.comissao) : undefined,
         imposto: formData.imposto ? parseFloat(formData.imposto) : undefined,
         descricao: formData.descricao,
@@ -362,11 +366,7 @@ export function ModalEditarLancamento({
             </div>
 
             <div className="flex gap-2 pt-4">
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={isSubmitting}
-              >
+              <Button type="submit" className="flex-1" disabled={isSubmitting}>
                 {isSubmitting ? "Salvando..." : "Salvar Alterações"}
               </Button>
               <Button
