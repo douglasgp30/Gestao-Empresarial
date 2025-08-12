@@ -418,7 +418,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       })
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-    console.log("[Dashboard] Meta mês atual: R$", receitasCaixaMesAtual.toFixed(2));
+    console.log(
+      "[Dashboard] Meta mês atual: R$",
+      receitasCaixaMesAtual.toFixed(2),
+    );
 
     // Total alcançado da meta = apenas receitas do mês atual
     const novoTotalMetaMes = receitasCaixaMesAtual;
