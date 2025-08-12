@@ -22,11 +22,7 @@ export const createCampanha: RequestHandler = async (req, res) => {
   try {
     const data = CampanhaSchema.parse(req.body);
     const campanha = await prisma.campanha.create({
-      data: {
-        ...data,
-        dataInicio: data.dataInicio ? new Date(data.dataInicio) : null,
-        dataFim: data.dataFim ? new Date(data.dataFim) : null
-      }
+      data
     });
     res.status(201).json(campanha);
   } catch (error) {
