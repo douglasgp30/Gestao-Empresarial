@@ -265,7 +265,7 @@ export default function FiltrosPeriodoCompacto({
                 Até
               </Label>
               <div className="relative">
-                <Calendar className="absolute left-2 top-2.5 h-3 w-3 text-muted-foreground" />
+                <Calendar className="absolute left-2 top-2 h-3 w-3 text-muted-foreground" />
                 <Input
                   ref={inputFimRef}
                   id="dataFim"
@@ -276,7 +276,7 @@ export default function FiltrosPeriodoCompacto({
                     setLocalDataFim(newValue);
                     handleDataFimChangeInterno(newValue);
                   }}
-                  className="pl-8 h-9 text-sm"
+                  className="pl-7 h-8 text-xs"
                   key={`fim-${forceUpdate}`}
                 />
               </div>
