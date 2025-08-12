@@ -151,6 +151,7 @@ model LancamentoCaixa {
   funcionarioId     Int?     // Puxa da tabela Técnicos
   setorId           Int?     // Puxa da tabela Cidades e Setores
   campanhaId        Int?     // Puxa da tabela Campanhas
+  clienteId         Int?     // Puxa da tabela Clientes
 
   // Relacionamentos
   descricao      Descricao      @relation(fields: [descricaoId], references: [id])
@@ -159,11 +160,13 @@ model LancamentoCaixa {
   funcionario    Funcionario?   @relation(fields: [funcionarioId], references: [id])
   setor          Setor?         @relation(fields: [setorId], references: [id])
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
+  cliente        Cliente?       @relation(fields: [clienteId], references: [id])
 
   @@map("lancamentos_caixa")
   @@index([dataHora])
   @@index([conta, tipo])
   @@index([funcionarioId])
+  @@index([clienteId])
 }
 
 model Conta {
