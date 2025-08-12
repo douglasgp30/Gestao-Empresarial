@@ -50,16 +50,25 @@ import {
   TrendingDown,
 } from "lucide-react";
 
-// Configuração das colunas padrão
+// Configuração das colunas padrão - todas as colunas do lançamento
 const defaultColumns: ColumnConfig[] = [
   { key: 'data', label: 'Data', visible: true, order: 0 },
   { key: 'tipo', label: 'Tipo', visible: true, order: 1 },
   { key: 'descricao', label: 'Descrição', visible: true, order: 2 },
   { key: 'valor', label: 'Valor', visible: true, order: 3 },
-  { key: 'formaPagamento', label: 'Forma de Pagamento', visible: true, order: 4 },
-  { key: 'tecnico', label: 'Técnico', visible: true, order: 5 },
-  { key: 'setor', label: 'Setor', visible: true, order: 6 },
-  { key: 'acoes', label: 'Ações', visible: true, order: 7 },
+  { key: 'valorLiquido', label: 'Valor Líquido', visible: false, order: 4 },
+  { key: 'valorRecebido', label: 'Valor Recebido', visible: false, order: 5 },
+  { key: 'comissao', label: 'Comissão', visible: false, order: 6 },
+  { key: 'imposto', label: 'Imposto/Taxa', visible: false, order: 7 },
+  { key: 'formaPagamento', label: 'Forma de Pagamento', visible: true, order: 8 },
+  { key: 'tecnico', label: 'Técnico', visible: true, order: 9 },
+  { key: 'setor', label: 'Setor', visible: true, order: 10 },
+  { key: 'campanha', label: 'Campanha', visible: false, order: 11 },
+  { key: 'conta', label: 'Conta', visible: false, order: 12 },
+  { key: 'observacoes', label: 'Observações', visible: false, order: 13 },
+  { key: 'numeroNota', label: 'Número da Nota', visible: false, order: 14 },
+  { key: 'cliente', label: 'Cliente', visible: false, order: 15 },
+  { key: 'acoes', label: 'Ações', visible: true, order: 16 },
 ];
 
 export function ListaLancamentosSimples() {
