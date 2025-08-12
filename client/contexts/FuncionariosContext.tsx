@@ -120,7 +120,41 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Função para carregar funcionários da API
+  const carregarFuncionarios = async () => {
+    try {
+      setIsLoading(true);
+      const response = await funcionariosApi.listar();
+      if (response.error) {
+        console.error("Erro ao carregar funcionários:", response.error);
+        return;
+      }
+
+      // Converter dados da API para o formato do contexto
+      const funcionariosFormatados = (response.data || []).map((f: any) => ({
+        id: f.id.toString(),
+        nomeCompleto: f.nome,
+        ehTecnico: f.ehTecnico || false,
+        email: f.email,
+        telefone: f.telefone,
+        cargo: f.cargo,
+        salario: f.salario,
+        permissaoAcesso: f.temAcessoSistema || false,
+        tipoAcesso: f.tipoAcesso || "Operador",
+        login: f.login,
+        permissoes: f.permissoes ? JSON.parse(f.permissoes) : undefined,
+        ativo: true, // Assumir ativo por padrão
+        dataCadastro: new Date(f.dataCriacao),
+      }));
+
+      setFuncionarios(funcionariosFormatados);
+    } catch (error) {
+      console.error("Erro ao carregar funcionários:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Função para salvar funcionarios no localStorage
   const salvarFuncionariosNoLocalStorage = (funcionarios: Funcionario[]) => {
