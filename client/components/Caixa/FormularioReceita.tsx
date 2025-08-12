@@ -536,7 +536,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               <div className="space-y-3 pl-6">
                 <div className="text-xs text-blue-600">
                   ℹ️ O site da nota fiscal foi aberto automaticamente. Após
-                  emitir, preencha o número abaixo.
+                  emitir, preencha o n��mero abaixo.
                 </div>
 
                 <div className="space-y-2">
@@ -616,16 +616,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <Label htmlFor="imposto">Desconto/Taxa (R$)</Label>
                   <Input
                     id="imposto"
-                    type="number"
-                    step="0.01"
-                    placeholder="0,00"
-                    value={formData.imposto}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        imposto: e.target.value,
-                      }))
-                    }
+                    {...impostoInput.inputProps}
                   />
                 </div>
 
