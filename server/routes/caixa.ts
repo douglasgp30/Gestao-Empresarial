@@ -27,6 +27,7 @@ const LancamentoCaixaSchema = z.object({
   funcionarioId: z.number().positive().optional(),
   setorId: z.number().positive().optional(),
   campanhaId: z.number().positive().optional(),
+  clienteId: z.number().positive().optional(),
 });
 
 // Função para gerar dataHora no formato DD-MM-AAAA HH:MM:SS
