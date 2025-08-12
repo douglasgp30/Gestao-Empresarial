@@ -209,7 +209,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar lançamentos
-      await carregarLancamentos();
+      await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
       throw error;
@@ -257,7 +257,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar lançamentos
-      await carregarLancamentos();
+      await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
       throw error;
