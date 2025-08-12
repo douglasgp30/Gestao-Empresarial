@@ -116,6 +116,7 @@ export default function FormularioFuncionario() {
 
     adicionarFuncionario({
       nomeCompleto: formData.nomeCompleto.trim(),
+      ehTecnico: formData.ehTecnico,
       login: formData.login.trim().toLowerCase(),
       senha: formData.senha,
       permissaoAcesso: formData.permissaoAcesso,
