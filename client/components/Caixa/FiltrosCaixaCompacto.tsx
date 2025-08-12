@@ -274,6 +274,32 @@ export function FiltrosCaixaCompacto() {
                       </Select>
                     </div>
 
+                    {/* Cidade */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Cidade
+                      </label>
+                      <Select
+                        value={filtrosLocal.cidade || "todas"}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({ ...prev, cidade: value }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {cidades.map((cidade) => (
+                            <SelectItem key={cidade} value={cidade}>
+                              {cidade}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
                     {/* Setor */}
                     <div>
                       <label className="text-xs font-medium mb-1 block text-gray-600">
@@ -297,38 +323,6 @@ export function FiltrosCaixaCompacto() {
                               value={setor.id.toString()}
                             >
                               {setor.nome} - {setor.cidade}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Campanha */}
-                    <div>
-                      <label className="text-xs font-medium mb-1 block text-gray-600">
-                        Campanha
-                      </label>
-                      <Select
-                        value={filtrosLocal.campanha}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            campanha: value,
-                          }))
-                        }
-                        disabled={isLoading}
-                      >
-                        <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="todas">Todas</SelectItem>
-                          {campanhas.map((campanha) => (
-                            <SelectItem
-                              key={campanha.id}
-                              value={campanha.id.toString()}
-                            >
-                              {campanha.nome}
                             </SelectItem>
                           ))}
                         </SelectContent>
