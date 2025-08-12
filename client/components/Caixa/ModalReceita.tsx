@@ -546,6 +546,46 @@ export function ModalReceita() {
               />
             </div>
 
+            {/* Cliente */}
+            <div className="space-y-2">
+              <Label htmlFor="cliente">Cliente</Label>
+              <div className="flex gap-2">
+                <Select
+                  value={formData.cliente}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, cliente: value }))
+                  }
+                >
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Selecione um cliente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Nenhum cliente</SelectItem>
+                    {clientes.map((cliente) => (
+                      <SelectItem key={cliente.id} value={cliente.id}>
+                        {cliente.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <ModalCadastroCliente
+                  trigger={
+                    <Button type="button" variant="outline" size="icon">
+                      <UserPlus className="h-4 w-4" />
+                    </Button>
+                  }
+                  onClienteAdicionado={(cliente) => {
+                    setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+                    toast({
+                      title: "Cliente Adicionado",
+                      description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+                      variant: "default",
+                    });
+                  }}
+                />
+              </div>
+            </div>
+
             {/* Nota Fiscal */}
             <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
               <div className="flex items-center space-x-2">
