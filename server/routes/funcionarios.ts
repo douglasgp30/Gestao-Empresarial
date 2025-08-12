@@ -4,6 +4,7 @@ import { z } from "zod";
 
 const FuncionarioSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
+  ehTecnico: z.boolean().default(false),
   email: z.string().email().optional(),
   telefone: z.string().optional(),
   cargo: z.string().optional(),
