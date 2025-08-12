@@ -165,10 +165,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Recarregar lançamentos quando os filtros mudarem
   useEffect(() => {
-    if (!isLoading) {
-      carregarLancamentos();
-    }
-  }, [filtros, carregarLancamentos, isLoading]);
+    const timeoutId = setTimeout(() => {
+      carregarLancamentos(true);
+    }, 100); // Debounce para evitar muitas chamadas
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    filtros.dataInicio.getTime(),
+    filtros.dataFim.getTime(),
+    filtros.tipo,
+    filtros.formaPagamento,
+    filtros.tecnico,
+    filtros.campanha,
+    filtros.setor
+  ]);
 
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
