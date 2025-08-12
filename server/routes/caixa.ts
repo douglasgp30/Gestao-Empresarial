@@ -111,7 +111,9 @@ export const getLancamentos: RequestHandler = async (req, res) => {
 
 export const createLancamento: RequestHandler = async (req, res) => {
   try {
+    console.log('[Caixa] Dados recebidos para criar lançamento:', JSON.stringify(req.body, null, 2));
     const data = LancamentoCaixaSchema.parse(req.body);
+    console.log('[Caixa] Dados após validação:', JSON.stringify(data, null, 2));
 
     // Validação customizada para valorRecebido quando forma de pagamento for cartão
     if (data.formaPagamentoId) {
@@ -132,6 +134,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       }
     }
 
+    console.log('[Caixa] Tentando criar lançamento no banco...');
     const lancamento = await prisma.lancamentoCaixa.create({
       data: {
         ...data,
