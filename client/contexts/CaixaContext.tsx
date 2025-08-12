@@ -76,7 +76,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         setCampanhas(campanhasResponse.data || []);
       }
 
-      // Carregar lan��amentos com filtros atuais
+      // Carregar lançamentos com filtros atuais
       await carregarLancamentos();
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
@@ -161,9 +161,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      // Log dos dados recebidos para debug
-      console.log("Dados do lançamento recebidos:", novoLancamento);
-
       // Preparar dados para a API
       const dadosApi = {
         // dataHora será gerada automaticamente no backend
@@ -190,12 +187,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           : undefined,
       };
 
-      // Log dos dados que serão enviados para a API
-      console.log("Dados preparados para API:", dadosApi);
-
       const response = await caixaApi.criarLancamento(dadosApi);
       if (response.error) {
-        console.error("Erro da API:", response.error);
         setError(response.error);
         throw new Error(response.error);
       }
