@@ -119,7 +119,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   // Valor líquido = valor recebido - impostos - desconto nota fiscal - taxa cartão
   const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado - descontoNotaFiscal - taxaCartao;
 
-  // Calcular comissão baseada no percentual do técnico
+  // Calcular comissão baseada no percentual do técnico sobre o valor líquido
   const comissaoCalculada = (() => {
     if (formData.tecnicoResponsavel) {
       const tecnico = tecnicos.find(
@@ -132,7 +132,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return 0;
   })();
 
-  // Resetar valorQueEntrou quando mudança de Cart��o para outras formas
+  // Valor final para a empresa = valor líquido - comissão do técnico
+  const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
+
+  // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
     if (!isFormaPagamentoCartao && valorQueEntrouInput.numericValue > 0) {
       valorQueEntrouInput.reset();
