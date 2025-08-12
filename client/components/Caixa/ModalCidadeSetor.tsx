@@ -162,9 +162,9 @@ export default function ModalCidadeSetor() {
     <>
       <Dialog open={isMainOpen} onOpenChange={setIsMainOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className="gap-2">
-            <MapPin className="h-4 w-4" />
-            Cidade/Setor
+          <Button variant="outline" size="sm" className="gap-1 text-xs">
+            <MapPin className="h-3 w-3" />
+            Setores
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
