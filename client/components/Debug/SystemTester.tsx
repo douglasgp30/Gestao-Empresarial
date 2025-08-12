@@ -18,6 +18,7 @@ import {
   SystemTestReport,
   formatTestReport,
 } from "../../lib/systemTests";
+import { CleanFakeData } from "./CleanFakeData";
 import {
   Loader2,
   Play,
