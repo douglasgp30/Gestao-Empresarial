@@ -241,7 +241,7 @@ export default function FiltrosPeriodoCompacto({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="space-y-1">
               <Label htmlFor="dataInicio" className="text-xs font-medium">
-                Data Inicial
+                De
               </Label>
               <div className="relative">
                 <Calendar className="absolute left-2 top-2.5 h-3 w-3 text-muted-foreground" />
