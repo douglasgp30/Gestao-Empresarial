@@ -49,6 +49,9 @@ function CaixaContent() {
 
       {/* Lista de Lançamentos */}
       <ListaLancamentosSimples />
+
+      {/* Botão para inicializar dados de teste */}
+      <InitDadosTeste />
     </div>
   );
 }
