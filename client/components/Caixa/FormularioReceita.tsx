@@ -607,16 +607,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     </Label>
                     <Input
                       id="valorQueEntrouAvancado"
-                      type="number"
-                      step="0.01"
-                      placeholder="0,00"
-                      value={formData.valorQueEntrou}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          valorQueEntrou: e.target.value,
-                        }))
-                      }
+                      {...valorQueEntrouInput.inputProps}
                     />
                   </div>
                 )}
