@@ -260,7 +260,13 @@ export function ModalReceita() {
   const isLoading = caixaLoading || entidadesLoading;
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      setIsOpen(open);
+      if (!open) {
+        // Ao fechar o dialog, sempre resetar o formulário
+        resetForm();
+      }
+    }}>
       <DialogTrigger asChild>
         <Button className="bg-green-600 hover:bg-green-700 text-white">
           <TrendingUp className="h-4 w-4 mr-2" />
@@ -661,7 +667,10 @@ export function ModalReceita() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  resetForm();
+                  setIsOpen(false);
+                }}
                 className="flex-1"
               >
                 Cancelar
