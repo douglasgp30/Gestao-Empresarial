@@ -654,17 +654,20 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="valorLiquido">Valor Líquido (R$)</Label>
-                  <Input
-                    id="valorLiquido"
-                    type="number"
-                    step="0.01"
-                    value={formData.valorLiquido}
-                    disabled
-                    className="bg-gray-100"
-                  />
-                </div>
+                {/* Valor Líquido só para cartão */}
+                {isFormaPagamentoCartao && (
+                  <div className="space-y-2">
+                    <Label htmlFor="valorLiquido">Valor Líquido (R$)</Label>
+                    <Input
+                      id="valorLiquido"
+                      type="number"
+                      step="0.01"
+                      value={formData.valorLiquido}
+                      disabled
+                      className="bg-gray-100"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
