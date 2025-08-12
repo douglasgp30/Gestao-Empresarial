@@ -527,7 +527,7 @@ export default function FormularioFuncionarioAvancado() {
                       <Select
                         value={formData.tipoAcesso}
                         onValueChange={(
-                          value: "Administrador" | "Operador" | "Técnico",
+                          value: "Administrador" | "Operador",
                         ) => {
                           setFormData({ ...formData, tipoAcesso: value });
                           aplicarPermissoesPadrao(value);
