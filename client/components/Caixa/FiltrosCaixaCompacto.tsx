@@ -34,6 +34,7 @@ export function FiltrosCaixaCompacto() {
     tecnicos,
     setores,
     descricoes,
+    cidades,
     isLoading: entidadesLoading,
   } = useEntidades();
 
@@ -82,6 +83,7 @@ export function FiltrosCaixaCompacto() {
     if (filtrosLocal.categoria !== "todas") count++;
     if (filtrosLocal.descricao !== "todas") count++;
     if (filtrosLocal.cliente !== "todos") count++;
+    if (filtrosLocal.cidade !== "todas") count++;
     if (filtrosLocal.numeroNota && filtrosLocal.numeroNota.trim() !== "") count++;
     return count;
   };
