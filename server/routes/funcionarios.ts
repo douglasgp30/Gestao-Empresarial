@@ -57,18 +57,13 @@ export const getTecnicos: RequestHandler = async (req, res) => {
     console.log("[Tecnicos] Buscando técnicos...");
     const tecnicos = await prisma.funcionario.findMany({
       where: {
-        OR: [
-          { tipoAcesso: "Técnico" },
-          { cargo: "Técnico" },
-          { cargo: { contains: "técnico" } },
-          { cargo: { contains: "Técnico" } },
-        ],
+        ehTecnico: true,
       },
       select: {
         id: true,
         nome: true,
+        ehTecnico: true,
         cargo: true,
-        tipoAcesso: true,
         percentualComissao: true, // Adicionar percentual de comissão
       },
       orderBy: { nome: "asc" },
