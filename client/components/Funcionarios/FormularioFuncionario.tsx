@@ -170,6 +170,19 @@ export default function FormularioFuncionario() {
                   <p className="text-sm text-red-500">{errors.nomeCompleto}</p>
                 )}
               </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="ehTecnico"
+                  checked={formData.ehTecnico}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, ehTecnico: checked })
+                  }
+                />
+                <Label htmlFor="ehTecnico" className="text-sm font-medium">
+                  Este funcionário é um técnico
+                </Label>
+              </div>
             </CardContent>
           </Card>
 
