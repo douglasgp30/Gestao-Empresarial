@@ -38,6 +38,8 @@ import {
 } from "../ui/alert-dialog";
 import { toast } from "../ui/use-toast";
 import { ModalEditarLancamento } from "./ModalEditarLancamento";
+import { ColumnManager } from "../ui/column-manager";
+import { useTableColumns, ColumnConfig } from "../../hooks/use-table-columns";
 import { LancamentoCaixa } from "@shared/types";
 import {
   MoreHorizontal,
@@ -48,6 +50,32 @@ import {
   TrendingDown,
 } from "lucide-react";
 
+// Configuração das colunas padrão - todas as colunas do lançamento
+const defaultColumns: ColumnConfig[] = [
+  { key: "data", label: "Data", visible: true, order: 0 },
+  { key: "tipo", label: "Tipo", visible: true, order: 1 },
+  { key: "descricao", label: "Descrição", visible: true, order: 2 },
+  { key: "valor", label: "Valor", visible: true, order: 3 },
+  { key: "valorLiquido", label: "Valor Líquido", visible: false, order: 4 },
+  { key: "valorRecebido", label: "Valor Recebido", visible: false, order: 5 },
+  { key: "comissao", label: "Comissão", visible: false, order: 6 },
+  { key: "imposto", label: "Imposto/Taxa", visible: false, order: 7 },
+  {
+    key: "formaPagamento",
+    label: "Forma de Pagamento",
+    visible: true,
+    order: 8,
+  },
+  { key: "tecnico", label: "Técnico", visible: true, order: 9 },
+  { key: "setor", label: "Setor", visible: true, order: 10 },
+  { key: "campanha", label: "Campanha", visible: false, order: 11 },
+  { key: "conta", label: "Conta", visible: false, order: 12 },
+  { key: "observacoes", label: "Observações", visible: false, order: 13 },
+  { key: "numeroNota", label: "Número da Nota", visible: false, order: 14 },
+  { key: "cliente", label: "Cliente", visible: false, order: 15 },
+  { key: "acoes", label: "Ações", visible: true, order: 16 },
+];
+
 export function ListaLancamentosSimples() {
   const { lancamentos, excluirLancamento, isLoading, error } = useCaixa();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
@@ -57,11 +85,146 @@ export function ListaLancamentosSimples() {
     useState<LancamentoCaixa | null>(null);
   const [excluindo, setExcluindo] = useState(false);
 
+  // Hook para gerenciar colunas
+  const {
+    columns,
+    toggleColumnVisibility,
+    reorderColumns,
+    resetColumns,
+    getVisibleColumns,
+    getColumnByKey,
+  } = useTableColumns("lancamentos-caixa", defaultColumns);
+
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(valor);
+  };
+
+  // Função para renderizar o conteúdo de cada célula
+  const renderCellContent = (
+    lancamento: LancamentoCaixa,
+    columnKey: string,
+  ) => {
+    switch (columnKey) {
+      case "data":
+        return formatDate(lancamento.data);
+
+      case "tipo":
+        return (
+          <Badge
+            variant={lancamento.tipo === "receita" ? "default" : "destructive"}
+            className={
+              lancamento.tipo === "receita"
+                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                : "bg-red-100 text-red-700 hover:bg-red-200"
+            }
+          >
+            {lancamento.tipo === "receita" ? (
+              <TrendingUp className="w-3 h-3 mr-1" />
+            ) : (
+              <TrendingDown className="w-3 h-3 mr-1" />
+            )}
+            {lancamento.tipo === "receita" ? "Receita" : "Despesa"}
+          </Badge>
+        );
+
+      case "descricao":
+        return lancamento.descricao?.nome || "N/A";
+
+      case "valor":
+        return (
+          <span className="font-medium">{formatarMoeda(lancamento.valor)}</span>
+        );
+
+      case "valorLiquido":
+        return (
+          <span className="font-medium text-green-600">
+            {formatarMoeda(lancamento.valorLiquido || lancamento.valor)}
+          </span>
+        );
+
+      case "valorRecebido":
+        return lancamento.valorRecebido
+          ? formatarMoeda(lancamento.valorRecebido)
+          : "-";
+
+      case "comissao":
+        return lancamento.comissao ? formatarMoeda(lancamento.comissao) : "-";
+
+      case "imposto":
+        return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
+
+      case "formaPagamento":
+        return lancamento.formaPagamento?.nome || "N/A";
+
+      case "tecnico":
+        return lancamento.funcionario?.nome || "-";
+
+      case "setor":
+        return lancamento.setor
+          ? `${lancamento.setor.nome} - ${lancamento.setor.cidade}`
+          : "-";
+
+      case "campanha":
+        return lancamento.campanha?.nome || "-";
+
+      case "conta":
+        return lancamento.conta || "-";
+
+      case "observacoes":
+        return lancamento.observacoes ? (
+          <span
+            className="text-sm text-muted-foreground"
+            title={lancamento.observacoes}
+          >
+            {lancamento.observacoes.length > 30
+              ? `${lancamento.observacoes.substring(0, 30)}...`
+              : lancamento.observacoes}
+          </span>
+        ) : (
+          "-"
+        );
+
+      case "numeroNota":
+        return lancamento.numeroNota || "-";
+
+      case "cliente":
+        return lancamento.cliente?.nome || lancamento.cliente || "-";
+
+      case "acoes":
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleEditar(lancamento)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  setLancamentoParaExcluir(lancamento.id.toString())
+                }
+                className="text-red-600"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+
+      default:
+        return "-";
+    }
   };
 
   const handleExcluir = async () => {
@@ -116,13 +279,23 @@ export function ListaLancamentosSimples() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Eye className="h-5 w-5" />
-          Lançamentos
-        </CardTitle>
-        <CardDescription>
-          {lancamentos.length} lançamento(s) encontrado(s)
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Lançamentos
+            </CardTitle>
+            <CardDescription>
+              {lancamentos.length} lançamento(s) encontrado(s)
+            </CardDescription>
+          </div>
+          <ColumnManager
+            columns={columns}
+            onToggleVisibility={toggleColumnVisibility}
+            onReorderColumns={reorderColumns}
+            onReset={resetColumns}
+          />
+        </div>
       </CardHeader>
       <CardContent>
         {lancamentos.length === 0 ? (
@@ -136,93 +309,27 @@ export function ListaLancamentosSimples() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Valor</TableHead>
-                    <TableHead>Forma de Pagamento</TableHead>
-                    <TableHead>Técnico</TableHead>
-                    <TableHead>Setor</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                    {getVisibleColumns().map((column) => (
+                      <TableHead
+                        key={column.key}
+                        className={column.key === "acoes" ? "text-right" : ""}
+                      >
+                        {column.label}
+                      </TableHead>
+                    ))}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {lancamentos.map((lancamento) => (
                     <TableRow key={lancamento.id}>
-                      <TableCell>{formatDate(lancamento.data)}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            lancamento.tipo === "receita"
-                              ? "default"
-                              : "destructive"
-                          }
-                          className={
-                            lancamento.tipo === "receita"
-                              ? "bg-green-100 text-green-700 hover:bg-green-200"
-                              : "bg-red-100 text-red-700 hover:bg-red-200"
-                          }
+                      {getVisibleColumns().map((column) => (
+                        <TableCell
+                          key={column.key}
+                          className={column.key === "acoes" ? "text-right" : ""}
                         >
-                          {lancamento.tipo === "receita" ? (
-                            <TrendingUp className="w-3 h-3 mr-1" />
-                          ) : (
-                            <TrendingDown className="w-3 h-3 mr-1" />
-                          )}
-                          {lancamento.tipo === "receita"
-                            ? "Receita"
-                            : "Despesa"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {lancamento.descricao?.nome || "N/A"}
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {formatarMoeda(
-                          lancamento.valorLiquido || lancamento.valor,
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {lancamento.formaPagamento?.nome || "N/A"}
-                      </TableCell>
-                      <TableCell>
-                        {lancamento.funcionario?.nome || "-"}
-                      </TableCell>
-                      <TableCell>
-                        {lancamento.setor
-                          ? `${lancamento.setor.nome} - ${lancamento.setor.cidade}`
-                          : "-"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Abrir menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleEditar(lancamento)}
-                            >
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                setLancamentoParaExcluir(
-                                  lancamento.id.toString(),
-                                )
-                              }
-                              className="text-red-600"
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Excluir
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+                          {renderCellContent(lancamento, column.key)}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   ))}
                 </TableBody>

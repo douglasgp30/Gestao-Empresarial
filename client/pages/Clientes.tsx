@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { useClientes } from "../contexts/ClientesContext";
 import { useCaixa } from "../contexts/CaixaContext";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import {
   Dialog,
@@ -21,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/table";
-import { FiltrosPeriodo } from "../components/ui/filtros-periodo";
 import ModalCadastroCliente from "../components/Clientes/ModalCadastroCliente";
 import {
   Users,
@@ -50,32 +55,9 @@ export default function Clientes() {
   const { lancamentos } = useCaixa();
   const [termoPesquisa, setTermoPesquisa] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<any>(null);
-  const [clientesFiltradosPeriodo, setClientesFiltradosPeriodo] = useState(clientes);
-  const [filtrosPeriodo, setFiltrosPeriodo] = useState({
-    dataInicio: new Date(new Date().getTime() - 90 * 24 * 60 * 60 * 1000),
-    dataFim: new Date(),
-  });
 
-  // Aplicar filtros quando mudarem
-  useEffect(() => {
-    const clientesResultado = clientes.filter((cliente) => {
-      // Filtro por período (data de cadastro)
-      const dataCadastro = new Date(cliente.dataCriacao);
-      const dentroDataInicio = dataCadastro >= filtrosPeriodo.dataInicio;
-      const dentroDataFim = dataCadastro <= filtrosPeriodo.dataFim;
-
-      return dentroDataInicio && dentroDataFim;
-    });
-
-    setClientesFiltradosPeriodo(clientesResultado);
-  }, [clientes, filtrosPeriodo]);
-
-  const handleFiltrosPeriodoChange = useCallback((dataInicio: Date, dataFim: Date) => {
-    setFiltrosPeriodo({ dataInicio, dataFim });
-  }, []);
-
-  // Filtrar clientes baseado no termo de pesquisa E período
-  const clientesFiltrados = clientesFiltradosPeriodo.filter((cliente) => {
+  // Filtrar clientes baseado no termo de pesquisa
+  const clientesFiltrados = clientes.filter((cliente) => {
     if (!termoPesquisa) return true;
     const busca = termoPesquisa.toLowerCase();
     return (
@@ -89,9 +71,9 @@ export default function Clientes() {
   // Função para obter histórico de serviços de um cliente
   const obterHistoricoCliente = (nomeCliente: string) => {
     return lancamentos
-      .filter((lancamento) => 
-        lancamento.tipo === "receita" && 
-        lancamento.cliente === nomeCliente
+      .filter(
+        (lancamento) =>
+          lancamento.tipo === "receita" && lancamento.cliente === nomeCliente,
       )
       .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
   };
@@ -99,11 +81,15 @@ export default function Clientes() {
   // Função para calcular total de serviços de um cliente
   const calcularTotalCliente = (nomeCliente: string) => {
     return lancamentos
-      .filter((lancamento) => 
-        lancamento.tipo === "receita" && 
-        lancamento.cliente === nomeCliente
+      .filter(
+        (lancamento) =>
+          lancamento.tipo === "receita" && lancamento.cliente === nomeCliente,
       )
-      .reduce((total, lancamento) => total + (lancamento.valorLiquido || lancamento.valor), 0);
+      .reduce(
+        (total, lancamento) =>
+          total + (lancamento.valorLiquido || lancamento.valor),
+        0,
+      );
   };
 
   const handleVisualizarCliente = (cliente: any) => {
@@ -133,13 +119,6 @@ export default function Clientes() {
         />
       </div>
 
-      {/* Filtros de Período */}
-      <FiltrosPeriodo
-        onFiltroChange={handleFiltrosPeriodoChange}
-        titulo="Filtrar por Data de Cadastro"
-        periodoInicialDias={90}
-      />
-
       {/* Pesquisa */}
       <Card>
         <CardHeader>
@@ -161,10 +140,7 @@ export default function Clientes() {
                 className="w-full"
               />
             </div>
-            <Button
-              variant="outline"
-              onClick={() => setTermoPesquisa("")}
-            >
+            <Button variant="outline" onClick={() => setTermoPesquisa("")}>
               Limpar
             </Button>
           </div>
@@ -175,16 +151,14 @@ export default function Clientes() {
       <Card>
         <CardHeader>
           <CardTitle>
-            {termoPesquisa 
-              ? `Resultados da pesquisa (${clientesFiltrados.length})` 
-              : `Todos os Clientes (${clientes.length})`
-            }
+            {termoPesquisa
+              ? `Resultados da pesquisa (${clientesFiltrados.length})`
+              : `Todos os Clientes (${clientes.length})`}
           </CardTitle>
           <CardDescription>
-            {termoPesquisa 
-              ? `Mostrando clientes que correspondem a "${termoPesquisa}"` 
-              : "Lista completa de clientes cadastrados"
-            }
+            {termoPesquisa
+              ? `Mostrando clientes que correspondem a "${termoPesquisa}"`
+              : "Lista completa de clientes cadastrados"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -196,10 +170,9 @@ export default function Clientes() {
             <div className="text-center py-8">
               <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <p className="text-muted-foreground">
-                {termoPesquisa 
-                  ? "Nenhum cliente encontrado com este termo de pesquisa" 
-                  : "Nenhum cliente cadastrado ainda"
-                }
+                {termoPesquisa
+                  ? "Nenhum cliente encontrado com este termo de pesquisa"
+                  : "Nenhum cliente cadastrado ainda"}
               </p>
               {!termoPesquisa && (
                 <ModalCadastroCliente
@@ -219,12 +192,17 @@ export default function Clientes() {
                 const qtdServicos = obterHistoricoCliente(cliente.nome).length;
 
                 return (
-                  <Card key={cliente.id} className="hover:shadow-md transition-shadow">
+                  <Card
+                    key={cliente.id}
+                    className="hover:shadow-md transition-shadow"
+                  >
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex-1 space-y-2">
                           <div className="flex items-center gap-3">
-                            <h3 className="font-semibold text-lg">{cliente.nome}</h3>
+                            <h3 className="font-semibold text-lg">
+                              {cliente.nome}
+                            </h3>
                             {cliente.cpf && (
                               <Badge variant="outline">{cliente.cpf}</Badge>
                             )}
@@ -247,10 +225,10 @@ export default function Clientes() {
                             {cliente.endereco && (
                               <div className="flex items-center gap-1">
                                 <MapPin className="h-3 w-3" />
-                                {cliente.endereco.rua && cliente.endereco.numero 
+                                {cliente.endereco.rua && cliente.endereco.numero
                                   ? `${cliente.endereco.rua}, ${cliente.endereco.numero}`
-                                  : cliente.endereco.cidade || "Endereço cadastrado"
-                                }
+                                  : cliente.endereco.cidade ||
+                                    "Endereço cadastrado"}
                               </div>
                             )}
 
@@ -292,7 +270,8 @@ export default function Clientes() {
                                   {cliente.nome}
                                 </DialogTitle>
                                 <DialogDescription>
-                                  Informações completas do cliente e histórico de serviços
+                                  Informações completas do cliente e histórico
+                                  de serviços
                                 </DialogDescription>
                               </DialogHeader>
 
@@ -301,7 +280,9 @@ export default function Clientes() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <Card>
                                     <CardHeader>
-                                      <CardTitle className="text-lg">Dados Pessoais</CardTitle>
+                                      <CardTitle className="text-lg">
+                                        Dados Pessoais
+                                      </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-2">
                                       <div>
@@ -313,20 +294,24 @@ export default function Clientes() {
                                         </div>
                                       )}
                                       <div>
-                                        <strong>Telefone Principal:</strong> {cliente.telefone1}
+                                        <strong>Telefone Principal:</strong>{" "}
+                                        {cliente.telefone1}
                                       </div>
                                       {cliente.telefone2 && (
                                         <div>
-                                          <strong>Telefone Secundário:</strong> {cliente.telefone2}
+                                          <strong>Telefone Secundário:</strong>{" "}
+                                          {cliente.telefone2}
                                         </div>
                                       )}
                                       {cliente.email && (
                                         <div>
-                                          <strong>E-mail:</strong> {cliente.email}
+                                          <strong>E-mail:</strong>{" "}
+                                          {cliente.email}
                                         </div>
                                       )}
                                       <div>
-                                        <strong>Cliente desde:</strong> {formatDate(cliente.dataCriacao)}
+                                        <strong>Cliente desde:</strong>{" "}
+                                        {formatDate(cliente.dataCriacao)}
                                       </div>
                                     </CardContent>
                                   </Card>
@@ -334,34 +319,43 @@ export default function Clientes() {
                                   {cliente.endereco && (
                                     <Card>
                                       <CardHeader>
-                                        <CardTitle className="text-lg">Endereço</CardTitle>
+                                        <CardTitle className="text-lg">
+                                          Endereço
+                                        </CardTitle>
                                       </CardHeader>
                                       <CardContent className="space-y-2">
                                         {cliente.endereco.cep && (
                                           <div>
-                                            <strong>CEP:</strong> {cliente.endereco.cep}
+                                            <strong>CEP:</strong>{" "}
+                                            {cliente.endereco.cep}
                                           </div>
                                         )}
                                         {cliente.endereco.rua && (
                                           <div>
-                                            <strong>Rua:</strong> {cliente.endereco.rua}
-                                            {cliente.endereco.numero && `, ${cliente.endereco.numero}`}
+                                            <strong>Rua:</strong>{" "}
+                                            {cliente.endereco.rua}
+                                            {cliente.endereco.numero &&
+                                              `, ${cliente.endereco.numero}`}
                                           </div>
                                         )}
                                         {cliente.endereco.complemento && (
                                           <div>
-                                            <strong>Complemento:</strong> {cliente.endereco.complemento}
+                                            <strong>Complemento:</strong>{" "}
+                                            {cliente.endereco.complemento}
                                           </div>
                                         )}
                                         {cliente.endereco.bairro && (
                                           <div>
-                                            <strong>Bairro:</strong> {cliente.endereco.bairro}
+                                            <strong>Bairro:</strong>{" "}
+                                            {cliente.endereco.bairro}
                                           </div>
                                         )}
                                         {cliente.endereco.cidade && (
                                           <div>
-                                            <strong>Cidade:</strong> {cliente.endereco.cidade}
-                                            {cliente.endereco.estado && ` - ${cliente.endereco.estado}`}
+                                            <strong>Cidade:</strong>{" "}
+                                            {cliente.endereco.cidade}
+                                            {cliente.endereco.estado &&
+                                              ` - ${cliente.endereco.estado}`}
                                           </div>
                                         )}
                                       </CardContent>
@@ -377,18 +371,24 @@ export default function Clientes() {
                                       Histórico de Serviços
                                     </CardTitle>
                                     <CardDescription>
-                                      Todos os serviços realizados para este cliente
+                                      Todos os serviços realizados para este
+                                      cliente
                                     </CardDescription>
                                   </CardHeader>
                                   <CardContent>
                                     {(() => {
-                                      const historico = obterHistoricoCliente(cliente.nome);
-                                      
+                                      const historico = obterHistoricoCliente(
+                                        cliente.nome,
+                                      );
+
                                       if (historico.length === 0) {
                                         return (
                                           <div className="text-center py-8 text-muted-foreground">
                                             <Receipt className="h-12 w-12 mx-auto mb-4" />
-                                            <p>Nenhum serviço realizado ainda para este cliente</p>
+                                            <p>
+                                              Nenhum serviço realizado ainda
+                                              para este cliente
+                                            </p>
                                           </div>
                                         );
                                       }
@@ -397,7 +397,13 @@ export default function Clientes() {
                                         <div className="space-y-4">
                                           <div className="flex items-center justify-between">
                                             <p className="text-sm text-muted-foreground">
-                                              {historico.length} serviço(s) • Total: {formatCurrency(calcularTotalCliente(cliente.nome))}
+                                              {historico.length} serviço(s) •
+                                              Total:{" "}
+                                              {formatCurrency(
+                                                calcularTotalCliente(
+                                                  cliente.nome,
+                                                ),
+                                              )}
                                             </p>
                                           </div>
 
@@ -415,11 +421,15 @@ export default function Clientes() {
                                               {historico.map((lancamento) => (
                                                 <TableRow key={lancamento.id}>
                                                   <TableCell>
-                                                    {formatDate(new Date(lancamento.data))}
+                                                    {formatDate(
+                                                      new Date(lancamento.data),
+                                                    )}
                                                   </TableCell>
                                                   <TableCell>
                                                     <div>
-                                                      <p className="font-medium">{lancamento.descricao}</p>
+                                                      <p className="font-medium">
+                                                        {lancamento.descricao}
+                                                      </p>
                                                       {lancamento.setor && (
                                                         <p className="text-sm text-muted-foreground">
                                                           {lancamento.setor}
@@ -428,23 +438,34 @@ export default function Clientes() {
                                                     </div>
                                                   </TableCell>
                                                   <TableCell>
-                                                    {lancamento.tecnicoResponsavel || "-"}
+                                                    {lancamento.tecnicoResponsavel ||
+                                                      "-"}
                                                   </TableCell>
                                                   <TableCell>
                                                     <div>
                                                       <p className="font-medium text-green-600">
-                                                        {formatCurrency(lancamento.valorLiquido || lancamento.valor)}
+                                                        {formatCurrency(
+                                                          lancamento.valorLiquido ||
+                                                            lancamento.valor,
+                                                        )}
                                                       </p>
-                                                      {lancamento.valor !== (lancamento.valorLiquido || lancamento.valor) && (
+                                                      {lancamento.valor !==
+                                                        (lancamento.valorLiquido ||
+                                                          lancamento.valor) && (
                                                         <p className="text-sm text-muted-foreground">
-                                                          Bruto: {formatCurrency(lancamento.valor)}
+                                                          Bruto:{" "}
+                                                          {formatCurrency(
+                                                            lancamento.valor,
+                                                          )}
                                                         </p>
                                                       )}
                                                     </div>
                                                   </TableCell>
                                                   <TableCell>
                                                     <Badge variant="outline">
-                                                      {lancamento.formaPagamento}
+                                                      {
+                                                        lancamento.formaPagamento
+                                                      }
                                                     </Badge>
                                                   </TableCell>
                                                 </TableRow>

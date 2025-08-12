@@ -475,28 +475,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasContext?.totais,
   ]);
 
-  // Sincronizar filtros com outros contextos quando não estiver aplicando filtros específicos do caixa
-  useEffect(() => {
-    if (!aplicarFiltrosCaixa && caixaContext && contasContext) {
-      console.log("Dashboard: Sincronizando filtros com contextos", filtros);
-
-      // Sincronizar filtros do Dashboard com outros contextos
-      const novosFiltrosCaixa = {
-        ...caixaContext?.filtros,
-        dataInicio: filtros.dataInicio,
-        dataFim: filtros.dataFim,
-      };
-
-      const novosFiltrosContas = {
-        ...contasContext?.filtros,
-        dataInicio: filtros.dataInicio,
-        dataFim: filtros.dataFim,
-      };
-
-      caixaContext?.setFiltros?.(novosFiltrosCaixa);
-      contasContext?.setFiltros?.(novosFiltrosContas);
-    }
-  }, [filtros.dataInicio, filtros.dataFim, aplicarFiltrosCaixa]);
+  // Remover sincronização automática para evitar loops infinitos
+  // Cada contexto agora gerencia seus próprios filtros independentemente
 
   // Carregar dados iniciais na primeira renderização
   useEffect(() => {

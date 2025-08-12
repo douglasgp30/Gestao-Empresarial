@@ -93,55 +93,70 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     return isNaN(parsed) ? undefined : parsed;
   };
 
-  // Função para formatar data para o servidor (DD-MM-AAAA)
+  // Função para formatar data para o servidor (YYYY-MM-DD)
   const formatarDataParaServidor = (data: Date): string => {
-    const dia = data.getDate().toString().padStart(2, "0");
-    const mes = (data.getMonth() + 1).toString().padStart(2, "0");
-    const ano = data.getFullYear();
-    return `${dia}-${mes}-${ano}`;
+    return data.toISOString().split("T")[0];
   };
 
   // Função para carregar lançamentos com base nos filtros
-  const carregarLancamentos = async () => {
-    try {
-      const filtrosApi: any = {
-        dataInicio: formatarDataParaServidor(filtros.dataInicio),
-        dataFim: formatarDataParaServidor(filtros.dataFim),
-        ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
-        ...(filtros.conta !== "todas" && { conta: filtros.conta }),
-        ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
-      };
+  const carregarLancamentos = React.useCallback(
+    async (forceLoad = false) => {
+      try {
+        // Evitar múltiplas chamadas simultâneas, exceto quando forçado
+        if (isLoading && !forceLoad) return;
 
-      // Adicionar filtros numéricos apenas se válidos
-      const funcionarioId = parseIntSafe(filtros.tecnico);
-      const setorId = parseIntSafe(filtros.setor);
-      const campanhaId = parseIntSafe(filtros.campanha);
-      const formaPagamentoId = parseIntSafe(filtros.formaPagamento);
+        const filtrosApi: any = {
+          dataInicio: formatarDataParaServidor(filtros.dataInicio),
+          dataFim: formatarDataParaServidor(filtros.dataFim),
+          ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
+          ...(filtros.conta !== "todas" && { conta: filtros.conta }),
+          ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
+        };
 
-      if (funcionarioId) filtrosApi.funcionarioId = funcionarioId;
-      if (setorId) filtrosApi.setorId = setorId;
-      if (campanhaId) filtrosApi.campanhaId = campanhaId;
-      if (formaPagamentoId) filtrosApi.formaPagamentoId = formaPagamentoId;
+        // Adicionar filtros numéricos apenas se válidos
+        const funcionarioId = parseIntSafe(filtros.tecnico);
+        const setorId = parseIntSafe(filtros.setor);
+        const campanhaId = parseIntSafe(filtros.campanha);
+        const formaPagamentoId = parseIntSafe(filtros.formaPagamento);
 
-      const response = await caixaApi.listarLancamentos(filtrosApi);
-      if (response.error) {
-        setError(response.error);
-      } else {
-        // Converter datas de string para Date
-        const lancamentosFormatados = (response.data || []).map(
-          (lancamento: any) => ({
-            ...lancamento,
-            dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
-            dataCriacao: new Date(lancamento.dataCriacao),
-          }),
-        );
-        setLancamentos(lancamentosFormatados);
+        if (funcionarioId) filtrosApi.funcionarioId = funcionarioId;
+        if (setorId) filtrosApi.setorId = setorId;
+        if (campanhaId) filtrosApi.campanhaId = campanhaId;
+        if (formaPagamentoId) filtrosApi.formaPagamentoId = formaPagamentoId;
+
+        const response = await caixaApi.listarLancamentos(filtrosApi);
+        if (response.error) {
+          setError(response.error);
+        } else {
+          // Converter datas de string para Date e manter relacionamentos
+          const lancamentosFormatados = (response.data || []).map(
+            (lancamento: any) => ({
+              ...lancamento,
+              // Converter dataHora do banco para Date para compatibilidade
+              data: new Date(lancamento.dataHora), // Criar campo data a partir de dataHora
+              dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
+              dataCriacao: new Date(lancamento.dataCriacao),
+              // Garantir que os relacionamentos estejam presentes corretamente
+              descricao: lancamento.descricao || { nome: "Sem descrição" },
+              formaPagamento: lancamento.formaPagamento || {
+                nome: "Não informado",
+              },
+              funcionario: lancamento.funcionario || null,
+              setor: lancamento.setor || null,
+              campanha: lancamento.campanha || null,
+              // Campos de compatibilidade para código que espera strings
+              tecnicoResponsavel: lancamento.funcionario?.nome || null,
+            }),
+          );
+          setLancamentos(lancamentosFormatados);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar lançamentos:", error);
+        setError("Erro ao carregar lançamentos");
       }
-    } catch (error) {
-      console.error("Erro ao carregar lançamentos:", error);
-      setError("Erro ao carregar lançamentos");
-    }
-  };
+    },
+    [filtros, isLoading],
+  );
 
   // Carregar dados na inicialização
   useEffect(() => {
@@ -150,10 +165,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Recarregar lançamentos quando os filtros mudarem
   useEffect(() => {
-    if (!isLoading) {
-      carregarLancamentos();
-    }
-  }, [filtros]);
+    const timeoutId = setTimeout(() => {
+      carregarLancamentos(true);
+    }, 100); // Debounce para evitar muitas chamadas
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    filtros.dataInicio.getTime(),
+    filtros.dataFim.getTime(),
+    filtros.tipo,
+    filtros.formaPagamento,
+    filtros.tecnico,
+    filtros.campanha,
+    filtros.setor,
+  ]);
 
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
@@ -187,6 +212,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         campanhaId: novoLancamento.campanha
           ? parseInt(novoLancamento.campanha)
           : undefined,
+        clienteId: novoLancamento.clienteId
+          ? parseInt(novoLancamento.clienteId)
+          : undefined,
       };
 
       const response = await caixaApi.criarLancamento(dadosApi);
@@ -196,7 +224,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar lançamentos
-      await carregarLancamentos();
+      await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
       throw error;
@@ -244,7 +272,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar lançamentos
-      await carregarLancamentos();
+      await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
       throw error;
@@ -261,8 +289,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      // Recarregar lançamentos
-      await carregarLancamentos();
+      // Recarregar lançamentos forçando a atualização
+      await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       throw error;

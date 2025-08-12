@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { useClientes } from "../../contexts/ClientesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -22,13 +23,18 @@ import {
 import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
-import { TrendingUp, FileText } from "lucide-react";
+import { TrendingUp, UserPlus } from "lucide-react";
+import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
+import { useCurrencyInput } from "../../hooks/use-currency-input";
+import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 
 interface FormularioReceitaProps {
   onSuccess?: () => void;
 }
 
 export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+
   const {
     adicionarLancamento,
     campanhas,
@@ -45,23 +51,32 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
+  const {
+    clientes,
+    adicionarCliente,
+    isLoading: clientesLoading,
+  } = useClientes();
+
+  // Hook para Enter funcionar como Tab
+  useEnterAsTab(formRef);
+
+  // Hook para input de moeda
+  const valorInput = useCurrencyInput();
+  const valorQueEntrouInput = useCurrencyInput();
+  const impostoInput = useCurrencyInput();
 
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
-    valor: "",
-    valorQueEntrou: "",
-    valorLiquido: "",
-    comissao: "",
-    imposto: "",
     categoria: "",
     descricao: "",
     formaPagamento: "",
     tecnicoResponsavel: "",
     setor: "",
     campanha: "",
+    cliente: "",
     observacoes: "",
     numeroNota: "",
     temNotaFiscal: false,
@@ -96,14 +111,28 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       ?.nome?.toLowerCase()
       .includes("cartão");
 
-  // Calcular campos automaticamente
-  const valorCalculado = parseFloat(formData.valor) || 0;
+  // Calcular campos automaticamente usando os hooks de moeda
+  const valorCalculado = valorInput.numericValue;
   const valorQueEntrouCalculado =
-    parseFloat(formData.valorQueEntrou) || valorCalculado;
-  const impostoCalculado = parseFloat(formData.imposto) || 0;
-  const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
+    valorQueEntrouInput.numericValue || valorCalculado;
+  const impostoCalculado = impostoInput.numericValue;
 
-  // Calcular comissão baseada no percentual do técnico
+  // Calcular descontos baseados nos percentuais
+  const percentualNotaFiscal = formData.temNotaFiscal ? 5 : 0; // 5% se houver nota fiscal
+  const descontoNotaFiscal =
+    (valorQueEntrouCalculado * percentualNotaFiscal) / 100;
+
+  // Taxa do cartão - aplicar só se for forma de pagamento de cartão
+  const taxaCartao = isFormaPagamentoCartao ? (valorCalculado * 3.5) / 100 : 0; // 3.5% para cartão
+
+  // Valor líquido = valor recebido - impostos - desconto nota fiscal - taxa cartão
+  const valorLiquidoCalculado =
+    valorQueEntrouCalculado -
+    impostoCalculado -
+    descontoNotaFiscal -
+    taxaCartao;
+
+  // Calcular comissão baseada no percentual do técnico sobre o valor líquido
   const comissaoCalculada = (() => {
     if (formData.tecnicoResponsavel) {
       const tecnico = tecnicos.find(
@@ -116,41 +145,15 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return 0;
   })();
 
-  // Atualizar campos calculados apenas quando necessário
-  useEffect(() => {
-    const novoValorLiquido = valorLiquidoCalculado.toFixed(2);
-    const novaComissao = comissaoCalculada.toFixed(2);
-
-    if (
-      formData.valorLiquido !== novoValorLiquido ||
-      formData.comissao !== novaComissao
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        valorLiquido: novoValorLiquido,
-        comissao: novaComissao,
-      }));
-    }
-  }, [
-    valorLiquidoCalculado,
-    comissaoCalculada,
-    formData.valorLiquido,
-    formData.comissao,
-  ]);
+  // Valor final para a empresa = valor líquido - comissão do técnico
+  const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
 
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
-    if (
-      !isFormaPagamentoCartao &&
-      formData.valorQueEntrou &&
-      formData.valorQueEntrou !== formData.valor
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        valorQueEntrou: "",
-      }));
+    if (!isFormaPagamentoCartao && valorQueEntrouInput.numericValue > 0) {
+      valorQueEntrouInput.reset();
     }
-  }, [isFormaPagamentoCartao]);
+  }, [isFormaPagamentoCartao, valorQueEntrouInput]);
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
@@ -182,7 +185,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     // Validação completa dos campos obrigatórios
     const camposObrigatorios = {
       data: formData.data,
-      valor: formData.valor,
+      valor: valorInput.numericValue,
       categoria: formData.categoria,
       descricao: formData.descricao,
       formaPagamento: formData.formaPagamento,
@@ -238,18 +241,17 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
-        valor: parseFloat(formData.valor),
-        valorLiquido:
-          parseFloat(formData.valorLiquido) || parseFloat(formData.valor),
-        valorQueEntrou:
-          parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
-        comissao: parseFloat(formData.comissao) || 0,
-        imposto: parseFloat(formData.imposto) || 0,
+        valor: valorInput.numericValue,
+        valorLiquido: valorLiquidoCalculado,
+        valorQueEntrou: valorQueEntrouCalculado,
+        comissao: comissaoCalculada,
+        imposto: impostoInput.numericValue,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         setor: formData.setor || undefined,
         campanha: formData.campanha || undefined,
+        clienteId: formData.cliente || undefined,
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
       });
@@ -263,21 +265,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Resetar formulário
       setFormData({
         data: new Date().toISOString().split("T")[0],
-        valor: "",
-        valorQueEntrou: "",
-        valorLiquido: "",
-        comissao: "",
-        imposto: "",
         categoria: "",
         descricao: "",
         formaPagamento: "",
         tecnicoResponsavel: "",
         setor: "",
         campanha: "",
+        cliente: "",
         observacoes: "",
         numeroNota: "",
         temNotaFiscal: false,
       });
+
+      // Resetar campos de moeda
+      valorInput.reset();
+      valorQueEntrouInput.reset();
+      impostoInput.reset();
       setNotaFiscalEmitida(false);
 
       onSuccess?.();
@@ -293,7 +296,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
   };
 
-  const isLoading = caixaLoading || entidadesLoading;
+  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
 
   if (isLoading) {
     return (
@@ -317,7 +320,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="space-y-4 sm:space-y-6"
+        >
           {/* Campos básicos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
@@ -337,17 +344,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
             <div className="space-y-2">
               <Label htmlFor="valor">Valor (R$) *</Label>
-              <Input
-                id="valor"
-                type="number"
-                step="0.01"
-                placeholder="0,00"
-                value={formData.valor}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, valor: e.target.value }))
-                }
-                required
-              />
+              <Input id="valor" {...valorInput.inputProps} required />
             </div>
           </div>
 
@@ -452,17 +449,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     </span>
                     <Input
                       id="valorQueEntrou"
-                      type="number"
-                      step="0.01"
-                      placeholder="0,00"
-                      value={formData.valorQueEntrou}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          valorQueEntrou: e.target.value,
-                        }))
-                      }
-                      className="bg-yellow-50 border-yellow-300 pl-8"
+                      {...valorQueEntrouInput.inputProps}
+                      className="bg-yellow-50 border-yellow-300"
                       required
                     />
                   </div>
@@ -549,6 +537,45 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
+          {/* Cliente */}
+          <div className="space-y-2">
+            <Label htmlFor="cliente">Cliente</Label>
+            <div className="flex gap-2">
+              <Select
+                value={formData.cliente}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, cliente: value }))
+                }
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Selecione um cliente" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clientes.map((cliente) => (
+                    <SelectItem key={cliente.id} value={cliente.id}>
+                      {cliente.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <ModalCadastroCliente
+                trigger={
+                  <Button type="button" variant="outline" size="icon">
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
+                }
+                onClienteAdicionado={(cliente) => {
+                  setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+                  toast({
+                    title: "Cliente Adicionado",
+                    description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+                    variant: "default",
+                  });
+                }}
+              />
+            </div>
+          </div>
+
           {/* Nota Fiscal */}
           <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
             <div className="flex items-center space-x-2">
@@ -576,7 +603,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               <div className="space-y-3 pl-6">
                 <div className="text-xs text-blue-600">
                   ℹ️ O site da nota fiscal foi aberto automaticamente. Após
-                  emitir, preencha o número abaixo.
+                  emitir, preencha o n��mero abaixo.
                 </div>
 
                 <div className="space-y-2">
@@ -610,23 +637,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             )}
           </div>
 
-          {/* Observações - Campo no final */}
-          <div className="space-y-2">
-            <Label htmlFor="observacoes">Observações do Serviço</Label>
-            <Textarea
-              id="observacoes"
-              placeholder="Observações sobre o serviço prestado..."
-              value={formData.observacoes}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  observacoes: e.target.value,
-                }))
-              }
-              rows={3}
-            />
-          </div>
-
           {/* Campos avançados */}
           <div className="flex items-center space-x-2">
             <Switch
@@ -647,35 +657,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     </Label>
                     <Input
                       id="valorQueEntrouAvancado"
-                      type="number"
-                      step="0.01"
-                      placeholder="0,00"
-                      value={formData.valorQueEntrou}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          valorQueEntrou: e.target.value,
-                        }))
-                      }
+                      {...valorQueEntrouInput.inputProps}
                     />
                   </div>
                 )}
 
                 <div className="space-y-2">
                   <Label htmlFor="imposto">Desconto/Taxa (R$)</Label>
-                  <Input
-                    id="imposto"
-                    type="number"
-                    step="0.01"
-                    placeholder="0,00"
-                    value={formData.imposto}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        imposto: e.target.value,
-                      }))
-                    }
-                  />
+                  <Input id="imposto" {...impostoInput.inputProps} />
                 </div>
 
                 {/* Valor Líquido só para cartão */}
@@ -694,85 +683,139 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="comissao">Comissão (R$)</Label>
                   <Input
                     id="comissao"
-                    type="number"
-                    step="0.01"
-                    value={formData.comissao}
+                    value={`R$ ${comissaoCalculada.toFixed(2).replace(".", ",")}`}
                     disabled
                     className="bg-gray-100"
                   />
                 </div>
 
-                <SelectWithAdd
-                  value={formData.campanha}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, campanha: value }))
-                  }
-                  placeholder="Selecione a campanha"
-                  label="Campanha"
-                  required={false}
-                  items={campanhas}
-                  onAddNew={async (data) => {
-                    await adicionarCampanha({
-                      nome: data.nome,
-                    });
-                  }}
-                  addNewTitle="Nova Campanha"
-                  addNewDescription="Adicione uma nova campanha de marketing."
-                  addNewFields={[
-                    {
-                      key: "nome",
-                      label: "Nome da Campanha",
-                      required: true,
-                    },
-                  ]}
-                />
+                <div className="md:col-span-2">
+                  <SelectWithAdd
+                    value={formData.campanha}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, campanha: value }))
+                    }
+                    placeholder="Selecione a campanha"
+                    label="Campanha"
+                    required={false}
+                    items={campanhas}
+                    onAddNew={async (data) => {
+                      await adicionarCampanha({
+                        nome: data.nome,
+                      });
+                    }}
+                    addNewTitle="Nova Campanha"
+                    addNewDescription="Adicione uma nova campanha de marketing."
+                    addNewFields={[
+                      {
+                        key: "nome",
+                        label: "Nome da Campanha",
+                        required: true,
+                      },
+                    ]}
+                  />
+                </div>
               </div>
             </div>
           )}
 
           {/* Resumo financeiro */}
-          {formData.valor && (
+          {valorInput.numericValue > 0 && (
             <div className="p-4 bg-green-50 rounded-lg">
-              <h4 className="font-medium text-green-800 mb-2">
-                Resumo Financeiro
+              <h4 className="font-medium text-green-800 mb-3">
+                Resumo Financeiro Detalhado
               </h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                <div>
-                  <span className="text-gray-600">Valor Total:</span>
-                  <div className="font-medium">
-                    R$ {parseFloat(formData.valor || "0").toFixed(2)}
+              <div className="space-y-3">
+                {/* Primeira linha - valores base */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                  <div>
+                    <span className="text-gray-600">Valor Total:</span>
+                    <div className="font-medium">
+                      R$ {valorInput.numericValue.toFixed(2).replace(".", ",")}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Valor Recebido:</span>
+                    <div className="font-medium">
+                      R$ {valorQueEntrouCalculado.toFixed(2).replace(".", ",")}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Impostos/Taxas:</span>
+                    <div className="font-medium">
+                      R$ {impostoCalculado.toFixed(2).replace(".", ",")}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <span className="text-gray-600">Valor Líquido:</span>
-                  <div className="font-medium">
-                    R$ {parseFloat(formData.valorLiquido || "0").toFixed(2)}
+
+                {/* Segunda linha - descontos */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm border-t pt-2">
+                  {formData.temNotaFiscal && (
+                    <div>
+                      <span className="text-gray-600">
+                        Desc. Nota Fiscal ({percentualNotaFiscal}%):
+                      </span>
+                      <div className="font-medium text-orange-600">
+                        - R$ {descontoNotaFiscal.toFixed(2).replace(".", ",")}
+                      </div>
+                    </div>
+                  )}
+                  {isFormaPagamentoCartao && (
+                    <div>
+                      <span className="text-gray-600">Taxa Cartão (3,5%):</span>
+                      <div className="font-medium text-orange-600">
+                        - R$ {taxaCartao.toFixed(2).replace(".", ",")}
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-gray-600">Comissão Técnico:</span>
+                    <div className="font-medium text-blue-600">
+                      R$ {comissaoCalculada.toFixed(2).replace(".", ",")}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <span className="text-gray-600">Comissão:</span>
-                  <div className="font-medium">
-                    R$ {parseFloat(formData.comissao || "0").toFixed(2)}
+
+                {/* Terceira linha - resultados finais */}
+                <div className="grid grid-cols-2 gap-3 text-sm border-t pt-2">
+                  <div>
+                    <span className="text-gray-600">Valor Líquido:</span>
+                    <div className="font-medium text-blue-600">
+                      R$ {valorLiquidoCalculado.toFixed(2).replace(".", ",")}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <span className="text-gray-600">Para Empresa:</span>
-                  <div className="font-medium text-green-600">
-                    R${" "}
-                    {(
-                      parseFloat(formData.valorLiquido || "0") -
-                      parseFloat(formData.comissao || "0")
-                    ).toFixed(2)}
+                  <div>
+                    <span className="text-gray-600">Para Empresa:</span>
+                    <div className="font-bold text-green-600">
+                      R$ {valorParaEmpresa.toFixed(2).replace(".", ",")}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           )}
+
+          {/* Observações - Campo no final */}
+          <div className="space-y-2">
+            <Label htmlFor="observacoes">Observações do Serviço</Label>
+            <Textarea
+              id="observacoes"
+              placeholder="Observações sobre o serviço prestado..."
+              value={formData.observacoes}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  observacoes: e.target.value,
+                }))
+              }
+              rows={3}
+            />
+          </div>
 
           <Button
             type="submit"

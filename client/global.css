@@ -160,3 +160,149 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Estilos para o filtro de data Google Ads */
+.filtro-data-google-ads .rdp {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Estilos básicos para o DayPicker */
+.rdp {
+  --rdp-cell-size: 36px;
+  --rdp-accent-color: hsl(var(--primary));
+  --rdp-background-color: hsl(var(--background));
+}
+
+.rdp-months {
+  display: flex;
+  gap: 1rem;
+}
+
+.rdp-month {
+  width: 100%;
+}
+
+.rdp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rdp-head_cell,
+.rdp-cell {
+  width: var(--rdp-cell-size);
+  height: var(--rdp-cell-size);
+  text-align: center;
+}
+
+.rdp-head_cell {
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.rdp-day {
+  width: var(--rdp-cell-size);
+  height: var(--rdp-cell-size);
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+}
+
+.rdp-day:hover {
+  background-color: hsl(var(--accent));
+}
+
+.rdp-day_selected {
+  background-color: var(--rdp-accent-color);
+  color: hsl(var(--primary-foreground));
+}
+
+.rdp-day_today {
+  font-weight: 600;
+  color: var(--rdp-accent-color);
+}
+
+.rdp-day_outside {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.5;
+}
+
+.rdp-day_disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.rdp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.rdp-nav_button {
+  background: none;
+  border: 1px solid hsl(var(--border));
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rdp-nav_button:hover {
+  background-color: hsl(var(--accent));
+}
+
+.rdp-caption_label {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.filtro-data-google-ads .rdp-months {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filtro-data-google-ads .rdp-month {
+  min-width: 280px;
+}
+
+.filtro-data-google-ads .rdp-caption {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.filtro-data-google-ads .rdp-day_selected {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.filtro-data-google-ads .rdp-day_range_middle {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--foreground));
+}
+
+.filtro-data-google-ads .rdp-day_range_start,
+.filtro-data-google-ads .rdp-day_range_end {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+@media (max-width: 640px) {
+  .filtro-data-google-ads .rdp-months {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filtro-data-google-ads .rdp-month {
+    min-width: 250px;
+  }
+}

@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Funcionario } from "@shared/types";
 import { useAuth } from "./AuthContext";
+import { funcionariosApi } from "../lib/apiService";
 
 interface FuncionariosContextType {
   funcionarios: Funcionario[];
@@ -24,9 +25,9 @@ interface FuncionariosContextType {
   };
   adicionarFuncionario: (
     funcionario: Omit<Funcionario, "id" | "dataCadastro">,
-  ) => void;
+  ) => Promise<void>;
   editarFuncionario: (id: string, funcionario: Partial<Funcionario>) => void;
-  excluirFuncionario: (id: string) => void;
+  excluirFuncionario: (id: string) => Promise<void>;
   alterarStatusFuncionario: (id: string, ativo: boolean) => void;
   setFiltros: (filtros: any) => void;
   isLoading: boolean;
@@ -120,6 +121,41 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Função para carregar funcionários da API
+  const carregarFuncionarios = async () => {
+    try {
+      setIsLoading(true);
+      const response = await funcionariosApi.listar();
+      if (response.error) {
+        console.error("Erro ao carregar funcionários:", response.error);
+        return;
+      }
+
+      // Converter dados da API para o formato do contexto
+      const funcionariosFormatados = (response.data || []).map((f: any) => ({
+        id: f.id.toString(),
+        nomeCompleto: f.nome,
+        ehTecnico: f.ehTecnico || false,
+        email: f.email,
+        telefone: f.telefone,
+        cargo: f.cargo,
+        salario: f.salario,
+        permissaoAcesso: f.temAcessoSistema || false,
+        tipoAcesso: f.tipoAcesso || "Operador",
+        login: f.login,
+        permissoes: f.permissoes ? JSON.parse(f.permissoes) : undefined,
+        ativo: true, // Assumir ativo por padrão
+        dataCadastro: new Date(f.dataCriacao),
+      }));
+
+      setFuncionarios(funcionariosFormatados);
+    } catch (error) {
+      console.error("Erro ao carregar funcionários:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Função para salvar funcionarios no localStorage
   const salvarFuncionariosNoLocalStorage = (funcionarios: Funcionario[]) => {
     try {
@@ -129,36 +165,48 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar dados reais do localStorage
+  // Carregar funcionários da API na inicialização
   useEffect(() => {
-    const funcionariosReais = carregarFuncionariosReais();
-    setFuncionarios(funcionariosReais);
-    setIsLoading(false);
+    carregarFuncionarios();
   }, []);
-
-  // Salvar no localStorage sempre que funcionarios mudarem
-  useEffect(() => {
-    if (!isLoading) {
-      salvarFuncionariosNoLocalStorage(funcionarios);
-    }
-  }, [funcionarios, isLoading]);
 
   const [filtros, setFiltros] = useState({
     tipoAcesso: "todos" as "Administrador" | "Operador" | "Técnico" | "todos",
     status: "todos" as "ativo" | "inativo" | "todos",
   });
 
-  const adicionarFuncionario = (
+  const adicionarFuncionario = async (
     novoFuncionario: Omit<Funcionario, "id" | "dataCadastro">,
   ) => {
-    const id = Date.now().toString();
-    const funcionario: Funcionario = {
-      ...novoFuncionario,
-      id,
-      dataCadastro: new Date(),
-    };
+    try {
+      // Preparar dados para a API
+      const dadosApi = {
+        nome: novoFuncionario.nomeCompleto,
+        ehTecnico: novoFuncionario.ehTecnico || false,
+        email: novoFuncionario.email,
+        telefone: novoFuncionario.telefone,
+        cargo: novoFuncionario.cargo,
+        salario: novoFuncionario.salario,
+        temAcessoSistema: novoFuncionario.permissaoAcesso || false,
+        tipoAcesso: novoFuncionario.tipoAcesso,
+        login: novoFuncionario.login,
+        senha: novoFuncionario.senha,
+        permissoes: novoFuncionario.permissoes
+          ? JSON.stringify(novoFuncionario.permissoes)
+          : undefined,
+      };
 
-    setFuncionarios((prev) => [...prev, funcionario]);
+      const response = await funcionariosApi.criar(dadosApi);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Recarregar lista de funcionários
+      await carregarFuncionarios();
+    } catch (error) {
+      console.error("Erro ao adicionar funcionário:", error);
+      throw error;
+    }
   };
 
   const editarFuncionario = (
@@ -174,15 +222,25 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const excluirFuncionario = (id: string) => {
+  const excluirFuncionario = async (id: string) => {
     // Não permitir excluir o próprio usuário ou o admin principal
     if (id === user?.id || id === "1") {
       alert("Não é possível excluir este usuário.");
       return;
     }
-    setFuncionarios((prev) =>
-      prev.filter((funcionario) => funcionario.id !== id),
-    );
+
+    try {
+      const response = await funcionariosApi.excluir(parseInt(id));
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Recarregar lista de funcionários
+      await carregarFuncionarios();
+    } catch (error) {
+      console.error("Erro ao excluir funcionário:", error);
+      throw error;
+    }
   };
 
   const alterarStatusFuncionario = (id: string, ativo: boolean) => {

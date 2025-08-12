@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { useClientes } from "../../contexts/ClientesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -23,7 +24,8 @@ import {
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
-import { TrendingUp, FileText } from "lucide-react";
+import { TrendingUp, UserPlus } from "lucide-react";
+import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 
 export function ModalReceita() {
   const {
@@ -42,6 +44,11 @@ export function ModalReceita() {
     adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
+  const {
+    clientes,
+    adicionarCliente,
+    isLoading: clientesLoading,
+  } = useClientes();
 
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
@@ -59,6 +66,7 @@ export function ModalReceita() {
     tecnicoResponsavel: "",
     setor: "",
     campanha: "",
+    cliente: "",
     observacoes: "",
     numeroNota: "",
     temNotaFiscal: false,
@@ -184,6 +192,7 @@ export function ModalReceita() {
       tecnicoResponsavel: "",
       setor: "",
       campanha: "",
+      cliente: "",
       observacoes: "",
       numeroNota: "",
       temNotaFiscal: false,
@@ -248,6 +257,7 @@ export function ModalReceita() {
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         setor: formData.setor || undefined,
         campanha: formData.campanha || undefined,
+        clienteId: formData.cliente || undefined,
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
       });
@@ -272,7 +282,7 @@ export function ModalReceita() {
     }
   };
 
-  const isLoading = caixaLoading || entidadesLoading;
+  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
 
   return (
     <Dialog
@@ -287,11 +297,11 @@ export function ModalReceita() {
     >
       <DialogTrigger asChild>
         <Button
-          size="sm"
-          className="bg-green-600 hover:bg-green-700 text-white text-xs"
+          size="default"
+          className="bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
         >
-          <TrendingUp className="h-3 w-3 mr-1" />
-          Receita
+          <TrendingUp className="h-4 w-4 mr-2" />
+          Receitas
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
@@ -536,6 +546,45 @@ export function ModalReceita() {
                 ]}
                 renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
               />
+            </div>
+
+            {/* Cliente */}
+            <div className="space-y-2">
+              <Label htmlFor="cliente">Cliente</Label>
+              <div className="flex gap-2">
+                <Select
+                  value={formData.cliente}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, cliente: value }))
+                  }
+                >
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Selecione um cliente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clientes.map((cliente) => (
+                      <SelectItem key={cliente.id} value={cliente.id}>
+                        {cliente.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <ModalCadastroCliente
+                  trigger={
+                    <Button type="button" variant="outline" size="icon">
+                      <UserPlus className="h-4 w-4" />
+                    </Button>
+                  }
+                  onClienteAdicionado={(cliente) => {
+                    setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+                    toast({
+                      title: "Cliente Adicionado",
+                      description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+                      variant: "default",
+                    });
+                  }}
+                />
+              </div>
             </div>
 
             {/* Nota Fiscal */}

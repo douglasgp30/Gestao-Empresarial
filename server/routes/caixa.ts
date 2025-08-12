@@ -27,6 +27,7 @@ const LancamentoCaixaSchema = z.object({
   funcionarioId: z.number().positive().optional(),
   setorId: z.number().positive().optional(),
   campanhaId: z.number().positive().optional(),
+  clienteId: z.number().positive().optional(),
 });
 
 // Função para gerar dataHora no formato DD-MM-AAAA HH:MM:SS
@@ -67,7 +68,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
-        const [dia, mes, ano] = (dataInicio as string).split("-");
+        const [ano, mes, dia] = (dataInicio as string).split("-");
         where.dataHora.gte = new Date(
           parseInt(ano),
           parseInt(mes) - 1,
@@ -78,7 +79,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
         );
       }
       if (dataFim) {
-        const [dia, mes, ano] = (dataFim as string).split("-");
+        const [ano, mes, dia] = (dataFim as string).split("-");
         where.dataHora.lte = new Date(
           parseInt(ano),
           parseInt(mes) - 1,
@@ -99,6 +100,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
         campanha: true,
+        cliente: true,
       },
       orderBy: { id: "desc" },
     });
@@ -191,6 +193,26 @@ export const createLancamento: RequestHandler = async (req, res) => {
       );
     }
 
+    // Verificar se o cliente existe (se especificado)
+    let clienteIdValido = data.clienteId;
+    if (data.clienteId) {
+      const cliente = await prisma.cliente.findUnique({
+        where: { id: data.clienteId },
+      });
+      console.log(
+        `[Caixa] Cliente ID ${data.clienteId}:`,
+        cliente ? "EXISTS" : "NOT FOUND",
+      );
+
+      // Se o cliente não existir, definir como null para não quebrar o foreign key
+      if (!cliente) {
+        console.log(
+          `[Caixa] Cliente ID ${data.clienteId} não encontrado. Definindo como null.`,
+        );
+        clienteIdValido = undefined;
+      }
+    }
+
     console.log("[Caixa] Tentando criar lançamento no banco...");
 
     // Usar a data enviada pelo frontend ou a data atual como fallback
@@ -219,11 +241,12 @@ export const createLancamento: RequestHandler = async (req, res) => {
     }
 
     // Remover o campo 'data' do objeto que vai para o Prisma (ele não existe no schema)
-    const { data: dataFromRequest, ...dadosLancamento } = data;
+    const { data: dataFromRequest, clienteId, ...dadosLancamento } = data;
 
     const lancamento = await prisma.lancamentoCaixa.create({
       data: {
         ...dadosLancamento,
+        clienteId: clienteIdValido,
         dataHora: dataHoraLancamento,
       },
       include: {
@@ -233,6 +256,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
         campanha: true,
+        cliente: true,
       },
     });
 
@@ -262,6 +286,7 @@ export const updateLancamento: RequestHandler = async (req, res) => {
         funcionario: { select: { id: true, nome: true, cargo: true } },
         setor: true,
         campanha: true,
+        cliente: true,
       },
     });
 
@@ -298,7 +323,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
-        const [dia, mes, ano] = (dataInicio as string).split("-");
+        const [ano, mes, dia] = (dataInicio as string).split("-");
         where.dataHora.gte = new Date(
           parseInt(ano),
           parseInt(mes) - 1,
@@ -309,7 +334,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
         );
       }
       if (dataFim) {
-        const [dia, mes, ano] = (dataFim as string).split("-");
+        const [ano, mes, dia] = (dataFim as string).split("-");
         where.dataHora.lte = new Date(
           parseInt(ano),
           parseInt(mes) - 1,

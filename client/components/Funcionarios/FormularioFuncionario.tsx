@@ -38,9 +38,10 @@ export default function FormularioFuncionario() {
     login: "",
     senha: "",
     confirmarSenha: "",
+    ehTecnico: false,
     permissaoAcesso: true,
-    tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
-    percentualComissao: "15",
+    tipoAcesso: "Operador" as "Administrador" | "Operador",
+    percentualComissao: "",
     ativo: true,
   });
 
@@ -52,9 +53,10 @@ export default function FormularioFuncionario() {
       login: "",
       senha: "",
       confirmarSenha: "",
+      ehTecnico: false,
       permissaoAcesso: true,
       tipoAcesso: "Operador",
-      percentualComissao: "15",
+      percentualComissao: "",
       ativo: true,
     });
     setErrors({});
@@ -98,32 +100,42 @@ export default function FormularioFuncionario() {
       }
     }
 
-    const percentual = parseFloat(formData.percentualComissao);
-    if (isNaN(percentual) || percentual < 0 || percentual > 100) {
-      newErrors.percentualComissao = "Percentual deve estar entre 0 e 100";
+    if (!formData.percentualComissao.trim()) {
+      newErrors.percentualComissao = "Percentual de comissão é obrigatório";
+    } else {
+      const percentual = parseFloat(formData.percentualComissao);
+      if (isNaN(percentual) || percentual < 0 || percentual > 100) {
+        newErrors.percentualComissao = "Percentual deve estar entre 0 e 100";
+      }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validarFormulario()) return;
 
-    adicionarFuncionario({
-      nomeCompleto: formData.nomeCompleto.trim(),
-      login: formData.login.trim().toLowerCase(),
-      senha: formData.senha,
-      permissaoAcesso: formData.permissaoAcesso,
-      tipoAcesso: formData.tipoAcesso,
-      percentualComissao: parseFloat(formData.percentualComissao),
-      ativo: formData.ativo,
-    });
+    try {
+      await adicionarFuncionario({
+        nomeCompleto: formData.nomeCompleto.trim(),
+        ehTecnico: formData.ehTecnico,
+        login: formData.login.trim().toLowerCase(),
+        senha: formData.senha,
+        permissaoAcesso: formData.permissaoAcesso,
+        tipoAcesso: formData.tipoAcesso,
+        percentualComissao: parseFloat(formData.percentualComissao),
+        ativo: formData.ativo,
+      });
 
-    resetForm();
-    setIsOpen(false);
+      resetForm();
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar funcionário:", error);
+      // TODO: Mostrar erro para o usuário
+    }
   };
 
   return (
@@ -167,6 +179,19 @@ export default function FormularioFuncionario() {
                   <p className="text-sm text-red-500">{errors.nomeCompleto}</p>
                 )}
               </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="ehTecnico"
+                  checked={formData.ehTecnico}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, ehTecnico: checked })
+                  }
+                />
+                <Label htmlFor="ehTecnico" className="text-sm font-medium">
+                  Este funcionário é um técnico
+                </Label>
+              </div>
             </CardContent>
           </Card>
 
@@ -203,9 +228,9 @@ export default function FormularioFuncionario() {
                   <Label>Tipo de Acesso</Label>
                   <Select
                     value={formData.tipoAcesso}
-                    onValueChange={(
-                      value: "Administrador" | "Operador" | "Técnico",
-                    ) => setFormData({ ...formData, tipoAcesso: value })}
+                    onValueChange={(value: "Administrador" | "Operador") =>
+                      setFormData({ ...formData, tipoAcesso: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -215,7 +240,6 @@ export default function FormularioFuncionario() {
                       <SelectItem value="Administrador">
                         Administrador
                       </SelectItem>
-                      <SelectItem value="Técnico">Técnico</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -291,7 +315,7 @@ export default function FormularioFuncionario() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="percentualComissao">
-                  Percentual de Comissão (%)
+                  Percentual de Comissão (%) *
                 </Label>
                 <Input
                   id="percentualComissao"
@@ -314,6 +338,9 @@ export default function FormularioFuncionario() {
                     {errors.percentualComissao}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  Use 0 para funcionários que não recebem comissão
+                </p>
                 <p className="text-sm text-muted-foreground">
                   Percentual aplicado sobre o valor líquido dos serviços
                   realizados

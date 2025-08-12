@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
@@ -22,12 +22,16 @@ import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
+import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
+import { useCurrencyInput } from "../../hooks/use-currency-input";
 
 interface FormularioDespesaProps {
   onSuccess?: () => void;
 }
 
 export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
   const {
     descricoes,
@@ -37,9 +41,14 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     isLoading: entidadesLoading,
   } = useEntidades();
 
+  // Hook para Enter funcionar como Tab
+  useEnterAsTab(formRef);
+
+  // Hook para input de moeda
+  const valorInput = useCurrencyInput();
+
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
-    valor: "",
     conta: "empresa", // "empresa" ou "pessoal"
     categoria: "",
     descricao: "",
@@ -72,7 +81,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     // Validação completa dos campos obrigatórios
     const camposObrigatorios = {
       data: formData.data,
-      valor: formData.valor,
+      valor: valorInput.numericValue,
       conta: formData.conta,
       categoria: formData.categoria,
       descricao: formData.descricao,
@@ -109,7 +118,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         data: new Date(formData.data),
         tipo: "despesa",
         conta: formData.conta,
-        valor: parseFloat(formData.valor),
+        valor: valorInput.numericValue,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         observacoes: formData.observacoes || undefined,
@@ -124,13 +133,15 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       // Resetar formulário
       setFormData({
         data: new Date().toISOString().split("T")[0],
-        valor: "",
         conta: "empresa",
         categoria: "",
         descricao: "",
         formaPagamento: "",
         observacoes: "",
       });
+
+      // Resetar campo de moeda
+      valorInput.reset();
 
       onSuccess?.();
     } catch (error) {
@@ -167,7 +178,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         <CardDescription>Registre uma nova saída do caixa</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
           {/* Campos básicos */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
@@ -185,17 +196,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
             <div className="space-y-2">
               <Label htmlFor="valor">Valor (R$) *</Label>
-              <Input
-                id="valor"
-                type="number"
-                step="0.01"
-                placeholder="0,00"
-                value={formData.valor}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, valor: e.target.value }))
-                }
-                required
-              />
+              <Input id="valor" {...valorInput.inputProps} required />
             </div>
 
             <div className="space-y-2">

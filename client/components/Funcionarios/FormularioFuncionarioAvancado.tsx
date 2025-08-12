@@ -179,9 +179,10 @@ export default function FormularioFuncionarioAvancado() {
     login: "",
     senha: "",
     confirmarSenha: "",
+    ehTecnico: false,
     temAcessoSistema: false,
-    tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
-    percentualComissao: "15",
+    tipoAcesso: "Operador" as "Administrador" | "Operador",
+    percentualComissao: "",
     ativo: true,
   });
 
@@ -211,9 +212,10 @@ export default function FormularioFuncionarioAvancado() {
       login: "",
       senha: "",
       confirmarSenha: "",
+      ehTecnico: false,
       temAcessoSistema: false,
       tipoAcesso: "Operador",
-      percentualComissao: "15",
+      percentualComissao: "",
       ativo: true,
     });
     setPermissoes({
@@ -236,9 +238,7 @@ export default function FormularioFuncionarioAvancado() {
     setErrors({});
   };
 
-  const aplicarPermissoesPadrao = (
-    tipo: "Administrador" | "Operador" | "Técnico",
-  ) => {
+  const aplicarPermissoesPadrao = (tipo: "Administrador" | "Operador") => {
     if (tipo === "Administrador") {
       // Administrador tem todas as permissões
       setPermissoes({
@@ -278,7 +278,7 @@ export default function FormularioFuncionarioAvancado() {
         alterarPermissoes: false,
       });
     } else if (tipo === "Técnico") {
-      // Técnico tem permissões limitadas, focadas em lançamentos
+      // Técnico tem permiss��es limitadas, focadas em lançamentos
       setPermissoes({
         acessarDashboard: true,
         verCaixa: true,
@@ -324,33 +324,43 @@ export default function FormularioFuncionarioAvancado() {
       }
     }
 
-    const percentual = parseFloat(formData.percentualComissao);
-    if (isNaN(percentual) || percentual < 0 || percentual > 100) {
-      newErrors.percentualComissao = "Percentual deve estar entre 0 e 100";
+    if (!formData.percentualComissao.trim()) {
+      newErrors.percentualComissao = "Percentual de comissão é obrigatório";
+    } else {
+      const percentual = parseFloat(formData.percentualComissao);
+      if (isNaN(percentual) || percentual < 0 || percentual > 100) {
+        newErrors.percentualComissao = "Percentual deve estar entre 0 e 100";
+      }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validarFormulario()) return;
 
-    adicionarFuncionario({
-      nomeCompleto: formData.nomeCompleto,
-      login: formData.temAcessoSistema ? formData.login : undefined,
-      senha: formData.temAcessoSistema ? formData.senha : undefined,
-      temAcessoSistema: formData.temAcessoSistema,
-      tipoAcesso: formData.temAcessoSistema ? formData.tipoAcesso : undefined,
-      permissoes: formData.temAcessoSistema ? permissoes : undefined,
-      percentualComissao: parseFloat(formData.percentualComissao),
-      ativo: formData.ativo,
-    });
+    try {
+      await adicionarFuncionario({
+        nomeCompleto: formData.nomeCompleto,
+        ehTecnico: formData.ehTecnico,
+        login: formData.temAcessoSistema ? formData.login : undefined,
+        senha: formData.temAcessoSistema ? formData.senha : undefined,
+        temAcessoSistema: formData.temAcessoSistema,
+        tipoAcesso: formData.temAcessoSistema ? formData.tipoAcesso : undefined,
+        permissoes: formData.temAcessoSistema ? permissoes : undefined,
+        percentualComissao: parseFloat(formData.percentualComissao),
+        ativo: formData.ativo,
+      });
 
-    resetForm();
-    setIsOpen(false);
+      resetForm();
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar funcionário:", error);
+      // TODO: Mostrar erro para o usuário
+    }
   };
 
   const contarPermissoesAtivas = () => {
@@ -399,9 +409,22 @@ export default function FormularioFuncionarioAvancado() {
                 )}
               </div>
 
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="ehTecnico"
+                  checked={formData.ehTecnico}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, ehTecnico: checked === true })
+                  }
+                />
+                <Label htmlFor="ehTecnico" className="text-sm font-medium">
+                  Este funcionário é um técnico
+                </Label>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="percentualComissao">
-                  Percentual de Comissão (%)
+                  Percentual de Comissão (%) *
                 </Label>
                 <div className="relative">
                   <Input
@@ -428,6 +451,9 @@ export default function FormularioFuncionarioAvancado() {
                     {errors.percentualComissao}
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  Use 0 para funcionários que não recebem comissão
+                </p>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -473,7 +499,7 @@ export default function FormularioFuncionarioAvancado() {
                   }}
                 />
                 <Label htmlFor="temAcessoSistema">
-                  Este funcionário terá acesso ao sistema?
+                  Este funcionário ter�� acesso ao sistema?
                 </Label>
               </div>
 
@@ -502,7 +528,7 @@ export default function FormularioFuncionarioAvancado() {
                       <Select
                         value={formData.tipoAcesso}
                         onValueChange={(
-                          value: "Administrador" | "Operador" | "Técnico",
+                          value: "Administrador" | "Operador",
                         ) => {
                           setFormData({ ...formData, tipoAcesso: value });
                           aplicarPermissoesPadrao(value);
@@ -516,7 +542,6 @@ export default function FormularioFuncionarioAvancado() {
                           <SelectItem value="Administrador">
                             Administrador
                           </SelectItem>
-                          <SelectItem value="Técnico">Técnico</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

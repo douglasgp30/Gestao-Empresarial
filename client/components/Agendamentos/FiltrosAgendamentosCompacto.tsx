@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAgendamentos } from "../../contexts/AgendamentosContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
-import { useFuncionarios } from "../../contexts/FuncionariosContext";
 import { Button } from "../ui/button";
 import {
   Select,
@@ -16,203 +15,204 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import FiltrosPeriodoCompacto from "../ui/filtros-periodo-compacto";
+import FiltroDataAgendamentos from "./FiltroDataAgendamentos";
 import { Filter, ChevronDown, X, Calendar } from "lucide-react";
 
 export default function FiltrosAgendamentosCompacto() {
-  const { filtros, setFiltros, agendamentosHoje, isLoading } =
-    useAgendamentos();
-  const { setores } = useEntidades();
-  const { funcionarios } = useFuncionarios();
+  const { filtros, setFiltros, isLoading } = useAgendamentos();
+  const { setores, tecnicos, isLoading: entidadesLoading } = useEntidades();
+  const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
-  const tecnicos = funcionarios.filter((f) => f.ativo);
+  useEffect(() => {
+    setFiltrosLocal(filtros);
+  }, [filtros]);
 
-  const handleDataInicioChange = (data: string) => {
-    const novaData = new Date(data);
-    // Normalizar para início do dia
-    novaData.setHours(0, 0, 0, 0);
-    setFiltros({
-      ...filtros,
-      dataInicio: novaData,
-      __timestamp: Date.now() // Força re-render
-    });
-  };
-
-  const handleDataFimChange = (data: string) => {
-    const novaData = new Date(data);
-    // Normalizar para fim do dia
-    novaData.setHours(23, 59, 59, 999);
-    setFiltros({
-      ...filtros,
-      dataFim: novaData,
-      __timestamp: Date.now() // Força re-render
-    });
-  };
-
-  const handleAplicarPeriodo = () => {
-    // Força atualização com novos filtros criando nova referência
-    setFiltros({
-      ...filtros,
-      __timestamp: Date.now() // Força re-render
-    });
+  const aplicarFiltros = () => {
+    setFiltros(filtrosLocal);
   };
 
   const limparFiltros = () => {
     const hoje = new Date();
-
-    setFiltros({
+    const filtrosLimpos = {
       dataInicio: hoje,
       dataFim: hoje,
-      status: "todos",
-      setor: undefined,
-      tecnico: undefined,
-    });
+      setor: "",
+      tecnico: "",
+      status: "todos" as const,
+    };
+    setFiltrosLocal(filtrosLimpos);
+    setFiltros(filtrosLimpos);
   };
 
+  // Contar filtros ativos
   const contarFiltrosAtivos = () => {
     let count = 0;
-    if (filtros.status !== "todos") count++;
-    if (filtros.setor) count++;
-    if (filtros.tecnico) count++;
+    if (filtrosLocal.setor) count++;
+    if (filtrosLocal.tecnico) count++;
+    if (filtrosLocal.status !== "todos") count++;
     return count;
   };
 
   const filtrosAtivos = contarFiltrosAtivos();
+  const isLoadingGeral = isLoading || entidadesLoading;
 
   return (
-    <div className="space-y-3">
-      {/* Filtros de Período */}
-      <FiltrosPeriodoCompacto
-        dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
-        dataFim={filtros.dataFim.toISOString().split("T")[0]}
-        onDataInicioChange={handleDataInicioChange}
-        onDataFimChange={handleDataFimChange}
-        onAplicar={handleAplicarPeriodo}
-        onLimpar={limparFiltros}
-        isLoading={isLoading}
-      />
+    <div className="max-w-6xl mx-auto space-y-4">
+      {/* Filtro de Data estilo Google Ads */}
+      <div className="max-w-sm">
+        <FiltroDataAgendamentos />
+      </div>
 
-      {/* Filtros Avançados */}
-      <Collapsible
-        open={filtrosAvancadosAbertos}
-        onOpenChange={setFiltrosAvancadosAbertos}
-      >
-        <div className="flex items-center justify-between">
-          <CollapsibleTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Filter className="h-4 w-4" />
-              Filtros Avançados
-              {filtrosAtivos > 0 && (
-                <Badge variant="secondary" className="h-5 px-2 text-xs">
-                  {filtrosAtivos}
-                </Badge>
-              )}
-              <ChevronDown
-                className={`h-4 w-4 transition-transform ${filtrosAvancadosAbertos ? "rotate-180" : ""}`}
-              />
-            </Button>
-          </CollapsibleTrigger>
-
-          {filtrosAtivos > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={limparFiltros}
-              className="gap-1 text-muted-foreground hover:text-foreground"
+      {/* Filtros Básicos - Layout Compacto */}
+      <div className="bg-background border rounded-lg p-4 max-w-4xl">
+        <div className="space-y-4">
+          {/* Filtro de Status - Compacto */}
+          <div className="max-w-xs">
+            <label className="text-sm font-medium mb-2 block">
+              Status do Agendamento
+            </label>
+            <Select
+              value={filtrosLocal.status}
+              onValueChange={(
+                value: "todos" | "agendado" | "concluido" | "cancelado",
+              ) => setFiltrosLocal((prev) => ({ ...prev, status: value }))}
             >
-              <X className="h-3 w-3" />
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os Status</SelectItem>
+                <SelectItem value="agendado">Agendado</SelectItem>
+                <SelectItem value="concluido">Concluído</SelectItem>
+                <SelectItem value="cancelado">Cancelado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Filtros Avançados */}
+          <Collapsible
+            open={filtrosAvancadosAbertos}
+            onOpenChange={setFiltrosAvancadosAbertos}
+          >
+            <div className="flex items-center justify-between">
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filtros Avançados
+                  {filtrosAtivos > 0 && (
+                    <Badge variant="secondary" className="h-5 px-2 text-xs">
+                      {filtrosAtivos}
+                    </Badge>
+                  )}
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      filtrosAvancadosAbertos ? "rotate-180" : ""
+                    }`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+
+              {filtrosAtivos > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={limparFiltros}
+                  className="gap-1 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                  Limpar
+                </Button>
+              )}
+            </div>
+
+            <CollapsibleContent className="mt-4">
+              <div className="bg-muted/30 rounded-lg p-4 border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Setor</label>
+                    <Select
+                      value={filtrosLocal.setor || ""}
+                      onValueChange={(value) =>
+                        setFiltrosLocal((prev) => ({ ...prev, setor: value }))
+                      }
+                      disabled={isLoadingGeral}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos os setores" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Todos os Setores</SelectItem>
+                        {setores.map((setor) => (
+                          <SelectItem
+                            key={setor.id}
+                            value={setor.id.toString()}
+                          >
+                            {setor.nome} - {setor.cidade}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Técnico</label>
+                    <Select
+                      value={filtrosLocal.tecnico || ""}
+                      onValueChange={(value) =>
+                        setFiltrosLocal((prev) => ({ ...prev, tecnico: value }))
+                      }
+                      disabled={isLoadingGeral}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todos os técnicos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Todos os Técnicos</SelectItem>
+                        {tecnicos.map((tecnico) => (
+                          <SelectItem
+                            key={tecnico.id}
+                            value={tecnico.id.toString()}
+                          >
+                            {tecnico.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Botões de Ação */}
+          <div className="flex gap-3 max-w-md">
+            <Button
+              onClick={aplicarFiltros}
+              size="sm"
+              className="flex-1"
+              disabled={isLoadingGeral}
+            >
+              Aplicar Filtros
+            </Button>
+            <Button
+              onClick={limparFiltros}
+              variant="outline"
+              size="sm"
+              className="px-6"
+            >
               Limpar
             </Button>
-          )}
-        </div>
-
-        <CollapsibleContent className="mt-3">
-          <div className="bg-muted/30 rounded-lg p-3 border">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {/* Status */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Status
-                </label>
-                <Select
-                  value={filtros.status}
-                  onValueChange={(value) =>
-                    setFiltros({ ...filtros, status: value as any })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="agendado">Agendados</SelectItem>
-                    <SelectItem value="concluido">Concluídos</SelectItem>
-                    <SelectItem value="cancelado">Cancelados</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Setor */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Setor
-                </label>
-                <Select
-                  value={filtros.setor || "todos"}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      setor: value === "todos" ? undefined : value,
-                    })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Todos os setores" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos os setores</SelectItem>
-                    {setores.map((setor) => (
-                      <SelectItem key={setor.id} value={setor.nome}>
-                        {setor.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Técnico */}
-              <div className="space-y-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Técnico
-                </label>
-                <Select
-                  value={filtros.tecnico || "todos"}
-                  onValueChange={(value) =>
-                    setFiltros({
-                      ...filtros,
-                      tecnico: value === "todos" ? undefined : value,
-                    })
-                  }
-                >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Todos os técnicos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos os técnicos</SelectItem>
-                    <SelectItem value="sem_tecnico">Sem técnico</SelectItem>
-                    {tecnicos.map((tecnico) => (
-                      <SelectItem key={tecnico.id} value={tecnico.nomeCompleto}>
-                        {tecnico.nomeCompleto}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
           </div>
-        </CollapsibleContent>
-      </Collapsible>
+        </div>
+      </div>
+
+      {/* Status de carregamento */}
+      {isLoadingGeral && (
+        <div className="text-center text-sm text-muted-foreground p-4">
+          Carregando dados...
+        </div>
+      )}
     </div>
   );
 }

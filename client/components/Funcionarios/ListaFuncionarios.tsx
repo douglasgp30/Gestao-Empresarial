@@ -61,7 +61,6 @@ import {
   UserX,
 } from "lucide-react";
 
-
 export default function ListaFuncionarios() {
   const { user } = useAuth();
   const {
@@ -107,9 +106,14 @@ export default function ListaFuncionarios() {
       return a.nomeCompleto.localeCompare(b.nomeCompleto);
     });
 
-  const handleExcluir = (id: string) => {
-    excluirFuncionario(id);
-    setFuncionarioParaExcluir(null);
+  const handleExcluir = async (id: string) => {
+    try {
+      await excluirFuncionario(id);
+      setFuncionarioParaExcluir(null);
+    } catch (error) {
+      console.error("Erro ao excluir funcionário:", error);
+      // TODO: Mostrar erro para o usuário
+    }
   };
 
   const handleAlterarStatus = (id: string, ativo: boolean) => {

@@ -20,6 +20,7 @@ import {
   formasPagamentoApi,
   funcionariosApi,
   setoresApi,
+  clientesApi,
 } from "../lib/apiService";
 
 interface EntidadesContextType {
@@ -66,11 +67,13 @@ interface EntidadesContextType {
   excluirSetor: (id: string) => Promise<void>;
   adicionarCidade: (cidade: { nome: string }) => Promise<void>;
 
-  // Clientes (mantém localStorage)
+  // Clientes (API)
   clientes: Cliente[];
-  adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => void;
-  editarCliente: (id: string, cliente: Partial<Cliente>) => void;
-  excluirCliente: (id: string) => void;
+  adicionarCliente: (
+    cliente: Omit<Cliente, "id" | "dataCriacao">,
+  ) => Promise<void>;
+  editarCliente: (id: string, cliente: Partial<Cliente>) => Promise<void>;
+  excluirCliente: (id: string) => Promise<void>;
 
   // Fornecedores (mantém localStorage)
   fornecedores: Fornecedor[];
@@ -354,9 +357,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     );
 
     // Usar apenas dados da API (banco de dados) para evitar conflitos de ID
-    // Filtrar funcionários que sejam do tipo "Técnico"
+    // Filtrar funcionários que estejam marcados como técnicos
     const funcionariosTecnicos = funcionarios.filter(
-      (f) => f.tipoAcesso === "Técnico" || f.cargo === "Técnico",
+      (f) => f.ehTecnico === true,
     );
 
     console.log(

@@ -8,6 +8,7 @@ import ModalDescricoesAvancado from "../components/Caixa/ModalDescricoesAvancado
 import ModalCidadeSetor from "../components/Caixa/ModalCidadeSetor";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
+import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
@@ -33,14 +34,20 @@ function CaixaContent() {
         </div>
       </div>
 
-      {/* Botões de configuração - Menores */}
-      <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-        <ModalCampanhas />
-        <ModalDescricoesAvancado />
-        <ModalCidadeSetor />
+      {/* Botões de configuração e Totais */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        {/* Botões de configuração */}
+        <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+          <ModalCampanhas />
+          <ModalDescricoesAvancado />
+          <ModalCidadeSetor />
+        </div>
+
+        {/* Totais alinhados à direita */}
+        <TotaisCaixa />
       </div>
 
-      {/* Filtros e Totais */}
+      {/* Filtros */}
       <FiltrosCaixaCompacto />
 
       {/* Lista de Lançamentos */}
