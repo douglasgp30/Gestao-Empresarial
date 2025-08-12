@@ -12,7 +12,7 @@ const FuncionarioSchema = z.object({
   tipoAcesso: z.string().optional(),
   login: z.string().optional(),
   senha: z.string().optional(),
-  permissoes: z.string().optional()
+  permissoes: z.string().optional(),
 });
 
 export const getFuncionarios: RequestHandler = async (req, res) => {
@@ -29,15 +29,15 @@ export const getFuncionarios: RequestHandler = async (req, res) => {
         tipoAcesso: true,
         login: true,
         permissoes: true,
-        dataCriacao: true
+        dataCriacao: true,
         // Não incluir senha na resposta
       },
-      orderBy: { nome: 'asc' }
+      orderBy: { nome: "asc" },
     });
     res.json(funcionarios);
   } catch (error) {
-    console.error('Erro ao buscar funcionários:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro ao buscar funcionários:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
 
@@ -46,31 +46,31 @@ export const getTecnicos: RequestHandler = async (req, res) => {
     const tecnicos = await prisma.funcionario.findMany({
       where: {
         OR: [
-          { tipoAcesso: 'Técnico' },
-          { cargo: 'Técnico' },
-          { cargo: { contains: 'técnico' } },
-          { cargo: { contains: 'Técnico' } }
-        ]
+          { tipoAcesso: "Técnico" },
+          { cargo: "Técnico" },
+          { cargo: { contains: "técnico" } },
+          { cargo: { contains: "Técnico" } },
+        ],
       },
       select: {
         id: true,
         nome: true,
         cargo: true,
-        tipoAcesso: true
+        tipoAcesso: true,
       },
-      orderBy: { nome: 'asc' }
+      orderBy: { nome: "asc" },
     });
     res.json(tecnicos);
   } catch (error) {
-    console.error('Erro ao buscar técnicos:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro ao buscar técnicos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
 
 export const createFuncionario: RequestHandler = async (req, res) => {
   try {
     const data = FuncionarioSchema.parse(req.body);
-    const funcionario = await prisma.funcionario.create({ 
+    const funcionario = await prisma.funcionario.create({
       data,
       select: {
         id: true,
@@ -83,16 +83,16 @@ export const createFuncionario: RequestHandler = async (req, res) => {
         tipoAcesso: true,
         login: true,
         permissoes: true,
-        dataCriacao: true
-      }
+        dataCriacao: true,
+      },
     });
     res.status(201).json(funcionario);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: 'Dados inválidos', details: error.errors });
+      res.status(400).json({ error: "Dados inválidos", details: error.errors });
     } else {
-      console.error('Erro ao criar funcionário:', error);
-      res.status(500).json({ error: 'Erro interno do servidor' });
+      console.error("Erro ao criar funcionário:", error);
+      res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
 };
@@ -101,7 +101,7 @@ export const updateFuncionario: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const data = FuncionarioSchema.partial().parse(req.body);
-    
+
     const funcionario = await prisma.funcionario.update({
       where: { id },
       data,
@@ -116,16 +116,16 @@ export const updateFuncionario: RequestHandler = async (req, res) => {
         tipoAcesso: true,
         login: true,
         permissoes: true,
-        dataCriacao: true
-      }
+        dataCriacao: true,
+      },
     });
     res.json(funcionario);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: 'Dados inválidos', details: error.errors });
+      res.status(400).json({ error: "Dados inválidos", details: error.errors });
     } else {
-      console.error('Erro ao atualizar funcionário:', error);
-      res.status(500).json({ error: 'Erro interno do servidor' });
+      console.error("Erro ao atualizar funcionário:", error);
+      res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
 };
@@ -136,7 +136,7 @@ export const deleteFuncionario: RequestHandler = async (req, res) => {
     await prisma.funcionario.delete({ where: { id } });
     res.status(204).send();
   } catch (error) {
-    console.error('Erro ao excluir funcionário:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro ao excluir funcionário:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };

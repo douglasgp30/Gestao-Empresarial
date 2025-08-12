@@ -60,19 +60,27 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     : [];
 
   // Obter categorias únicas das descrições de despesa
-  const categoriasDespesa = [...new Set(
-    descricoesDespesa
-      .map((d) => d.categoria)
-      .filter((categoria) => categoria && categoria.trim() !== "")
-  )].sort();
+  const categoriasDespesa = [
+    ...new Set(
+      descricoesDespesa
+        .map((d) => d.categoria)
+        .filter((categoria) => categoria && categoria.trim() !== ""),
+    ),
+  ].sort();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.valor || !formData.categoria || !formData.descricao || !formData.formaPagamento) {
+    if (
+      !formData.valor ||
+      !formData.categoria ||
+      !formData.descricao ||
+      !formData.formaPagamento
+    ) {
       toast({
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
+        description:
+          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
         variant: "destructive",
       });
       return;
@@ -184,7 +192,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                   setFormData((prev) => ({
                     ...prev,
                     categoria: value,
-                    descricao: "" // Limpar descrição quando categoria muda
+                    descricao: "", // Limpar descrição quando categoria muda
                   }));
                 }}
               >
@@ -206,7 +214,11 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, descricao: value }))
               }
-              placeholder={formData.categoria ? "Selecione a descrição" : "Primeiro selecione uma categoria"}
+              placeholder={
+                formData.categoria
+                  ? "Selecione a descrição"
+                  : "Primeiro selecione uma categoria"
+              }
               label="Descrição da Despesa"
               required={true}
               disabled={!formData.categoria}

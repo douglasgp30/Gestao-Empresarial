@@ -190,9 +190,9 @@ export default function FormularioFuncionario() {
                   <Label>Tipo de Acesso</Label>
                   <Select
                     value={formData.tipoAcesso}
-                    onValueChange={(value: "Administrador" | "Operador" | "Técnico") =>
-                      setFormData({ ...formData, tipoAcesso: value })
-                    }
+                    onValueChange={(
+                      value: "Administrador" | "Operador" | "Técnico",
+                    ) => setFormData({ ...formData, tipoAcesso: value })}
                   >
                     <SelectTrigger>
                       <SelectValue />
