@@ -3,11 +3,7 @@ import { prisma } from "../lib/database";
 import { z } from "zod";
 
 const CampanhaSchema = z.object({
-  nome: z.string().min(1, "Nome é obrigatório"),
-  descricao: z.string().optional(),
-  ativa: z.boolean().default(true),
-  dataInicio: z.string().optional(),
-  dataFim: z.string().optional()
+  nome: z.string().min(1, "Nome é obrigatório")
 });
 
 export const getCampanhas: RequestHandler = async (req, res) => {
