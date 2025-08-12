@@ -405,19 +405,6 @@ export function FiltrosCaixaCompacto() {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-orange-500">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-orange-600" />
-              <div>
-                <p className="text-xs text-muted-foreground">Comissões</p>
-                <p className="text-lg font-bold text-orange-600">
-                  {formatarMoeda(totais.comissoes)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Status de carregamento */}
