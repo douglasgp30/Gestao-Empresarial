@@ -14,9 +14,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "../ui/card";
 import {
   Collapsible,
@@ -25,11 +22,7 @@ import {
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import {
-  Calendar,
   Filter,
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
   ChevronDown,
   X,
 } from "lucide-react";
