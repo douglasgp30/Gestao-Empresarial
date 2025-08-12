@@ -31,7 +31,6 @@ export function FiltrosCaixaCompacto() {
   const {
     filtros,
     setFiltros,
-    totais,
     campanhas,
     isLoading: caixaLoading,
   } = useCaixa();
