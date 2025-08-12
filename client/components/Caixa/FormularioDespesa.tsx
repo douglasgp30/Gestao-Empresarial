@@ -81,7 +81,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     // Validação completa dos campos obrigatórios
     const camposObrigatorios = {
       data: formData.data,
-      valor: formData.valor,
+      valor: valorInput.numericValue,
       conta: formData.conta,
       categoria: formData.categoria,
       descricao: formData.descricao,
