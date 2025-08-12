@@ -338,7 +338,7 @@ export function FiltrosCaixaCompacto() {
               <Button
                 onClick={aplicarFiltros}
                 size="sm"
-                className="flex-1 h-10 text-sm"
+                className="flex-1 h-8 text-xs"
               >
                 Aplicar Filtros
               </Button>
@@ -346,7 +346,7 @@ export function FiltrosCaixaCompacto() {
                 onClick={limparFiltros}
                 variant="outline"
                 size="sm"
-                className="h-10 text-sm sm:w-auto"
+                className="h-8 text-xs sm:w-auto"
               >
                 Limpar Tudo
               </Button>
