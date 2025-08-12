@@ -234,7 +234,7 @@ export default function FiltrosPeriodoCompacto({
   };
 
   return (
-    <div className={`bg-muted/30 rounded-lg p-3 border ${className}`}>
+    <div className={`bg-muted/30 rounded-lg p-2 border ${className}`}>
       <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
         {/* Período */}
         <div className="flex-1 min-w-0">
