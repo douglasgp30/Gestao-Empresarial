@@ -406,27 +406,27 @@ export default function FiltroDataGoogleAds({
                 </div>
 
                 {/* Campos de data manual */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600 mb-2 block">
+                <div className="grid grid-cols-2 gap-6 mb-8">
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <Label className="text-sm font-semibold text-gray-600 mb-3 block">
                       Data de início*
                     </Label>
                     <Input
                       type="date"
                       value={tempDataInicio || dataInicio}
                       onChange={(e) => setTempDataInicio(e.target.value)}
-                      className="h-10 text-sm"
+                      className="h-12 text-base font-medium"
                     />
                   </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600 mb-2 block">
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <Label className="text-sm font-semibold text-gray-600 mb-3 block">
                       Data de término
                     </Label>
                     <Input
                       type="date"
                       value={tempDataFim || dataFim}
                       onChange={(e) => setTempDataFim(e.target.value)}
-                      className="h-10 text-sm"
+                      className="h-12 text-base font-medium"
                     />
                   </div>
                 </div>
