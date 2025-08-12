@@ -55,13 +55,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const {
     descricoes,
     formasPagamento,
-    tecnicos,
+    getTecnicos,
     setores,
     adicionarDescricao,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
+
+  // Carregar técnicos usando a função que verifica localStorage
+  const tecnicos = getTecnicos();
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -455,21 +458,27 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <SelectValue placeholder="Selecione o técnico" />
                 </SelectTrigger>
                 <SelectContent>
-                  {tecnicos
-                    .filter(
-                      (tecnico) =>
-                        tecnico.id != null &&
-                        tecnico.id !== "" &&
-                        tecnico.id !== 0,
-                    )
-                    .map((tecnico) => (
-                      <SelectItem
-                        key={tecnico.id}
-                        value={tecnico.id.toString()}
-                      >
-                        {tecnico.nome}
-                      </SelectItem>
-                    ))}
+                  {tecnicos.length === 0 ? (
+                    <div className="px-2 py-1 text-sm text-gray-500">
+                      Nenhum técnico cadastrado
+                    </div>
+                  ) : (
+                    tecnicos
+                      .filter(
+                        (tecnico) =>
+                          tecnico.id != null &&
+                          tecnico.id !== "" &&
+                          tecnico.id !== 0,
+                      )
+                      .map((tecnico) => (
+                        <SelectItem
+                          key={tecnico.id}
+                          value={tecnico.id.toString()}
+                        >
+                          {tecnico.nome || tecnico.nomeCompleto}
+                        </SelectItem>
+                      ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
