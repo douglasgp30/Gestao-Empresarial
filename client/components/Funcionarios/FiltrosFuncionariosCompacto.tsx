@@ -76,7 +76,7 @@ export default function FiltrosFuncionariosCompacto() {
                 setFiltros({ ...filtros, status: value as any })
               }
             >
-              <SelectTrigger className="w-32 h-9">
+              <SelectTrigger className="w-28 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
