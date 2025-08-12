@@ -165,19 +165,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar dados reais do localStorage
+  // Carregar funcionários da API na inicialização
   useEffect(() => {
-    const funcionariosReais = carregarFuncionariosReais();
-    setFuncionarios(funcionariosReais);
-    setIsLoading(false);
+    carregarFuncionarios();
   }, []);
-
-  // Salvar no localStorage sempre que funcionarios mudarem
-  useEffect(() => {
-    if (!isLoading) {
-      salvarFuncionariosNoLocalStorage(funcionarios);
-    }
-  }, [funcionarios, isLoading]);
 
   const [filtros, setFiltros] = useState({
     tipoAcesso: "todos" as "Administrador" | "Operador" | "Técnico" | "todos",
