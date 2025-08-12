@@ -39,7 +39,7 @@ export default function FormularioFuncionario() {
     senha: "",
     confirmarSenha: "",
     permissaoAcesso: true,
-    tipoAcesso: "Operador" as "Administrador" | "Operador",
+    tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
     percentualComissao: "15",
     ativo: true,
   });
