@@ -516,6 +516,7 @@ export function FiltrosCaixaCompacto() {
                         categoria: "todas",
                         descricao: "todas",
                         cliente: "todos",
+                        cidade: "todas",
                         numeroNota: "",
                       }));
                     }}
