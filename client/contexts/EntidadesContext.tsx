@@ -67,11 +67,11 @@ interface EntidadesContextType {
   excluirSetor: (id: string) => Promise<void>;
   adicionarCidade: (cidade: { nome: string }) => Promise<void>;
 
-  // Clientes (mantém localStorage)
+  // Clientes (API)
   clientes: Cliente[];
-  adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => void;
-  editarCliente: (id: string, cliente: Partial<Cliente>) => void;
-  excluirCliente: (id: string) => void;
+  adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => Promise<void>;
+  editarCliente: (id: string, cliente: Partial<Cliente>) => Promise<void>;
+  excluirCliente: (id: string) => Promise<void>;
 
   // Fornecedores (mantém localStorage)
   fornecedores: Fornecedor[];
