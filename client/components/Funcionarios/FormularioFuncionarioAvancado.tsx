@@ -236,7 +236,7 @@ export default function FormularioFuncionarioAvancado() {
     setErrors({});
   };
 
-  const aplicarPermissoesPadrao = (tipo: "Administrador" | "Operador") => {
+  const aplicarPermissoesPadrao = (tipo: "Administrador" | "Operador" | "Técnico") => {
     if (tipo === "Administrador") {
       // Administrador tem todas as permissões
       setPermissoes({
