@@ -46,8 +46,14 @@ export interface LancamentoCaixa {
   dataHora: Date; // Data e hora do lançamento
   valor: number; // Valor do lançamento (obrigatório)
   valorRecebido?: number; // Valor efetivamente recebido (obrigatório para cartão)
+  valorLiquido?: number; // Valor líquido após descontos
+  comissao?: number; // Comissão do técnico
+  imposto?: number; // Impostos/taxas
   conta: "empresa" | "pessoal"; // Define se é Empresa ou Pessoal (obrigatório)
   tipo: "receita" | "despesa"; // Receita ou Despesa (obrigatório)
+  observacoes?: string; // Observações do lançamento
+  numeroNota?: string; // Número da nota fiscal
+  arquivoNota?: string; // Arquivo da nota fiscal
 
   // Relacionamentos obrigatórios
   descricaoId: number; // FK para tabela Descrição
