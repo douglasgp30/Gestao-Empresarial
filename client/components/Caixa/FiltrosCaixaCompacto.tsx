@@ -139,8 +139,8 @@ export function FiltrosCaixaCompacto() {
                   className="h-8 text-xs"
                 />
               </div>
-              <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-                <Label htmlFor="tipo" className="text-sm font-medium">
+              <div className="space-y-1 sm:col-span-2 lg:col-span-1">
+                <Label htmlFor="tipo" className="text-xs font-medium">
                   Tipo
                 </Label>
                 <Select
@@ -149,7 +149,7 @@ export function FiltrosCaixaCompacto() {
                     setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
                   }
                 >
-                  <SelectTrigger className="h-10 sm:h-9">
+                  <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
