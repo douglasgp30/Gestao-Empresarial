@@ -215,7 +215,7 @@ export default function FormularioFuncionarioAvancado() {
       ehTecnico: false,
       temAcessoSistema: false,
       tipoAcesso: "Operador",
-      percentualComissao: "15",
+      percentualComissao: "",
       ativo: true,
     });
     setPermissoes({
