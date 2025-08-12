@@ -182,7 +182,7 @@ export default function FormularioFuncionarioAvancado() {
     ehTecnico: false,
     temAcessoSistema: false,
     tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
-    percentualComissao: "15",
+    percentualComissao: "",
     ativo: true,
   });
 
