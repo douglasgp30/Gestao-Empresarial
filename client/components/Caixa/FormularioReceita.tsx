@@ -63,11 +63,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
-    valor: "",
-    valorQueEntrou: "",
-    valorLiquido: "",
-    comissao: "",
-    imposto: "",
     categoria: "",
     descricao: "",
     formaPagamento: "",
