@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
@@ -11,7 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Card, CardContent } from "../ui/card";
+import {
+  Card,
+  CardContent,
+} from "../ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,7 +20,11 @@ import {
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import FiltroDataCaixa from "./FiltroDataCaixa";
-import { Filter, ChevronDown, X } from "lucide-react";
+import {
+  Filter,
+  ChevronDown,
+  X,
+} from "lucide-react";
 
 export function FiltrosCaixaCompacto() {
   const {
@@ -77,36 +82,36 @@ export function FiltrosCaixaCompacto() {
   const isLoading = caixaLoading || entidadesLoading;
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="max-w-6xl mx-auto space-y-4">
       {/* Filtro de Data estilo Google Ads */}
-      <FiltroDataCaixa />
-
-      {/* Filtros Básicos */}
-      <Card>
-        <CardContent className="p-2 sm:p-3">
-          {/* Período e Tipo - Sempre visíveis */}
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
-              <div className="space-y-1">
-                <Label htmlFor="tipo" className="text-xs font-medium">
-                  Tipo
-                </Label>
-                <Select
-                  value={filtrosLocal.tipo}
-                  onValueChange={(value: "todos" | "receita" | "despesa") =>
-                    setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
-                  }
-                >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="receita">Receitas</SelectItem>
-                    <SelectItem value="despesa">Despesas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+      <div className="max-w-sm">
+        <FiltroDataCaixa />
+      </div>
+      
+      {/* Filtros Básicos - Layout Compacto */}
+      <Card className="max-w-4xl">
+        <CardContent className="p-4">
+          <div className="space-y-4">
+            {/* Filtro de Tipo - Compacto */}
+            <div className="max-w-xs">
+              <label className="text-sm font-medium mb-2 block">
+                Tipo de Lançamento
+              </label>
+              <Select
+                value={filtrosLocal.tipo}
+                onValueChange={(value: "todos" | "receita" | "despesa") =>
+                  setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
+                }
+              >
+                <SelectTrigger className="h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos</SelectItem>
+                  <SelectItem value="receita">Receitas</SelectItem>
+                  <SelectItem value="despesa">Despesas</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Filtros Avançados Colapsáveis */}
@@ -119,11 +124,10 @@ export function FiltrosCaixaCompacto() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 h-10 text-sm"
+                    className="gap-2 h-10"
                   >
                     <Filter className="h-4 w-4" />
-                    <span className="hidden xs:inline">Filtros Avançados</span>
-                    <span className="xs:hidden">Filtros</span>
+                    Filtros Avançados
                     {filtrosAtivos > 0 && (
                       <Badge variant="secondary" className="h-5 px-2 text-xs">
                         {filtrosAtivos}
@@ -142,24 +146,21 @@ export function FiltrosCaixaCompacto() {
                     variant="ghost"
                     size="sm"
                     onClick={limparFiltros}
-                    className="gap-1 text-muted-foreground hover:text-foreground h-10 px-3"
+                    className="gap-1 text-muted-foreground hover:text-foreground h-10"
                   >
                     <X className="h-4 w-4" />
-                    <span className="hidden xs:inline">Limpar</span>
+                    Limpar
                   </Button>
                 )}
               </div>
 
-              <CollapsibleContent className="mt-3">
-                <div className="bg-muted/30 rounded-lg p-3 sm:p-4 border">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <CollapsibleContent className="mt-4">
+                <div className="bg-muted/30 rounded-lg p-4 border">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl">
                     <div className="space-y-2">
-                      <Label
-                        htmlFor="formaPagamento"
-                        className="text-sm font-medium"
-                      >
+                      <label className="text-sm font-medium">
                         Forma de Pagamento
-                      </Label>
+                      </label>
                       <Select
                         value={filtrosLocal.formaPagamento}
                         onValueChange={(value) =>
@@ -170,7 +171,7 @@ export function FiltrosCaixaCompacto() {
                         }
                         disabled={isLoading}
                       >
-                        <SelectTrigger className="h-10 sm:h-9">
+                        <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -187,10 +188,10 @@ export function FiltrosCaixaCompacto() {
                       </Select>
                     </div>
 
-                    <div className="space-y-1">
-                      <Label htmlFor="tecnico" className="text-xs">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
                         Técnico
-                      </Label>
+                      </label>
                       <Select
                         value={filtrosLocal.tecnico}
                         onValueChange={(value) =>
@@ -201,7 +202,7 @@ export function FiltrosCaixaCompacto() {
                         }
                         disabled={isLoading}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -218,10 +219,10 @@ export function FiltrosCaixaCompacto() {
                       </Select>
                     </div>
 
-                    <div className="space-y-1">
-                      <Label htmlFor="setor" className="text-xs">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
                         Setor
-                      </Label>
+                      </label>
                       <Select
                         value={filtrosLocal.setor}
                         onValueChange={(value) =>
@@ -229,7 +230,7 @@ export function FiltrosCaixaCompacto() {
                         }
                         disabled={isLoading}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -246,10 +247,10 @@ export function FiltrosCaixaCompacto() {
                       </Select>
                     </div>
 
-                    <div className="space-y-1 md:col-span-2 lg:col-span-3">
-                      <Label htmlFor="campanha" className="text-xs">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
                         Campanha
-                      </Label>
+                      </label>
                       <Select
                         value={filtrosLocal.campanha}
                         onValueChange={(value) =>
@@ -260,7 +261,7 @@ export function FiltrosCaixaCompacto() {
                         }
                         disabled={isLoading}
                       >
-                        <SelectTrigger className="h-8">
+                        <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -281,12 +282,12 @@ export function FiltrosCaixaCompacto() {
               </CollapsibleContent>
             </Collapsible>
 
-            {/* Botões de Ação */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            {/* Botões de Ação - Compactos */}
+            <div className="flex gap-3 max-w-md">
               <Button
                 onClick={aplicarFiltros}
                 size="sm"
-                className="flex-1 h-8 text-xs"
+                className="flex-1"
               >
                 Aplicar Filtros
               </Button>
@@ -294,9 +295,9 @@ export function FiltrosCaixaCompacto() {
                 onClick={limparFiltros}
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs sm:w-auto"
+                className="px-6"
               >
-                Limpar Tudo
+                Limpar
               </Button>
             </div>
           </div>
