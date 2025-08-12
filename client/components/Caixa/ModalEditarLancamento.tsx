@@ -304,7 +304,7 @@ export function ModalEditarLancamento({
                     <SelectValue placeholder="Selecione o técnico" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Nenhum</SelectItem>
+                    <SelectItem value="none">Nenhum</SelectItem>
                     {tecnicos.map((tecnico) => (
                       <SelectItem
                         key={tecnico.id}
