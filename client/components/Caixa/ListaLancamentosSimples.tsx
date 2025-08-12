@@ -53,6 +53,9 @@ export function ListaLancamentosSimples() {
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
     string | null
   >(null);
+  const [lancamentoParaEditar, setLancamentoParaEditar] = useState<
+    LancamentoCaixa | null
+  >(null);
   const [excluindo, setExcluindo] = useState(false);
 
   const formatarMoeda = (valor: number) => {
@@ -366,7 +369,7 @@ export function ListaLancamentosSimples() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogTitle>Confirmar exclus��o</AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja excluir este lançamento? Esta ação não pode
               ser desfeita.
