@@ -414,8 +414,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <Label htmlFor="valorQueEntrou" className="text-sm font-medium text-yellow-700">
                   Valor Recebido *
                 </Label>
-                <div className="flex items-center gap-2">
-                  <div className="relative w-40">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <div className="relative w-full sm:w-40">
                     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
                       R$
                     </span>
@@ -435,7 +435,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                       required
                     />
                   </div>
-                  <p className="text-xs text-yellow-600 flex-1">
+                  <p className="text-xs text-yellow-600 sm:flex-1">
                     <strong>Importante:</strong> Valor líquido após taxas da operadora.
                   </p>
                 </div>
