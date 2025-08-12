@@ -102,8 +102,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   // Função para carregar lançamentos com base nos filtros
-  const carregarLancamentos = React.useCallback(async () => {
+  const carregarLancamentos = React.useCallback(async (forceLoad = false) => {
     try {
+      // Evitar múltiplas chamadas simultâneas, exceto quando forçado
+      if (isLoading && !forceLoad) return;
+
       const filtrosApi: any = {
         dataInicio: formatarDataParaServidor(filtros.dataInicio),
         dataFim: formatarDataParaServidor(filtros.dataFim),
@@ -151,7 +154,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.error("Erro ao carregar lançamentos:", error);
       setError("Erro ao carregar lançamentos");
     }
-  }, [filtros]);
+  }, [filtros, isLoading]);
 
   // Carregar dados na inicialização
   useEffect(() => {
