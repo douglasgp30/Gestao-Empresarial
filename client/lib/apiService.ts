@@ -11,10 +11,12 @@ export interface ApiResponse<T> {
 
 // Função utilitária para fazer requests
 async function apiRequest<T>(
-  endpoint: string, 
+  endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   try {
+    console.log(`[ApiService] Fazendo requisição para: ${API_BASE}${endpoint}`);
+
     const response = await fetch(`${API_BASE}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -23,15 +25,25 @@ async function apiRequest<T>(
       ...options,
     });
 
+    console.log(`[ApiService] Resposta recebida: ${response.status} ${response.statusText}`);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error(`[ApiService] Erro HTTP ${response.status}:`, errorData);
       return { error: errorData.error || `Erro HTTP ${response.status}`, details: errorData.details };
     }
 
     const data = await response.json();
+    console.log(`[ApiService] Dados recebidos:`, data);
     return { data };
   } catch (error) {
-    console.error('Erro na API:', error);
+    console.error('[ApiService] Erro na comunicação:', error);
+
+    // Verificar se é um erro de rede
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      return { error: 'Servidor não disponível. Verifique se o backend está rodando.' };
+    }
+
     return { error: 'Erro de comunicação com o servidor' };
   }
 }
