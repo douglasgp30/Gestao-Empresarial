@@ -8,12 +8,14 @@ const CampanhaSchema = z.object({
 
 export const getCampanhas: RequestHandler = async (req, res) => {
   try {
+    console.log('[Campanhas] Buscando campanhas...');
     const campanhas = await prisma.campanha.findMany({
       orderBy: { nome: "asc" },
     });
+    console.log(`[Campanhas] Encontradas ${campanhas.length} campanhas`);
     res.json(campanhas);
   } catch (error) {
-    console.error("Erro ao buscar campanhas:", error);
+    console.error("[Campanhas] Erro ao buscar campanhas:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
