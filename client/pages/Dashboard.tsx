@@ -26,10 +26,6 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
-import { TesteFiltros } from "../components/ui/teste-filtros";
-import { TesteDatas } from "../components/ui/teste-datas";
-import { StatusCorrecoes } from "../components/ui/status-correcoes";
-import { ResumoFinalCorrecoes } from "../components/ui/resumo-final-correcoes";
 import { formatDate, formatDateRange } from "../lib/dateUtils";
 import {
   DollarSign,
@@ -772,11 +768,17 @@ export default function Dashboard() {
         </div>
 
         {/* Componente de Teste dos Filtros */}
+        {/* Espaço para futuros gráficos e relatórios */}
         <div className="flex flex-col items-center gap-6">
-          <ResumoFinalCorrecoes />
-          <StatusCorrecoes />
-          <TesteFiltros />
-          <TesteDatas />
+          <Card className="w-full max-w-2xl">
+            <CardContent className="p-6 text-center">
+              <div className="text-muted-foreground">
+                <Trophy className="h-8 w-8 mx-auto mb-2" />
+                <p className="text-sm">Sistema pronto para uso!</p>
+                <p className="text-xs mt-1">Utilize o menu para acessar as funções.</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </TooltipProvider>
