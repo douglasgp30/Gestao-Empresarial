@@ -212,6 +212,7 @@ export default function FormularioFuncionarioAvancado() {
       login: "",
       senha: "",
       confirmarSenha: "",
+      ehTecnico: false,
       temAcessoSistema: false,
       tipoAcesso: "Operador",
       percentualComissao: "15",
