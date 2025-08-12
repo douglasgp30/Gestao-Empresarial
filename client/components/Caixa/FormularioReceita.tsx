@@ -238,11 +238,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Resetar formulário
       setFormData({
         data: new Date().toISOString().split("T")[0],
-        valor: "",
-        valorQueEntrou: "",
-        valorLiquido: "",
-        comissao: "",
-        imposto: "",
         categoria: "",
         descricao: "",
         formaPagamento: "",
@@ -253,6 +248,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         numeroNota: "",
         temNotaFiscal: false,
       });
+
+      // Resetar campos de moeda
+      valorInput.reset();
+      valorQueEntrouInput.reset();
+      impostoInput.reset();
       setNotaFiscalEmitida(false);
 
       onSuccess?.();
