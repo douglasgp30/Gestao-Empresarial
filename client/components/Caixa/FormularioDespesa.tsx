@@ -176,18 +176,45 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="categoria">Categoria *</Label>
+              <Select
+                value={formData.categoria}
+                onValueChange={(value) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    categoria: value,
+                    descricao: "" // Limpar descrição quando categoria muda
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoriasDespesa.map((categoria) => (
+                    <SelectItem key={categoria} value={categoria}>
+                      {categoria}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <SelectWithAdd
               value={formData.descricao}
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, descricao: value }))
               }
-              placeholder="Selecione a descrição"
+              placeholder={formData.categoria ? "Selecione a descrição" : "Primeiro selecione uma categoria"}
               label="Descrição da Despesa"
               required={true}
-              items={descricoesDespesa}
+              disabled={!formData.categoria}
+              items={descricoesFiltradas}
               onAddNew={async (data) => {
                 await adicionarDescricao({
                   nome: data.nome,
+                  categoria: formData.categoria,
                   tipo: "despesa",
                 });
               }}
