@@ -51,6 +51,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
+  const {
+    clientes,
+    adicionarCliente,
+    isLoading: clientesLoading,
+  } = useClientes();
 
   // Hook para Enter funcionar como Tab
   useEnterAsTab(formRef);
