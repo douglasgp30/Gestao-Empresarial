@@ -4,6 +4,8 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useMemo,
+  useCallback,
 } from "react";
 import { DashboardStats, LancamentoCaixa, Conta } from "@shared/types";
 import { useCaixa } from "./CaixaContext";
