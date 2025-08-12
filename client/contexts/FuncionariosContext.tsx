@@ -27,7 +27,7 @@ interface FuncionariosContextType {
     funcionario: Omit<Funcionario, "id" | "dataCadastro">,
   ) => Promise<void>;
   editarFuncionario: (id: string, funcionario: Partial<Funcionario>) => void;
-  excluirFuncionario: (id: string) => void;
+  excluirFuncionario: (id: string) => Promise<void>;
   alterarStatusFuncionario: (id: string, ativo: boolean) => void;
   setFiltros: (filtros: any) => void;
   isLoading: boolean;
