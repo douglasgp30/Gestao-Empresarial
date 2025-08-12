@@ -286,34 +286,34 @@ export default function FiltroDataGoogleAds({
       )}
 
       <div
-        className="relative filtro-data-google-ads w-full max-w-xs"
+        className="relative filtro-data-google-ads w-full max-w-sm"
         ref={dropdownRef}
       >
         <Button
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full justify-between h-8 px-3 text-xs font-normal"
+          className="w-full justify-between h-10 px-4 text-sm font-normal"
           disabled={isLoading}
         >
-          <div className="flex items-center gap-1">
-            <Calendar className="h-3 w-3 text-muted-foreground" />
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="truncate">{formatarPeriodoDisplay()}</span>
           </div>
-          <ChevronDown className="h-3 w-3 opacity-50" />
+          <ChevronDown className="h-4 w-4 opacity-50" />
         </Button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-96">
+          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 w-[600px]">
             {!showCalendar ? (
               <div className="flex">
                 {/* Lista de opções predefinidas */}
-                <div className="w-48 p-2 border-r border-gray-100">
+                <div className="w-64 p-3 border-r border-gray-100">
                   <div className="space-y-1">
                     {opcoesPeriodo.map((opcao) => (
                       <button
                         key={opcao.id}
                         onClick={() => aplicarPeriodo(opcao)}
-                        className={`w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-50 transition-colors ${
+                        className={`w-full text-left px-4 py-3 text-sm rounded-md hover:bg-gray-50 transition-colors ${
                           periodoSelecionado === opcao.id
                             ? "bg-blue-50 text-blue-700 font-medium"
                             : "text-gray-700"
@@ -326,17 +326,38 @@ export default function FiltroDataGoogleAds({
                 </div>
 
                 {/* Preview das datas */}
-                <div className="flex-1 p-4 min-w-64">
-                  <div className="text-sm text-gray-600 mb-3">
-                    Período selecionado:
-                  </div>
-                  <div className="text-lg font-semibold text-gray-900 mb-4">
-                    {formatarPeriodoDisplay()}
+                <div className="flex-1 p-6">
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-600 mb-2">
+                      Período selecionado:
+                    </div>
+                    <div className="text-xl font-semibold text-gray-900">
+                      {formatarPeriodoDisplay()}
+                    </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600 block mb-1">
+                        Data de início*
+                      </label>
+                      <div className="text-lg text-gray-900">
+                        {dataInicio ? parseISO(dataInicio).toLocaleDateString('pt-BR') : '-'}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600 block mb-1">
+                        Data de término
+                      </label>
+                      <div className="text-lg text-gray-900">
+                        {dataFim ? parseISO(dataFim).toLocaleDateString('pt-BR') : '-'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
                     <Button
-                      size="sm"
+                      size="default"
                       onClick={() => {
                         if (periodoSelecionado !== "personalizar") {
                           const opcaoAtual = opcoesPeriodo.find(
@@ -349,98 +370,98 @@ export default function FiltroDataGoogleAds({
                       }}
                       className="flex-1"
                     >
-                      <Check className="h-3 w-3 mr-1" />
+                      <Check className="h-4 w-4 mr-2" />
                       Aplicar
                     </Button>
                     {onLimpar && (
                       <Button
-                        size="sm"
+                        size="default"
                         variant="outline"
                         onClick={() => {
                           onLimpar();
                           setIsOpen(false);
                         }}
                       >
-                        Limpar
+                        Cancelar
                       </Button>
                     )}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="p-4">
+              <div className="p-6">
                 {/* Header do calendário personalizado */}
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-6">
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="default"
                     onClick={voltarParaOpcoes}
-                    className="text-sm"
+                    className="text-sm font-medium"
                   >
                     ← Voltar
                   </Button>
-                  <h3 className="font-medium">Datas personalizadas</h3>
+                  <h3 className="text-lg font-semibold">Datas personalizadas</h3>
                   <div></div>
                 </div>
 
                 {/* Campos de data manual */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
-                    <Label className="text-xs text-gray-600">
-                      Data de início
+                    <Label className="text-sm font-medium text-gray-600 mb-2 block">
+                      Data de início*
                     </Label>
                     <Input
                       type="date"
                       value={tempDataInicio || dataInicio}
                       onChange={(e) => setTempDataInicio(e.target.value)}
-                      className="h-8 text-sm"
+                      className="h-10 text-sm"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-gray-600">
+                    <Label className="text-sm font-medium text-gray-600 mb-2 block">
                       Data de término
                     </Label>
                     <Input
                       type="date"
                       value={tempDataFim || dataFim}
                       onChange={(e) => setTempDataFim(e.target.value)}
-                      className="h-8 text-sm"
+                      className="h-10 text-sm"
                     />
                   </div>
                 </div>
 
                 {/* Calendário duplo */}
-                <div className="border rounded p-3 bg-gray-50">
+                <div className="border rounded-lg p-4 bg-gray-50">
                   <DayPicker
                     mode="range"
                     selected={dateRange}
                     onSelect={setDateRange}
                     numberOfMonths={2}
                     locale={ptBR}
-                    className="text-sm"
+                    className="text-base"
                     classNames={{
                       months:
-                        "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                        "flex flex-col sm:flex-row space-y-4 sm:space-x-6 sm:space-y-0",
                       month: "space-y-4",
-                      caption: "flex justify-center pt-1 relative items-center",
-                      caption_label: "text-sm font-medium",
-                      nav: "space-x-1 flex items-center",
+                      caption: "flex justify-center pt-2 relative items-center mb-4",
+                      caption_label: "text-base font-semibold",
+                      nav: "space-x-2 flex items-center",
                       nav_button:
-                        "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-md border border-gray-300 hover:bg-gray-100",
-                      nav_button_previous: "absolute left-1",
-                      nav_button_next: "absolute right-1",
+                        "h-9 w-9 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-md border border-gray-300 hover:bg-gray-100 transition-colors",
+                      nav_button_previous: "absolute left-2",
+                      nav_button_next: "absolute right-2",
                       table: "w-full border-collapse space-y-1",
-                      head_row: "flex",
+                      head_row: "flex mb-2",
                       head_cell:
-                        "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
-                      row: "flex w-full mt-2",
-                      cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                      day: "h-8 w-8 p-0 font-normal aria-selected:opacity-100 rounded-md hover:bg-gray-100",
+                        "text-muted-foreground rounded-md w-10 h-10 font-medium text-sm flex items-center justify-center",
+                      row: "flex w-full mt-1",
+                      cell: "text-center text-base p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                      day: "h-10 w-10 p-0 font-normal aria-selected:opacity-100 rounded-md hover:bg-gray-100 transition-colors text-sm flex items-center justify-center",
                       day_selected:
-                        "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                      day_today: "bg-accent text-accent-foreground",
+                        "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground font-medium",
+                      day_today: "bg-accent text-accent-foreground font-semibold",
                       day_outside: "text-muted-foreground opacity-50",
-                      day_disabled: "text-muted-foreground opacity-50",
+                      day_disabled: "text-muted-foreground opacity-30",
                       day_range_middle:
                         "aria-selected:bg-accent aria-selected:text-accent-foreground",
                       day_hidden: "invisible",
@@ -449,9 +470,9 @@ export default function FiltroDataGoogleAds({
                 </div>
 
                 {/* Botões do calendário */}
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-3 mt-6">
                   <Button
-                    size="sm"
+                    size="default"
                     onClick={aplicarDatasPersonalizadas}
                     className="flex-1"
                     disabled={
@@ -459,11 +480,11 @@ export default function FiltroDataGoogleAds({
                       (!tempDataInicio || !tempDataFim)
                     }
                   >
-                    <Check className="h-3 w-3 mr-1" />
+                    <Check className="h-4 w-4 mr-2" />
                     Aplicar período
                   </Button>
                   <Button
-                    size="sm"
+                    size="default"
                     variant="outline"
                     onClick={() => {
                       setDateRange(undefined);
