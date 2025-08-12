@@ -133,13 +133,15 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       // Resetar formulário
       setFormData({
         data: new Date().toISOString().split("T")[0],
-        valor: "",
         conta: "empresa",
         categoria: "",
         descricao: "",
         formaPagamento: "",
         observacoes: "",
       });
+
+      // Resetar campo de moeda
+      valorInput.reset();
 
       onSuccess?.();
     } catch (error) {
