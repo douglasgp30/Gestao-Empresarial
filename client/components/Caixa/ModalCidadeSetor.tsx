@@ -164,11 +164,7 @@ export default function ModalCidadeSetor() {
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="gap-1 text-xs">
             <MapPin className="h-3 w-3" />
-            <span>
-              <p>
-                <br />
-              </p>
-            </span>
+            Cidade / Setores
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -451,7 +447,7 @@ export default function ModalCidadeSetor() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog de confirmação de exclusão */}
+      {/* Dialog de confirma��ão de exclusão */}
       <AlertDialog
         open={!!setorParaExcluir}
         onOpenChange={() => setSetorParaExcluir(null)}
