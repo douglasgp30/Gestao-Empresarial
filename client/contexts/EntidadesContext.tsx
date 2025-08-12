@@ -346,8 +346,22 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === FUNÇÕES PARA FUNCIONÁRIOS (API) ===
   const getTecnicos = () => {
-    // Filtrar funcionários que sejam do tipo "Técnico" ou que estejam na lista de técnicos da API
-    const funcionariosTecnicos = funcionarios.filter(f =>
+    // Carregar funcionários do localStorage se não há funcionários carregados
+    let funcionariosDisponiveis = funcionarios;
+
+    if (funcionariosDisponiveis.length === 0) {
+      try {
+        const funcionariosStorage = localStorage.getItem("funcionarios");
+        if (funcionariosStorage) {
+          funcionariosDisponiveis = JSON.parse(funcionariosStorage);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar funcionários do localStorage:", error);
+      }
+    }
+
+    // Filtrar funcionários que sejam do tipo "Técnico"
+    const funcionariosTecnicos = funcionariosDisponiveis.filter(f =>
       f.tipoAcesso === "Técnico" || f.cargo === "Técnico"
     );
 
