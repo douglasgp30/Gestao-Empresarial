@@ -345,6 +345,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   // === FUNÇÕES PARA FUNCIONÁRIOS (API) ===
+  const getTecnicos = () => {
+    // Filtrar funcionários que sejam do tipo "Técnico" ou que estejam na lista de técnicos da API
+    const funcionariosTecnicos = funcionarios.filter(f =>
+      f.tipoAcesso === "Técnico" || f.cargo === "Técnico"
+    );
+
+    // Combinar com técnicos da API
+    const todosTecnicos = [...tecnicos, ...funcionariosTecnicos];
+
+    // Remover duplicatas baseado no ID
+    const tecnicosUnicos = todosTecnicos.filter((tecnico, index, array) =>
+      array.findIndex(t => t.id === tecnico.id) === index
+    );
+
+    return tecnicosUnicos;
+  };
+
   const adicionarFuncionario = async (novoFuncionario: any) => {
     try {
       setError(null);
