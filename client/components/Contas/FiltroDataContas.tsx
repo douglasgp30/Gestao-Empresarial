@@ -47,22 +47,22 @@ export default function FiltroDataContas() {
   };
 
   // Verificar se o contexto tem as propriedades de data de vencimento
-  const dataInicio =
-    filtros.dataVencimentoInicio || filtros.dataInicio || new Date();
+  const dataInicio = filtros.dataVencimentoInicio || filtros.dataInicio || new Date();
   const dataFim = filtros.dataVencimentoFim || filtros.dataFim || new Date();
 
   return (
-    <FiltroDataGoogleAds
-      dataInicio={dataInicio.toISOString().split("T")[0]}
-      dataFim={dataFim.toISOString().split("T")[0]}
-      onDataInicioChange={handleDataInicioChange}
-      onDataFimChange={handleDataFimChange}
-      onAplicar={handleAplicar}
-      onLimpar={handleLimpar}
-      isLoading={isLoading}
-      className="mb-4"
-      placeholder="Selecionar período de vencimento"
-      label="Período de vencimento das contas"
-    />
+    <div className="flex flex-col sm:flex-row sm:items-end gap-4 mb-4">
+      <FiltroDataGoogleAds
+        dataInicio={dataInicio.toISOString().split("T")[0]}
+        dataFim={dataFim.toISOString().split("T")[0]}
+        onDataInicioChange={handleDataInicioChange}
+        onDataFimChange={handleDataFimChange}
+        onAplicar={handleAplicar}
+        onLimpar={handleLimpar}
+        isLoading={isLoading}
+        placeholder="Selecionar período de vencimento"
+        label="Período de vencimento das contas"
+      />
+    </div>
   );
 }
