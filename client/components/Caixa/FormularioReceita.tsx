@@ -277,7 +277,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="flex items-center gap-2 text-green-600 text-lg sm:text-xl">
           <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
-          Lançar Receita
+          Lan��ar Receita
         </CardTitle>
         <CardDescription className="text-sm">
           Registre uma nova entrada no caixa
@@ -504,10 +504,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           {/* Observações - Campo básico */}
           <div className="space-y-2">
-            <Label htmlFor="observacoes">Observações</Label>
+            <Label htmlFor="observacoes">Observações do Serviço</Label>
             <Textarea
               id="observacoes"
-              placeholder="Informações adicionais sobre a receita..."
+              placeholder="Observações sobre o serviço prestado..."
               value={formData.observacoes}
               onChange={(e) =>
                 setFormData((prev) => ({
