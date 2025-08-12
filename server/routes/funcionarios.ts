@@ -17,6 +17,7 @@ const FuncionarioSchema = z.object({
 
 export const getFuncionarios: RequestHandler = async (req, res) => {
   try {
+    console.log('[Funcionarios] Buscando funcionários...');
     const funcionarios = await prisma.funcionario.findMany({
       select: {
         id: true,
@@ -25,6 +26,7 @@ export const getFuncionarios: RequestHandler = async (req, res) => {
         telefone: true,
         cargo: true,
         salario: true,
+        percentualComissao: true, // Adicionar percentual de comissão
         temAcessoSistema: true,
         tipoAcesso: true,
         login: true,
@@ -34,6 +36,8 @@ export const getFuncionarios: RequestHandler = async (req, res) => {
       },
       orderBy: { nome: "asc" },
     });
+    console.log(`[Funcionarios] Encontrados ${funcionarios.length} funcionários`);
+    console.log('[Funcionarios] IDs dos funcionários:', funcionarios.map(f => f.id));
     res.json(funcionarios);
   } catch (error) {
     console.error("Erro ao buscar funcionários:", error);
@@ -43,6 +47,7 @@ export const getFuncionarios: RequestHandler = async (req, res) => {
 
 export const getTecnicos: RequestHandler = async (req, res) => {
   try {
+    console.log('[Tecnicos] Buscando técnicos...');
     const tecnicos = await prisma.funcionario.findMany({
       where: {
         OR: [
@@ -57,9 +62,12 @@ export const getTecnicos: RequestHandler = async (req, res) => {
         nome: true,
         cargo: true,
         tipoAcesso: true,
+        percentualComissao: true, // Adicionar percentual de comissão
       },
       orderBy: { nome: "asc" },
     });
+    console.log(`[Tecnicos] Encontrados ${tecnicos.length} técnicos`);
+    console.log('[Tecnicos] IDs dos técnicos:', tecnicos.map(t => t.id));
     res.json(tecnicos);
   } catch (error) {
     console.error("Erro ao buscar técnicos:", error);
