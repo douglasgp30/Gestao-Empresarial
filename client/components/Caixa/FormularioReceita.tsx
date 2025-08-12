@@ -511,6 +511,34 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
+          {/* Cliente */}
+          <div className="space-y-2">
+            <Label htmlFor="cliente">Cliente</Label>
+            <div className="flex gap-2">
+              <Input
+                id="cliente"
+                placeholder="Nome do cliente"
+                value={formData.cliente}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, cliente: e.target.value }))
+                }
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="px-3"
+                onClick={() => {
+                  // TODO: Abrir modal de cadastro de cliente
+                  console.log("Abrir modal de cadastro de cliente");
+                }}
+              >
+                +
+              </Button>
+            </div>
+          </div>
+
           {/* Nota Fiscal */}
           <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
             <div className="flex items-center space-x-2">
