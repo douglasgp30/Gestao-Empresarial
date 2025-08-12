@@ -346,26 +346,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === FUNÇÕES PARA FUNCIONÁRIOS (API) ===
   const getTecnicos = () => {
-    // Carregar funcionários do localStorage se não há funcionários carregados
-    let funcionariosDisponiveis = funcionarios;
+    console.log('[EntidadesContext] getTecnicos chamado');
+    console.log('[EntidadesContext] Técnicos da API:', tecnicos.length);
+    console.log('[EntidadesContext] Funcionários carregados:', funcionarios.length);
 
-    if (funcionariosDisponiveis.length === 0) {
-      try {
-        const funcionariosStorage = localStorage.getItem("funcionarios");
-        if (funcionariosStorage) {
-          funcionariosDisponiveis = JSON.parse(funcionariosStorage);
-        }
-      } catch (error) {
-        console.warn("Erro ao carregar funcionários do localStorage:", error);
-      }
-    }
-
+    // Usar apenas dados da API (banco de dados) para evitar conflitos de ID
     // Filtrar funcionários que sejam do tipo "Técnico"
-    const funcionariosTecnicos = funcionariosDisponiveis.filter(
+    const funcionariosTecnicos = funcionarios.filter(
       (f) => f.tipoAcesso === "Técnico" || f.cargo === "Técnico",
     );
 
-    // Combinar com técnicos da API
+    console.log('[EntidadesContext] Funcionários técnicos encontrados:', funcionariosTecnicos.length);
+
+    // Combinar técnicos específicos da API com funcionários marcados como técnicos
     const todosTecnicos = [...tecnicos, ...funcionariosTecnicos];
 
     // Remover duplicatas baseado no ID
@@ -373,6 +366,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       (tecnico, index, array) =>
         array.findIndex((t) => t.id === tecnico.id) === index,
     );
+
+    console.log('[EntidadesContext] Total de técnicos únicos:', tecnicosUnicos.length);
+    console.log('[EntidadesContext] IDs dos técnicos:', tecnicosUnicos.map(t => t.id));
 
     return tecnicosUnicos;
   };
