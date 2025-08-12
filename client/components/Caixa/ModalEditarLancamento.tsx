@@ -58,8 +58,8 @@ export function ModalEditarLancamento({
     categoria: "",
     descricao: "",
     formaPagamento: "",
-    tecnicoResponsavel: "",
-    setor: "",
+    tecnicoResponsavel: "none",
+    setor: "none",
     observacoes: "",
     conta: "empresa",
   });
