@@ -226,11 +226,11 @@ export default function FiltrosRelatoriosCompacto() {
                           Forma Pagamento
                         </label>
                         <Select
-                          value={filtrosLocal.formaPagamento || ""}
+                          value={filtrosLocal.formaPagamento || "todas"}
                           onValueChange={(value) =>
                             setFiltrosLocal((prev) => ({
                               ...prev,
-                              formaPagamento: value,
+                              formaPagamento: value === "todas" ? "" : value,
                             }))
                           }
                           disabled={isLoadingGeral}
@@ -239,7 +239,7 @@ export default function FiltrosRelatoriosCompacto() {
                             <SelectValue placeholder="Todas" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Todas</SelectItem>
+                            <SelectItem value="todas">Todas</SelectItem>
                             {formasPagamento.map((forma) => (
                               <SelectItem
                                 key={forma.id}
@@ -258,9 +258,9 @@ export default function FiltrosRelatoriosCompacto() {
                           Técnico
                         </label>
                         <Select
-                          value={filtrosLocal.tecnico || ""}
+                          value={filtrosLocal.tecnico || "todos"}
                           onValueChange={(value) =>
-                            setFiltrosLocal((prev) => ({ ...prev, tecnico: value }))
+                            setFiltrosLocal((prev) => ({ ...prev, tecnico: value === "todos" ? "" : value }))
                           }
                           disabled={isLoadingGeral}
                         >
@@ -268,7 +268,7 @@ export default function FiltrosRelatoriosCompacto() {
                             <SelectValue placeholder="Todos" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Todos</SelectItem>
+                            <SelectItem value="todos">Todos</SelectItem>
                             {tecnicos.map((tecnico) => (
                               <SelectItem
                                 key={tecnico.id}
