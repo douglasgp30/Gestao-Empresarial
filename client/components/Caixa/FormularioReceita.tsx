@@ -290,7 +290,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
   };
 
-  const isLoading = caixaLoading || entidadesLoading;
+  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
 
   if (isLoading) {
     return (
