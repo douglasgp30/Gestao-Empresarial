@@ -103,11 +103,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       ?.nome?.toLowerCase()
       .includes("cartão");
 
-  // Calcular campos automaticamente
-  const valorCalculado = parseFloat(formData.valor) || 0;
-  const valorQueEntrouCalculado =
-    parseFloat(formData.valorQueEntrou) || valorCalculado;
-  const impostoCalculado = parseFloat(formData.imposto) || 0;
+  // Calcular campos automaticamente usando os hooks de moeda
+  const valorCalculado = valorInput.numericValue;
+  const valorQueEntrouCalculado = valorQueEntrouInput.numericValue || valorCalculado;
+  const impostoCalculado = impostoInput.numericValue;
   const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
 
   // Calcular comissão baseada no percentual do técnico
