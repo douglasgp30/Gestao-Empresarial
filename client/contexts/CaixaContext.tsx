@@ -93,12 +93,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     return isNaN(parsed) ? undefined : parsed;
   };
 
-  // Função para formatar data para o servidor (DD-MM-AAAA)
+  // Função para formatar data para o servidor (YYYY-MM-DD)
   const formatarDataParaServidor = (data: Date): string => {
-    const dia = data.getDate().toString().padStart(2, "0");
-    const mes = (data.getMonth() + 1).toString().padStart(2, "0");
-    const ano = data.getFullYear();
-    return `${dia}-${mes}-${ano}`;
+    return data.toISOString().split('T')[0];
   };
 
   // Função para carregar lançamentos com base nos filtros
