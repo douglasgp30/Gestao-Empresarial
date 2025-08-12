@@ -21,6 +21,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
+import FiltroDataCaixa from "./FiltroDataCaixa";
 import {
   Filter,
   ChevronDown,
@@ -85,47 +86,16 @@ export function FiltrosCaixaCompacto() {
 
   return (
     <div className="space-y-3 sm:space-y-4">
+      {/* Filtro de Data estilo Google Ads */}
+      <FiltroDataCaixa />
+
       {/* Filtros Básicos */}
       <Card>
         <CardContent className="p-2 sm:p-3">
           {/* Período e Tipo - Sempre visíveis */}
           <div className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               <div className="space-y-1">
-                <Label htmlFor="dataInicio" className="text-xs font-medium">
-                  De
-                </Label>
-                <Input
-                  id="dataInicio"
-                  type="date"
-                  value={filtrosLocal.dataInicio.toISOString().split("T")[0]}
-                  onChange={(e) =>
-                    setFiltrosLocal((prev) => ({
-                      ...prev,
-                      dataInicio: new Date(e.target.value),
-                    }))
-                  }
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="dataFim" className="text-xs font-medium">
-                  Até
-                </Label>
-                <Input
-                  id="dataFim"
-                  type="date"
-                  value={filtrosLocal.dataFim.toISOString().split("T")[0]}
-                  onChange={(e) =>
-                    setFiltrosLocal((prev) => ({
-                      ...prev,
-                      dataFim: new Date(e.target.value),
-                    }))
-                  }
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-1 sm:col-span-2 lg:col-span-1">
                 <Label htmlFor="tipo" className="text-xs font-medium">
                   Tipo
                 </Label>
