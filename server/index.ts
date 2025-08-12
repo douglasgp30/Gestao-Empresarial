@@ -53,7 +53,7 @@ import contasRouter from "./routes/contas";
 import { cleanFakeDataRoute } from "./routes/clean";
 
 export function createServer(): Express {
-  console.log("[Server] Criando servidor Express...");
+  // Criando servidor Express
   const app = express();
 
   app.use(cors());
