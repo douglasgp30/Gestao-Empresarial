@@ -379,6 +379,15 @@ export function ListaLancamentosSimples() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Modal de edição */}
+      {lancamentoParaEditar && (
+        <ModalEditarLancamento
+          lancamento={lancamentoParaEditar}
+          isOpen={!!lancamentoParaEditar}
+          onClose={() => setLancamentoParaEditar(null)}
+        />
+      )}
     </Card>
   );
 }
