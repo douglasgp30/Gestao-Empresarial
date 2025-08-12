@@ -240,14 +240,14 @@ export default function FiltrosRelatoriosCompacto() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="todas">Todas</SelectItem>
-                            {formasPagamento.map((forma) => (
+                            {formasPagamento?.map((forma) => (
                               <SelectItem
                                 key={forma.id}
                                 value={forma.id.toString()}
                               >
                                 {forma.nome}
                               </SelectItem>
-                            ))}
+                            )) || []}
                           </SelectContent>
                         </Select>
                       </div>
@@ -269,14 +269,14 @@ export default function FiltrosRelatoriosCompacto() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="todos">Todos</SelectItem>
-                            {tecnicos.map((tecnico) => (
+                            {tecnicos?.map((tecnico) => (
                               <SelectItem
                                 key={tecnico.id}
                                 value={tecnico.id.toString()}
                               >
                                 {tecnico.nome}
                               </SelectItem>
-                            ))}
+                            )) || []}
                           </SelectContent>
                         </Select>
                       </div>
@@ -298,14 +298,14 @@ export default function FiltrosRelatoriosCompacto() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="todos">Todos</SelectItem>
-                            {setores.map((setor) => (
+                            {setores?.map((setor) => (
                               <SelectItem
                                 key={setor.id}
                                 value={setor.id.toString()}
                               >
                                 {setor.nome} - {setor.cidade}
                               </SelectItem>
-                            ))}
+                            )) || []}
                           </SelectContent>
                         </Select>
                       </div>
@@ -330,14 +330,14 @@ export default function FiltrosRelatoriosCompacto() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="todas">Todas</SelectItem>
-                            {campanhas.map((campanha) => (
+                            {campanhas?.map((campanha) => (
                               <SelectItem
                                 key={campanha.id}
                                 value={campanha.id.toString()}
                               >
                                 {campanha.nome}
                               </SelectItem>
-                            ))}
+                            )) || []}
                           </SelectContent>
                         </Select>
                       </div>
