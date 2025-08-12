@@ -632,22 +632,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             )}
           </div>
 
-          {/* Observações - Campo no final */}
-          <div className="space-y-2">
-            <Label htmlFor="observacoes">Observações do Serviço</Label>
-            <Textarea
-              id="observacoes"
-              placeholder="Observações sobre o serviço prestado..."
-              value={formData.observacoes}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  observacoes: e.target.value,
-                }))
-              }
-              rows={3}
-            />
-          </div>
 
           {/* Campos avançados */}
           <div className="flex items-center space-x-2">
