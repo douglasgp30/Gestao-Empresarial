@@ -116,11 +116,17 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Estados para Meta do Mês
-  const [metaMes, setMetaMes] = useState<number>(() => {
+  const [metaMes, setMetaMesState] = useState<number>(() => {
     const mesAtual = new Date().toISOString().slice(0, 7); // YYYY-MM
     const storedMeta = localStorage.getItem(`metaMes_${mesAtual}`);
     return storedMeta ? parseFloat(storedMeta) : 10000; // Meta padrão de R$ 10.000
   });
+
+  const setMetaMes = useCallback((valor: number) => {
+    setMetaMesState(valor);
+    const mesAtual = new Date().toISOString().slice(0, 7);
+    localStorage.setItem(`metaMes_${mesAtual}`, valor.toString());
+  }, []);
   const [totalMetaMes, setTotalMetaMes] = useState(0);
   const [restanteParaMeta, setRestanteParaMeta] = useState(0);
   const [stats, setStats] = useState<DashboardStats>({
@@ -427,15 +433,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(false);
   }, [
-    filtros,
-    filtros.__timestamp, // Força re-render quando timestamp muda
-    filtros.dataInicio?.getTime(), // Força re-render quando data início muda
-    filtros.dataFim?.getTime(), // Força re-render quando data fim muda
-    metaMes, // Recalcula restante da meta quando meta muda
-    aplicarFiltrosCaixa,
-    caixaContext?.lancamentos,
-    caixaContext?.filtros,
-    contasContext?.contas,
+    lancamentosFiltrados,
+    contasFiltradas,
+    metaMes,
+    caixaContext?.totais,
+    contasContext?.totais,
   ]);
 
   // Sincronizar filtros com outros contextos quando não estiver aplicando filtros específicos do caixa
