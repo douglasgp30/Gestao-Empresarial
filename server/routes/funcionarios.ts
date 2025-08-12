@@ -26,6 +26,7 @@ export const getFuncionarios: RequestHandler = async (req, res) => {
         cargo: true,
         salario: true,
         temAcessoSistema: true,
+        tipoAcesso: true,
         login: true,
         permissoes: true,
         dataCriacao: true
@@ -47,7 +48,7 @@ export const getTecnicos: RequestHandler = async (req, res) => {
         OR: [
           { tipoAcesso: 'Técnico' },
           { cargo: 'Técnico' },
-          { cargo: { contains: 'técnico' } },
+          { cargo: { contains: 't��cnico' } },
           { cargo: { contains: 'Técnico' } }
         ]
       },
