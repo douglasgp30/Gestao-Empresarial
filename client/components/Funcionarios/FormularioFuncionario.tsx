@@ -41,7 +41,7 @@ export default function FormularioFuncionario() {
     ehTecnico: false,
     permissaoAcesso: true,
     tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
-    percentualComissao: "15",
+    percentualComissao: "",
     ativo: true,
   });
 
@@ -56,7 +56,7 @@ export default function FormularioFuncionario() {
       ehTecnico: false,
       permissaoAcesso: true,
       tipoAcesso: "Operador",
-      percentualComissao: "15",
+      percentualComissao: "",
       ativo: true,
     });
     setErrors({});
