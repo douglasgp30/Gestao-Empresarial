@@ -161,7 +161,6 @@ export function createServer(): Express {
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
 
-  console.log("[Server] Servidor Express configurado com sucesso");
   return app;
 }
 
