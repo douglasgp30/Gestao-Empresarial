@@ -88,12 +88,8 @@ export function ListaLancamentosSimples() {
     }
   };
 
-  const handleEditar = (id: string) => {
-    // TODO: Implementar edição de lançamentos
-    toast({
-      title: "Em desenvolvimento",
-      description: "Funcionalidade de edição será implementada em breve.",
-    });
+  const handleEditar = (lancamento: LancamentoCaixa) => {
+    setLancamentoParaEditar(lancamento);
   };
 
   if (isLoading) {
@@ -369,7 +365,7 @@ export function ListaLancamentosSimples() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclus��o</AlertDialogTitle>
+            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja excluir este lançamento? Esta ação não pode
               ser desfeita.
