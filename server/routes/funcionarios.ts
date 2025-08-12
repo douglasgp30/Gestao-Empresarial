@@ -23,6 +23,7 @@ export const getFuncionarios: RequestHandler = async (req, res) => {
       select: {
         id: true,
         nome: true,
+        ehTecnico: true,
         email: true,
         telefone: true,
         cargo: true,
