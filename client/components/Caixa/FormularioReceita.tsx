@@ -538,18 +538,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }
                 className="flex-1"
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="px-3"
-                onClick={() => {
-                  // TODO: Abrir modal de cadastro de cliente
-                  console.log("Abrir modal de cadastro de cliente");
+              <ModalCadastroClienteRapido
+                onClienteAdicionado={(nomeCliente) => {
+                  setFormData((prev) => ({ ...prev, cliente: nomeCliente }));
+                  toast({
+                    title: "Cliente Adicionado",
+                    description: `Cliente "${nomeCliente}" foi selecionado no campo.`,
+                    variant: "default",
+                  });
                 }}
-              >
-                +
-              </Button>
+              />
             </div>
           </div>
 
