@@ -120,6 +120,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Função para salvar funcionarios no localStorage
   const salvarFuncionariosNoLocalStorage = (funcionarios: Funcionario[]) => {
