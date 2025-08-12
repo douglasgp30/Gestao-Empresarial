@@ -52,6 +52,9 @@ function CaixaContent() {
         </div>
       </div>
 
+      {/* Alerta para dados vazios */}
+      <AlertaDadosVazios show={!temDadosEssenciais} />
+
       {/* Filtros e Totais */}
       <FiltrosCaixaCompacto />
 
