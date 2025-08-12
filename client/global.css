@@ -160,3 +160,52 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Estilos para o filtro de data Google Ads */
+.filtro-data-google-ads .rdp {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.filtro-data-google-ads .rdp-months {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filtro-data-google-ads .rdp-month {
+  min-width: 280px;
+}
+
+.filtro-data-google-ads .rdp-caption {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.filtro-data-google-ads .rdp-day_selected {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.filtro-data-google-ads .rdp-day_range_middle {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--foreground));
+}
+
+.filtro-data-google-ads .rdp-day_range_start,
+.filtro-data-google-ads .rdp-day_range_end {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+@media (max-width: 640px) {
+  .filtro-data-google-ads .rdp-months {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filtro-data-google-ads .rdp-month {
+    min-width: 250px;
+  }
+}
