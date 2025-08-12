@@ -276,11 +276,11 @@ export default function FiltroDataGoogleAds({
   };
 
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`space-y-1 ${className}`}>
       {label && (
-        <Label className="text-sm font-medium">{label}</Label>
+        <Label className="text-xs font-medium text-gray-600">{label}</Label>
       )}
-      
+
       <div
         className="relative filtro-data-google-ads w-full max-w-xs"
         ref={dropdownRef}
