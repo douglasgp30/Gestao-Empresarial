@@ -641,9 +641,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <Label htmlFor="comissao">Comissão (R$)</Label>
                   <Input
                     id="comissao"
-                    type="number"
-                    step="0.01"
-                    value={formData.comissao}
+                    value={`R$ ${comissaoCalculada.toFixed(2).replace('.', ',')}`}
                     disabled
                     className="bg-gray-100"
                   />
