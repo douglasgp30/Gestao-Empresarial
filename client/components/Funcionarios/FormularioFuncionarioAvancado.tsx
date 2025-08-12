@@ -541,7 +541,6 @@ export default function FormularioFuncionarioAvancado() {
                           <SelectItem value="Administrador">
                             Administrador
                           </SelectItem>
-                          <SelectItem value="Técnico">Técnico</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
