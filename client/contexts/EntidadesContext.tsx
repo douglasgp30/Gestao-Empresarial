@@ -20,6 +20,7 @@ import {
   formasPagamentoApi,
   funcionariosApi,
   setoresApi,
+  clientesApi,
 } from "../lib/apiService";
 
 interface EntidadesContextType {
