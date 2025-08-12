@@ -92,6 +92,7 @@ model Funcionario {
   id                Int      @id @default(autoincrement()) // CodigoTecnico
   nome              String   // NomeTecnico (obrigatório)
   percentualServico Float?   // PercentualServico (obrigatório)
+  percentualComissao Float?  // Percentual de comissão do técnico
   email             String?  @unique
   telefone          String?
   cargo             String?
@@ -131,6 +132,12 @@ model LancamentoCaixa {
   dataHora          DateTime // Data e hora do lançamento
   valor             Float    // Valor do lançamento (obrigatório)
   valorRecebido     Float?   // Valor efetivamente recebido (obrigatório para cartão)
+  valorLiquido      Float?   // Valor líquido após descontos
+  comissao          Float?   // Comissão do técnico
+  imposto           Float?   // Impostos/taxas
+  observacoes       String?  // Observações do lançamento
+  numeroNota        String?  // Número da nota fiscal
+  arquivoNota       String?  // Arquivo da nota fiscal
   conta             String   // "empresa" ou "pessoal" (obrigatório)
   tipo              String   // "receita" ou "despesa" (obrigatório)
   dataCriacao       DateTime @default(now())
