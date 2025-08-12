@@ -256,7 +256,7 @@ export default function FormularioFuncionarioAvancado() {
         gerenciarFuncionarios: true,
         alterarPermissoes: true,
       });
-    } else {
+    } else if (tipo === "Operador") {
       // Operador tem permissões básicas
       setPermissoes({
         acessarDashboard: true,
@@ -272,6 +272,25 @@ export default function FormularioFuncionarioAvancado() {
         fazerBackupManual: false,
         gerarRelatorios: true,
         verCadastros: true,
+        gerenciarFuncionarios: false,
+        alterarPermissoes: false,
+      });
+    } else if (tipo === "Técnico") {
+      // Técnico tem permissões limitadas, focadas em lançamentos
+      setPermissoes({
+        acessarDashboard: true,
+        verCaixa: true,
+        lancarReceita: true,
+        lancarDespesa: false,
+        editarLancamentos: false,
+        verContas: false,
+        lancarContasPagar: false,
+        lancarContasReceber: false,
+        marcarContasPagas: false,
+        acessarConfiguracoes: false,
+        fazerBackupManual: false,
+        gerarRelatorios: false,
+        verCadastros: false,
         gerenciarFuncionarios: false,
         alterarPermissoes: false,
       });
