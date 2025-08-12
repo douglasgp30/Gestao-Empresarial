@@ -42,6 +42,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
+    categoria: "",
     descricao: "",
     formaPagamento: "",
     setor: "",
@@ -53,13 +54,25 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   // Filtrar descrições de despesa
   const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
 
+  // Filtrar descrições pela categoria selecionada
+  const descricoesFiltradas = formData.categoria
+    ? descricoesDespesa.filter((d) => d.categoria === formData.categoria)
+    : [];
+
+  // Obter categorias únicas das descrições de despesa
+  const categoriasDespesa = [...new Set(
+    descricoesDespesa
+      .map((d) => d.categoria)
+      .filter((categoria) => categoria && categoria.trim() !== "")
+  )].sort();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.valor || !formData.descricao || !formData.formaPagamento) {
+    if (!formData.valor || !formData.categoria || !formData.descricao || !formData.formaPagamento) {
       toast({
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios",
+        description: "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
         variant: "destructive",
       });
       return;
@@ -88,6 +101,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       setFormData({
         data: new Date().toISOString().split("T")[0],
         valor: "",
+        categoria: "",
         descricao: "",
         formaPagamento: "",
         setor: "",
