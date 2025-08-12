@@ -64,19 +64,50 @@ export function ApiTest() {
     await testEndpoint('/api/caixa/lancamentos', 'lancamentos');
   };
 
+  const seedBasicData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/debug/seed-basic-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const result = await response.json();
+      console.log('Seed result:', result);
+
+      // Executar testes após seed
+      await runAllTests();
+    } catch (error) {
+      console.error('Erro ao executar seed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>🔧 Teste de Conectividade da API</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button 
-          onClick={runAllTests} 
-          disabled={isLoading}
-          className="w-full"
-        >
-          {isLoading ? "Testando..." : "Executar Testes"}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={runAllTests}
+            disabled={isLoading}
+            className="flex-1"
+          >
+            {isLoading ? "Testando..." : "Executar Testes"}
+          </Button>
+
+          <Button
+            onClick={seedBasicData}
+            disabled={isLoading}
+            variant="outline"
+            className="flex-1"
+          >
+            {isLoading ? "Criando..." : "Criar Dados Básicos"}
+          </Button>
+        </div>
 
         <div className="space-y-2">
           {Object.entries(testResults).map(([name, result]: [string, any]) => (
