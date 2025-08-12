@@ -244,7 +244,7 @@ export default function FiltrosPeriodoCompacto({
                 De
               </Label>
               <div className="relative">
-                <Calendar className="absolute left-2 top-2.5 h-3 w-3 text-muted-foreground" />
+                <Calendar className="absolute left-2 top-2 h-3 w-3 text-muted-foreground" />
                 <Input
                   ref={inputInicioRef}
                   id="dataInicio"
@@ -255,7 +255,7 @@ export default function FiltrosPeriodoCompacto({
                     setLocalDataInicio(newValue);
                     handleDataInicioChangeInterno(newValue);
                   }}
-                  className="pl-8 h-9 text-sm"
+                  className="pl-7 h-8 text-xs"
                   key={`inicio-${forceUpdate}`}
                 />
               </div>
