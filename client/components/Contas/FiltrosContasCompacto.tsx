@@ -253,16 +253,16 @@ export default function FiltrosContasCompacto() {
                         Status
                       </label>
                       <Select
-                        value={filtrosLocal.status || ""}
+                        value={filtrosLocal.status || "todos"}
                         onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({ ...prev, status: value }))
+                          setFiltrosLocal((prev) => ({ ...prev, status: value === "todos" ? "" : value }))
                         }
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
                           <SelectValue placeholder="Todos os status" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Todos os Status</SelectItem>
+                          <SelectItem value="todos">Todos os Status</SelectItem>
                           {statusOptions.map((status) => (
                             <SelectItem key={status.value} value={status.value}>
                               <div className="flex items-center gap-2">
