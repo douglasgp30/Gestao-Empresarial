@@ -44,17 +44,18 @@ export default function FiltroDataCaixa() {
   };
 
   return (
-    <FiltroDataGoogleAds
-      dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
-      dataFim={filtros.dataFim.toISOString().split("T")[0]}
-      onDataInicioChange={handleDataInicioChange}
-      onDataFimChange={handleDataFimChange}
-      onAplicar={handleAplicar}
-      onLimpar={handleLimpar}
-      isLoading={isLoading}
-      className="mb-4"
-      placeholder="Selecionar período do caixa"
-      label="Período dos lançamentos"
-    />
+    <div className="flex flex-col sm:flex-row sm:items-end gap-4 mb-4">
+      <FiltroDataGoogleAds
+        dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
+        dataFim={filtros.dataFim.toISOString().split("T")[0]}
+        onDataInicioChange={handleDataInicioChange}
+        onDataFimChange={handleDataFimChange}
+        onAplicar={handleAplicar}
+        onLimpar={handleLimpar}
+        isLoading={isLoading}
+        placeholder="Selecionar período do caixa"
+        label="Período dos lançamentos"
+      />
+    </div>
   );
 }
