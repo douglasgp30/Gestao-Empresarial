@@ -355,9 +355,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     );
 
     // Usar apenas dados da API (banco de dados) para evitar conflitos de ID
-    // Filtrar funcionários que sejam do tipo "Técnico"
+    // Filtrar funcionários que estejam marcados como técnicos
     const funcionariosTecnicos = funcionarios.filter(
-      (f) => f.tipoAcesso === "Técnico" || f.cargo === "Técnico",
+      (f) => f.ehTecnico === true,
     );
 
     console.log(
