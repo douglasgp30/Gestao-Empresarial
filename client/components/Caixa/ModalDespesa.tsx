@@ -36,9 +36,10 @@ export function ModalDespesa() {
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
+    conta: "empresa", // "empresa" ou "pessoal"
+    categoria: "",
     descricao: "",
     formaPagamento: "",
-    setor: "",
     observacoes: "",
     numeroNota: "",
   });
@@ -48,13 +49,28 @@ export function ModalDespesa() {
   // Filtrar descrições de despesa
   const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
 
+  // Filtrar descrições pela categoria selecionada
+  const descricoesFiltradas = formData.categoria
+    ? descricoesDespesa.filter((d) => d.categoria === formData.categoria)
+    : [];
+
+  // Obter categorias únicas das descrições de despesa
+  const categoriasDespesa = [
+    ...new Set(
+      descricoesDespesa
+        .map((d) => d.categoria)
+        .filter((categoria) => categoria && categoria.trim() !== ""),
+    ),
+  ].sort();
+
   const resetForm = () => {
     setFormData({
       data: new Date().toISOString().split("T")[0],
       valor: "",
+      conta: "empresa",
+      categoria: "",
       descricao: "",
       formaPagamento: "",
-      setor: "",
       observacoes: "",
       numeroNota: "",
     });
