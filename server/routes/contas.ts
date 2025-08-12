@@ -1,32 +1,29 @@
-import { Router } from 'express';
-import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
-import { ApiResponse } from '@shared/api';
+import { Router } from "express";
+import { z } from "zod";
+import { PrismaClient } from "@prisma/client";
+import { ApiResponse } from "@shared/api";
 
 const router = Router();
 const prisma = new PrismaClient();
 
 const ContaSchema = z.object({
-  tipo: z.enum(['pagar', 'receber']),
-  descricao: z.string().min(1, 'Descrição é obrigatória'),
-  valor: z.number().positive('Valor deve ser positivo'),
+  tipo: z.enum(["pagar", "receber"]),
+  descricao: z.string().min(1, "Descrição é obrigatória"),
+  valor: z.number().positive("Valor deve ser positivo"),
   dataVencimento: z.string().transform((str) => new Date(str)),
-  dataPagamento: z.string().optional().transform((str) => str ? new Date(str) : undefined),
-  status: z.enum(['pendente', 'pago', 'atrasado']).default('pendente'),
+  dataPagamento: z
+    .string()
+    .optional()
+    .transform((str) => (str ? new Date(str) : undefined)),
+  status: z.enum(["pendente", "pago", "atrasado"]).default("pendente"),
   observacoes: z.string().optional(),
   categoria: z.string().optional(),
 });
 
 // GET /api/contas - Listar contas com filtros
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const { 
-      dataInicio, 
-      dataFim, 
-      tipo, 
-      status, 
-      categoria 
-    } = req.query;
+    const { dataInicio, dataFim, tipo, status, categoria } = req.query;
 
     const where: any = {};
 
@@ -42,25 +39,25 @@ router.get('/', async (req, res) => {
     }
 
     // Filtro por tipo
-    if (tipo && tipo !== 'ambos') {
+    if (tipo && tipo !== "ambos") {
       where.tipo = tipo;
     }
 
     // Filtro por status
-    if (status && status !== 'todos') {
+    if (status && status !== "todos") {
       where.status = status;
     }
 
     // Filtro por categoria
-    if (categoria && categoria !== 'todos') {
+    if (categoria && categoria !== "todos") {
       where.categoria = categoria;
     }
 
     const contas = await prisma.conta.findMany({
       where,
       orderBy: {
-        dataVencimento: 'desc'
-      }
+        dataVencimento: "desc",
+      },
     });
 
     const response: ApiResponse<typeof contas> = {
@@ -70,17 +67,17 @@ router.get('/', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('Erro ao buscar contas:', error);
+    console.error("Erro ao buscar contas:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Erro interno do servidor',
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
 });
 
 // POST /api/contas - Criar nova conta
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const dados = ContaSchema.parse(req.body);
 
@@ -95,12 +92,12 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(response);
   } catch (error) {
-    console.error('Erro ao criar conta:', error);
-    
+    console.error("Erro ao criar conta:", error);
+
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Dados inválidos',
+        error: "Dados inválidos",
         details: error.errors,
       };
       return res.status(400).json(response);
@@ -108,14 +105,14 @@ router.post('/', async (req, res) => {
 
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Erro interno do servidor',
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
 });
 
 // PUT /api/contas/:id - Atualizar conta
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const dados = ContaSchema.partial().parse(req.body);
@@ -132,12 +129,12 @@ router.put('/:id', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('Erro ao atualizar conta:', error);
-    
+    console.error("Erro ao atualizar conta:", error);
+
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
         success: false,
-        error: 'Dados inválidos',
+        error: "Dados inválidos",
         details: error.errors,
       };
       return res.status(400).json(response);
@@ -145,14 +142,14 @@ router.put('/:id', async (req, res) => {
 
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Erro interno do servidor',
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
 });
 
 // DELETE /api/contas/:id - Excluir conta
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
@@ -167,24 +164,24 @@ router.delete('/:id', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('Erro ao excluir conta:', error);
+    console.error("Erro ao excluir conta:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Erro interno do servidor',
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
 });
 
 // PATCH /api/contas/:id/pagar - Marcar conta como paga
-router.patch('/:id/pagar', async (req, res) => {
+router.patch("/:id/pagar", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
     const conta = await prisma.conta.update({
       where: { id },
       data: {
-        status: 'pago',
+        status: "pago",
         dataPagamento: new Date(),
       },
     });
@@ -196,17 +193,17 @@ router.patch('/:id/pagar', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('Erro ao marcar conta como paga:', error);
+    console.error("Erro ao marcar conta como paga:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Erro interno do servidor',
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
 });
 
 // GET /api/contas/totais - Obter totais para dashboard
-router.get('/totais', async (req, res) => {
+router.get("/totais", async (req, res) => {
   try {
     const { dataInicio, dataFim } = req.query;
 
@@ -225,29 +222,34 @@ router.get('/totais', async (req, res) => {
 
     const totais = {
       totalPagar: contas
-        .filter(c => c.tipo === 'pagar' && c.status !== 'pago')
+        .filter((c) => c.tipo === "pagar" && c.status !== "pago")
         .reduce((sum, c) => sum + c.valor, 0),
       totalReceber: contas
-        .filter(c => c.tipo === 'receber' && c.status !== 'pago')
+        .filter((c) => c.tipo === "receber" && c.status !== "pago")
         .reduce((sum, c) => sum + c.valor, 0),
       totalVencendoHoje: contas
-        .filter(c => {
+        .filter((c) => {
           const hoje = new Date();
           const vencimento = new Date(c.dataVencimento);
-          return hoje.toDateString() === vencimento.toDateString() && c.status !== 'pago';
+          return (
+            hoje.toDateString() === vencimento.toDateString() &&
+            c.status !== "pago"
+          );
         })
         .reduce((sum, c) => sum + c.valor, 0),
       totalAtrasadas: contas
-        .filter(c => new Date(c.dataVencimento) < new Date() && c.status !== 'pago')
+        .filter(
+          (c) => new Date(c.dataVencimento) < new Date() && c.status !== "pago",
+        )
         .reduce((sum, c) => sum + c.valor, 0),
       totalPagas: contas
-        .filter(c => c.status === 'pago')
+        .filter((c) => c.status === "pago")
         .reduce((sum, c) => sum + c.valor, 0),
       totalContasRecebidas: contas
-        .filter(c => c.tipo === 'receber' && c.status === 'pago')
+        .filter((c) => c.tipo === "receber" && c.status === "pago")
         .reduce((sum, c) => sum + c.valor, 0),
       totalContasPagas: contas
-        .filter(c => c.tipo === 'pagar' && c.status === 'pago')
+        .filter((c) => c.tipo === "pagar" && c.status === "pago")
         .reduce((sum, c) => sum + c.valor, 0),
     };
 
@@ -258,10 +260,10 @@ router.get('/totais', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error('Erro ao calcular totais:', error);
+    console.error("Erro ao calcular totais:", error);
     const response: ApiResponse<null> = {
       success: false,
-      error: 'Erro interno do servidor',
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }

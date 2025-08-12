@@ -150,31 +150,32 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasAtrasadas: 0,
   });
 
-  const setFiltroRapido = useCallback((
-    tipo: "ultimos7dias" | "estaemana" | "ultimos30dias" | "mesAtual",
-  ) => {
-    let novoFiltro: FiltrosPeriodo;
+  const setFiltroRapido = useCallback(
+    (tipo: "ultimos7dias" | "estaemana" | "ultimos30dias" | "mesAtual") => {
+      let novoFiltro: FiltrosPeriodo;
 
-    switch (tipo) {
-      case "ultimos7dias":
-        novoFiltro = { dataInicio: getUltimos7Dias(), dataFim: getHoje() };
-        break;
-      case "estaemana":
-        novoFiltro = { dataInicio: getInicioSemana(), dataFim: getHoje() };
-        break;
-      case "ultimos30dias":
-        novoFiltro = { dataInicio: getUltimos30Dias(), dataFim: getHoje() };
-        break;
-      case "mesAtual":
-        // CORRIGIDO: "Este Mês" é do dia 1 até hoje (não até fim do mês)
-        novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getHoje() };
-        break;
-      default:
-        return; // Não fazer nada se tipo inválido
-    }
+      switch (tipo) {
+        case "ultimos7dias":
+          novoFiltro = { dataInicio: getUltimos7Dias(), dataFim: getHoje() };
+          break;
+        case "estaemana":
+          novoFiltro = { dataInicio: getInicioSemana(), dataFim: getHoje() };
+          break;
+        case "ultimos30dias":
+          novoFiltro = { dataInicio: getUltimos30Dias(), dataFim: getHoje() };
+          break;
+        case "mesAtual":
+          // CORRIGIDO: "Este Mês" é do dia 1 até hoje (não até fim do mês)
+          novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getHoje() };
+          break;
+        default:
+          return; // Não fazer nada se tipo inválido
+      }
 
-    setFiltros(novoFiltro);
-  }, []);
+      setFiltros(novoFiltro);
+    },
+    [],
+  );
 
   // Memoize filtered data to avoid recalculations
   const lancamentosFiltrados = useMemo(() => {

@@ -77,10 +77,12 @@ export default function FormularioFuncionario() {
       } else {
         // Verificar se o login já existe
         const loginExistente = funcionarios.find(
-          (func) => func.login?.toLowerCase() === formData.login.trim().toLowerCase()
+          (func) =>
+            func.login?.toLowerCase() === formData.login.trim().toLowerCase(),
         );
         if (loginExistente) {
-          newErrors.login = "Este login já está sendo usado por outro funcionário";
+          newErrors.login =
+            "Este login já está sendo usado por outro funcionário";
         }
       }
 

@@ -4,41 +4,41 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 
 // Importar rotas do banco de dados
-import { 
-  getCampanhas, 
-  createCampanha, 
-  updateCampanha, 
-  deleteCampanha 
+import {
+  getCampanhas,
+  createCampanha,
+  updateCampanha,
+  deleteCampanha,
 } from "./routes/campanhas";
 
-import { 
-  getDescricoes, 
-  createDescricao, 
-  updateDescricao, 
-  deleteDescricao 
+import {
+  getDescricoes,
+  createDescricao,
+  updateDescricao,
+  deleteDescricao,
 } from "./routes/descricoes";
 
-import { 
-  getFormasPagamento, 
-  createFormaPagamento, 
-  updateFormaPagamento, 
-  deleteFormaPagamento 
+import {
+  getFormasPagamento,
+  createFormaPagamento,
+  updateFormaPagamento,
+  deleteFormaPagamento,
 } from "./routes/formas-pagamento";
 
-import { 
-  getFuncionarios, 
-  getTecnicos, 
-  createFuncionario, 
-  updateFuncionario, 
-  deleteFuncionario 
+import {
+  getFuncionarios,
+  getTecnicos,
+  createFuncionario,
+  updateFuncionario,
+  deleteFuncionario,
 } from "./routes/funcionarios";
 
-import { 
-  getSetores, 
-  getCidades, 
-  createSetor, 
-  updateSetor, 
-  deleteSetor 
+import {
+  getSetores,
+  getCidades,
+  createSetor,
+  updateSetor,
+  deleteSetor,
 } from "./routes/setores";
 
 import {
@@ -46,7 +46,7 @@ import {
   createLancamento,
   updateLancamento,
   deleteLancamento,
-  getTotaisCaixa
+  getTotaisCaixa,
 } from "./routes/caixa";
 
 import contasRouter from "./routes/contas";
