@@ -281,9 +281,7 @@ export function ListaLancamentosSimples() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() =>
-                                handleEditar(lancamento.id.toString())
-                              }
+                              onClick={() => handleEditar(lancamento)}
                             >
                               <Edit className="mr-2 h-4 w-4" />
                               Editar
