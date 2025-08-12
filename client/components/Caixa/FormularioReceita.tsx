@@ -159,7 +159,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     // Validação completa dos campos obrigatórios
     const camposObrigatorios = {
       data: formData.data,
-      valor: formData.valor,
+      valor: valorInput.numericValue,
       categoria: formData.categoria,
       descricao: formData.descricao,
       formaPagamento: formData.formaPagamento,
