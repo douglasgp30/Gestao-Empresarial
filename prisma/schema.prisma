@@ -1,0 +1,217 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ma/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Campanha {
+  id          Int      @id @default(autoincrement()) // CodigoCampanha
+  nome        String   // NomeCampanha (obrigatório)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  lancamentos LancamentoCaixa[]
+
+  @@map("campanhas")
+}
+
+model Descricao {
+  id          Int      @id @default(autoincrement()) // CodigoDescricao
+  nome        String   // Descrição (obrigatório)
+  categoria   String?
+  tipo        String   @default("receita") // "receita" ou "despesa"
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  lancamentos    LancamentoCaixa[]
+  subdescricoes  Subdescricao[]
+
+  @@map("descricoes")
+}
+
+model Subdescricao {
+  id          Int      @id @default(autoincrement()) // CodigoSubdescricao
+  nome        String   // Subdescricao (obrigatório)
+  descricaoId Int      // CodigoDescricao (FK obrigatório)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  descricao   Descricao         @relation(fields: [descricaoId], references: [id])
+  lancamentos LancamentoCaixa[]
+
+  @@map("subdescricoes")
+}
+
+model FormaPagamento {
+  id          Int      @id @default(autoincrement()) // CodigoForma
+  nome        String   // FormaPagamento (obrigatório)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  lancamentos LancamentoCaixa[]
+
+  @@map("formas_pagamento")
+}
+
+model Cliente {
+  id                 Int      @id @default(autoincrement()) // CodigoCliente
+  nome               String   // Nome do cliente (obrigatório)
+  cpf                String?  @unique // CPF do cliente (opcional)
+  telefonePrincipal  String   // Telefone principal (obrigatório)
+  telefoneSecundario String?  // Telefone secundário (opcional)
+  email              String?  @unique // E-mail (opcional)
+  cep                String?  // CEP (opcional)
+  logradouro         String?  // Preenchido automaticamente a partir do CEP
+  complemento        String?  // Complemento do endereço (opcional)
+  dataCriacao        DateTime @default(now())
+
+  // Relacionamentos
+  agendamentos Agendamento[]
+
+  @@map("clientes")
+  @@index([cpf])
+  @@index([email])
+}
+
+model Fornecedor {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  telefone    String?
+  dataCriacao DateTime @default(now())
+
+  @@map("fornecedores")
+}
+
+model Funcionario {
+  id                Int      @id @default(autoincrement()) // CodigoTecnico
+  nome              String   // NomeTecnico (obrigatório)
+  percentualServico Float?   // PercentualServico (obrigatório)
+  percentualComissao Float?  // Percentual de comissão do técnico
+  email             String?  @unique
+  telefone          String?
+  cargo             String?
+  salario           Float?
+  temAcessoSistema  Boolean  @default(false)
+  tipoAcesso        String?  // "Administrador", "Operador", "Técnico"
+  login             String?  @unique
+  senha             String?
+  permissoes        String? // JSON das permissões
+  dataCriacao       DateTime @default(now())
+
+  // Relacionamentos
+  lancamentos  LancamentoCaixa[]
+  agendamentos Agendamento[]
+
+  @@map("funcionarios")
+  @@index([email])
+  @@index([temAcessoSistema])
+  @@index([tipoAcesso])
+}
+
+model Setor {
+  id          Int      @id @default(autoincrement()) // CodigoSetor
+  cidade      String   // Cidade (obrigatório)
+  nome        String   // Setor/bairro (obrigatório)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  lancamentos  LancamentoCaixa[]
+  agendamentos Agendamento[]
+
+  @@map("setores")
+}
+
+model LancamentoCaixa {
+  id                Int      @id @default(autoincrement()) // CodLançamentoCX
+  dataHora          DateTime // Data e hora do lançamento
+  valor             Float    // Valor do lançamento (obrigatório)
+  valorRecebido     Float?   // Valor efetivamente recebido (obrigatório para cartão)
+  valorLiquido      Float?   // Valor líquido após descontos
+  comissao          Float?   // Comissão do técnico
+  imposto           Float?   // Impostos/taxas
+  observacoes       String?  // Observações do lançamento
+  numeroNota        String?  // Número da nota fiscal
+  arquivoNota       String?  // Arquivo da nota fiscal
+  conta             String   // "empresa" ou "pessoal" (obrigatório)
+  tipo              String   // "receita" ou "despesa" (obrigatório)
+  dataCriacao       DateTime @default(now())
+
+  // Chaves estrangeiras obrigatórias
+  descricaoId       Int      // Puxa da tabela Descrição
+  formaPagamentoId  Int      // Puxa da tabela Forma de Pagamento
+
+  // Chaves estrangeiras opcionais
+  subdescricaoId    Int?     // Puxa da tabela Subdescrição
+  funcionarioId     Int?     // Puxa da tabela Técnicos
+  setorId           Int?     // Puxa da tabela Cidades e Setores
+  campanhaId        Int?     // Puxa da tabela Campanhas
+
+  // Relacionamentos
+  descricao      Descricao      @relation(fields: [descricaoId], references: [id])
+  formaPagamento FormaPagamento @relation(fields: [formaPagamentoId], references: [id])
+  subdescricao   Subdescricao?  @relation(fields: [subdescricaoId], references: [id])
+  funcionario    Funcionario?   @relation(fields: [funcionarioId], references: [id])
+  setor          Setor?         @relation(fields: [setorId], references: [id])
+  campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
+
+  @@map("lancamentos_caixa")
+  @@index([dataHora])
+  @@index([conta, tipo])
+  @@index([funcionarioId])
+}
+
+model Conta {
+  id            Int      @id @default(autoincrement())
+  tipo          String // "pagar" ou "receber"
+  descricao     String
+  valor         Float
+  dataVencimento DateTime
+  dataPagamento DateTime?
+  status        String   @default("pendente") // "pendente", "pago", "atrasado"
+  observacoes   String?
+  categoria     String?
+  dataCriacao   DateTime @default(now())
+
+  @@map("contas")
+  @@index([dataVencimento])
+  @@index([status])
+  @@index([tipo])
+}
+
+model Agendamento {
+  id          Int      @id @default(autoincrement())
+  data        DateTime
+  horario     String
+  servico     String
+  observacoes String?
+  status      String   @default("agendado") // "agendado", "realizado", "cancelado"
+  dataCriacao DateTime @default(now())
+
+  // Chaves estrangeiras
+  clienteId     Int
+  funcionarioId Int?
+  setorId       Int?
+
+  // Relacionamentos
+  cliente     Cliente      @relation(fields: [clienteId], references: [id])
+  funcionario Funcionario? @relation(fields: [funcionarioId], references: [id])
+  setor       Setor?       @relation(fields: [setorId], references: [id])
+
+  @@map("agendamentos")
+}
+
+model Configuracao {
+  id           Int      @id @default(autoincrement())
+  chave        String   @unique
+  valor        String
+  descricao    String?
+  dataAlteracao DateTime @default(now())
+
+  @@map("configuracoes")
+}

@@ -103,12 +103,21 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       status: getStatusConta(novaConta.dataVencimento, "pendente"),
     };
 
-    setContas((prev) => [...prev, conta]);
+    setContas((prev) => {
+      const novasContas = [...prev, conta];
+      // Salvar no localStorage
+      try {
+        localStorage.setItem("contas", JSON.stringify(novasContas));
+      } catch (error) {
+        console.warn("Erro ao salvar contas no localStorage:", error);
+      }
+      return novasContas;
+    });
   };
 
   const editarConta = (id: string, dadosAtualizados: Partial<Conta>) => {
-    setContas((prev) =>
-      prev.map((conta) =>
+    setContas((prev) => {
+      const contasAtualizadas = prev.map((conta) =>
         conta.id === id
           ? {
               ...conta,
@@ -121,17 +130,35 @@ export function ContasProvider({ children }: { children: ReactNode }) {
                 : conta.status,
             }
           : conta,
-      ),
-    );
+      );
+
+      // Salvar no localStorage
+      try {
+        localStorage.setItem("contas", JSON.stringify(contasAtualizadas));
+      } catch (error) {
+        console.warn("Erro ao salvar contas no localStorage:", error);
+      }
+      return contasAtualizadas;
+    });
   };
 
   const excluirConta = (id: string) => {
-    setContas((prev) => prev.filter((conta) => conta.id !== id));
+    setContas((prev) => {
+      const contasAtualizadas = prev.filter((conta) => conta.id !== id);
+
+      // Salvar no localStorage
+      try {
+        localStorage.setItem("contas", JSON.stringify(contasAtualizadas));
+      } catch (error) {
+        console.warn("Erro ao salvar contas no localStorage:", error);
+      }
+      return contasAtualizadas;
+    });
   };
 
   const marcarComoPaga = (id: string) => {
-    setContas((prev) =>
-      prev.map((conta) =>
+    setContas((prev) => {
+      const contasAtualizadas = prev.map((conta) =>
         conta.id === id
           ? {
               ...conta,
@@ -139,8 +166,16 @@ export function ContasProvider({ children }: { children: ReactNode }) {
               dataPagamento: new Date(),
             }
           : conta,
-      ),
-    );
+      );
+
+      // Salvar no localStorage
+      try {
+        localStorage.setItem("contas", JSON.stringify(contasAtualizadas));
+      } catch (error) {
+        console.warn("Erro ao salvar contas no localStorage:", error);
+      }
+      return contasAtualizadas;
+    });
   };
 
   // Atualizar status das contas automaticamente

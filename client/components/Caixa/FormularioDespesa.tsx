@@ -11,152 +11,180 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Textarea } from "../ui/textarea";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
-import { TrendingDown, Receipt } from "lucide-react";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Textarea } from "../ui/textarea";
+import { toast } from "../ui/use-toast";
+import SelectWithAdd from "../ui/select-with-add";
+import { TrendingDown } from "lucide-react";
 
-const formasPagamento = [
-  "Dinheiro",
-  "Pix",
-  "Cartão de Débito",
-  "Cartão de Crédito",
-  "Boleto",
-  "Transferência",
-];
+interface FormularioDespesaProps {
+  onSuccess?: () => void;
+}
 
-const categoriasDespesa = [
-  "Combustível",
-  "Material de Trabalho",
-  "Ferramentas",
-  "Manutenção de Veículos",
-  "Alimentação",
-  "Telefone/Internet",
-  "Água",
-  "Energia Elétrica",
-  "Aluguel",
-  "Impostos",
-  "Marketing",
-  "Escritório",
-  "Outros",
-];
-
-export default function FormularioDespesa() {
-  const { adicionarLancamento } = useCaixa();
-  const { descricoes, categorias, adicionarDescricao } = useEntidades();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isNewDescricaoOpen, setIsNewDescricaoOpen] = useState(false);
+export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
+  const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
+  const {
+    descricoes,
+    formasPagamento,
+    adicionarDescricao,
+    adicionarFormaPagamento,
+    isLoading: entidadesLoading,
+  } = useEntidades();
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
-    formaPagamento: "",
+    conta: "empresa", // "empresa" ou "pessoal"
     categoria: "",
-    descricaoServico: "",
-    tipoDespesa: "empresa" as "empresa" | "pessoal",
+    descricao: "",
+    formaPagamento: "",
     observacoes: "",
   });
 
-  const [novaDescricao, setNovaDescricao] = useState({
-    nome: "",
-    categoria: "",
-    tipo: "despesa" as "receita" | "despesa",
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Filtrar descrições de despesa
+  const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
+
+  // Filtrar descrições pela categoria selecionada
+  const descricoesFiltradas = formData.categoria
+    ? descricoesDespesa.filter((d) => d.categoria === formData.categoria)
+    : [];
+
+  // Obter categorias únicas das descrições de despesa
+  const categoriasDespesa = [
+    ...new Set(
+      descricoesDespesa
+        .map((d) => d.categoria)
+        .filter((categoria) => categoria && categoria.trim() !== ""),
+    ),
+  ].sort();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const valor = parseFloat(formData.valor);
-    if (!valor || valor <= 0) return;
+    // Validação completa dos campos obrigatórios
+    const camposObrigatorios = {
+      data: formData.data,
+      valor: formData.valor,
+      conta: formData.conta,
+      categoria: formData.categoria,
+      descricao: formData.descricao,
+      formaPagamento: formData.formaPagamento,
+    };
 
-    if (!formData.descricaoServico.trim()) {
-      alert("Por favor, selecione ou cadastre uma descrição da despesa.");
+    const camposFaltando = Object.entries(camposObrigatorios)
+      .filter(([key, value]) => !value || value.toString().trim() === "")
+      .map(([key]) => {
+        const nomes = {
+          data: "Data",
+          valor: "Valor",
+          conta: "Conta",
+          categoria: "Categoria",
+          descricao: "Descrição",
+          formaPagamento: "Forma de Pagamento",
+        };
+        return nomes[key as keyof typeof nomes];
+      });
+
+    if (camposFaltando.length > 0) {
+      toast({
+        title: "Campos obrigatórios não preenchidos",
+        description: `Preencha os seguintes campos: ${camposFaltando.join(", ")}`,
+        variant: "destructive",
+      });
       return;
     }
 
-    adicionarLancamento({
-      tipo: "despesa",
-      data: new Date(formData.data),
-      valor,
-      formaPagamento: formData.formaPagamento,
-      categoria: formData.categoria,
-      descricao: formData.descricaoServico,
-      tipoDespesa: formData.tipoDespesa,
-      notaFiscal: false, // Despesas geralmente não têm nota fiscal
-    });
+    setIsSubmitting(true);
 
-    // Reset form
-    setFormData({
-      data: new Date().toISOString().split("T")[0],
-      valor: "",
-      formaPagamento: "",
-      categoria: "",
-      descricaoServico: "",
-      tipoDespesa: "empresa" as "empresa" | "pessoal",
-      observacoes: "",
-    });
+    try {
+      await adicionarLancamento({
+        data: new Date(formData.data),
+        tipo: "despesa",
+        conta: formData.conta,
+        valor: parseFloat(formData.valor),
+        descricao: formData.descricao,
+        formaPagamento: formData.formaPagamento,
+        observacoes: formData.observacoes || undefined,
+      });
 
-    setIsOpen(false);
+      toast({
+        title: "Sucesso",
+        description: "Despesa lançada com sucesso!",
+        variant: "default",
+      });
+
+      // Resetar formulário
+      setFormData({
+        data: new Date().toISOString().split("T")[0],
+        valor: "",
+        conta: "empresa",
+        categoria: "",
+        descricao: "",
+        formaPagamento: "",
+        observacoes: "",
+      });
+
+      onSuccess?.();
+    } catch (error) {
+      console.error("Erro ao lançar despesa:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao lançar despesa. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleAddDescricao = () => {
-    if (!novaDescricao.nome.trim()) return;
+  const isLoading = caixaLoading || entidadesLoading;
 
-    adicionarDescricao({
-      nome: novaDescricao.nome,
-      tipo: "despesa",
-      categoria: novaDescricao.categoria || undefined,
-    });
-
-    setNovaDescricao({
-      nome: "",
-      categoria: "",
-      tipo: "despesa",
-    });
-
-    setIsNewDescricaoOpen(false);
-  };
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">Carregando dados...</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="destructive" className="gap-2">
-          <TrendingDown className="h-4 w-4" />
-          Nova Despesa
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Receipt className="h-5 w-5 text-red-600" />
-            Lançar Despesa
-          </DialogTitle>
-          <DialogDescription>Registre uma despesa da empresa</DialogDescription>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-red-600">
+          <TrendingDown className="h-5 w-5" />
+          Lançar Despesa
+        </CardTitle>
+        <CardDescription>Registre uma nova saída do caixa</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Campos básicos */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="data">Data</Label>
+              <Label htmlFor="data">Data *</Label>
               <Input
                 id="data"
                 type="date"
                 value={formData.data}
                 onChange={(e) =>
-                  setFormData({ ...formData, data: e.target.value })
+                  setFormData((prev) => ({ ...prev, data: e.target.value }))
                 }
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="valor">Valor (R$)</Label>
+              <Label htmlFor="valor">Valor (R$) *</Label>
               <Input
                 id="valor"
                 type="number"
@@ -164,191 +192,160 @@ export default function FormularioDespesa() {
                 placeholder="0,00"
                 value={formData.valor}
                 onChange={(e) =>
-                  setFormData({ ...formData, valor: e.target.value })
+                  setFormData((prev) => ({ ...prev, valor: e.target.value }))
                 }
                 required
               />
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label>Forma de Pagamento</Label>
-            <Select
-              value={formData.formaPagamento}
-              onValueChange={(value) =>
-                setFormData({ ...formData, formaPagamento: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a forma" />
-              </SelectTrigger>
-              <SelectContent>
-                {formasPagamento.map((forma) => (
-                  <SelectItem key={forma} value={forma}>
-                    {forma}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Categoria da Despesa</Label>
-            <Select
-              value={formData.categoria}
-              onValueChange={(value) =>
-                setFormData({ ...formData, categoria: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                {categorias
-                  .filter((cat) => cat.tipo === "despesa")
-                  .map((categoria) => (
-                    <SelectItem key={categoria.id} value={categoria.nome}>
-                      {categoria.nome}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="flex items-center justify-between">
-              Descrição da Despesa *
-              <Dialog
-                open={isNewDescricaoOpen}
-                onOpenChange={setIsNewDescricaoOpen}
+            <div className="space-y-2">
+              <Label htmlFor="conta">Conta *</Label>
+              <Select
+                value={formData.conta}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, conta: value }))
+                }
               >
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    + Novo
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Adicionar Nova Descrição</DialogTitle>
-                    <DialogDescription>
-                      Cadastre uma nova descrição de despesa
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="nomeDescricao">Nome da Descrição *</Label>
-                      <Input
-                        id="nomeDescricao"
-                        value={novaDescricao.nome}
-                        onChange={(e) =>
-                          setNovaDescricao({
-                            ...novaDescricao,
-                            nome: e.target.value,
-                          })
-                        }
-                        placeholder="Ex: Combustível, Material de limpeza..."
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="categoriaDescricao">
-                        Categoria (Opcional)
-                      </Label>
-                      <Select
-                        value={novaDescricao.categoria}
-                        onValueChange={(value) =>
-                          setNovaDescricao({
-                            ...novaDescricao,
-                            categoria: value,
-                          })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione uma categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categorias
-                            .filter((cat) => cat.tipo === "despesa")
-                            .map((categoria) => (
-                              <SelectItem
-                                key={categoria.id}
-                                value={categoria.nome}
-                              >
-                                {categoria.nome}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsNewDescricaoOpen(false)}
-                      >
-                        Cancelar
-                      </Button>
-                      <Button onClick={handleAddDescricao}>
-                        Adicionar Descrição
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </Label>
-            <Select
-              value={formData.descricaoServico}
-              onValueChange={(value) =>
-                setFormData({ ...formData, descricaoServico: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione ou cadastre a descrição *" />
-              </SelectTrigger>
-              <SelectContent>
-                {descricoes
-                  .filter((descricao) => descricao.tipo === "despesa")
-                  .map((descricao) => (
-                    <SelectItem key={descricao.id} value={descricao.nome}>
-                      {descricao.nome}
-                      {descricao.categoria && (
-                        <span className="text-muted-foreground">
-                          {" "}
-                          - {descricao.categoria}
-                        </span>
-                      )}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a conta" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="empresa">Empresa</SelectItem>
+                  <SelectItem value="pessoal">Pessoal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="observacoes">Observações (Opcional)</Label>
-            <Textarea
-              id="observacoes"
-              value={formData.observacoes}
-              onChange={(e) =>
-                setFormData({ ...formData, observacoes: e.target.value })
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="categoria">Categoria *</Label>
+              <Select
+                value={formData.categoria}
+                onValueChange={(value) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    categoria: value,
+                    descricao: "", // Limpar descrição quando categoria muda
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoriasDespesa.map((categoria) => (
+                    <SelectItem key={categoria} value={categoria}>
+                      {categoria}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <SelectWithAdd
+              value={formData.descricao}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, descricao: value }))
               }
-              placeholder="Observações adicionais..."
-              rows={2}
+              placeholder={
+                formData.categoria
+                  ? "Selecione a descrição"
+                  : "Primeiro selecione uma categoria"
+              }
+              label="Descrição da Despesa"
+              required={true}
+              disabled={!formData.categoria}
+              items={descricoesFiltradas}
+              onAddNew={async (data) => {
+                await adicionarDescricao({
+                  nome: data.nome,
+                  categoria: formData.categoria,
+                  tipo: "despesa",
+                });
+              }}
+              addNewTitle="Nova Descrição de Despesa"
+              addNewDescription="Adicione uma nova descrição para despesas."
+              addNewFields={[
+                {
+                  key: "nome",
+                  label: "Nome da Descrição",
+                  required: true,
+                },
+              ]}
             />
           </div>
 
-          <div className="flex gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsOpen(false)}
-              className="flex-1"
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" variant="destructive" className="flex-1">
-              Lançar Despesa
-            </Button>
+          <SelectWithAdd
+            value={formData.formaPagamento}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, formaPagamento: value }))
+            }
+            placeholder="Selecione a forma"
+            label="Forma de Pagamento"
+            required={true}
+            items={formasPagamento}
+            onAddNew={async (data) => {
+              await adicionarFormaPagamento({
+                nome: data.nome,
+              });
+            }}
+            addNewTitle="Nova Forma de Pagamento"
+            addNewDescription="Adicione uma nova forma de pagamento."
+            addNewFields={[
+              {
+                key: "nome",
+                label: "Nome da Forma de Pagamento",
+                required: true,
+              },
+            ]}
+          />
+
+          <div className="space-y-2">
+            <Label htmlFor="observacoes">Observações</Label>
+            <Textarea
+              id="observacoes"
+              placeholder="Informações adicionais..."
+              value={formData.observacoes}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  observacoes: e.target.value,
+                }))
+              }
+            />
           </div>
+
+          {/* Resumo financeiro */}
+          {formData.valor && (
+            <div className="p-4 bg-red-50 rounded-lg">
+              <h4 className="font-medium text-red-800 mb-2">
+                Resumo da Despesa
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600">Valor a ser debitado:</span>
+                  <div className="font-medium text-red-600 text-lg">
+                    R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-gray-600">Conta:</span>
+                  <div className="font-medium capitalize">{formData.conta}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full bg-red-600 hover:bg-red-700"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Lançando..." : "Lançar Despesa"}
+          </Button>
         </form>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </Card>
   );
 }

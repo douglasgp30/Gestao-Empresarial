@@ -24,6 +24,7 @@ import {
 } from "../ui/dialog";
 import { Calendar, Clock, Plus, User } from "lucide-react";
 import { toast } from "../../hooks/use-toast";
+import SelectWithAdd from "../ui/select-with-add";
 
 interface FormularioAgendamentoProps {
   children?: React.ReactNode;
@@ -184,29 +185,65 @@ export default function FormularioAgendamento({
     setErros({});
   };
 
-  const handleAdicionarSetor = () => {
-    if (novoSetor.trim()) {
-      adicionarSetor(novoSetor.trim());
-      setFormData({ ...formData, setor: novoSetor.trim() });
-      setNovoSetor("");
-      setMostrarNovoSetor(false);
+  const handleAdicionarSetor = async () => {
+    if (!formData.cidade) {
       toast({
-        title: "Setor adicionado",
-        description: `O setor "${novoSetor}" foi adicionado com sucesso.`,
+        title: "Erro",
+        description: "Selecione uma cidade antes de adicionar um setor.",
+        variant: "destructive",
       });
+      return;
+    }
+
+    if (novoSetor.trim()) {
+      try {
+        await adicionarSetor({
+          nome: novoSetor.trim(),
+          cidade: formData.cidade,
+        });
+
+        // Buscar o setor recém-criado para obter o ID correto
+        const setorCriado = setores.find(
+          (s) => s.nome === novoSetor.trim() && s.cidade === formData.cidade,
+        );
+        if (setorCriado) {
+          setFormData({ ...formData, setor: setorCriado.id.toString() });
+        }
+
+        setNovoSetor("");
+        setMostrarNovoSetor(false);
+        toast({
+          title: "Setor adicionado",
+          description: `O setor "${novoSetor}" foi adicionado com sucesso.`,
+        });
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Erro ao adicionar setor. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const handleAdicionarCidade = () => {
+  const handleAdicionarCidade = async () => {
     if (novaCidade.trim()) {
-      adicionarCidade({ nome: novaCidade.trim() });
-      setFormData({ ...formData, cidade: novaCidade.trim() });
-      setNovaCidade("");
-      setMostrarNovaCidade(false);
-      toast({
-        title: "Cidade adicionada",
-        description: `A cidade "${novaCidade}" foi adicionada com sucesso.`,
-      });
+      try {
+        await adicionarCidade({ nome: novaCidade.trim() });
+        setFormData({ ...formData, cidade: novaCidade.trim() });
+        setNovaCidade("");
+        setMostrarNovaCidade(false);
+        toast({
+          title: "Cidade adicionada",
+          description: `A cidade "${novaCidade}" foi adicionada com sucesso.`,
+        });
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Erro ao adicionar cidade. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -338,11 +375,16 @@ export default function FormularioAgendamento({
                   <SelectValue placeholder="Selecione o setor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {setores.map((setor) => (
-                    <SelectItem key={setor.id} value={setor.nome}>
-                      {setor.nome}
-                    </SelectItem>
-                  ))}
+                  {setores
+                    .filter(
+                      (setor) =>
+                        !formData.cidade || setor.cidade === formData.cidade,
+                    )
+                    .map((setor) => (
+                      <SelectItem key={setor.id} value={setor.id.toString()}>
+                        {setor.nome} - {setor.cidade}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
               <Button
@@ -390,9 +432,12 @@ export default function FormularioAgendamento({
                   <SelectValue placeholder="Selecione a cidade" />
                 </SelectTrigger>
                 <SelectContent>
-                  {cidades.map((cidade) => (
-                    <SelectItem key={cidade.id} value={cidade.nome}>
-                      {cidade.nome}
+                  {cidades.map((cidade, index) => (
+                    <SelectItem
+                      key={`cidade-${index}-${cidade}`}
+                      value={cidade}
+                    >
+                      {cidade}
                     </SelectItem>
                   ))}
                 </SelectContent>

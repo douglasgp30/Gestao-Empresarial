@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -57,10 +58,6 @@ import {
   XCircle,
   Folder,
 } from "lucide-react";
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("pt-BR");
-}
 
 export default function ModalDescricoesAvancado() {
   const {
@@ -519,8 +516,8 @@ export default function ModalDescricoesAvancado() {
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className="gap-2">
-            <FileText className="h-4 w-4" />
+          <Button variant="outline" size="sm" className="gap-1 text-xs">
+            <FileText className="h-3 w-3" />
             Descrições
           </Button>
         </DialogTrigger>

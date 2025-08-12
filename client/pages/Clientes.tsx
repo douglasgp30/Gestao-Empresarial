@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useClientes } from "../contexts/ClientesContext";
 import { useCaixa } from "../contexts/CaixaContext";
 import { Button } from "../components/ui/button";
@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/table";
+import { FiltrosPeriodo } from "../components/ui/filtros-periodo";
 import ModalCadastroCliente from "../components/Clientes/ModalCadastroCliente";
 import {
   Users,
@@ -42,18 +43,48 @@ function formatCurrency(value: number) {
   });
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("pt-BR");
-}
+import { formatDate } from "../lib/dateUtils";
 
 export default function Clientes() {
   const { clientes, filtrarClientes, isLoading } = useClientes();
   const { lancamentos } = useCaixa();
   const [termoPesquisa, setTermoPesquisa] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<any>(null);
+  const [clientesFiltradosPeriodo, setClientesFiltradosPeriodo] = useState(clientes);
+  const [filtrosPeriodo, setFiltrosPeriodo] = useState({
+    dataInicio: new Date(new Date().getTime() - 90 * 24 * 60 * 60 * 1000),
+    dataFim: new Date(),
+  });
 
-  // Filtrar clientes baseado no termo de pesquisa
-  const clientesFiltrados = filtrarClientes(termoPesquisa);
+  // Aplicar filtros quando mudarem
+  useEffect(() => {
+    const clientesResultado = clientes.filter((cliente) => {
+      // Filtro por período (data de cadastro)
+      const dataCadastro = new Date(cliente.dataCriacao);
+      const dentroDataInicio = dataCadastro >= filtrosPeriodo.dataInicio;
+      const dentroDataFim = dataCadastro <= filtrosPeriodo.dataFim;
+
+      return dentroDataInicio && dentroDataFim;
+    });
+
+    setClientesFiltradosPeriodo(clientesResultado);
+  }, [clientes, filtrosPeriodo]);
+
+  const handleFiltrosPeriodoChange = useCallback((dataInicio: Date, dataFim: Date) => {
+    setFiltrosPeriodo({ dataInicio, dataFim });
+  }, []);
+
+  // Filtrar clientes baseado no termo de pesquisa E período
+  const clientesFiltrados = clientesFiltradosPeriodo.filter((cliente) => {
+    if (!termoPesquisa) return true;
+    const busca = termoPesquisa.toLowerCase();
+    return (
+      cliente.nome.toLowerCase().includes(busca) ||
+      cliente.cpf?.toLowerCase().includes(busca) ||
+      cliente.telefone1?.toLowerCase().includes(busca) ||
+      cliente.email?.toLowerCase().includes(busca)
+    );
+  });
 
   // Função para obter histórico de serviços de um cliente
   const obterHistoricoCliente = (nomeCliente: string) => {
@@ -101,6 +132,13 @@ export default function Clientes() {
           }
         />
       </div>
+
+      {/* Filtros de Período */}
+      <FiltrosPeriodo
+        onFiltroChange={handleFiltrosPeriodoChange}
+        titulo="Filtrar por Data de Cadastro"
+        periodoInicialDias={90}
+      />
 
       {/* Pesquisa */}
       <Card>

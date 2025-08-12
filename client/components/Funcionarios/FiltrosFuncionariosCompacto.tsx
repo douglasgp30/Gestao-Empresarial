@@ -53,18 +53,18 @@ export default function FiltrosFuncionariosCompacto() {
   return (
     <div className="space-y-3">
       {/* Busca e Filtros Básicos */}
-      <div className="bg-muted/30 rounded-lg p-3 border">
+      <div className="bg-muted/30 rounded-lg p-2 border">
         <div className="flex flex-col sm:flex-row gap-2">
           {/* Busca */}
           <div className="flex-1 relative">
-            <Search className="absolute left-2 top-2.5 h-3 w-3 text-muted-foreground" />
+            <Search className="absolute left-2 top-2 h-3 w-3 text-muted-foreground" />
             <Input
               placeholder="Buscar por nome ou login..."
               value={filtros.busca || ""}
               onChange={(e) =>
                 setFiltros({ ...filtros, busca: e.target.value })
               }
-              className="pl-8 h-9"
+              className="pl-7 h-8 text-xs"
             />
           </div>
 
@@ -76,7 +76,7 @@ export default function FiltrosFuncionariosCompacto() {
                 setFiltros({ ...filtros, status: value as any })
               }
             >
-              <SelectTrigger className="w-32 h-9">
+              <SelectTrigger className="w-28 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

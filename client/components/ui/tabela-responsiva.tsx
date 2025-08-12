@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "./table";
 import { Badge } from "./badge";
+import { formatDate } from "../../lib/dateUtils";
 import { Card, CardContent } from "./card";
 import { Button } from "./button";
 import {
@@ -53,9 +54,6 @@ function formatCurrency(value: number) {
   });
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("pt-BR");
-}
 
 export default function TabelaResponsivaLancamentos({
   dados,

@@ -23,6 +23,7 @@ import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import SistemaBackup from "../components/Backup/SistemaBackup";
+import SystemTester from "../components/Debug/SystemTester";
 import {
   Settings,
   Building2,
@@ -232,7 +233,7 @@ export default function Configuracoes() {
       )}
 
       <Tabs defaultValue="empresa" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="empresa">
             <Building2 className="h-4 w-4 mr-2" />
             Empresa
@@ -252,6 +253,10 @@ export default function Configuracoes() {
           <TabsTrigger value="backup">
             <HardDrive className="h-4 w-4 mr-2" />
             Backup
+          </TabsTrigger>
+          <TabsTrigger value="testes">
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            Testes
           </TabsTrigger>
         </TabsList>
 
@@ -492,7 +497,6 @@ export default function Configuracoes() {
           </Card>
         </TabsContent>
 
-
         <TabsContent value="usuarios" className="space-y-6">
           <Card>
             <CardHeader>
@@ -621,7 +625,7 @@ export default function Configuracoes() {
                       Status da conexão com o banco
                     </p>
                   </div>
-                  <Badge className="bg-success text-success-foreground">
+                  <Badge className="bg-green-100 text-green-800">
                     Conectado
                   </Badge>
                 </div>
@@ -632,7 +636,7 @@ export default function Configuracoes() {
                       Sistema de atualização automática
                     </p>
                   </div>
-                  <Badge className="bg-success text-success-foreground">
+                  <Badge className="bg-green-100 text-green-800">
                     Atualizado
                   </Badge>
                 </div>
@@ -836,6 +840,21 @@ export default function Configuracoes() {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="testes" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>🧪 Testes do Sistema</CardTitle>
+              <CardDescription>
+                Execute testes automatizados para verificar a integridade das
+                funcionalidades principais
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SystemTester />
             </CardContent>
           </Card>
         </TabsContent>

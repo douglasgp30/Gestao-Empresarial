@@ -30,7 +30,7 @@ import {
 import { UserPlus, User, Shield, Percent } from "lucide-react";
 
 export default function FormularioFuncionario() {
-  const { adicionarFuncionario } = useFuncionarios();
+  const { adicionarFuncionario, funcionarios } = useFuncionarios();
   const [isOpen, setIsOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -39,7 +39,7 @@ export default function FormularioFuncionario() {
     senha: "",
     confirmarSenha: "",
     permissaoAcesso: true,
-    tipoAcesso: "Operador" as "Administrador" | "Operador",
+    tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
     percentualComissao: "15",
     ativo: true,
   });
@@ -74,6 +74,16 @@ export default function FormularioFuncionario() {
           "Login é obrigatório para funcionários com acesso ao sistema";
       } else if (formData.login.length < 3) {
         newErrors.login = "Login deve ter pelo menos 3 caracteres";
+      } else {
+        // Verificar se o login já existe
+        const loginExistente = funcionarios.find(
+          (func) =>
+            func.login?.toLowerCase() === formData.login.trim().toLowerCase(),
+        );
+        if (loginExistente) {
+          newErrors.login =
+            "Este login já está sendo usado por outro funcionário";
+        }
       }
 
       if (!formData.senha) {
@@ -181,6 +191,9 @@ export default function FormularioFuncionario() {
                     placeholder="Login para acesso"
                     className={errors.login ? "border-red-500" : ""}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    O login será convertido automaticamente para minúsculas
+                  </p>
                   {errors.login && (
                     <p className="text-sm text-red-500">{errors.login}</p>
                   )}
@@ -190,9 +203,9 @@ export default function FormularioFuncionario() {
                   <Label>Tipo de Acesso</Label>
                   <Select
                     value={formData.tipoAcesso}
-                    onValueChange={(value: "Administrador" | "Operador") =>
-                      setFormData({ ...formData, tipoAcesso: value })
-                    }
+                    onValueChange={(
+                      value: "Administrador" | "Operador" | "Técnico",
+                    ) => setFormData({ ...formData, tipoAcesso: value })}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -202,6 +215,7 @@ export default function FormularioFuncionario() {
                       <SelectItem value="Administrador">
                         Administrador
                       </SelectItem>
+                      <SelectItem value="Técnico">Técnico</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

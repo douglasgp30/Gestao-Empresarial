@@ -96,75 +96,7 @@ const RelatoriosContext = createContext<RelatoriosContextType | undefined>(
   undefined,
 );
 
-// Mock data - em um app real viria de APIs/contexts existentes
-const hoje = new Date();
-const ontem = new Date(hoje.getTime() - 24 * 60 * 60 * 1000);
-const anteontem = new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000);
-const cincodiasatras = new Date(hoje.getTime() - 5 * 24 * 60 * 60 * 1000);
-const dezdiasatras = new Date(hoje.getTime() - 10 * 24 * 60 * 60 * 1000);
-
-const mockLancamentos: LancamentoCaixa[] = [
-  {
-    id: "1",
-    data: hoje,
-    tipo: "receita",
-    valor: 450.0,
-    valorLiquido: 450.0,
-    formaPagamento: "Pix",
-    tecnicoResponsavel: "João Silva",
-    comissao: 67.5,
-    notaFiscal: false,
-    setor: "Residencial",
-    campanha: "Desconto Dezembro",
-    funcionarioId: "2",
-  },
-  {
-    id: "2",
-    data: ontem,
-    tipo: "receita",
-    valor: 280.0,
-    valorLiquido: 280.0,
-    formaPagamento: "Dinheiro",
-    tecnicoResponsavel: "Carlos Santos",
-    comissao: 42.0,
-    notaFiscal: false,
-    setor: "Comercial",
-    funcionarioId: "3",
-  },
-  {
-    id: "3",
-    data: anteontem,
-    tipo: "despesa",
-    valor: 120.5,
-    formaPagamento: "Cartão",
-    categoria: "Combustível",
-    descricao: "Abastecimento van",
-    funcionarioId: "1",
-  },
-];
-
-const mockContas: Conta[] = [
-  {
-    id: "1",
-    tipo: "pagar",
-    dataVencimento: cincodiasatras,
-    fornecedorCliente: "Posto de Gasolina ABC",
-    tipoPagamento: "Boleto",
-    valor: 350.0,
-    status: "vence_hoje",
-    funcionarioId: "1",
-  },
-  {
-    id: "2",
-    tipo: "receber",
-    dataVencimento: cincodiasatras,
-    fornecedorCliente: "Empresa XYZ Ltda",
-    tipoPagamento: "Boleto",
-    valor: 1200.0,
-    status: "atrasada",
-    funcionarioId: "1",
-  },
-];
+// Dados devem vir dos contextos existentes - sem dados fictícios
 
 export function RelatoriosProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -207,26 +139,8 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   }, [filtros]);
 
   const gerarRelatorioFinanceiro = (): RelatorioFinanceiro => {
-    const lancamentosFiltrados = mockLancamentos.filter((l) => {
-      const data = new Date(l.data);
-      // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(
-        filtros.periodo.dataInicio.getFullYear(),
-        filtros.periodo.dataInicio.getMonth(),
-        filtros.periodo.dataInicio.getDate(),
-      );
-      const dataFim = new Date(
-        filtros.periodo.dataFim.getFullYear(),
-        filtros.periodo.dataFim.getMonth(),
-        filtros.periodo.dataFim.getDate(),
-      );
-      const dataNorm = new Date(
-        data.getFullYear(),
-        data.getMonth(),
-        data.getDate(),
-      );
-      return dataNorm >= dataInicio && dataNorm <= dataFim;
-    });
+    // Usar dados do CaixaContext quando disponível - por enquanto vazio sem dados fictícios
+    const lancamentosFiltrados: LancamentoCaixa[] = [];
 
     const receitas = lancamentosFiltrados.filter((l) => l.tipo === "receita");
     const despesas = lancamentosFiltrados.filter((l) => l.tipo === "despesa");
@@ -299,26 +213,8 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   };
 
   const gerarRelatorioContas = (): RelatorioContas => {
-    const contasFiltradas = mockContas.filter((c) => {
-      const data = new Date(c.dataVencimento);
-      // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(
-        filtros.periodo.dataInicio.getFullYear(),
-        filtros.periodo.dataInicio.getMonth(),
-        filtros.periodo.dataInicio.getDate(),
-      );
-      const dataFim = new Date(
-        filtros.periodo.dataFim.getFullYear(),
-        filtros.periodo.dataFim.getMonth(),
-        filtros.periodo.dataFim.getDate(),
-      );
-      const dataNorm = new Date(
-        data.getFullYear(),
-        data.getMonth(),
-        data.getDate(),
-      );
-      return dataNorm >= dataInicio && dataNorm <= dataFim;
-    });
+    // Usar dados do ContasContext quando disponível - por enquanto vazio sem dados fictícios
+    const contasFiltradas: Conta[] = [];
 
     const totalAPagar = contasFiltradas
       .filter((c) => c.tipo === "pagar" && c.status !== "paga")
@@ -350,13 +246,8 @@ export function RelatoriosProvider({ children }: { children: ReactNode }) {
   };
 
   const gerarRelatorioTecnicos = (): RelatorioTecnicos => {
-    const receitas = mockLancamentos.filter(
-      (l) =>
-        l.tipo === "receita" &&
-        l.tecnicoResponsavel &&
-        new Date(l.data) >= filtros.periodo.dataInicio &&
-        new Date(l.data) <= filtros.periodo.dataFim,
-    );
+    // Usar dados do CaixaContext quando disponível - por enquanto vazio sem dados fictícios
+    const receitas: LancamentoCaixa[] = [];
 
     const performanceTecnicos = receitas.reduce(
       (acc, r) => {

@@ -28,65 +28,65 @@ export interface FuncionarioPermissoes {
 }
 
 export interface Funcionario {
-  id: string;
-  nomeCompleto: string;
+  id: string; // CodigoTecnico
+  nome: string; // NomeTecnico (obrigatório)
+  nomeCompleto?: string; // Nome completo alternativo
+  percentualServico?: number; // PercentualServico (obrigatório)
+  percentualComissao?: number; // Percentual de comissão do técnico
   login?: string;
   senha?: string;
   temAcessoSistema?: boolean;
   permissaoAcesso?: boolean;
-  tipoAcesso?: "Administrador" | "Operador";
+  tipoAcesso?: "Administrador" | "Operador" | "Técnico";
   permissoes?: FuncionarioPermissoes;
-  percentualComissao: number;
   dataCadastro: Date;
   ativo: boolean;
 }
 
 export interface LancamentoCaixa {
-  id: string;
-  data: Date;
-  tipo: "receita" | "despesa";
-  valor: number;
-  valorLiquido?: number;
-  formaPagamento: string;
-  tecnicoResponsavel?: string;
-  comissao?: number;
-  notaFiscal: boolean;
-  notaFiscalArquivo?: {
-    nome: string;
-    tamanho: number;
-    dataUpload: Date;
-  };
-  descontoImposto?: number;
-  setor?: string;
-  cidade?: string;
-  campanha?: string;
-  categoria?: string;
-  descricao?: string;
-  tipoDespesa?: "empresa" | "pessoal"; // Apenas para despesas
-  cliente?: string; // Nome do cliente para receitas
-  funcionarioId: string;
+  id: string; // CodLançamentoCX
+  dataHora: Date; // Data e hora do lançamento
+  valor: number; // Valor do lançamento (obrigatório)
+  valorRecebido?: number; // Valor efetivamente recebido (obrigatório para cartão)
+  valorLiquido?: number; // Valor líquido após descontos
+  comissao?: number; // Comissão do técnico
+  imposto?: number; // Impostos/taxas
+  conta: "empresa" | "pessoal"; // Define se é Empresa ou Pessoal (obrigatório)
+  tipo: "receita" | "despesa"; // Receita ou Despesa (obrigatório)
+  observacoes?: string; // Observações do lançamento
+  numeroNota?: string; // Número da nota fiscal
+  arquivoNota?: string; // Arquivo da nota fiscal
+
+  // Relacionamentos obrigatórios
+  descricaoId: number; // FK para tabela Descrição
+  formaPagamentoId: number; // FK para tabela Forma de Pagamento
+
+  // Relacionamentos opcionais
+  subdescricaoId?: number; // FK para tabela Subdescrição
+  funcionarioId?: number; // FK para tabela Técnicos
+  setorId?: number; // FK para tabela Cidades e Setores
+  campanhaId?: number; // FK para tabela Campanhas
+
+  dataCriacao: Date;
 }
 
 export interface Conta {
   id: string;
   tipo: "pagar" | "receber";
-  dataVencimento: Date;
-  fornecedorCliente: string;
-  tipoPagamento: string;
+  descricao: string;
   valor: number;
+  dataVencimento: Date;
+  dataPagamento?: Date;
   status: "paga" | "atrasada" | "vence_hoje" | "pendente";
   observacoes?: string;
-  dataPagamento?: Date;
-  funcionarioId: string;
+  categoria?: string;
+  dataCriacao: Date;
 }
 
 export interface Campanha {
-  id: string;
-  nome: string;
-  descricao?: string;
-  ativa: boolean;
-  dataInicio: Date;
-  dataFim?: Date;
+  id: string; // CodigoCampanha
+  nome: string; // NomeCampanha (obrigatório)
+  dataCriacao: Date;
 }
 
 export interface Configuracao {
@@ -100,7 +100,7 @@ export interface AuthUser {
   id: string;
   nomeCompleto: string;
   login: string;
-  tipoAcesso: "Administrador" | "Operador";
+  tipoAcesso: "Administrador" | "Operador" | "Técnico";
   permissaoAcesso: boolean;
   permissoes?: FuncionarioPermissoes;
 }
@@ -162,10 +162,17 @@ export interface RelatorioFiltros {
 }
 
 export interface Descricao {
-  id: string;
-  nome: string;
+  id: string; // CodigoDescricao
+  nome: string; // Descrição (obrigatório)
   tipo: "receita" | "despesa";
   categoria?: string;
+  dataCriacao: Date;
+}
+
+export interface Subdescricao {
+  id: string; // CodigoSubdescricao
+  nome: string; // Subdescricao (obrigatório)
+  descricaoId: number; // CodigoDescricao (FK obrigatório)
   dataCriacao: Date;
 }
 
@@ -177,29 +184,21 @@ export interface Categoria {
 }
 
 export interface FormaPagamento {
-  id: string;
-  nome: string;
-  tipo: "receita" | "despesa" | "ambos";
-  ativa?: boolean;
+  id: string; // CodigoForma
+  nome: string; // FormaPagamento (obrigatório)
   dataCriacao: Date;
 }
 
 export interface Cliente {
-  id: string;
-  nome: string;
-  cpf?: string;
-  telefone1: string;
-  telefone2?: string;
-  email?: string;
-  endereco?: {
-    cep?: string;
-    rua?: string;
-    numero?: string;
-    complemento?: string;
-    bairro?: string;
-    cidade?: string;
-    estado?: string;
-  };
+  id: string; // CodigoCliente
+  nome: string; // Nome do cliente (obrigatório)
+  cpf?: string; // CPF do cliente (opcional)
+  telefonePrincipal: string; // Telefone principal (obrigatório)
+  telefoneSecundario?: string; // Telefone secundário (opcional)
+  email?: string; // E-mail (opcional)
+  cep?: string; // CEP (opcional)
+  logradouro?: string; // Preenchido automaticamente a partir do CEP
+  complemento?: string; // Complemento do endereço (opcional)
   dataCriacao: Date;
 }
 
@@ -211,8 +210,9 @@ export interface Fornecedor {
 }
 
 export interface Setor {
-  id: string;
-  nome: string;
+  id: string; // CodigoSetor
+  cidade: string; // Cidade (obrigatório)
+  nome: string; // Setor/bairro (obrigatório)
   dataCriacao: Date;
 }
 

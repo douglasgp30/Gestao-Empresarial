@@ -180,7 +180,7 @@ export default function FormularioFuncionarioAvancado() {
     senha: "",
     confirmarSenha: "",
     temAcessoSistema: false,
-    tipoAcesso: "Operador" as "Administrador" | "Operador",
+    tipoAcesso: "Operador" as "Administrador" | "Operador" | "Técnico",
     percentualComissao: "15",
     ativo: true,
   });
@@ -236,7 +236,9 @@ export default function FormularioFuncionarioAvancado() {
     setErrors({});
   };
 
-  const aplicarPermissoesPadrao = (tipo: "Administrador" | "Operador") => {
+  const aplicarPermissoesPadrao = (
+    tipo: "Administrador" | "Operador" | "Técnico",
+  ) => {
     if (tipo === "Administrador") {
       // Administrador tem todas as permissões
       setPermissoes({
@@ -256,7 +258,7 @@ export default function FormularioFuncionarioAvancado() {
         gerenciarFuncionarios: true,
         alterarPermissoes: true,
       });
-    } else {
+    } else if (tipo === "Operador") {
       // Operador tem permissões básicas
       setPermissoes({
         acessarDashboard: true,
@@ -272,6 +274,25 @@ export default function FormularioFuncionarioAvancado() {
         fazerBackupManual: false,
         gerarRelatorios: true,
         verCadastros: true,
+        gerenciarFuncionarios: false,
+        alterarPermissoes: false,
+      });
+    } else if (tipo === "Técnico") {
+      // Técnico tem permissões limitadas, focadas em lançamentos
+      setPermissoes({
+        acessarDashboard: true,
+        verCaixa: true,
+        lancarReceita: true,
+        lancarDespesa: false,
+        editarLancamentos: false,
+        verContas: false,
+        lancarContasPagar: false,
+        lancarContasReceber: false,
+        marcarContasPagas: false,
+        acessarConfiguracoes: false,
+        fazerBackupManual: false,
+        gerarRelatorios: false,
+        verCadastros: false,
         gerenciarFuncionarios: false,
         alterarPermissoes: false,
       });
@@ -481,7 +502,7 @@ export default function FormularioFuncionarioAvancado() {
                       <Select
                         value={formData.tipoAcesso}
                         onValueChange={(
-                          value: "Administrador" | "Operador",
+                          value: "Administrador" | "Operador" | "Técnico",
                         ) => {
                           setFormData({ ...formData, tipoAcesso: value });
                           aplicarPermissoesPadrao(value);
@@ -495,6 +516,7 @@ export default function FormularioFuncionarioAvancado() {
                           <SelectItem value="Administrador">
                             Administrador
                           </SelectItem>
+                          <SelectItem value="Técnico">Técnico</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

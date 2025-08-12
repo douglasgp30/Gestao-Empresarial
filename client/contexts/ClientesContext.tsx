@@ -44,12 +44,28 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Função para salvar clientes no localStorage
+  const salvarClientesNoLocalStorage = (clientes: Cliente[]) => {
+    try {
+      localStorage.setItem("clientes", JSON.stringify(clientes));
+    } catch (error) {
+      console.warn("Erro ao salvar clientes no localStorage:", error);
+    }
+  };
+
   // Carregar dados reais do localStorage
   useEffect(() => {
     const clientesReais = carregarClientesReais();
     setClientes(clientesReais);
     setIsLoading(false);
   }, []);
+
+  // Salvar no localStorage sempre que clientes mudarem
+  useEffect(() => {
+    if (!isLoading) {
+      salvarClientesNoLocalStorage(clientes);
+    }
+  }, [clientes, isLoading]);
 
   const adicionarCliente = (
     novoCliente: Omit<Cliente, "id" | "dataCriacao">,

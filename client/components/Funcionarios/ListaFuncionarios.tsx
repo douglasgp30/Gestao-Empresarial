@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useFuncionarios } from "../../contexts/FuncionariosContext";
+import { formatDate } from "../../lib/dateUtils";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   Card,
@@ -60,9 +61,6 @@ import {
   UserX,
 } from "lucide-react";
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("pt-BR");
-}
 
 export default function ListaFuncionarios() {
   const { user } = useAuth();

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -53,6 +54,7 @@ import {
   Calendar,
   Tag,
 } from "lucide-react";
+import { toast } from "../ui/use-toast";
 
 const categorias = [
   "Residencial",
@@ -62,10 +64,6 @@ const categorias = [
   "Emergência",
   "Outros",
 ];
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("pt-BR");
-}
 
 export default function ModalDescricoes() {
   const { descricoes, adicionarDescricao, excluirDescricao } = useEntidades();
@@ -87,24 +85,54 @@ export default function ModalDescricoes() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.nome.trim()) return;
 
-    adicionarDescricao({
-      nome: formData.nome.trim(),
-      categoria: formData.categoria || undefined,
-      tipo: "receita", // Default para receita, pode ser alterado posteriormente
-    });
+    try {
+      await adicionarDescricao({
+        nome: formData.nome.trim(),
+        categoria: formData.categoria || undefined,
+        tipo: "receita", // Default para receita, pode ser alterado posteriormente
+      });
 
-    resetForm();
-    setIsNewDescricaoOpen(false);
+      toast({
+        title: "Sucesso",
+        description: "Descrição criada com sucesso!",
+        variant: "default",
+      });
+
+      resetForm();
+      setIsNewDescricaoOpen(false);
+    } catch (error) {
+      console.error("Erro ao criar descrição:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao criar descrição. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleExcluir = (id: string) => {
-    excluirDescricao(id);
-    setDescricaoParaExcluir(null);
+  const handleExcluir = async (id: string) => {
+    try {
+      await excluirDescricao(id);
+      toast({
+        title: "Sucesso",
+        description: "Descrição excluída com sucesso!",
+        variant: "default",
+      });
+      setDescricaoParaExcluir(null);
+    } catch (error) {
+      console.error("Erro ao excluir descrição:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir descrição. Tente novamente.",
+        variant: "destructive",
+      });
+      // Manter o dialog aberto em caso de erro para o usuário tentar novamente
+    }
   };
 
   return (

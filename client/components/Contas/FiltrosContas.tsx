@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useContas } from "../../contexts/ContasContext";
+import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -32,9 +33,6 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("pt-BR");
-}
 
 function formatCurrency(value: number): string {
   return value.toLocaleString("pt-BR", {

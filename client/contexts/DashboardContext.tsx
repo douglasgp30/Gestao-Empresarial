@@ -4,6 +4,8 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useMemo,
+  useCallback,
 } from "react";
 import { DashboardStats, LancamentoCaixa, Conta } from "@shared/types";
 import { useCaixa } from "./CaixaContext";
@@ -100,9 +102,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasContext = null;
   }
 
+  // CORRIGIDO: Estado inicial do Dashboard é "Este Mês" (dia 1 até hoje)
   const [filtros, setFiltros] = useState<FiltrosPeriodo>({
-    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-    dataFim: new Date(),
+    dataInicio: getInicioDoMes(),
+    dataFim: getHoje(),
   });
 
   console.log("DashboardContext: Estado inicial dos filtros:", {
@@ -113,11 +116,17 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Estados para Meta do Mês
-  const [metaMes, setMetaMes] = useState<number>(() => {
+  const [metaMes, setMetaMesState] = useState<number>(() => {
     const mesAtual = new Date().toISOString().slice(0, 7); // YYYY-MM
     const storedMeta = localStorage.getItem(`metaMes_${mesAtual}`);
     return storedMeta ? parseFloat(storedMeta) : 10000; // Meta padrão de R$ 10.000
   });
+
+  const setMetaMes = useCallback((valor: number) => {
+    setMetaMesState(valor);
+    const mesAtual = new Date().toISOString().slice(0, 7);
+    localStorage.setItem(`metaMes_${mesAtual}`, valor.toString());
+  }, []);
   const [totalMetaMes, setTotalMetaMes] = useState(0);
   const [restanteParaMeta, setRestanteParaMeta] = useState(0);
   const [stats, setStats] = useState<DashboardStats>({
@@ -141,134 +150,117 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     contasAtrasadas: 0,
   });
 
-  const setFiltroRapido = (
-    tipo: "ultimos7dias" | "estaemana" | "ultimos30dias" | "mesAtual",
-  ) => {
-    let novoFiltro: FiltrosPeriodo;
+  const setFiltroRapido = useCallback(
+    (tipo: "ultimos7dias" | "estaemana" | "ultimos30dias" | "mesAtual") => {
+      let novoFiltro: FiltrosPeriodo;
 
-    switch (tipo) {
-      case "ultimos7dias":
-        novoFiltro = { dataInicio: getUltimos7Dias(), dataFim: getHoje() };
-        break;
-      case "estaemana":
-        novoFiltro = { dataInicio: getInicioSemana(), dataFim: getHoje() };
-        break;
-      case "ultimos30dias":
-        novoFiltro = { dataInicio: getUltimos30Dias(), dataFim: getHoje() };
-        break;
-      case "mesAtual":
-        novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getFimDoMes() };
-        break;
-      default:
-        novoFiltro = filtros;
+      switch (tipo) {
+        case "ultimos7dias":
+          novoFiltro = { dataInicio: getUltimos7Dias(), dataFim: getHoje() };
+          break;
+        case "estaemana":
+          novoFiltro = { dataInicio: getInicioSemana(), dataFim: getHoje() };
+          break;
+        case "ultimos30dias":
+          novoFiltro = { dataInicio: getUltimos30Dias(), dataFim: getHoje() };
+          break;
+        case "mesAtual":
+          // CORRIGIDO: "Este Mês" é do dia 1 até hoje (não até fim do mês)
+          novoFiltro = { dataInicio: getInicioDoMes(), dataFim: getHoje() };
+          break;
+        default:
+          return; // Não fazer nada se tipo inválido
+      }
+
+      setFiltros(novoFiltro);
+    },
+    [],
+  );
+
+  // Memoize filtered data to avoid recalculations
+  const lancamentosFiltrados = useMemo(() => {
+    if (!caixaContext?.lancamentos) return [];
+
+    let filtro = filtros;
+    if (aplicarFiltrosCaixa && caixaContext?.filtros) {
+      filtro = {
+        dataInicio: caixaContext.filtros.dataInicio || filtros.dataInicio,
+        dataFim: caixaContext.filtros.dataFim || filtros.dataFim,
+      };
     }
 
-    setFiltros(novoFiltro);
-  };
+    return caixaContext.lancamentos.filter((lancamento) => {
+      const dataLancamento = new Date(lancamento.data);
+      const dataInicio = new Date(
+        filtro.dataInicio.getFullYear(),
+        filtro.dataInicio.getMonth(),
+        filtro.dataInicio.getDate(),
+      );
+      const dataFim = new Date(
+        filtro.dataFim.getFullYear(),
+        filtro.dataFim.getMonth(),
+        filtro.dataFim.getDate(),
+      );
+      const dataLancNorm = new Date(
+        dataLancamento.getFullYear(),
+        dataLancamento.getMonth(),
+        dataLancamento.getDate(),
+      );
+
+      return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
+    });
+  }, [
+    caixaContext?.lancamentos,
+    filtros,
+    aplicarFiltrosCaixa,
+    caixaContext?.filtros?.dataInicio,
+    caixaContext?.filtros?.dataFim,
+  ]);
+
+  const contasFiltradas = useMemo(() => {
+    if (!contasContext?.contas) return [];
+
+    return contasContext.contas.filter((conta) => {
+      const dataReferencia = conta.dataPagamento || conta.dataVencimento;
+      const dataInicio = new Date(
+        filtros.dataInicio.getFullYear(),
+        filtros.dataInicio.getMonth(),
+        filtros.dataInicio.getDate(),
+      );
+      const dataFim = new Date(
+        filtros.dataFim.getFullYear(),
+        filtros.dataFim.getMonth(),
+        filtros.dataFim.getDate(),
+      );
+      const dataRefNorm = new Date(
+        dataReferencia.getFullYear(),
+        dataReferencia.getMonth(),
+        dataReferencia.getDate(),
+      );
+
+      return dataRefNorm >= dataInicio && dataRefNorm <= dataFim;
+    });
+  }, [contasContext?.contas, filtros]);
 
   // Calcular estatísticas baseadas no período selecionado e dados dos contextos
   useEffect(() => {
     if (!caixaContext || !contasContext) {
+      console.log("Dashboard: Aguardando contextos...", {
+        caixa: !!caixaContext,
+        contas: !!contasContext,
+      });
       return;
     }
 
-    if (!caixaContext?.lancamentos || caixaContext?.lancamentos?.length === 0) {
-      return;
-    }
+    console.log("Dashboard: Recalculando stats", {
+      lancamentos: caixaContext.lancamentos?.length || 0,
+      totaisCaixa: caixaContext.totais,
+      filtros: filtros,
+    });
 
     setIsLoading(true);
 
-    // Processar imediatamente (removendo timeout para debug)
-    // Filtrar lançamentos do caixa - usar filtros do dashboard ou do caixa
-    let lancamentosFiltrados;
-
-    if (aplicarFiltrosCaixa && caixaContext?.filtros) {
-      // Usar filtros específicos do Caixa para cálculos dinâmicos
-      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter(
-        (lancamento) => {
-          const dataLancamento = new Date(lancamento.data);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(
-            caixaContext?.filtros?.dataInicio?.getFullYear() ||
-              new Date().getFullYear(),
-            caixaContext?.filtros?.dataInicio?.getMonth() ||
-              new Date().getMonth(),
-            caixaContext?.filtros?.dataInicio?.getDate() ||
-              new Date().getDate(),
-          );
-          const dataFim = new Date(
-            caixaContext?.filtros?.dataFim?.getFullYear() ||
-              new Date().getFullYear(),
-            caixaContext?.filtros?.dataFim?.getMonth() || new Date().getMonth(),
-            caixaContext?.filtros?.dataFim?.getDate() || new Date().getDate(),
-          );
-          const dataLancNorm = new Date(
-            dataLancamento.getFullYear(),
-            dataLancamento.getMonth(),
-            dataLancamento.getDate(),
-          );
-
-          const dentroDataInicio = dataLancNorm >= dataInicio;
-          const dentroDataFim = dataLancNorm <= dataFim;
-          const tipoCorreto =
-            !caixaContext?.filtros?.tipo ||
-            caixaContext?.filtros?.tipo === "todos" ||
-            lancamento.tipo === caixaContext?.filtros?.tipo;
-          const formaPagamentoCorreta =
-            !caixaContext?.filtros?.formaPagamento ||
-            caixaContext?.filtros?.formaPagamento === "todas" ||
-            lancamento.formaPagamento === caixaContext?.filtros?.formaPagamento;
-          const tecnicoCorreto =
-            !caixaContext?.filtros?.tecnico ||
-            caixaContext?.filtros?.tecnico === "todos" ||
-            lancamento.tecnicoResponsavel === caixaContext?.filtros?.tecnico;
-          const campanhaCorreta =
-            !caixaContext?.filtros?.campanha ||
-            caixaContext?.filtros?.campanha === "todas" ||
-            lancamento.campanha === caixaContext?.filtros?.campanha;
-          const setorCorreto =
-            !caixaContext?.filtros?.setor ||
-            caixaContext?.filtros?.setor === "todos" ||
-            lancamento.setor === caixaContext?.filtros?.setor;
-
-          return (
-            dentroDataInicio &&
-            dentroDataFim &&
-            tipoCorreto &&
-            formaPagamentoCorreta &&
-            tecnicoCorreto &&
-            campanhaCorreta &&
-            setorCorreto
-          );
-        },
-      );
-    } else {
-      // Usar filtros do dashboard (período básico)
-
-      lancamentosFiltrados = (caixaContext?.lancamentos || []).filter(
-        (lancamento) => {
-          const dataLancamento = new Date(lancamento.data);
-          // Normalizar datas para comparação (apenas ano, mês, dia)
-          const dataInicio = new Date(
-            filtros.dataInicio.getFullYear(),
-            filtros.dataInicio.getMonth(),
-            filtros.dataInicio.getDate(),
-          );
-          const dataFim = new Date(
-            filtros.dataFim.getFullYear(),
-            filtros.dataFim.getMonth(),
-            filtros.dataFim.getDate(),
-          );
-          const dataLancNorm = new Date(
-            dataLancamento.getFullYear(),
-            dataLancamento.getMonth(),
-            dataLancamento.getDate(),
-          );
-
-          return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
-        },
-      );
-    }
+    // Use memoized filtered data instead of recalculating
 
     // LINHA 1 - Totais do Módulo Caixa (usar dados calculados pelo CaixaContext)
     const totalReceitasCaixa = caixaContext?.totais?.receitas || 0;
@@ -376,57 +368,67 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     // CÁLCULO TOTAL ALCANÇADO DA META
     // IMPORTANTE: Meta é SEMPRE do mês atual, independente dos filtros de data selecionados
-    // Baseado apenas em receitas do mês atual + contas a receber criadas no mês atual
+    // Baseado apenas em receitas do caixa no mês atual
     const hoje = new Date();
     const inicioMesAtual = getInicioDoMes();
     const fimMesAtual = getFimDoMes();
 
-    // 1. Receitas do caixa do mês atual (independente dos filtros)
+    // Receitas do caixa do mês atual (independente dos filtros)
+    // Meta do mês atual - baseada em receitas do caixa
+
     const receitasCaixaMesAtual = (caixaContext?.lancamentos || [])
       .filter((l) => {
         if (l.tipo !== "receita") return false;
-        const dataLancamento = new Date(l.data);
-        // Normalizar datas para comparação do mês atual
-        const dataLancNorm = new Date(
-          dataLancamento.getFullYear(),
-          dataLancamento.getMonth(),
-          dataLancamento.getDate(),
-        );
-        const inicioMesNorm = new Date(
-          inicioMesAtual.getFullYear(),
-          inicioMesAtual.getMonth(),
-          inicioMesAtual.getDate(),
-        );
-        const fimMesNorm = new Date(
-          fimMesAtual.getFullYear(),
-          fimMesAtual.getMonth(),
-          fimMesAtual.getDate(),
-        );
-        return dataLancNorm >= inicioMesNorm && dataLancNorm <= fimMesNorm;
+
+        // Converter dataHora para Date
+        let dataLancamento: Date;
+
+        if (l.dataHora) {
+          if (typeof l.dataHora === "string") {
+            // Se for string, pode ser formato brasileiro DD-MM-AAAA HH:MM:SS ou ISO
+            if (
+              l.dataHora.includes("-") &&
+              l.dataHora.split("-")[0].length === 2
+            ) {
+              // Formato brasileiro DD-MM-AAAA HH:MM:SS
+              const [datePart] = l.dataHora.split(" ");
+              const [dia, mes, ano] = datePart.split("-");
+              dataLancamento = new Date(
+                parseInt(ano),
+                parseInt(mes) - 1,
+                parseInt(dia),
+              );
+            } else {
+              // Formato ISO ou outro
+              dataLancamento = new Date(l.dataHora);
+            }
+          } else {
+            // Se já for Date
+            dataLancamento = new Date(l.dataHora);
+          }
+        } else if (l.data) {
+          // Fallback para campo data se existir
+          dataLancamento = new Date(l.data);
+        } else {
+          console.warn("[Dashboard] Lançamento sem data válida:", l);
+          return false;
+        }
+
+        return isMesmoMes(dataLancamento, hoje);
       })
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-    // 2. Contas a receber que foram CRIADAS no mês atual
-    // Como não temos dataCadastro, vamos usar dataVencimento como proxy
-    // Em uma implementação real, seria melhor ter um campo dataCriacao
-    const contasAReceberCriadasMesAtual = (contasContext?.contas || [])
-      .filter((c) => {
-        if (c.tipo !== "receber") return false;
-        // Simular data de criação usando dataVencimento
-        // Na prática, você deveria ter um campo dataCriacao ou dataCadastro
-        const dataVencimento = new Date(c.dataVencimento);
-        return isMesmoMes(dataVencimento, hoje);
-      })
-      .reduce((total, c) => total + c.valor, 0);
+    console.log(
+      "[Dashboard] Meta mês atual: R$",
+      receitasCaixaMesAtual.toFixed(2),
+    );
 
-    // Total alcançado da meta = apenas receitas + contas a receber criadas no mês
-    // NÃO inclui contas recebidas de meses anteriores
-    const novoTotalMetaMes =
-      receitasCaixaMesAtual + contasAReceberCriadasMesAtual;
+    // Total alcançado da meta = apenas receitas do mês atual
+    const novoTotalMetaMes = receitasCaixaMesAtual;
     setTotalMetaMes(novoTotalMetaMes);
 
-    // Restante para bater a meta
-    const novoRestanteParaMeta = metaMes - novoTotalMetaMes;
+    // Restante para bater a meta (Meta Restante = Meta do Mês - Total Alcançado)
+    const novoRestanteParaMeta = Math.max(0, metaMes - novoTotalMetaMes);
     setRestanteParaMeta(novoRestanteParaMeta);
 
     // Estatísticas gerais para compatibilidade
@@ -466,20 +468,18 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(false);
   }, [
-    filtros,
-    filtros.__timestamp, // Força re-render quando timestamp muda
-    filtros.dataInicio?.getTime(), // Força re-render quando data início muda
-    filtros.dataFim?.getTime(), // Força re-render quando data fim muda
-    metaMes, // Recalcula restante da meta quando meta muda
-    aplicarFiltrosCaixa,
-    caixaContext?.lancamentos,
-    caixaContext?.filtros,
-    contasContext?.contas,
+    lancamentosFiltrados,
+    contasFiltradas,
+    metaMes,
+    caixaContext?.totais,
+    contasContext?.totais,
   ]);
 
   // Sincronizar filtros com outros contextos quando não estiver aplicando filtros específicos do caixa
   useEffect(() => {
     if (!aplicarFiltrosCaixa && caixaContext && contasContext) {
+      console.log("Dashboard: Sincronizando filtros com contextos", filtros);
+
       // Sincronizar filtros do Dashboard com outros contextos
       const novosFiltrosCaixa = {
         ...caixaContext?.filtros,
@@ -497,6 +497,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       contasContext?.setFiltros?.(novosFiltrosContas);
     }
   }, [filtros.dataInicio, filtros.dataFim, aplicarFiltrosCaixa]);
+
+  // Carregar dados iniciais na primeira renderização
+  useEffect(() => {
+    if (caixaContext && contasContext) {
+      console.log("Dashboard: Carregamento inicial detectado");
+      // Força um recálculo das estatísticas
+      setFiltros((prev) => ({ ...prev, __timestamp: Date.now() }));
+    }
+  }, [!!caixaContext, !!contasContext]);
 
   // Filtrar contas que precisam de atenção (vencendo hoje e atrasadas)
   const contasVencendo =

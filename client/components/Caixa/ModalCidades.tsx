@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -27,9 +28,6 @@ import {
   Plus,
 } from "lucide-react";
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("pt-BR");
-}
 
 export default function ModalCidades() {
   const { cidades, adicionarCidade } = useEntidades();
@@ -226,21 +224,21 @@ export default function ModalCidades() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {cidades.map((cidade) => (
-                    <TableRow key={cidade.id}>
+                  {cidades.map((cidade, index) => (
+                    <TableRow key={`cidade-${index}-${cidade}`}>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <div className="bg-primary/10 p-2 rounded-full">
                             <MapPin className="h-4 w-4 text-primary" />
                           </div>
-                          <span className="font-medium">{cidade.nome}</span>
+                          <span className="font-medium">{cidade}</span>
                         </div>
                       </TableCell>
 
                       <TableCell>
                         <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                           <Calendar className="h-3 w-3" />
-                          <span>{formatDate(cidade.dataCriacao)}</span>
+                          <span>-</span>
                         </div>
                       </TableCell>
                     </TableRow>

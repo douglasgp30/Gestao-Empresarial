@@ -26,6 +26,7 @@ import {
   DialogTrigger,
 } from "../components/ui/dialog";
 import FiltrosDataCompacto from "../components/Dashboard/FiltrosDataCompacto";
+import { formatDate, formatDateRange } from "../lib/dateUtils";
 import {
   DollarSign,
   TrendingUp,
@@ -52,14 +53,10 @@ function formatCurrency(value: number) {
   });
 }
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("pt-BR");
-}
-
 function getStatusColor(status: string) {
   switch (status) {
     case "paga":
-      return "bg-success text-success-foreground";
+      return "bg-green-100 text-green-800";
     case "atrasada":
       return "bg-destructive text-destructive-foreground";
     case "vence_hoje":
@@ -126,7 +123,7 @@ function StatCard({
         </div>
         <p className="text-xs text-muted-foreground flex items-center">
           {!isLoading && trend === "up" && (
-            <TrendingUp className="h-3 w-3 mr-1 text-success" />
+            <TrendingUp className="h-3 w-3 mr-1 text-green-600" />
           )}
           {!isLoading && trend === "down" && (
             <TrendingDown className="h-3 w-3 mr-1 text-destructive" />
@@ -148,9 +145,8 @@ export default function Dashboard() {
     metaMes,
     totalMetaMes,
     restanteParaMeta,
-    setMetaMes
+    setMetaMes,
   } = useDashboard();
-
 
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [novaMetaValue, setNovaMetaValue] = useState(metaMes.toString());
@@ -160,14 +156,23 @@ export default function Dashboard() {
     .filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
       // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-      const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
-
-      return (
-        dataLancNorm >= dataInicio &&
-        dataLancNorm <= dataFim
+      const dataInicio = new Date(
+        filtros.dataInicio.getFullYear(),
+        filtros.dataInicio.getMonth(),
+        filtros.dataInicio.getDate(),
       );
+      const dataFim = new Date(
+        filtros.dataFim.getFullYear(),
+        filtros.dataFim.getMonth(),
+        filtros.dataFim.getDate(),
+      );
+      const dataLancNorm = new Date(
+        dataLancamento.getFullYear(),
+        dataLancamento.getMonth(),
+        dataLancamento.getDate(),
+      );
+
+      return dataLancNorm >= dataInicio && dataLancNorm <= dataFim;
     })
     .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
     .slice(0, 5);
@@ -180,7 +185,9 @@ export default function Dashboard() {
   };
 
   const handleSalvarMeta = () => {
-    const novaMetaNum = parseFloat(novaMetaValue.replace(/[^\d,]/g, '').replace(',', '.'));
+    const novaMetaNum = parseFloat(
+      novaMetaValue.replace(/[^\d,]/g, "").replace(",", "."),
+    );
     if (!isNaN(novaMetaNum) && novaMetaNum > 0) {
       setMetaMes(novaMetaNum);
       setIsEditingMeta(false);
@@ -193,18 +200,21 @@ export default function Dashboard() {
   };
 
   const formatCurrencyInput = (value: string) => {
-    const numValue = value.replace(/[^\d,]/g, '').replace(',', '.');
+    const numValue = value.replace(/[^\d,]/g, "").replace(",", ".");
     return numValue;
   };
 
   return (
     <TooltipProvider>
-      <div className="p-6 space-y-6">
-        {/* Header com Saldo Geral e Meta do Mês */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+        {/* Header - Mobile First */}
+        <div className="space-y-4">
+          {/* Título */}
+          <div className="text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+              Dashboard
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Visão geral financeira
             </p>
           </div>
@@ -212,8 +222,8 @@ export default function Dashboard() {
             {/* Espaçador à esquerda para equilibrar o layout */}
             <div className="flex-1"></div>
 
-            {/* Centro: Meta do Mês, Total Alcançado e Restante */}
-            <div className="flex items-start space-x-8 bg-accent/20 px-6 py-4 rounded-lg border mx-auto">
+            {/* Centro: Meta do Mês, Total Alcançado e Restante - Responsivo */}
+            <div className="hidden sm:flex items-start space-x-8 bg-accent/20 px-6 py-4 rounded-lg border mx-auto">
               {/* Meta do Mês */}
               <div className="flex flex-col items-center space-y-2 min-w-0">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
@@ -223,7 +233,10 @@ export default function Dashboard() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <Dialog open={isEditingMeta} onOpenChange={setIsEditingMeta}>
+                    <Dialog
+                      open={isEditingMeta}
+                      onOpenChange={setIsEditingMeta}
+                    >
                       <DialogTrigger asChild>
                         <span className="text-lg font-bold text-primary cursor-pointer hover:bg-accent/50 px-2 py-1 rounded transition-colors">
                           {formatCurrency(metaMes)}
@@ -233,7 +246,8 @@ export default function Dashboard() {
                         <DialogHeader>
                           <DialogTitle>Editar Meta do Mês</DialogTitle>
                           <DialogDescription>
-                            Defina sua meta de receitas para o mês atual. Este valor será usado para calcular o progresso da meta.
+                            Defina sua meta de receitas para o mês atual. Este
+                            valor será usado para calcular o progresso da meta.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -246,14 +260,22 @@ export default function Dashboard() {
                                 id="meta"
                                 placeholder="Ex: 15000"
                                 value={novaMetaValue}
-                                onChange={(e) => setNovaMetaValue(formatCurrencyInput(e.target.value))}
+                                onChange={(e) =>
+                                  setNovaMetaValue(
+                                    formatCurrencyInput(e.target.value),
+                                  )
+                                }
                                 className="w-full"
                               />
                             </div>
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="button" variant="outline" onClick={handleCancelarEdicao}>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleCancelarEdicao}
+                          >
                             Cancelar
                           </Button>
                           <Button type="button" onClick={handleSalvarMeta}>
@@ -262,7 +284,10 @@ export default function Dashboard() {
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                    <Edit3 className="h-3 w-3 text-muted-foreground cursor-pointer" onClick={() => setIsEditingMeta(true)} />
+                    <Edit3
+                      className="h-3 w-3 text-muted-foreground cursor-pointer"
+                      onClick={() => setIsEditingMeta(true)}
+                    />
                   </div>
                 )}
               </div>
@@ -284,9 +309,15 @@ export default function Dashboard() {
                         <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p className="font-medium mb-1">Total Alcançado da Meta:</p>
+                        <p className="font-medium mb-1">
+                          Total Alcançado da Meta:
+                        </p>
                         <p className="text-xs">
-                          <strong>Sempre do mês atual, independente dos filtros.</strong> Receitas do Caixa + Contas a Receber criadas no mês atual.
+                          <strong>
+                            Sempre do mês atual, independente dos filtros.
+                          </strong>{" "}
+                          Receitas do Caixa + Contas a Receber criadas no mês
+                          atual.
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -306,14 +337,16 @@ export default function Dashboard() {
                     <span
                       className={`text-lg font-bold ${
                         restanteParaMeta <= 0
-                          ? "text-success"
+                          ? "text-green-600 dark:text-green-400"
                           : "text-orange-600 dark:text-orange-400"
                       }`}
                     >
-                      {restanteParaMeta <= 0 ? "Meta Atingida!" : formatCurrency(restanteParaMeta)}
+                      {restanteParaMeta <= 0
+                        ? "Meta Atingida!"
+                        : formatCurrency(restanteParaMeta)}
                     </span>
                     {restanteParaMeta <= 0 && (
-                      <Trophy className="h-4 w-4 text-success" />
+                      <Trophy className="h-4 w-4 text-green-600" />
                     )}
                     <Tooltip>
                       <TooltipTrigger>
@@ -322,10 +355,10 @@ export default function Dashboard() {
                       <TooltipContent className="max-w-xs">
                         <p className="font-medium mb-1">Restante para Meta:</p>
                         <p className="text-xs">
-                          <strong>Sempre do mês atual.</strong> {restanteParaMeta <= 0
+                          <strong>Sempre do mês atual.</strong>{" "}
+                          {restanteParaMeta <= 0
                             ? "Parabéns! Você atingiu ou superou a meta do mês!"
-                            : "Valor que ainda falta para atingir a meta estabelecida."
-                          }
+                            : "Valor que ainda falta para atingir a meta estabelecida."}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -346,7 +379,7 @@ export default function Dashboard() {
                   <span
                     className={`text-lg font-bold ${
                       stats.saldoGeralConsolidado > 0
-                        ? "text-success"
+                        ? "text-green-600 dark:text-green-400"
                         : stats.saldoGeralConsolidado < 0
                           ? "text-destructive"
                           : "text-foreground"
@@ -359,7 +392,9 @@ export default function Dashboard() {
                       <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      <p className="font-medium mb-1">Cálculo do Saldo Geral:</p>
+                      <p className="font-medium mb-1">
+                        Cálculo do Saldo Geral:
+                      </p>
                       <p className="text-xs">
                         (Receitas do Caixa + Contas Recebidas) - (Despesas do
                         Caixa + Contas Pagas)
@@ -372,6 +407,97 @@ export default function Dashboard() {
 
             {/* Espaçador à direita para equilibrar o layout */}
             <div className="flex-1"></div>
+          </div>
+
+          {/* Versão Mobile da Meta do Mês */}
+          <div className="sm:hidden space-y-4">
+            {/* Saldo Geral Mobile */}
+            <div className="flex justify-center">
+              <div className="flex items-center space-x-3 bg-accent/20 px-4 py-2 rounded-lg border">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Saldo Geral:
+                </span>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <span
+                    className={`text-lg font-bold ${
+                      stats.saldoGeralConsolidado > 0
+                        ? "text-green-600 dark:text-green-400"
+                        : stats.saldoGeralConsolidado < 0
+                          ? "text-destructive"
+                          : "text-foreground"
+                    }`}
+                  >
+                    {formatCurrency(stats.saldoGeralConsolidado)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Meta do Mês Mobile */}
+            <div className="bg-accent/20 px-4 py-4 rounded-lg border">
+              <h3 className="text-lg font-semibold text-center mb-4">
+                Meta do Mês
+              </h3>
+
+              <div className="grid grid-cols-1 gap-4">
+                {/* Meta do Mês */}
+                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Meta do Mês
+                  </span>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <span className="text-xl font-bold text-primary">
+                      {formatCurrency(metaMes)}
+                    </span>
+                  )}
+                </div>
+
+                {/* Total Alcançado */}
+                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
+                  <span className="text-sm font-medium text-muted-foreground text-center">
+                    Total Alcançado
+                  </span>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <span className="text-xl font-bold text-blue-600">
+                      {formatCurrency(totalMetaMes)}
+                    </span>
+                  )}
+                </div>
+
+                {/* Restante para Meta */}
+                <div className="flex flex-col items-center space-y-2 p-3 bg-background rounded-lg">
+                  <span className="text-sm font-medium text-muted-foreground text-center">
+                    Restante para Meta
+                  </span>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`text-xl font-bold ${
+                          restanteParaMeta <= 0
+                            ? "text-green-600"
+                            : "text-orange-600"
+                        }`}
+                      >
+                        {restanteParaMeta <= 0
+                          ? "Meta Atingida!"
+                          : formatCurrency(restanteParaMeta)}
+                      </span>
+                      {restanteParaMeta <= 0 && (
+                        <Trophy className="h-5 w-5 text-green-600" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -387,13 +513,17 @@ export default function Dashboard() {
         )}
 
         {/* LINHA 1 - Totais do Módulo Caixa */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-foreground flex items-center space-x-2">
-            <Wallet className="h-5 w-5" />
-            <span>📊 Totais do Caixa</span>
-            <Badge variant="outline">Dinâmico com filtros</Badge>
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+            <div className="flex items-center space-x-2">
+              <Wallet className="h-5 w-5" />
+              <span>📊 Totais do Caixa</span>
+            </div>
+            <Badge variant="outline" className="w-fit">
+              Dinâmico com filtros
+            </Badge>
           </h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <StatCard
               title="Total de Receitas"
               value={formatCurrency(stats.totalReceitasCaixa)}
@@ -498,7 +628,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-
         {/* Content Grid */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Recent Transactions */}
@@ -525,7 +654,7 @@ export default function Dashboard() {
                         <div
                           className={`p-2 rounded-full ${
                             transaction.tipo === "receita"
-                              ? "bg-success/10 text-success"
+                              ? "bg-green-100 text-green-700"
                               : "bg-destructive/10 text-destructive"
                           }`}
                         >
@@ -555,7 +684,7 @@ export default function Dashboard() {
                         <p
                           className={`font-bold ${
                             transaction.tipo === "receita"
-                              ? "text-success"
+                              ? "text-green-600"
                               : "text-destructive"
                           }`}
                         >
@@ -634,6 +763,22 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Componente de Teste dos Filtros */}
+        {/* Espaço para futuros gráficos e relatórios */}
+        <div className="flex flex-col items-center gap-6">
+          <Card className="w-full max-w-2xl">
+            <CardContent className="p-6 text-center">
+              <div className="text-muted-foreground">
+                <Trophy className="h-8 w-8 mx-auto mb-2" />
+                <p className="text-sm">Sistema pronto para uso!</p>
+                <p className="text-xs mt-1">
+                  Utilize o menu para acessar as funções.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
