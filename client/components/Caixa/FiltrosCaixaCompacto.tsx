@@ -453,8 +453,35 @@ export function FiltrosCaixaCompacto() {
                     </div>
                   </div>
 
-                  {/* Terceira linha - Número da Nota */}
+                  {/* Terceira linha - Cidade e Número da Nota */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {/* Cidade */}
+                    <div>
+                      <label className="text-xs font-medium mb-1 block text-gray-600">
+                        Cidade
+                      </label>
+                      <Select
+                        value={filtrosLocal.cidade || "todas"}
+                        onValueChange={(value) =>
+                          setFiltrosLocal((prev) => ({ ...prev, cidade: value }))
+                        }
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todas">Todas</SelectItem>
+                          {cidades.map((cidade) => (
+                            <SelectItem key={cidade} value={cidade}>
+                              {cidade}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Número da Nota */}
                     <div>
                       <label className="text-xs font-medium mb-1 block text-gray-600">
                         Número da Nota
