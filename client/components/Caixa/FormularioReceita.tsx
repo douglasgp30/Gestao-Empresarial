@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { useClientes } from "../../contexts/ClientesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -22,10 +23,10 @@ import {
 import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
-import { TrendingUp, FileText } from "lucide-react";
+import { TrendingUp, UserPlus } from "lucide-react";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
-import { ModalCadastroClienteRapido } from "./ModalCadastroClienteRapido";
+import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 
 interface FormularioReceitaProps {
   onSuccess?: () => void;
