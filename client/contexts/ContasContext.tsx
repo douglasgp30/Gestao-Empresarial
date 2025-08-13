@@ -198,7 +198,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar contas
-      carregarContasDebounced();
+      await carregarContas();
     } catch (error) {
       console.error("Erro ao adicionar conta:", error);
       throw error;
