@@ -241,12 +241,16 @@ export default function FiltroDataContasSimples() {
                         // Usar parseFloat e depois criar data local para evitar problemas de timezone
                         const [ano, mes, dia] = e.target.value.split('-').map(Number);
                         const novaData = new Date(ano, mes - 1, dia, 23, 59, 59, 999);
-                        console.log('📅 Data fim contas alterada:', e.target.value, '->', novaData);
-                        setFiltros({
+                        console.log('📅 [FILTRO CONTAS] Data fim alterada:', e.target.value, '->', novaData);
+
+                        const novosFiltros = {
                           ...filtros,
                           dataFim: novaData,
                           __timestamp: Date.now(),
-                        });
+                        };
+
+                        console.log('📅 [FILTRO CONTAS] Aplicando filtros com nova data fim:', novosFiltros);
+                        setFiltros(novosFiltros);
                       }}
                       className="h-8 text-xs"
                     />
