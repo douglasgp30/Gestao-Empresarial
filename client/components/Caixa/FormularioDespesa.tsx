@@ -129,7 +129,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       // Resetar formulário
       setFormData({
         data: new Date().toISOString().split("T")[0],
-        conta: "empresa",
         categoria: "",
         descricao: "",
         formaPagamento: "",
