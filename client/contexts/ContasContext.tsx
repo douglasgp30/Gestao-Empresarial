@@ -219,8 +219,16 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     }, 300);
   }, []);
 
-  // Carregar contas na inicialização
+  // Carregar contas na inicialização - híbrido (localStorage + API)
   useEffect(() => {
+    // Primeiro, carregar dados do localStorage para exibição imediata
+    const contasLocal = carregarContasDoLocalStorage();
+    if (contasLocal.length > 0) {
+      console.log('🔄 [CONTAS] Carregando dados locais primeiro para exibição imediata');
+      setContas(contasLocal);
+    }
+
+    // Depois tentar carregar da API
     carregarContasDebounced();
   }, [carregarContasDebounced]);
 
