@@ -260,7 +260,7 @@ export default function ListaContas() {
           {!isLoading && (
             <Button
               variant="outline"
-              onClick={() => window.location.reload()}
+              onClick={forcarRecarregamento}
               className="text-xs"
             >
               Recarregar dados
