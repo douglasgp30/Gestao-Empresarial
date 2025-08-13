@@ -79,10 +79,14 @@ export function ColumnManager({
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          className={`flex items-center space-x-3 p-3 border rounded-lg ${
+                          className={`flex items-center space-x-3 p-3 border rounded-lg transition-all duration-200 ${
                             snapshot.isDragging
-                              ? "shadow-lg bg-background"
-                              : "bg-card"
+                              ? "shadow-lg bg-background scale-105"
+                              : "bg-card hover:bg-accent/50"
+                          } ${
+                            column.key === "data" || column.key === "acoes"
+                              ? "border-primary/30 bg-primary/5"
+                              : ""
                           }`}
                         >
                           <div
