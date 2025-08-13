@@ -50,7 +50,6 @@ import {
 } from "./routes/caixa";
 
 import contasRouter from "./routes/contas";
-import seedRouter from "./routes/seed";
 import { cleanFakeDataRoute } from "./routes/clean";
 
 import {
