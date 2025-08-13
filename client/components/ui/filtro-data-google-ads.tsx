@@ -77,8 +77,8 @@ export default function FiltroDataGoogleAds({
     return undefined;
   });
   const [showCalendar, setShowCalendar] = useState(false);
-  const [tempDataInicio, setTempDataInicio] = useState("");
-  const [tempDataFim, setTempDataFim] = useState("");
+  const [tempDataInicio, setTempDataInicio] = useState(dataInicio || "");
+  const [tempDataFim, setTempDataFim] = useState(dataFim || "");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const hoje = new Date();
