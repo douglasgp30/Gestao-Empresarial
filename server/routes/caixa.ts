@@ -121,12 +121,14 @@ export const createLancamento: RequestHandler = async (req, res) => {
     const data = LancamentoCaixaSchema.parse(req.body);
     console.log("[Caixa] Dados após validação:", JSON.stringify(data, null, 2));
 
-    // Validação customizada para valorRecebido quando forma de pagamento for cartão
+    // Verificar forma de pagamento e aplicar validações específicas
+    let isBoleto = false;
     if (data.formaPagamentoId) {
       const formaPagamento = await prisma.formaPagamento.findUnique({
         where: { id: data.formaPagamentoId },
       });
 
+      // Verificar se é cartão
       if (
         formaPagamento?.nome.toLowerCase().includes("cartão") ||
         formaPagamento?.nome.toLowerCase().includes("cartao")
@@ -137,6 +139,14 @@ export const createLancamento: RequestHandler = async (req, res) => {
               "Valor recebido é obrigatório quando a forma de pagamento for cartão",
           });
         }
+      }
+
+      // Verificar se é boleto
+      if (
+        formaPagamento?.nome.toLowerCase().includes("boleto") ||
+        formaPagamento?.nome.toLowerCase().includes("bancário")
+      ) {
+        isBoleto = true;
       }
     }
 
