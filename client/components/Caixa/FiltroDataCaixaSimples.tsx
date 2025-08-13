@@ -75,7 +75,7 @@ export default function FiltroDataCaixaSimples() {
         fim = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 23, 59, 59, 999);
         break;
       case '7-dias':
-        // ��ltimos 7 dias incluindo hoje (hoje + 6 dias anteriores = 7 dias total)
+        // Últimos 7 dias incluindo hoje (hoje + 6 dias anteriores = 7 dias total)
         const seteDiasAtras = new Date(hojeNormalizado);
         seteDiasAtras.setDate(seteDiasAtras.getDate() - 6);
         inicio = new Date(seteDiasAtras.getFullYear(), seteDiasAtras.getMonth(), seteDiasAtras.getDate(), 0, 0, 0, 0);
@@ -86,6 +86,7 @@ export default function FiltroDataCaixaSimples() {
         fim = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 23, 59, 59, 999);
         break;
       case '30-dias':
+        // Últimos 30 dias incluindo hoje (hoje + 29 dias anteriores = 30 dias total)
         const trintaDiasAtras = new Date(hojeNormalizado);
         trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 29);
         inicio = new Date(trintaDiasAtras.getFullYear(), trintaDiasAtras.getMonth(), trintaDiasAtras.getDate(), 0, 0, 0, 0);
