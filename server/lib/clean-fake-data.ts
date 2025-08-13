@@ -39,8 +39,10 @@ export async function cleanFakeData() {
           { email: { contains: "test" } },
           { email: { contains: "demo" } },
           { email: { contains: "example" } },
-          { telefone: "00000000000" },
-          { telefone: "11111111111" },
+          { telefonePrincipal: "00000000000" },
+          { telefonePrincipal: "11111111111" },
+          { telefoneSecundario: "00000000000" },
+          { telefoneSecundario: "11111111111" },
         ],
       },
     });
