@@ -115,7 +115,7 @@ type SortField =
 type SortDirection = "asc" | "desc" | null;
 
 export default function ListaContas() {
-  const { contas, filtros, excluirConta, marcarComoPaga } = useContas();
+  const { contas, filtros, excluirConta, marcarComoPaga, isLoading } = useContas();
   const [contaParaExcluir, setContaParaExcluir] = useState<string | null>(null);
   const [contaParaPagar, setContaParaPagar] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField | null>(null);
