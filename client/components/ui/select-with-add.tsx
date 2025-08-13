@@ -72,27 +72,32 @@ export default function SelectWithAdd({
 
   // Normalizar os dados para um formato único
   const normalizedItems = useMemo(() => {
-    if (items && Array.isArray(items)) {
-      return items.map(item => ({
-        id: item.id,
-        nome: item.nome,
-        label: item.nome,
-        value: item.id.toString(),
-        ...item
-      }));
-    }
+    try {
+      if (items && Array.isArray(items)) {
+        return items.map(item => ({
+          id: item.id || item.value || '',
+          nome: item.nome || item.label || '',
+          label: item.nome || item.label || '',
+          value: (item.id || item.value || '').toString(),
+          ...item
+        }));
+      }
 
-    if (options && Array.isArray(options)) {
-      return options.map(option => ({
-        id: option.value,
-        nome: option.label,
-        label: option.label,
-        value: option.value,
-        ...option
-      }));
-    }
+      if (options && Array.isArray(options)) {
+        return options.map(option => ({
+          id: option.value || '',
+          nome: option.label || '',
+          label: option.label || '',
+          value: option.value || '',
+          ...option
+        }));
+      }
 
-    return [];
+      return [];
+    } catch (error) {
+      console.error("Erro ao normalizar items no SelectWithAdd:", error);
+      return [];
+    }
   }, [items, options]);
 
   // Auto-selecionar item recém-criado
