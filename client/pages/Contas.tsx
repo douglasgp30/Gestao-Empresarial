@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Plus,
   DollarSign,
   Clock,
   AlertTriangle,
@@ -12,18 +10,15 @@ import {
 } from "lucide-react";
 import { ContasProvider, useContas } from "@/contexts/ContasContext";
 import { FiltroDataContasSimples } from "@/components/Contas/FiltroDataContasSimples";
-import { FormularioConta } from "@/components/Contas/FormularioConta";
+import { ModalConta } from "@/components/Contas/ModalConta";
 import { ListaContas } from "@/components/Contas/ListaContas";
-import { AccountsSystemTester } from "@/components/Debug/AccountsSystemTester";
 import { ContaLancamento } from "@shared/types";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 function ContasContent() {
   const { contas, carregando, forcarRecarregamento } = useContas();
   const [contaParaEditar, setContaParaEditar] =
     useState<ContaLancamento | null>(null);
-  const [abaSelecionada, setAbaSelecionada] = useState("lista");
+  const [modalContaAberto, setModalContaAberto] = useState(false);
 
   // Calcular totais
   const hoje = new Date();
@@ -60,12 +55,12 @@ function ContasContent() {
 
   const handleEditarConta = (conta: ContaLancamento) => {
     setContaParaEditar(conta);
-    setAbaSelecionada("formulario");
+    setModalContaAberto(true);
   };
 
   const handleSuccessForm = () => {
     setContaParaEditar(null);
-    setAbaSelecionada("lista");
+    setModalContaAberto(false);
   };
 
   return (
@@ -84,15 +79,10 @@ function ContasContent() {
             <RefreshCw className="mr-2 h-4 w-4" />
             Recarregar
           </Button>
-          <Button
-            onClick={() => {
-              setContaParaEditar(null);
-              setAbaSelecionada("formulario");
-            }}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Conta
-          </Button>
+          <ModalConta
+            contaParaEditar={contaParaEditar || undefined}
+            onSuccess={handleSuccessForm}
+          />
         </div>
       </div>
 
@@ -173,31 +163,8 @@ function ContasContent() {
         </Card>
       </div>
 
-      {/* Abas */}
-      <Tabs value={abaSelecionada} onValueChange={setAbaSelecionada}>
-        <TabsList>
-          <TabsTrigger value="lista">Lista de Contas</TabsTrigger>
-          <TabsTrigger value="formulario">
-            {contaParaEditar ? "Editar Conta" : "Nova Conta"}
-          </TabsTrigger>
-          <TabsTrigger value="teste">🧪 Teste do Sistema</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="lista" className="space-y-4">
-          <ListaContas onEditarConta={handleEditarConta} />
-        </TabsContent>
-
-        <TabsContent value="formulario" className="space-y-4">
-          <FormularioConta
-            contaParaEditar={contaParaEditar || undefined}
-            onSuccess={handleSuccessForm}
-          />
-        </TabsContent>
-
-        <TabsContent value="teste" className="space-y-4">
-          <AccountsSystemTester />
-        </TabsContent>
-      </Tabs>
+      {/* Lista de Contas */}
+      <ListaContas onEditarConta={handleEditarConta} />
 
       {/* Status de carregamento */}
       {carregando && (
