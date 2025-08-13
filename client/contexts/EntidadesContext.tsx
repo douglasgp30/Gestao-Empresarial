@@ -25,16 +25,26 @@ import {
 } from "../lib/apiService";
 
 interface EntidadesContextType {
-  // Descrições
+  // Tabela unificada de descrições e categorias
+  descricoesECategorias: DescricaoECategoria[];
+  adicionarDescricaoECategoria: (
+    item: Omit<DescricaoECategoria, "id" | "dataCriacao">,
+  ) => Promise<void>;
+  editarDescricaoECategoria: (id: string, item: Partial<DescricaoECategoria>) => Promise<void>;
+  excluirDescricaoECategoria: (id: string) => Promise<void>;
+
+  // Funções de conveniência para filtrar a tabela unificada
+  getCategorias: (tipo?: "receita" | "despesa") => DescricaoECategoria[];
+  getDescricoes: (tipo?: "receita" | "despesa", categoria?: string) => DescricaoECategoria[];
+
+  // Mantém interfaces originais para compatibilidade
   descricoes: Descricao[];
+  categorias: Categoria[];
   adicionarDescricao: (
     descricao: Omit<Descricao, "id" | "dataCriacao">,
   ) => Promise<void>;
   editarDescricao: (id: string, descricao: Partial<Descricao>) => Promise<void>;
   excluirDescricao: (id: string) => Promise<void>;
-
-  // Categorias (mantém localStorage por enquanto)
-  categorias: Categoria[];
   adicionarCategoria: (
     categoria: Omit<Categoria, "id" | "dataCriacao">,
   ) => void;
