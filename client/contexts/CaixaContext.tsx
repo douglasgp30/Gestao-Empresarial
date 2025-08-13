@@ -326,16 +326,21 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
+      console.log("Excluindo lançamento:", id);
       const response = await caixaApi.excluirLancamento(parseInt(id));
+
       if (response.error) {
+        console.error("Erro da API ao excluir:", response.error);
         setError(response.error);
         throw new Error(response.error);
       }
 
+      console.log("Lançamento excluído com sucesso, recarregando lista...");
       // Recarregar lançamentos forçando a atualização
       await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
+      setError("Erro ao excluir lançamento");
       throw error;
     }
   };
