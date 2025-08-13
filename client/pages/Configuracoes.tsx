@@ -256,7 +256,7 @@ export default function Configuracoes() {
           </TabsTrigger>
           <TabsTrigger value="testes">
             <AlertTriangle className="h-4 w-4 mr-2" />
-            Testes
+            Limpeza
           </TabsTrigger>
         </TabsList>
 
