@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { useClientes } from "../../contexts/ClientesContext";
@@ -75,22 +75,27 @@ export function ModalReceita() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Filtrar descrições de receita
-  const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
+  // Filtrar descrições de receita - usando useCallback para evitar re-renderizações
+  const descricoesReceita = useCallback(() => {
+    return descricoes.filter((d) => d.tipo === "receita");
+  }, [descricoes]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = formData.categoria
-    ? descricoesReceita.filter((d) => d.categoria === formData.categoria)
-    : [];
+  const descricoesFiltradas = useCallback(() => {
+    if (!formData.categoria) return [];
+    return descricoesReceita().filter((d) => d.categoria === formData.categoria);
+  }, [formData.categoria, descricoesReceita]);
 
   // Obter categorias únicas das descrições de receita
-  const categoriasReceita = [
-    ...new Set(
-      descricoesReceita
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
+  const categoriasReceita = useCallback(() => {
+    return [
+      ...new Set(
+        descricoesReceita()
+          .map((d) => d.categoria)
+          .filter((categoria) => categoria && categoria.trim() !== ""),
+      ),
+    ].sort();
+  }, [descricoesReceita]);
 
   // Verificar se forma de pagamento é cartão
   const isFormaPagamentoCartao =
@@ -367,7 +372,7 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoriasReceita.map((categoria) => (
+                    {categoriasReceita().map((categoria) => (
                       <SelectItem key={categoria} value={categoria}>
                         {categoria}
                       </SelectItem>
@@ -388,7 +393,7 @@ export function ModalReceita() {
                       ? "Selecione a descrição"
                       : "Primeiro selecione uma categoria"
                   }
-                  options={descricoesFiltradas.map(desc => ({
+                  options={descricoesFiltradas().map(desc => ({
                     value: desc.id.toString(),
                     label: desc.nome
                   }))}
