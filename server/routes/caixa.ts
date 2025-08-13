@@ -274,7 +274,42 @@ export const createLancamento: RequestHandler = async (req, res) => {
 export const updateLancamento: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    console.log(`[Caixa] Atualizando lançamento ID: ${id}`, JSON.stringify(req.body, null, 2));
+
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "ID do lançamento inválido" });
+    }
+
+    // Verificar se o lançamento existe
+    const lancamentoExistente = await prisma.lancamentoCaixa.findUnique({
+      where: { id },
+    });
+
+    if (!lancamentoExistente) {
+      return res.status(404).json({ error: "Lançamento não encontrado" });
+    }
+
     const data = LancamentoCaixaSchema.partial().parse(req.body);
+    console.log(`[Caixa] Dados validados:`, JSON.stringify(data, null, 2));
+
+    // Validação customizada para valorRecebido quando forma de pagamento for cartão
+    if (data.formaPagamentoId) {
+      const formaPagamento = await prisma.formaPagamento.findUnique({
+        where: { id: data.formaPagamentoId },
+      });
+
+      if (
+        formaPagamento?.nome.toLowerCase().includes("cartão") ||
+        formaPagamento?.nome.toLowerCase().includes("cartao")
+      ) {
+        if (!data.valorRecebido || data.valorRecebido <= 0) {
+          return res.status(400).json({
+            error:
+              "Valor recebido é obrigatório quando a forma de pagamento for cartão",
+          });
+        }
+      }
+    }
 
     const lancamento = await prisma.lancamentoCaixa.update({
       where: { id },
@@ -290,9 +325,11 @@ export const updateLancamento: RequestHandler = async (req, res) => {
       },
     });
 
+    console.log(`[Caixa] Lançamento atualizado com sucesso:`, lancamento.id);
     res.json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("[Caixa] Erro de validação:", error.errors);
       res.status(400).json({ error: "Dados inválidos", details: error.errors });
     } else {
       console.error("Erro ao atualizar lançamento:", error);
