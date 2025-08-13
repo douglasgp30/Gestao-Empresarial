@@ -33,6 +33,10 @@ export function ModalDespesa() {
     adicionarDescricao,
     adicionarFormaPagamento,
     isLoading: entidadesLoading,
+    // Unified data source
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
   } = useEntidades();
 
   const [isOpen, setIsOpen] = useState(false);
