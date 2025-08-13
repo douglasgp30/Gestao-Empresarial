@@ -310,3 +310,24 @@ export const contasApi = {
     return apiRequest<any>(`/contas/totais${queryString ? `?${queryString}` : ""}`);
   },
 };
+
+// === GENERAL API SERVICE ===
+// Main apiService object for general HTTP methods
+export const apiService = {
+  get: <T>(endpoint: string) => apiRequest<T>(endpoint),
+  post: <T>(endpoint: string, data?: any) => apiRequest<T>(endpoint, {
+    method: "POST",
+    body: data ? JSON.stringify(data) : undefined,
+  }),
+  put: <T>(endpoint: string, data?: any) => apiRequest<T>(endpoint, {
+    method: "PUT",
+    body: data ? JSON.stringify(data) : undefined,
+  }),
+  patch: <T>(endpoint: string, data?: any) => apiRequest<T>(endpoint, {
+    method: "PATCH",
+    body: data ? JSON.stringify(data) : undefined,
+  }),
+  delete: <T>(endpoint: string) => apiRequest<T>(endpoint, {
+    method: "DELETE",
+  }),
+};
