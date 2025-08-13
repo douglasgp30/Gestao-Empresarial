@@ -129,7 +129,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         }));
 
         console.log("🔍 [CONTAS] Dados recebidos da API:", {
-          total: response.data.length,
+          total: response.data.data.length,
           contasFormatadas: contasFormatadas.length,
         });
 
