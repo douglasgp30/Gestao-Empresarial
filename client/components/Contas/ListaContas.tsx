@@ -152,33 +152,16 @@ export default function ListaContas() {
     return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
   };
 
-  // Filtrar contas
+  // Aplicar apenas filtros não processados pela API (fornecedor/cliente)
   const contasFiltradas = contas
     .filter((conta) => {
-      const dataVencimento = new Date(conta.dataVencimento);
-      // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-      const dataVencNorm = new Date(dataVencimento.getFullYear(), dataVencimento.getMonth(), dataVencimento.getDate());
-
-      const dentroDataInicio = dataVencNorm >= dataInicio;
-      const dentroDataFim = dataVencNorm <= dataFim;
-      const tipoCorreto =
-        filtros.tipo === "ambos" || conta.tipo === filtros.tipo;
-      const statusCorreto = !filtros.status || conta.status === filtros.status;
       const fornecedorCorreto =
         !filtros.fornecedorCliente ||
         (conta.fornecedorCliente && conta.fornecedorCliente
           .toLowerCase()
           .includes(filtros.fornecedorCliente.toLowerCase()));
 
-      return (
-        dentroDataInicio &&
-        dentroDataFim &&
-        tipoCorreto &&
-        statusCorreto &&
-        fornecedorCorreto
-      );
+      return fornecedorCorreto;
     })
     .sort((a, b) => {
       // Aplicar ordenação personalizada se houver
