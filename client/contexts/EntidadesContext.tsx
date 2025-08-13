@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import {
   Descricao,
   Categoria,
+  DescricaoECategoria,
   FormaPagamento,
   Cliente,
   Fornecedor,
