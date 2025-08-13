@@ -251,38 +251,10 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Calcular totais baseados nos filtros
+  // Calcular totais baseados nas contas já filtradas pela API
   const totais = React.useMemo(() => {
+    // Aplicar filtros adicionais apenas no frontend (fornecedor/cliente)
     const contasFiltradas = contas.filter((conta) => {
-      // Para contas pagas, usar dataPagamento. Para pendentes, usar dataVencimento
-      const dataReferencia = conta.dataPagamento
-        ? new Date(conta.dataPagamento)
-        : new Date(conta.dataVencimento);
-      // Normalizar datas para comparaç��o (apenas ano, mês, dia)
-      const dataInicio = new Date(
-        filtros.dataInicio.getFullYear(),
-        filtros.dataInicio.getMonth(),
-        filtros.dataInicio.getDate(),
-      );
-      const dataFim = new Date(
-        filtros.dataFim.getFullYear(),
-        filtros.dataFim.getMonth(),
-        filtros.dataFim.getDate(),
-      );
-      const dataRefNorm = new Date(
-        dataReferencia.getFullYear(),
-        dataReferencia.getMonth(),
-        dataReferencia.getDate(),
-      );
-
-      const dentroDataInicio = dataRefNorm >= dataInicio;
-      const dentroDataFim = dataRefNorm <= dataFim;
-      const tipoCorreto =
-        filtros.tipo === "ambos" || conta.tipo === filtros.tipo;
-      const statusCorreto =
-        !filtros.status ||
-        filtros.status === "todos" ||
-        conta.status === filtros.status;
       const fornecedorCorreto =
         !filtros.fornecedorCliente ||
         filtros.fornecedorCliente === "todos" ||
@@ -290,13 +262,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
           .toLowerCase()
           .includes(filtros.fornecedorCliente.toLowerCase());
 
-      return (
-        dentroDataInicio &&
-        dentroDataFim &&
-        tipoCorreto &&
-        statusCorreto &&
-        fornecedorCorreto
-      );
+      return fornecedorCorreto;
     });
 
     const totalPagar = contasFiltradas
