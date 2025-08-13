@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useContas } from "../../contexts/ContasContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { useClientes } from "../../contexts/ClientesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
