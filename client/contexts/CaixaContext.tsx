@@ -144,7 +144,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           dataInicio: formatarDataParaServidor(filtros.dataInicio),
           dataFim: formatarDataParaServidor(filtros.dataFim),
           ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
-          ...(filtros.conta !== "todas" && { conta: filtros.conta }),
           ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
           ...(filtros.numeroNota &&
             filtros.numeroNota.trim() !== "" && {
