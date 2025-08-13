@@ -8,6 +8,7 @@ import { ContasProvider, useContas } from "@/contexts/ContasContext";
 import { FiltroDataContasSimples } from "@/components/Contas/FiltroDataContasSimples";
 import { FormularioConta } from "@/components/Contas/FormularioConta";
 import { ListaContas } from "@/components/Contas/ListaContas";
+import { AccountsSystemTester } from "@/components/Debug/AccountsSystemTester";
 import { ContaLancamento } from "@shared/types";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
