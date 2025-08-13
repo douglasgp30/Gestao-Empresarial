@@ -46,7 +46,7 @@ export function CleanFakeData() {
 
         toast({
           title: "✅ Limpeza Concluída!",
-          description: `${totalRemovidos} registros fictícios removidos. Sistema agora contém apenas dados reais.`,
+          description: `${totalRemovidos} registros fictícios removidos. Sistema agora cont��m apenas dados reais.`,
           variant: "default",
         });
       } else {
@@ -103,14 +103,41 @@ export function CleanFakeData() {
           </div>
         </div>
 
-        <Button
-          onClick={cleanFakeData}
-          disabled={isLoading}
-          variant="destructive"
-          className="w-full"
-        >
-          {isLoading ? "Limpando Dados..." : "🗑️ Executar Limpeza Completa"}
-        </Button>
+        <div className="space-y-2">
+          <Button
+            onClick={async () => {
+              try {
+                const response = await fetch("/api/ping");
+                const data = await response.json();
+                toast({
+                  title: "✅ Conectividade OK",
+                  description: `Servidor respondeu: ${data.message}`,
+                  variant: "default",
+                });
+              } catch (error) {
+                toast({
+                  title: "❌ Erro de Conectividade",
+                  description: "Não foi possível conectar com o servidor",
+                  variant: "destructive",
+                });
+              }
+            }}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            🔍 Testar Conectividade
+          </Button>
+
+          <Button
+            onClick={cleanFakeData}
+            disabled={isLoading}
+            variant="destructive"
+            className="w-full"
+          >
+            {isLoading ? "Limpando Dados..." : "🗑️ Executar Limpeza Completa"}
+          </Button>
+        </div>
 
         {lastResults && (
           <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
