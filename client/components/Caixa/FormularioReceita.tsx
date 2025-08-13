@@ -148,19 +148,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
 
-  // Log para debug dos cálculos
-  console.log("[FormularioReceita] Cálculos:", {
-    valor: valorCalculado,
-    valorQueEntrou: valorQueEntrouCalculado,
-    impostos: impostoCalculado,
-    descontoNota: descontoNotaFiscal,
-    taxaCartao: taxaCartao,
-    valorLiquido: valorLiquidoCalculado,
-    comissao: comissaoCalculada,
-    valorParaEmpresa: valorParaEmpresa,
-    isCartao: isFormaPagamentoCartao
-  });
-
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
     if (!isFormaPagamentoCartao && valorQueEntrouInput.numericValue > 0) {
