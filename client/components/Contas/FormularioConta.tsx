@@ -59,16 +59,36 @@ export default function FormularioConta() {
 
     const valor = parseFloat(formData.valor);
     if (!valor || valor <= 0) return;
-    if (!formData.fornecedorCliente || !formData.dataVencimento) return;
+
+    // Para contas a receber, verificar se o cliente foi selecionado
+    if (activeTab === "receber") {
+      if (!formData.cliente || !formData.dataVencimento) return;
+    } else {
+      // Para contas a pagar, verificar fornecedor
+      if (!formData.fornecedorCliente || !formData.dataVencimento) return;
+    }
+
+    // Buscar dados do cliente se for conta a receber
+    const clienteSelecionado = activeTab === "receber" && formData.cliente
+      ? clientes.find(c => c.id === formData.cliente)
+      : null;
 
     adicionarConta({
       tipo: activeTab as "pagar" | "receber",
       dataVencimento: new Date(formData.dataVencimento),
-      fornecedorCliente: formData.fornecedorCliente,
+      // Para contas a receber, usar nome do cliente; para pagar, usar fornecedor
+      fornecedorCliente: activeTab === "receber"
+        ? clienteSelecionado?.nome || "Cliente não encontrado"
+        : formData.fornecedorCliente,
+      clienteId: activeTab === "receber" ? formData.cliente : undefined,
       tipoPagamento: formData.tipoPagamento,
       valor,
       status: "pendente",
       observacoes: formData.observacoes || undefined,
+      descricao: activeTab === "receber"
+        ? `Conta a receber - ${clienteSelecionado?.nome || "Cliente"}`
+        : `Conta a pagar - ${formData.fornecedorCliente}`,
+      dataCriacao: new Date(),
     });
 
     resetForm();
