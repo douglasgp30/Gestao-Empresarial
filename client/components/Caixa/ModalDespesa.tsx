@@ -71,7 +71,6 @@ export function ModalDespesa() {
     setFormData({
       data: new Date().toISOString().split("T")[0],
       valor: "",
-      conta: "empresa",
       categoria: "",
       descricao: "",
       formaPagamento: "",
