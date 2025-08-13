@@ -166,9 +166,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const saldoContasPagas = totalContasRecebidas - totalContasPagas;
 
     // LINHA 3 - Totais de Contas a Receber e a Pagar do mês atual (não processadas)
+    console.log("[Dashboard] 📊 Contas do contexto:", contasContext?.contas?.length || 0);
+    console.log("[Dashboard] 📊 Contas do mês atual:", contasMesAtual.length);
     const totalContasAReceber = contasMesAtual
       .filter((c) => c.tipo === "receber" && c.status !== "paga")
       .reduce((total, c) => total + c.valor, 0);
+    console.log("[Dashboard] 📊 Total contas a receber:", totalContasAReceber);
 
     const totalContasAPagar = contasMesAtual
       .filter((c) => c.tipo === "pagar" && c.status !== "paga")
