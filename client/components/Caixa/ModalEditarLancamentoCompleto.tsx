@@ -801,7 +801,7 @@ export function ModalEditarLancamentoCompleto({
             )}
 
             {/* Resumo financeiro para despesas */}
-            {lancamento.tipo === "despesa" && (valorInput.numericValue || 0) > 0 && (
+            {lancamento.tipo === "despesa" && Number(valorInput.numericValue || 0) > 0 && (
               <div className="p-4 bg-red-50 rounded-lg">
                 <h4 className="font-medium text-red-800 mb-2">
                   Resumo da Despesa
