@@ -13,7 +13,6 @@ const ContaLancamentoSchema = z
     codigoCliente: z.number().optional(),
     codigoFornecedor: z.number().optional(),
     tipo: z.enum(["receber", "pagar"]),
-    conta: z.enum(["empresa", "pessoal"]).default("empresa"),
     formaPg: z.number().optional(),
     observacoes: z.string().optional(),
     descricaoCategoria: z.number().optional(),
