@@ -456,7 +456,10 @@ export default function FiltroDataGoogleAds({
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    onClick={aplicarDatasPersonalizadas}
+                    onClick={() => {
+                      console.log('🖱️ FILTRO Clique: Botão Aplicar');
+                      aplicarDatasPersonalizadas();
+                    }}
                     className="flex-1 h-7 text-xs"
                     disabled={!tempDataInicio || !tempDataFim}
                   >
