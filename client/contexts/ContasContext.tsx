@@ -95,8 +95,6 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      console.log("Resposta da API de contas:", response);
-
       // Verificar se response.data é um array
       const contasData = Array.isArray(response.data) ? response.data : [];
 
