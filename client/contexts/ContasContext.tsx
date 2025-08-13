@@ -145,8 +145,11 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         dataVencimento: novaConta.dataVencimento.toISOString().split("T")[0],
         status: "pendente",
         observacoes: novaConta.observacoes,
-        categoria: novaConta.categoria,
+        categoria: novaConta.tipoPagamento || novaConta.categoria,
       };
+
+      console.log("[ContasContext] Dados originais:", novaConta);
+      console.log("[ContasContext] Dados para API:", dadosApi);
 
       const response = await contasApi.criar(dadosApi);
       if (response.error) {
