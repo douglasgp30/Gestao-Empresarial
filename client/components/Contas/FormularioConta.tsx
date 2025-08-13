@@ -30,12 +30,14 @@ import { toast } from "../ui/use-toast";
 export default function FormularioConta() {
   const { adicionarConta } = useContas();
   const { formasPagamento, adicionarFormaPagamento } = useEntidades();
+  const { clientes } = useClientes();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("pagar");
 
   const [formData, setFormData] = useState({
     dataVencimento: "",
     fornecedorCliente: "",
+    cliente: "", // Para contas a receber - ID do cliente
     tipoPagamento: "",
     valor: "",
     observacoes: "",
