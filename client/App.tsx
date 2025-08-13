@@ -1,15 +1,28 @@
 import "./global.css";
 
-// Suprimir erro benigno do ResizeObserver
+// Suprimir erros benignos do ResizeObserver
 const originalError = console.error;
+const originalWarn = console.warn;
+
 console.error = (...args: any[]) => {
+  if (
+    typeof args[0] === 'string' &&
+    (args[0].includes('ResizeObserver loop completed with undelivered notifications') ||
+     args[0].includes('ResizeObserver loop limit exceeded'))
+  ) {
+    return;
+  }
+  originalError.apply(console, args);
+};
+
+console.warn = (...args: any[]) => {
   if (
     typeof args[0] === 'string' &&
     args[0].includes('ResizeObserver loop completed with undelivered notifications')
   ) {
     return;
   }
-  originalError.apply(console, args);
+  originalWarn.apply(console, args);
 };
 
 import { Toaster } from "@/components/ui/toaster";
