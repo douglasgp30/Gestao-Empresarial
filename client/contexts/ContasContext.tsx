@@ -149,7 +149,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   // Carregar contas na inicialização e quando filtros mudarem
   useEffect(() => {
     carregarContas();
-  }, [filtros.dataInicio, filtros.dataFim, filtros.tipo, filtros.status]);
+  }, []);
 
   const adicionarConta = async (novaConta: Omit<Conta, "id" | "funcionarioId">) => {
     try {
