@@ -274,7 +274,6 @@ model ContaLancamento {
   codigoCliente         Int?     // BIGINT FK clientes(id) - Conditional
   codigoFornecedor      Int?     // BIGINT FK fornecedores(id) - Conditional
   tipo                  String   // ENUM('receber','pagar')
-  conta                 String   @default("empresa") // ENUM('empresa','pessoal')
 
   // Payment Information
   formaPagamentoId      Int?     // SMALLINT FK formas_pagamento(id) - Conditional
