@@ -230,6 +230,22 @@ export default function ListaContas() {
     setContaParaPagar(null);
   };
 
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <h3 className="text-lg font-medium text-muted-foreground mb-2">
+            Carregando contas...
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Aguarde enquanto carregamos suas contas.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (contasFiltradas.length === 0) {
     return (
       <Card>
