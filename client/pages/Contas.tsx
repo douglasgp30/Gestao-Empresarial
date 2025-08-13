@@ -181,6 +181,7 @@ function ContasContent() {
           <TabsTrigger value="formulario">
             {contaParaEditar ? "Editar Conta" : "Nova Conta"}
           </TabsTrigger>
+          <TabsTrigger value="teste">🧪 Teste do Sistema</TabsTrigger>
         </TabsList>
 
         <TabsContent value="lista" className="space-y-4">
