@@ -149,9 +149,20 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     carregarContas();
   }, []);
 
+  // Adicionar logs para setFiltros
+  const setFiltrosComLog = (novosFiltros: any) => {
+    console.log('🔄 [CONTAS CONTEXT] setFiltros chamado com:', novosFiltros);
+    console.log('🔄 [CONTAS CONTEXT] Filtros anteriores:', filtros);
+    setFiltros(novosFiltros);
+    console.log('🔄 [CONTAS CONTEXT] setFiltros executado');
+  };
+
   // Recarregar quando filtros importantes mudarem
   useEffect(() => {
+    console.log('🔄 [CONTAS CONTEXT] useEffect de filtros disparado');
+    console.log('🔄 [CONTAS CONTEXT] Filtros atuais:', filtros);
     if (filtros.dataInicio && filtros.dataFim) {
+      console.log('🔄 [CONTAS CONTEXT] Carregando contas...');
       carregarContas();
     }
   }, [filtros.dataInicio, filtros.dataFim, filtros.tipo, filtros.status]);
