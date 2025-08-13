@@ -116,6 +116,9 @@ type SortDirection = "asc" | "desc" | null;
 
 export default function ListaContas() {
   const { contas, filtros, excluirConta, marcarComoPaga, forcarRecarregamento, isLoading } = useContas();
+
+  console.log('🔍 [LISTA CONTAS] Contas recebidas do contexto:', contas);
+  console.log('🔍 [LISTA CONTAS] Filtros atuais:', filtros);
   const [contaParaExcluir, setContaParaExcluir] = useState<string | null>(null);
   const [contaParaPagar, setContaParaPagar] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField | null>(null);
