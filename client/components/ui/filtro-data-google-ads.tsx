@@ -259,12 +259,7 @@ export default function FiltroDataGoogleAds({
   };
 
   const aplicarPeriodo = (opcao: OpcaoPeriodo) => {
-    console.log('🚀 === APLICAR PERÍODO INICIADO ===');
-    console.log('🔍 Aplicando período:', opcao.id);
-    console.log('🔍 Opção recebida:', opcao);
-
     if (opcao.id === "personalizar") {
-      console.log('📝 Modo personalizar ativado');
       // Sincronizar campos temporários com os valores atuais
       setTempDataInicio(dataInicio || "");
       setTempDataFim(dataFim || "");
@@ -282,41 +277,25 @@ export default function FiltroDataGoogleAds({
     }
 
     const { inicio, fim } = opcao.calcularDatas();
-    console.log('🔍 Datas calculadas:', { inicio, fim });
-
     setPeriodoSelecionado(opcao.id);
 
     // Aplicar as datas imediatamente
     const dataInicioFormatada = format(inicio, "yyyy-MM-dd");
     const dataFimFormatada = format(fim, "yyyy-MM-dd");
 
-    console.log('🔍 Datas formatadas:', { dataInicioFormatada, dataFimFormatada });
-    console.log('🔍 Chamando onDataInicioChange...');
     onDataInicioChange(dataInicioFormatada);
-    console.log('🔍 Chamando onDataFimChange...');
     onDataFimChange(dataFimFormatada);
 
-    console.log('🔍 Chamando onAplicar...');
     // Aplicar os filtros imediatamente
     onAplicar();
-    console.log('🔍 Fechando dropdown...');
     setIsOpen(false);
-    console.log('🚀 === APLICAR PERÍODO FINALIZADO ===');
   };
 
   const aplicarDatasPersonalizadas = () => {
-    console.log('🚀 === APLICAR DATAS PERSONALIZADAS INICIADO ===');
-    console.log('📅 dateRange atual:', dateRange);
-    console.log('📅 tempDataInicio atual:', tempDataInicio);
-    console.log('📅 tempDataFim atual:', tempDataFim);
-
     // Priorizar dateRange do calendário se disponível
     if (dateRange?.from && dateRange?.to) {
-      console.log('📅 Usando dateRange...');
       const dataInicioFormatada = format(dateRange.from, "yyyy-MM-dd");
       const dataFimFormatada = format(dateRange.to, "yyyy-MM-dd");
-
-      console.log('📅 Datas formatadas do dateRange:', { dataInicioFormatada, dataFimFormatada });
 
       onDataInicioChange(dataInicioFormatada);
       onDataFimChange(dataFimFormatada);
@@ -327,9 +306,6 @@ export default function FiltroDataGoogleAds({
     }
     // Caso contrário, usar campos temporários
     else if (tempDataInicio && tempDataFim) {
-      console.log('📅 Usando campos temporários...');
-      console.log('📅 Datas dos campos:', { tempDataInicio, tempDataFim });
-
       onDataInicioChange(tempDataInicio);
       onDataFimChange(tempDataFim);
 
@@ -340,19 +316,14 @@ export default function FiltroDataGoogleAds({
       });
     }
     else {
-      console.log('❌ Nenhuma data válida encontrada');
       // Se nenhum estiver preenchido, não fazer nada
       return;
     }
 
-    console.log('📅 Definindo período como personalizar...');
     setPeriodoSelecionado("personalizar");
-    console.log('📅 Chamando onAplicar...');
     onAplicar();
-    console.log('📅 Fechando modals...');
     setIsOpen(false);
     setShowCalendar(false);
-    console.log('🚀 === APLICAR DATAS PERSONALIZADAS FINALIZADO ===');
   };
 
   const voltarParaOpcoes = () => {
@@ -390,12 +361,7 @@ export default function FiltroDataGoogleAds({
                 <div className="space-y-1">
                   {/* Personalizar no topo */}
                   <button
-                    onClick={(e) => {
-                      console.log('🖱️ CLIQUE CAPTURADO: Personalizar');
-                      e.preventDefault();
-                      e.stopPropagation();
-                      aplicarPeriodo(opcoesPeriodo.find(o => o.id === "personalizar")!)
-                    }}
+                    onClick={() => aplicarPeriodo(opcoesPeriodo.find(o => o.id === "personalizar")!)}
                     className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
                       periodoSelecionado === "personalizar"
                         ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
@@ -413,12 +379,7 @@ export default function FiltroDataGoogleAds({
                     .map((opcao) => (
                     <button
                       key={opcao.id}
-                      onClick={(e) => {
-                        console.log(`🖱️ CLIQUE CAPTURADO: ${opcao.label} (${opcao.id})`);
-                        e.preventDefault();
-                        e.stopPropagation();
-                        aplicarPeriodo(opcao);
-                      }}
+                      onClick={() => aplicarPeriodo(opcao)}
                       className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
                         periodoSelecionado === opcao.id
                           ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
@@ -476,12 +437,7 @@ export default function FiltroDataGoogleAds({
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    onClick={(e) => {
-                      console.log('🖱️ CLIQUE CAPTURADO: Botão Aplicar (datas personalizadas)');
-                      e.preventDefault();
-                      e.stopPropagation();
-                      aplicarDatasPersonalizadas();
-                    }}
+                    onClick={aplicarDatasPersonalizadas}
                     className="flex-1 h-7 text-xs"
                     disabled={!tempDataInicio || !tempDataFim}
                   >
