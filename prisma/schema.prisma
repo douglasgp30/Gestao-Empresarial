@@ -146,6 +146,7 @@ model Setor {
   // Relacionamentos
   lancamentos  LancamentoCaixa[]
   agendamentos Agendamento[]
+  contas       ContaLancamento[]
 
   @@map("setores")
 }
