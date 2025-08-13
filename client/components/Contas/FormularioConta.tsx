@@ -78,7 +78,7 @@ export function FormularioConta({
         formaPg: contaParaEditar.formaPg?.toString() || "",
         observacoes: contaParaEditar.observacoes || "",
         descricaoCategoria:
-          contaParaEditar.descricaoCategoria?.toString() || "",
+          contaParaEditar.descricaoCategoria?.toString() || "0",
         pago: contaParaEditar.pago,
         dataPagamento: contaParaEditar.dataPagamento,
       });
