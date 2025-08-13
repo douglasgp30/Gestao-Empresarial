@@ -383,7 +383,7 @@ export function FormularioConta({
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Nenhuma</SelectItem>
+                <SelectItem value="0">Nenhuma</SelectItem>
                 {categorias.map((categoria) => (
                   <SelectItem
                     key={categoria.id}
