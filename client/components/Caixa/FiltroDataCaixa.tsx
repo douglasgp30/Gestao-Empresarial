@@ -37,9 +37,13 @@ export default function FiltroDataCaixa() {
 
   const handleLimpar = () => {
     const hoje = new Date();
+    const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
+    const fimHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
     setFiltros({
-      dataInicio: hoje,
-      dataFim: hoje,
+      ...filtros,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
+      __timestamp: Date.now(),
     });
   };
 
