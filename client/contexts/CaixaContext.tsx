@@ -20,7 +20,6 @@ interface CaixaContextType {
     tecnico?: string;
     campanha?: string;
     setor?: string;
-    conta?: string;
     categoria?: string;
     descricao?: string;
     cliente?: string;
