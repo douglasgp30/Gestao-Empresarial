@@ -85,16 +85,46 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     tipo: "ambos" as "pagar" | "receber" | "ambos",
   });
 
-  // Carregar dados reais do localStorage
-  useEffect(() => {
-    const contasReais = carregarContasReais();
-    const contasComStatus = contasReais.map((conta) => ({
-      ...conta,
-      status: getStatusConta(conta.dataVencimento, conta.status),
-    }));
+  // Função para carregar contas da API
+  const carregarContas = async () => {
+    try {
+      setIsLoading(true);
+      const response = await contasApi.listar();
+      if (response.error) {
+        console.error("Erro ao carregar contas:", response.error);
+        return;
+      }
 
-    setContas(contasComStatus);
-    setIsLoading(false);
+      // Converter dados da API para o formato do contexto
+      const contasFormatadas = (response.data || []).map((c: any) => ({
+        id: c.id.toString(),
+        tipo: c.tipo,
+        descricao: c.descricao,
+        valor: c.valor,
+        dataVencimento: new Date(c.dataVencimento),
+        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
+        status: c.status,
+        observacoes: c.observacoes,
+        categoria: c.categoria,
+        dataCriacao: new Date(c.dataCriacao),
+        // Campos de compatibilidade
+        fornecedorCliente: c.descricao, // Usar descrição como nome do fornecedor/cliente
+        tipoPagamento: c.categoria,
+        funcionarioId: user?.id || "1",
+        clienteId: c.clienteId,
+      }));
+
+      setContas(contasFormatadas);
+    } catch (error) {
+      console.error("Erro ao carregar contas:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Carregar contas na inicialização
+  useEffect(() => {
+    carregarContas();
   }, []);
 
   const adicionarConta = async (novaConta: Omit<Conta, "id" | "funcionarioId">) => {
