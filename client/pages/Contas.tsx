@@ -68,7 +68,8 @@ function ContasContent() {
             <RefreshCw className="mr-2 h-4 w-4" />
             Recarregar
           </Button>
-          <ModalConta />
+          <ModalContasReceber />
+          <ModalContasPagar />
         </div>
       </div>
 
