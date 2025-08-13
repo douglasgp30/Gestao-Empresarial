@@ -1,6 +1,6 @@
 import React from "react";
 import { ContasProvider, useContas } from "@/contexts/ContasContext";
-import { EntidadesProvider } from "@/contexts/EntidadesProvider";
+import { EntidadesProvider } from "@/contexts/EntidadesContext";
 import { ClientesProvider } from "@/contexts/ClientesContext";
 import { FiltroDataContasSimples } from "@/components/Contas/FiltroDataContasSimples";
 import { ModalContasReceber } from "@/components/Contas/ModalContasReceber";
