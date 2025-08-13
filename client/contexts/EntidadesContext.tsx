@@ -771,6 +771,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const value = {
     // Estados
+    descricoesECategorias,
     categorias,
     descricoes,
     formasPagamento,
@@ -783,12 +784,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     isLoading,
     error,
 
-    // Funções para Categorias (localStorage)
+    // Funções para tabela unificada
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
+    editarDescricaoECategoria,
+    excluirDescricaoECategoria,
+
+    // Funções para Categorias (localStorage - compatibilidade)
     adicionarCategoria,
     editarCategoria,
     excluirCategoria,
 
-    // Funções para Descrições (API)
+    // Funções para Descrições (API - compatibilidade)
     adicionarDescricao,
     editarDescricao,
     excluirDescricao,
