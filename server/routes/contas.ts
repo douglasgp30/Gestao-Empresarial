@@ -60,8 +60,6 @@ router.get("/", async (req, res) => {
       },
     });
 
-    console.log("[Contas API] Retornando", contas.length, "contas:", contas.map(c => ({ id: c.id, tipo: c.tipo, descricao: c.descricao })));
-
     const response: ApiResponse<typeof contas> = {
       data: contas,
     };
