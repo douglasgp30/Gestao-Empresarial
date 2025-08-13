@@ -67,7 +67,7 @@ export function ColumnManager({
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="space-y-2"
+                  className="space-y-2 max-h-96 overflow-y-auto pr-2"
                 >
                   {columns.map((column, index) => (
                     <Draggable
