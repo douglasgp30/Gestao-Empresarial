@@ -57,14 +57,51 @@ export default function FormularioConta() {
     e.preventDefault();
 
     const valor = parseFloat(formData.valor);
-    if (!valor || valor <= 0) return;
+    if (!valor || valor <= 0) {
+      toast({
+        title: "Erro de Validação",
+        description: "Informe um valor válido para a conta.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Para contas a receber, verificar se o cliente foi selecionado
     if (activeTab === "receber") {
-      if (!formData.cliente || !formData.dataVencimento) return;
+      if (!formData.cliente) {
+        toast({
+          title: "Cliente Obrigatório",
+          description: "Selecione um cliente para a conta a receber.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!formData.dataVencimento) {
+        toast({
+          title: "Data Obrigatória",
+          description: "Informe a data de vencimento da conta.",
+          variant: "destructive",
+        });
+        return;
+      }
     } else {
       // Para contas a pagar, verificar fornecedor
-      if (!formData.fornecedorCliente || !formData.dataVencimento) return;
+      if (!formData.fornecedorCliente) {
+        toast({
+          title: "Fornecedor Obrigatório",
+          description: "Informe o nome do fornecedor para a conta a pagar.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!formData.dataVencimento) {
+        toast({
+          title: "Data Obrigatória",
+          description: "Informe a data de vencimento da conta.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     // Buscar dados do cliente se for conta a receber
