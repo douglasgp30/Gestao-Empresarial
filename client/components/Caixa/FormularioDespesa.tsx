@@ -308,10 +308,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                     R$ {parseFloat(formData.valor || "0").toFixed(2)}
                   </div>
                 </div>
-                <div>
-                  <span className="text-gray-600">Conta:</span>
-                  <div className="font-medium capitalize">{formData.conta}</div>
-                </div>
               </div>
             </div>
           )}
