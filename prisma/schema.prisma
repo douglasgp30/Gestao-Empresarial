@@ -64,9 +64,13 @@ model Subdescricao {
   descricaoId Int      // CodigoDescricao (FK obrigatório)
   dataCriacao DateTime @default(now())
 
+  // Support for unified table
+  descricaoECategoriaId Int? // FK to unified table
+
   // Relacionamentos
   descricao   Descricao         @relation(fields: [descricaoId], references: [id])
   lancamentos LancamentoCaixa[]
+  descricaoECategoria DescricaoECategoria? @relation(fields: [descricaoECategoriaId], references: [id])
 
   @@map("subdescricoes")
 }
@@ -243,24 +247,24 @@ model ContaLancamento {
   descricaoParcela      String?  // Installment description (e.g., "3/12")
   contrato              String?  // Contract number for installments
 
-  // Amount Fields (using Decimal instead of Float)
-  valorOriginal         Decimal  @db.Decimal(15,2) // Original amount
-  valorDesconto         Decimal? @default(0) @db.Decimal(15,2) // Discount amount
-  valorAcrescimo        Decimal? @default(0) @db.Decimal(15,2) // Additional charges
-  valorJuros            Decimal? @default(0) @db.Decimal(15,2) // Interest amount
-  valorMulta            Decimal? @default(0) @db.Decimal(15,2) // Penalty amount
-  valorLiquido          Decimal  @db.Decimal(15,2) // Net amount after calculations
-  valorPago             Decimal? @default(0) @db.Decimal(15,2) // Amount actually paid
-  valorRestante         Decimal? @default(0) @db.Decimal(15,2) // Remaining amount
+  // Amount Fields (using Float for SQLite compatibility)
+  valorOriginal         Float    // Original amount
+  valorDesconto         Float?   @default(0) // Discount amount
+  valorAcrescimo        Float?   @default(0) // Additional charges
+  valorJuros            Float?   @default(0) // Interest amount
+  valorMulta            Float?   @default(0) // Penalty amount
+  valorLiquido          Float    // Net amount after calculations
+  valorPago             Float?   @default(0) // Amount actually paid
+  valorRestante         Float?   @default(0) // Remaining amount
 
   // Tax Information
-  valorIR               Decimal? @default(0) @db.Decimal(15,2) // Income tax withheld
-  valorISS              Decimal? @default(0) @db.Decimal(15,2) // ISS tax
-  valorPIS              Decimal? @default(0) @db.Decimal(15,2) // PIS tax
-  valorCOFINS           Decimal? @default(0) @db.Decimal(15,2) // COFINS tax
-  valorCSLL             Decimal? @default(0) @db.Decimal(15,2) // CSLL tax
-  valorINSS             Decimal? @default(0) @db.Decimal(15,2) // INSS tax
-  baseCalculoIR         Decimal? @db.Decimal(15,2) // IR calculation base
+  valorIR               Float?   @default(0) // Income tax withheld
+  valorISS              Float?   @default(0) // ISS tax
+  valorPIS              Float?   @default(0) // PIS tax
+  valorCOFINS           Float?   @default(0) // COFINS tax
+  valorCSLL             Float?   @default(0) // CSLL tax
+  valorINSS             Float?   @default(0) // INSS tax
+  baseCalculoIR         Float?   // IR calculation base
 
   // Status Management
   status                String   @default("pendente") // "pendente", "pago", "parcial", "vencido", "cancelado", "protestado"
