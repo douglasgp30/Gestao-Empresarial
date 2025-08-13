@@ -503,7 +503,7 @@ export function ModalEditarLancamentoCompleto({
                       <SelectValue placeholder="Selecione o técnico" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhum</SelectItem>
+                      <SelectItem value="none">Nenhum</SelectItem>
                       {tecnicos.length === 0 ? (
                         <div className="px-2 py-1 text-sm text-gray-500">
                           Nenhum técnico cadastrado
