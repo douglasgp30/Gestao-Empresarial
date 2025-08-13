@@ -60,12 +60,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filtros, setFiltros] = useState(() => {
-    // Forçar data atual real (14/08/2025)
-    const hoje = new Date(2025, 7, 14); // Mês 7 = agosto (0-indexed)
-    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
-    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
+    // Usar data atual do sistema mas normalizando para o dia correto
+    const agora = new Date();
+    const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0, 0);
+    const fimHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
 
     console.log('🔍 Debug CaixaContext datas iniciais:', {
+      agora,
       inicioHoje,
       fimHoje,
       dataInicioString: inicioHoje.toISOString(),
