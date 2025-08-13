@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { useClientes } from "../../contexts/ClientesContext";
@@ -43,6 +43,10 @@ export function ModalReceita() {
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
+    // Unified data source
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
   } = useEntidades();
   const {
     clientes,
@@ -75,22 +79,21 @@ export function ModalReceita() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Filtrar descrições de receita
-  const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
+  // Filtrar descrições de receita usando tabela unificada - usando useCallback para evitar re-renderizações
+  const categoriasReceita = useCallback(() => {
+    const categorias = getCategorias("receita");
+    return categorias.map((cat) => cat.nome).sort();
+  }, [getCategorias]);
+
+  const descricoesReceita = useCallback(() => {
+    return getDescricoes("receita");
+  }, [getDescricoes]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = formData.categoria
-    ? descricoesReceita.filter((d) => d.categoria === formData.categoria)
-    : [];
-
-  // Obter categorias únicas das descrições de receita
-  const categoriasReceita = [
-    ...new Set(
-      descricoesReceita
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
+  const descricoesFiltradas = useCallback(() => {
+    if (!formData.categoria) return [];
+    return getDescricoes("receita", formData.categoria);
+  }, [formData.categoria, getDescricoes]);
 
   // Verificar se forma de pagamento é cartão
   const isFormaPagamentoCartao =
@@ -367,7 +370,7 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoriasReceita.map((categoria) => (
+                    {categoriasReceita().map((categoria) => (
                       <SelectItem key={categoria} value={categoria}>
                         {categoria}
                       </SelectItem>
@@ -376,64 +379,55 @@ export function ModalReceita() {
                 </Select>
               </div>
 
-              <SelectWithAdd
-                value={formData.descricao}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, descricao: value }))
-                }
-                placeholder={
-                  formData.categoria
-                    ? "Selecione a descrição"
-                    : "Primeiro selecione uma categoria"
-                }
-                label="Descrição do Serviço"
-                required={true}
-                disabled={!formData.categoria}
-                items={descricoesFiltradas}
-                onAddNew={async (data) => {
-                  await adicionarDescricao({
-                    nome: data.nome,
-                    tipo: "receita",
-                    categoria: formData.categoria,
-                  });
-                }}
-                addNewTitle="Nova Descrição de Receita"
-                addNewDescription="Adicione uma nova descrição de serviço para receitas."
-                addNewFields={[
-                  {
-                    key: "nome",
-                    label: "Nome da Descrição",
-                    required: true,
-                  },
-                ]}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="descricao">Descrição do Serviço *</Label>
+                <SelectWithAdd
+                  value={formData.descricao}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, descricao: value }))
+                  }
+                  placeholder={
+                    formData.categoria
+                      ? "Selecione a descrição"
+                      : "Primeiro selecione uma categoria"
+                  }
+                  options={descricoesFiltradas().map((desc) => ({
+                    value: desc.id.toString(),
+                    label: desc.nome,
+                  }))}
+                  onAddNew={async (nomeDescricao) => {
+                    await adicionarDescricao({
+                      nome: nomeDescricao,
+                      tipo: "receita",
+                      categoria: formData.categoria,
+                    });
+                  }}
+                  addButtonText="Nova Descrição"
+                />
+              </div>
             </div>
 
             <div className="space-y-4">
-              <SelectWithAdd
-                value={formData.formaPagamento}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, formaPagamento: value }))
-                }
-                placeholder="Selecione a forma"
-                label="Forma de Pagamento"
-                required={true}
-                items={formasPagamento}
-                onAddNew={async (data) => {
-                  await adicionarFormaPagamento({
-                    nome: data.nome,
-                  });
-                }}
-                addNewTitle="Nova Forma de Pagamento"
-                addNewDescription="Adicione uma nova forma de pagamento."
-                addNewFields={[
-                  {
-                    key: "nome",
-                    label: "Nome da Forma de Pagamento",
-                    required: true,
-                  },
-                ]}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
+                <SelectWithAdd
+                  value={formData.formaPagamento}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, formaPagamento: value }))
+                  }
+                  placeholder="Selecione a forma"
+                  options={formasPagamento.map((forma) => ({
+                    value: forma.id.toString(),
+                    label: forma.nome,
+                  }))}
+                  onAddNew={async (nomeForma) => {
+                    await adicionarFormaPagamento({
+                      nome: nomeForma,
+                    });
+                  }}
+                  addButtonText="Nova Forma"
+                />
+              </div>
 
               {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
               {isFormaPagamentoCartao && (
@@ -515,37 +509,26 @@ export function ModalReceita() {
                 </Select>
               </div>
 
-              <SelectWithAdd
-                value={formData.setor}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, setor: value }))
-                }
-                placeholder="Selecione o setor"
-                label="Setor/Região"
-                required={false}
-                items={setores}
-                onAddNew={async (data) => {
-                  await adicionarSetor({
-                    nome: data.nome,
-                    cidade: data.cidade,
-                  });
-                }}
-                addNewTitle="Novo Setor/Região"
-                addNewDescription="Adicione um novo setor ou região."
-                addNewFields={[
-                  {
-                    key: "nome",
-                    label: "Nome do Setor",
-                    required: true,
-                  },
-                  {
-                    key: "cidade",
-                    label: "Cidade",
-                    required: true,
-                  },
-                ]}
-                renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="setor">Setor/Região</Label>
+                <Select
+                  value={formData.setor}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, setor: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o setor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {setores.map((setor) => (
+                      <SelectItem key={setor.id} value={setor.id.toString()}>
+                        {setor.nome} - {setor.cidade}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* Cliente */}
@@ -668,30 +651,26 @@ export function ModalReceita() {
               />
             </div>
 
-            <SelectWithAdd
-              value={formData.campanha}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, campanha: value }))
-              }
-              placeholder="Selecione a campanha"
-              label="Campanha"
-              required={false}
-              items={campanhas}
-              onAddNew={async (data) => {
-                await adicionarCampanha({
-                  nome: data.nome,
-                });
-              }}
-              addNewTitle="Nova Campanha"
-              addNewDescription="Adicione uma nova campanha de marketing."
-              addNewFields={[
-                {
-                  key: "nome",
-                  label: "Nome da Campanha",
-                  required: true,
-                },
-              ]}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="campanha">Campanha</Label>
+              <SelectWithAdd
+                value={formData.campanha}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, campanha: value }))
+                }
+                placeholder="Selecione a campanha"
+                options={campanhas.map((campanha) => ({
+                  value: campanha.id.toString(),
+                  label: campanha.nome,
+                }))}
+                onAddNew={async (nomeCampanha) => {
+                  await adicionarCampanha({
+                    nome: nomeCampanha,
+                  });
+                }}
+                addButtonText="Nova Campanha"
+              />
+            </div>
 
             {/* Resumo financeiro */}
             {formData.valor && (

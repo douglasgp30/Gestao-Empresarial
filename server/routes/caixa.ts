@@ -12,7 +12,6 @@ const LancamentoCaixaSchema = z.object({
   observacoes: z.string().optional(),
   numeroNota: z.string().optional(),
   arquivoNota: z.string().optional(),
-  conta: z.enum(["empresa", "pessoal"]).default("empresa"),
   tipo: z.enum(["receita", "despesa"], {
     required_error: "Tipo é obrigatório",
   }),
@@ -47,14 +46,12 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       formaPagamentoId,
       descricaoId,
       subdescricaoId,
-      conta,
     } = req.query;
 
     const where: any = {};
 
     // Filtros
     if (tipo) where.tipo = tipo;
-    if (conta) where.conta = conta;
     if (funcionarioId) where.funcionarioId = parseInt(funcionarioId as string);
     if (setorId) where.setorId = parseInt(setorId as string);
     if (campanhaId) where.campanhaId = parseInt(campanhaId as string);
@@ -387,10 +384,9 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
 
 export const getTotaisCaixa: RequestHandler = async (req, res) => {
   try {
-    const { dataInicio, dataFim, conta } = req.query;
+    const { dataInicio, dataFim } = req.query;
 
     const where: any = {};
-    if (conta) where.conta = conta;
 
     // Filtros de data baseados em dataHora DateTime
     if (dataInicio || dataFim) {

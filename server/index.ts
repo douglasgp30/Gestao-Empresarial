@@ -50,8 +50,8 @@ import {
 } from "./routes/caixa";
 
 import contasRouter from "./routes/contas";
-import seedRouter from "./routes/seed";
 import { cleanFakeDataRoute } from "./routes/clean";
+import descricoesECategoriasRouter from "./routes/descricoes-e-categorias";
 
 import {
   getClientes,
@@ -122,8 +122,19 @@ export function createServer(): Express {
     }
   });
 
-  // Limpeza de dados fictícios
-  app.post("/api/clean-fake-data", cleanFakeDataRoute);
+  // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
+  app.post(
+    "/api/clean-fake-data",
+    (req, res, next) => {
+      // Garantir que o body não seja lido múltiplas vezes
+      console.log(
+        "[Middleware] Clean route accessed, body readable:",
+        req.readable,
+      );
+      next();
+    },
+    cleanFakeDataRoute,
+  );
   app.get("/api/demo", handleDemo);
 
   // Rotas de Campanhas
@@ -168,8 +179,8 @@ export function createServer(): Express {
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
 
-  // Rotas de Seed
-  app.use("/api/seed", seedRouter);
+  // Rotas de Descrições e Categorias Unificadas
+  app.use("/api/descricoes-e-categorias", descricoesECategoriasRouter);
 
   // Rotas de Clientes
   app.get("/api/clientes", getClientes);

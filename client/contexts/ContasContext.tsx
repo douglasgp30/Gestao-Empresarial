@@ -48,6 +48,11 @@ interface ContasContextType {
   fornecedores: Fornecedor[];
   formasPagamento: FormaPagamento[];
   categorias: Categoria[];
+
+  // Funções para adicionar entidades
+  adicionarFornecedor: (
+    fornecedor: Omit<Fornecedor, "id">,
+  ) => Promise<Fornecedor>;
 }
 
 const ContasContext = createContext<ContasContextType | undefined>(undefined);
@@ -118,8 +123,8 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
       console.log("🔍 [CONTAS] Resposta completa da API:", response);
 
-      if (response.data) {
-        const contasFormatadas = response.data.map((conta: any) => ({
+      if (response.data && response.data.data) {
+        const contasFormatadas = response.data.data.map((conta: any) => ({
           ...conta,
           dataLancamento: new Date(conta.dataLancamento),
           dataVencimento: new Date(conta.dataVencimento),
@@ -129,7 +134,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         }));
 
         console.log("🔍 [CONTAS] Dados recebidos da API:", {
-          total: response.data.length,
+          total: response.data.data.length,
           contasFormatadas: contasFormatadas.length,
         });
 
@@ -181,26 +186,37 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     try {
       // Carregar clientes
       const clientesResponse = await apiService.get("/contas/clientes");
-      if (clientesResponse.data) {
-        setClientes(clientesResponse.data);
+      if (clientesResponse.data && clientesResponse.data.data) {
+        setClientes(clientesResponse.data.data);
       }
 
       // Carregar fornecedores
       const fornecedoresResponse = await apiService.get("/contas/fornecedores");
-      if (fornecedoresResponse.data) {
-        setFornecedores(fornecedoresResponse.data);
+      if (fornecedoresResponse.data && fornecedoresResponse.data.data) {
+        setFornecedores(fornecedoresResponse.data.data);
       }
 
       // Carregar formas de pagamento
       const formasResponse = await apiService.get("/formas-pagamento");
-      if (formasResponse.data) {
-        setFormasPagamento(formasResponse.data);
+      if (formasResponse.data && formasResponse.data.data) {
+        setFormasPagamento(formasResponse.data.data);
       }
 
-      // Carregar categorias
-      const categoriasResponse = await apiService.get("/contas/categorias");
-      if (categoriasResponse.data) {
-        setCategorias(categoriasResponse.data);
+      // Carregar categorias da tabela unificada
+      const categoriasResponse = await apiService.get(
+        "/descricoes-e-categorias/categorias",
+      );
+      if (categoriasResponse.data && categoriasResponse.data.data) {
+        // Convert unified format to the expected format
+        const categoriasFormatadas = categoriasResponse.data.data.map(
+          (item: any) => ({
+            id: item.id,
+            nome: item.nome,
+            tipo: item.tipo,
+            dataCriacao: new Date(item.dataCriacao),
+          }),
+        );
+        setCategorias(categoriasFormatadas);
       }
     } catch (error) {
       console.error("❌ [CONTAS] Erro ao carregar dados auxiliares:", error);
@@ -219,13 +235,13 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
         const response = await apiService.post("/contas", novaConta);
 
-        if (response.data) {
+        if (response.data && response.data.data) {
           const contaFormatada = {
-            ...response.data,
-            dataLancamento: new Date(response.data.dataLancamento),
-            dataVencimento: new Date(response.data.dataVencimento),
-            dataPagamento: response.data.dataPagamento
-              ? new Date(response.data.dataPagamento)
+            ...response.data.data,
+            dataLancamento: new Date(response.data.data.dataLancamento),
+            dataVencimento: new Date(response.data.data.dataVencimento),
+            dataPagamento: response.data.data.dataPagamento
+              ? new Date(response.data.data.dataPagamento)
               : undefined,
           };
 
@@ -254,13 +270,13 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       try {
         const response = await apiService.put(`/contas/${id}`, contaAtualizada);
 
-        if (response.data) {
+        if (response.data && response.data.data) {
           const contaFormatada = {
-            ...response.data,
-            dataLancamento: new Date(response.data.dataLancamento),
-            dataVencimento: new Date(response.data.dataVencimento),
-            dataPagamento: response.data.dataPagamento
-              ? new Date(response.data.dataPagamento)
+            ...response.data.data,
+            dataLancamento: new Date(response.data.data.dataLancamento),
+            dataVencimento: new Date(response.data.data.dataVencimento),
+            dataPagamento: response.data.data.dataPagamento
+              ? new Date(response.data.data.dataPagamento)
               : undefined,
           };
 
@@ -304,13 +320,13 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           formaPg: formaPagamentoId,
         });
 
-        if (response.data) {
+        if (response.data && response.data.data) {
           const contaFormatada = {
-            ...response.data,
-            dataLancamento: new Date(response.data.dataLancamento),
-            dataVencimento: new Date(response.data.dataVencimento),
-            dataPagamento: response.data.dataPagamento
-              ? new Date(response.data.dataPagamento)
+            ...response.data.data,
+            dataLancamento: new Date(response.data.data.dataLancamento),
+            dataVencimento: new Date(response.data.data.dataVencimento),
+            dataPagamento: response.data.data.dataPagamento
+              ? new Date(response.data.data.dataPagamento)
               : undefined,
           };
 
@@ -327,6 +343,39 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao marcar conta como paga:", error);
+        throw error;
+      }
+    },
+    [],
+  );
+
+  const adicionarFornecedor = useCallback(
+    async (novoFornecedor: Omit<Fornecedor, "id">) => {
+      try {
+        console.log("🔍 [CONTAS] Adicionando novo fornecedor:", novoFornecedor);
+
+        const response = await apiService.post(
+          "/contas/fornecedores",
+          novoFornecedor,
+        );
+
+        if (response.data && response.data.data) {
+          const fornecedorAdicionado = response.data.data;
+
+          console.log(
+            "✅ [CONTAS] Fornecedor adicionado com sucesso:",
+            fornecedorAdicionado,
+          );
+
+          // Atualizar a lista de fornecedores
+          setFornecedores((prev) => [...prev, fornecedorAdicionado]);
+
+          return fornecedorAdicionado;
+        } else {
+          throw new Error("Resposta inválida da API");
+        }
+      } catch (error) {
+        console.error("❌ [CONTAS] Erro ao adicionar fornecedor:", error);
         throw error;
       }
     },
@@ -370,6 +419,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     fornecedores,
     formasPagamento,
     categorias,
+    adicionarFornecedor,
   };
 
   return (

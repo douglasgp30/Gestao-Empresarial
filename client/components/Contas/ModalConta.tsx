@@ -10,30 +10,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarIcon, Save, RefreshCw } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useContas } from "@/contexts/ContasContext";
-import { ContaLancamento } from "@shared/types";
-import { useCurrencyInput } from "@/hooks/use-currency-input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { useToast } from "@/hooks/use-toast";
+import { useContas } from "@/contexts/ContasContext";
+import { ContaLancamento } from "@shared/types";
+import { useCurrencyInput } from "@/hooks/use-currency-input";
+import { CalendarIcon, Plus, Receipt, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import ModalCadastroCliente from "@/components/Clientes/ModalCadastroCliente";
 
-interface FormularioContaProps {
+interface ModalContaProps {
   contaParaEditar?: ContaLancamento;
   onSuccess?: () => void;
 }
 
-export function FormularioConta({
-  contaParaEditar,
-  onSuccess,
-}: FormularioContaProps) {
+export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
   const { toast } = useToast();
   const {
     adicionarConta,
@@ -44,6 +49,7 @@ export function FormularioConta({
     categorias,
   } = useContas();
 
+  const [isOpen, setIsOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [formData, setFormData] = useState({
     valor: "",
@@ -65,9 +71,27 @@ export function FormularioConta({
     setValue: setValor,
   } = useCurrencyInput();
 
+  // Resetar formulário
+  const resetForm = () => {
+    setFormData({
+      valor: "",
+      dataVencimento: new Date(),
+      codigoCliente: "",
+      codigoFornecedor: "",
+      tipo: "receber",
+      conta: "empresa",
+      formaPg: "",
+      observacoes: "",
+      descricaoCategoria: "0",
+      pago: false,
+      dataPagamento: undefined,
+    });
+    setValor("");
+  };
+
   // Preencher formulário quando houver conta para editar
   useEffect(() => {
-    if (contaParaEditar) {
+    if (contaParaEditar && isOpen) {
       setFormData({
         valor: contaParaEditar.valor.toString(),
         dataVencimento: contaParaEditar.dataVencimento,
@@ -83,8 +107,10 @@ export function FormularioConta({
         dataPagamento: contaParaEditar.dataPagamento,
       });
       setValor(contaParaEditar.valor.toString());
+    } else if (isOpen && !contaParaEditar) {
+      resetForm();
     }
-  }, [contaParaEditar, setValor]);
+  }, [contaParaEditar, isOpen, setValor]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,7 +195,7 @@ export function FormularioConta({
           : undefined,
       };
 
-      console.log("🔍 [FORM CONTA] Enviando dados:", dadosConta);
+      console.log("🔍 [MODAL CONTA] Enviando dados:", dadosConta);
 
       if (contaParaEditar) {
         await atualizarConta(contaParaEditar.codLancamentoContas, dadosConta);
@@ -185,27 +211,11 @@ export function FormularioConta({
         });
       }
 
-      // Limpar formulário após sucesso
-      if (!contaParaEditar) {
-        setFormData({
-          valor: "",
-          dataVencimento: new Date(),
-          codigoCliente: "",
-          codigoFornecedor: "",
-          tipo: "receber",
-          conta: "empresa",
-          formaPg: "",
-          observacoes: "",
-          descricaoCategoria: "0",
-          pago: false,
-          dataPagamento: undefined,
-        });
-        setValor("");
-      }
-
+      resetForm();
+      setIsOpen(false);
       onSuccess?.();
     } catch (error) {
-      console.error("❌ [FORM CONTA] Erro ao salvar conta:", error);
+      console.error("❌ [MODAL CONTA] Erro ao salvar conta:", error);
       toast({
         title: "Erro",
         description: "Erro ao salvar conta. Tente novamente.",
@@ -226,16 +236,37 @@ export function FormularioConta({
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Save className="h-5 w-5" />
-          {contaParaEditar ? "Editar Conta" : "Nova Conta"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Tipo */}
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          resetForm();
+        }
+      }}
+    >
+      <DialogTrigger asChild>
+        <Button
+          size="default"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Nova Conta
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-blue-600 text-lg sm:text-xl">
+            <Receipt className="h-4 w-4 sm:h-5 sm:w-5" />
+            {contaParaEditar ? "Editar Conta" : "Nova Conta"}
+          </DialogTitle>
+          <DialogDescription className="text-sm">
+            {contaParaEditar ? "Atualize os dados da conta" : "Registre uma nova conta a pagar ou receber"}
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          {/* Tipo e Conta */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="tipo">Tipo *</Label>
@@ -274,26 +305,43 @@ export function FormularioConta({
             {formData.tipo === "receber" ? (
               <>
                 <Label htmlFor="codigoCliente">Cliente *</Label>
-                <Select
-                  value={formData.codigoCliente}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, codigoCliente: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clientes.map((cliente) => (
-                      <SelectItem
-                        key={cliente.id}
-                        value={cliente.id.toString()}
-                      >
-                        {cliente.nome} - {cliente.telefonePrincipal}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex gap-2">
+                  <Select
+                    value={formData.codigoCliente}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, codigoCliente: value }))
+                    }
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Selecione um cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientes.map((cliente) => (
+                        <SelectItem
+                          key={cliente.id}
+                          value={cliente.id.toString()}
+                        >
+                          {cliente.nome} - {cliente.telefonePrincipal}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <ModalCadastroCliente
+                    trigger={
+                      <Button type="button" variant="outline" size="icon">
+                        <UserPlus className="h-4 w-4" />
+                      </Button>
+                    }
+                    onClienteAdicionado={(cliente) => {
+                      setFormData((prev) => ({ ...prev, codigoCliente: cliente.id }));
+                      toast({
+                        title: "Cliente Adicionado",
+                        description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+                        variant: "default",
+                      });
+                    }}
+                  />
+                </div>
               </>
             ) : (
               <>
@@ -326,48 +374,50 @@ export function FormularioConta({
             )}
           </div>
 
-          {/* Valor */}
-          <div className="space-y-2">
-            <Label htmlFor="valor">Valor *</Label>
-            <Input
-              id="valor"
-              value={valorFormatado}
-              onChange={onValorChange}
-              placeholder="R$ 0,00"
-            />
-          </div>
+          {/* Valor e Data de Vencimento */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="valor">Valor (R$) *</Label>
+              <Input
+                id="valor"
+                value={valorFormatado}
+                onChange={onValorChange}
+                placeholder="R$ 0,00"
+                required
+              />
+            </div>
 
-          {/* Data de Vencimento */}
-          <div className="space-y-2">
-            <Label>Data de Vencimento *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.dataVencimento
-                    ? format(formData.dataVencimento, "dd/MM/yyyy", {
-                        locale: ptBR,
-                      })
-                    : "Selecione a data"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={formData.dataVencimento}
-                  onSelect={(date) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      dataVencimento: date || new Date(),
-                    }))
-                  }
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="space-y-2">
+              <Label>Data de Vencimento *</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.dataVencimento
+                      ? format(formData.dataVencimento, "dd/MM/yyyy", {
+                          locale: ptBR,
+                        })
+                      : "Selecione a data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.dataVencimento}
+                    onSelect={(date) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        dataVencimento: date || new Date(),
+                      }))
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
           {/* Categoria */}
@@ -451,12 +501,29 @@ export function FormularioConta({
             />
           </div>
 
-          <Button type="submit" disabled={salvando} className="w-full">
-            {salvando && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
-            {contaParaEditar ? "Atualizar Conta" : "Adicionar Conta"}
-          </Button>
+          {/* Botões */}
+          <div className="flex gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                resetForm();
+                setIsOpen(false);
+              }}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              disabled={salvando}
+            >
+              {salvando ? "Salvando..." : contaParaEditar ? "Atualizar Conta" : "Adicionar Conta"}
+            </Button>
+          </div>
         </form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

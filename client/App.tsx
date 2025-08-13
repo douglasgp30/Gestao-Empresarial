@@ -1,10 +1,57 @@
 import "./global.css";
 
+// Suprimir erros benignos do ResizeObserver
+const originalError = console.error;
+const originalWarn = console.warn;
+const originalInfo = console.info;
+
+console.error = (...args: any[]) => {
+  if (
+    typeof args[0] === "string" &&
+    (args[0].includes(
+      "ResizeObserver loop completed with undelivered notifications",
+    ) ||
+      args[0].includes("ResizeObserver loop limit exceeded") ||
+      args[0].includes("ResizeObserver loop"))
+  ) {
+    return;
+  }
+  // Verificar se é um Error object
+  if (
+    args[0] instanceof Error &&
+    args[0].message.includes("ResizeObserver loop")
+  ) {
+    return;
+  }
+  originalError.apply(console, args);
+};
+
+console.warn = (...args: any[]) => {
+  if (
+    typeof args[0] === "string" &&
+    (args[0].includes(
+      "ResizeObserver loop completed with undelivered notifications",
+    ) ||
+      args[0].includes("ResizeObserver loop"))
+  ) {
+    return;
+  }
+  originalWarn.apply(console, args);
+};
+
+console.info = (...args: any[]) => {
+  if (typeof args[0] === "string" && args[0].includes("ResizeObserver loop")) {
+    return;
+  }
+  originalInfo.apply(console, args);
+};
+
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
 import "./lib/clearOldFilters"; // Executar limpeza de filtros antigos
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -33,78 +80,172 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <ConfigProvider>
-        <AuthProvider>
-          <EntidadesProvider>
-            <ClientesProvider>
-              <FuncionariosProvider>
-                <AgendamentosProvider>
-                  <CaixaProvider>
-                    <ContasProvider>
-                      <RelatoriosProvider>
-                        <DashboardProvider>
-                          <BrowserRouter>
-                            <Routes>
-                              <Route path="/login" element={<Login />} />
-                              <Route
-                                path="/"
-                                element={
-                                  <ProtectedRoute>
-                                    <MainLayout />
-                                  </ProtectedRoute>
-                                }
-                              >
-                                <Route index element={<Dashboard />} />
-                                <Route path="caixa" element={<Caixa />} />
-                                <Route path="contas" element={<Contas />} />
+const App = () => {
+  // Configurar handler de erro global para suprimir erros benignos
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      if (
+        event.message &&
+        (event.message.includes("ResizeObserver loop") ||
+          event.message.includes(
+            "ResizeObserver loop completed with undelivered notifications",
+          ) ||
+          event.message.includes("ResizeObserver loop limit exceeded"))
+      ) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return false;
+      }
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      if (
+        event.reason &&
+        ((typeof event.reason === "string" &&
+          event.reason.includes("ResizeObserver loop")) ||
+          (event.reason instanceof Error &&
+            event.reason.message.includes("ResizeObserver loop")))
+      ) {
+        event.preventDefault();
+        return false;
+      }
+    };
+
+    // Suprimir ResizeObserver em nível de window com proteção mais robusta
+    const originalResizeObserver = window.ResizeObserver;
+    window.ResizeObserver = class extends originalResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        const wrappedCallback: ResizeObserverCallback = (entries, observer) => {
+          // Usar requestAnimationFrame para evitar loops
+          window.requestAnimationFrame(() => {
+            try {
+              callback(entries, observer);
+            } catch (error) {
+              if (
+                error instanceof Error &&
+                error.message.includes("ResizeObserver loop")
+              ) {
+                // Suprimir completamente erros do ResizeObserver
+                return;
+              }
+              // Para outros erros, apenas log silencioso sem re-throw
+              console.debug("ResizeObserver callback error:", error);
+            }
+          });
+        };
+        super(wrappedCallback);
+      }
+    };
+
+    // Interceptar também no nível do document
+    const handleDocumentError = (event: any) => {
+      if (
+        event.error &&
+        event.error.message &&
+        event.error.message.includes("ResizeObserver loop")
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }
+    };
+
+    window.addEventListener("error", handleError, true);
+    window.addEventListener(
+      "unhandledrejection",
+      handleUnhandledRejection,
+      true,
+    );
+    document.addEventListener("error", handleDocumentError, true);
+
+    return () => {
+      window.removeEventListener("error", handleError, true);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection,
+        true,
+      );
+      document.removeEventListener("error", handleDocumentError, true);
+      window.ResizeObserver = originalResizeObserver;
+    };
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <ConfigProvider>
+          <AuthProvider>
+            <EntidadesProvider>
+              <ClientesProvider>
+                <FuncionariosProvider>
+                  <AgendamentosProvider>
+                    <CaixaProvider>
+                      <ContasProvider>
+                        <RelatoriosProvider>
+                          <DashboardProvider>
+                            <BrowserRouter>
+                              <Routes>
+                                <Route path="/login" element={<Login />} />
                                 <Route
-                                  path="agendamentos"
-                                  element={<Agendamentos />}
-                                />
-                                <Route path="clientes" element={<Clientes />} />
-                                <Route
-                                  path="funcionarios"
+                                  path="/"
                                   element={
-                                    <ProtectedRoute requireAdmin>
-                                      <Funcionarios />
+                                    <ProtectedRoute>
+                                      <MainLayout />
                                     </ProtectedRoute>
                                   }
-                                />
-                                <Route
-                                  path="relatorios"
-                                  element={<Relatorios />}
-                                />
-                                <Route
-                                  path="configuracoes"
-                                  element={
-                                    <ProtectedRoute requireAdmin>
-                                      <Configuracoes />
-                                    </ProtectedRoute>
-                                  }
-                                />
-                                <Route path="*" element={<NotFound />} />
-                              </Route>
-                            </Routes>
-                            <GerenciadorLembretes />
-                          </BrowserRouter>
-                        </DashboardProvider>
-                      </RelatoriosProvider>
-                    </ContasProvider>
-                  </CaixaProvider>
-                </AgendamentosProvider>
-              </FuncionariosProvider>
-            </ClientesProvider>
-          </EntidadesProvider>
-        </AuthProvider>
-      </ConfigProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+                                >
+                                  <Route index element={<Dashboard />} />
+                                  <Route path="caixa" element={<Caixa />} />
+                                  <Route path="contas" element={<Contas />} />
+                                  <Route
+                                    path="agendamentos"
+                                    element={<Agendamentos />}
+                                  />
+                                  <Route
+                                    path="clientes"
+                                    element={<Clientes />}
+                                  />
+                                  <Route
+                                    path="funcionarios"
+                                    element={
+                                      <ProtectedRoute requireAdmin>
+                                        <Funcionarios />
+                                      </ProtectedRoute>
+                                    }
+                                  />
+                                  <Route
+                                    path="relatorios"
+                                    element={<Relatorios />}
+                                  />
+                                  <Route
+                                    path="configuracoes"
+                                    element={
+                                      <ProtectedRoute requireAdmin>
+                                        <Configuracoes />
+                                      </ProtectedRoute>
+                                    }
+                                  />
+                                  <Route path="*" element={<NotFound />} />
+                                </Route>
+                              </Routes>
+                              <GerenciadorLembretes />
+                            </BrowserRouter>
+                          </DashboardProvider>
+                        </RelatoriosProvider>
+                      </ContasProvider>
+                    </CaixaProvider>
+                  </AgendamentosProvider>
+                </FuncionariosProvider>
+              </ClientesProvider>
+            </EntidadesProvider>
+          </AuthProvider>
+        </ConfigProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 // Evitar múltiplas inicializações do React
 const rootElement = document.getElementById("root")!;

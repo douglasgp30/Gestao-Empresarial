@@ -48,12 +48,11 @@ import { ptBR } from "date-fns/locale";
 import { useContas } from "@/contexts/ContasContext";
 import { ContaLancamento } from "@shared/types";
 import { useToast } from "@/hooks/use-toast";
+import { ModalEditarConta } from "@/components/Contas/ModalEditarConta";
 
-interface ListaContasProps {
-  onEditarConta?: (conta: ContaLancamento) => void;
-}
+interface ListaContasProps {}
 
-export function ListaContas({ onEditarConta }: ListaContasProps) {
+export function ListaContas({}: ListaContasProps) {
   const { toast } = useToast();
   const {
     contas,
@@ -265,15 +264,9 @@ export function ListaContas({ onEditarConta }: ListaContasProps) {
               <FileText className="h-5 w-5" />
               Lista de Contas
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>
-                Debug: {contas.length} contas no contexto,{" "}
-                {contasProcessadas.length} após filtros
-              </span>
-              <Button onClick={forcarRecarregamento} variant="ghost" size="sm">
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button onClick={forcarRecarregamento} variant="ghost" size="sm">
+              <RefreshCw className="h-4 w-4" />
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -355,12 +348,24 @@ export function ListaContas({ onEditarConta }: ListaContasProps) {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => onEditarConta?.(conta)}
-                            >
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
+                            <ModalEditarConta
+                              conta={conta}
+                              trigger={
+                                <DropdownMenuItem
+                                  onSelect={(e) => e.preventDefault()}
+                                >
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Editar
+                                </DropdownMenuItem>
+                              }
+                              onSuccess={() => {
+                                forcarRecarregamento();
+                                toast({
+                                  title: "Sucesso",
+                                  description: "Conta atualizada com sucesso!",
+                                });
+                              }}
+                            />
                             {!conta.pago && (
                               <DropdownMenuItem
                                 onClick={() => setContaParaPagar(conta)}

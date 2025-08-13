@@ -49,7 +49,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
-    conta: "empresa", // "empresa" ou "pessoal"
     categoria: "",
     descricao: "",
     formaPagamento: "",
@@ -82,7 +81,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     const camposObrigatorios = {
       data: formData.data,
       valor: valorInput.numericValue,
-      conta: formData.conta,
       categoria: formData.categoria,
       descricao: formData.descricao,
       formaPagamento: formData.formaPagamento,
@@ -94,7 +92,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         const nomes = {
           data: "Data",
           valor: "Valor",
-          conta: "Conta",
           categoria: "Categoria",
           descricao: "Descrição",
           formaPagamento: "Forma de Pagamento",
@@ -117,7 +114,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "despesa",
-        conta: formData.conta,
         valor: valorInput.numericValue,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
@@ -133,7 +129,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       // Resetar formulário
       setFormData({
         data: new Date().toISOString().split("T")[0],
-        conta: "empresa",
         categoria: "",
         descricao: "",
         formaPagamento: "",
@@ -197,24 +192,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
             <div className="space-y-2">
               <Label htmlFor="valor">Valor (R$) *</Label>
               <Input id="valor" {...valorInput.inputProps} required />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="conta">Conta *</Label>
-              <Select
-                value={formData.conta}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, conta: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a conta" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="empresa">Empresa</SelectItem>
-                  <SelectItem value="pessoal">Pessoal</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
@@ -329,10 +306,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                   <div className="font-medium text-red-600 text-lg">
                     R$ {parseFloat(formData.valor || "0").toFixed(2)}
                   </div>
-                </div>
-                <div>
-                  <span className="text-gray-600">Conta:</span>
-                  <div className="font-medium capitalize">{formData.conta}</div>
                 </div>
               </div>
             </div>

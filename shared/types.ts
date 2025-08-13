@@ -51,7 +51,6 @@ export interface LancamentoCaixa {
   valorLiquido?: number; // Valor líquido após descontos
   comissao?: number; // Comissão do técnico
   imposto?: number; // Impostos/taxas
-  conta: "empresa" | "pessoal"; // Define se é Empresa ou Pessoal (obrigatório)
   tipo: "receita" | "despesa"; // Receita ou Despesa (obrigatório)
   observacoes?: string; // Observações do lançamento
   numeroNota?: string; // Número da nota fiscal
@@ -98,7 +97,6 @@ export interface ContaLancamento {
   codigoCliente?: number; // BIGINT FK clientes(id) - Condicional
   codigoFornecedor?: number; // BIGINT FK fornecedores(id) - Condicional
   tipo: "receber" | "pagar"; // ENUM('receber','pagar')
-  conta: "empresa" | "pessoal"; // ENUM('empresa','pessoal')
   formaPg?: number; // SMALLINT FK formas_pagamento(id) - Condicional
   observacoes?: string; // TEXT
   descricaoCategoria?: number; // SMALLINT FK categorias(id)
@@ -209,6 +207,16 @@ export interface Categoria {
   id: number;
   nome: string;
   tipo: "receita" | "despesa";
+  dataCriacao: Date;
+}
+
+export interface DescricaoECategoria {
+  id: string;
+  nome: string;
+  tipo: "receita" | "despesa";
+  tipoItem: "descricao" | "categoria";
+  categoria?: string;
+  ativo: boolean;
   dataCriacao: Date;
 }
 

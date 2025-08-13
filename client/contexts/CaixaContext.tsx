@@ -20,7 +20,6 @@ interface CaixaContextType {
     tecnico?: string;
     campanha?: string;
     setor?: string;
-    conta?: string;
     categoria?: string;
     descricao?: string;
     cliente?: string;
@@ -90,7 +89,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       campanha: "todas",
       setor: "todos",
       cidade: "todas",
-      conta: "todas",
       categoria: "todas",
       descricao: "todas",
       cliente: "todos",
@@ -146,7 +144,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           dataInicio: formatarDataParaServidor(filtros.dataInicio),
           dataFim: formatarDataParaServidor(filtros.dataFim),
           ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
-          ...(filtros.conta !== "todas" && { conta: filtros.conta }),
           ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
           ...(filtros.numeroNota &&
             filtros.numeroNota.trim() !== "" && {
@@ -228,7 +225,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.tecnico,
     filtros.campanha,
     filtros.setor,
-    filtros.conta,
     filtros.categoria,
     filtros.descricao,
     filtros.cliente,
@@ -256,7 +252,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         observacoes: novoLancamento.observacoes,
         numeroNota: novoLancamento.numeroNota,
         arquivoNota: novoLancamento.arquivoNota,
-        conta: novoLancamento.conta || "empresa", // Usar conta do formulário ou padrão
         descricaoId: parseInt(novoLancamento.descricao),
         formaPagamentoId: parseInt(novoLancamento.formaPagamento),
         funcionarioId: novoLancamento.tecnicoResponsavel

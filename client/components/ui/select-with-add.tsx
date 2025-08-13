@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -21,25 +21,18 @@ import {
 import { Plus } from "lucide-react";
 import { toast } from "./use-toast";
 
+interface Option {
+  value: string;
+  label: string;
+}
+
 interface SelectWithAddProps {
   value: string;
   onValueChange: (value: string) => void;
   placeholder: string;
-  label?: string;
-  required?: boolean;
-  disabled?: boolean;
-  items: Array<{ id: string; nome: string; [key: string]: any }>;
-  onAddNew: (item: any) => Promise<void>;
-  addNewTitle: string;
-  addNewDescription: string;
-  addNewFields: Array<{
-    key: string;
-    label: string;
-    type?: "text" | "select";
-    required?: boolean;
-    options?: Array<{ value: string; label: string }>;
-  }>;
-  renderItem?: (item: any) => string;
+  options: Option[];
+  onAddNew: (newItemName: string) => Promise<boolean | void>;
+  addButtonText?: string;
   className?: string;
 }
 
@@ -47,51 +40,20 @@ export default function SelectWithAdd({
   value,
   onValueChange,
   placeholder,
-  label,
-  required = false,
-  disabled = false,
-  items,
+  options = [],
   onAddNew,
-  addNewTitle,
-  addNewDescription,
-  addNewFields,
-  renderItem = (item) => item.nome,
+  addButtonText = "Novo",
   className = "",
 }: SelectWithAddProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<Record<string, string>>({});
-  const [newlyCreatedItemName, setNewlyCreatedItemName] = useState<
-    string | null
-  >(null);
-
-  // Auto-selecionar item recém-criado
-  useEffect(() => {
-    if (newlyCreatedItemName) {
-      // Procurar o item recém-criado na lista
-      const newItem = items.find(
-        (item) =>
-          item.nome?.toLowerCase() === newlyCreatedItemName.toLowerCase(),
-      );
-
-      if (newItem && !value) {
-        onValueChange(newItem.id.toString());
-        setNewlyCreatedItemName(null);
-      }
-    }
-  }, [items, newlyCreatedItemName, value, onValueChange]);
+  const [newItemName, setNewItemName] = useState("");
 
   const handleAddNew = async () => {
-    // Validar campos obrigatórios
-    const requiredFields = addNewFields.filter((field) => field.required);
-    const missingFields = requiredFields.filter(
-      (field) => !formData[field.key],
-    );
-
-    if (missingFields.length > 0) {
+    if (!newItemName.trim()) {
       toast({
         title: "Erro",
-        description: `Preencha todos os campos obrigatórios: ${missingFields.map((f) => f.label).join(", ")}`,
+        description: "Digite um nome para o novo item",
         variant: "destructive",
       });
       return;
@@ -99,23 +61,23 @@ export default function SelectWithAdd({
 
     setIsSubmitting(true);
     try {
-      await onAddNew(formData);
+      const result = await onAddNew(newItemName.trim());
 
-      // Marcar o nome do item criado para seleção automática
-      setNewlyCreatedItemName(formData.nome || formData.name || "");
-
-      toast({
-        title: "Sucesso",
-        description: `${addNewTitle} criado com sucesso!`,
-        variant: "default",
-      });
-      setIsDialogOpen(false);
-      setFormData({});
+      // Se retornou true ou undefined (sucesso)
+      if (result !== false) {
+        toast({
+          title: "Sucesso",
+          description: `${addButtonText} criado com sucesso!`,
+          variant: "default",
+        });
+        setIsDialogOpen(false);
+        setNewItemName("");
+      }
     } catch (error) {
       console.error("Erro ao criar item:", error);
       toast({
         title: "Erro",
-        description: `Erro ao criar ${addNewTitle.toLowerCase()}. Tente novamente.`,
+        description: `Erro ao criar ${addButtonText.toLowerCase()}. Tente novamente.`,
         variant: "destructive",
       });
     } finally {
@@ -125,44 +87,35 @@ export default function SelectWithAdd({
 
   const handleCancel = () => {
     setIsDialogOpen(false);
-    setFormData({});
+    setNewItemName("");
   };
+
+  // Filtrar opções válidas
+  const validOptions = Array.isArray(options)
+    ? options.filter(
+        (option) =>
+          option &&
+          option.value !== null &&
+          option.value !== undefined &&
+          option.value !== "" &&
+          option.label !== null &&
+          option.label !== undefined,
+      )
+    : [];
 
   return (
     <div className={`space-y-2 ${className}`}>
-      {label && (
-        <Label>
-          {label} {required && "*"}
-        </Label>
-      )}
-
       <div className="flex gap-2">
-        <Select
-          value={value}
-          onValueChange={onValueChange}
-          required={required}
-          disabled={disabled}
-        >
+        <Select value={value} onValueChange={onValueChange}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
-            {items
-              .filter((item) => {
-                // Filtrar itens com IDs inválidos
-                const id = item.id;
-                return (
-                  id != null &&
-                  id !== "" &&
-                  id !== 0 &&
-                  id.toString().trim() !== ""
-                );
-              })
-              .map((item) => (
-                <SelectItem key={item.id} value={item.id.toString()}>
-                  {renderItem(item)}
-                </SelectItem>
-              ))}
+            {validOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -173,59 +126,34 @@ export default function SelectWithAdd({
               variant="outline"
               size="icon"
               className="shrink-0"
-              disabled={disabled}
             >
               <Plus className="h-4 w-4" />
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>{addNewTitle}</DialogTitle>
-              <DialogDescription>{addNewDescription}</DialogDescription>
+              <DialogTitle>Adicionar {addButtonText}</DialogTitle>
+              <DialogDescription>
+                Digite o nome do novo item que deseja adicionar.
+              </DialogDescription>
             </DialogHeader>
 
             <div className="grid gap-4 py-4">
-              {addNewFields.map((field) => (
-                <div key={field.key} className="grid gap-2">
-                  <Label htmlFor={field.key}>
-                    {field.label} {field.required && "*"}
-                  </Label>
-
-                  {field.type === "select" && field.options ? (
-                    <Select
-                      value={formData[field.key] || ""}
-                      onValueChange={(value) =>
-                        setFormData((prev) => ({ ...prev, [field.key]: value }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={`Selecione ${field.label.toLowerCase()}`}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {field.options.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Input
-                      id={field.key}
-                      placeholder={`Digite ${field.label.toLowerCase()}`}
-                      value={formData[field.key] || ""}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          [field.key]: e.target.value,
-                        }))
-                      }
-                    />
-                  )}
-                </div>
-              ))}
+              <div className="grid gap-2">
+                <Label htmlFor="newItemName">Nome *</Label>
+                <Input
+                  id="newItemName"
+                  placeholder="Digite o nome"
+                  value={newItemName}
+                  onChange={(e) => setNewItemName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddNew();
+                    }
+                  }}
+                />
+              </div>
             </div>
 
             <DialogFooter>
@@ -240,7 +168,7 @@ export default function SelectWithAdd({
               <Button
                 type="button"
                 onClick={handleAddNew}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !newItemName.trim()}
               >
                 {isSubmitting ? "Criando..." : "Criar"}
               </Button>

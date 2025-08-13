@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
+import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
 
 export function ModalDespesa() {
@@ -29,14 +30,19 @@ export function ModalDespesa() {
     descricoes,
     formasPagamento,
     setores,
+    adicionarDescricao,
+    adicionarFormaPagamento,
     isLoading: entidadesLoading,
+    // Unified data source
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
   } = useEntidades();
 
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
-    conta: "empresa", // "empresa" ou "pessoal"
     categoria: "",
     descricao: "",
     formaPagamento: "",
@@ -45,28 +51,26 @@ export function ModalDespesa() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filtrar descrições de despesa
-  const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
+  // Filtrar descrições de despesa usando tabela unificada - usando useCallback para evitar re-renderizações
+  const categoriasDespesa = useCallback(() => {
+    const categorias = getCategorias("despesa");
+    return categorias.map((cat) => cat.nome).sort();
+  }, [getCategorias]);
+
+  const descricoesDespesa = useCallback(() => {
+    return getDescricoes("despesa");
+  }, [getDescricoes]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = formData.categoria
-    ? descricoesDespesa.filter((d) => d.categoria === formData.categoria)
-    : [];
-
-  // Obter categorias únicas das descrições de despesa
-  const categoriasDespesa = [
-    ...new Set(
-      descricoesDespesa
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
+  const descricoesFiltradas = useCallback(() => {
+    if (!formData.categoria) return [];
+    return getDescricoes("despesa", formData.categoria);
+  }, [formData.categoria, getDescricoes]);
 
   const resetForm = () => {
     setFormData({
       data: new Date().toISOString().split("T")[0],
       valor: "",
-      conta: "empresa",
       categoria: "",
       descricao: "",
       formaPagamento: "",
@@ -82,10 +86,6 @@ export function ModalDespesa() {
 
     if (!formData.valor || parseFloat(formData.valor) <= 0) {
       erros.push("Valor deve ser maior que zero");
-    }
-
-    if (!formData.conta) {
-      erros.push("Conta é obrigatória");
     }
 
     if (!formData.categoria) {
@@ -115,7 +115,6 @@ export function ModalDespesa() {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "despesa",
-        conta: formData.conta,
         valor: parseFloat(formData.valor),
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
@@ -208,24 +207,6 @@ export function ModalDespesa() {
                   required
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="conta">Conta *</Label>
-                <Select
-                  value={formData.conta}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, conta: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a conta" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="empresa">Empresa</SelectItem>
-                    <SelectItem value="pessoal">Pessoal</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -245,7 +226,7 @@ export function ModalDespesa() {
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoriasDespesa.map((categoria) => (
+                    {categoriasDespesa().map((categoria) => (
                       <SelectItem key={categoria} value={categoria}>
                         {categoria}
                       </SelectItem>
@@ -256,54 +237,51 @@ export function ModalDespesa() {
 
               <div className="space-y-2">
                 <Label htmlFor="descricao">Descrição da Despesa *</Label>
-                <Select
+                <SelectWithAdd
                   value={formData.descricao}
                   onValueChange={(value) =>
                     setFormData((prev) => ({ ...prev, descricao: value }))
                   }
-                  required
-                  disabled={!formData.categoria}
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        formData.categoria
-                          ? "Selecione a descrição"
-                          : "Primeiro selecione uma categoria"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {descricoesFiltradas.map((desc) => (
-                      <SelectItem key={desc.id} value={desc.id.toString()}>
-                        {desc.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={
+                    formData.categoria
+                      ? "Selecione a descrição"
+                      : "Primeiro selecione uma categoria"
+                  }
+                  options={descricoesFiltradas().map((desc) => ({
+                    value: desc.id.toString(),
+                    label: desc.nome,
+                  }))}
+                  onAddNew={async (nomeDescricao) => {
+                    await adicionarDescricao({
+                      nome: nomeDescricao,
+                      tipo: "despesa",
+                      categoria: formData.categoria,
+                    });
+                  }}
+                  addButtonText="Nova Descrição"
+                />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
-              <Select
+              <SelectWithAdd
                 value={formData.formaPagamento}
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, formaPagamento: value }))
                 }
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a forma" />
-                </SelectTrigger>
-                <SelectContent>
-                  {formasPagamento.map((forma) => (
-                    <SelectItem key={forma.id} value={forma.id.toString()}>
-                      {forma.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Selecione a forma"
+                options={formasPagamento.map((forma) => ({
+                  value: forma.id.toString(),
+                  label: forma.nome,
+                }))}
+                onAddNew={async (nomeForma) => {
+                  await adicionarFormaPagamento({
+                    nome: nomeForma,
+                  });
+                }}
+                addButtonText="Nova Forma"
+              />
             </div>
 
             <div className="space-y-2">

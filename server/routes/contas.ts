@@ -13,7 +13,6 @@ const ContaLancamentoSchema = z
     codigoCliente: z.number().optional(),
     codigoFornecedor: z.number().optional(),
     tipo: z.enum(["receber", "pagar"]),
-    conta: z.enum(["empresa", "pessoal"]).default("empresa"),
     formaPg: z.number().optional(),
     observacoes: z.string().optional(),
     descricaoCategoria: z.number().optional(),
@@ -395,15 +394,20 @@ router.get("/fornecedores", async (req, res) => {
   }
 });
 
-// GET /api/contas/categorias - Listar categorias para dropdown
+// GET /api/contas/categorias - Listar categorias para dropdown (usando tabela unificada)
 router.get("/categorias", async (req, res) => {
   try {
-    const categorias = await prisma.categoria.findMany({
+    const categorias = await prisma.descricaoECategoria.findMany({
+      where: {
+        tipoItem: "categoria",
+        ativo: true,
+      },
       orderBy: { nome: "asc" },
       select: {
         id: true,
         nome: true,
         tipo: true,
+        dataCriacao: true,
       },
     });
 

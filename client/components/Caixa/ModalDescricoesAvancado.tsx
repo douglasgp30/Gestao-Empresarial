@@ -138,16 +138,20 @@ export default function ModalDescricoesAvancado() {
     setIsNewCategoriaOpen(false);
   };
 
-  const handleExcluir = () => {
+  const handleExcluir = async () => {
     if (!itemParaExcluir) return;
 
-    if (itemParaExcluir.tipo === "descricao") {
-      excluirDescricao(itemParaExcluir.id);
-    } else {
-      excluirCategoria(itemParaExcluir.id);
+    try {
+      if (itemParaExcluir.tipo === "descricao") {
+        await excluirDescricao(itemParaExcluir.id);
+      } else {
+        excluirCategoria(itemParaExcluir.id);
+      }
+      setItemParaExcluir(null);
+    } catch (error) {
+      console.error("Erro ao excluir item:", error);
+      // O erro já foi tratado no contexto, não precisa fazer nada aqui
     }
-
-    setItemParaExcluir(null);
   };
 
   const abrirModalDescricao = (tipo: "receita" | "despesa") => {

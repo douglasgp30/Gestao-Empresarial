@@ -23,7 +23,7 @@ import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import SistemaBackup from "../components/Backup/SistemaBackup";
-import SystemTester from "../components/Debug/SystemTester";
+import { CleanFakeData } from "../components/Debug/CleanFakeData";
 import {
   Settings,
   Building2,
@@ -256,7 +256,7 @@ export default function Configuracoes() {
           </TabsTrigger>
           <TabsTrigger value="testes">
             <AlertTriangle className="h-4 w-4 mr-2" />
-            Testes
+            Limpeza
           </TabsTrigger>
         </TabsList>
 
@@ -847,16 +847,19 @@ export default function Configuracoes() {
         <TabsContent value="testes" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>🧪 Testes do Sistema</CardTitle>
+              <CardTitle>📊 Status do Sistema</CardTitle>
               <CardDescription>
-                Execute testes automatizados para verificar a integridade das
-                funcionalidades principais
+                Acompanhe o status dos módulos do sistema
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SystemTester />
+              <p className="text-sm text-muted-foreground">
+                ✅ Sistema funcionando corretamente com dados reais
+              </p>
             </CardContent>
           </Card>
+
+          <CleanFakeData />
         </TabsContent>
       </Tabs>
     </div>

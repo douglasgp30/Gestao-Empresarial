@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import {
   Descricao,
   Categoria,
+  DescricaoECategoria,
   FormaPagamento,
   Cliente,
   Fornecedor,
@@ -22,18 +23,35 @@ import {
   setoresApi,
   clientesApi,
 } from "../lib/apiService";
+import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 
 interface EntidadesContextType {
-  // Descrições
+  // Tabela unificada de descrições e categorias
+  descricoesECategorias: DescricaoECategoria[];
+  adicionarDescricaoECategoria: (
+    item: Omit<DescricaoECategoria, "id" | "dataCriacao">,
+  ) => Promise<void>;
+  editarDescricaoECategoria: (
+    id: string,
+    item: Partial<DescricaoECategoria>,
+  ) => Promise<void>;
+  excluirDescricaoECategoria: (id: string) => Promise<void>;
+
+  // Funções de conveniência para filtrar a tabela unificada
+  getCategorias: (tipo?: "receita" | "despesa") => DescricaoECategoria[];
+  getDescricoes: (
+    tipo?: "receita" | "despesa",
+    categoria?: string,
+  ) => DescricaoECategoria[];
+
+  // Mantém interfaces originais para compatibilidade
   descricoes: Descricao[];
+  categorias: Categoria[];
   adicionarDescricao: (
     descricao: Omit<Descricao, "id" | "dataCriacao">,
   ) => Promise<void>;
   editarDescricao: (id: string, descricao: Partial<Descricao>) => Promise<void>;
   excluirDescricao: (id: string) => Promise<void>;
-
-  // Categorias (mantém localStorage por enquanto)
-  categorias: Categoria[];
   adicionarCategoria: (
     categoria: Omit<Categoria, "id" | "dataCriacao">,
   ) => void;
@@ -144,6 +162,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   // Estados para entidades no banco
+  const [descricoesECategorias, setDescricoesECategorias] = useState<
+    DescricaoECategoria[]
+  >([]);
   const [descricoes, setDescricoes] = useState<Descricao[]>([]);
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
@@ -164,6 +185,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       // Carregar dados do banco
       const [
+        descricoesECategoriasResponse,
         descricoesResponse,
         formasPagamentoResponse,
         funcionariosResponse,
@@ -171,6 +193,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
+        descricoesECategoriasApi.listar(),
         descricoesApi.listar(),
         formasPagamentoApi.listar(),
         funcionariosApi.listar(),
@@ -180,6 +203,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       ]);
 
       // Atualizar estados com dados do banco
+      if (descricoesECategoriasResponse.data)
+        setDescricoesECategorias(descricoesECategoriasResponse.data);
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
       if (formasPagamentoResponse.data)
         setFormasPagamento(formasPagamentoResponse.data);
@@ -205,6 +230,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setError("Erro ao carregar dados do servidor");
 
       // Definir dados padrão em caso de erro para evitar crashes
+      setDescricoesECategorias([]);
       setDescricoes([]);
       setFormasPagamento([]);
       setFuncionarios([]);
@@ -213,6 +239,106 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setCidades([]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // === FUNÇÕES PARA TABELA UNIFICADA ===
+  const getCategorias = (tipo?: "receita" | "despesa") => {
+    return descricoesECategorias.filter(
+      (item) =>
+        item.tipoItem === "categoria" &&
+        item.ativo &&
+        (tipo ? item.tipo === tipo : true),
+    );
+  };
+
+  const getDescricoes = (tipo?: "receita" | "despesa", categoria?: string) => {
+    return descricoesECategorias.filter(
+      (item) =>
+        item.tipoItem === "descricao" &&
+        item.ativo &&
+        (tipo ? item.tipo === tipo : true) &&
+        (categoria ? item.categoria === categoria : true),
+    );
+  };
+
+  const adicionarDescricaoECategoria = async (
+    novoItem: Omit<DescricaoECategoria, "id" | "dataCriacao">,
+  ) => {
+    try {
+      setError(null);
+      const response = await descricoesECategoriasApi.criar(novoItem);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+
+      // Recarregar dados
+      const descricoesECategoriasResponse =
+        await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data)
+        setDescricoesECategorias(descricoesECategoriasResponse.data);
+    } catch (error) {
+      console.error("Erro ao adicionar item:", error);
+      throw error;
+    }
+  };
+
+  const editarDescricaoECategoria = async (
+    id: string,
+    dadosAtualizados: Partial<DescricaoECategoria>,
+  ) => {
+    try {
+      setError(null);
+      const response = await descricoesECategoriasApi.atualizar(
+        parseInt(id),
+        dadosAtualizados,
+      );
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+
+      // Recarregar dados
+      const descricoesECategoriasResponse =
+        await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data)
+        setDescricoesECategorias(descricoesECategoriasResponse.data);
+    } catch (error) {
+      console.error("Erro ao editar item:", error);
+      throw error;
+    }
+  };
+
+  const excluirDescricaoECategoria = async (id: string) => {
+    try {
+      console.log("🗑️ [Descrições e Categorias] Excluindo item:", id);
+      setError(null);
+
+      const response = await descricoesECategoriasApi.excluir(parseInt(id));
+      if (response.error) {
+        setError(response.error);
+        toast.error("Erro ao excluir item: " + response.error);
+        throw new Error(response.error);
+      }
+
+      // Recarregar dados
+      const descricoesECategoriasResponse =
+        await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data)
+        setDescricoesECategorias(descricoesECategoriasResponse.data);
+
+      console.log("✅ [Descrições e Categorias] Item excluído com sucesso");
+      toast.success("Item excluído com sucesso!");
+    } catch (error) {
+      console.error(
+        "❌ [Descrições e Categorias] Erro ao excluir item:",
+        error,
+      );
+      if (!error.message?.includes("Erro ao excluir item:")) {
+        toast.error("Erro ao excluir item");
+      }
+      throw error;
     }
   };
 
@@ -268,18 +394,27 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const excluirDescricao = async (id: string) => {
     try {
+      console.log("🗑️ [Descrições] Excluindo descrição:", id);
       setError(null);
+
       const response = await descricoesApi.excluir(parseInt(id));
       if (response.error) {
         setError(response.error);
+        toast.error("Erro ao excluir descrição: " + response.error);
         throw new Error(response.error);
       }
 
       // Recarregar descrições
       const descricoesResponse = await descricoesApi.listar();
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
+
+      console.log("✅ [Descrições] Descrição excluída com sucesso");
+      toast.success("Descrição excluída com sucesso!");
     } catch (error) {
-      console.error("Erro ao excluir descrição:", error);
+      console.error("❌ [Descrições] Erro ao excluir descrição:", error);
+      if (!error.message?.includes("Erro ao excluir descrição:")) {
+        toast.error("Erro ao excluir descrição");
+      }
       throw error;
     }
   };
@@ -571,11 +706,26 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   const excluirCategoria = (id: string) => {
-    const categoriasAtualizadas = categorias.filter(
-      (categoria) => categoria.id !== id,
-    );
-    setCategorias(categoriasAtualizadas);
-    salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
+    try {
+      console.log("🗑️ [Categorias] Excluindo categoria:", id);
+
+      const categoriasAtualizadas = categorias.filter(
+        (categoria) => categoria.id !== id,
+      );
+
+      console.log(
+        "🗑️ [Categorias] Categorias após exclusão:",
+        categoriasAtualizadas.length,
+      );
+
+      setCategorias(categoriasAtualizadas);
+      salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
+
+      toast.success("Categoria excluída com sucesso!");
+    } catch (error) {
+      console.error("��� [Categorias] Erro ao excluir categoria:", error);
+      toast.error("Erro ao excluir categoria");
+    }
   };
 
   // === FUNÇÕES PARA CLIENTES (localStorage - temporário) ===
@@ -644,6 +794,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const value = {
     // Estados
+    descricoesECategorias,
     categorias,
     descricoes,
     formasPagamento,
@@ -656,12 +807,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     isLoading,
     error,
 
-    // Funções para Categorias (localStorage)
+    // Funções para tabela unificada
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
+    editarDescricaoECategoria,
+    excluirDescricaoECategoria,
+
+    // Funções para Categorias (localStorage - compatibilidade)
     adicionarCategoria,
     editarCategoria,
     excluirCategoria,
 
-    // Funções para Descrições (API)
+    // Funções para Descrições (API - compatibilidade)
     adicionarDescricao,
     editarDescricao,
     excluirDescricao,

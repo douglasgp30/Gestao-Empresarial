@@ -10,33 +10,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarIcon, Save, RefreshCw } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useContas } from "@/contexts/ContasContext";
-import { ContaLancamento } from "@shared/types";
-import { useCurrencyInput } from "@/hooks/use-currency-input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { useToast } from "@/hooks/use-toast";
+import { useContas } from "@/contexts/ContasContext";
+import { ContaLancamento } from "@shared/types";
+import { useCurrencyInput } from "@/hooks/use-currency-input";
+import { CalendarIcon, Edit, Receipt } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-interface FormularioContaProps {
-  contaParaEditar?: ContaLancamento;
+interface ModalEditarContaProps {
+  conta: ContaLancamento;
+  trigger?: React.ReactNode;
   onSuccess?: () => void;
 }
 
-export function FormularioConta({
-  contaParaEditar,
-  onSuccess,
-}: FormularioContaProps) {
+export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarContaProps) {
   const { toast } = useToast();
   const {
-    adicionarConta,
     atualizarConta,
     clientes,
     fornecedores,
@@ -44,6 +48,7 @@ export function FormularioConta({
     categorias,
   } = useContas();
 
+  const [isOpen, setIsOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [formData, setFormData] = useState({
     valor: "",
@@ -65,26 +70,25 @@ export function FormularioConta({
     setValue: setValor,
   } = useCurrencyInput();
 
-  // Preencher formulário quando houver conta para editar
+  // Preencher formulário quando abrir o modal
   useEffect(() => {
-    if (contaParaEditar) {
+    if (isOpen && conta) {
       setFormData({
-        valor: contaParaEditar.valor.toString(),
-        dataVencimento: contaParaEditar.dataVencimento,
-        codigoCliente: contaParaEditar.codigoCliente?.toString() || "",
-        codigoFornecedor: contaParaEditar.codigoFornecedor?.toString() || "",
-        tipo: contaParaEditar.tipo,
-        conta: contaParaEditar.conta,
-        formaPg: contaParaEditar.formaPg?.toString() || "",
-        observacoes: contaParaEditar.observacoes || "",
-        descricaoCategoria:
-          contaParaEditar.descricaoCategoria?.toString() || "0",
-        pago: contaParaEditar.pago,
-        dataPagamento: contaParaEditar.dataPagamento,
+        valor: conta.valor.toString(),
+        dataVencimento: conta.dataVencimento,
+        codigoCliente: conta.codigoCliente?.toString() || "",
+        codigoFornecedor: conta.codigoFornecedor?.toString() || "",
+        tipo: conta.tipo,
+        conta: conta.conta,
+        formaPg: conta.formaPg?.toString() || "",
+        observacoes: conta.observacoes || "",
+        descricaoCategoria: conta.descricaoCategoria?.toString() || "0",
+        pago: conta.pago,
+        dataPagamento: conta.dataPagamento,
       });
-      setValor(contaParaEditar.valor.toString());
+      setValor(conta.valor.toString());
     }
-  }, [contaParaEditar, setValor]);
+  }, [isOpen, conta, setValor]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,43 +173,18 @@ export function FormularioConta({
           : undefined,
       };
 
-      console.log("🔍 [FORM CONTA] Enviando dados:", dadosConta);
+      console.log("🔍 [MODAL EDITAR CONTA] Enviando dados:", dadosConta);
 
-      if (contaParaEditar) {
-        await atualizarConta(contaParaEditar.codLancamentoContas, dadosConta);
-        toast({
-          title: "Sucesso",
-          description: "Conta atualizada com sucesso!",
-        });
-      } else {
-        await adicionarConta(dadosConta);
-        toast({
-          title: "Sucesso",
-          description: "Conta adicionada com sucesso!",
-        });
-      }
+      await atualizarConta(conta.codLancamentoContas, dadosConta);
+      toast({
+        title: "Sucesso",
+        description: "Conta atualizada com sucesso!",
+      });
 
-      // Limpar formulário após sucesso
-      if (!contaParaEditar) {
-        setFormData({
-          valor: "",
-          dataVencimento: new Date(),
-          codigoCliente: "",
-          codigoFornecedor: "",
-          tipo: "receber",
-          conta: "empresa",
-          formaPg: "",
-          observacoes: "",
-          descricaoCategoria: "0",
-          pago: false,
-          dataPagamento: undefined,
-        });
-        setValor("");
-      }
-
+      setIsOpen(false);
       onSuccess?.();
     } catch (error) {
-      console.error("❌ [FORM CONTA] Erro ao salvar conta:", error);
+      console.error("❌ [MODAL EDITAR CONTA] Erro ao salvar conta:", error);
       toast({
         title: "Erro",
         description: "Erro ao salvar conta. Tente novamente.",
@@ -226,16 +205,28 @@ export function FormularioConta({
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Save className="h-5 w-5" />
-          {contaParaEditar ? "Editar Conta" : "Nova Conta"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Tipo */}
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        {trigger || (
+          <Button variant="outline" size="sm">
+            <Edit className="h-4 w-4 mr-1" />
+            Editar
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-blue-600 text-lg sm:text-xl">
+            <Receipt className="h-4 w-4 sm:h-5 sm:w-5" />
+            Editar Conta
+          </DialogTitle>
+          <DialogDescription className="text-sm">
+            Atualize os dados da conta
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          {/* Tipo e Conta */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="tipo">Tipo *</Label>
@@ -326,48 +317,50 @@ export function FormularioConta({
             )}
           </div>
 
-          {/* Valor */}
-          <div className="space-y-2">
-            <Label htmlFor="valor">Valor *</Label>
-            <Input
-              id="valor"
-              value={valorFormatado}
-              onChange={onValorChange}
-              placeholder="R$ 0,00"
-            />
-          </div>
+          {/* Valor e Data de Vencimento */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="valor">Valor (R$) *</Label>
+              <Input
+                id="valor"
+                value={valorFormatado}
+                onChange={onValorChange}
+                placeholder="R$ 0,00"
+                required
+              />
+            </div>
 
-          {/* Data de Vencimento */}
-          <div className="space-y-2">
-            <Label>Data de Vencimento *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.dataVencimento
-                    ? format(formData.dataVencimento, "dd/MM/yyyy", {
-                        locale: ptBR,
-                      })
-                    : "Selecione a data"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={formData.dataVencimento}
-                  onSelect={(date) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      dataVencimento: date || new Date(),
-                    }))
-                  }
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="space-y-2">
+              <Label>Data de Vencimento *</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {formData.dataVencimento
+                      ? format(formData.dataVencimento, "dd/MM/yyyy", {
+                          locale: ptBR,
+                        })
+                      : "Selecione a data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={formData.dataVencimento}
+                    onSelect={(date) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        dataVencimento: date || new Date(),
+                      }))
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
           {/* Categoria */}
@@ -451,12 +444,26 @@ export function FormularioConta({
             />
           </div>
 
-          <Button type="submit" disabled={salvando} className="w-full">
-            {salvando && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
-            {contaParaEditar ? "Atualizar Conta" : "Adicionar Conta"}
-          </Button>
+          {/* Botões */}
+          <div className="flex gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              disabled={salvando}
+            >
+              {salvando ? "Salvando..." : "Atualizar Conta"}
+            </Button>
+          </div>
         </form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }
