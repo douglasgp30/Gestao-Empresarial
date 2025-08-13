@@ -303,36 +303,26 @@ export default function FormularioConta() {
                 </div>
               </div>
 
-              <SelectWithAdd
-                value={formData.tipoPagamento}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, tipoPagamento: value })
-                }
-                placeholder="Selecione o tipo"
-                label="Tipo de Pagamento"
-                required={false}
-                items={formasPagamento}
-                onAddNew={async (data) => {
-                  await adicionarFormaPagamento({
-                    nome: data.nome,
-                    descricao: data.descricao || "",
-                  });
-                }}
-                addNewTitle="Nova Forma de Pagamento"
-                addNewDescription="Adicione uma nova forma de pagamento."
-                addNewFields={[
-                  {
-                    key: "nome",
-                    label: "Nome da Forma de Pagamento",
-                    required: true,
-                  },
-                  {
-                    key: "descricao",
-                    label: "Descrição (opcional)",
-                    required: false,
-                  },
-                ]}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="tipoPagamento">Tipo de Pagamento</Label>
+                <Select
+                  value={formData.tipoPagamento}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, tipoPagamento: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formasPagamento.map((forma) => (
+                      <SelectItem key={forma.id} value={forma.id}>
+                        {forma.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="observacoes">Observações</Label>
