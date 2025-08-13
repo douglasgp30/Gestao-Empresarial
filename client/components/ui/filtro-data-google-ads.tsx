@@ -259,7 +259,9 @@ export default function FiltroDataGoogleAds({
   };
 
   const aplicarPeriodo = (opcao: OpcaoPeriodo) => {
+    console.log('🚀 FILTRO aplicarPeriodo chamado com:', opcao.id);
     if (opcao.id === "personalizar") {
+      console.log('📝 FILTRO Modo personalizar ativado');
       // Sincronizar campos temporários com os valores atuais
       setTempDataInicio(dataInicio || "");
       setTempDataFim(dataFim || "");
@@ -277,16 +279,19 @@ export default function FiltroDataGoogleAds({
     }
 
     const { inicio, fim } = opcao.calcularDatas();
+    console.log('🚀 FILTRO Datas calculadas:', { inicio, fim });
     setPeriodoSelecionado(opcao.id);
 
     // Aplicar as datas imediatamente
     const dataInicioFormatada = format(inicio, "yyyy-MM-dd");
     const dataFimFormatada = format(fim, "yyyy-MM-dd");
 
+    console.log('🚀 FILTRO Chamando handlers:', { dataInicioFormatada, dataFimFormatada });
     onDataInicioChange(dataInicioFormatada);
     onDataFimChange(dataFimFormatada);
 
     // Aplicar os filtros imediatamente
+    console.log('🚀 FILTRO Chamando onAplicar');
     onAplicar();
     setIsOpen(false);
   };
