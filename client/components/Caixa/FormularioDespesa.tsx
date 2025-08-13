@@ -81,7 +81,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     const camposObrigatorios = {
       data: formData.data,
       valor: valorInput.numericValue,
-      conta: formData.conta,
       categoria: formData.categoria,
       descricao: formData.descricao,
       formaPagamento: formData.formaPagamento,
