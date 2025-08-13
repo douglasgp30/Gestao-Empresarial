@@ -31,7 +31,7 @@ import { useCurrencyInput } from "@/hooks/use-currency-input";
 import { CalendarIcon, Plus, Receipt, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ModalCadastroCliente } from "@/components/Clientes/ModalCadastroCliente";
+import ModalCadastroCliente from "@/components/Clientes/ModalCadastroCliente";
 
 interface ModalContaProps {
   contaParaEditar?: ContaLancamento;
