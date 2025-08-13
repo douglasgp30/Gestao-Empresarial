@@ -66,11 +66,21 @@ export default function FormularioConta() {
       return;
     }
 
+    // Validar forma de pagamento (obrigatória para ambos)
+    if (!formData.tipoPagamento) {
+      toast({
+        title: "Erro de Validação",
+        description: "Selecione uma forma de pagamento.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Para contas a receber, verificar se o cliente foi selecionado
     if (activeTab === "receber") {
       if (!formData.cliente) {
         toast({
-          title: "Cliente Obrigatório",
+          title: "Erro de Validação",
           description: "Selecione um cliente para a conta a receber.",
           variant: "destructive",
         });
@@ -78,7 +88,7 @@ export default function FormularioConta() {
       }
       if (!formData.dataVencimento) {
         toast({
-          title: "Data Obrigatória",
+          title: "Erro de Validação",
           description: "Informe a data de vencimento da conta.",
           variant: "destructive",
         });
@@ -88,7 +98,7 @@ export default function FormularioConta() {
       // Para contas a pagar, verificar fornecedor
       if (!formData.fornecedorCliente) {
         toast({
-          title: "Fornecedor Obrigatório",
+          title: "Erro de Validação",
           description: "Informe o nome do fornecedor para a conta a pagar.",
           variant: "destructive",
         });
@@ -96,7 +106,7 @@ export default function FormularioConta() {
       }
       if (!formData.dataVencimento) {
         toast({
-          title: "Data Obrigatória",
+          title: "Erro de Validação",
           description: "Informe a data de vencimento da conta.",
           variant: "destructive",
         });
