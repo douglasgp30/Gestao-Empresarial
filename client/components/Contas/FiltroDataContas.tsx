@@ -39,17 +39,19 @@ export default function FiltroDataContas() {
     const hoje = new Date();
     const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
     const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    inicioMes.setHours(0, 0, 0, 0);
+    fimMes.setHours(23, 59, 59, 999);
     setFiltros({
       ...filtros,
-      dataVencimentoInicio: inicioMes,
-      dataVencimentoFim: fimMes,
+      dataInicio: inicioMes,
+      dataFim: fimMes,
+      __timestamp: Date.now(),
     });
   };
 
-  // Verificar se o contexto tem as propriedades de data de vencimento
-  const dataInicio =
-    filtros.dataVencimentoInicio || filtros.dataInicio || new Date();
-  const dataFim = filtros.dataVencimentoFim || filtros.dataFim || new Date();
+  // Usar as datas do contexto diretamente
+  const dataInicio = filtros.dataInicio || new Date();
+  const dataFim = filtros.dataFim || new Date();
 
   return (
     <FiltroDataGoogleAds
