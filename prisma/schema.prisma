@@ -189,35 +189,150 @@ model LancamentoCaixa {
   @@index([clienteId])
 }
 
-// Nova tabela de contas seguindo o PRD fornecido
+// Enhanced ContaLancamento model with complete Brazilian accounts payable/receivable features
 model ContaLancamento {
-  codLancamentoContas Int      @id @default(autoincrement()) // BIGSERIAL PK
-  dataLancamento      DateTime @default(now()) // TIMESTAMP
-  valor               Float    // NUMERIC(12,2)
-  dataVencimento      DateTime // DATE
-  codigoCliente       Int?     // BIGINT FK clientes(id) - Condicional
-  codigoFornecedor    Int?     // BIGINT FK fornecedores(id) - Condicional
-  tipo                String   // ENUM('receber','pagar')
-  conta               String   @default("empresa") // ENUM('empresa','pessoal')
-  formaPg             Int?     // SMALLINT FK formas_pagamento(id) - Condicional
-  observacoes         String?  // TEXT
-  descricaoCategoria  Int?     // SMALLINT FK categorias(id)
-  pago                Boolean  @default(false) // BOOLEAN
-  dataPagamento       DateTime? // TIMESTAMP - Condicional
+  // Primary Key
+  id                    Int      @id @default(autoincrement()) // BIGSERIAL PK
 
-  // Relacionamentos
-  cliente        Cliente?        @relation("ClienteContas", fields: [codigoCliente], references: [id])
-  fornecedor     Fornecedor?     @relation("FornecedorContas", fields: [codigoFornecedor], references: [id])
-  formaPagamento FormaPagamento? @relation("FormaPagamentoReceber", fields: [formaPg], references: [id])
-  formaPagamentoPagar FormaPagamento? @relation("FormaPagamentoPagar", fields: [formaPg], references: [id])
-  categoria      Categoria?      @relation(fields: [descricaoCategoria], references: [id])
+  // Basic Information
+  dataLancamento        DateTime @default(now()) // TIMESTAMP - Creation date
+  dataVencimento        DateTime // DATE - Due date
+  dataPagamento         DateTime? // TIMESTAMP - Payment date (conditional)
+  dataOperacao          DateTime? // DATE - Operation date (when service was provided)
 
-  @@map("contas_lancamentos")
+  // Document Information
+  numeroDocumento       String?  // Document/Invoice number
+  numeroNF              String?  // Tax invoice number (Nota Fiscal)
+  numeroNFSe            String?  // Service invoice number
+  serieDocumento        String?  // Document series
+  chaveNFe              String?  // NFe access key
+
+  // Installment Information
+  numeroMesParcela      Int?     // Installment number (e.g., 1, 2, 3...)
+  totalParcelas         Int?     // Total installments (e.g., 12)
+  descricaoParcela      String?  // Installment description (e.g., "3/12")
+  contrato              String?  // Contract number for installments
+
+  // Amount Fields (using Decimal instead of Float)
+  valorOriginal         Decimal  @db.Decimal(15,2) // Original amount
+  valorDesconto         Decimal? @default(0) @db.Decimal(15,2) // Discount amount
+  valorAcrescimo        Decimal? @default(0) @db.Decimal(15,2) // Additional charges
+  valorJuros            Decimal? @default(0) @db.Decimal(15,2) // Interest amount
+  valorMulta            Decimal? @default(0) @db.Decimal(15,2) // Penalty amount
+  valorLiquido          Decimal  @db.Decimal(15,2) // Net amount after calculations
+  valorPago             Decimal? @default(0) @db.Decimal(15,2) // Amount actually paid
+  valorRestante         Decimal? @default(0) @db.Decimal(15,2) // Remaining amount
+
+  // Tax Information
+  valorIR               Decimal? @default(0) @db.Decimal(15,2) // Income tax withheld
+  valorISS              Decimal? @default(0) @db.Decimal(15,2) // ISS tax
+  valorPIS              Decimal? @default(0) @db.Decimal(15,2) // PIS tax
+  valorCOFINS           Decimal? @default(0) @db.Decimal(15,2) // COFINS tax
+  valorCSLL             Decimal? @default(0) @db.Decimal(15,2) // CSLL tax
+  valorINSS             Decimal? @default(0) @db.Decimal(15,2) // INSS tax
+  baseCalculoIR         Decimal? @db.Decimal(15,2) // IR calculation base
+
+  // Status Management
+  status                String   @default("pendente") // "pendente", "pago", "parcial", "vencido", "cancelado", "protestado"
+  statusCobranca        String?  // "em_cobranca", "juridico", "acordo", "parcelado"
+  prioridadePagamento   String?  @default("normal") // "baixa", "normal", "alta", "urgente"
+
+  // Entity Relationships
+  codigoCliente         Int?     // BIGINT FK clientes(id) - Conditional
+  codigoFornecedor      Int?     // BIGINT FK fornecedores(id) - Conditional
+  tipo                  String   // ENUM('receber','pagar')
+  conta                 String   @default("empresa") // ENUM('empresa','pessoal')
+
+  // Payment Information
+  formaPagamentoId      Int?     // SMALLINT FK formas_pagamento(id) - Conditional
+  contaBancariaId       Int?     // Bank account used for payment
+  agenciaBancaria       String?  // Bank branch
+  numeroConta           String?  // Account number
+  digitoConta           String?  // Account digit
+  nomeBanco             String?  // Bank name
+  codigoBanco           String?  // Bank code
+
+  // Cost Center and Project Tracking
+  centroCustoId         Int?     // Cost center ID
+  projetoId             Int?     // Project ID
+  departamentoId        Int?     // Department ID
+  categoriaId           Int?     // SMALLINT FK categorias(id)
+  subcategoriaId        Int?     // Subcategory ID
+
+  // Recurring Information
+  ehRecorrente          Boolean  @default(false) // Is recurring
+  tipoRecorrencia       String?  // "mensal", "trimestral", "semestral", "anual"
+  proximoVencimento     DateTime? // Next due date for recurring
+  contaOrigemId         Int?     // Original account for recurring copies
+
+  // Additional Information
+  observacoes           String?  // TEXT - Comments
+  observacoesInternas   String?  // Internal comments
+  motivoCancelamento    String?  // Cancellation reason
+  anexos                String?  // JSON with attached files
+  tags                  String?  // JSON with tags
+
+  // Geographic Information
+  cidadeId              Int?     // City ID
+  setorId               Int?     // Sector/neighborhood ID
+
+  // Responsible Information
+  funcionarioLancamento Int?     // Employee who created the record
+  funcionarioPagamento  Int?     // Employee who processed payment
+  funcionarioCobranca   Int?     // Employee responsible for collection
+
+  // Integration Fields
+  codigoExterno         String?  // External system code
+  sistemaOrigem         String?  // Origin system
+  sincronizado          Boolean  @default(false) // Sync status
+
+  // Audit Trail
+  dataCriacao           DateTime @default(now()) // Creation timestamp
+  dataAlteracao         DateTime @updatedAt // Last update timestamp
+  usuarioCriacao        Int?     // User who created
+  usuarioAlteracao      Int?     // User who last updated
+  versao                Int      @default(1) // Version control
+  ativo                 Boolean  @default(true) // Soft delete flag
+
+  // Workflow Information
+  aprovado              Boolean  @default(false) // Approval status
+  dataAprovacao         DateTime? // Approval date
+  usuarioAprovacao      Int?     // User who approved
+  workflow              String?  // JSON with workflow data
+
+  // Relationships
+  cliente               Cliente?        @relation("ClienteContas", fields: [codigoCliente], references: [id])
+  fornecedor            Fornecedor?     @relation("FornecedorContas", fields: [codigoFornecedor], references: [id])
+  formaPagamento        FormaPagamento? @relation("FormaPagamentoContas", fields: [formaPagamentoId], references: [id])
+  categoria             Categoria?      @relation(fields: [categoriaId], references: [id])
+  funcionarioLanc       Funcionario?    @relation("FuncionarioLancamento", fields: [funcionarioLancamento], references: [id])
+  funcionarioPag        Funcionario?    @relation("FuncionarioPagamento", fields: [funcionarioPagamento], references: [id])
+  funcionarioCob        Funcionario?    @relation("FuncionarioCobranca", fields: [funcionarioCobranca], references: [id])
+  setor                 Setor?          @relation(fields: [setorId], references: [id])
+  contaOrigem           ContaLancamento? @relation("ContaRecorrente", fields: [contaOrigemId], references: [id])
+  contasRecorrentes     ContaLancamento[] @relation("ContaRecorrente")
+
+  // Indexes for performance
+  @@map("contas_lancamentos_enhanced")
   @@index([dataVencimento])
+  @@index([dataPagamento])
   @@index([tipo])
-  @@index([pago])
+  @@index([status])
   @@index([codigoCliente])
   @@index([codigoFornecedor])
+  @@index([formaPagamentoId])
+  @@index([centroCustoId])
+  @@index([projetoId])
+  @@index([numeroDocumento])
+  @@index([numeroNF])
+  @@index([ehRecorrente])
+  @@index([proximoVencimento])
+  @@index([conta, tipo])
+  @@index([dataCriacao])
+  @@index([ativo])
+  @@index([aprovado])
+  @@index([statusCobranca])
+  @@index([prioridadePagamento])
 }
 
 // Manter tabela antiga para compatibilidade temporária
