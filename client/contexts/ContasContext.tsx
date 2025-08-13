@@ -90,6 +90,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     try {
       console.log("[ContasContext] 🔄 Iniciando carregamento de contas...");
       setIsLoading(true);
+      console.error("[TESTE] Contexto executando corretamente!");
       const response = await contasApi.listar();
       if (response.error) {
         console.error("Erro ao carregar contas:", response.error);
