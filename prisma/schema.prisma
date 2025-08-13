@@ -363,7 +363,7 @@ model ContaLancamento {
   @@index([numeroNF])
   @@index([ehRecorrente])
   @@index([proximoVencimento])
-  @@index([conta, tipo])
+  @@index([tipo])
   @@index([dataCriacao])
   @@index([ativo])
   @@index([aprovado])
