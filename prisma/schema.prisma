@@ -125,8 +125,11 @@ model Funcionario {
   dataCriacao       DateTime @default(now())
 
   // Relacionamentos
-  lancamentos  LancamentoCaixa[]
-  agendamentos Agendamento[]
+  lancamentos           LancamentoCaixa[]
+  agendamentos          Agendamento[]
+  contasLancamento      ContaLancamento[] @relation("FuncionarioLancamento")
+  contasPagamento       ContaLancamento[] @relation("FuncionarioPagamento")
+  contasCobranca        ContaLancamento[] @relation("FuncionarioCobranca")
 
   @@map("funcionarios")
   @@index([email])
