@@ -239,7 +239,7 @@ export function ModalEditarLancamentoCompleto({
     }
 
     // Validar valor recebido para pagamentos com cartão
-    if (isFormaPagamentoCartao && valorQueEntrouInput.numericValue <= 0) {
+    if (isFormaPagamentoCartao && (valorQueEntrouInput.numericValue || 0) <= 0) {
       toast({
         title: "Erro",
         description:
