@@ -61,6 +61,7 @@ export default function FormularioFuncionario() {
       ativo: true,
     });
     setErrors({});
+    setSubmitting(false);
   };
 
   const validarFormulario = () => {
