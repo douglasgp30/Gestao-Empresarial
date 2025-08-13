@@ -202,7 +202,8 @@ export default function FiltroDataGoogleAds({
     const inicioHoje = startOfDay(hoje);
     const fimHoje = endOfDay(hoje);
 
-    if (isSameDay(inicioAtual, inicioHoje) && isSameDay(fimAtual, fimHoje)) {
+    // Se as datas são iguais, é "hoje"
+    if (isSameDay(inicioAtual, fimAtual)) {
       setPeriodoSelecionado("hoje");
     } else {
       setPeriodoSelecionado("personalizar");
