@@ -48,6 +48,7 @@ import { ptBR } from "date-fns/locale";
 import { useContas } from "@/contexts/ContasContext";
 import { ContaLancamento } from "@shared/types";
 import { useToast } from "@/hooks/use-toast";
+import { ModalEditarConta } from "@/components/Contas/ModalEditarConta";
 
 interface ListaContasProps {
   onEditarConta?: (conta: ContaLancamento) => void;
