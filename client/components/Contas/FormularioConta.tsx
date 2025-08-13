@@ -91,8 +91,6 @@ export default function FormularioConta() {
       dataCriacao: new Date(),
     };
 
-    console.log("Dados da conta a ser criada:", contaData);
-
     adicionarConta(contaData);
 
     toast({
