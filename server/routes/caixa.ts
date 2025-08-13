@@ -260,7 +260,9 @@ export const createLancamento: RequestHandler = async (req, res) => {
         dataHora: dataHoraLancamento,
         // Marcar como boleto se for o caso (boletos não entram no caixa imediatamente)
         observacoes: isBoleto
-          ? (dadosLancamento.observacoes ? `${dadosLancamento.observacoes} [BOLETO - Aguardando pagamento]` : "[BOLETO - Aguardando pagamento]")
+          ? dadosLancamento.observacoes
+            ? `${dadosLancamento.observacoes} [BOLETO - Aguardando pagamento]`
+            : "[BOLETO - Aguardando pagamento]"
           : dadosLancamento.observacoes,
       },
       include: {
@@ -288,7 +290,10 @@ export const createLancamento: RequestHandler = async (req, res) => {
 export const updateLancamento: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    console.log(`[Caixa] Atualizando lançamento ID: ${id}`, JSON.stringify(req.body, null, 2));
+    console.log(
+      `[Caixa] Atualizando lançamento ID: ${id}`,
+      JSON.stringify(req.body, null, 2),
+    );
 
     if (isNaN(id)) {
       return res.status(400).json({ error: "ID do lançamento inválido" });
@@ -423,19 +428,27 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     });
 
     // Separar boletos de outras formas de pagamento
-    const receitasBoleto = receitasCompletas.filter(r =>
-      r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
-      r.formaPagamento?.nome.toLowerCase().includes("bancário")
+    const receitasBoleto = receitasCompletas.filter(
+      (r) =>
+        r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
+        r.formaPagamento?.nome.toLowerCase().includes("bancário"),
     );
 
-    const receitasNaoBoleto = receitasCompletas.filter(r =>
-      !r.formaPagamento?.nome.toLowerCase().includes("boleto") &&
-      !r.formaPagamento?.nome.toLowerCase().includes("bancário")
+    const receitasNaoBoleto = receitasCompletas.filter(
+      (r) =>
+        !r.formaPagamento?.nome.toLowerCase().includes("boleto") &&
+        !r.formaPagamento?.nome.toLowerCase().includes("bancário"),
     );
 
     // Calcular totais
-    const totalReceitaBruta = receitasCompletas.reduce((sum, r) => sum + r.valor, 0);
-    const totalReceitaLiquida = receitasNaoBoleto.reduce((sum, r) => sum + (r.valorRecebido || r.valor), 0);
+    const totalReceitaBruta = receitasCompletas.reduce(
+      (sum, r) => sum + r.valor,
+      0,
+    );
+    const totalReceitaLiquida = receitasNaoBoleto.reduce(
+      (sum, r) => sum + (r.valorRecebido || r.valor),
+      0,
+    );
     const totalBoletos = receitasBoleto.reduce((sum, r) => sum + r.valor, 0);
 
     const despesas = await prisma.lancamentoCaixa.aggregate({

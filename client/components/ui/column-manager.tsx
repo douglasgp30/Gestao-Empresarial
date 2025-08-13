@@ -17,7 +17,14 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { Settings, GripVertical, Eye, EyeOff, RotateCcw, Lock } from "lucide-react";
+import {
+  Settings,
+  GripVertical,
+  Eye,
+  EyeOff,
+  RotateCcw,
+  Lock,
+} from "lucide-react";
 import { ColumnConfig } from "../../hooks/use-table-columns";
 
 interface ColumnManagerProps {
@@ -104,7 +111,8 @@ export function ColumnManager({
                             <Label className="text-sm font-medium">
                               {column.label}
                             </Label>
-                            {(column.key === "data" || column.key === "acoes") && (
+                            {(column.key === "data" ||
+                              column.key === "acoes") && (
                               <Lock className="h-3 w-3 text-primary opacity-60" />
                             )}
                           </div>

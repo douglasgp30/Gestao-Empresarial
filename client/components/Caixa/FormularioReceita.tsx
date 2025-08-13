@@ -620,7 +620,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }}
                 className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-blue-200"
               />
-              <Label htmlFor="nota-fiscal" className="font-medium text-sm text-blue-800 cursor-pointer">
+              <Label
+                htmlFor="nota-fiscal"
+                className="font-medium text-sm text-blue-800 cursor-pointer"
+              >
                 Há nota fiscal para esta receita?
               </Label>
             </div>
@@ -671,7 +674,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               onCheckedChange={setMostrarCamposAvancados}
               className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-300"
             />
-            <Label htmlFor="campos-avancados" className="font-medium text-sm text-gray-700 cursor-pointer">
+            <Label
+              htmlFor="campos-avancados"
+              className="font-medium text-sm text-gray-700 cursor-pointer"
+            >
               Mostrar campos avançados
             </Label>
           </div>

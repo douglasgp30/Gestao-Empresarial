@@ -25,7 +25,10 @@ export const getClientes: RequestHandler = async (req, res) => {
 
 export const createCliente: RequestHandler = async (req, res) => {
   try {
-    console.log("[Clientes] Dados recebidos:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "[Clientes] Dados recebidos:",
+      JSON.stringify(req.body, null, 2),
+    );
     const data = ClienteSchema.parse(req.body);
 
     const cliente = await prisma.cliente.create({
@@ -48,8 +51,11 @@ export const createCliente: RequestHandler = async (req, res) => {
 export const updateCliente: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    console.log(`[Clientes] Atualizando cliente ID: ${id}`, JSON.stringify(req.body, null, 2));
-    
+    console.log(
+      `[Clientes] Atualizando cliente ID: ${id}`,
+      JSON.stringify(req.body, null, 2),
+    );
+
     if (isNaN(id)) {
       return res.status(400).json({ error: "ID do cliente inválido" });
     }
@@ -64,7 +70,7 @@ export const updateCliente: RequestHandler = async (req, res) => {
     }
 
     const data = ClienteSchema.partial().parse(req.body);
-    
+
     const cliente = await prisma.cliente.update({
       where: { id },
       data,
@@ -87,7 +93,7 @@ export const deleteCliente: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     console.log(`[Clientes] Excluindo cliente ID: ${id}`);
-    
+
     if (isNaN(id)) {
       return res.status(400).json({ error: "ID do cliente inválido" });
     }
@@ -103,7 +109,7 @@ export const deleteCliente: RequestHandler = async (req, res) => {
 
     await prisma.cliente.delete({ where: { id } });
     console.log(`[Clientes] Cliente ${id} excluído com sucesso`);
-    
+
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao excluir cliente:", error);

@@ -299,7 +299,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       // Limpar campos undefined para evitar problemas na API
-      Object.keys(dadosApi).forEach(key => {
+      Object.keys(dadosApi).forEach((key) => {
         if (dadosApi[key] === undefined || dadosApi[key] === "") {
           delete dadosApi[key];
         }
@@ -380,19 +380,27 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
 
     // Separar boletos
-    const receitasBoleto = receitasCompletas.filter(l =>
-      l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
-      l.formaPagamento?.nome?.toLowerCase().includes("bancário")
+    const receitasBoleto = receitasCompletas.filter(
+      (l) =>
+        l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
+        l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
     );
 
-    const receitasNaoBoleto = receitasCompletas.filter(l =>
-      !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
-      !l.formaPagamento?.nome?.toLowerCase().includes("bancário")
+    const receitasNaoBoleto = receitasCompletas.filter(
+      (l) =>
+        !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
+        !l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
     );
 
     // Calcular totais
-    const receitaBruta = receitasCompletas.reduce((total, l) => total + l.valor, 0);
-    const receitaLiquida = receitasNaoBoleto.reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    const receitaBruta = receitasCompletas.reduce(
+      (total, l) => total + l.valor,
+      0,
+    );
+    const receitaLiquida = receitasNaoBoleto.reduce(
+      (total, l) => total + (l.valorLiquido || l.valor),
+      0,
+    );
     const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
 
     const despesas = lancamentos

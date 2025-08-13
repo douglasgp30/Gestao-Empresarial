@@ -122,9 +122,9 @@ export function ModalEditarLancamentoCompleto({
       impostoInput.setValue(lancamento.imposto?.toString() || "0");
 
       // Mostrar campos avançados se houver dados neles
-      const temDadosAvancados = 
-        lancamento.valorRecebido || 
-        lancamento.imposto || 
+      const temDadosAvancados =
+        lancamento.valorRecebido ||
+        lancamento.imposto ||
         lancamento.campanha ||
         lancamento.numeroNota;
       setMostrarCamposAvancados(!!temDadosAvancados);
@@ -156,25 +156,28 @@ export function ModalEditarLancamentoCompleto({
 
   // Calcular campos automaticamente usando os hooks de moeda
   const valorCalculado = Number(valorInput.numericValue || 0);
-  const valorQueEntrouCalculado =
-    Number(valorQueEntrouInput.numericValue || valorCalculado);
+  const valorQueEntrouCalculado = Number(
+    valorQueEntrouInput.numericValue || valorCalculado,
+  );
   const impostoCalculado = Number(impostoInput.numericValue || 0);
 
   // Calcular descontos baseados nos percentuais
   const percentualNotaFiscal = formData.temNotaFiscal ? 5 : 0; // 5% se houver nota fiscal
   const descontoNotaFiscal = Number(
-    (valorQueEntrouCalculado * percentualNotaFiscal) / 100
+    (valorQueEntrouCalculado * percentualNotaFiscal) / 100,
   );
 
   // Taxa do cartão - aplicar só se for forma de pagamento de cartão
-  const taxaCartao = Number(isFormaPagamentoCartao ? (valorCalculado * 3.5) / 100 : 0); // 3.5% para cartão
+  const taxaCartao = Number(
+    isFormaPagamentoCartao ? (valorCalculado * 3.5) / 100 : 0,
+  ); // 3.5% para cartão
 
   // Valor líquido = valor recebido - impostos - desconto nota fiscal - taxa cartão
   const valorLiquidoCalculado = Number(
     valorQueEntrouCalculado -
-    impostoCalculado -
-    descontoNotaFiscal -
-    taxaCartao
+      impostoCalculado -
+      descontoNotaFiscal -
+      taxaCartao,
   );
 
   // Calcular comissão baseada no percentual do técnico sobre o valor líquido
@@ -184,7 +187,9 @@ export function ModalEditarLancamentoCompleto({
         (t) => t.id.toString() === formData.tecnicoResponsavel,
       );
       if (tecnico && tecnico.percentualComissao) {
-        return Number(valorLiquidoCalculado * (tecnico.percentualComissao / 100));
+        return Number(
+          valorLiquidoCalculado * (tecnico.percentualComissao / 100),
+        );
       }
     }
     return 0;
@@ -241,7 +246,10 @@ export function ModalEditarLancamentoCompleto({
     }
 
     // Validar valor recebido para pagamentos com cartão
-    if (isFormaPagamentoCartao && Number(valorQueEntrouInput.numericValue || 0) <= 0) {
+    if (
+      isFormaPagamentoCartao &&
+      Number(valorQueEntrouInput.numericValue || 0) <= 0
+    ) {
       toast({
         title: "Erro",
         description:
@@ -273,10 +281,16 @@ export function ModalEditarLancamentoCompleto({
         imposto: Number(impostoInput.numericValue || 0),
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
-        tecnicoResponsavel: formData.tecnicoResponsavel && formData.tecnicoResponsavel !== "none" ? formData.tecnicoResponsavel : undefined,
+        tecnicoResponsavel:
+          formData.tecnicoResponsavel && formData.tecnicoResponsavel !== "none"
+            ? formData.tecnicoResponsavel
+            : undefined,
         setor: formData.setor || undefined,
         campanha: formData.campanha || undefined,
-        clienteId: formData.cliente && formData.cliente !== "none" ? formData.cliente : undefined,
+        clienteId:
+          formData.cliente && formData.cliente !== "none"
+            ? formData.cliente
+            : undefined,
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
         conta: lancamento.tipo === "despesa" ? formData.conta : undefined,
@@ -316,7 +330,8 @@ export function ModalEditarLancamentoCompleto({
             Editar {lancamento.tipo === "receita" ? "Receita" : "Despesa"}
           </DialogTitle>
           <DialogDescription>
-            Modifique os dados do lançamento conforme necessário. Todos os campos são editáveis.
+            Modifique os dados do lançamento conforme necessário. Todos os
+            campos são editáveis.
           </DialogDescription>
         </DialogHeader>
 
@@ -491,7 +506,9 @@ export function ModalEditarLancamentoCompleto({
             {lancamento.tipo === "receita" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
+                  <Label htmlFor="tecnicoResponsavel">
+                    Técnico Responsável
+                  </Label>
                   <Select
                     value={formData.tecnicoResponsavel}
                     onValueChange={(value) =>
@@ -643,14 +660,20 @@ export function ModalEditarLancamentoCompleto({
                     id="nota-fiscal"
                     checked={formData.temNotaFiscal}
                     onCheckedChange={(checked) => {
-                      setFormData((prev) => ({ ...prev, temNotaFiscal: checked }));
+                      setFormData((prev) => ({
+                        ...prev,
+                        temNotaFiscal: checked,
+                      }));
                       if (!checked) {
                         setFormData((prev) => ({ ...prev, numeroNota: "" }));
                       }
                     }}
                     className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-blue-200"
                   />
-                  <Label htmlFor="nota-fiscal" className="font-medium text-sm text-blue-800 cursor-pointer">
+                  <Label
+                    htmlFor="nota-fiscal"
+                    className="font-medium text-sm text-blue-800 cursor-pointer"
+                  >
                     Há nota fiscal para esta receita?
                   </Label>
                 </div>
@@ -695,7 +718,10 @@ export function ModalEditarLancamentoCompleto({
                 onCheckedChange={setMostrarCamposAvancados}
                 className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-300"
               />
-              <Label htmlFor="campos-avançados" className="font-medium text-sm text-gray-700 cursor-pointer">
+              <Label
+                htmlFor="campos-avançados"
+                className="font-medium text-sm text-gray-700 cursor-pointer"
+              >
                 Mostrar campos avançados
               </Label>
             </div>
@@ -736,100 +762,127 @@ export function ModalEditarLancamentoCompleto({
             )}
 
             {/* Resumo financeiro para receitas */}
-            {lancamento.tipo === "receita" && Number(valorInput.numericValue || 0) > 0 && (
-              <div className="p-4 bg-green-50 rounded-lg">
-                <h4 className="font-medium text-green-800 mb-3">
-                  Resumo Financeiro Detalhado
-                </h4>
-                <div className="space-y-3">
-                  {/* Primeira linha - valores base */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                    <div>
-                      <span className="text-gray-600">Valor Total:</span>
-                      <div className="font-medium">
-                        R$ {Number(valorInput.numericValue || 0).toFixed(2).replace(".", ",")}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Valor Recebido:</span>
-                      <div className="font-medium">
-                        R$ {(valorQueEntrouCalculado || 0).toFixed(2).replace(".", ",")}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Impostos/Taxas:</span>
-                      <div className="font-medium">
-                        R$ {(impostoCalculado || 0).toFixed(2).replace(".", ",")}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Segunda linha - descontos */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm border-t pt-2">
-                    {formData.temNotaFiscal && (
+            {lancamento.tipo === "receita" &&
+              Number(valorInput.numericValue || 0) > 0 && (
+                <div className="p-4 bg-green-50 rounded-lg">
+                  <h4 className="font-medium text-green-800 mb-3">
+                    Resumo Financeiro Detalhado
+                  </h4>
+                  <div className="space-y-3">
+                    {/* Primeira linha - valores base */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
                       <div>
-                        <span className="text-gray-600">
-                          Desc. Nota Fiscal ({percentualNotaFiscal}%):
-                        </span>
-                        <div className="font-medium text-orange-600">
-                          - R$ {(descontoNotaFiscal || 0).toFixed(2).replace(".", ",")}
+                        <span className="text-gray-600">Valor Total:</span>
+                        <div className="font-medium">
+                          R${" "}
+                          {Number(valorInput.numericValue || 0)
+                            .toFixed(2)
+                            .replace(".", ",")}
                         </div>
                       </div>
-                    )}
-                    {isFormaPagamentoCartao && (
                       <div>
-                        <span className="text-gray-600">Taxa Cartão (3,5%):</span>
-                        <div className="font-medium text-orange-600">
-                          - R$ {(taxaCartao || 0).toFixed(2).replace(".", ",")}
+                        <span className="text-gray-600">Valor Recebido:</span>
+                        <div className="font-medium">
+                          R${" "}
+                          {(valorQueEntrouCalculado || 0)
+                            .toFixed(2)
+                            .replace(".", ",")}
                         </div>
                       </div>
-                    )}
-                    <div>
-                      <span className="text-gray-600">Comissão Técnico:</span>
-                      <div className="font-medium text-blue-600">
-                        R$ {(comissaoCalculada || 0).toFixed(2).replace(".", ",")}
+                      <div>
+                        <span className="text-gray-600">Impostos/Taxas:</span>
+                        <div className="font-medium">
+                          R${" "}
+                          {(impostoCalculado || 0).toFixed(2).replace(".", ",")}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Resultado final */}
-                  <div className="border-t pt-2">
-                    <div className="text-center">
-                      <span className="text-gray-600">Para Empresa:</span>
-                      <div className="font-bold text-green-600 text-lg">
-                        R$ {(valorParaEmpresa || 0).toFixed(2).replace(".", ",")}
+                    {/* Segunda linha - descontos */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm border-t pt-2">
+                      {formData.temNotaFiscal && (
+                        <div>
+                          <span className="text-gray-600">
+                            Desc. Nota Fiscal ({percentualNotaFiscal}%):
+                          </span>
+                          <div className="font-medium text-orange-600">
+                            - R${" "}
+                            {(descontoNotaFiscal || 0)
+                              .toFixed(2)
+                              .replace(".", ",")}
+                          </div>
+                        </div>
+                      )}
+                      {isFormaPagamentoCartao && (
+                        <div>
+                          <span className="text-gray-600">
+                            Taxa Cartão (3,5%):
+                          </span>
+                          <div className="font-medium text-orange-600">
+                            - R${" "}
+                            {(taxaCartao || 0).toFixed(2).replace(".", ",")}
+                          </div>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-gray-600">Comissão Técnico:</span>
+                        <div className="font-medium text-blue-600">
+                          R${" "}
+                          {(comissaoCalculada || 0)
+                            .toFixed(2)
+                            .replace(".", ",")}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Resultado final */}
+                    <div className="border-t pt-2">
+                      <div className="text-center">
+                        <span className="text-gray-600">Para Empresa:</span>
+                        <div className="font-bold text-green-600 text-lg">
+                          R${" "}
+                          {(valorParaEmpresa || 0).toFixed(2).replace(".", ",")}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Resumo financeiro para despesas */}
-            {lancamento.tipo === "despesa" && Number(valorInput.numericValue || 0) > 0 && (
-              <div className="p-4 bg-red-50 rounded-lg">
-                <h4 className="font-medium text-red-800 mb-2">
-                  Resumo da Despesa
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-600">Valor a ser debitado:</span>
-                    <div className="font-medium text-red-600 text-lg">
-                      R$ {Number(valorInput.numericValue || 0).toFixed(2).replace(".", ",")}
+            {lancamento.tipo === "despesa" &&
+              Number(valorInput.numericValue || 0) > 0 && (
+                <div className="p-4 bg-red-50 rounded-lg">
+                  <h4 className="font-medium text-red-800 mb-2">
+                    Resumo da Despesa
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">
+                        Valor a ser debitado:
+                      </span>
+                      <div className="font-medium text-red-600 text-lg">
+                        R${" "}
+                        {Number(valorInput.numericValue || 0)
+                          .toFixed(2)
+                          .replace(".", ",")}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Conta:</span>
+                      <div className="font-medium capitalize">
+                        {formData.conta}
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <span className="text-gray-600">Conta:</span>
-                    <div className="font-medium capitalize">{formData.conta}</div>
-                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Observações - Campo no final */}
             <div className="space-y-2">
               <Label htmlFor="observacoes">
-                Observações {lancamento.tipo === "receita" ? "do Serviço" : "da Despesa"}
+                Observações{" "}
+                {lancamento.tipo === "receita" ? "do Serviço" : "da Despesa"}
               </Label>
               <Textarea
                 id="observacoes"
@@ -847,11 +900,11 @@ export function ModalEditarLancamentoCompleto({
 
             {/* Botões */}
             <div className="flex gap-2 pt-4">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className={`flex-1 ${
-                  lancamento.tipo === "receita" 
-                    ? "bg-green-600 hover:bg-green-700" 
+                  lancamento.tipo === "receita"
+                    ? "bg-green-600 hover:bg-green-700"
                     : "bg-red-600 hover:bg-red-700"
                 }`}
                 disabled={isSubmitting}
