@@ -30,8 +30,6 @@ export default function FormularioConta() {
   const { adicionarConta } = useContas();
   const { formasPagamento } = useEntidades();
   const { clientes } = useClientes();
-
-  console.log("[FormularioConta] Formas de pagamento:", formasPagamento);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("pagar");
 
