@@ -358,101 +358,38 @@ export default function FiltroDataGoogleAds({
           <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-[280px]">
             {!showCalendar ? (
               <div className="p-3">
-                <div className="flex gap-3">
-                  {/* Lista de opções predefinidas - mais compacta */}
-                  <div className="w-48">
-                    <div className="space-y-1">
-                      {/* Personalizar no topo */}
-                      <button
-                        onClick={() => aplicarPeriodo(opcoesPeriodo.find(o => o.id === "personalizar")!)}
-                        className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
-                          periodoSelecionado === "personalizar"
-                            ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
-                            : "text-gray-700 hover:bg-gray-50"
-                        }`}
-                      >
-                        📅 Personalizar
-                      </button>
+                {/* Lista de opções simples */}
+                <div className="space-y-1">
+                  {/* Personalizar no topo */}
+                  <button
+                    onClick={() => aplicarPeriodo(opcoesPeriodo.find(o => o.id === "personalizar")!)}
+                    className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
+                      periodoSelecionado === "personalizar"
+                        ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    📅 Personalizar
+                  </button>
 
-                      <div className="border-t border-gray-200 my-2"></div>
+                  <div className="border-t border-gray-200 my-2"></div>
 
-                      {/* Outras opções */}
-                      {opcoesPeriodo
-                        .filter(opcao => opcao.id !== "personalizar")
-                        .map((opcao) => (
-                        <button
-                          key={opcao.id}
-                          onClick={() => aplicarPeriodo(opcao)}
-                          className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
-                            periodoSelecionado === opcao.id
-                              ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
-                              : "text-gray-700 hover:bg-gray-50"
-                          }`}
-                        >
-                          {opcao.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Preview das datas - mais compacto */}
-                  <div className="flex-1">
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                      <div className="bg-gray-50 p-3 rounded-md border">
-                        <label className="text-xs font-medium text-gray-600 block mb-1">
-                          Data de início
-                        </label>
-                        <div className="text-sm font-medium text-gray-900">
-                          {dataInicio
-                            ? parseISO(dataInicio).toLocaleDateString("pt-BR")
-                            : "-"}
-                        </div>
-                      </div>
-                      <div className="bg-gray-50 p-3 rounded-md border">
-                        <label className="text-xs font-medium text-gray-600 block mb-1">
-                          Data de término
-                        </label>
-                        <div className="text-sm font-medium text-gray-900">
-                          {dataFim
-                            ? parseISO(dataFim).toLocaleDateString("pt-BR")
-                            : "-"}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          if (periodoSelecionado !== "personalizar") {
-                            const opcaoAtual = opcoesPeriodo.find(
-                              (o) => o.id === periodoSelecionado,
-                            );
-                            if (opcaoAtual) aplicarPeriodo(opcaoAtual);
-                          } else {
-                            aplicarDatasPersonalizadas();
-                          }
-                        }}
-                        className="flex-1 h-9 text-sm font-medium"
-                      >
-                        <Check className="h-4 w-4 mr-1" />
-                        Aplicar
-                      </Button>
-                      {onLimpar && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            onLimpar();
-                            setIsOpen(false);
-                          }}
-                          className="h-9 px-3 text-sm"
-                        >
-                          Cancelar
-                        </Button>
-                      )}
-                    </div>
-                  </div>
+                  {/* Outras opções */}
+                  {opcoesPeriodo
+                    .filter(opcao => opcao.id !== "personalizar")
+                    .map((opcao) => (
+                    <button
+                      key={opcao.id}
+                      onClick={() => aplicarPeriodo(opcao)}
+                      className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
+                        periodoSelecionado === opcao.id
+                          ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {opcao.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             ) : (
