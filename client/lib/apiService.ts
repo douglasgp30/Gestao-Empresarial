@@ -240,3 +240,45 @@ export const clientesApi = {
       method: "DELETE",
     }),
 };
+
+// === CONTAS ===
+export const contasApi = {
+  listar: (filtros?: any) => {
+    const params = new URLSearchParams();
+    if (filtros) {
+      Object.keys(filtros).forEach(key => {
+        if (filtros[key] !== undefined && filtros[key] !== null) {
+          params.append(key, filtros[key].toString());
+        }
+      });
+    }
+    const queryString = params.toString();
+    return apiRequest<any[]>(`/contas${queryString ? `?${queryString}` : ""}`);
+  },
+  criar: (dados: any) => apiRequest("/contas", {
+    method: "POST",
+    body: JSON.stringify(dados),
+  }),
+  atualizar: (id: number, dados: any) => apiRequest(`/contas/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(dados),
+  }),
+  excluir: (id: number) => apiRequest(`/contas/${id}`, {
+    method: "DELETE",
+  }),
+  marcarComoPaga: (id: number) => apiRequest(`/contas/${id}/pagar`, {
+    method: "PATCH",
+  }),
+  obterTotais: (filtros?: any) => {
+    const params = new URLSearchParams();
+    if (filtros) {
+      Object.keys(filtros).forEach(key => {
+        if (filtros[key] !== undefined && filtros[key] !== null) {
+          params.append(key, filtros[key].toString());
+        }
+      });
+    }
+    const queryString = params.toString();
+    return apiRequest<any>(`/contas/totais${queryString ? `?${queryString}` : ""}`);
+  },
+};
