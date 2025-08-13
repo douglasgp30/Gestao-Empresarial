@@ -336,6 +336,36 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const adicionarFornecedor = useCallback(
+    async (novoFornecedor: Omit<Fornecedor, "id">) => {
+      try {
+        console.log("🔍 [CONTAS] Adicionando novo fornecedor:", novoFornecedor);
+
+        const response = await apiService.post("/contas/fornecedores", novoFornecedor);
+
+        if (response.data && response.data.data) {
+          const fornecedorAdicionado = response.data.data;
+
+          console.log(
+            "✅ [CONTAS] Fornecedor adicionado com sucesso:",
+            fornecedorAdicionado,
+          );
+
+          // Atualizar a lista de fornecedores
+          setFornecedores(prev => [...prev, fornecedorAdicionado]);
+
+          return fornecedorAdicionado;
+        } else {
+          throw new Error("Resposta inválida da API");
+        }
+      } catch (error) {
+        console.error("❌ [CONTAS] Erro ao adicionar fornecedor:", error);
+        throw error;
+      }
+    },
+    [],
+  );
+
   const forcarRecarregamento = useCallback(() => {
     console.log("🔄 [CONTAS] Forçando recarregamento manual");
     setFiltros((prev) => ({
