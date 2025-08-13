@@ -171,9 +171,9 @@ export default function ListaContas() {
       const statusCorreto = !filtros.status || conta.status === filtros.status;
       const fornecedorCorreto =
         !filtros.fornecedorCliente ||
-        conta.fornecedorCliente
+        (conta.fornecedorCliente && conta.fornecedorCliente
           .toLowerCase()
-          .includes(filtros.fornecedorCliente.toLowerCase());
+          .includes(filtros.fornecedorCliente.toLowerCase()));
 
       const passou = (
         dentroDataInicio &&
