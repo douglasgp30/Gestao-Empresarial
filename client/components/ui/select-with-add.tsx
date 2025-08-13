@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -71,7 +71,7 @@ export default function SelectWithAdd({
   >(null);
 
   // Normalizar os dados para um formato único
-  const normalizedItems = React.useMemo(() => {
+  const normalizedItems = useMemo(() => {
     if (items && Array.isArray(items)) {
       return items.map(item => ({
         id: item.id,
