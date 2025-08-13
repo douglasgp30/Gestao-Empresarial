@@ -268,18 +268,27 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const excluirDescricao = async (id: string) => {
     try {
+      console.log("🗑️ [Descrições] Excluindo descrição:", id);
       setError(null);
+
       const response = await descricoesApi.excluir(parseInt(id));
       if (response.error) {
         setError(response.error);
+        toast.error("Erro ao excluir descrição: " + response.error);
         throw new Error(response.error);
       }
 
       // Recarregar descrições
       const descricoesResponse = await descricoesApi.listar();
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
+
+      console.log("✅ [Descrições] Descrição excluída com sucesso");
+      toast.success("Descrição excluída com sucesso!");
     } catch (error) {
-      console.error("Erro ao excluir descrição:", error);
+      console.error("❌ [Descrições] Erro ao excluir descrição:", error);
+      if (!error.message?.includes("Erro ao excluir descrição:")) {
+        toast.error("Erro ao excluir descrição");
+      }
       throw error;
     }
   };
@@ -585,7 +594,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       toast.success("Categoria excluída com sucesso!");
     } catch (error) {
-      console.error("❌ [Categorias] Erro ao excluir categoria:", error);
+      console.error("��� [Categorias] Erro ao excluir categoria:", error);
       toast.error("Erro ao excluir categoria");
     }
   };
