@@ -48,6 +48,9 @@ interface ContasContextType {
   fornecedores: Fornecedor[];
   formasPagamento: FormaPagamento[];
   categorias: Categoria[];
+
+  // Funções para adicionar entidades
+  adicionarFornecedor: (fornecedor: Omit<Fornecedor, "id">) => Promise<Fornecedor>;
 }
 
 const ContasContext = createContext<ContasContextType | undefined>(undefined);
