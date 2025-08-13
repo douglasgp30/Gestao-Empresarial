@@ -299,170 +299,188 @@ export default function FiltroDataGoogleAds({
         </Button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-[700px]">
+          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-[520px]">
             {!showCalendar ? (
-              <div className="flex">
-                {/* Lista de opções predefinidas */}
-                <div className="w-72 p-4 border-r border-gray-200">
-                  <div className="space-y-2">
-                    {opcoesPeriodo.map((opcao) => (
+              <div className="p-4">
+                {/* Período selecionado no topo */}
+                <div className="mb-4 pb-3 border-b border-gray-200">
+                  <div className="text-sm text-gray-500 mb-1">Período selecionado:</div>
+                  <div className="text-lg font-semibold text-gray-900">
+                    {formatarPeriodoDisplay()}
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  {/* Lista de opções predefinidas - mais compacta */}
+                  <div className="w-48">
+                    <div className="space-y-1">
+                      {/* Personalizar no topo */}
                       <button
-                        key={opcao.id}
-                        onClick={() => aplicarPeriodo(opcao)}
-                        className={`w-full text-left px-4 py-3 text-sm rounded-lg hover:bg-gray-100 transition-colors ${
-                          periodoSelecionado === opcao.id
+                        onClick={() => aplicarPeriodo(opcoesPeriodo.find(o => o.id === "personalizar")!)}
+                        className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
+                          periodoSelecionado === "personalizar"
                             ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
                             : "text-gray-700 hover:bg-gray-50"
                         }`}
                       >
-                        {opcao.label}
+                        📅 Personalizar
                       </button>
-                    ))}
-                  </div>
-                </div>
 
-                {/* Preview das datas */}
-                <div className="flex-1 p-6">
-                  <div className="mb-6">
-                    <div className="text-sm font-medium text-gray-500 mb-3">
-                      Período selecionado:
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900 mb-6">
-                      {formatarPeriodoDisplay()}
+                      <div className="border-t border-gray-200 my-2"></div>
+
+                      {/* Outras opções */}
+                      {opcoesPeriodo
+                        .filter(opcao => opcao.id !== "personalizar")
+                        .map((opcao) => (
+                        <button
+                          key={opcao.id}
+                          onClick={() => aplicarPeriodo(opcao)}
+                          className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
+                            periodoSelecionado === opcao.id
+                              ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          {opcao.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6 mb-8">
-                    <div className="bg-gray-50 p-4 rounded-lg border">
-                      <label className="text-sm font-semibold text-gray-600 block mb-2">
-                        Data de início*
-                      </label>
-                      <div className="text-base font-medium text-gray-900">
-                        {dataInicio
-                          ? parseISO(dataInicio).toLocaleDateString("pt-BR")
-                          : "-"}
+                  {/* Preview das datas - mais compacto */}
+                  <div className="flex-1">
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="bg-gray-50 p-3 rounded-md border">
+                        <label className="text-xs font-medium text-gray-600 block mb-1">
+                          Data de início
+                        </label>
+                        <div className="text-sm font-medium text-gray-900">
+                          {dataInicio
+                            ? parseISO(dataInicio).toLocaleDateString("pt-BR")
+                            : "-"}
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 p-3 rounded-md border">
+                        <label className="text-xs font-medium text-gray-600 block mb-1">
+                          Data de término
+                        </label>
+                        <div className="text-sm font-medium text-gray-900">
+                          {dataFim
+                            ? parseISO(dataFim).toLocaleDateString("pt-BR")
+                            : "-"}
+                        </div>
                       </div>
                     </div>
-                    <div className="bg-gray-50 p-4 rounded-lg border">
-                      <label className="text-sm font-semibold text-gray-600 block mb-2">
-                        Data de término
-                      </label>
-                      <div className="text-base font-medium text-gray-900">
-                        {dataFim
-                          ? parseISO(dataFim).toLocaleDateString("pt-BR")
-                          : "-"}
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-4">
-                    <Button
-                      size="lg"
-                      onClick={() => {
-                        if (periodoSelecionado !== "personalizar") {
-                          const opcaoAtual = opcoesPeriodo.find(
-                            (o) => o.id === periodoSelecionado,
-                          );
-                          if (opcaoAtual) aplicarPeriodo(opcaoAtual);
-                        } else {
-                          aplicarDatasPersonalizadas();
-                        }
-                      }}
-                      className="flex-1 h-12 text-base font-semibold"
-                    >
-                      <Check className="h-5 w-5 mr-2" />
-                      Aplicar
-                    </Button>
-                    {onLimpar && (
+                    <div className="flex gap-2">
                       <Button
-                        size="lg"
-                        variant="outline"
+                        size="sm"
                         onClick={() => {
-                          onLimpar();
-                          setIsOpen(false);
+                          if (periodoSelecionado !== "personalizar") {
+                            const opcaoAtual = opcoesPeriodo.find(
+                              (o) => o.id === periodoSelecionado,
+                            );
+                            if (opcaoAtual) aplicarPeriodo(opcaoAtual);
+                          } else {
+                            aplicarDatasPersonalizadas();
+                          }
                         }}
-                        className="h-12 px-6 text-base"
+                        className="flex-1 h-9 text-sm font-medium"
                       >
-                        Cancelar
+                        <Check className="h-4 w-4 mr-1" />
+                        Aplicar
                       </Button>
-                    )}
+                      {onLimpar && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            onLimpar();
+                            setIsOpen(false);
+                          }}
+                          className="h-9 px-3 text-sm"
+                        >
+                          Cancelar
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="p-6">
+              <div className="p-4">
                 {/* Header do calendário personalizado */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <Button
                     variant="ghost"
-                    size="default"
+                    size="sm"
                     onClick={voltarParaOpcoes}
                     className="text-sm font-medium"
                   >
                     ← Voltar
                   </Button>
-                  <h3 className="text-lg font-semibold">
+                  <h3 className="text-base font-semibold">
                     Datas personalizadas
                   </h3>
                   <div></div>
                 </div>
 
                 {/* Campos de data manual */}
-                <div className="grid grid-cols-2 gap-6 mb-8">
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <Label className="text-sm font-semibold text-gray-600 mb-3 block">
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white p-3 rounded-md border border-gray-200">
+                    <Label className="text-xs font-medium text-gray-600 mb-2 block">
                       Data de início*
                     </Label>
                     <Input
                       type="date"
                       value={tempDataInicio || dataInicio}
                       onChange={(e) => setTempDataInicio(e.target.value)}
-                      className="h-12 text-base font-medium"
+                      className="h-9 text-sm"
                     />
                   </div>
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <Label className="text-sm font-semibold text-gray-600 mb-3 block">
+                  <div className="bg-white p-3 rounded-md border border-gray-200">
+                    <Label className="text-xs font-medium text-gray-600 mb-2 block">
                       Data de término
                     </Label>
                     <Input
                       type="date"
                       value={tempDataFim || dataFim}
                       onChange={(e) => setTempDataFim(e.target.value)}
-                      className="h-12 text-base font-medium"
+                      className="h-9 text-sm"
                     />
                   </div>
                 </div>
 
-                {/* Calendário duplo */}
-                <div className="border border-gray-200 rounded-lg p-5 bg-gray-50">
+                {/* Calendário mais compacto */}
+                <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
                   <DayPicker
                     mode="range"
                     selected={dateRange}
                     onSelect={setDateRange}
                     numberOfMonths={2}
                     locale={ptBR}
-                    className="text-base"
+                    className="text-sm"
                     classNames={{
                       months:
-                        "flex flex-col sm:flex-row space-y-6 sm:space-x-8 sm:space-y-0",
-                      month: "space-y-5",
+                        "flex flex-col sm:flex-row space-y-4 sm:space-x-6 sm:space-y-0",
+                      month: "space-y-3",
                       caption:
-                        "flex justify-center pt-3 relative items-center mb-5",
-                      caption_label: "text-lg font-bold text-gray-800",
-                      nav: "space-x-3 flex items-center",
+                        "flex justify-center pt-2 relative items-center mb-3",
+                      caption_label: "text-sm font-semibold text-gray-800",
+                      nav: "space-x-2 flex items-center",
                       nav_button:
-                        "h-10 w-10 bg-white p-0 opacity-70 hover:opacity-100 rounded-lg border border-gray-300 hover:bg-gray-100 transition-all duration-200 shadow-sm",
-                      nav_button_previous: "absolute left-3",
-                      nav_button_next: "absolute right-3",
-                      table: "w-full border-collapse space-y-2",
-                      head_row: "flex mb-3",
+                        "h-8 w-8 bg-white p-0 opacity-70 hover:opacity-100 rounded-md border border-gray-300 hover:bg-gray-100 transition-all duration-200",
+                      nav_button_previous: "absolute left-2",
+                      nav_button_next: "absolute right-2",
+                      table: "w-full border-collapse space-y-1",
+                      head_row: "flex mb-2",
                       head_cell:
-                        "text-gray-600 rounded-lg w-11 h-11 font-semibold text-sm flex items-center justify-center",
-                      row: "flex w-full mt-2",
-                      cell: "text-center text-base p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-lg last:[&:has([aria-selected])]:rounded-r-lg focus-within:relative focus-within:z-20",
-                      day: "h-11 w-11 p-0 font-medium aria-selected:opacity-100 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-150 text-base flex items-center justify-center border border-transparent hover:border-gray-200",
+                        "text-gray-600 rounded-md w-8 h-8 font-medium text-xs flex items-center justify-center",
+                      row: "flex w-full mt-1",
+                      cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                      day: "h-8 w-8 p-0 font-medium aria-selected:opacity-100 rounded-md hover:bg-white hover:shadow-sm transition-all duration-150 text-sm flex items-center justify-center border border-transparent hover:border-gray-200",
                       day_selected:
-                        "bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white font-semibold border-blue-600 shadow-md",
+                        "bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white font-semibold border-blue-600",
                       day_today:
                         "bg-blue-100 text-blue-800 font-bold border-blue-300",
                       day_outside: "text-gray-400 opacity-60",
@@ -475,28 +493,28 @@ export default function FiltroDataGoogleAds({
                 </div>
 
                 {/* Botões do calendário */}
-                <div className="flex gap-4 mt-8">
+                <div className="flex gap-3 mt-4">
                   <Button
-                    size="lg"
+                    size="sm"
                     onClick={aplicarDatasPersonalizadas}
-                    className="flex-1 h-12 text-base font-semibold"
+                    className="flex-1 h-9 text-sm font-medium"
                     disabled={
                       (!dateRange?.from || !dateRange?.to) &&
                       (!tempDataInicio || !tempDataFim)
                     }
                   >
-                    <Check className="h-5 w-5 mr-2" />
+                    <Check className="h-4 w-4 mr-1" />
                     Aplicar período
                   </Button>
                   <Button
-                    size="lg"
+                    size="sm"
                     variant="outline"
                     onClick={() => {
                       setDateRange(undefined);
                       setTempDataInicio("");
                       setTempDataFim("");
                     }}
-                    className="h-12 px-6 text-base"
+                    className="h-9 px-4 text-sm"
                   >
                     Limpar
                   </Button>
