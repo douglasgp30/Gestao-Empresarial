@@ -90,16 +90,25 @@ export default function FormularioConta() {
       dataCriacao: new Date(),
     };
 
-    adicionarConta(contaData);
+    try {
+      await adicionarConta(contaData);
 
-    toast({
-      title: "Conta Adicionada",
-      description: `Conta ${activeTab === "receber" ? "a receber" : "a pagar"} foi criada com sucesso.`,
-      variant: "default",
-    });
+      toast({
+        title: "Conta Adicionada",
+        description: `Conta ${activeTab === "receber" ? "a receber" : "a pagar"} foi criada com sucesso.`,
+        variant: "default",
+      });
 
-    resetForm();
-    setIsOpen(false);
+      resetForm();
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar conta:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao criar conta. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
