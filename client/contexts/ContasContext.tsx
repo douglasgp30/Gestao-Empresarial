@@ -287,11 +287,11 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     return () => {
       clearInterval(interval);
       // Limpar timeout de carregamento se existir
-      if (carregandoTimeout) {
-        clearTimeout(carregandoTimeout);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
-  }, [carregandoTimeout]);
+  }, []);
 
   // Calcular totais baseados nas contas já filtradas pela API
   const totais = React.useMemo(() => {
