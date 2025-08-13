@@ -88,6 +88,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   // Função para carregar contas da API
   const carregarContas = async () => {
     try {
+      console.log("[ContasContext] 🔄 Iniciando carregamento de contas...");
       setIsLoading(true);
       const response = await contasApi.listar();
       if (response.error) {
