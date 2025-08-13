@@ -46,7 +46,11 @@ export function ColumnManager({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 bg-background hover:bg-accent/80 border-2 shadow-sm transition-all duration-200 hover:shadow-md"
+        >
           <Settings className="h-4 w-4" />
           Colunas ({visibleCount}/{columns.length})
         </Button>
