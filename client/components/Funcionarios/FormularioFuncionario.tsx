@@ -76,10 +76,10 @@ export default function FormularioFuncionario() {
       if (!formData.login.trim()) {
         newErrors.login =
           "Login é obrigatório para funcionários com acesso ao sistema";
-      } else if (formData.login.length < 3) {
+      } else if (formData.login.trim().length < 3) {
         newErrors.login = "Login deve ter pelo menos 3 caracteres";
       } else {
-        // Verificar se o login já existe
+        // Verificar se o login já existe (frontend validation)
         const loginExistente = funcionarios.find(
           (func) =>
             func.login?.toLowerCase() === formData.login.trim().toLowerCase(),
