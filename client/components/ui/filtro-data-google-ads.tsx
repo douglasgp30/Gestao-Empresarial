@@ -390,7 +390,12 @@ export default function FiltroDataGoogleAds({
                 <div className="space-y-1">
                   {/* Personalizar no topo */}
                   <button
-                    onClick={() => aplicarPeriodo(opcoesPeriodo.find(o => o.id === "personalizar")!)}
+                    onClick={(e) => {
+                      console.log('🖱️ CLIQUE CAPTURADO: Personalizar');
+                      e.preventDefault();
+                      e.stopPropagation();
+                      aplicarPeriodo(opcoesPeriodo.find(o => o.id === "personalizar")!)
+                    }}
                     className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
                       periodoSelecionado === "personalizar"
                         ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
