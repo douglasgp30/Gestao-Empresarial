@@ -1,4 +1,4 @@
-// Serviço para comunicaç��o com a API
+// Serviço para comunicação com a API
 
 const API_BASE = "/api";
 
@@ -61,10 +61,12 @@ async function apiRequest<T>(
 
       // Se é a última tentativa, retornar o erro
       if (attempt === retries) {
-        // Verificar se é um erro de rede
+        // Verificar se é um erro de rede ou do FullStory
         if (
           error instanceof TypeError &&
-          (error.message.includes("Failed to fetch") || error.message.includes("NetworkError"))
+          (error.message.includes("Failed to fetch") ||
+           error.message.includes("NetworkError") ||
+           error.stack?.includes("fullstory.com"))
         ) {
           return {
             error: "Servidor não disponível. Verifique se o backend está rodando.",
