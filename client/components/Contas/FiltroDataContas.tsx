@@ -11,7 +11,7 @@ export default function FiltroDataContas() {
     novaData.setHours(0, 0, 0, 0);
     setFiltros({
       ...filtros,
-      dataVencimentoInicio: novaData,
+      dataInicio: novaData,
       __timestamp: Date.now(),
     });
   };
@@ -22,7 +22,7 @@ export default function FiltroDataContas() {
     novaData.setHours(23, 59, 59, 999);
     setFiltros({
       ...filtros,
-      dataVencimentoFim: novaData,
+      dataFim: novaData,
       __timestamp: Date.now(),
     });
   };
