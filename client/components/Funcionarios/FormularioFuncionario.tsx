@@ -119,12 +119,15 @@ export default function FormularioFuncionario() {
 
     if (!validarFormulario()) return;
 
+    setSubmitting(true);
+    setErrors({}); // Clear previous errors
+
     try {
       await adicionarFuncionario({
         nomeCompleto: formData.nomeCompleto.trim(),
         ehTecnico: formData.ehTecnico,
-        login: formData.login.trim().toLowerCase(),
-        senha: formData.senha,
+        login: formData.permissaoAcesso ? formData.login.trim().toLowerCase() : undefined,
+        senha: formData.permissaoAcesso ? formData.senha : undefined,
         permissaoAcesso: formData.permissaoAcesso,
         tipoAcesso: formData.tipoAcesso,
         percentualComissao: parseFloat(formData.percentualComissao),
@@ -133,9 +136,19 @@ export default function FormularioFuncionario() {
 
       resetForm();
       setIsOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao adicionar funcionário:", error);
-      // TODO: Mostrar erro para o usuário
+
+      // Check if error message indicates login already exists
+      if (error?.message?.includes("login já está sendo usado")) {
+        setErrors({ login: error.message });
+      } else if (error?.message?.includes("email já está sendo usado")) {
+        setErrors({ email: error.message });
+      } else {
+        setErrors({ general: error?.message || "Erro ao criar funcionário. Tente novamente." });
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
