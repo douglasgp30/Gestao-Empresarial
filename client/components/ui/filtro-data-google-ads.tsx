@@ -357,16 +357,8 @@ export default function FiltroDataGoogleAds({
         {isOpen && (
           <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-[520px]">
             {!showCalendar ? (
-              <div className="p-4">
-                {/* Período selecionado no topo */}
-                <div className="mb-4 pb-3 border-b border-gray-200">
-                  <div className="text-sm text-gray-500 mb-1">Período selecionado:</div>
-                  <div className="text-lg font-semibold text-gray-900">
-                    {formatarPeriodoDisplay()}
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
+              <div className="p-3">
+                <div className="flex gap-3">
                   {/* Lista de opções predefinidas - mais compacta */}
                   <div className="w-48">
                     <div className="space-y-1">
