@@ -52,16 +52,21 @@ export function ModalDespesa() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filtrar descrições de despesa - usando useCallback para evitar re-renderizações
+  // Filtrar descrições de despesa usando tabela unificada - usando useCallback para evitar re-renderizações
+  const categoriasDespesa = useCallback(() => {
+    const categorias = getCategorias("despesa");
+    return categorias.map(cat => cat.nome).sort();
+  }, [getCategorias]);
+
   const descricoesDespesa = useCallback(() => {
-    return descricoes.filter((d) => d.tipo === "despesa");
-  }, [descricoes]);
+    return getDescricoes("despesa");
+  }, [getDescricoes]);
 
   // Filtrar descrições pela categoria selecionada
   const descricoesFiltradas = useCallback(() => {
     if (!formData.categoria) return [];
-    return descricoesDespesa().filter((d) => d.categoria === formData.categoria);
-  }, [formData.categoria, descricoesDespesa]);
+    return getDescricoes("despesa", formData.categoria);
+  }, [formData.categoria, getDescricoes]);
 
   // Obter categorias únicas das descrições de despesa
   const categoriasDespesa = useCallback(() => {
