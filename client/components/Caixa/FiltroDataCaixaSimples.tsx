@@ -84,7 +84,11 @@ export default function FiltroDataCaixaSimples() {
     setIsOpen(!isOpen);
   };
 
-  const periodoAtual = `${formatarDataDisplay(filtros.dataInicio)} - ${formatarDataDisplay(filtros.dataFim)}`;
+  // Garantir que as datas existem, senão usar valores padrão
+  const dataInicio = filtros?.dataInicio || new Date();
+  const dataFim = filtros?.dataFim || new Date();
+
+  const periodoAtual = `${formatarDataDisplay(dataInicio)} - ${formatarDataDisplay(dataFim)}`;
 
   return (
     <div className="space-y-1">
