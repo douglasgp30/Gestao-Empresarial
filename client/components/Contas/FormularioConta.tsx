@@ -53,7 +53,7 @@ export default function FormularioConta() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const valor = parseFloat(formData.valor);
