@@ -46,7 +46,27 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // Configurar handler de erro global para suprimir erros benignos
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      if (
+        event.message &&
+        event.message.includes('ResizeObserver loop completed with undelivered notifications')
+      ) {
+        event.stopImmediatePropagation();
+        return false;
+      }
+    };
+
+    window.addEventListener('error', handleError);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -117,7 +137,8 @@ const App = () => (
       </ConfigProvider>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 // Evitar múltiplas inicializações do React
 const rootElement = document.getElementById("root")!;
