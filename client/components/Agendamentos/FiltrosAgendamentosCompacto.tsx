@@ -16,7 +16,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import FiltroDataAgendamentos from "./FiltroDataAgendamentos";
+import FiltroDataAgendamentosSimples from "./FiltroDataAgendamentosSimples";
 import { Filter, ChevronDown, X, Search } from "lucide-react";
 
 export default function FiltrosAgendamentosCompacto() {
