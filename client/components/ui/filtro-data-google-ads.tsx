@@ -393,45 +393,43 @@ export default function FiltroDataGoogleAds({
                 </div>
               </div>
             ) : (
-              <div className="p-4">
-                {/* Header do calendário personalizado */}
-                <div className="flex items-center justify-between mb-4">
+              <div className="p-3">
+                {/* Header compacto */}
+                <div className="flex items-center justify-between mb-3">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={voltarParaOpcoes}
-                    className="text-sm font-medium"
+                    className="text-xs p-1 h-6"
                   >
                     ← Voltar
                   </Button>
-                  <h3 className="text-base font-semibold">
-                    Datas personalizadas
-                  </h3>
-                  <div></div>
+                  <span className="text-sm font-medium">Personalizar</span>
+                  <div className="w-6"></div>
                 </div>
 
-                {/* Campos de data manual */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-white p-3 rounded-md border border-gray-200">
-                    <Label className="text-xs font-medium text-gray-600 mb-2 block">
-                      Data de início*
+                {/* Campos de data inline compactos */}
+                <div className="space-y-2 mb-3">
+                  <div>
+                    <Label className="text-xs text-gray-600 mb-1 block">
+                      Data de início
                     </Label>
                     <Input
                       type="date"
                       value={tempDataInicio || dataInicio}
                       onChange={(e) => handleTempDataInicioChange(e.target.value)}
-                      className="h-9 text-sm"
+                      className="h-8 text-xs w-full"
                     />
                   </div>
-                  <div className="bg-white p-3 rounded-md border border-gray-200">
-                    <Label className="text-xs font-medium text-gray-600 mb-2 block">
+                  <div>
+                    <Label className="text-xs text-gray-600 mb-1 block">
                       Data de término
                     </Label>
                     <Input
                       type="date"
                       value={tempDataFim || dataFim}
                       onChange={(e) => handleTempDataFimChange(e.target.value)}
-                      className="h-9 text-sm"
+                      className="h-8 text-xs w-full"
                     />
                   </div>
                 </div>
