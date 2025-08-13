@@ -434,60 +434,16 @@ export default function FiltroDataGoogleAds({
                   </div>
                 </div>
 
-                {/* Calendário mais compacto */}
-                <div className="border border-gray-200 rounded-md p-3 bg-gray-50">
-                  <DayPicker
-                    mode="range"
-                    selected={dateRange}
-                    onSelect={setDateRange}
-                    numberOfMonths={2}
-                    locale={ptBR}
-                    className="text-sm"
-                    classNames={{
-                      months:
-                        "flex flex-col sm:flex-row space-y-4 sm:space-x-6 sm:space-y-0",
-                      month: "space-y-3",
-                      caption:
-                        "flex justify-center pt-2 relative items-center mb-3",
-                      caption_label: "text-sm font-semibold text-gray-800",
-                      nav: "space-x-2 flex items-center",
-                      nav_button:
-                        "h-8 w-8 bg-white p-0 opacity-70 hover:opacity-100 rounded-md border border-gray-300 hover:bg-gray-100 transition-all duration-200",
-                      nav_button_previous: "absolute left-2",
-                      nav_button_next: "absolute right-2",
-                      table: "w-full border-collapse space-y-1",
-                      head_row: "flex mb-2",
-                      head_cell:
-                        "text-gray-600 rounded-md w-8 h-8 font-medium text-xs flex items-center justify-center",
-                      row: "flex w-full mt-1",
-                      cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                      day: "h-8 w-8 p-0 font-medium aria-selected:opacity-100 rounded-md hover:bg-white hover:shadow-sm transition-all duration-150 text-sm flex items-center justify-center border border-transparent hover:border-gray-200",
-                      day_selected:
-                        "bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white font-semibold border-blue-600",
-                      day_today:
-                        "bg-blue-100 text-blue-800 font-bold border-blue-300",
-                      day_outside: "text-gray-400 opacity-60",
-                      day_disabled: "text-gray-300 opacity-40",
-                      day_range_middle:
-                        "aria-selected:bg-blue-100 aria-selected:text-blue-800",
-                      day_hidden: "invisible",
-                    }}
-                  />
-                </div>
-
-                {/* Botões do calendário */}
-                <div className="flex gap-3 mt-4">
+                {/* Botões compactos */}
+                <div className="flex gap-2">
                   <Button
                     size="sm"
                     onClick={aplicarDatasPersonalizadas}
-                    className="flex-1 h-9 text-sm font-medium"
-                    disabled={
-                      (!dateRange?.from || !dateRange?.to) &&
-                      (!tempDataInicio || !tempDataFim)
-                    }
+                    className="flex-1 h-7 text-xs"
+                    disabled={!tempDataInicio || !tempDataFim}
                   >
-                    <Check className="h-4 w-4 mr-1" />
-                    Aplicar período
+                    <Check className="h-3 w-3 mr-1" />
+                    Aplicar
                   </Button>
                   <Button
                     size="sm"
@@ -497,7 +453,7 @@ export default function FiltroDataGoogleAds({
                       setTempDataInicio("");
                       setTempDataFim("");
                     }}
-                    className="h-9 px-4 text-sm"
+                    className="h-7 px-2 text-xs"
                   >
                     Limpar
                   </Button>
