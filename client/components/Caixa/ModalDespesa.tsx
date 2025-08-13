@@ -88,10 +88,6 @@ export function ModalDespesa() {
       erros.push("Valor deve ser maior que zero");
     }
 
-    if (!formData.conta) {
-      erros.push("Conta é obrigatória");
-    }
-
     if (!formData.categoria) {
       erros.push("Categoria é obrigatória");
     }
