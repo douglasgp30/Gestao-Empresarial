@@ -127,7 +127,9 @@ export function ColumnManager({
             <RotateCcw className="h-4 w-4" />
             Restaurar Padrão
           </Button>
-          <Button onClick={() => setIsOpen(false)}>Fechar</Button>
+          <Button onClick={() => setIsOpen(false)} className="px-6">
+            Fechar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
