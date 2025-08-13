@@ -169,11 +169,12 @@ export function ModalEditarLancamentoCompleto({
   const taxaCartao = isFormaPagamentoCartao ? (valorCalculado * 3.5) / 100 : 0; // 3.5% para cartão
 
   // Valor líquido = valor recebido - impostos - desconto nota fiscal - taxa cartão
-  const valorLiquidoCalculado =
+  const valorLiquidoCalculado = Number(
     valorQueEntrouCalculado -
     impostoCalculado -
     descontoNotaFiscal -
-    taxaCartao;
+    taxaCartao
+  );
 
   // Calcular comissão baseada no percentual do técnico sobre o valor líquido
   const comissaoCalculada = (() => {
@@ -182,14 +183,14 @@ export function ModalEditarLancamentoCompleto({
         (t) => t.id.toString() === formData.tecnicoResponsavel,
       );
       if (tecnico && tecnico.percentualComissao) {
-        return valorLiquidoCalculado * (tecnico.percentualComissao / 100);
+        return Number(valorLiquidoCalculado * (tecnico.percentualComissao / 100));
       }
     }
     return 0;
   })();
 
   // Valor final para a empresa = valor líquido - comissão do técnico
-  const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
+  const valorParaEmpresa = Number(valorLiquidoCalculado - comissaoCalculada);
 
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
