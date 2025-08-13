@@ -187,13 +187,6 @@ export default function FiltroDataGoogleAds({
   React.useEffect(() => {
     if (!dataInicio || !dataFim) return;
 
-    console.log('🔍 Debug filtro de data:', {
-      dataInicio,
-      dataFim,
-      inicioAtual: parseISO(dataInicio),
-      fimAtual: parseISO(dataFim)
-    });
-
     const inicioAtual = parseISO(dataInicio);
     const fimAtual = parseISO(dataFim);
 
