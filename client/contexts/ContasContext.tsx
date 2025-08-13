@@ -219,13 +219,13 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
         const response = await apiService.post("/contas", novaConta);
 
-        if (response.data) {
+        if (response.data && response.data.data) {
           const contaFormatada = {
-            ...response.data,
-            dataLancamento: new Date(response.data.dataLancamento),
-            dataVencimento: new Date(response.data.dataVencimento),
-            dataPagamento: response.data.dataPagamento
-              ? new Date(response.data.dataPagamento)
+            ...response.data.data,
+            dataLancamento: new Date(response.data.data.dataLancamento),
+            dataVencimento: new Date(response.data.data.dataVencimento),
+            dataPagamento: response.data.data.dataPagamento
+              ? new Date(response.data.data.dataPagamento)
               : undefined,
           };
 
