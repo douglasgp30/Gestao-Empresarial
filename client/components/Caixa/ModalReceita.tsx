@@ -43,6 +43,10 @@ export function ModalReceita() {
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
+    // Unified data source
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
   } = useEntidades();
   const {
     clientes,
