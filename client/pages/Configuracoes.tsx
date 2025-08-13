@@ -23,7 +23,6 @@ import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import SistemaBackup from "../components/Backup/SistemaBackup";
-import SystemTester from "../components/Debug/SystemTester";
 import {
   Settings,
   Building2,
