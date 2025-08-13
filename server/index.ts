@@ -167,6 +167,12 @@ export function createServer(): Express {
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
 
+  // Rotas de Clientes
+  app.get("/api/clientes", getClientes);
+  app.post("/api/clientes", createCliente);
+  app.put("/api/clientes/:id", updateCliente);
+  app.delete("/api/clientes/:id", deleteCliente);
+
   return app;
 }
 
