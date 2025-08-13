@@ -181,8 +181,10 @@ export default function FiltroDataCaixaSimples() {
                       type="date"
                       value={formatDateForInput(dataInicio)}
                       onChange={(e) => {
-                        const novaData = new Date(e.target.value);
-                        novaData.setHours(0, 0, 0, 0);
+                        // Usar parseFloat e depois criar data local para evitar problemas de timezone
+                        const [ano, mes, dia] = e.target.value.split('-').map(Number);
+                        const novaData = new Date(ano, mes - 1, dia, 0, 0, 0, 0);
+                        console.log('📅 Data início alterada:', e.target.value, '->', novaData);
                         setFiltros({
                           ...filtros,
                           dataInicio: novaData,
@@ -197,8 +199,10 @@ export default function FiltroDataCaixaSimples() {
                       type="date"
                       value={formatDateForInput(dataFim)}
                       onChange={(e) => {
-                        const novaData = new Date(e.target.value);
-                        novaData.setHours(23, 59, 59, 999);
+                        // Usar parseFloat e depois criar data local para evitar problemas de timezone
+                        const [ano, mes, dia] = e.target.value.split('-').map(Number);
+                        const novaData = new Date(ano, mes - 1, dia, 23, 59, 59, 999);
+                        console.log('📅 Data fim alterada:', e.target.value, '->', novaData);
                         setFiltros({
                           ...filtros,
                           dataFim: novaData,
