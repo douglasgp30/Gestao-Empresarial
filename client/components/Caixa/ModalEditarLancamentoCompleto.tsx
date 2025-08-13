@@ -745,7 +745,7 @@ export function ModalEditarLancamentoCompleto({
             )}
 
             {/* Resumo financeiro para receitas */}
-            {lancamento.tipo === "receita" && valorInput.numericValue > 0 && (
+            {lancamento.tipo === "receita" && (valorInput.numericValue || 0) > 0 && (
               <div className="p-4 bg-green-50 rounded-lg">
                 <h4 className="font-medium text-green-800 mb-3">
                   Resumo Financeiro Detalhado
@@ -756,19 +756,19 @@ export function ModalEditarLancamentoCompleto({
                     <div>
                       <span className="text-gray-600">Valor Total:</span>
                       <div className="font-medium">
-                        R$ {valorInput.numericValue.toFixed(2).replace(".", ",")}
+                        R$ {(valorInput.numericValue || 0).toFixed(2).replace(".", ",")}
                       </div>
                     </div>
                     <div>
                       <span className="text-gray-600">Valor Recebido:</span>
                       <div className="font-medium">
-                        R$ {valorQueEntrouCalculado.toFixed(2).replace(".", ",")}
+                        R$ {(valorQueEntrouCalculado || 0).toFixed(2).replace(".", ",")}
                       </div>
                     </div>
                     <div>
                       <span className="text-gray-600">Impostos/Taxas:</span>
                       <div className="font-medium">
-                        R$ {impostoCalculado.toFixed(2).replace(".", ",")}
+                        R$ {(impostoCalculado || 0).toFixed(2).replace(".", ",")}
                       </div>
                     </div>
                   </div>
