@@ -167,8 +167,6 @@ export function createServer(): Express {
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
 
-  // Rotas de Seed
-  app.use("/api/seed", seedRouter);
 
   // Rotas de Clientes
   app.get("/api/clientes", getClientes);
