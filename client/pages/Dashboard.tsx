@@ -112,15 +112,15 @@ export default function Dashboard() {
           {/* Top Row - Meta e Saldo Geral */}
           <div className="flex flex-col lg:flex-row items-center gap-6">
             {/* Meta do Mês, Total Alcançado e Restante */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 bg-accent/20 px-6 py-4 rounded-lg border flex-grow">
-              <div className="flex flex-col items-center justify-center space-y-2 min-w-0 h-16">
+            <div className="flex flex-col sm:flex-row items-stretch justify-center gap-6 bg-accent/20 px-6 py-4 rounded-lg border flex-grow">
+              <div className="flex flex-col items-center justify-between py-2 min-w-0 flex-1">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                   Meta do Mês
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <div className="flex items-center justify-center space-x-2">
+                  <div className="flex items-center justify-center space-x-2 h-6">
                     <Dialog
                       open={isEditingMeta}
                       onOpenChange={setIsEditingMeta}
@@ -180,14 +180,14 @@ export default function Dashboard() {
                 )}
               </div>
 
-              <div className="flex flex-col items-center justify-center space-y-2 min-w-0 h-16">
+              <div className="flex flex-col items-center justify-between py-2 min-w-0 flex-1">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                   Total Alcançado da Meta
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <div className="flex items-center justify-center space-x-2">
+                  <div className="flex items-center justify-center space-x-2 h-6">
                     <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {formatCurrency(totalMetaMes)}
                     </span>
@@ -212,14 +212,14 @@ export default function Dashboard() {
                 )}
               </div>
 
-              <div className="flex flex-col items-center justify-center space-y-2 min-w-0 h-16">
+              <div className="flex flex-col items-center justify-between py-2 min-w-0 flex-1">
                 <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                   Restante para Meta
                 </span>
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <div className="flex items-center justify-center space-x-2">
+                  <div className="flex items-center justify-center space-x-2 h-6">
                     <span
                       className={`text-lg font-bold ${
                         restanteParaMeta <= 0
