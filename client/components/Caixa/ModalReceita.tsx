@@ -82,7 +82,7 @@ export function ModalReceita() {
   // Filtrar descrições de receita usando tabela unificada - usando useCallback para evitar re-renderizações
   const categoriasReceita = useCallback(() => {
     const categorias = getCategorias("receita");
-    return categorias.map(cat => cat.nome).sort();
+    return categorias.map((cat) => cat.nome).sort();
   }, [getCategorias]);
 
   const descricoesReceita = useCallback(() => {
@@ -391,9 +391,9 @@ export function ModalReceita() {
                       ? "Selecione a descrição"
                       : "Primeiro selecione uma categoria"
                   }
-                  options={descricoesFiltradas().map(desc => ({
+                  options={descricoesFiltradas().map((desc) => ({
                     value: desc.id.toString(),
-                    label: desc.nome
+                    label: desc.nome,
                   }))}
                   onAddNew={async (nomeDescricao) => {
                     await adicionarDescricao({
@@ -416,9 +416,9 @@ export function ModalReceita() {
                     setFormData((prev) => ({ ...prev, formaPagamento: value }))
                   }
                   placeholder="Selecione a forma"
-                  options={formasPagamento.map(forma => ({
+                  options={formasPagamento.map((forma) => ({
                     value: forma.id.toString(),
-                    label: forma.nome
+                    label: forma.nome,
                   }))}
                   onAddNew={async (nomeForma) => {
                     await adicionarFormaPagamento({
@@ -659,9 +659,9 @@ export function ModalReceita() {
                   setFormData((prev) => ({ ...prev, campanha: value }))
                 }
                 placeholder="Selecione a campanha"
-                options={campanhas.map(campanha => ({
+                options={campanhas.map((campanha) => ({
                   value: campanha.id.toString(),
-                  label: campanha.nome
+                  label: campanha.nome,
                 }))}
                 onAddNew={async (nomeCampanha) => {
                   await adicionarCampanha({

@@ -54,7 +54,7 @@ export function ModalDespesa() {
   // Filtrar descrições de despesa usando tabela unificada - usando useCallback para evitar re-renderizações
   const categoriasDespesa = useCallback(() => {
     const categorias = getCategorias("despesa");
-    return categorias.map(cat => cat.nome).sort();
+    return categorias.map((cat) => cat.nome).sort();
   }, [getCategorias]);
 
   const descricoesDespesa = useCallback(() => {
@@ -247,9 +247,9 @@ export function ModalDespesa() {
                       ? "Selecione a descrição"
                       : "Primeiro selecione uma categoria"
                   }
-                  options={descricoesFiltradas().map(desc => ({
+                  options={descricoesFiltradas().map((desc) => ({
                     value: desc.id.toString(),
-                    label: desc.nome
+                    label: desc.nome,
                   }))}
                   onAddNew={async (nomeDescricao) => {
                     await adicionarDescricao({
@@ -271,9 +271,9 @@ export function ModalDespesa() {
                   setFormData((prev) => ({ ...prev, formaPagamento: value }))
                 }
                 placeholder="Selecione a forma"
-                options={formasPagamento.map(forma => ({
+                options={formasPagamento.map((forma) => ({
                   value: forma.id.toString(),
-                  label: forma.nome
+                  label: forma.nome,
                 }))}
                 onAddNew={async (nomeForma) => {
                   await adicionarFormaPagamento({

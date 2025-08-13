@@ -3,7 +3,9 @@ import { cleanFakeData } from "../lib/clean-fake-data";
 
 export const cleanFakeDataRoute: RequestHandler = async (req, res) => {
   try {
-    console.log("[Clean Route] Iniciando limpeza completa de dados fictícios/void...");
+    console.log(
+      "[Clean Route] Iniciando limpeza completa de dados fictícios/void...",
+    );
 
     // Verificar se o corpo da requisição já foi lido
     if (req.readableEnded) {

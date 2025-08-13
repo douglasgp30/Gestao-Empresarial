@@ -399,8 +399,8 @@ router.get("/categorias", async (req, res) => {
   try {
     const categorias = await prisma.descricaoECategoria.findMany({
       where: {
-        tipoItem: 'categoria',
-        ativo: true
+        tipoItem: "categoria",
+        ativo: true,
       },
       orderBy: { nome: "asc" },
       select: {

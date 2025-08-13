@@ -50,7 +50,9 @@ interface ContasContextType {
   categorias: Categoria[];
 
   // Funções para adicionar entidades
-  adicionarFornecedor: (fornecedor: Omit<Fornecedor, "id">) => Promise<Fornecedor>;
+  adicionarFornecedor: (
+    fornecedor: Omit<Fornecedor, "id">,
+  ) => Promise<Fornecedor>;
 }
 
 const ContasContext = createContext<ContasContextType | undefined>(undefined);
@@ -201,15 +203,19 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Carregar categorias da tabela unificada
-      const categoriasResponse = await apiService.get("/descricoes-e-categorias/categorias");
+      const categoriasResponse = await apiService.get(
+        "/descricoes-e-categorias/categorias",
+      );
       if (categoriasResponse.data && categoriasResponse.data.data) {
         // Convert unified format to the expected format
-        const categoriasFormatadas = categoriasResponse.data.data.map((item: any) => ({
-          id: item.id,
-          nome: item.nome,
-          tipo: item.tipo,
-          dataCriacao: new Date(item.dataCriacao)
-        }));
+        const categoriasFormatadas = categoriasResponse.data.data.map(
+          (item: any) => ({
+            id: item.id,
+            nome: item.nome,
+            tipo: item.tipo,
+            dataCriacao: new Date(item.dataCriacao),
+          }),
+        );
         setCategorias(categoriasFormatadas);
       }
     } catch (error) {
@@ -348,7 +354,10 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log("🔍 [CONTAS] Adicionando novo fornecedor:", novoFornecedor);
 
-        const response = await apiService.post("/contas/fornecedores", novoFornecedor);
+        const response = await apiService.post(
+          "/contas/fornecedores",
+          novoFornecedor,
+        );
 
         if (response.data && response.data.data) {
           const fornecedorAdicionado = response.data.data;
@@ -359,7 +368,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           );
 
           // Atualizar a lista de fornecedores
-          setFornecedores(prev => [...prev, fornecedorAdicionado]);
+          setFornecedores((prev) => [...prev, fornecedorAdicionado]);
 
           return fornecedorAdicionado;
         } else {

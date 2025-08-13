@@ -31,7 +31,13 @@ import { useEntidades } from "@/contexts/EntidadesContext";
 import { useClientes } from "@/contexts/ClientesContext";
 import { ContaLancamento } from "@shared/types";
 import { useCurrencyInput } from "@/hooks/use-currency-input";
-import { CalendarIcon, Plus, Receipt, UserPlus, DollarSign } from "lucide-react";
+import {
+  CalendarIcon,
+  Plus,
+  Receipt,
+  UserPlus,
+  DollarSign,
+} from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ModalCadastroCliente from "@/components/Clientes/ModalCadastroCliente";
@@ -42,22 +48,22 @@ interface ModalContasReceberProps {
   onSuccess?: () => void;
 }
 
-export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasReceberProps) {
+export function ModalContasReceber({
+  contaParaEditar,
+  onSuccess,
+}: ModalContasReceberProps) {
   const { toast } = useToast();
-  const {
-    adicionarConta,
-    atualizarConta,
-  } = useContas();
+  const { adicionarConta, atualizarConta } = useContas();
 
   // Usar contextos separados para obter os dados
   const { clientes, adicionarCliente } = useClientes();
-  const { 
-    descricoes, 
-    formasPagamento, 
+  const {
+    descricoes,
+    formasPagamento,
     adicionarDescricao,
     adicionarFormaPagamento,
     categorias: entidadesCategorias,
-    adicionarCategoria
+    adicionarCategoria,
   } = useEntidades();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -114,7 +120,9 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
         descricao: contaParaEditar.descricao || "",
         categoria: contaParaEditar.categoria?.nome || "",
         pago: contaParaEditar.pago,
-        dataPagamento: contaParaEditar.dataPagamento ? new Date(contaParaEditar.dataPagamento) : undefined,
+        dataPagamento: contaParaEditar.dataPagamento
+          ? new Date(contaParaEditar.dataPagamento)
+          : undefined,
       });
       setValor(contaParaEditar.valor.toString());
     }
@@ -122,8 +130,11 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!valorFormatado || parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", ".")) <= 0) {
+
+    if (
+      !valorFormatado ||
+      parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", ".")) <= 0
+    ) {
       toast({
         title: "Erro",
         description: "Por favor, insira um valor válido",
@@ -153,8 +164,10 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
     setSalvando(true);
 
     try {
-      const valorNumerico = parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", "."));
-      
+      const valorNumerico = parseFloat(
+        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
+      );
+
       const contaData = {
         tipo: "receber" as const,
         valor: valorNumerico,
@@ -164,7 +177,9 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
         formaPg: parseInt(formData.formaPg),
         observacoes: formData.observacoes,
         descricao: formData.descricao,
-        categoria: formData.categoria ? { nome: formData.categoria } : undefined,
+        categoria: formData.categoria
+          ? { nome: formData.categoria }
+          : undefined,
         pago: formData.pago,
         dataPagamento: formData.dataPagamento,
       };
@@ -209,11 +224,13 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-green-600">
-            {contaParaEditar ? "Editar Conta a Receber" : "Nova Conta a Receber"}
+            {contaParaEditar
+              ? "Editar Conta a Receber"
+              : "Nova Conta a Receber"}
           </DialogTitle>
           <DialogDescription>
-            {contaParaEditar 
-              ? "Atualize os dados da conta a receber" 
+            {contaParaEditar
+              ? "Atualize os dados da conta a receber"
               : "Adicione uma nova conta a receber ao sistema"}
           </DialogDescription>
         </DialogHeader>
@@ -243,7 +260,9 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {formData.dataVencimento ? (
-                    format(formData.dataVencimento, "dd/MM/yyyy", { locale: ptBR })
+                    format(formData.dataVencimento, "dd/MM/yyyy", {
+                      locale: ptBR,
+                    })
                   ) : (
                     <span>Selecione uma data</span>
                   )}
@@ -253,8 +272,11 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
                 <Calendar
                   mode="single"
                   selected={formData.dataVencimento}
-                  onSelect={(date) => 
-                    setFormData(prev => ({ ...prev, dataVencimento: date || new Date() }))
+                  onSelect={(date) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      dataVencimento: date || new Date(),
+                    }))
                   }
                   initialFocus
                 />
@@ -268,8 +290,8 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
             <div className="flex gap-2">
               <Select
                 value={formData.codigoCliente}
-                onValueChange={(value) => 
-                  setFormData(prev => ({ ...prev, codigoCliente: value }))
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, codigoCliente: value }))
                 }
               >
                 <SelectTrigger className="flex-1">
@@ -302,13 +324,19 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
             <SelectWithAdd
               placeholder="Selecione uma categoria"
               value={formData.categoria}
-              onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, categoria: value }))
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, categoria: value }))
               }
-              options={entidadesCategorias.map(cat => ({ value: cat.nome, label: cat.nome }))}
+              options={entidadesCategorias.map((cat) => ({
+                value: cat.nome,
+                label: cat.nome,
+              }))}
               onAddNew={async (novaCategoria) => {
                 try {
-                  await adicionarCategoria({ nome: novaCategoria, tipo: "receita" });
+                  await adicionarCategoria({
+                    nome: novaCategoria,
+                    tipo: "receita",
+                  });
                   toast({
                     title: "Sucesso",
                     description: "Categoria adicionada com sucesso!",
@@ -333,13 +361,19 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
             <SelectWithAdd
               placeholder="Selecione uma descrição"
               value={formData.descricao}
-              onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, descricao: value }))
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, descricao: value }))
               }
-              options={descricoesReceita.map(desc => ({ value: desc.nome, label: desc.nome }))}
+              options={descricoesReceita.map((desc) => ({
+                value: desc.nome,
+                label: desc.nome,
+              }))}
               onAddNew={async (novaDescricao) => {
                 try {
-                  await adicionarDescricao({ nome: novaDescricao, tipo: "receita" });
+                  await adicionarDescricao({
+                    nome: novaDescricao,
+                    tipo: "receita",
+                  });
                   toast({
                     title: "Sucesso",
                     description: "Descrição adicionada com sucesso!",
@@ -364,12 +398,12 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
             <SelectWithAdd
               placeholder="Selecione uma forma de pagamento"
               value={formData.formaPg}
-              onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, formaPg: value }))
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, formaPg: value }))
               }
-              options={formasPagamento.map(forma => ({ 
-                value: forma.id.toString(), 
-                label: forma.nome 
+              options={formasPagamento.map((forma) => ({
+                value: forma.id.toString(),
+                label: forma.nome,
               }))}
               onAddNew={async (novaForma) => {
                 try {
@@ -397,8 +431,8 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
             <Label htmlFor="conta">Conta</Label>
             <Select
               value={formData.conta}
-              onValueChange={(value: "empresa" | "pessoal") => 
-                setFormData(prev => ({ ...prev, conta: value }))
+              onValueChange={(value: "empresa" | "pessoal") =>
+                setFormData((prev) => ({ ...prev, conta: value }))
               }
             >
               <SelectTrigger>
@@ -418,8 +452,11 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
               id="observacoes"
               placeholder="Observações adicionais..."
               value={formData.observacoes}
-              onChange={(e) => 
-                setFormData(prev => ({ ...prev, observacoes: e.target.value }))
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  observacoes: e.target.value,
+                }))
               }
               rows={3}
             />
@@ -430,8 +467,8 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
             <Checkbox
               id="pago"
               checked={formData.pago}
-              onCheckedChange={(checked) => 
-                setFormData(prev => ({ ...prev, pago: !!checked }))
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, pago: !!checked }))
               }
             />
             <Label htmlFor="pago">Marcar como pago</Label>
@@ -449,7 +486,9 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {formData.dataPagamento ? (
-                      format(formData.dataPagamento, "dd/MM/yyyy", { locale: ptBR })
+                      format(formData.dataPagamento, "dd/MM/yyyy", {
+                        locale: ptBR,
+                      })
                     ) : (
                       <span>Selecione uma data</span>
                     )}
@@ -459,8 +498,8 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
                   <Calendar
                     mode="single"
                     selected={formData.dataPagamento}
-                    onSelect={(date) => 
-                      setFormData(prev => ({ ...prev, dataPagamento: date }))
+                    onSelect={(date) =>
+                      setFormData((prev) => ({ ...prev, dataPagamento: date }))
                     }
                     initialFocus
                   />
@@ -478,12 +517,16 @@ export function ModalContasReceber({ contaParaEditar, onSuccess }: ModalContasRe
             >
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={salvando}
               className="bg-green-600 hover:bg-green-700"
             >
-              {salvando ? "Salvando..." : contaParaEditar ? "Atualizar" : "Adicionar"}
+              {salvando
+                ? "Salvando..."
+                : contaParaEditar
+                  ? "Atualizar"
+                  : "Adicionar"}
             </Button>
           </div>
         </form>

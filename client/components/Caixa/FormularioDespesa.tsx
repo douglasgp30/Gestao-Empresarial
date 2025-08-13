@@ -193,7 +193,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               <Label htmlFor="valor">Valor (R$) *</Label>
               <Input id="valor" {...valorInput.inputProps} required />
             </div>
-
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

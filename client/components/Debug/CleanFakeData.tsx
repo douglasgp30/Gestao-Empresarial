@@ -34,7 +34,9 @@ export function CleanFakeData() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Server response error:", errorText);
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        throw new Error(
+          `HTTP error! status: ${response.status} - ${errorText}`,
+        );
       }
 
       const data = await response.json();
@@ -43,7 +45,10 @@ export function CleanFakeData() {
         setLastResults(data.data);
 
         const totalRemovidos = data.data?.removidos
-          ? Object.values(data.data.removidos).reduce((a: any, b: any) => a + b, 0)
+          ? Object.values(data.data.removidos).reduce(
+              (a: any, b: any) => a + b,
+              0,
+            )
           : 0;
 
         toast({
@@ -60,12 +65,15 @@ export function CleanFakeData() {
       let errorMessage = "Erro desconhecido ao limpar dados fictícios";
 
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = "Operação cancelada por timeout (30s). Tente novamente.";
-        } else if (error.message.includes('body stream already read')) {
-          errorMessage = "Erro de comunicação. Aguarde um momento e tente novamente.";
-        } else if (error.message.includes('Failed to fetch')) {
-          errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
+        if (error.name === "AbortError") {
+          errorMessage =
+            "Operação cancelada por timeout (30s). Tente novamente.";
+        } else if (error.message.includes("body stream already read")) {
+          errorMessage =
+            "Erro de comunicação. Aguarde um momento e tente novamente.";
+        } else if (error.message.includes("Failed to fetch")) {
+          errorMessage =
+            "Erro de conexão. Verifique sua internet e tente novamente.";
         } else {
           errorMessage = error.message;
         }
@@ -93,7 +101,9 @@ export function CleanFakeData() {
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start gap-2">
           <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
           <div className="text-sm text-yellow-700">
-            <p className="font-medium">Esta ação irá remover TODOS os dados fictícios:</p>
+            <p className="font-medium">
+              Esta ação irá remover TODOS os dados fictícios:
+            </p>
             <ul className="mt-1 list-disc list-inside text-xs space-y-1">
               <li>Funcionários, clientes e fornecedores de teste</li>
               <li>Lançamentos de caixa com valores redondos suspeitos</li>
@@ -101,7 +111,9 @@ export function CleanFakeData() {
               <li>Agendamentos com dados de teste</li>
               <li>Descrições, campanhas e setores de exemplo</li>
             </ul>
-            <p className="mt-2 font-medium">Apenas dados reais lançados por você permanecerão no sistema.</p>
+            <p className="mt-2 font-medium">
+              Apenas dados reais lançados por você permanecerão no sistema.
+            </p>
           </div>
         </div>
 
@@ -148,17 +160,25 @@ export function CleanFakeData() {
               <div>
                 <span className="font-medium text-red-600">Removidos:</span>
                 <ul className="mt-1 space-y-1">
-                  {Object.entries(lastResults.removidos).map(([tipo, count]) => (
-                    <li key={tipo}>{tipo}: {count as number}</li>
-                  ))}
+                  {Object.entries(lastResults.removidos).map(
+                    ([tipo, count]) => (
+                      <li key={tipo}>
+                        {tipo}: {count as number}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
               <div>
                 <span className="font-medium text-green-600">Restantes:</span>
                 <ul className="mt-1 space-y-1">
-                  {Object.entries(lastResults.restantes).map(([tipo, count]) => (
-                    <li key={tipo}>{tipo}: {count as number}</li>
-                  ))}
+                  {Object.entries(lastResults.restantes).map(
+                    ([tipo, count]) => (
+                      <li key={tipo}>
+                        {tipo}: {count as number}
+                      </li>
+                    ),
+                  )}
                 </ul>
               </div>
             </div>

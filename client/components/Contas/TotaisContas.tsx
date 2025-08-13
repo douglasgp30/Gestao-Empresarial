@@ -1,6 +1,12 @@
 import React from "react";
 import { useContas } from "../../contexts/ContasContext";
-import { TrendingUp, TrendingDown, Clock, CheckCircle, AlertTriangle } from "lucide-react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 
 export function TotaisContas() {
   const { contas } = useContas();
@@ -32,18 +38,22 @@ export function TotaisContas() {
       pagas: contasPagar
         .filter((c) => c.pago)
         .reduce((sum, c) => sum + c.valor, 0),
-      aReceberVencendoHoje: contasReceber.filter((c) => {
-        if (c.pago) return false;
-        const vencimento = new Date(c.dataVencimento);
-        vencimento.setHours(23, 59, 59, 999);
-        return hoje.toDateString() === vencimento.toDateString();
-      }).reduce((sum, c) => sum + c.valor, 0),
-      aPagarVencendoHoje: contasPagar.filter((c) => {
-        if (c.pago) return false;
-        const vencimento = new Date(c.dataVencimento);
-        vencimento.setHours(23, 59, 59, 999);
-        return hoje.toDateString() === vencimento.toDateString();
-      }).reduce((sum, c) => sum + c.valor, 0),
+      aReceberVencendoHoje: contasReceber
+        .filter((c) => {
+          if (c.pago) return false;
+          const vencimento = new Date(c.dataVencimento);
+          vencimento.setHours(23, 59, 59, 999);
+          return hoje.toDateString() === vencimento.toDateString();
+        })
+        .reduce((sum, c) => sum + c.valor, 0),
+      aPagarVencendoHoje: contasPagar
+        .filter((c) => {
+          if (c.pago) return false;
+          const vencimento = new Date(c.dataVencimento);
+          vencimento.setHours(23, 59, 59, 999);
+          return hoje.toDateString() === vencimento.toDateString();
+        })
+        .reduce((sum, c) => sum + c.valor, 0),
     };
   }, [contas]);
 

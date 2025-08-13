@@ -18,7 +18,8 @@ export const descricoesECategoriasApi = {
       const url = new URL(API_BASE, window.location.origin);
       if (params?.tipo) url.searchParams.set("tipo", params.tipo);
       if (params?.tipoItem) url.searchParams.set("tipoItem", params.tipoItem);
-      if (params?.ativo !== undefined) url.searchParams.set("ativo", params.ativo.toString());
+      if (params?.ativo !== undefined)
+        url.searchParams.set("ativo", params.ativo.toString());
 
       const response = await fetch(url.toString());
       if (!response.ok) {
@@ -32,7 +33,9 @@ export const descricoesECategoriasApi = {
   },
 
   // Listar apenas categorias
-  listarCategorias: async (tipo?: "receita" | "despesa"): Promise<ApiResponse<DescricaoECategoria[]>> => {
+  listarCategorias: async (
+    tipo?: "receita" | "despesa",
+  ): Promise<ApiResponse<DescricaoECategoria[]>> => {
     try {
       const url = new URL(`${API_BASE}/categorias`, window.location.origin);
       if (tipo) url.searchParams.set("tipo", tipo);
@@ -56,7 +59,8 @@ export const descricoesECategoriasApi = {
     try {
       const url = new URL(`${API_BASE}/descricoes`, window.location.origin);
       if (params?.tipo) url.searchParams.set("tipo", params.tipo);
-      if (params?.categoria) url.searchParams.set("categoria", params.categoria);
+      if (params?.categoria)
+        url.searchParams.set("categoria", params.categoria);
 
       const response = await fetch(url.toString());
       if (!response.ok) {
@@ -70,7 +74,9 @@ export const descricoesECategoriasApi = {
   },
 
   // Criar novo item
-  criar: async (item: Omit<DescricaoECategoria, "id" | "dataCriacao">): Promise<ApiResponse<DescricaoECategoria>> => {
+  criar: async (
+    item: Omit<DescricaoECategoria, "id" | "dataCriacao">,
+  ): Promise<ApiResponse<DescricaoECategoria>> => {
     try {
       const response = await fetch(API_BASE, {
         method: "POST",
@@ -87,12 +93,17 @@ export const descricoesECategoriasApi = {
       return await response.json();
     } catch (error) {
       console.error("Erro ao criar item:", error);
-      return { error: error instanceof Error ? error.message : "Erro ao criar item" };
+      return {
+        error: error instanceof Error ? error.message : "Erro ao criar item",
+      };
     }
   },
 
   // Atualizar item
-  atualizar: async (id: number, item: Partial<DescricaoECategoria>): Promise<ApiResponse<DescricaoECategoria>> => {
+  atualizar: async (
+    id: number,
+    item: Partial<DescricaoECategoria>,
+  ): Promise<ApiResponse<DescricaoECategoria>> => {
     try {
       const response = await fetch(`${API_BASE}/${id}`, {
         method: "PUT",
@@ -109,7 +120,10 @@ export const descricoesECategoriasApi = {
       return await response.json();
     } catch (error) {
       console.error("Erro ao atualizar item:", error);
-      return { error: error instanceof Error ? error.message : "Erro ao atualizar item" };
+      return {
+        error:
+          error instanceof Error ? error.message : "Erro ao atualizar item",
+      };
     }
   },
 
@@ -127,7 +141,9 @@ export const descricoesECategoriasApi = {
       return { data: null };
     } catch (error) {
       console.error("Erro ao excluir item:", error);
-      return { error: error instanceof Error ? error.message : "Erro ao excluir item" };
+      return {
+        error: error instanceof Error ? error.message : "Erro ao excluir item",
+      };
     }
   },
 };

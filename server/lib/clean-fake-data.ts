@@ -252,8 +252,12 @@ export async function cleanFakeData() {
   });
 
   const totalRemovidos = Object.values(removidos).reduce((a, b) => a + b, 0);
-  console.log(`[Clean] ✅ Limpeza concluída! Total removidos: ${totalRemovidos} registros`);
-  console.log("[Clean] Sistema agora contém apenas dados reais lançados pelo usuário.");
+  console.log(
+    `[Clean] ✅ Limpeza concluída! Total removidos: ${totalRemovidos} registros`,
+  );
+  console.log(
+    "[Clean] Sistema agora contém apenas dados reais lançados pelo usuário.",
+  );
 
   return {
     removidos,

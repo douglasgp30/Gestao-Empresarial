@@ -31,12 +31,18 @@ interface EntidadesContextType {
   adicionarDescricaoECategoria: (
     item: Omit<DescricaoECategoria, "id" | "dataCriacao">,
   ) => Promise<void>;
-  editarDescricaoECategoria: (id: string, item: Partial<DescricaoECategoria>) => Promise<void>;
+  editarDescricaoECategoria: (
+    id: string,
+    item: Partial<DescricaoECategoria>,
+  ) => Promise<void>;
   excluirDescricaoECategoria: (id: string) => Promise<void>;
 
   // Funções de conveniência para filtrar a tabela unificada
   getCategorias: (tipo?: "receita" | "despesa") => DescricaoECategoria[];
-  getDescricoes: (tipo?: "receita" | "despesa", categoria?: string) => DescricaoECategoria[];
+  getDescricoes: (
+    tipo?: "receita" | "despesa",
+    categoria?: string,
+  ) => DescricaoECategoria[];
 
   // Mantém interfaces originais para compatibilidade
   descricoes: Descricao[];
@@ -156,7 +162,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   // Estados para entidades no banco
-  const [descricoesECategorias, setDescricoesECategorias] = useState<DescricaoECategoria[]>([]);
+  const [descricoesECategorias, setDescricoesECategorias] = useState<
+    DescricaoECategoria[]
+  >([]);
   const [descricoes, setDescricoes] = useState<Descricao[]>([]);
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
@@ -195,7 +203,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       ]);
 
       // Atualizar estados com dados do banco
-      if (descricoesECategoriasResponse.data) setDescricoesECategorias(descricoesECategoriasResponse.data);
+      if (descricoesECategoriasResponse.data)
+        setDescricoesECategorias(descricoesECategoriasResponse.data);
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
       if (formasPagamentoResponse.data)
         setFormasPagamento(formasPagamentoResponse.data);
@@ -235,19 +244,21 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === FUNÇÕES PARA TABELA UNIFICADA ===
   const getCategorias = (tipo?: "receita" | "despesa") => {
-    return descricoesECategorias.filter(item =>
-      item.tipoItem === 'categoria' &&
-      item.ativo &&
-      (tipo ? item.tipo === tipo : true)
+    return descricoesECategorias.filter(
+      (item) =>
+        item.tipoItem === "categoria" &&
+        item.ativo &&
+        (tipo ? item.tipo === tipo : true),
     );
   };
 
   const getDescricoes = (tipo?: "receita" | "despesa", categoria?: string) => {
-    return descricoesECategorias.filter(item =>
-      item.tipoItem === 'descricao' &&
-      item.ativo &&
-      (tipo ? item.tipo === tipo : true) &&
-      (categoria ? item.categoria === categoria : true)
+    return descricoesECategorias.filter(
+      (item) =>
+        item.tipoItem === "descricao" &&
+        item.ativo &&
+        (tipo ? item.tipo === tipo : true) &&
+        (categoria ? item.categoria === categoria : true),
     );
   };
 
@@ -263,8 +274,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar dados
-      const descricoesECategoriasResponse = await descricoesECategoriasApi.listar();
-      if (descricoesECategoriasResponse.data) setDescricoesECategorias(descricoesECategoriasResponse.data);
+      const descricoesECategoriasResponse =
+        await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data)
+        setDescricoesECategorias(descricoesECategoriasResponse.data);
     } catch (error) {
       console.error("Erro ao adicionar item:", error);
       throw error;
@@ -287,8 +300,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar dados
-      const descricoesECategoriasResponse = await descricoesECategoriasApi.listar();
-      if (descricoesECategoriasResponse.data) setDescricoesECategorias(descricoesECategoriasResponse.data);
+      const descricoesECategoriasResponse =
+        await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data)
+        setDescricoesECategorias(descricoesECategoriasResponse.data);
     } catch (error) {
       console.error("Erro ao editar item:", error);
       throw error;
@@ -308,13 +323,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar dados
-      const descricoesECategoriasResponse = await descricoesECategoriasApi.listar();
-      if (descricoesECategoriasResponse.data) setDescricoesECategorias(descricoesECategoriasResponse.data);
+      const descricoesECategoriasResponse =
+        await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data)
+        setDescricoesECategorias(descricoesECategoriasResponse.data);
 
       console.log("✅ [Descrições e Categorias] Item excluído com sucesso");
       toast.success("Item excluído com sucesso!");
     } catch (error) {
-      console.error("❌ [Descrições e Categorias] Erro ao excluir item:", error);
+      console.error(
+        "❌ [Descrições e Categorias] Erro ao excluir item:",
+        error,
+      );
       if (!error.message?.includes("Erro ao excluir item:")) {
         toast.error("Erro ao excluir item");
       }
@@ -693,7 +713,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         (categoria) => categoria.id !== id,
       );
 
-      console.log("🗑️ [Categorias] Categorias após exclusão:", categoriasAtualizadas.length);
+      console.log(
+        "🗑️ [Categorias] Categorias após exclusão:",
+        categoriasAtualizadas.length,
+      );
 
       setCategorias(categoriasAtualizadas);
       salvarEntidadeNoStorage("categorias", categoriasAtualizadas);

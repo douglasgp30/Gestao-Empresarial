@@ -30,7 +30,13 @@ import { useContas } from "@/contexts/ContasContext";
 import { useEntidades } from "@/contexts/EntidadesContext";
 import { ContaLancamento } from "@shared/types";
 import { useCurrencyInput } from "@/hooks/use-currency-input";
-import { CalendarIcon, Plus, Receipt, Building2, CreditCard } from "lucide-react";
+import {
+  CalendarIcon,
+  Plus,
+  Receipt,
+  Building2,
+  CreditCard,
+} from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import SelectWithAdd from "@/components/ui/select-with-add";
@@ -40,23 +46,22 @@ interface ModalContasPagarProps {
   onSuccess?: () => void;
 }
 
-export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPagarProps) {
+export function ModalContasPagar({
+  contaParaEditar,
+  onSuccess,
+}: ModalContasPagarProps) {
   const { toast } = useToast();
-  const {
-    adicionarConta,
-    atualizarConta,
-    fornecedores,
-    adicionarFornecedor,
-  } = useContas();
+  const { adicionarConta, atualizarConta, fornecedores, adicionarFornecedor } =
+    useContas();
 
   // Usar contexto das entidades para obter dados compartilhados
-  const { 
-    descricoes, 
-    formasPagamento, 
+  const {
+    descricoes,
+    formasPagamento,
     adicionarDescricao,
     adicionarFormaPagamento,
     categorias: entidadesCategorias,
-    adicionarCategoria
+    adicionarCategoria,
   } = useEntidades();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -115,7 +120,9 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
         descricao: contaParaEditar.descricao || "",
         categoria: contaParaEditar.categoria?.nome || "",
         pago: contaParaEditar.pago,
-        dataPagamento: contaParaEditar.dataPagamento ? new Date(contaParaEditar.dataPagamento) : undefined,
+        dataPagamento: contaParaEditar.dataPagamento
+          ? new Date(contaParaEditar.dataPagamento)
+          : undefined,
         novoFornecedor: "",
       });
       setValor(contaParaEditar.valor.toString());
@@ -139,8 +146,8 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
         telefone: "",
         endereco: "",
       });
-      
-      setFormData(prev => ({
+
+      setFormData((prev) => ({
         ...prev,
         codigoFornecedor: novoFornecedor.id.toString(),
         novoFornecedor: "",
@@ -161,8 +168,11 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!valorFormatado || parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", ".")) <= 0) {
+
+    if (
+      !valorFormatado ||
+      parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", ".")) <= 0
+    ) {
       toast({
         title: "Erro",
         description: "Por favor, insira um valor válido",
@@ -192,8 +202,10 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
     setSalvando(true);
 
     try {
-      const valorNumerico = parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", "."));
-      
+      const valorNumerico = parseFloat(
+        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
+      );
+
       const contaData = {
         tipo: "pagar" as const,
         valor: valorNumerico,
@@ -203,7 +215,9 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
         formaPg: parseInt(formData.formaPg),
         observacoes: formData.observacoes,
         descricao: formData.descricao,
-        categoria: formData.categoria ? { nome: formData.categoria } : undefined,
+        categoria: formData.categoria
+          ? { nome: formData.categoria }
+          : undefined,
         pago: formData.pago,
         dataPagamento: formData.dataPagamento,
       };
@@ -251,8 +265,8 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
             {contaParaEditar ? "Editar Conta a Pagar" : "Nova Conta a Pagar"}
           </DialogTitle>
           <DialogDescription>
-            {contaParaEditar 
-              ? "Atualize os dados da conta a pagar" 
+            {contaParaEditar
+              ? "Atualize os dados da conta a pagar"
               : "Adicione uma nova conta a pagar ao sistema"}
           </DialogDescription>
         </DialogHeader>
@@ -282,7 +296,9 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {formData.dataVencimento ? (
-                    format(formData.dataVencimento, "dd/MM/yyyy", { locale: ptBR })
+                    format(formData.dataVencimento, "dd/MM/yyyy", {
+                      locale: ptBR,
+                    })
                   ) : (
                     <span>Selecione uma data</span>
                   )}
@@ -292,8 +308,11 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
                 <Calendar
                   mode="single"
                   selected={formData.dataVencimento}
-                  onSelect={(date) => 
-                    setFormData(prev => ({ ...prev, dataVencimento: date || new Date() }))
+                  onSelect={(date) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      dataVencimento: date || new Date(),
+                    }))
                   }
                   initialFocus
                 />
@@ -306,8 +325,8 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
             <Label htmlFor="fornecedor">Fornecedor *</Label>
             <Select
               value={formData.codigoFornecedor}
-              onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, codigoFornecedor: value }))
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, codigoFornecedor: value }))
               }
             >
               <SelectTrigger>
@@ -315,20 +334,26 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
               </SelectTrigger>
               <SelectContent>
                 {fornecedores.map((fornecedor) => (
-                  <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
+                  <SelectItem
+                    key={fornecedor.id}
+                    value={fornecedor.id.toString()}
+                  >
                     {fornecedor.nome}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            
+
             {/* Opção para adicionar novo fornecedor */}
             <div className="flex gap-2">
               <Input
                 placeholder="Novo fornecedor"
                 value={formData.novoFornecedor}
-                onChange={(e) => 
-                  setFormData(prev => ({ ...prev, novoFornecedor: e.target.value }))
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    novoFornecedor: e.target.value,
+                  }))
                 }
               />
               <Button
@@ -349,13 +374,19 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
             <SelectWithAdd
               placeholder="Selecione uma categoria"
               value={formData.categoria}
-              onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, categoria: value }))
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, categoria: value }))
               }
-              options={entidadesCategorias.map(cat => ({ value: cat.nome, label: cat.nome }))}
+              options={entidadesCategorias.map((cat) => ({
+                value: cat.nome,
+                label: cat.nome,
+              }))}
               onAddNew={async (novaCategoria) => {
                 try {
-                  await adicionarCategoria({ nome: novaCategoria, tipo: "despesa" });
+                  await adicionarCategoria({
+                    nome: novaCategoria,
+                    tipo: "despesa",
+                  });
                   toast({
                     title: "Sucesso",
                     description: "Categoria adicionada com sucesso!",
@@ -380,13 +411,19 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
             <SelectWithAdd
               placeholder="Selecione uma descrição"
               value={formData.descricao}
-              onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, descricao: value }))
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, descricao: value }))
               }
-              options={descricoesDespesa.map(desc => ({ value: desc.nome, label: desc.nome }))}
+              options={descricoesDespesa.map((desc) => ({
+                value: desc.nome,
+                label: desc.nome,
+              }))}
               onAddNew={async (novaDescricao) => {
                 try {
-                  await adicionarDescricao({ nome: novaDescricao, tipo: "despesa" });
+                  await adicionarDescricao({
+                    nome: novaDescricao,
+                    tipo: "despesa",
+                  });
                   toast({
                     title: "Sucesso",
                     description: "Descrição adicionada com sucesso!",
@@ -411,12 +448,12 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
             <SelectWithAdd
               placeholder="Selecione uma forma de pagamento"
               value={formData.formaPg}
-              onValueChange={(value) => 
-                setFormData(prev => ({ ...prev, formaPg: value }))
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, formaPg: value }))
               }
-              options={formasPagamento.map(forma => ({ 
-                value: forma.id.toString(), 
-                label: forma.nome 
+              options={formasPagamento.map((forma) => ({
+                value: forma.id.toString(),
+                label: forma.nome,
               }))}
               onAddNew={async (novaForma) => {
                 try {
@@ -444,8 +481,8 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
             <Label htmlFor="conta">Conta</Label>
             <Select
               value={formData.conta}
-              onValueChange={(value: "empresa" | "pessoal") => 
-                setFormData(prev => ({ ...prev, conta: value }))
+              onValueChange={(value: "empresa" | "pessoal") =>
+                setFormData((prev) => ({ ...prev, conta: value }))
               }
             >
               <SelectTrigger>
@@ -465,8 +502,11 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
               id="observacoes"
               placeholder="Observações adicionais..."
               value={formData.observacoes}
-              onChange={(e) => 
-                setFormData(prev => ({ ...prev, observacoes: e.target.value }))
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  observacoes: e.target.value,
+                }))
               }
               rows={3}
             />
@@ -477,8 +517,8 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
             <Checkbox
               id="pago"
               checked={formData.pago}
-              onCheckedChange={(checked) => 
-                setFormData(prev => ({ ...prev, pago: !!checked }))
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, pago: !!checked }))
               }
             />
             <Label htmlFor="pago">Marcar como pago</Label>
@@ -496,7 +536,9 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {formData.dataPagamento ? (
-                      format(formData.dataPagamento, "dd/MM/yyyy", { locale: ptBR })
+                      format(formData.dataPagamento, "dd/MM/yyyy", {
+                        locale: ptBR,
+                      })
                     ) : (
                       <span>Selecione uma data</span>
                     )}
@@ -506,8 +548,8 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
                   <Calendar
                     mode="single"
                     selected={formData.dataPagamento}
-                    onSelect={(date) => 
-                      setFormData(prev => ({ ...prev, dataPagamento: date }))
+                    onSelect={(date) =>
+                      setFormData((prev) => ({ ...prev, dataPagamento: date }))
                     }
                     initialFocus
                   />
@@ -525,12 +567,16 @@ export function ModalContasPagar({ contaParaEditar, onSuccess }: ModalContasPaga
             >
               Cancelar
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={salvando}
               className="bg-red-600 hover:bg-red-700"
             >
-              {salvando ? "Salvando..." : contaParaEditar ? "Atualizar" : "Adicionar"}
+              {salvando
+                ? "Salvando..."
+                : contaParaEditar
+                  ? "Atualizar"
+                  : "Adicionar"}
             </Button>
           </div>
         </form>

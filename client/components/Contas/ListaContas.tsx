@@ -351,7 +351,9 @@ export function ListaContas({}: ListaContasProps) {
                             <ModalEditarConta
                               conta={conta}
                               trigger={
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <DropdownMenuItem
+                                  onSelect={(e) => e.preventDefault()}
+                                >
                                   <Edit className="mr-2 h-4 w-4" />
                                   Editar
                                 </DropdownMenuItem>

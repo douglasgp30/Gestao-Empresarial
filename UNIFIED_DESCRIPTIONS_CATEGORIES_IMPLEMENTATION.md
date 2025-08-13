@@ -7,6 +7,7 @@ The system now has a unified table called `DescricoesECategorias` that stores bo
 ## 🗃️ Database Changes
 
 ### New Table: `descricoes_e_categorias`
+
 ```sql
 CREATE TABLE "descricoes_e_categorias" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -20,6 +21,7 @@ CREATE TABLE "descricoes_e_categorias" (
 ```
 
 ### Relationships Added
+
 - `LancamentoCaixa.descricaoECategoriaId` → `DescricaoECategoria.id`
 - `ContaLancamento.descricaoECategoriaId` → `DescricaoECategoria.id`
 - `Subdescricao.descricaoECategoriaId` → `DescricaoECategoria.id`
@@ -27,6 +29,7 @@ CREATE TABLE "descricoes_e_categorias" (
 ## 🔌 API Endpoints
 
 ### New Unified Endpoints
+
 - `GET /api/descricoes-e-categorias` - List all items with optional filters
 - `GET /api/descricoes-e-categorias/categorias` - List only categories
 - `GET /api/descricoes-e-categorias/descricoes` - List only descriptions
@@ -35,17 +38,20 @@ CREATE TABLE "descricoes_e_categorias" (
 - `DELETE /api/descricoes-e-categorias/:id` - Soft delete item
 
 ### Query Parameters
+
 - `tipo`: "receita" | "despesa"
 - `tipoItem`: "descricao" | "categoria"
 - `categoria`: Filter descriptions by category name
 - `ativo`: true | false
 
 ### Updated Existing Endpoints
+
 - `GET /api/contas/categorias` - Now uses unified table
 
 ## 💻 Frontend Changes
 
 ### EntidadesContext Updates
+
 - Added `descricoesECategorias` state
 - Added unified CRUD functions:
   - `getCategorias(tipo?: "receita" | "despesa")`
@@ -56,17 +62,20 @@ CREATE TABLE "descricoes_e_categorias" (
 - Maintains backward compatibility with existing interfaces
 
 ### Caixa Components Updates
+
 - `ModalReceita.tsx` - Uses `getCategorias("receita")` and `getDescricoes("receita", categoria)`
 - `ModalDespesa.tsx` - Uses `getCategorias("despesa")` and `getDescricoes("despesa", categoria)`
 - Maintains same UI/UX behavior with improved data source
 
 ### Contas Components Updates
+
 - `ContasContext.tsx` - Uses unified categories endpoint
 - Maintains full compatibility with existing account management
 
 ## 🧪 Testing
 
 ### Comprehensive Test Coverage
+
 - ✅ Database integrity verification
 - ✅ Category filtering by type (receita/despesa)
 - ✅ Description filtering by category and type
@@ -76,6 +85,7 @@ CREATE TABLE "descricoes_e_categorias" (
 - ✅ Frontend integration
 
 ### Sample Data Created
+
 - 6 categories (3 receita, 3 despesa)
 - 15 descriptions across all categories
 - 5 payment methods for complete testing
@@ -83,11 +93,13 @@ CREATE TABLE "descricoes_e_categorias" (
 ## 📊 Data Flow
 
 ### For Caixa Module:
+
 1. User selects category from unified table (filtered by tipo)
 2. Descriptions are filtered by selected category
 3. Both categories and descriptions are stored/retrieved from same table
 
 ### For Contas Module:
+
 1. Categories loaded from unified table
 2. Accounts link to unified table via `descricaoECategoriaId`
 3. Full compatibility with existing account workflow
@@ -111,6 +123,7 @@ CREATE TABLE "descricoes_e_categorias" (
 ## 🚀 Ready for Production
 
 The unified system is fully functional and tested:
+
 - ✅ Database schema updated
 - ✅ API endpoints working
 - ✅ Frontend integration complete

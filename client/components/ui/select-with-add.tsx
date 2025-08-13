@@ -62,7 +62,7 @@ export default function SelectWithAdd({
     setIsSubmitting(true);
     try {
       const result = await onAddNew(newItemName.trim());
-      
+
       // Se retornou true ou undefined (sucesso)
       if (result !== false) {
         toast({
@@ -91,14 +91,15 @@ export default function SelectWithAdd({
   };
 
   // Filtrar opções válidas
-  const validOptions = Array.isArray(options) 
-    ? options.filter(option => 
-        option && 
-        option.value !== null && 
-        option.value !== undefined && 
-        option.value !== "" &&
-        option.label !== null && 
-        option.label !== undefined
+  const validOptions = Array.isArray(options)
+    ? options.filter(
+        (option) =>
+          option &&
+          option.value !== null &&
+          option.value !== undefined &&
+          option.value !== "" &&
+          option.label !== null &&
+          option.label !== undefined,
       )
     : [];
 
@@ -120,7 +121,12 @@ export default function SelectWithAdd({
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button type="button" variant="outline" size="icon" className="shrink-0">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="shrink-0"
+            >
               <Plus className="h-4 w-4" />
             </Button>
           </DialogTrigger>

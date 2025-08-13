@@ -10,7 +10,7 @@ const DescricaoECategoriaSchema = z.object({
   tipo: z.enum(["receita", "despesa"]),
   tipoItem: z.enum(["descricao", "categoria"]),
   categoria: z.string().optional(),
-  ativo: z.boolean().default(true)
+  ativo: z.boolean().default(true),
 });
 
 interface ApiResponse<T> {
@@ -22,19 +22,19 @@ interface ApiResponse<T> {
 const getDescricoesECategorias: RequestHandler = async (req, res) => {
   try {
     const { tipo, tipoItem, ativo } = req.query;
-    
+
     const where: any = {};
-    
-    if (tipo && typeof tipo === 'string') {
+
+    if (tipo && typeof tipo === "string") {
       where.tipo = tipo;
     }
-    
-    if (tipoItem && typeof tipoItem === 'string') {
+
+    if (tipoItem && typeof tipoItem === "string") {
       where.tipoItem = tipoItem;
     }
-    
+
     if (ativo !== undefined) {
-      where.ativo = ativo === 'true';
+      where.ativo = ativo === "true";
     } else {
       where.ativo = true; // Por padrão, apenas itens ativos
     }
@@ -42,17 +42,17 @@ const getDescricoesECategorias: RequestHandler = async (req, res) => {
     const items = await prisma.descricaoECategoria.findMany({
       where,
       orderBy: [
-        { tipoItem: 'asc' }, // Categorias primeiro
-        { nome: 'asc' }
-      ]
+        { tipoItem: "asc" }, // Categorias primeiro
+        { nome: "asc" },
+      ],
     });
 
     const response: ApiResponse<typeof items> = { data: items };
     res.json(response);
   } catch (error) {
-    console.error('Erro ao buscar descrições e categorias:', error);
+    console.error("Erro ao buscar descrições e categorias:", error);
     const response: ApiResponse<null> = {
-      error: 'Erro interno do servidor'
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
@@ -62,27 +62,27 @@ const getDescricoesECategorias: RequestHandler = async (req, res) => {
 const getCategorias: RequestHandler = async (req, res) => {
   try {
     const { tipo } = req.query;
-    
+
     const where: any = {
-      tipoItem: 'categoria',
-      ativo: true
+      tipoItem: "categoria",
+      ativo: true,
     };
-    
-    if (tipo && typeof tipo === 'string') {
+
+    if (tipo && typeof tipo === "string") {
       where.tipo = tipo;
     }
 
     const categorias = await prisma.descricaoECategoria.findMany({
       where,
-      orderBy: { nome: 'asc' }
+      orderBy: { nome: "asc" },
     });
 
     const response: ApiResponse<typeof categorias> = { data: categorias };
     res.json(response);
   } catch (error) {
-    console.error('Erro ao buscar categorias:', error);
+    console.error("Erro ao buscar categorias:", error);
     const response: ApiResponse<null> = {
-      error: 'Erro interno do servidor'
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
@@ -92,31 +92,31 @@ const getCategorias: RequestHandler = async (req, res) => {
 const getDescricoes: RequestHandler = async (req, res) => {
   try {
     const { tipo, categoria } = req.query;
-    
+
     const where: any = {
-      tipoItem: 'descricao',
-      ativo: true
+      tipoItem: "descricao",
+      ativo: true,
     };
-    
-    if (tipo && typeof tipo === 'string') {
+
+    if (tipo && typeof tipo === "string") {
       where.tipo = tipo;
     }
-    
-    if (categoria && typeof categoria === 'string') {
+
+    if (categoria && typeof categoria === "string") {
       where.categoria = categoria;
     }
 
     const descricoes = await prisma.descricaoECategoria.findMany({
       where,
-      orderBy: { nome: 'asc' }
+      orderBy: { nome: "asc" },
     });
 
     const response: ApiResponse<typeof descricoes> = { data: descricoes };
     res.json(response);
   } catch (error) {
-    console.error('Erro ao buscar descrições:', error);
+    console.error("Erro ao buscar descrições:", error);
     const response: ApiResponse<null> = {
-      error: 'Erro interno do servidor'
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
@@ -126,21 +126,22 @@ const getDescricoes: RequestHandler = async (req, res) => {
 const createDescricaoECategoria: RequestHandler = async (req, res) => {
   try {
     const data = DescricaoECategoriaSchema.parse(req.body);
-    
+
     const item = await prisma.descricaoECategoria.create({ data });
-    
+
     const response: ApiResponse<typeof item> = { data: item };
     res.status(201).json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
-        error: 'Dados inválidos: ' + error.errors.map(e => e.message).join(', ')
+        error:
+          "Dados inválidos: " + error.errors.map((e) => e.message).join(", "),
       };
       res.status(400).json(response);
     } else {
-      console.error('Erro ao criar item:', error);
+      console.error("Erro ao criar item:", error);
       const response: ApiResponse<null> = {
-        error: 'Erro interno do servidor'
+        error: "Erro interno do servidor",
       };
       res.status(500).json(response);
     }
@@ -152,24 +153,25 @@ const updateDescricaoECategoria: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const data = DescricaoECategoriaSchema.partial().parse(req.body);
-    
+
     const item = await prisma.descricaoECategoria.update({
       where: { id },
-      data
+      data,
     });
-    
+
     const response: ApiResponse<typeof item> = { data: item };
     res.json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
-        error: 'Dados inválidos: ' + error.errors.map(e => e.message).join(', ')
+        error:
+          "Dados inválidos: " + error.errors.map((e) => e.message).join(", "),
       };
       res.status(400).json(response);
     } else {
-      console.error('Erro ao atualizar item:', error);
+      console.error("Erro ao atualizar item:", error);
       const response: ApiResponse<null> = {
-        error: 'Erro interno do servidor'
+        error: "Erro interno do servidor",
       };
       res.status(500).json(response);
     }
@@ -180,30 +182,30 @@ const updateDescricaoECategoria: RequestHandler = async (req, res) => {
 const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    
+
     // Soft delete - apenas marcar como inativo
     await prisma.descricaoECategoria.update({
       where: { id },
-      data: { ativo: false }
+      data: { ativo: false },
     });
-    
+
     const response: ApiResponse<null> = { data: null };
     res.status(204).json(response);
   } catch (error) {
-    console.error('Erro ao desativar item:', error);
+    console.error("Erro ao desativar item:", error);
     const response: ApiResponse<null> = {
-      error: 'Erro interno do servidor'
+      error: "Erro interno do servidor",
     };
     res.status(500).json(response);
   }
 };
 
 // Rotas
-router.get('/', getDescricoesECategorias);
-router.get('/categorias', getCategorias);
-router.get('/descricoes', getDescricoes);
-router.post('/', createDescricaoECategoria);
-router.put('/:id', updateDescricaoECategoria);
-router.delete('/:id', deleteDescricaoECategoria);
+router.get("/", getDescricoesECategorias);
+router.get("/categorias", getCategorias);
+router.get("/descricoes", getDescricoes);
+router.post("/", createDescricaoECategoria);
+router.put("/:id", updateDescricaoECategoria);
+router.delete("/:id", deleteDescricaoECategoria);
 
 export default router;
