@@ -731,7 +731,7 @@ export function ModalEditarLancamentoCompleto({
             )}
 
             {/* Resumo financeiro para receitas */}
-            {lancamento.tipo === "receita" && (valorInput.numericValue || 0) > 0 && (
+            {lancamento.tipo === "receita" && Number(valorInput.numericValue || 0) > 0 && (
               <div className="p-4 bg-green-50 rounded-lg">
                 <h4 className="font-medium text-green-800 mb-3">
                   Resumo Financeiro Detalhado
