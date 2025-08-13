@@ -177,6 +177,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       // Carregar dados do banco
       const [
+        descricoesECategoriasResponse,
         descricoesResponse,
         formasPagamentoResponse,
         funcionariosResponse,
@@ -184,6 +185,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
+        descricoesECategoriasApi.listar(),
         descricoesApi.listar(),
         formasPagamentoApi.listar(),
         funcionariosApi.listar(),
