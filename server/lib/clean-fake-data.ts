@@ -3,53 +3,75 @@ import { prisma } from "./database";
 export async function cleanFakeData() {
   console.log("[Clean] Removendo TODOS os dados fictícios/void...");
 
+  const removidos = {
+    funcionarios: 0,
+    clientes: 0,
+    fornecedores: 0,
+    lancamentosCaixa: 0,
+    contas: 0,
+    agendamentos: 0,
+    descricoes: 0,
+    campanhas: 0,
+    setores: 0,
+  };
+
   try {
     // 1. Remover funcionários fictícios específicos
-    const funcionariosFicticios = await prisma.funcionario.deleteMany({
-      where: {
-        OR: [
-          { nome: "João Técnico" },
-          { nome: "Maria Técnica" },
-          { nome: "Administrador" },
-          { nome: { contains: "Teste" } },
-          { nome: { contains: "Demo" } },
-          { nome: { contains: "Fictício" } },
-          { nome: { contains: "Exemplo" } },
-          { email: { contains: "test" } },
-          { email: { contains: "demo" } },
-          { email: { contains: "example" } },
-        ],
-      },
-    });
+    try {
+      const funcionariosFicticios = await prisma.funcionario.deleteMany({
+        where: {
+          OR: [
+            { nome: "João Técnico" },
+            { nome: "Maria Técnica" },
+            { nome: "Administrador" },
+            { nome: { contains: "Teste" } },
+            { nome: { contains: "Demo" } },
+            { nome: { contains: "Fictício" } },
+            { nome: { contains: "Exemplo" } },
+            { email: { contains: "test" } },
+            { email: { contains: "demo" } },
+            { email: { contains: "example" } },
+          ],
+        },
+      });
 
-    console.log(
-      `[Clean] Removidos ${funcionariosFicticios.count} funcionários fictícios`,
-    );
+      removidos.funcionarios = funcionariosFicticios.count;
+      console.log(
+        `[Clean] Removidos ${funcionariosFicticios.count} funcionários fictícios`,
+      );
+    } catch (error) {
+      console.error("[Clean] Erro ao remover funcionários fictícios:", error);
+    }
 
     // 2. Remover clientes fictícios
-    const clientesFicticios = await prisma.cliente.deleteMany({
-      where: {
-        OR: [
-          { nome: { contains: "Teste" } },
-          { nome: { contains: "Demo" } },
-          { nome: { contains: "Fictício" } },
-          { nome: { contains: "Exemplo" } },
-          { nome: { contains: "Test" } },
-          { nome: { contains: "Sample" } },
-          { email: { contains: "test" } },
-          { email: { contains: "demo" } },
-          { email: { contains: "example" } },
-          { telefonePrincipal: "00000000000" },
-          { telefonePrincipal: "11111111111" },
-          { telefoneSecundario: "00000000000" },
-          { telefoneSecundario: "11111111111" },
-        ],
-      },
-    });
+    try {
+      const clientesFicticios = await prisma.cliente.deleteMany({
+        where: {
+          OR: [
+            { nome: { contains: "Teste" } },
+            { nome: { contains: "Demo" } },
+            { nome: { contains: "Fictício" } },
+            { nome: { contains: "Exemplo" } },
+            { nome: { contains: "Test" } },
+            { nome: { contains: "Sample" } },
+            { email: { contains: "test" } },
+            { email: { contains: "demo" } },
+            { email: { contains: "example" } },
+            { telefonePrincipal: "00000000000" },
+            { telefonePrincipal: "11111111111" },
+            { telefoneSecundario: "00000000000" },
+            { telefoneSecundario: "11111111111" },
+          ],
+        },
+      });
 
-    console.log(
-      `[Clean] Removidos ${clientesFicticios.count} clientes fictícios`,
-    );
+      removidos.clientes = clientesFicticios.count;
+      console.log(
+        `[Clean] Removidos ${clientesFicticios.count} clientes fictícios`,
+      );
+    } catch (error) {
+      console.error("[Clean] Erro ao remover clientes fictícios:", error);
+    }
 
     // 3. Remover fornecedores fictícios
     const fornecedoresFicticios = await prisma.fornecedor.deleteMany({
@@ -222,17 +244,7 @@ export async function cleanFakeData() {
     console.log("[Clean] Sistema agora contém apenas dados reais lançados pelo usuário.");
 
     return {
-      removidos: {
-        funcionarios: funcionariosFicticios.count,
-        clientes: clientesFicticios.count,
-        fornecedores: fornecedoresFicticios.count,
-        lancamentosCaixa: lancamentosFicticios.count,
-        contas: contasFicticias.count,
-        agendamentos: agendamentosFicticios.count,
-        descricoes: descricoesFicticias.count,
-        campanhas: campanhasFicticias.count,
-        setores: setoresFicticios.count,
-      },
+      removidos,
       restantes: estatisticasFinais,
     };
   } catch (error) {
