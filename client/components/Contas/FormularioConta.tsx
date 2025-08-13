@@ -160,7 +160,7 @@ export function FormularioConta({
             ? parseInt(formData.formaPg)
             : undefined,
         observacoes: formData.observacoes || undefined,
-        descricaoCategoria: formData.descricaoCategoria
+        descricaoCategoria: formData.descricaoCategoria && formData.descricaoCategoria !== "0"
           ? parseInt(formData.descricaoCategoria)
           : undefined,
         pago: formData.pago,
