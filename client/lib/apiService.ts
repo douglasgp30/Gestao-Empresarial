@@ -82,8 +82,10 @@ async function apiRequest<T>(
         return { error: "Erro de comunicação com o servidor" };
       }
 
-      // Aguardar antes de tentar novamente (backoff exponencial)
-      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      // Aguardar antes de tentar novamente (backoff exponencial aumentado)
+      const delay = Math.pow(2, attempt) * 2000; // Aumentado para 2s, 4s, 8s...
+      console.log(`[ApiService] Aguardando ${delay}ms antes da próxima tentativa...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 
