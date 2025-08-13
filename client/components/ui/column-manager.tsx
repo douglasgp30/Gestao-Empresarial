@@ -51,7 +51,7 @@ export function ColumnManager({
           Colunas ({visibleCount}/{columns.length})
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Gerenciar Colunas</DialogTitle>
           <DialogDescription>
