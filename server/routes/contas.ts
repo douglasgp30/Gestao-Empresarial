@@ -69,7 +69,7 @@ router.get("/", async (req, res) => {
   } catch (error) {
     console.error("Erro ao buscar contas:", error);
     const response: ApiResponse<null> = {
-      success: false,
+
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -97,7 +97,7 @@ router.post("/", async (req, res) => {
 
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
-        success: false,
+  
         error: "Dados inválidos",
         details: error.errors,
       };
@@ -105,7 +105,7 @@ router.post("/", async (req, res) => {
     }
 
     const response: ApiResponse<null> = {
-      success: false,
+
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -134,7 +134,7 @@ router.put("/:id", async (req, res) => {
 
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
-        success: false,
+  
         error: "Dados inválidos",
         details: error.errors,
       };
@@ -142,7 +142,7 @@ router.put("/:id", async (req, res) => {
     }
 
     const response: ApiResponse<null> = {
-      success: false,
+
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -167,7 +167,7 @@ router.delete("/:id", async (req, res) => {
   } catch (error) {
     console.error("Erro ao excluir conta:", error);
     const response: ApiResponse<null> = {
-      success: false,
+
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -196,7 +196,7 @@ router.patch("/:id/pagar", async (req, res) => {
   } catch (error) {
     console.error("Erro ao marcar conta como paga:", error);
     const response: ApiResponse<null> = {
-      success: false,
+
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -263,7 +263,7 @@ router.get("/totais", async (req, res) => {
   } catch (error) {
     console.error("Erro ao calcular totais:", error);
     const response: ApiResponse<null> = {
-      success: false,
+
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
