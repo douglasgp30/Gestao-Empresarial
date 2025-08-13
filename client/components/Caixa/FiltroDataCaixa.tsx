@@ -32,11 +32,16 @@ export default function FiltroDataCaixa() {
   };
 
   const handleAplicar = () => {
+    console.log('🚀 === HANDLE APLICAR CHAMADO ===');
+    console.log('📊 Filtros atuais antes da aplicação:', filtros);
     const novosFiltros = {
       ...filtros,
       __timestamp: Date.now(),
     };
+    console.log('📊 Novos filtros a serem aplicados:', novosFiltros);
     setFiltros(novosFiltros);
+    console.log('📊 setFiltros chamado com sucesso');
+    console.log('🚀 === HANDLE APLICAR FINALIZADO ===');
   };
 
   const handleLimpar = () => {
