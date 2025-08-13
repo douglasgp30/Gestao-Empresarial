@@ -147,7 +147,7 @@ model Funcionario {
   tipoAcesso        String?  // "Administrador", "Operador", "Técnico"
   login             String?  @unique
   senha             String?
-  permissoes        String? // JSON das permiss��es
+  permissoes        String? // JSON das permissões
   dataCriacao       DateTime @default(now())
 
   // Relacionamentos
@@ -217,7 +217,7 @@ model LancamentoCaixa {
 
   @@map("lancamentos_caixa")
   @@index([dataHora])
-  @@index([tipo])
+  @@index([tipo], map: "lancamentos_caixa_tipo_idx")
   @@index([funcionarioId])
   @@index([clienteId])
 }
