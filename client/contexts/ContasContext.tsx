@@ -93,8 +93,8 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // Função para carregar contas da API
-  const carregarContas = async () => {
+  // Função para carregar contas da API com retry e fallback
+  const carregarContas = async (tentativa = 1) => {
     try {
       setIsLoading(true);
 
@@ -106,14 +106,25 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         status: filtros.status !== 'todos' ? filtros.status : undefined,
       };
 
-      console.log('🔍 [CONTAS] Carregando contas com filtros:', filtrosApi);
+      console.log(`🔍 [CONTAS] Carregando contas (tentativa ${tentativa}) com filtros:`, filtrosApi);
 
       const response = await contasApi.listar(filtrosApi);
       console.log('🔍 [CONTAS] Resposta da API:', response);
 
       if (response.error) {
         console.error("Erro ao carregar contas:", response.error);
-        setContas([]);
+
+        // Se for erro de rede e não é a primeira tentativa, tentar fallback
+        if (response.error.includes("não disponível") && tentativa === 1) {
+          console.log('🔄 [CONTAS] Tentando novamente em 2 segundos...');
+          setTimeout(() => carregarContas(2), 2000);
+          return;
+        }
+
+        // Se falhar, usar dados do localStorage como fallback
+        console.log('🔄 [CONTAS] Tentando carregar do localStorage...');
+        const contasLocal = carregarContasDoLocalStorage();
+        setContas(contasLocal);
         return;
       }
 
