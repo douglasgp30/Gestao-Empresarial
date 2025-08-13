@@ -488,7 +488,7 @@ export function ListaLancamentosSimples() {
 
       {/* Modal de edição */}
       {lancamentoParaEditar && (
-        <ModalEditarLancamento
+        <ModalEditarLancamentoCompleto
           lancamento={lancamentoParaEditar}
           isOpen={!!lancamentoParaEditar}
           onClose={() => setLancamentoParaEditar(null)}
