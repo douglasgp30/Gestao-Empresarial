@@ -203,7 +203,7 @@ export default function FormularioConta() {
                   </SelectTrigger>
                   <SelectContent>
                     {formasPagamento.map((forma) => (
-                      <SelectItem key={forma.id} value={forma.id}>
+                      <SelectItem key={forma.id} value={forma.id.toString()}>
                         {forma.nome}
                       </SelectItem>
                     ))}
