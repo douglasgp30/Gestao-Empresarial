@@ -104,12 +104,21 @@ export function ColumnManager({
                             ) : (
                               <EyeOff className="h-4 w-4 text-muted-foreground" />
                             )}
-                            <Switch
-                              checked={column.visible}
-                              onCheckedChange={() =>
-                                onToggleVisibility(column.key)
-                              }
-                            />
+                            {/* Tornar Data e Ações obrigatórias (não removíveis) */}
+                            {column.key === "data" || column.key === "acoes" ? (
+                              <Switch
+                                checked={true}
+                                disabled={true}
+                                className="opacity-50"
+                              />
+                            ) : (
+                              <Switch
+                                checked={column.visible}
+                                onCheckedChange={() =>
+                                  onToggleVisibility(column.key)
+                                }
+                              />
+                            )}
                           </div>
                         </div>
                       )}
