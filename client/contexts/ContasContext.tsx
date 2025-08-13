@@ -79,15 +79,12 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [filtros, setFiltros] = useState(() => {
     const hoje = new Date();
-    // Usar últimos 3 meses até próximos 12 meses para um range mais sensato
-    const inicioRange = new Date(hoje.getFullYear(), hoje.getMonth() - 3, 1);
-    const fimRange = new Date(hoje.getFullYear(), hoje.getMonth() + 12, 0);
-    inicioRange.setHours(0, 0, 0, 0);
-    fimRange.setHours(23, 59, 59, 999);
+    const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
+    const fimHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
 
     return {
-      dataInicio: inicioRange,
-      dataFim: fimRange,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
       tipo: "ambos" as "pagar" | "receber" | "ambos",
     };
   });
