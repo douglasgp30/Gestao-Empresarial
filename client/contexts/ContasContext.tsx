@@ -59,6 +59,36 @@ function carregarContasReais(): Conta[] {
   }
 }
 
+// Função para carregar contas do localStorage como fallback
+function carregarContasDoLocalStorage(): Conta[] {
+  try {
+    const contasLocalStr = localStorage.getItem("contas_backup");
+    if (contasLocalStr) {
+      const contasLocal = JSON.parse(contasLocalStr);
+      console.log('🔄 [CONTAS] Carregadas do localStorage:', contasLocal.length, 'contas');
+      return contasLocal.map((c: any) => ({
+        ...c,
+        dataVencimento: new Date(c.dataVencimento),
+        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.warn("Erro ao carregar contas do localStorage:", error);
+    return [];
+  }
+}
+
+// Função para salvar contas no localStorage como backup
+function salvarContasNoLocalStorage(contas: Conta[]) {
+  try {
+    localStorage.setItem("contas_backup", JSON.stringify(contas));
+    console.log('💾 [CONTAS] Backup salvo no localStorage:', contas.length, 'contas');
+  } catch (error) {
+    console.warn("Erro ao salvar contas no localStorage:", error);
+  }
+}
+
 function getStatusConta(
   dataVencimento: Date,
   status: string,
