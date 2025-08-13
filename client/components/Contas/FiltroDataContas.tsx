@@ -47,14 +47,22 @@ export default function FiltroDataContas() {
     });
   };
 
+  // Função para formatar data sem problemas de timezone
+  const formatDateForInput = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Usar as datas do contexto diretamente
   const dataInicio = filtros.dataInicio || new Date();
   const dataFim = filtros.dataFim || new Date();
 
   return (
     <FiltroDataGoogleAds
-      dataInicio={dataInicio.toISOString().split("T")[0]}
-      dataFim={dataFim.toISOString().split("T")[0]}
+      dataInicio={formatDateForInput(dataInicio)}
+      dataFim={formatDateForInput(dataFim)}
       onDataInicioChange={handleDataInicioChange}
       onDataFimChange={handleDataFimChange}
       onAplicar={handleAplicar}
