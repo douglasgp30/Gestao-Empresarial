@@ -31,6 +31,23 @@ export default function FiltroDataCaixaSimples() {
     }
   }, [filtros, setFiltros]);
 
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   // Função para formatar data para input com validação
   const formatDateForInput = (date: Date | null | undefined): string => {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
