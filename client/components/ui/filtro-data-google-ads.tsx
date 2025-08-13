@@ -81,7 +81,7 @@ export default function FiltroDataGoogleAds({
   const [tempDataFim, setTempDataFim] = useState(dataFim || "");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const hoje = new Date(2025, 7, 14); // Forçar data atual real (14/08/2025)
+  const hoje = new Date(); // Usar data atual do sistema
 
   const opcoesPeriodo: OpcaoPeriodo[] = [
     {
