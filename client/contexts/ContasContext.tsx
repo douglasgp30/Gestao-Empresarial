@@ -1,456 +1,325 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  ReactNode,
-} from "react";
-import { Conta } from "@shared/types";
-import { useAuth } from "./AuthContext";
-import { contasApi } from "../lib/apiService";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { apiService } from "@/lib/apiService";
+import { ContaLancamento, Cliente, Fornecedor, FormaPagamento, Categoria } from "@shared/types";
+
+interface FiltrosContas {
+  dataInicio: Date;
+  dataFim: Date;
+  tipo: "receber" | "pagar" | "ambos";
+  pago: "true" | "false" | "todos";
+  categoria: string;
+  __timestamp?: number;
+}
 
 interface ContasContextType {
-  contas: Conta[];
-  filtros: {
-    dataInicio: Date;
-    dataFim: Date;
-    tipo?: "pagar" | "receber" | "ambos";
-    status?: string;
-    fornecedorCliente?: string;
-  };
-  totais: {
-    totalPagar: number;
-    totalReceber: number;
-    totalVencendoHoje: number;
-    totalAtrasadas: number;
-    totalPagas: number;
-    totalContasRecebidas: number;
-    totalContasPagas: number;
-  };
-  adicionarConta: (conta: Omit<Conta, "id" | "funcionarioId">) => Promise<void>;
-  editarConta: (id: string, conta: Partial<Conta>) => void;
-  excluirConta: (id: string) => void;
-  marcarComoPaga: (id: string) => void;
-  setFiltros: (filtros: any) => void;
+  contas: ContaLancamento[];
+  filtros: FiltrosContas;
+  setFiltros: (filtros: FiltrosContas) => void;
+  carregando: boolean;
+  erro: string | null;
+  adicionarConta: (conta: Omit<ContaLancamento, "codLancamentoContas" | "dataLancamento">) => Promise<ContaLancamento>;
+  atualizarConta: (id: number, conta: Partial<ContaLancamento>) => Promise<ContaLancamento>;
+  excluirConta: (id: number) => Promise<void>;
+  marcarComoPago: (id: number, formaPagamentoId: number) => Promise<ContaLancamento>;
   forcarRecarregamento: () => void;
-  isLoading: boolean;
+  
+  // Listas auxiliares
+  clientes: Cliente[];
+  fornecedores: Fornecedor[];
+  formasPagamento: FormaPagamento[];
+  categorias: Categoria[];
 }
 
 const ContasContext = createContext<ContasContextType | undefined>(undefined);
 
-// Função para carregar contas reais do localStorage
-function carregarContasReais(): Conta[] {
-  try {
-    const contas = localStorage.getItem("contas");
-    if (contas) {
-      const parsedContas = JSON.parse(contas);
-      // Converter strings de data de volta para objetos Date
-      return parsedContas.map((c: any) => ({
-        ...c,
-        dataVencimento: new Date(c.dataVencimento),
-        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
-      }));
-    }
-    return [];
-  } catch (error) {
-    console.warn("Erro ao carregar contas do localStorage:", error);
-    return [];
-  }
-}
-
-// Função para carregar contas do localStorage como fallback
-function carregarContasDoLocalStorage(): Conta[] {
-  try {
-    const contasLocalStr = localStorage.getItem("contas_backup");
-    if (contasLocalStr) {
-      const contasLocal = JSON.parse(contasLocalStr);
-      console.log('🔄 [CONTAS] Carregadas do localStorage:', contasLocal.length, 'contas');
-      return contasLocal.map((c: any) => ({
-        ...c,
-        dataVencimento: new Date(c.dataVencimento),
-        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
-      }));
-    }
-    return [];
-  } catch (error) {
-    console.warn("Erro ao carregar contas do localStorage:", error);
-    return [];
-  }
-}
-
-// Função para salvar contas no localStorage como backup
-function salvarContasNoLocalStorage(contas: Conta[]) {
-  try {
-    localStorage.setItem("contas_backup", JSON.stringify(contas));
-    console.log('💾 [CONTAS] Backup salvo no localStorage:', contas.length, 'contas');
-  } catch (error) {
-    console.warn("Erro ao salvar contas no localStorage:", error);
-  }
-}
-
-function getStatusConta(
-  dataVencimento: Date,
-  status: string,
-): "paga" | "atrasada" | "vence_hoje" | "pendente" {
-  if (status === "paga") return "paga";
-
+const getDefaultFiltros = (): FiltrosContas => {
   const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-  const vencimento = new Date(dataVencimento);
-  vencimento.setHours(0, 0, 0, 0);
+  const dataFim = new Date(hoje);
+  const dataInicio = new Date(hoje);
+  
+  // Últimos 30 dias por padrão
+  dataInicio.setDate(hoje.getDate() - 30);
+  
+  return {
+    dataInicio,
+    dataFim,
+    tipo: "ambos",
+    pago: "todos",
+    categoria: "todos",
+    __timestamp: Date.now()
+  };
+};
 
-  if (vencimento < hoje) return "atrasada";
-  if (vencimento.getTime() === hoje.getTime()) return "vence_hoje";
-  return "pendente";
-}
+export function ContasProvider({ children }: { children: React.ReactNode }) {
+  const [contas, setContas] = useState<ContaLancamento[]>([]);
+  const [filtros, setFiltros] = useState<FiltrosContas>(getDefaultFiltros);
+  const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  
+  // Listas auxiliares
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
+  const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
 
-export function ContasProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
-  const [contas, setContas] = useState<Conta[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [filtros, setFiltros] = useState(() => {
-    // Usar últimos 30 dias como padrão para mostrar mais dados
-    const agora = new Date();
-    const inicio30Dias = new Date(agora);
-    inicio30Dias.setDate(inicio30Dias.getDate() - 29); // Últimos 30 dias incluindo hoje
-    const inicioMes = new Date(inicio30Dias.getFullYear(), inicio30Dias.getMonth(), inicio30Dias.getDate(), 0, 0, 0, 0);
-    const fimHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
-
-    return {
-      dataInicio: inicioMes,
-      dataFim: fimHoje,
-      tipo: "ambos" as "pagar" | "receber" | "ambos",
-    };
-  });
-
-  // Função para carregar contas da API com retry e fallback
-  const carregarContas = async (tentativa = 1) => {
+  const carregarContas = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setCarregando(true);
+      setErro(null);
 
-      // Preparar filtros para a API
-      const filtrosApi = {
-        dataInicio: filtros.dataInicio.toISOString().split('T')[0],
-        dataFim: filtros.dataFim.toISOString().split('T')[0],
-        tipo: filtros.tipo !== 'ambos' ? filtros.tipo : undefined,
-        status: filtros.status !== 'todos' ? filtros.status : undefined,
-      };
-
-      const response = await contasApi.listar(filtrosApi);
-      console.log('🔍 [CONTAS] Resposta completa da API:', response);
-      console.log(`📊 [CONTAS] API retornou ${response.data?.length || 0} contas`);
-
-      if (response.data && Array.isArray(response.data)) {
-        console.log('🔍 [CONTAS] Primeiras 3 contas:', response.data.slice(0, 3));
+      const params = new URLSearchParams();
+      params.append("dataInicio", filtros.dataInicio.toISOString().split("T")[0]);
+      params.append("dataFim", filtros.dataFim.toISOString().split("T")[0]);
+      
+      if (filtros.tipo !== "ambos") {
+        params.append("tipo", filtros.tipo);
+      }
+      
+      if (filtros.pago !== "todos") {
+        params.append("pago", filtros.pago);
+      }
+      
+      if (filtros.categoria !== "todos") {
+        params.append("categoria", filtros.categoria);
       }
 
-      if (response.error) {
-        console.error("Erro ao carregar contas:", response.error);
+      console.log("🔍 [CONTAS] Carregando contas com filtros:", {
+        dataInicio: filtros.dataInicio.toISOString().split("T")[0],
+        dataFim: filtros.dataFim.toISOString().split("T")[0],
+        tipo: filtros.tipo,
+        pago: filtros.pago,
+        categoria: filtros.categoria
+      });
 
-        // Se for erro de rede e não é a primeira tentativa, tentar fallback
-        if (response.error.includes("não disponível") && tentativa === 1) {
-          console.log('🔄 [CONTAS] Tentando novamente em 2 segundos...');
-          setTimeout(() => carregarContas(2), 2000);
-          return;
-        }
-
-        // Se falhar, usar dados do localStorage como fallback
-        console.log('🔄 [CONTAS] Tentando carregar do localStorage...');
-        const contasLocal = carregarContasDoLocalStorage();
-        setContas(contasLocal);
-        return;
-      }
-
-      // Verificar se response.data é um array
-      const contasData = Array.isArray(response.data) ? response.data : [];
-      console.log('🔍 [CONTAS] Dados recebidos da API:', contasData.length, 'itens');
-
-      // Converter dados da API para o formato do contexto
-      const contasFormatadas = contasData.map((c: any) => ({
-        id: c.id.toString(),
-        tipo: c.tipo,
-        descricao: c.descricao || "Sem descrição",
-        valor: c.valor || 0,
-        dataVencimento: new Date(c.dataVencimento),
-        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
-        // Mapear status do servidor para o cliente
-        status: c.status === "pago" ? "paga" :
-                c.status === "atrasado" ? "atrasada" :
-                c.status || "pendente",
-        observacoes: c.observacoes || "",
-        categoria: c.categoria || "",
-        dataCriacao: new Date(c.dataCriacao || new Date()),
-        // Campos de compatibilidade
-        fornecedorCliente: c.descricao || "Sem descrição", // Usar descrição como nome do fornecedor/cliente
-        tipoPagamento: c.categoria || "",
-        funcionarioId: user?.id || "1",
-        clienteId: c.clienteId || undefined,
-      }));
-
-      console.log('🔍 [CONTAS] Contas formatadas:', contasFormatadas);
-      setContas(contasFormatadas);
-      console.log(`✅ [CONTAS] ${contasFormatadas.length} contas definidas no estado`);
-
-      // Salvar backup no localStorage
-      salvarContasNoLocalStorage(contasFormatadas);
-    } catch (error) {
-      console.error("Erro ao carregar contas:", error);
-
-      // Em caso de erro, tentar carregar do localStorage
-      const contasLocal = carregarContasDoLocalStorage();
-      if (contasLocal.length > 0) {
-        console.log('🔄 [CONTAS] Usando dados do localStorage como fallback');
-        setContas(contasLocal);
+      const response = await apiService.get(`/api/contas?${params.toString()}`);
+      
+      console.log("🔍 [CONTAS] Resposta completa da API:", response);
+      
+      if (response.data) {
+        const contasFormatadas = response.data.map((conta: any) => ({
+          ...conta,
+          dataLancamento: new Date(conta.dataLancamento),
+          dataVencimento: new Date(conta.dataVencimento),
+          dataPagamento: conta.dataPagamento ? new Date(conta.dataPagamento) : undefined,
+        }));
+        
+        console.log("🔍 [CONTAS] Dados recebidos da API:", {
+          total: response.data.length,
+          contasFormatadas: contasFormatadas.length
+        });
+        
+        console.log("🔍 [CONTAS] Contas formatadas:", contasFormatadas.slice(0, 3));
+        
+        setContas(contasFormatadas);
+        
+        // Salvar no localStorage como backup
+        localStorage.setItem("contas-backup", JSON.stringify(contasFormatadas));
+        localStorage.setItem("contas-backup-timestamp", Date.now().toString());
       } else {
+        console.warn("🔍 [CONTAS] API retornou dados vazios");
         setContas([]);
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Função para carregar com debounce usando useRef
-  const carregarContasDebounced = useCallback(() => {
-    // Cancelar timeout anterior se existir
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    // Criar novo timeout com debounce de 300ms
-    timeoutRef.current = setTimeout(() => {
-      carregarContas();
-    }, 300);
-  }, []);
-
-  // Carregar contas na inicialização - híbrido (localStorage + API)
-  useEffect(() => {
-    // Primeiro, carregar dados do localStorage para exibição imediata
-    const contasLocal = carregarContasDoLocalStorage();
-    if (contasLocal.length > 0) {
-      console.log('🔄 [CONTAS] Carregando dados locais primeiro para exibição imediata');
-      setContas(contasLocal);
-    }
-
-    // Depois tentar carregar da API
-    carregarContasDebounced();
-  }, [carregarContasDebounced]);
-
-  // Função para atualizar filtros
-  const setFiltrosComLog = (novosFiltros: any) => {
-    setFiltros(novosFiltros);
-  };
-
-  // Recarregar quando filtros importantes mudarem
-  useEffect(() => {
-    if (filtros.dataInicio && filtros.dataFim) {
-      console.log('🔄 [CONTAS] Filtros mudaram, recarregando...');
-      carregarContasDebounced();
-    }
-  }, [filtros.dataInicio, filtros.dataFim, filtros.tipo, filtros.status, carregarContasDebounced]);
-
-  const adicionarConta = async (novaConta: Omit<Conta, "id" | "funcionarioId">) => {
-    try {
-      setIsLoading(true);
-
-      // Preparar dados para a API
-      const dadosApi = {
-        tipo: novaConta.tipo,
-        descricao: novaConta.descricao || `Conta ${novaConta.tipo === "receber" ? "a receber" : "a pagar"}`,
-        valor: novaConta.valor,
-        dataVencimento: novaConta.dataVencimento.toISOString().split("T")[0],
-        status: "pendente",
-        observacoes: novaConta.observacoes,
-        categoria: novaConta.tipoPagamento || novaConta.categoria,
-      };
-
-      const response = await contasApi.criar(dadosApi);
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      console.log('✅ [CONTAS] Conta criada, recarregando lista...');
-      // Recarregar contas - forçar sem debounce
-      await carregarContas(1);
     } catch (error) {
-      console.error("Erro ao adicionar conta:", error);
-      throw error;
+      console.error("❌ [CONTAS] Erro ao carregar contas:", error);
+      setErro("Erro ao carregar contas");
+      
+      // Tentar carregar do localStorage como fallback
+      try {
+        const backup = localStorage.getItem("contas-backup");
+        if (backup) {
+          const contasBackup = JSON.parse(backup).map((conta: any) => ({
+            ...conta,
+            dataLancamento: new Date(conta.dataLancamento),
+            dataVencimento: new Date(conta.dataVencimento),
+            dataPagamento: conta.dataPagamento ? new Date(conta.dataPagamento) : undefined,
+          }));
+          console.log("📦 [CONTAS] Carregando do backup localStorage:", contasBackup.length);
+          setContas(contasBackup);
+        }
+      } catch (backupError) {
+        console.error("❌ [CONTAS] Erro ao carregar backup:", backupError);
+      }
     } finally {
-      setIsLoading(false);
+      setCarregando(false);
     }
-  };
+  }, [filtros]);
 
-  const editarConta = (id: string, dadosAtualizados: Partial<Conta>) => {
-    setContas((prev) => {
-      const contasAtualizadas = prev.map((conta) =>
-        conta.id === id
-          ? {
-              ...conta,
-              ...dadosAtualizados,
-              status: dadosAtualizados.dataVencimento
-                ? getStatusConta(
-                    dadosAtualizados.dataVencimento,
-                    dadosAtualizados.status || conta.status,
-                  )
-                : conta.status,
-            }
-          : conta,
-      );
-
-      // Salvar no localStorage
-      try {
-        localStorage.setItem("contas", JSON.stringify(contasAtualizadas));
-      } catch (error) {
-        console.warn("Erro ao salvar contas no localStorage:", error);
+  const carregarDadosAuxiliares = useCallback(async () => {
+    try {
+      // Carregar clientes
+      const clientesResponse = await apiService.get("/api/contas/clientes");
+      if (clientesResponse.data) {
+        setClientes(clientesResponse.data);
       }
-      return contasAtualizadas;
-    });
-  };
 
-  const excluirConta = (id: string) => {
-    setContas((prev) => {
-      const contasAtualizadas = prev.filter((conta) => conta.id !== id);
-
-      // Salvar no localStorage
-      try {
-        localStorage.setItem("contas", JSON.stringify(contasAtualizadas));
-      } catch (error) {
-        console.warn("Erro ao salvar contas no localStorage:", error);
+      // Carregar fornecedores
+      const fornecedoresResponse = await apiService.get("/api/contas/fornecedores");
+      if (fornecedoresResponse.data) {
+        setFornecedores(fornecedoresResponse.data);
       }
-      return contasAtualizadas;
-    });
-  };
 
-  const marcarComoPaga = (id: string) => {
-    setContas((prev) => {
-      const contasAtualizadas = prev.map((conta) =>
-        conta.id === id
-          ? {
-              ...conta,
-              status: "paga",
-              dataPagamento: new Date(),
-            }
-          : conta,
-      );
-
-      // Salvar no localStorage
-      try {
-        localStorage.setItem("contas", JSON.stringify(contasAtualizadas));
-      } catch (error) {
-        console.warn("Erro ao salvar contas no localStorage:", error);
+      // Carregar formas de pagamento
+      const formasResponse = await apiService.get("/api/formas-pagamento");
+      if (formasResponse.data) {
+        setFormasPagamento(formasResponse.data);
       }
-      return contasAtualizadas;
-    });
-  };
 
-  // Atualizar status das contas automaticamente
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setContas((prev) =>
-        prev.map((conta) => ({
-          ...conta,
-          status:
-            conta.status === "paga"
-              ? "paga"
-              : getStatusConta(conta.dataVencimento, conta.status),
-        })),
-      );
-    }, 60000); // Atualizar a cada minuto
-
-    return () => {
-      clearInterval(interval);
-      // Limpar timeout de carregamento se existir
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      // Carregar categorias
+      const categoriasResponse = await apiService.get("/api/contas/categorias");
+      if (categoriasResponse.data) {
+        setCategorias(categoriasResponse.data);
       }
-    };
+    } catch (error) {
+      console.error("❌ [CONTAS] Erro ao carregar dados auxiliares:", error);
+    }
   }, []);
 
-  // Calcular totais baseados nas contas já filtradas pela API
-  const totais = React.useMemo(() => {
-    // Aplicar filtros adicionais apenas no frontend (fornecedor/cliente)
-    const contasFiltradas = contas.filter((conta) => {
-      const fornecedorCorreto =
-        !filtros.fornecedorCliente ||
-        filtros.fornecedorCliente === "todos" ||
-        conta.fornecedorCliente
-          .toLowerCase()
-          .includes(filtros.fornecedorCliente.toLowerCase());
+  const adicionarConta = useCallback(async (novaConta: Omit<ContaLancamento, "codLancamentoContas" | "dataLancamento">) => {
+    try {
+      console.log("🔍 [CONTAS] Adicionando nova conta:", novaConta);
+      
+      const response = await apiService.post("/api/contas", novaConta);
+      
+      if (response.data) {
+        const contaFormatada = {
+          ...response.data,
+          dataLancamento: new Date(response.data.dataLancamento),
+          dataVencimento: new Date(response.data.dataVencimento),
+          dataPagamento: response.data.dataPagamento ? new Date(response.data.dataPagamento) : undefined,
+        };
+        
+        console.log("✅ [CONTAS] Conta adicionada com sucesso:", contaFormatada);
+        
+        // Forçar recarregamento das contas
+        await carregarContas();
+        
+        return contaFormatada;
+      } else {
+        throw new Error("Resposta inválida da API");
+      }
+    } catch (error) {
+      console.error("❌ [CONTAS] Erro ao adicionar conta:", error);
+      throw error;
+    }
+  }, [carregarContas]);
 
-      return fornecedorCorreto;
-    });
+  const atualizarConta = useCallback(async (id: number, contaAtualizada: Partial<ContaLancamento>) => {
+    try {
+      const response = await apiService.put(`/api/contas/${id}`, contaAtualizada);
+      
+      if (response.data) {
+        const contaFormatada = {
+          ...response.data,
+          dataLancamento: new Date(response.data.dataLancamento),
+          dataVencimento: new Date(response.data.dataVencimento),
+          dataPagamento: response.data.dataPagamento ? new Date(response.data.dataPagamento) : undefined,
+        };
+        
+        // Atualizar a lista local
+        setContas(contas => 
+          contas.map(conta => 
+            conta.codLancamentoContas === id ? contaFormatada : conta
+          )
+        );
+        
+        return contaFormatada;
+      } else {
+        throw new Error("Resposta inválida da API");
+      }
+    } catch (error) {
+      console.error("❌ [CONTAS] Erro ao atualizar conta:", error);
+      throw error;
+    }
+  }, []);
 
-    const totalPagar = contasFiltradas
-      .filter((c) => c.tipo === "pagar" && c.status !== "paga")
-      .reduce((total, c) => total + c.valor, 0);
+  const excluirConta = useCallback(async (id: number) => {
+    try {
+      await apiService.delete(`/api/contas/${id}`);
+      
+      // Remover da lista local
+      setContas(contas => contas.filter(conta => conta.codLancamentoContas !== id));
+    } catch (error) {
+      console.error("❌ [CONTAS] Erro ao excluir conta:", error);
+      throw error;
+    }
+  }, []);
 
-    const totalReceber = contasFiltradas
-      .filter((c) => c.tipo === "receber" && c.status !== "paga")
-      .reduce((total, c) => total + c.valor, 0);
+  const marcarComoPago = useCallback(async (id: number, formaPagamentoId: number) => {
+    try {
+      const response = await apiService.patch(`/api/contas/${id}/pagar`, { formaPg: formaPagamentoId });
+      
+      if (response.data) {
+        const contaFormatada = {
+          ...response.data,
+          dataLancamento: new Date(response.data.dataLancamento),
+          dataVencimento: new Date(response.data.dataVencimento),
+          dataPagamento: response.data.dataPagamento ? new Date(response.data.dataPagamento) : undefined,
+        };
+        
+        // Atualizar a lista local
+        setContas(contas => 
+          contas.map(conta => 
+            conta.codLancamentoContas === id ? contaFormatada : conta
+          )
+        );
+        
+        return contaFormatada;
+      } else {
+        throw new Error("Resposta inválida da API");
+      }
+    } catch (error) {
+      console.error("❌ [CONTAS] Erro ao marcar conta como paga:", error);
+      throw error;
+    }
+  }, []);
 
-    const totalVencendoHoje = contasFiltradas
-      .filter((c) => c.status === "vence_hoje")
-      .reduce((total, c) => total + c.valor, 0);
+  const forcarRecarregamento = useCallback(() => {
+    console.log("🔄 [CONTAS] Forçando recarregamento manual");
+    setFiltros(prev => ({
+      ...prev,
+      __timestamp: Date.now()
+    }));
+  }, []);
 
-    const totalAtrasadas = contasFiltradas
-      .filter((c) => c.status === "atrasada")
-      .reduce((total, c) => total + c.valor, 0);
+  // Carregar contas quando os filtros mudarem
+  useEffect(() => {
+    console.log("🔍 [CONTAS] useEffect carregarContas disparado. Filtros:", filtros);
+    carregarContas();
+  }, [carregarContas, filtros.__timestamp]);
 
-    const totalPagas = contasFiltradas
-      .filter((c) => c.status === "paga")
-      .reduce((total, c) => total + c.valor, 0);
+  // Carregar dados auxiliares na inicialização
+  useEffect(() => {
+    carregarDadosAuxiliares();
+  }, [carregarDadosAuxiliares]);
 
-    // Totais específicos para contas recebidas e pagas separadamente
-    const totalContasRecebidas = contasFiltradas
-      .filter((c) => c.tipo === "receber" && c.status === "paga")
-      .reduce((total, c) => total + c.valor, 0);
-
-    const totalContasPagas = contasFiltradas
-      .filter((c) => c.tipo === "pagar" && c.status === "paga")
-      .reduce((total, c) => total + c.valor, 0);
-
-    return {
-      totalPagar,
-      totalReceber,
-      totalVencendoHoje,
-      totalAtrasadas,
-      totalPagas,
-      totalContasRecebidas,
-      totalContasPagas,
-    };
-  }, [contas, filtros]);
-
-  // Função pública para forçar recarregamento
-  const forcarRecarregamento = () => {
-    console.log('🔄 [CONTAS] Forçando recarregamento manual...');
-    carregarContas(1); // Chama diretamente sem debounce
-  };
-
-  const value = {
+  const value: ContasContextType = {
     contas,
     filtros,
-    totais,
+    setFiltros,
+    carregando,
+    erro,
     adicionarConta,
-    editarConta,
+    atualizarConta,
     excluirConta,
-    marcarComoPaga,
-    setFiltros: setFiltrosComLog,
+    marcarComoPago,
     forcarRecarregamento,
-    isLoading,
+    clientes,
+    fornecedores,
+    formasPagamento,
+    categorias,
   };
 
   return (
-    <ContasContext.Provider value={value}>{children}</ContasContext.Provider>
+    <ContasContext.Provider value={value}>
+      {children}
+    </ContasContext.Provider>
   );
 }
 
 export function useContas() {
   const context = useContext(ContasContext);
   if (context === undefined) {
-    throw new Error("useContas must be used within a ContasProvider");
+    throw new Error("useContas deve ser usado dentro de um ContasProvider");
   }
   return context;
 }
