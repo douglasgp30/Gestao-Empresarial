@@ -61,9 +61,8 @@ export async function cleanFakeData() {
           { nome: { contains: "Exemplo" } },
           { nome: { contains: "Test" } },
           { nome: { contains: "Sample" } },
-          { email: { contains: "test" } },
-          { email: { contains: "demo" } },
-          { email: { contains: "example" } },
+          { telefone: "00000000000" },
+          { telefone: "11111111111" },
         ],
       },
     });
