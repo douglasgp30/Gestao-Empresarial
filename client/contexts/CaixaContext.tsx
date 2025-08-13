@@ -89,7 +89,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       campanha: "todas",
       setor: "todos",
       cidade: "todas",
-      conta: "todas",
       categoria: "todas",
       descricao: "todas",
       cliente: "todos",
