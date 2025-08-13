@@ -1,4 +1,4 @@
-// Serviço para comunicação com a API
+// Serviço para comunicaç��o com a API
 
 const API_BASE = "/api";
 
@@ -9,59 +9,83 @@ export interface ApiResponse<T> {
   details?: any;
 }
 
-// Função utilitária para fazer requests
+// Função utilitária para fazer requests com retry
 async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {},
+  retries = 2,
 ): Promise<ApiResponse<T>> {
-  try {
-    console.log(`[ApiService] Fazendo requisição para: ${API_BASE}${endpoint}`);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      console.log(`[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`);
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-      ...options,
-    });
+      // Adicionar timeout para evitar travamentos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-    console.log(
-      `[ApiService] Resposta recebida: ${response.status} ${response.statusText}`,
-    );
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...options.headers,
+        },
+        signal: controller.signal,
+        ...options,
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error(`[ApiService] Erro HTTP ${response.status}:`, errorData);
-      return {
-        error: errorData.error || `Erro HTTP ${response.status}`,
-        details: errorData.details,
-      };
+      clearTimeout(timeoutId);
+
+      console.log(
+        `[ApiService] Resposta recebida: ${response.status} ${response.statusText}`,
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`[ApiService] Erro HTTP ${response.status}:`, errorData);
+        return {
+          error: errorData.error || `Erro HTTP ${response.status}`,
+          details: errorData.details,
+        };
+      }
+
+      // Status 204 (No Content) não tem corpo de resposta
+      if (response.status === 204) {
+        console.log(`[ApiService] Resposta 204 - No Content`);
+        return { data: null };
+      }
+
+      const data = await response.json();
+      console.log(`[ApiService] Dados recebidos:`, data);
+      return { data };
+    } catch (error) {
+      console.error(`[ApiService] Erro na comunicação (tentativa ${attempt + 1}):`, error);
+
+      // Se é a última tentativa, retornar o erro
+      if (attempt === retries) {
+        // Verificar se é um erro de rede
+        if (
+          error instanceof TypeError &&
+          (error.message.includes("Failed to fetch") || error.message.includes("NetworkError"))
+        ) {
+          return {
+            error: "Servidor não disponível. Verifique se o backend está rodando.",
+          };
+        }
+
+        if (error.name === 'AbortError') {
+          return {
+            error: "Requisição expirou. Tente novamente.",
+          };
+        }
+
+        return { error: "Erro de comunicação com o servidor" };
+      }
+
+      // Aguardar antes de tentar novamente (backoff exponencial)
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
     }
-
-    // Status 204 (No Content) não tem corpo de resposta
-    if (response.status === 204) {
-      console.log(`[ApiService] Resposta 204 - No Content`);
-      return { data: null };
-    }
-
-    const data = await response.json();
-    console.log(`[ApiService] Dados recebidos:`, data);
-    return { data };
-  } catch (error) {
-    console.error("[ApiService] Erro na comunicação:", error);
-
-    // Verificar se é um erro de rede
-    if (
-      error instanceof TypeError &&
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        error: "Servidor não disponível. Verifique se o backend está rodando.",
-      };
-    }
-
-    return { error: "Erro de comunicação com o servidor" };
   }
+
+  return { error: "Erro de comunicação com o servidor" };
 }
 
 // === CAMPANHAS ===
