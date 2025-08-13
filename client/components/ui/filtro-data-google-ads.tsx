@@ -264,23 +264,38 @@ export default function FiltroDataGoogleAds({
   };
 
   const aplicarDatasPersonalizadas = () => {
+    // Priorizar dateRange do calendário se disponível
     if (dateRange?.from && dateRange?.to) {
-      onDataInicioChange(format(dateRange.from, "yyyy-MM-dd"));
-      onDataFimChange(format(dateRange.to, "yyyy-MM-dd"));
-      setPeriodoSelecionado("personalizar");
+      const dataInicioFormatada = format(dateRange.from, "yyyy-MM-dd");
+      const dataFimFormatada = format(dateRange.to, "yyyy-MM-dd");
 
-      onAplicar();
-      setIsOpen(false);
-      setShowCalendar(false);
-    } else if (tempDataInicio && tempDataFim) {
+      onDataInicioChange(dataInicioFormatada);
+      onDataFimChange(dataFimFormatada);
+
+      // Sincronizar campos temporários
+      setTempDataInicio(dataInicioFormatada);
+      setTempDataFim(dataFimFormatada);
+    }
+    // Caso contrário, usar campos temporários
+    else if (tempDataInicio && tempDataFim) {
       onDataInicioChange(tempDataInicio);
       onDataFimChange(tempDataFim);
-      setPeriodoSelecionado("personalizar");
 
-      onAplicar();
-      setIsOpen(false);
-      setShowCalendar(false);
+      // Sincronizar dateRange
+      setDateRange({
+        from: parseISO(tempDataInicio),
+        to: parseISO(tempDataFim)
+      });
     }
+    else {
+      // Se nenhum estiver preenchido, não fazer nada
+      return;
+    }
+
+    setPeriodoSelecionado("personalizar");
+    onAplicar();
+    setIsOpen(false);
+    setShowCalendar(false);
   };
 
   const voltarParaOpcoes = () => {
