@@ -96,10 +96,13 @@ export function ColumnManager({
                             <GripVertical className="h-4 w-4 text-muted-foreground" />
                           </div>
 
-                          <div className="flex-1">
+                          <div className="flex-1 flex items-center space-x-2">
                             <Label className="text-sm font-medium">
                               {column.label}
                             </Label>
+                            {(column.key === "data" || column.key === "acoes") && (
+                              <Lock className="h-3 w-3 text-primary opacity-60" />
+                            )}
                           </div>
 
                           <div className="flex items-center space-x-2">
