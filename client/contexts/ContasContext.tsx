@@ -181,7 +181,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       }));
 
       setContas(contasFormatadas);
-      console.log('🔍 [CONTAS] Contas formatadas e definidas no estado:', contasFormatadas);
+      console.log(`✅ [CONTAS] ${contasFormatadas.length} contas carregadas com sucesso`);
 
       // Salvar backup no localStorage
       salvarContasNoLocalStorage(contasFormatadas);
