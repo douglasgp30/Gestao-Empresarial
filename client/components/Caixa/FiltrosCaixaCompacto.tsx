@@ -18,7 +18,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import FiltroDataCaixa from "./FiltroDataCaixa";
+import FiltroDataCaixaSimples from "./FiltroDataCaixaSimples";
 import { Filter, ChevronDown, X, Search } from "lucide-react";
 
 export function FiltrosCaixaCompacto() {
