@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
@@ -48,22 +48,27 @@ export function ModalDespesa() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filtrar descrições de despesa
-  const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
+  // Filtrar descrições de despesa - usando useCallback para evitar re-renderizações
+  const descricoesDespesa = useCallback(() => {
+    return descricoes.filter((d) => d.tipo === "despesa");
+  }, [descricoes]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = formData.categoria
-    ? descricoesDespesa.filter((d) => d.categoria === formData.categoria)
-    : [];
+  const descricoesFiltradas = useCallback(() => {
+    if (!formData.categoria) return [];
+    return descricoesDespesa().filter((d) => d.categoria === formData.categoria);
+  }, [formData.categoria, descricoesDespesa]);
 
   // Obter categorias únicas das descrições de despesa
-  const categoriasDespesa = [
-    ...new Set(
-      descricoesDespesa
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
+  const categoriasDespesa = useCallback(() => {
+    return [
+      ...new Set(
+        descricoesDespesa()
+          .map((d) => d.categoria)
+          .filter((categoria) => categoria && categoria.trim() !== ""),
+      ),
+    ].sort();
+  }, [descricoesDespesa]);
 
   const resetForm = () => {
     setFormData({
@@ -248,7 +253,7 @@ export function ModalDespesa() {
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoriasDespesa.map((categoria) => (
+                    {categoriasDespesa().map((categoria) => (
                       <SelectItem key={categoria} value={categoria}>
                         {categoria}
                       </SelectItem>
@@ -269,7 +274,7 @@ export function ModalDespesa() {
                       ? "Selecione a descrição"
                       : "Primeiro selecione uma categoria"
                   }
-                  options={descricoesFiltradas.map(desc => ({
+                  options={descricoesFiltradas().map(desc => ({
                     value: desc.id.toString(),
                     label: desc.nome
                   }))}
