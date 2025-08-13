@@ -41,7 +41,7 @@ model DescricaoECategoria {
   nome        String   // Nome da descrição ou categoria
   tipo        String   // "receita" ou "despesa"
   tipoItem    String   // "descricao" ou "categoria"
-  categoria   String?  // Categoria pai (apenas para descrições)
+  categoria   String?  // Categoria pai (apenas para descriç��es)
   ativo       Boolean  @default(true)
   dataCriacao DateTime @default(now())
 
@@ -188,7 +188,6 @@ model LancamentoCaixa {
   observacoes       String?  // Observações do lançamento
   numeroNota        String?  // Número da nota fiscal
   arquivoNota       String?  // Arquivo da nota fiscal
-  conta             String   // "empresa" ou "pessoal" (obrigatório)
   tipo              String   // "receita" ou "despesa" (obrigatório)
   dataCriacao       DateTime @default(now())
 
