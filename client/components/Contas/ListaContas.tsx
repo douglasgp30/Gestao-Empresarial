@@ -153,6 +153,9 @@ export default function ListaContas() {
   };
 
   // Filtrar contas
+  console.log("[ListaContas] Contas recebidas:", contas.length, contas);
+  console.log("[ListaContas] Filtros ativos:", filtros);
+
   const contasFiltradas = contas
     .filter((conta) => {
       const dataVencimento = new Date(conta.dataVencimento);
