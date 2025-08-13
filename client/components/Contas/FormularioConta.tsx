@@ -236,18 +236,40 @@ export default function FormularioConta() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="cliente">Cliente</Label>
-                <Input
-                  id="cliente"
-                  value={formData.fornecedorCliente}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      fornecedorCliente: e.target.value,
-                    })
-                  }
-                  placeholder="Nome do cliente"
-                  required
-                />
+                <div className="flex gap-2">
+                  <Select
+                    value={formData.cliente}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, cliente: value }))
+                    }
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Selecione um cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientes.map((cliente) => (
+                        <SelectItem key={cliente.id} value={cliente.id}>
+                          {cliente.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <ModalCadastroCliente
+                    trigger={
+                      <Button type="button" variant="outline" size="icon">
+                        <UserPlus className="h-4 w-4" />
+                      </Button>
+                    }
+                    onClienteAdicionado={(cliente) => {
+                      setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+                      toast({
+                        title: "Cliente Adicionado",
+                        description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+                        variant: "default",
+                      });
+                    }}
+                  />
+                </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
