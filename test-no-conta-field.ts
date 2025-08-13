@@ -29,7 +29,7 @@ async function testSystem() {
       select: {
         id: true,
         tipo: true,
-        valor: true,
+        valorOriginal: true,
         // conta: true, // Este campo não deve mais existir
       }
     });
