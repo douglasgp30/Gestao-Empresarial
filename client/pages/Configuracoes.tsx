@@ -23,6 +23,7 @@ import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import SistemaBackup from "../components/Backup/SistemaBackup";
+import { CleanFakeData } from "../components/Debug/CleanFakeData";
 import {
   Settings,
   Building2,
@@ -857,6 +858,8 @@ export default function Configuracoes() {
               </p>
             </CardContent>
           </Card>
+
+          <CleanFakeData />
         </TabsContent>
       </Tabs>
     </div>
