@@ -49,7 +49,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
-    conta: "empresa", // "empresa" ou "pessoal"
     categoria: "",
     descricao: "",
     formaPagamento: "",
