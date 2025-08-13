@@ -254,9 +254,18 @@ export default function ListaContas() {
           <h3 className="text-lg font-medium text-muted-foreground mb-2">
             Nenhuma conta encontrada
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mb-4">
             Ajuste os filtros ou adicione novas contas a pagar e receber.
           </p>
+          {!isLoading && (
+            <Button
+              variant="outline"
+              onClick={() => window.location.reload()}
+              className="text-xs"
+            >
+              Recarregar dados
+            </Button>
+          )}
         </CardContent>
       </Card>
     );
