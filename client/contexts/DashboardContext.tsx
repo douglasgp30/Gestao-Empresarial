@@ -210,9 +210,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       totalContasPagas;
 
     // CÁLCULO TOTAL ALCANÇADO DA META
-    // Meta é sempre do mês atual, baseado em receitas do caixa
-    const receitasCaixaMesAtual = lancamentosMesAtual
-      .filter((l) => l.tipo === "receita")
+    // Meta é sempre do mês atual, baseado em receitas líquidas (sem boletos)
+    const receitasCaixaMesAtual = receitasNaoBoletoMesAtual
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
     console.log(
