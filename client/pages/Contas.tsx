@@ -164,7 +164,7 @@ function ContasContent() {
       </div>
 
       {/* Lista de Contas */}
-      <ListaContas onEditarConta={handleEditarConta} />
+      <ListaContas />
 
       {/* Status de carregamento */}
       {carregando && (
