@@ -124,16 +124,22 @@ export default function FormularioFuncionario() {
     setErrors({}); // Clear previous errors
 
     try {
-      await adicionarFuncionario({
+      const funcionarioData: any = {
         nomeCompleto: formData.nomeCompleto.trim(),
         ehTecnico: formData.ehTecnico,
-        login: formData.permissaoAcesso ? formData.login.trim().toLowerCase() : undefined,
-        senha: formData.permissaoAcesso ? formData.senha : undefined,
         permissaoAcesso: formData.permissaoAcesso,
         tipoAcesso: formData.tipoAcesso,
         percentualComissao: parseFloat(formData.percentualComissao),
         ativo: formData.ativo,
-      });
+      };
+
+      // Only include login and senha if user has system access
+      if (formData.permissaoAcesso) {
+        funcionarioData.login = formData.login.trim().toLowerCase();
+        funcionarioData.senha = formData.senha;
+      }
+
+      await adicionarFuncionario(funcionarioData);
 
       resetForm();
       setIsOpen(false);
