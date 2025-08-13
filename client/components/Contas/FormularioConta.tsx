@@ -88,7 +88,7 @@ export default function FormularioConta() {
       ? clientes.find(c => c.id === formData.cliente)
       : null;
 
-    adicionarConta({
+    const contaData = {
       tipo: activeTab as "pagar" | "receber",
       dataVencimento: new Date(formData.dataVencimento),
       // Para contas a receber, usar nome do cliente; para pagar, usar fornecedor
@@ -104,6 +104,16 @@ export default function FormularioConta() {
         ? `Conta a receber - ${clienteSelecionado?.nome || "Cliente"}`
         : `Conta a pagar - ${formData.fornecedorCliente}`,
       dataCriacao: new Date(),
+    };
+
+    console.log("Dados da conta a ser criada:", contaData);
+
+    adicionarConta(contaData);
+
+    toast({
+      title: "Conta Adicionada",
+      description: `Conta ${activeTab === "receber" ? "a receber" : "a pagar"} foi criada com sucesso.`,
+      variant: "default",
     });
 
     resetForm();
