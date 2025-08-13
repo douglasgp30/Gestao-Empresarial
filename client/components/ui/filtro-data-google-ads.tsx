@@ -250,11 +250,9 @@ export default function FiltroDataGoogleAds({
     onDataInicioChange(dataInicioFormatada);
     onDataFimChange(dataFimFormatada);
 
-    // Aplicar os filtros após um pequeno delay
-    setTimeout(() => {
-      onAplicar();
-      setIsOpen(false);
-    }, 10);
+    // Aplicar os filtros imediatamente
+    onAplicar();
+    setIsOpen(false);
   };
 
   const aplicarDatasPersonalizadas = () => {
