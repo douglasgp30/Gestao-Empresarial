@@ -98,9 +98,6 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       // Verificar se response.data é um array
       const contasData = Array.isArray(response.data) ? response.data : [];
 
-      console.log("[ContasContext] Response da API:", response);
-      console.log("[ContasContext] Dados das contas:", contasData);
-
       // Converter dados da API para o formato do contexto
       const contasFormatadas = contasData.map((c: any) => ({
         id: c.id.toString(),
