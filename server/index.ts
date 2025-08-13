@@ -52,6 +52,13 @@ import {
 import contasRouter from "./routes/contas";
 import { cleanFakeDataRoute } from "./routes/clean";
 
+import {
+  getClientes,
+  createCliente,
+  updateCliente,
+  deleteCliente,
+} from "./routes/clientes";
+
 export function createServer(): Express {
   const app = express();
 
