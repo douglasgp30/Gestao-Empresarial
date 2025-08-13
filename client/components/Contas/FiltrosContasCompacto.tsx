@@ -16,7 +16,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import FiltroDataContas from "./FiltroDataContas";
+import FiltroDataContasSimples from "./FiltroDataContasSimples";
 import {
   Filter,
   ChevronDown,
