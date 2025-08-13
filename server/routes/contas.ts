@@ -23,6 +23,7 @@ const ContaSchema = z.object({
 // GET /api/contas - Listar contas com filtros
 router.get("/", async (req, res) => {
   try {
+    console.log("[Contas] Buscando contas...");
     const { dataInicio, dataFim, tipo, status, categoria } = req.query;
 
     const where: any = {};
