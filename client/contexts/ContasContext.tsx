@@ -106,7 +106,11 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         status: filtros.status !== 'todos' ? filtros.status : undefined,
       };
 
+      console.log('🔍 [CONTAS] Carregando contas com filtros:', filtrosApi);
+
       const response = await contasApi.listar(filtrosApi);
+      console.log('🔍 [CONTAS] Resposta da API:', response);
+
       if (response.error) {
         console.error("Erro ao carregar contas:", response.error);
         setContas([]);
