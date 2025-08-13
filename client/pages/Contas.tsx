@@ -10,7 +10,8 @@ import {
 } from "lucide-react";
 import { ContasProvider, useContas } from "@/contexts/ContasContext";
 import { FiltroDataContasSimples } from "@/components/Contas/FiltroDataContasSimples";
-import { ModalConta } from "@/components/Contas/ModalConta";
+import { ModalContasReceber } from "@/components/Contas/ModalContasReceber";
+import { ModalContasPagar } from "@/components/Contas/ModalContasPagar";
 import { ListaContas } from "@/components/Contas/ListaContas";
 import { ContaLancamento } from "@shared/types";
 
