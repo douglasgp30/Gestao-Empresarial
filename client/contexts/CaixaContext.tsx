@@ -225,7 +225,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.tecnico,
     filtros.campanha,
     filtros.setor,
-    filtros.conta,
     filtros.categoria,
     filtros.descricao,
     filtros.cliente,
