@@ -264,11 +264,11 @@ export function ModalEditarLancamentoCompleto({
 
     try {
       await editarLancamento(lancamento.id.toString(), {
-        valor: valorInput.numericValue || 0,
-        valorQueEntrou: valorQueEntrouCalculado || 0,
-        valorLiquido: valorLiquidoCalculado || 0,
-        comissao: comissaoCalculada || 0,
-        imposto: impostoInput.numericValue || 0,
+        valor: Number(valorInput.numericValue || 0),
+        valorQueEntrou: Number(valorQueEntrouCalculado || 0),
+        valorLiquido: Number(valorLiquidoCalculado || 0),
+        comissao: Number(comissaoCalculada || 0),
+        imposto: Number(impostoInput.numericValue || 0),
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel && formData.tecnicoResponsavel !== "none" ? formData.tecnicoResponsavel : undefined,
