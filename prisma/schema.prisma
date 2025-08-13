@@ -35,6 +35,29 @@ model Descricao {
   @@map("descricoes")
 }
 
+// Tabela unificada para Descrições e Categorias
+model DescricaoECategoria {
+  id          Int      @id @default(autoincrement())
+  nome        String   // Nome da descrição ou categoria
+  tipo        String   // "receita" ou "despesa"
+  tipoItem    String   // "descricao" ou "categoria"
+  categoria   String?  // Categoria pai (apenas para descrições)
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos com Caixa
+  lancamentosCaixa    LancamentoCaixa[]
+  subdescricoes       Subdescricao[]
+
+  // Relacionamentos com Contas
+  contasLancamentos   ContaLancamento[] @relation("DescricaoCategoria")
+
+  @@map("descricoes_e_categorias")
+  @@index([tipo])
+  @@index([tipoItem])
+  @@index([ativo])
+}
+
 model Subdescricao {
   id          Int      @id @default(autoincrement()) // CodigoSubdescricao
   nome        String   // Subdescricao (obrigatório)
