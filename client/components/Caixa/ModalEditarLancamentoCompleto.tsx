@@ -730,43 +730,14 @@ export function ModalEditarLancamentoCompleto({
                 </div>
 
                 {lancamento.tipo === "receita" && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="comissao">Comissão (R$)</Label>
-                      <Input
-                        id="comissao"
-                        value={`R$ ${comissaoCalculada.toFixed(2).replace(".", ",")}`}
-                        disabled
-                        className="bg-gray-100"
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <SelectWithAdd
-                        value={formData.campanha}
-                        onValueChange={(value) =>
-                          setFormData((prev) => ({ ...prev, campanha: value }))
-                        }
-                        placeholder="Selecione a campanha"
-                        label="Campanha"
-                        required={false}
-                        items={campanhas}
-                        onAddNew={async (data) => {
-                          await adicionarCampanha({
-                            nome: data.nome,
-                          });
-                        }}
-                        addNewTitle="Nova Campanha"
-                        addNewDescription="Adicione uma nova campanha de marketing."
-                        addNewFields={[
-                          {
-                            key: "nome",
-                            label: "Nome da Campanha",
-                            required: true,
-                          },
-                        ]}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="comissao">Comissão (R$)</Label>
+                    <Input
+                      id="comissao"
+                      value={`R$ ${(comissaoCalculada || 0).toFixed(2).replace(".", ",")}`}
+                      disabled
+                      className="bg-gray-100"
+                    />
                   </div>
                 )}
               </div>
