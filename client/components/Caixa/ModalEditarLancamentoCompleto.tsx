@@ -204,7 +204,7 @@ export function ModalEditarLancamentoCompleto({
     // Validação completa dos campos obrigatórios
     const camposObrigatorios: any = {
       data: formData.data,
-      valor: valorInput.numericValue || 0,
+      valor: Number(valorInput.numericValue || 0),
       categoria: formData.categoria,
       descricao: formData.descricao,
       formaPagamento: formData.formaPagamento,
