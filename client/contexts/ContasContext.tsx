@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Conta } from "@shared/types";
 import { useAuth } from "./AuthContext";
+import { contasApi } from "../lib/apiService";
 
 interface ContasContextType {
   contas: Conta[];
