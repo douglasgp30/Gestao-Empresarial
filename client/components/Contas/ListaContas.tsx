@@ -50,11 +50,9 @@ import { ContaLancamento } from "@shared/types";
 import { useToast } from "@/hooks/use-toast";
 import { ModalEditarConta } from "@/components/Contas/ModalEditarConta";
 
-interface ListaContasProps {
-  onEditarConta?: (conta: ContaLancamento) => void;
-}
+interface ListaContasProps {}
 
-export function ListaContas({ onEditarConta }: ListaContasProps) {
+export function ListaContas({}: ListaContasProps) {
   const { toast } = useToast();
   const {
     contas,
