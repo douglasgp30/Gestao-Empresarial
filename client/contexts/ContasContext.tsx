@@ -106,7 +106,8 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         valor: c.valor,
         dataVencimento: new Date(c.dataVencimento),
         dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
-        status: c.status,
+        // Mapear status do servidor para o cliente
+        status: c.status === "pago" ? "paga" : c.status,
         observacoes: c.observacoes,
         categoria: c.categoria,
         dataCriacao: new Date(c.dataCriacao),
