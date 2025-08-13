@@ -252,7 +252,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         observacoes: novoLancamento.observacoes,
         numeroNota: novoLancamento.numeroNota,
         arquivoNota: novoLancamento.arquivoNota,
-        conta: novoLancamento.conta || "empresa", // Usar conta do formulário ou padrão
         descricaoId: parseInt(novoLancamento.descricao),
         formaPagamentoId: parseInt(novoLancamento.formaPagamento),
         funcionarioId: novoLancamento.tecnicoResponsavel
