@@ -19,8 +19,11 @@ export default function FiltroDataCaixaSimples() {
     return `${year}-${month}-${day}`;
   };
 
-  // Função para formatar data para exibição
-  const formatarDataDisplay = (date: Date): string => {
+  // Função para formatar data para exibição com validação
+  const formatarDataDisplay = (date: Date | null | undefined): string => {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      return format(new Date(), "dd/MM/yyyy", { locale: ptBR });
+    }
     return format(date, "dd/MM/yyyy", { locale: ptBR });
   };
 
