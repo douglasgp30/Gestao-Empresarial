@@ -124,7 +124,7 @@ router.put("/:id", async (req, res) => {
     });
 
     const response: ApiResponse<typeof conta> = {
-      success: true,
+
       data: conta,
     };
 
@@ -159,7 +159,7 @@ router.delete("/:id", async (req, res) => {
     });
 
     const response: ApiResponse<null> = {
-      success: true,
+
       data: null,
     };
 
@@ -188,7 +188,7 @@ router.patch("/:id/pagar", async (req, res) => {
     });
 
     const response: ApiResponse<typeof conta> = {
-      success: true,
+
       data: conta,
     };
 
@@ -255,7 +255,7 @@ router.get("/totais", async (req, res) => {
     };
 
     const response: ApiResponse<typeof totais> = {
-      success: true,
+
       data: totais,
     };
 
