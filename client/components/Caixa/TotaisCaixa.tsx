@@ -1,7 +1,7 @@
 import React from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { Card, CardContent } from "../ui/card";
-import { TrendingUp, TrendingDown, DollarSign, CreditCard } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, CreditCard, FileText } from "lucide-react";
 
 export function TotaisCaixa() {
   const { totais } = useCaixa();
