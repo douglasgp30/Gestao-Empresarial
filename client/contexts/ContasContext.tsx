@@ -91,7 +91,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         categoria: filtros.categoria
       });
 
-      const response = await apiService.get(`/api/contas?${params.toString()}`);
+      const response = await apiService.get(`/contas?${params.toString()}`);
       
       console.log("🔍 [CONTAS] Resposta completa da API:", response);
       
@@ -147,25 +147,25 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   const carregarDadosAuxiliares = useCallback(async () => {
     try {
       // Carregar clientes
-      const clientesResponse = await apiService.get("/api/contas/clientes");
+      const clientesResponse = await apiService.get("/contas/clientes");
       if (clientesResponse.data) {
         setClientes(clientesResponse.data);
       }
 
       // Carregar fornecedores
-      const fornecedoresResponse = await apiService.get("/api/contas/fornecedores");
+      const fornecedoresResponse = await apiService.get("/contas/fornecedores");
       if (fornecedoresResponse.data) {
         setFornecedores(fornecedoresResponse.data);
       }
 
       // Carregar formas de pagamento
-      const formasResponse = await apiService.get("/api/formas-pagamento");
+      const formasResponse = await apiService.get("/formas-pagamento");
       if (formasResponse.data) {
         setFormasPagamento(formasResponse.data);
       }
 
       // Carregar categorias
-      const categoriasResponse = await apiService.get("/api/contas/categorias");
+      const categoriasResponse = await apiService.get("/contas/categorias");
       if (categoriasResponse.data) {
         setCategorias(categoriasResponse.data);
       }
@@ -178,7 +178,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log("🔍 [CONTAS] Adicionando nova conta:", novaConta);
       
-      const response = await apiService.post("/api/contas", novaConta);
+      const response = await apiService.post("/contas", novaConta);
       
       if (response.data) {
         const contaFormatada = {
@@ -205,7 +205,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
   const atualizarConta = useCallback(async (id: number, contaAtualizada: Partial<ContaLancamento>) => {
     try {
-      const response = await apiService.put(`/api/contas/${id}`, contaAtualizada);
+      const response = await apiService.put(`/contas/${id}`, contaAtualizada);
       
       if (response.data) {
         const contaFormatada = {
@@ -234,7 +234,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
   const excluirConta = useCallback(async (id: number) => {
     try {
-      await apiService.delete(`/api/contas/${id}`);
+      await apiService.delete(`/contas/${id}`);
       
       // Remover da lista local
       setContas(contas => contas.filter(conta => conta.codLancamentoContas !== id));
@@ -246,7 +246,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
   const marcarComoPago = useCallback(async (id: number, formaPagamentoId: number) => {
     try {
-      const response = await apiService.patch(`/api/contas/${id}/pagar`, { formaPg: formaPagamentoId });
+      const response = await apiService.patch(`/contas/${id}/pagar`, { formaPg: formaPagamentoId });
       
       if (response.data) {
         const contaFormatada = {
