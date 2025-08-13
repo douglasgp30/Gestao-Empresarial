@@ -112,13 +112,15 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [filtros, setFiltros] = useState(() => {
-    // Usar data atual do sistema
+    // Usar últimos 30 dias como padrão para mostrar mais dados
     const agora = new Date();
-    const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0, 0);
+    const inicio30Dias = new Date(agora);
+    inicio30Dias.setDate(inicio30Dias.getDate() - 29); // Últimos 30 dias incluindo hoje
+    const inicioMes = new Date(inicio30Dias.getFullYear(), inicio30Dias.getMonth(), inicio30Dias.getDate(), 0, 0, 0, 0);
     const fimHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
 
     return {
-      dataInicio: inicioHoje,
+      dataInicio: inicioMes,
       dataFim: fimHoje,
       tipo: "ambos" as "pagar" | "receber" | "ambos",
     };
