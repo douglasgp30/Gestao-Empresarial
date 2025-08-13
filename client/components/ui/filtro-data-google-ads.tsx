@@ -501,7 +501,7 @@ export default function FiltroDataGoogleAds({
                     <Input
                       type="date"
                       value={tempDataFim || dataFim}
-                      onChange={(e) => setTempDataFim(e.target.value)}
+                      onChange={(e) => handleTempDataFimChange(e.target.value)}
                       className="h-9 text-sm"
                     />
                   </div>
