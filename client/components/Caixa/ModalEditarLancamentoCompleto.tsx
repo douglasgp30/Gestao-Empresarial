@@ -146,7 +146,7 @@ export function ModalEditarLancamentoCompleto({
     ),
   ].sort();
 
-  // Verificar se forma de pagamento é cartão
+  // Verificar se forma de pagamento é cart��o
   const isFormaPagamentoCartao =
     formData.formaPagamento &&
     formasPagamento
@@ -162,11 +162,12 @@ export function ModalEditarLancamentoCompleto({
 
   // Calcular descontos baseados nos percentuais
   const percentualNotaFiscal = formData.temNotaFiscal ? 5 : 0; // 5% se houver nota fiscal
-  const descontoNotaFiscal =
-    (valorQueEntrouCalculado * percentualNotaFiscal) / 100;
+  const descontoNotaFiscal = Number(
+    (valorQueEntrouCalculado * percentualNotaFiscal) / 100
+  );
 
   // Taxa do cartão - aplicar só se for forma de pagamento de cartão
-  const taxaCartao = isFormaPagamentoCartao ? (valorCalculado * 3.5) / 100 : 0; // 3.5% para cartão
+  const taxaCartao = Number(isFormaPagamentoCartao ? (valorCalculado * 3.5) / 100 : 0); // 3.5% para cartão
 
   // Valor líquido = valor recebido - impostos - desconto nota fiscal - taxa cartão
   const valorLiquidoCalculado = Number(
