@@ -233,6 +233,8 @@ export default function ListaContas() {
     setContaParaPagar(null);
   };
 
+  console.log('🔍 [LISTA CONTAS] Estado final - contas:', contas.length, 'filtradas:', contasFiltradas.length, 'loading:', isLoading);
+
   if (isLoading) {
     return (
       <Card>
