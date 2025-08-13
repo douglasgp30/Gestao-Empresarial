@@ -172,19 +172,13 @@ export default function ListaContas() {
           .toLowerCase()
           .includes(filtros.fornecedorCliente.toLowerCase()));
 
-      const passou = (
+      return (
         dentroDataInicio &&
         dentroDataFim &&
         tipoCorreto &&
         statusCorreto &&
         fornecedorCorreto
       );
-
-      if (!passou) {
-        console.log("[ListaContas] Conta filtrada:", conta.id, { dentroDataInicio, dentroDataFim, tipoCorreto, statusCorreto, fornecedorCorreto });
-      }
-
-      return passou;
     })
     .sort((a, b) => {
       // Aplicar ordenação personalizada se houver
