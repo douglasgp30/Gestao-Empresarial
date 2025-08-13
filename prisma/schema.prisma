@@ -285,6 +285,9 @@ model ContaLancamento {
   categoriaId           Int?     // SMALLINT FK categorias(id)
   subcategoriaId        Int?     // Subcategory ID
 
+  // Unified descriptions and categories
+  descricaoECategoriaId Int?     // FK to unified table
+
   // Recurring Information
   ehRecorrente          Boolean  @default(false) // Is recurring
   tipoRecorrencia       String?  // "mensal", "trimestral", "semestral", "anual"
