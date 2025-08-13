@@ -3,11 +3,12 @@ import { cleanFakeData } from "../lib/clean-fake-data";
 
 export const cleanFakeDataRoute: RequestHandler = async (req, res) => {
   try {
-    console.log("[Clean Route] Iniciando limpeza de dados fictícios...");
-    await cleanFakeData();
+    console.log("[Clean Route] Iniciando limpeza completa de dados fictícios/void...");
+    const results = await cleanFakeData();
     res.json({
       success: true,
-      message: "Dados fictícios removidos com sucesso",
+      message: "Todos os dados fictícios foram removidos com sucesso",
+      data: results,
     });
   } catch (error) {
     console.error("[Clean Route] Erro ao limpar dados fictícios:", error);
