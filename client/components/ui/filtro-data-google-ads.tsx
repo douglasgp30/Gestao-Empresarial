@@ -371,7 +371,7 @@ export default function FiltroDataGoogleAds({
         </Button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-[280px]"
+          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-[9999] w-[280px]"
                onLoad={() => console.log('🔍 FILTRO Dropdown renderizado')}
                ref={(el) => el && console.log('🔍 FILTRO Dropdown montado no DOM')}>
             {!showCalendar ? (
