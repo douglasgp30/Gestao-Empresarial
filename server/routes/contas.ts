@@ -79,7 +79,6 @@ router.get("/", async (req, res) => {
 // POST /api/contas - Criar nova conta
 router.post("/", async (req, res) => {
   try {
-    console.log("[Contas] Criando nova conta:", req.body);
     const dados = ContaSchema.parse(req.body);
 
     const conta = await prisma.conta.create({
