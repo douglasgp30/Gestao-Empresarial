@@ -37,7 +37,7 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { toast } from "../ui/use-toast";
-import { ModalEditarLancamento } from "./ModalEditarLancamento";
+import { ModalEditarLancamentoCompleto } from "./ModalEditarLancamentoCompleto";
 import { ColumnManager } from "../ui/column-manager";
 import { useTableColumns, ColumnConfig } from "../../hooks/use-table-columns";
 import { LancamentoCaixa } from "@shared/types";
@@ -237,6 +237,7 @@ export function ListaLancamentosSimples() {
         title: "Sucesso",
         description: "Lançamento excluído com sucesso!",
       });
+      setLancamentoParaExcluir(null);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       toast({
@@ -246,7 +247,6 @@ export function ListaLancamentosSimples() {
       });
     } finally {
       setExcluindo(false);
-      setLancamentoParaExcluir(null);
     }
   };
 
@@ -488,7 +488,7 @@ export function ListaLancamentosSimples() {
 
       {/* Modal de edição */}
       {lancamentoParaEditar && (
-        <ModalEditarLancamento
+        <ModalEditarLancamentoCompleto
           lancamento={lancamentoParaEditar}
           isOpen={!!lancamentoParaEditar}
           onClose={() => setLancamentoParaEditar(null)}

@@ -1,7 +1,7 @@
 import React from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { Card, CardContent } from "../ui/card";
-import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, CreditCard } from "lucide-react";
 
 export function TotaisCaixa() {
   const { totais } = useCaixa();
@@ -15,12 +15,22 @@ export function TotaisCaixa() {
 
   return (
     <div className="flex flex-wrap gap-2 lg:gap-3 justify-center lg:justify-end">
-      <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-        <TrendingUp className="h-4 w-4 text-green-600" />
+      <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+        <TrendingUp className="h-4 w-4 text-emerald-600" />
         <div className="text-center">
-          <p className="text-xs text-green-700/70 font-medium">Receitas</p>
+          <p className="text-xs text-emerald-700/70 font-medium">Rec. Bruta</p>
+          <p className="text-sm font-bold text-emerald-700">
+            {formatarMoeda(totais.receitaBruta || totais.receitas)}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+        <CreditCard className="h-4 w-4 text-green-600" />
+        <div className="text-center">
+          <p className="text-xs text-green-700/70 font-medium">Rec. Líquida</p>
           <p className="text-sm font-bold text-green-700">
-            {formatarMoeda(totais.receitas)}
+            {formatarMoeda(totais.receitaLiquida || totais.receitas)}
           </p>
         </div>
       </div>

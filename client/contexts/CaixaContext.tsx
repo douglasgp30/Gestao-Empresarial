@@ -29,6 +29,9 @@ interface CaixaContextType {
   };
   totais: {
     receitas: number;
+    receitaBruta?: number;
+    receitaLiquida?: number;
+    boletos?: number;
     despesas: number;
     saldo: number;
     comissoes: number;
@@ -291,6 +294,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         dadosApi.campanhaId = parseInt(dadosAtualizados.campanha);
         delete dadosApi.campanha;
       }
+      if (dadosAtualizados.clienteId) {
+        dadosApi.clienteId = parseInt(dadosAtualizados.clienteId);
+      }
+
+      // Limpar campos undefined para evitar problemas na API
+      Object.keys(dadosApi).forEach((key) => {
+        if (dadosApi[key] === undefined || dadosApi[key] === "") {
+          delete dadosApi[key];
+        }
+      });
+
+      console.log("Dados para API de edição:", dadosApi);
 
       const response = await caixaApi.atualizarLancamento(
         parseInt(id),
@@ -305,6 +320,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
+      setError("Erro ao editar lançamento");
       throw error;
     }
   };
@@ -313,16 +329,21 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
+      console.log("Excluindo lançamento:", id);
       const response = await caixaApi.excluirLancamento(parseInt(id));
+
       if (response.error) {
+        console.error("Erro da API ao excluir:", response.error);
         setError(response.error);
         throw new Error(response.error);
       }
 
+      console.log("Lançamento excluído com sucesso, recarregando lista...");
       // Recarregar lançamentos forçando a atualização
       await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
+      setError("Erro ao excluir lançamento");
       throw error;
     }
   };
@@ -356,22 +377,47 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Calcular totais baseados nos lançamentos carregados
   const totais = React.useMemo(() => {
-    const receitas = lancamentos
-      .filter((l) => l.tipo === "receita")
-      .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
+
+    // Separar boletos
+    const receitasBoleto = receitasCompletas.filter(
+      (l) =>
+        l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
+        l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
+    );
+
+    const receitasNaoBoleto = receitasCompletas.filter(
+      (l) =>
+        !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
+        !l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
+    );
+
+    // Calcular totais
+    const receitaBruta = receitasCompletas.reduce(
+      (total, l) => total + l.valor,
+      0,
+    );
+    const receitaLiquida = receitasNaoBoleto.reduce(
+      (total, l) => total + (l.valorLiquido || l.valor),
+      0,
+    );
+    const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
 
     const despesas = lancamentos
       .filter((l) => l.tipo === "despesa")
       .reduce((total, l) => total + l.valor, 0);
 
-    const comissoes = lancamentos
-      .filter((l) => l.tipo === "receita" && l.comissao)
+    const comissoes = receitasNaoBoleto
+      .filter((l) => l.comissao)
       .reduce((total, l) => total + (l.comissao || 0), 0);
 
     return {
-      receitas,
+      receitas: receitaLiquida, // Para compatibilidade
+      receitaBruta,
+      receitaLiquida,
+      boletos,
       despesas,
-      saldo: receitas - despesas,
+      saldo: receitaLiquida - despesas, // Saldo só com receitas líquidas (sem boletos)
       comissoes,
     };
   }, [lancamentos]);

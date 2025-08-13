@@ -576,9 +576,35 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             </div>
           </div>
 
+          {/* Campanha */}
+          <SelectWithAdd
+            value={formData.campanha}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, campanha: value }))
+            }
+            placeholder="Selecione a campanha"
+            label="Campanha"
+            required={false}
+            items={campanhas}
+            onAddNew={async (data) => {
+              await adicionarCampanha({
+                nome: data.nome,
+              });
+            }}
+            addNewTitle="Nova Campanha"
+            addNewDescription="Adicione uma nova campanha de marketing."
+            addNewFields={[
+              {
+                key: "nome",
+                label: "Nome da Campanha",
+                required: true,
+              },
+            ]}
+          />
+
           {/* Nota Fiscal */}
-          <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
-            <div className="flex items-center space-x-2">
+          <div className="space-y-3 p-4 bg-blue-50/70 rounded-lg border border-blue-200/70 shadow-sm">
+            <div className="flex items-center space-x-3">
               <Switch
                 id="nota-fiscal"
                 checked={formData.temNotaFiscal}
@@ -592,9 +618,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     emitirNotaFiscal();
                   }
                 }}
-                className="data-[state=checked]:bg-blue-600"
+                className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-blue-200"
               />
-              <Label htmlFor="nota-fiscal" className="font-medium text-sm">
+              <Label
+                htmlFor="nota-fiscal"
+                className="font-medium text-sm text-blue-800 cursor-pointer"
+              >
                 Há nota fiscal para esta receita?
               </Label>
             </div>
@@ -638,18 +667,24 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           </div>
 
           {/* Campos avançados */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3 p-3 bg-gray-50/70 rounded-lg border border-gray-200/70 shadow-sm">
             <Switch
               id="campos-avancados"
               checked={mostrarCamposAvancados}
               onCheckedChange={setMostrarCamposAvancados}
+              className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-300"
             />
-            <Label htmlFor="campos-avancados">Mostrar campos avançados</Label>
+            <Label
+              htmlFor="campos-avancados"
+              className="font-medium text-sm text-gray-700 cursor-pointer"
+            >
+              Mostrar campos avançados
+            </Label>
           </div>
 
           {mostrarCamposAvancados && (
             <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {!isFormaPagamentoCartao && (
                   <div className="space-y-2">
                     <Label htmlFor="valorQueEntrouAvancado">
@@ -666,60 +701,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <Label htmlFor="imposto">Desconto/Taxa (R$)</Label>
                   <Input id="imposto" {...impostoInput.inputProps} />
                 </div>
-
-                {/* Valor Líquido só para cartão */}
-                {isFormaPagamentoCartao && (
-                  <div className="space-y-2">
-                    <Label htmlFor="valorLiquido">Valor Líquido (R$)</Label>
-                    <Input
-                      id="valorLiquido"
-                      type="number"
-                      step="0.01"
-                      value={formData.valorLiquido}
-                      disabled
-                      className="bg-gray-100"
-                    />
-                  </div>
-                )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="comissao">Comissão (R$)</Label>
-                  <Input
-                    id="comissao"
-                    value={`R$ ${comissaoCalculada.toFixed(2).replace(".", ",")}`}
-                    disabled
-                    className="bg-gray-100"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <SelectWithAdd
-                    value={formData.campanha}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({ ...prev, campanha: value }))
-                    }
-                    placeholder="Selecione a campanha"
-                    label="Campanha"
-                    required={false}
-                    items={campanhas}
-                    onAddNew={async (data) => {
-                      await adicionarCampanha({
-                        nome: data.nome,
-                      });
-                    }}
-                    addNewTitle="Nova Campanha"
-                    addNewDescription="Adicione uma nova campanha de marketing."
-                    addNewFields={[
-                      {
-                        key: "nome",
-                        label: "Nome da Campanha",
-                        required: true,
-                      },
-                    ]}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="comissao">Comissão (R$)</Label>
+                <Input
+                  id="comissao"
+                  value={`R$ ${comissaoCalculada.toFixed(2).replace(".", ",")}`}
+                  disabled
+                  className="bg-gray-100"
+                />
               </div>
             </div>
           )}
@@ -781,17 +772,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   </div>
                 </div>
 
-                {/* Terceira linha - resultados finais */}
-                <div className="grid grid-cols-2 gap-3 text-sm border-t pt-2">
-                  <div>
-                    <span className="text-gray-600">Valor Líquido:</span>
-                    <div className="font-medium text-blue-600">
-                      R$ {valorLiquidoCalculado.toFixed(2).replace(".", ",")}
-                    </div>
-                  </div>
-                  <div>
+                {/* Resultado final */}
+                <div className="border-t pt-2">
+                  <div className="text-center">
                     <span className="text-gray-600">Para Empresa:</span>
-                    <div className="font-bold text-green-600">
+                    <div className="font-bold text-green-600 text-lg">
                       R$ {valorParaEmpresa.toFixed(2).replace(".", ",")}
                     </div>
                   </div>

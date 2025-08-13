@@ -121,12 +121,14 @@ export const createLancamento: RequestHandler = async (req, res) => {
     const data = LancamentoCaixaSchema.parse(req.body);
     console.log("[Caixa] Dados após validação:", JSON.stringify(data, null, 2));
 
-    // Validação customizada para valorRecebido quando forma de pagamento for cartão
+    // Verificar forma de pagamento e aplicar validações específicas
+    let isBoleto = false;
     if (data.formaPagamentoId) {
       const formaPagamento = await prisma.formaPagamento.findUnique({
         where: { id: data.formaPagamentoId },
       });
 
+      // Verificar se é cartão
       if (
         formaPagamento?.nome.toLowerCase().includes("cartão") ||
         formaPagamento?.nome.toLowerCase().includes("cartao")
@@ -137,6 +139,14 @@ export const createLancamento: RequestHandler = async (req, res) => {
               "Valor recebido é obrigatório quando a forma de pagamento for cartão",
           });
         }
+      }
+
+      // Verificar se é boleto
+      if (
+        formaPagamento?.nome.toLowerCase().includes("boleto") ||
+        formaPagamento?.nome.toLowerCase().includes("bancário")
+      ) {
+        isBoleto = true;
       }
     }
 
@@ -248,6 +258,12 @@ export const createLancamento: RequestHandler = async (req, res) => {
         ...dadosLancamento,
         clienteId: clienteIdValido,
         dataHora: dataHoraLancamento,
+        // Marcar como boleto se for o caso (boletos não entram no caixa imediatamente)
+        observacoes: isBoleto
+          ? dadosLancamento.observacoes
+            ? `${dadosLancamento.observacoes} [BOLETO - Aguardando pagamento]`
+            : "[BOLETO - Aguardando pagamento]"
+          : dadosLancamento.observacoes,
       },
       include: {
         descricao: true,
@@ -274,7 +290,45 @@ export const createLancamento: RequestHandler = async (req, res) => {
 export const updateLancamento: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    console.log(
+      `[Caixa] Atualizando lançamento ID: ${id}`,
+      JSON.stringify(req.body, null, 2),
+    );
+
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "ID do lançamento inválido" });
+    }
+
+    // Verificar se o lançamento existe
+    const lancamentoExistente = await prisma.lancamentoCaixa.findUnique({
+      where: { id },
+    });
+
+    if (!lancamentoExistente) {
+      return res.status(404).json({ error: "Lançamento não encontrado" });
+    }
+
     const data = LancamentoCaixaSchema.partial().parse(req.body);
+    console.log(`[Caixa] Dados validados:`, JSON.stringify(data, null, 2));
+
+    // Validação customizada para valorRecebido quando forma de pagamento for cartão
+    if (data.formaPagamentoId) {
+      const formaPagamento = await prisma.formaPagamento.findUnique({
+        where: { id: data.formaPagamentoId },
+      });
+
+      if (
+        formaPagamento?.nome.toLowerCase().includes("cartão") ||
+        formaPagamento?.nome.toLowerCase().includes("cartao")
+      ) {
+        if (!data.valorRecebido || data.valorRecebido <= 0) {
+          return res.status(400).json({
+            error:
+              "Valor recebido é obrigatório quando a forma de pagamento for cart��o",
+          });
+        }
+      }
+    }
 
     const lancamento = await prisma.lancamentoCaixa.update({
       where: { id },
@@ -290,9 +344,11 @@ export const updateLancamento: RequestHandler = async (req, res) => {
       },
     });
 
+    console.log(`[Caixa] Lançamento atualizado com sucesso:`, lancamento.id);
     res.json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("[Caixa] Erro de validação:", error.errors);
       res.status(400).json({ error: "Dados inválidos", details: error.errors });
     } else {
       console.error("Erro ao atualizar lançamento:", error);
@@ -304,7 +360,24 @@ export const updateLancamento: RequestHandler = async (req, res) => {
 export const deleteLancamento: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    console.log(`[Caixa] Excluindo lançamento ID: ${id}`);
+
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "ID do lançamento inválido" });
+    }
+
+    // Verificar se o lançamento existe antes de excluir
+    const lancamentoExistente = await prisma.lancamentoCaixa.findUnique({
+      where: { id },
+    });
+
+    if (!lancamentoExistente) {
+      return res.status(404).json({ error: "Lançamento não encontrado" });
+    }
+
     await prisma.lancamentoCaixa.delete({ where: { id } });
+    console.log(`[Caixa] Lançamento ${id} excluído com sucesso`);
+
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao excluir lançamento:", error);
@@ -346,10 +419,37 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
       }
     }
 
-    const receitas = await prisma.lancamentoCaixa.aggregate({
+    // Buscar todas as receitas com forma de pagamento
+    const receitasCompletas = await prisma.lancamentoCaixa.findMany({
       where: { ...where, tipo: "receita" },
-      _sum: { valor: true, valorRecebido: true },
+      include: {
+        formaPagamento: true,
+      },
     });
+
+    // Separar boletos de outras formas de pagamento
+    const receitasBoleto = receitasCompletas.filter(
+      (r) =>
+        r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
+        r.formaPagamento?.nome.toLowerCase().includes("bancário"),
+    );
+
+    const receitasNaoBoleto = receitasCompletas.filter(
+      (r) =>
+        !r.formaPagamento?.nome.toLowerCase().includes("boleto") &&
+        !r.formaPagamento?.nome.toLowerCase().includes("bancário"),
+    );
+
+    // Calcular totais
+    const totalReceitaBruta = receitasCompletas.reduce(
+      (sum, r) => sum + r.valor,
+      0,
+    );
+    const totalReceitaLiquida = receitasNaoBoleto.reduce(
+      (sum, r) => sum + (r.valorRecebido || r.valor),
+      0,
+    );
+    const totalBoletos = receitasBoleto.reduce((sum, r) => sum + r.valor, 0);
 
     const despesas = await prisma.lancamentoCaixa.aggregate({
       where: { ...where, tipo: "despesa" },
@@ -357,12 +457,14 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     });
 
     const totais = {
-      receitas: receitas._sum.valor || 0,
-      receitasRecebidas: receitas._sum.valorRecebido || 0,
+      receitaBruta: totalReceitaBruta, // Todas as receitas incluindo boletos
+      receitaLiquida: totalReceitaLiquida, // Só receitas não-boleto (que entram no caixa)
+      boletos: totalBoletos, // Total em boletos pendentes
       despesas: despesas._sum.valor || 0,
-      saldo:
-        (receitas._sum.valorRecebido || receitas._sum.valor || 0) -
-        (despesas._sum.valor || 0),
+      saldo: totalReceitaLiquida - (despesas._sum.valor || 0), // Saldo do caixa (sem boletos)
+      // Manter campos antigos para compatibilidade
+      receitas: totalReceitaLiquida,
+      receitasRecebidas: totalReceitaLiquida,
     };
 
     res.json(totais);

@@ -52,6 +52,13 @@ import {
 import contasRouter from "./routes/contas";
 import { cleanFakeDataRoute } from "./routes/clean";
 
+import {
+  getClientes,
+  createCliente,
+  updateCliente,
+  deleteCliente,
+} from "./routes/clientes";
+
 export function createServer(): Express {
   const app = express();
 
@@ -159,6 +166,12 @@ export function createServer(): Express {
 
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
+
+  // Rotas de Clientes
+  app.get("/api/clientes", getClientes);
+  app.post("/api/clientes", createCliente);
+  app.put("/api/clientes/:id", updateCliente);
+  app.delete("/api/clientes/:id", deleteCliente);
 
   return app;
 }
