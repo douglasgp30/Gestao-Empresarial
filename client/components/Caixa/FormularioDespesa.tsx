@@ -92,7 +92,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         const nomes = {
           data: "Data",
           valor: "Valor",
-          conta: "Conta",
           categoria: "Categoria",
           descricao: "Descrição",
           formaPagamento: "Forma de Pagamento",
