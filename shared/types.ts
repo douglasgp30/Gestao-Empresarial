@@ -89,6 +89,29 @@ export interface Conta {
   clienteId?: string; // ID do cliente da tabela clientes
 }
 
+// Nova interface seguindo o PRD fornecido
+export interface ContaLancamento {
+  codLancamentoContas: number; // BIGSERIAL PK
+  dataLancamento: Date; // TIMESTAMP
+  valor: number; // NUMERIC(12,2)
+  dataVencimento: Date; // DATE
+  codigoCliente?: number; // BIGINT FK clientes(id) - Condicional
+  codigoFornecedor?: number; // BIGINT FK fornecedores(id) - Condicional
+  tipo: "receber" | "pagar"; // ENUM('receber','pagar')
+  conta: "empresa" | "pessoal"; // ENUM('empresa','pessoal')
+  formaPg?: number; // SMALLINT FK formas_pagamento(id) - Condicional
+  observacoes?: string; // TEXT
+  descricaoCategoria?: number; // SMALLINT FK categorias(id)
+  pago: boolean; // BOOLEAN
+  dataPagamento?: Date; // TIMESTAMP - Condicional
+
+  // Relacionamentos expandidos
+  cliente?: Cliente;
+  fornecedor?: Fornecedor;
+  formaPagamento?: FormaPagamento;
+  categoria?: Categoria;
+}
+
 export interface Campanha {
   id: string; // CodigoCampanha
   nome: string; // NomeCampanha (obrigatório)
