@@ -55,8 +55,7 @@ model FormaPagamento {
 
   // Relacionamentos
   lancamentos    LancamentoCaixa[]
-  contasReceber  ContaLancamento[] @relation("FormaPagamentoReceber")
-  contasPagar    ContaLancamento[] @relation("FormaPagamentoPagar")
+  contasContas   ContaLancamento[] @relation("FormaPagamentoContas")
 
   @@map("formas_pagamento")
 }
