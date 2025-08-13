@@ -67,10 +67,7 @@ function ContasContent() {
             <RefreshCw className="mr-2 h-4 w-4" />
             Recarregar
           </Button>
-          <ModalConta
-            contaParaEditar={contaParaEditar || undefined}
-            onSuccess={handleSuccessForm}
-          />
+          <ModalConta />
         </div>
       </div>
 
