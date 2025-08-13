@@ -210,6 +210,7 @@ model LancamentoCaixa {
   setor          Setor?         @relation(fields: [setorId], references: [id])
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
   cliente        Cliente?       @relation(fields: [clienteId], references: [id])
+  descricaoECategoria DescricaoECategoria? @relation(fields: [descricaoECategoriaId], references: [id])
 
   @@map("lancamentos_caixa")
   @@index([dataHora])
