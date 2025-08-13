@@ -131,8 +131,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       },
     );
 
-    const totalReceitasCaixa = lancamentosMesAtual
-      .filter((l) => l.tipo === "receita")
+    // Filtrar receitas do mês atual, excluindo boletos
+    const receitasMesAtual = lancamentosMesAtual.filter((l) => l.tipo === "receita");
+    const receitasNaoBoletoMesAtual = receitasMesAtual.filter(
+      (l) =>
+        !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
+        !l.formaPagamento?.nome?.toLowerCase().includes("bancário")
+    );
+
+    // Total de receitas = apenas receitas líquidas (sem boletos)
+    const totalReceitasCaixa = receitasNaoBoletoMesAtual
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
     const totalDespesasCaixa = lancamentosMesAtual
