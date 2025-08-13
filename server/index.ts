@@ -121,8 +121,12 @@ export function createServer(): Express {
     }
   });
 
-  // Limpeza de dados fictícios
-  app.post("/api/clean-fake-data", cleanFakeDataRoute);
+  // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
+  app.post("/api/clean-fake-data", (req, res, next) => {
+    // Garantir que o body não seja lido múltiplas vezes
+    console.log("[Middleware] Clean route accessed, body readable:", req.readable);
+    next();
+  }, cleanFakeDataRoute);
   app.get("/api/demo", handleDemo);
 
   // Rotas de Campanhas
