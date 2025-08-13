@@ -196,7 +196,7 @@ export function FormularioConta({
           conta: "empresa",
           formaPg: "",
           observacoes: "",
-          descricaoCategoria: "",
+          descricaoCategoria: "0",
           pago: false,
           dataPagamento: undefined,
         });
