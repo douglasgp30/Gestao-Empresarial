@@ -778,17 +778,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   </div>
                 </div>
 
-                {/* Terceira linha - resultados finais */}
-                <div className="grid grid-cols-2 gap-3 text-sm border-t pt-2">
-                  <div>
-                    <span className="text-gray-600">Valor Líquido:</span>
-                    <div className="font-medium text-blue-600">
-                      R$ {valorLiquidoCalculado.toFixed(2).replace(".", ",")}
-                    </div>
-                  </div>
-                  <div>
+                {/* Resultado final */}
+                <div className="border-t pt-2">
+                  <div className="text-center">
                     <span className="text-gray-600">Para Empresa:</span>
-                    <div className="font-bold text-green-600">
+                    <div className="font-bold text-green-600 text-lg">
                       R$ {valorParaEmpresa.toFixed(2).replace(".", ",")}
                     </div>
                   </div>
