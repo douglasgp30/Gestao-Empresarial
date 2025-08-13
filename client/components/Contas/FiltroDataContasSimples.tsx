@@ -158,6 +158,7 @@ export default function FiltroDataContasSimples() {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="truncate">{periodoAtual}</span>
+            {isLoading && <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>}
           </div>
           <ChevronDown className="h-4 w-4 opacity-50" />
         </Button>
