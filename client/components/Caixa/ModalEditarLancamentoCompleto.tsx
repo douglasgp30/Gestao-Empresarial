@@ -781,7 +781,7 @@ export function ModalEditarLancamentoCompleto({
                           Desc. Nota Fiscal ({percentualNotaFiscal}%):
                         </span>
                         <div className="font-medium text-orange-600">
-                          - R$ {descontoNotaFiscal.toFixed(2).replace(".", ",")}
+                          - R$ {(descontoNotaFiscal || 0).toFixed(2).replace(".", ",")}
                         </div>
                       </div>
                     )}
@@ -789,14 +789,14 @@ export function ModalEditarLancamentoCompleto({
                       <div>
                         <span className="text-gray-600">Taxa Cartão (3,5%):</span>
                         <div className="font-medium text-orange-600">
-                          - R$ {taxaCartao.toFixed(2).replace(".", ",")}
+                          - R$ {(taxaCartao || 0).toFixed(2).replace(".", ",")}
                         </div>
                       </div>
                     )}
                     <div>
                       <span className="text-gray-600">Comissão Técnico:</span>
                       <div className="font-medium text-blue-600">
-                        R$ {comissaoCalculada.toFixed(2).replace(".", ",")}
+                        R$ {(comissaoCalculada || 0).toFixed(2).replace(".", ",")}
                       </div>
                     </div>
                   </div>
@@ -806,13 +806,13 @@ export function ModalEditarLancamentoCompleto({
                     <div>
                       <span className="text-gray-600">Valor Líquido:</span>
                       <div className="font-medium text-blue-600">
-                        R$ {valorLiquidoCalculado.toFixed(2).replace(".", ",")}
+                        R$ {(valorLiquidoCalculado || 0).toFixed(2).replace(".", ",")}
                       </div>
                     </div>
                     <div>
                       <span className="text-gray-600">Para Empresa:</span>
                       <div className="font-bold text-green-600">
-                        R$ {valorParaEmpresa.toFixed(2).replace(".", ",")}
+                        R$ {(valorParaEmpresa || 0).toFixed(2).replace(".", ",")}
                       </div>
                     </div>
                   </div>
