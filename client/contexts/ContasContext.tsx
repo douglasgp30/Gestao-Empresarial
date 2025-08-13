@@ -148,8 +148,6 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         categoria: novaConta.tipoPagamento || novaConta.categoria,
       };
 
-      console.log("[ContasContext] Dados originais:", novaConta);
-      console.log("[ContasContext] Dados para API:", dadosApi);
 
       const response = await contasApi.criar(dadosApi);
       if (response.error) {
