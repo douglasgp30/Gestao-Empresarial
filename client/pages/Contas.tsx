@@ -50,15 +50,6 @@ function ContasContent() {
     }).format(valor);
   };
 
-  const handleEditarConta = (conta: ContaLancamento) => {
-    setContaParaEditar(conta);
-    setModalContaAberto(true);
-  };
-
-  const handleSuccessForm = () => {
-    setContaParaEditar(null);
-    setModalContaAberto(false);
-  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
