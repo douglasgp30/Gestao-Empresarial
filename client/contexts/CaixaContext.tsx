@@ -377,22 +377,39 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Calcular totais baseados nos lançamentos carregados
   const totais = React.useMemo(() => {
-    const receitas = lancamentos
-      .filter((l) => l.tipo === "receita")
-      .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
+
+    // Separar boletos
+    const receitasBoleto = receitasCompletas.filter(l =>
+      l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
+      l.formaPagamento?.nome?.toLowerCase().includes("bancário")
+    );
+
+    const receitasNaoBoleto = receitasCompletas.filter(l =>
+      !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
+      !l.formaPagamento?.nome?.toLowerCase().includes("bancário")
+    );
+
+    // Calcular totais
+    const receitaBruta = receitasCompletas.reduce((total, l) => total + l.valor, 0);
+    const receitaLiquida = receitasNaoBoleto.reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
 
     const despesas = lancamentos
       .filter((l) => l.tipo === "despesa")
       .reduce((total, l) => total + l.valor, 0);
 
-    const comissoes = lancamentos
-      .filter((l) => l.tipo === "receita" && l.comissao)
+    const comissoes = receitasNaoBoleto
+      .filter((l) => l.comissao)
       .reduce((total, l) => total + (l.comissao || 0), 0);
 
     return {
-      receitas,
+      receitas: receitaLiquida, // Para compatibilidade
+      receitaBruta,
+      receitaLiquida,
+      boletos,
       despesas,
-      saldo: receitas - despesas,
+      saldo: receitaLiquida - despesas, // Saldo só com receitas líquidas (sem boletos)
       comissoes,
     };
   }, [lancamentos]);
