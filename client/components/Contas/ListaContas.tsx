@@ -264,15 +264,9 @@ export function ListaContas({}: ListaContasProps) {
               <FileText className="h-5 w-5" />
               Lista de Contas
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>
-                Debug: {contas.length} contas no contexto,{" "}
-                {contasProcessadas.length} após filtros
-              </span>
-              <Button onClick={forcarRecarregamento} variant="ghost" size="sm">
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button onClick={forcarRecarregamento} variant="ghost" size="sm">
+              <RefreshCw className="h-4 w-4" />
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>

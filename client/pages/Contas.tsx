@@ -1,173 +1,51 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  DollarSign,
-  Clock,
-  AlertTriangle,
-  RefreshCw,
-  TrendingUp,
-  TrendingDown,
-  FileText,
-} from "lucide-react";
 import { ContasProvider, useContas } from "@/contexts/ContasContext";
 import { FiltroDataContasSimples } from "@/components/Contas/FiltroDataContasSimples";
 import { ModalContasReceber } from "@/components/Contas/ModalContasReceber";
 import { ModalContasPagar } from "@/components/Contas/ModalContasPagar";
 import { ListaContas } from "@/components/Contas/ListaContas";
-import { ContaLancamento } from "@shared/types";
+import { TotaisContas } from "@/components/Contas/TotaisContas";
+import { FileText } from "lucide-react";
 
 function ContasContent() {
-  const { contas, carregando, forcarRecarregamento } = useContas();
-
-  // Calcular totais
-  const hoje = new Date();
-  hoje.setHours(23, 59, 59, 999);
-
-  const totais = React.useMemo(() => {
-    return {
-      totalReceber: contas
-        .filter((c) => c.tipo === "receber" && !c.pago)
-        .reduce((sum, c) => sum + c.valor, 0),
-      totalPagar: contas
-        .filter((c) => c.tipo === "pagar" && !c.pago)
-        .reduce((sum, c) => sum + c.valor, 0),
-      vencendoHoje: contas.filter((c) => {
-        const vencimento = new Date(c.dataVencimento);
-        vencimento.setHours(23, 59, 59, 999);
-        return hoje.toDateString() === vencimento.toDateString() && !c.pago;
-      }).length,
-      atrasadas: contas.filter((c) => {
-        const vencimento = new Date(c.dataVencimento);
-        vencimento.setHours(23, 59, 59, 999);
-        return vencimento < hoje && !c.pago;
-      }).length,
-      pagas: contas.filter((c) => c.pago).length,
-    };
-  }, [contas, hoje]);
-
-  const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(valor);
-  };
+  const { forcarRecarregamento } = useContas();
 
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+      {/* Header com botões no topo direito */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        {/* Título */}
         <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <FileText className="h-8 w-8 text-primary" />
-            Contas a Pagar e Receber
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-2">
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            Contas
           </h1>
-          <p className="text-muted-foreground">
-            Sistema avançado de gestão financeira com controles separados
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
+            Gestão completa de contas a pagar e receber
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={forcarRecarregamento} variant="outline" size="sm">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Recarregar
-          </Button>
+
+        {/* Botões principais - Compactos no canto direito */}
+        <div className="flex flex-wrap gap-2 lg:flex-nowrap">
           <ModalContasReceber />
           <ModalContasPagar />
         </div>
       </div>
 
-      {/* Filtros de Data */}
-      <FiltroDataContasSimples />
+      {/* Filtros e Totais */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        {/* Filtros */}
+        <div className="flex justify-center lg:justify-start">
+          <FiltroDataContasSimples />
+        </div>
 
-      {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card className="bg-green-50 border-green-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">A Receber</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {formatarMoeda(totais.totalReceber)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Pendentes de recebimento
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-red-50 border-red-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">A Pagar</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {formatarMoeda(totais.totalPagar)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Pendentes de pagamento
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Vencendo Hoje</CardTitle>
-            <Clock className="h-4 w-4 text-amber-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-amber-600">
-              {totais.vencendoHoje}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Contas com vencimento hoje
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Atrasadas</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {totais.atrasadas}
-            </div>
-            <p className="text-xs text-muted-foreground">Contas em atraso</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pagas</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {totais.pagas}
-            </div>
-            <p className="text-xs text-muted-foreground">Contas quitadas</p>
-          </CardContent>
-        </Card>
+        {/* Totais alinhados à direita */}
+        <TotaisContas />
       </div>
 
       {/* Lista de Contas */}
       <ListaContas />
-
-      {/* Status de carregamento */}
-      {carregando && (
-        <div className="fixed bottom-4 right-4">
-          <Card className="p-4">
-            <div className="flex items-center space-x-2">
-              <RefreshCw className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Carregando contas...</span>
-            </div>
-          </Card>
-        </div>
-      )}
     </div>
   );
 }
