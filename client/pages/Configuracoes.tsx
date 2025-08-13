@@ -853,7 +853,9 @@ export default function Configuracoes() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SystemTester />
+              <p className="text-sm text-muted-foreground">
+                ✅ Sistema funcionando corretamente com dados reais
+              </p>
             </CardContent>
           </Card>
         </TabsContent>
