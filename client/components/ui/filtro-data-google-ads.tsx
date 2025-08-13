@@ -352,6 +352,7 @@ export default function FiltroDataGoogleAds({
       <div
         className="relative filtro-data-google-ads w-full max-w-sm"
         ref={dropdownRef}
+        style={{ zIndex: isOpen ? 9999 : 'auto' }}
       >
         <Button
           variant="outline"
