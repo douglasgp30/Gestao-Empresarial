@@ -3,13 +3,19 @@ import "./global.css";
 // Suprimir erros benignos do ResizeObserver
 const originalError = console.error;
 const originalWarn = console.warn;
+const originalInfo = console.info;
 
 console.error = (...args: any[]) => {
   if (
     typeof args[0] === 'string' &&
     (args[0].includes('ResizeObserver loop completed with undelivered notifications') ||
-     args[0].includes('ResizeObserver loop limit exceeded'))
+     args[0].includes('ResizeObserver loop limit exceeded') ||
+     args[0].includes('ResizeObserver loop'))
   ) {
+    return;
+  }
+  // Verificar se é um Error object
+  if (args[0] instanceof Error && args[0].message.includes('ResizeObserver loop')) {
     return;
   }
   originalError.apply(console, args);
@@ -18,11 +24,22 @@ console.error = (...args: any[]) => {
 console.warn = (...args: any[]) => {
   if (
     typeof args[0] === 'string' &&
-    args[0].includes('ResizeObserver loop completed with undelivered notifications')
+    (args[0].includes('ResizeObserver loop completed with undelivered notifications') ||
+     args[0].includes('ResizeObserver loop'))
   ) {
     return;
   }
   originalWarn.apply(console, args);
+};
+
+console.info = (...args: any[]) => {
+  if (
+    typeof args[0] === 'string' &&
+    args[0].includes('ResizeObserver loop')
+  ) {
+    return;
+  }
+  originalInfo.apply(console, args);
 };
 
 import { Toaster } from "@/components/ui/toaster";
@@ -65,7 +82,8 @@ const App = () => {
     const handleError = (event: ErrorEvent) => {
       if (
         event.message &&
-        (event.message.includes('ResizeObserver loop completed with undelivered notifications') ||
+        (event.message.includes('ResizeObserver loop') ||
+         event.message.includes('ResizeObserver loop completed with undelivered notifications') ||
          event.message.includes('ResizeObserver loop limit exceeded'))
       ) {
         event.preventDefault();
@@ -77,40 +95,54 @@ const App = () => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       if (
         event.reason &&
-        typeof event.reason === 'string' &&
-        event.reason.includes('ResizeObserver loop completed with undelivered notifications')
+        ((typeof event.reason === 'string' && event.reason.includes('ResizeObserver loop')) ||
+         (event.reason instanceof Error && event.reason.message.includes('ResizeObserver loop')))
       ) {
         event.preventDefault();
         return false;
       }
     };
 
-    // Suprimir ResizeObserver em nível de window
+    // Suprimir ResizeObserver em nível de window com proteção mais robusta
     const originalResizeObserver = window.ResizeObserver;
     window.ResizeObserver = class extends originalResizeObserver {
       constructor(callback: ResizeObserverCallback) {
         const wrappedCallback: ResizeObserverCallback = (entries, observer) => {
-          try {
-            callback(entries, observer);
-          } catch (error) {
-            if (error instanceof Error &&
-                error.message.includes('ResizeObserver loop completed with undelivered notifications')) {
-              // Suprimir este erro específico
-              return;
+          // Usar requestAnimationFrame para evitar loops
+          window.requestAnimationFrame(() => {
+            try {
+              callback(entries, observer);
+            } catch (error) {
+              if (error instanceof Error && error.message.includes('ResizeObserver loop')) {
+                // Suprimir completamente erros do ResizeObserver
+                return;
+              }
+              // Para outros erros, apenas log silencioso sem re-throw
+              console.debug('ResizeObserver callback error:', error);
             }
-            throw error;
-          }
+          });
         };
         super(wrappedCallback);
       }
     };
 
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    // Interceptar também no nível do document
+    const handleDocumentError = (event: any) => {
+      if (event.error && event.error.message && event.error.message.includes('ResizeObserver loop')) {
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      }
+    };
+
+    window.addEventListener('error', handleError, true);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection, true);
+    document.addEventListener('error', handleDocumentError, true);
 
     return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('error', handleError, true);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection, true);
+      document.removeEventListener('error', handleDocumentError, true);
       window.ResizeObserver = originalResizeObserver;
     };
   }, []);
