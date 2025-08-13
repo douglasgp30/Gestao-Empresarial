@@ -91,70 +91,60 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // Função para carregar contas da API com debounce
-  const carregarContasDebounced = React.useCallback(() => {
-    // Cancelar timeout anterior se existir
-    if (carregandoTimeout) {
-      clearTimeout(carregandoTimeout);
-    }
+  // Função para carregar contas da API
+  const carregarContas = async () => {
+    try {
+      setIsLoading(true);
 
-    // Criar novo timeout com debounce de 500ms (aumentado para ser mais estável)
-    const novoTimeout = setTimeout(async () => {
-      try {
-        setIsLoading(true);
+      // Preparar filtros para a API
+      const filtrosApi = {
+        dataInicio: filtros.dataInicio.toISOString().split('T')[0],
+        dataFim: filtros.dataFim.toISOString().split('T')[0],
+        tipo: filtros.tipo !== 'ambos' ? filtros.tipo : undefined,
+        status: filtros.status !== 'todos' ? filtros.status : undefined,
+      };
 
-        // Preparar filtros para a API
-        const filtrosApi = {
-          dataInicio: filtros.dataInicio.toISOString().split('T')[0],
-          dataFim: filtros.dataFim.toISOString().split('T')[0],
-          tipo: filtros.tipo !== 'ambos' ? filtros.tipo : undefined,
-          status: filtros.status !== 'todos' ? filtros.status : undefined,
-        };
-
-        const response = await contasApi.listar(filtrosApi);
-        if (response.error) {
-          console.error("Erro ao carregar contas:", response.error);
-          setContas([]);
-          return;
-        }
-
-        // Verificar se response.data é um array
-        const contasData = Array.isArray(response.data) ? response.data : [];
-
-        // Converter dados da API para o formato do contexto
-        const contasFormatadas = contasData.map((c: any) => ({
-          id: c.id.toString(),
-          tipo: c.tipo,
-          descricao: c.descricao || "Sem descrição",
-          valor: c.valor || 0,
-          dataVencimento: new Date(c.dataVencimento),
-          dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
-          // Mapear status do servidor para o cliente
-          status: c.status === "pago" ? "paga" :
-                  c.status === "atrasado" ? "atrasada" :
-                  c.status || "pendente",
-          observacoes: c.observacoes || "",
-          categoria: c.categoria || "",
-          dataCriacao: new Date(c.dataCriacao || new Date()),
-          // Campos de compatibilidade
-          fornecedorCliente: c.descricao || "Sem descrição", // Usar descrição como nome do fornecedor/cliente
-          tipoPagamento: c.categoria || "",
-          funcionarioId: user?.id || "1",
-          clienteId: c.clienteId || undefined,
-        }));
-
-        setContas(contasFormatadas);
-      } catch (error) {
-        console.error("Erro ao carregar contas:", error);
-        // Em caso de erro, manter contas vazias
+      const response = await contasApi.listar(filtrosApi);
+      if (response.error) {
+        console.error("Erro ao carregar contas:", response.error);
         setContas([]);
-      } finally {
-        setIsLoading(false);
+        return;
       }
-    }, 500); // Debounce de 500ms
 
-    setCarregandoTimeout(novoTimeout);
-  }, [filtros, carregandoTimeout, user?.id]);
+      // Verificar se response.data é um array
+      const contasData = Array.isArray(response.data) ? response.data : [];
+
+      // Converter dados da API para o formato do contexto
+      const contasFormatadas = contasData.map((c: any) => ({
+        id: c.id.toString(),
+        tipo: c.tipo,
+        descricao: c.descricao || "Sem descrição",
+        valor: c.valor || 0,
+        dataVencimento: new Date(c.dataVencimento),
+        dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
+        // Mapear status do servidor para o cliente
+        status: c.status === "pago" ? "paga" :
+                c.status === "atrasado" ? "atrasada" :
+                c.status || "pendente",
+        observacoes: c.observacoes || "",
+        categoria: c.categoria || "",
+        dataCriacao: new Date(c.dataCriacao || new Date()),
+        // Campos de compatibilidade
+        fornecedorCliente: c.descricao || "Sem descrição", // Usar descrição como nome do fornecedor/cliente
+        tipoPagamento: c.categoria || "",
+        funcionarioId: user?.id || "1",
+        clienteId: c.clienteId || undefined,
+      }));
+
+      setContas(contasFormatadas);
+    } catch (error) {
+      console.error("Erro ao carregar contas:", error);
+      // Em caso de erro, manter contas vazias
+      setContas([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Carregar contas na inicialização
   useEffect(() => {
