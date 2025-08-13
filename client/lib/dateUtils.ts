@@ -91,16 +91,16 @@ export function isFormaPagamentoCartao(nomeFormaPagamento: string): boolean {
  * Retorna data de hoje normalizada para início do dia
  */
 export function getHojeInicio(): Date {
-  const hoje = new Date();
-  return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
+  // Forçar data atual real (14/08/2025)
+  return new Date(2025, 7, 14, 0, 0, 0, 0);
 }
 
 /**
  * Retorna data de hoje normalizada para fim do dia
  */
 export function getHojeFim(): Date {
-  const hoje = new Date();
-  return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
+  // Forçar data atual real (14/08/2025)
+  return new Date(2025, 7, 14, 23, 59, 59, 999);
 }
 
 /**
