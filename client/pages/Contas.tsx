@@ -59,11 +59,12 @@ function ContasContent() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <FileText className="h-8 w-8 text-primary" />
             Contas a Pagar e Receber
           </h1>
           <p className="text-muted-foreground">
-            Gerencie suas contas com vencimento por data de vencimento
+            Sistema avançado de gestão financeira com controles separados
           </p>
         </div>
         <div className="flex items-center gap-2">
