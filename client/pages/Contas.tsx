@@ -16,9 +16,6 @@ import { ContaLancamento } from "@shared/types";
 
 function ContasContent() {
   const { contas, carregando, forcarRecarregamento } = useContas();
-  const [contaParaEditar, setContaParaEditar] =
-    useState<ContaLancamento | null>(null);
-  const [modalContaAberto, setModalContaAberto] = useState(false);
 
   // Calcular totais
   const hoje = new Date();
