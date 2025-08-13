@@ -355,7 +355,11 @@ export default function FiltroDataGoogleAds({
       >
         <Button
           variant="outline"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            console.log('🖱️ FILTRO Clique no botão principal, isOpen atual:', isOpen);
+            setIsOpen(!isOpen);
+            console.log('🖱️ FILTRO Novo estado isOpen:', !isOpen);
+          }}
           className="w-full justify-between h-10 px-4 text-sm font-normal"
           disabled={isLoading}
         >
