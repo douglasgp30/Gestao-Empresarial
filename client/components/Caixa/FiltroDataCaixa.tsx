@@ -47,10 +47,18 @@ export default function FiltroDataCaixa() {
     });
   };
 
+  // Função para formatar data sem problemas de timezone
+  const formatDateForInput = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <FiltroDataGoogleAds
-      dataInicio={filtros.dataInicio.toISOString().split("T")[0]}
-      dataFim={filtros.dataFim.toISOString().split("T")[0]}
+      dataInicio={formatDateForInput(filtros.dataInicio)}
+      dataFim={formatDateForInput(filtros.dataFim)}
       onDataInicioChange={handleDataInicioChange}
       onDataFimChange={handleDataFimChange}
       onAplicar={handleAplicar}
