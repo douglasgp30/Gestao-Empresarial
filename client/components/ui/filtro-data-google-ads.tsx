@@ -191,7 +191,7 @@ export default function FiltroDataGoogleAds({
     const fimAtual = parseISO(dataFim);
 
     // Verificar se as datas correspondem a "hoje"
-    const hoje = new Date();
+    const hoje = new Date(2025, 7, 14); // Forçar data atual real (14/08/2025)
     const inicioHoje = startOfDay(hoje);
     const fimHoje = endOfDay(hoje);
 
