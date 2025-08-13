@@ -81,11 +81,9 @@ router.post("/", async (req, res) => {
   try {
     const dados = ContaSchema.parse(req.body);
 
-    console.log("[Server] Dados recebidos para criação:", dados);
     const conta = await prisma.conta.create({
       data: dados,
     });
-    console.log("[Server] Conta criada:", conta);
 
     const response: ApiResponse<typeof conta> = {
       data: conta,
