@@ -140,7 +140,12 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       };
 
       const response = await contasApi.listar(filtrosApi);
+      console.log('🔍 [CONTAS] Resposta completa da API:', response);
       console.log(`📊 [CONTAS] API retornou ${response.data?.length || 0} contas`);
+
+      if (response.data && Array.isArray(response.data)) {
+        console.log('🔍 [CONTAS] Primeiras 3 contas:', response.data.slice(0, 3));
+      }
 
       if (response.error) {
         console.error("Erro ao carregar contas:", response.error);
