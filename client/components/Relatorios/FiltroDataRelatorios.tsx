@@ -37,12 +37,13 @@ export default function FiltroDataRelatorios() {
 
   const handleLimpar = () => {
     const hoje = new Date();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
+    const fimHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
     setFiltros({
       ...filtros,
-      dataInicio: inicioMes,
-      dataFim: fimMes,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
+      __timestamp: Date.now(),
     });
   };
 
