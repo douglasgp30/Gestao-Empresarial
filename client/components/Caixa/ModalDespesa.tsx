@@ -43,7 +43,6 @@ export function ModalDespesa() {
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
-    conta: "empresa", // "empresa" ou "pessoal"
     categoria: "",
     descricao: "",
     formaPagamento: "",
