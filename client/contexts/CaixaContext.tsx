@@ -29,6 +29,9 @@ interface CaixaContextType {
   };
   totais: {
     receitas: number;
+    receitaBruta?: number;
+    receitaLiquida?: number;
+    boletos?: number;
     despesas: number;
     saldo: number;
     comissoes: number;
