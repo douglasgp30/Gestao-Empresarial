@@ -397,8 +397,8 @@ export default function FormularioFuncionario() {
             >
               Cancelar
             </Button>
-            <Button type="submit" className="flex-1">
-              Cadastrar Funcionário
+            <Button type="submit" className="flex-1" disabled={submitting}>
+              {submitting ? "Cadastrando..." : "Cadastrar Funcionário"}
             </Button>
           </div>
         </form>
