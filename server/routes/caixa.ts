@@ -367,7 +367,7 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
     });
 
     if (!lancamentoExistente) {
-      return res.status(404).json({ error: "Lançamento n��o encontrado" });
+      return res.status(404).json({ error: "Lançamento não encontrado" });
     }
 
     await prisma.lancamentoCaixa.delete({ where: { id } });
@@ -414,10 +414,29 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
       }
     }
 
-    const receitas = await prisma.lancamentoCaixa.aggregate({
+    // Buscar todas as receitas com forma de pagamento
+    const receitasCompletas = await prisma.lancamentoCaixa.findMany({
       where: { ...where, tipo: "receita" },
-      _sum: { valor: true, valorRecebido: true },
+      include: {
+        formaPagamento: true,
+      },
     });
+
+    // Separar boletos de outras formas de pagamento
+    const receitasBoleto = receitasCompletas.filter(r =>
+      r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
+      r.formaPagamento?.nome.toLowerCase().includes("bancário")
+    );
+
+    const receitasNaoBoleto = receitasCompletas.filter(r =>
+      !r.formaPagamento?.nome.toLowerCase().includes("boleto") &&
+      !r.formaPagamento?.nome.toLowerCase().includes("bancário")
+    );
+
+    // Calcular totais
+    const totalReceitaBruta = receitasCompletas.reduce((sum, r) => sum + r.valor, 0);
+    const totalReceitaLiquida = receitasNaoBoleto.reduce((sum, r) => sum + (r.valorRecebido || r.valor), 0);
+    const totalBoletos = receitasBoleto.reduce((sum, r) => sum + r.valor, 0);
 
     const despesas = await prisma.lancamentoCaixa.aggregate({
       where: { ...where, tipo: "despesa" },
@@ -425,12 +444,14 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     });
 
     const totais = {
-      receitas: receitas._sum.valor || 0,
-      receitasRecebidas: receitas._sum.valorRecebido || 0,
+      receitaBruta: totalReceitaBruta, // Todas as receitas incluindo boletos
+      receitaLiquida: totalReceitaLiquida, // Só receitas não-boleto (que entram no caixa)
+      boletos: totalBoletos, // Total em boletos pendentes
       despesas: despesas._sum.valor || 0,
-      saldo:
-        (receitas._sum.valorRecebido || receitas._sum.valor || 0) -
-        (despesas._sum.valor || 0),
+      saldo: totalReceitaLiquida - (despesas._sum.valor || 0), // Saldo do caixa (sem boletos)
+      // Manter campos antigos para compatibilidade
+      receitas: totalReceitaLiquida,
+      receitasRecebidas: totalReceitaLiquida,
     };
 
     res.json(totais);
