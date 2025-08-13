@@ -153,8 +153,8 @@ export default function ListaContas() {
   };
 
   // Filtrar contas
-  console.log("[ListaContas] Contas recebidas:", contas.length, contas);
-  console.log("[ListaContas] Filtros ativos:", filtros);
+  console.error("🔥 [DEBUG] ListaContas - Contas recebidas:", contas.length, contas);
+  console.error("🔥 [DEBUG] ListaContas - Filtros ativos:", filtros);
 
   const contasFiltradas = contas
     .filter((conta) => {
