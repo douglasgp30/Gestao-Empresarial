@@ -576,6 +576,32 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             </div>
           </div>
 
+          {/* Campanha */}
+          <SelectWithAdd
+            value={formData.campanha}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, campanha: value }))
+            }
+            placeholder="Selecione a campanha"
+            label="Campanha"
+            required={false}
+            items={campanhas}
+            onAddNew={async (data) => {
+              await adicionarCampanha({
+                nome: data.nome,
+              });
+            }}
+            addNewTitle="Nova Campanha"
+            addNewDescription="Adicione uma nova campanha de marketing."
+            addNewFields={[
+              {
+                key: "nome",
+                label: "Nome da Campanha",
+                required: true,
+              },
+            ]}
+          />
+
           {/* Nota Fiscal */}
           <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
             <div className="flex items-center space-x-2">
