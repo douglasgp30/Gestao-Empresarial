@@ -117,12 +117,18 @@ export default function FiltroDataContasSimples() {
     console.log('🚀 Datas calculadas para contas:', { inicio, fim });
 
     // Aplicar diretamente
-    setFiltros({
+    console.log('🔄 [FILTRO CONTAS] Aplicando novos filtros:', { inicio, fim });
+    console.log('🔄 [FILTRO CONTAS] Filtros atuais antes:', filtros);
+
+    const novosFiltros = {
       ...filtros,
       dataInicio: inicio,
       dataFim: fim,
       __timestamp: Date.now(),
-    });
+    };
+
+    console.log('🔄 [FILTRO CONTAS] Novos filtros:', novosFiltros);
+    setFiltros(novosFiltros);
 
     setIsOpen(false);
   };
