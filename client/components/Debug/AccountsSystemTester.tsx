@@ -42,7 +42,7 @@ export function AccountsSystemTester() {
     try {
       // 1. Seed de dados básicos
       try {
-        const seedResponse = await apiService.post("/api/seed/accounts");
+        const seedResponse = await apiService.post("/seed/accounts");
         testes[0].status = "success";
         testes[0].message = "Dados básicos criados com sucesso";
       } catch (error) {
@@ -53,7 +53,7 @@ export function AccountsSystemTester() {
 
       // 2. Buscar clientes
       try {
-        const clientesResponse = await apiService.get("/api/contas/clientes");
+        const clientesResponse = await apiService.get("/contas/clientes");
         clientes = clientesResponse.data || [];
         testes[1].status = "success";
         testes[1].message = `${clientes.length} clientes encontrados`;
@@ -66,7 +66,7 @@ export function AccountsSystemTester() {
 
       // 3. Buscar fornecedores
       try {
-        const fornecedoresResponse = await apiService.get("/api/contas/fornecedores");
+        const fornecedoresResponse = await apiService.get("/contas/fornecedores");
         fornecedores = fornecedoresResponse.data || [];
         testes[2].status = "success";
         testes[2].message = `${fornecedores.length} fornecedores encontrados`;
@@ -79,7 +79,7 @@ export function AccountsSystemTester() {
 
       // 4. Buscar formas de pagamento
       try {
-        const formasResponse = await apiService.get("/api/formas-pagamento");
+        const formasResponse = await apiService.get("/formas-pagamento");
         formasPagamento = formasResponse.data || [];
         testes[3].status = "success";
         testes[3].message = `${formasPagamento.length} formas de pagamento encontradas`;
@@ -92,7 +92,7 @@ export function AccountsSystemTester() {
 
       // 5. Buscar categorias
       try {
-        const categoriasResponse = await apiService.get("/api/contas/categorias");
+        const categoriasResponse = await apiService.get("/contas/categorias");
         categorias = categoriasResponse.data || [];
         testes[4].status = "success";
         testes[4].message = `${categorias.length} categorias encontradas`;
@@ -110,7 +110,7 @@ export function AccountsSystemTester() {
         dataFim.setDate(dataFim.getDate() + 30);
         const dataFimStr = dataFim.toISOString().split('T')[0];
         
-        const contasResponse = await apiService.get(`/api/contas?dataInicio=${hoje}&dataFim=${dataFimStr}`);
+        const contasResponse = await apiService.get(`/contas?dataInicio=${hoje}&dataFim=${dataFimStr}`);
         const contas = contasResponse.data || [];
         testes[5].status = "success";
         testes[5].message = `${contas.length} contas encontradas`;
@@ -142,7 +142,7 @@ export function AccountsSystemTester() {
             pago: false
           };
 
-          const contaCriada = await apiService.post("/api/contas", novaContaReceber);
+          const contaCriada = await apiService.post("/contas", novaContaReceber);
           testes[6].status = "success";
           testes[6].message = `Conta a receber criada - ID: ${contaCriada.data?.codLancamentoContas}`;
           testes[6].data = contaCriada.data;
@@ -170,7 +170,7 @@ export function AccountsSystemTester() {
             pago: false
           };
 
-          const contaCriada = await apiService.post("/api/contas", novaContaPagar);
+          const contaCriada = await apiService.post("/contas", novaContaPagar);
           testes[7].status = "success";
           testes[7].message = `Conta a pagar criada - ID: ${contaCriada.data?.codLancamentoContas}`;
           testes[7].data = contaCriada.data;
@@ -191,7 +191,7 @@ export function AccountsSystemTester() {
         dataFim.setDate(dataFim.getDate() + 30);
         const dataFimStr = dataFim.toISOString().split('T')[0];
         
-        const totaisResponse = await apiService.get(`/api/contas/totais?dataInicio=${hoje}&dataFim=${dataFimStr}`);
+        const totaisResponse = await apiService.get(`/contas/totais?dataInicio=${hoje}&dataFim=${dataFimStr}`);
         const totais = totaisResponse.data;
         testes[8].status = "success";
         testes[8].message = `Totais calculados com sucesso`;
