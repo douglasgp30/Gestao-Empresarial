@@ -425,6 +425,12 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     };
   }, [contas, filtros]);
 
+  // Função pública para forçar recarregamento
+  const forcarRecarregamento = () => {
+    console.log('🔄 [CONTAS] Forçando recarregamento manual...');
+    carregarContas(1); // Chama diretamente sem debounce
+  };
+
   const value = {
     contas,
     filtros,
@@ -434,6 +440,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     excluirConta,
     marcarComoPaga,
     setFiltros: setFiltrosComLog,
+    forcarRecarregamento,
     isLoading,
   };
 
