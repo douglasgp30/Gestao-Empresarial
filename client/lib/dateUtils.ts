@@ -86,3 +86,29 @@ export function isFormaPagamentoCartao(nomeFormaPagamento: string): boolean {
          nome.includes('crédito') ||
          nome.includes('credito');
 }
+
+/**
+ * Retorna data de hoje normalizada para início do dia
+ */
+export function getHojeInicio(): Date {
+  const hoje = new Date();
+  return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
+}
+
+/**
+ * Retorna data de hoje normalizada para fim do dia
+ */
+export function getHojeFim(): Date {
+  const hoje = new Date();
+  return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
+}
+
+/**
+ * Retorna objeto com dataInicio e dataFim padrão (hoje)
+ */
+export function getDefaultDateRange() {
+  return {
+    dataInicio: getHojeInicio(),
+    dataFim: getHojeFim()
+  };
+}
