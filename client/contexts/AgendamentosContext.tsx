@@ -55,9 +55,9 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
 
   // Filtros padrão
   const [filtros, setFiltros] = useState<FiltrosAgendamento>(() => {
-    const hoje = new Date();
-    const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
-    const fimHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
+    // Forçar data atual real (14/08/2025)
+    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
+    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
 
     return {
       dataInicio: inicioHoje,
