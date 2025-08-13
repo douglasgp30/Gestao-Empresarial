@@ -291,6 +291,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         dadosApi.campanhaId = parseInt(dadosAtualizados.campanha);
         delete dadosApi.campanha;
       }
+      if (dadosAtualizados.clienteId) {
+        dadosApi.clienteId = parseInt(dadosAtualizados.clienteId);
+      }
+
+      // Limpar campos undefined para evitar problemas na API
+      Object.keys(dadosApi).forEach(key => {
+        if (dadosApi[key] === undefined || dadosApi[key] === "") {
+          delete dadosApi[key];
+        }
+      });
+
+      console.log("Dados para API de edição:", dadosApi);
 
       const response = await caixaApi.atualizarLancamento(
         parseInt(id),
@@ -305,6 +317,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
+      setError("Erro ao editar lançamento");
       throw error;
     }
   };
