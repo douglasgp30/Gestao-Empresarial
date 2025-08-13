@@ -34,6 +34,7 @@ interface ContasContextType {
   excluirConta: (id: string) => void;
   marcarComoPaga: (id: string) => void;
   setFiltros: (filtros: any) => void;
+  forcarRecarregamento: () => void;
   isLoading: boolean;
 }
 
@@ -268,7 +269,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       console.log('🔍 [CONTAS] Dados preparados para a API:', dadosApi);
 
       const response = await contasApi.criar(dadosApi);
-      console.log('🔍 [CONTAS] Resposta da criação:', response);
+      console.log('�� [CONTAS] Resposta da criação:', response);
 
       if (response.error) {
         throw new Error(response.error);
