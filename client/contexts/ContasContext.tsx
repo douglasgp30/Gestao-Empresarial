@@ -14,8 +14,6 @@ interface ContasContextType {
   filtros: {
     dataInicio: Date;
     dataFim: Date;
-    dataVencimentoInicio?: Date;
-    dataVencimentoFim?: Date;
     tipo?: "pagar" | "receber" | "ambos";
     status?: string;
     fornecedorCliente?: string;
