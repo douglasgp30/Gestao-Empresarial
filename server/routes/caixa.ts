@@ -258,6 +258,10 @@ export const createLancamento: RequestHandler = async (req, res) => {
         ...dadosLancamento,
         clienteId: clienteIdValido,
         dataHora: dataHoraLancamento,
+        // Marcar como boleto se for o caso (boletos não entram no caixa imediatamente)
+        observacoes: isBoleto
+          ? (dadosLancamento.observacoes ? `${dadosLancamento.observacoes} [BOLETO - Aguardando pagamento]` : "[BOLETO - Aguardando pagamento]")
+          : dadosLancamento.observacoes,
       },
       include: {
         descricao: true,
@@ -363,7 +367,7 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
     });
 
     if (!lancamentoExistente) {
-      return res.status(404).json({ error: "Lançamento não encontrado" });
+      return res.status(404).json({ error: "Lançamento n��o encontrado" });
     }
 
     await prisma.lancamentoCaixa.delete({ where: { id } });
