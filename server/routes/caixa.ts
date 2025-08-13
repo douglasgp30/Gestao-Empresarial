@@ -46,14 +46,12 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       formaPagamentoId,
       descricaoId,
       subdescricaoId,
-      conta,
     } = req.query;
 
     const where: any = {};
 
     // Filtros
     if (tipo) where.tipo = tipo;
-    if (conta) where.conta = conta;
     if (funcionarioId) where.funcionarioId = parseInt(funcionarioId as string);
     if (setorId) where.setorId = parseInt(setorId as string);
     if (campanhaId) where.campanhaId = parseInt(campanhaId as string);
