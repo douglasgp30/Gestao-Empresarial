@@ -62,7 +62,6 @@ router.get("/", async (req, res) => {
     console.log("[Server] Contas encontradas:", contas.length, contas);
 
     const response: ApiResponse<typeof contas> = {
-      success: true,
       data: contas,
     };
 
