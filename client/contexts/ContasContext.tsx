@@ -269,15 +269,15 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       console.log('🔍 [CONTAS] Dados preparados para a API:', dadosApi);
 
       const response = await contasApi.criar(dadosApi);
-      console.log('�� [CONTAS] Resposta da criação:', response);
+      console.log('🔍 [CONTAS] Resposta da criação:', response);
 
       if (response.error) {
         throw new Error(response.error);
       }
 
       console.log('🔍 [CONTAS] Conta criada com sucesso, recarregando lista...');
-      // Recarregar contas
-      await carregarContas();
+      // Recarregar contas - forçar sem debounce
+      await carregarContas(1);
     } catch (error) {
       console.error("Erro ao adicionar conta:", error);
       throw error;
