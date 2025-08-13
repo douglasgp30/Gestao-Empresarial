@@ -22,7 +22,6 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import SelectWithAdd from "../ui/select-with-add";
 import { Plus, TrendingDown, TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 import { toast } from "../ui/use-toast";
