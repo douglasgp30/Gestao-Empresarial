@@ -87,7 +87,16 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   const carregarContas = async () => {
     try {
       setIsLoading(true);
-      const response = await contasApi.listar();
+
+      // Preparar filtros para a API
+      const filtrosApi = {
+        dataInicio: filtros.dataInicio.toISOString().split('T')[0],
+        dataFim: filtros.dataFim.toISOString().split('T')[0],
+        tipo: filtros.tipo !== 'ambos' ? filtros.tipo : undefined,
+        status: filtros.status !== 'todos' ? filtros.status : undefined,
+      };
+
+      const response = await contasApi.listar(filtrosApi);
       if (response.error) {
         console.error("Erro ao carregar contas:", response.error);
         return;
