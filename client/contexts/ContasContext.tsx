@@ -164,7 +164,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
 
   // Carregar contas na inicialização
   useEffect(() => {
-    carregarContas();
+    carregarContasDebounced();
   }, []);
 
   // Adicionar logs para setFiltros
@@ -181,9 +181,9 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     console.log('🔄 [CONTAS CONTEXT] Filtros atuais:', filtros);
     if (filtros.dataInicio && filtros.dataFim) {
       console.log('🔄 [CONTAS CONTEXT] Carregando contas...');
-      carregarContas();
+      carregarContasDebounced();
     }
-  }, [filtros.dataInicio, filtros.dataFim, filtros.tipo, filtros.status]);
+  }, [filtros.dataInicio, filtros.dataFim, filtros.tipo, filtros.status, carregarContasDebounced]);
 
   const adicionarConta = async (novaConta: Omit<Conta, "id" | "funcionarioId">) => {
     try {
