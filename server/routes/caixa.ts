@@ -305,7 +305,7 @@ export const updateLancamento: RequestHandler = async (req, res) => {
         if (!data.valorRecebido || data.valorRecebido <= 0) {
           return res.status(400).json({
             error:
-              "Valor recebido é obrigatório quando a forma de pagamento for cartão",
+              "Valor recebido é obrigatório quando a forma de pagamento for cart��o",
           });
         }
       }
@@ -341,7 +341,24 @@ export const updateLancamento: RequestHandler = async (req, res) => {
 export const deleteLancamento: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    console.log(`[Caixa] Excluindo lançamento ID: ${id}`);
+
+    if (isNaN(id)) {
+      return res.status(400).json({ error: "ID do lançamento inválido" });
+    }
+
+    // Verificar se o lançamento existe antes de excluir
+    const lancamentoExistente = await prisma.lancamentoCaixa.findUnique({
+      where: { id },
+    });
+
+    if (!lancamentoExistente) {
+      return res.status(404).json({ error: "Lançamento não encontrado" });
+    }
+
     await prisma.lancamentoCaixa.delete({ where: { id } });
+    console.log(`[Caixa] Lançamento ${id} excluído com sucesso`);
+
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao excluir lançamento:", error);
