@@ -95,8 +95,13 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      console.log("Resposta da API de contas:", response);
+
+      // Verificar se response.data é um array
+      const contasData = Array.isArray(response.data) ? response.data : [];
+
       // Converter dados da API para o formato do contexto
-      const contasFormatadas = (response.data || []).map((c: any) => ({
+      const contasFormatadas = contasData.map((c: any) => ({
         id: c.id.toString(),
         tipo: c.tipo,
         descricao: c.descricao,
@@ -117,6 +122,8 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       setContas(contasFormatadas);
     } catch (error) {
       console.error("Erro ao carregar contas:", error);
+      // Em caso de erro, manter contas vazias
+      setContas([]);
     } finally {
       setIsLoading(false);
     }
