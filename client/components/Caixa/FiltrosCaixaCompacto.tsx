@@ -61,7 +61,6 @@ export function FiltrosCaixaCompacto() {
       tecnico: "todos",
       campanha: "todas",
       setor: "todos",
-      conta: "todas",
       categoria: "todas",
       descricao: "todas",
       cliente: "todos",
@@ -82,7 +81,6 @@ export function FiltrosCaixaCompacto() {
     if (filtrosLocal.tecnico !== "todos") count++;
     if (filtrosLocal.setor !== "todos") count++;
     if (filtrosLocal.campanha !== "todas") count++;
-    if (filtrosLocal.conta !== "todas") count++;
     if (filtrosLocal.categoria !== "todas") count++;
     if (filtrosLocal.descricao !== "todas") count++;
     if (filtrosLocal.cliente !== "todos") count++;
