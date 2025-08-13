@@ -172,6 +172,8 @@ export function createServer(): Express {
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
 
+  // Rotas de Descrições e Categorias Unificadas
+  app.use("/api/descricoes-e-categorias", descricoesECategoriasRouter);
 
   // Rotas de Clientes
   app.get("/api/clientes", getClientes);
