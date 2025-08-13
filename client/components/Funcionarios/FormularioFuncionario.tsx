@@ -46,6 +46,7 @@ export default function FormularioFuncionario() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const resetForm = () => {
     setFormData({
