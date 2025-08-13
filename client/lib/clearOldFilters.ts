@@ -23,12 +23,9 @@ export function clearOldDateFilters() {
   }
 }
 
-// Executar limpeza automaticamente na primeira vez
+// Executar limpeza automaticamente para forçar data correta
 if (typeof window !== 'undefined') {
-  // Verificar se já foi executado
-  const hasCleared = localStorage.getItem('filtersCleared_v2');
-  if (!hasCleared) {
-    clearOldDateFilters();
-    localStorage.setItem('filtersCleared_v2', 'true');
-  }
+  // Sempre limpar para aplicar data correta (14/08/2025)
+  clearOldDateFilters();
+  localStorage.setItem('filtersCleared_v3', 'true');
 }
