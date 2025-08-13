@@ -221,6 +221,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setError("Erro ao carregar dados do servidor");
 
       // Definir dados padrão em caso de erro para evitar crashes
+      setDescricoesECategorias([]);
       setDescricoes([]);
       setFormasPagamento([]);
       setFuncionarios([]);
@@ -229,6 +230,95 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setCidades([]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // === FUNÇÕES PARA TABELA UNIFICADA ===
+  const getCategorias = (tipo?: "receita" | "despesa") => {
+    return descricoesECategorias.filter(item =>
+      item.tipoItem === 'categoria' &&
+      item.ativo &&
+      (tipo ? item.tipo === tipo : true)
+    );
+  };
+
+  const getDescricoes = (tipo?: "receita" | "despesa", categoria?: string) => {
+    return descricoesECategorias.filter(item =>
+      item.tipoItem === 'descricao' &&
+      item.ativo &&
+      (tipo ? item.tipo === tipo : true) &&
+      (categoria ? item.categoria === categoria : true)
+    );
+  };
+
+  const adicionarDescricaoECategoria = async (
+    novoItem: Omit<DescricaoECategoria, "id" | "dataCriacao">,
+  ) => {
+    try {
+      setError(null);
+      const response = await descricoesECategoriasApi.criar(novoItem);
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+
+      // Recarregar dados
+      const descricoesECategoriasResponse = await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data) setDescricoesECategorias(descricoesECategoriasResponse.data);
+    } catch (error) {
+      console.error("Erro ao adicionar item:", error);
+      throw error;
+    }
+  };
+
+  const editarDescricaoECategoria = async (
+    id: string,
+    dadosAtualizados: Partial<DescricaoECategoria>,
+  ) => {
+    try {
+      setError(null);
+      const response = await descricoesECategoriasApi.atualizar(
+        parseInt(id),
+        dadosAtualizados,
+      );
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+
+      // Recarregar dados
+      const descricoesECategoriasResponse = await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data) setDescricoesECategorias(descricoesECategoriasResponse.data);
+    } catch (error) {
+      console.error("Erro ao editar item:", error);
+      throw error;
+    }
+  };
+
+  const excluirDescricaoECategoria = async (id: string) => {
+    try {
+      console.log("🗑️ [Descrições e Categorias] Excluindo item:", id);
+      setError(null);
+
+      const response = await descricoesECategoriasApi.excluir(parseInt(id));
+      if (response.error) {
+        setError(response.error);
+        toast.error("Erro ao excluir item: " + response.error);
+        throw new Error(response.error);
+      }
+
+      // Recarregar dados
+      const descricoesECategoriasResponse = await descricoesECategoriasApi.listar();
+      if (descricoesECategoriasResponse.data) setDescricoesECategorias(descricoesECategoriasResponse.data);
+
+      console.log("✅ [Descrições e Categorias] Item excluído com sucesso");
+      toast.success("Item excluído com sucesso!");
+    } catch (error) {
+      console.error("❌ [Descrições e Categorias] Erro ao excluir item:", error);
+      if (!error.message?.includes("Erro ao excluir item:")) {
+        toast.error("Erro ao excluir item");
+      }
+      throw error;
     }
   };
 
