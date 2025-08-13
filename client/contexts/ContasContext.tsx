@@ -373,6 +373,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     fornecedores,
     formasPagamento,
     categorias,
+    adicionarFornecedor,
   };
 
   return (
