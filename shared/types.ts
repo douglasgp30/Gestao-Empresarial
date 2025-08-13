@@ -206,7 +206,7 @@ export interface Subdescricao {
 }
 
 export interface Categoria {
-  id: string;
+  id: number;
   nome: string;
   tipo: "receita" | "despesa";
   dataCriacao: Date;
