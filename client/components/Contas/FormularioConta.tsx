@@ -28,7 +28,7 @@ import { toast } from "../ui/use-toast";
 
 export default function FormularioConta() {
   const { adicionarConta } = useContas();
-  const { formasPagamento, adicionarFormaPagamento } = useEntidades();
+  const { formasPagamento } = useEntidades();
   const { clientes } = useClientes();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("pagar");
