@@ -155,10 +155,10 @@ export function ModalEditarLancamentoCompleto({
       .includes("cartão");
 
   // Calcular campos automaticamente usando os hooks de moeda
-  const valorCalculado = valorInput.numericValue;
+  const valorCalculado = Number(valorInput.numericValue || 0);
   const valorQueEntrouCalculado =
-    valorQueEntrouInput.numericValue || valorCalculado;
-  const impostoCalculado = impostoInput.numericValue;
+    Number(valorQueEntrouInput.numericValue || valorCalculado);
+  const impostoCalculado = Number(impostoInput.numericValue || 0);
 
   // Calcular descontos baseados nos percentuais
   const percentualNotaFiscal = formData.temNotaFiscal ? 5 : 0; // 5% se houver nota fiscal
