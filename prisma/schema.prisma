@@ -335,6 +335,57 @@ model ContaLancamento {
   @@index([prioridadePagamento])
 }
 
+// Supporting models for the enhanced accounts system
+
+model CentroCusto {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  nome        String
+  descricao   String?
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  @@map("centros_custo")
+}
+
+model Projeto {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  nome        String
+  descricao   String?
+  dataInicio  DateTime?
+  dataFim     DateTime?
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  @@map("projetos")
+}
+
+model Departamento {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  nome        String
+  descricao   String?
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  @@map("departamentos")
+}
+
+model ContaBancaria {
+  id          Int      @id @default(autoincrement())
+  banco       String
+  agencia     String
+  conta       String
+  digito      String?
+  tipo        String   // "corrente", "poupanca", "aplicacao"
+  descricao   String?
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  @@map("contas_bancarias")
+}
+
 // Manter tabela antiga para compatibilidade temporária
 model Conta {
   id            Int      @id @default(autoincrement())
