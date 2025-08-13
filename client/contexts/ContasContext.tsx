@@ -114,7 +114,9 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         dataVencimento: new Date(c.dataVencimento),
         dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
         // Mapear status do servidor para o cliente
-        status: c.status === "pago" ? "paga" : c.status || "pendente",
+        status: c.status === "pago" ? "paga" :
+                c.status === "atrasado" ? "atrasada" :
+                c.status || "pendente",
         observacoes: c.observacoes || "",
         categoria: c.categoria || "",
         dataCriacao: new Date(c.dataCriacao || new Date()),
