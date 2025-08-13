@@ -262,6 +262,9 @@ export default function ListaContas() {
           <p className="text-sm text-muted-foreground mb-4">
             Ajuste os filtros ou adicione novas contas a pagar e receber.
           </p>
+          <div className="text-xs text-gray-500 mb-4">
+            Debug: {contas.length} contas no contexto, {contasFiltradas.length} após filtros
+          </div>
           {!isLoading && (
             <Button
               variant="outline"
