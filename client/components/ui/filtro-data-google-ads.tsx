@@ -67,7 +67,15 @@ export default function FiltroDataGoogleAds({
   const [isOpen, setIsOpen] = useState(false);
   const [periodoSelecionado, setPeriodoSelecionado] =
     useState<PeriodoPredefinido>("hoje");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    if (dataInicio && dataFim) {
+      return {
+        from: parseISO(dataInicio),
+        to: parseISO(dataFim)
+      };
+    }
+    return undefined;
+  });
   const [showCalendar, setShowCalendar] = useState(false);
   const [tempDataInicio, setTempDataInicio] = useState("");
   const [tempDataFim, setTempDataFim] = useState("");
