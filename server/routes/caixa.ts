@@ -12,7 +12,6 @@ const LancamentoCaixaSchema = z.object({
   observacoes: z.string().optional(),
   numeroNota: z.string().optional(),
   arquivoNota: z.string().optional(),
-  conta: z.enum(["empresa", "pessoal"]).default("empresa"),
   tipo: z.enum(["receita", "despesa"], {
     required_error: "Tipo é obrigatório",
   }),
