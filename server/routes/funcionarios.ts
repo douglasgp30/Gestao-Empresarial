@@ -89,6 +89,8 @@ export const createFuncionario: RequestHandler = async (req, res) => {
       select: {
         id: true,
         nome: true,
+        ehTecnico: true,
+        percentualComissao: true,
         email: true,
         telefone: true,
         cargo: true,
@@ -104,6 +106,23 @@ export const createFuncionario: RequestHandler = async (req, res) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Dados inválidos", details: error.errors });
+    } else if (error && typeof error === 'object' && 'code' in error) {
+      // Handle Prisma errors
+      if (error.code === 'P2002') {
+        const target = (error as any).meta?.target;
+        if (target && target.includes('login')) {
+          res.status(400).json({ error: "Este login já está sendo usado por outro funcionário" });
+          return;
+        }
+        if (target && target.includes('email')) {
+          res.status(400).json({ error: "Este email já está sendo usado por outro funcionário" });
+          return;
+        }
+        res.status(400).json({ error: "Dados já existem no sistema" });
+      } else {
+        console.error("Erro ao criar funcionário:", error);
+        res.status(500).json({ error: "Erro interno do servidor" });
+      }
     } else {
       console.error("Erro ao criar funcionário:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
