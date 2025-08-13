@@ -697,7 +697,7 @@ export function ModalEditarLancamentoCompleto({
 
             {mostrarCamposAvancados && (
               <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {!isFormaPagamentoCartao && lancamento.tipo === "receita" && (
                     <div className="space-y-2">
                       <Label htmlFor="valorQueEntrouAvancado">
@@ -714,19 +714,6 @@ export function ModalEditarLancamentoCompleto({
                     <Label htmlFor="imposto">Desconto/Taxa (R$)</Label>
                     <Input id="imposto" {...impostoInput.inputProps} />
                   </div>
-
-                  {/* Valor Líquido só para cartão em receitas */}
-                  {isFormaPagamentoCartao && lancamento.tipo === "receita" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="valorLiquido">Valor Líquido (R$)</Label>
-                      <Input
-                        id="valorLiquido"
-                        value={`R$ ${valorLiquidoCalculado.toFixed(2).replace(".", ",")}`}
-                        disabled
-                        className="bg-gray-100"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 {lancamento.tipo === "receita" && (
