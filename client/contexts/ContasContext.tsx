@@ -118,8 +118,8 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
       console.log("🔍 [CONTAS] Resposta completa da API:", response);
 
-      if (response.data) {
-        const contasFormatadas = response.data.map((conta: any) => ({
+      if (response.data && response.data.data) {
+        const contasFormatadas = response.data.data.map((conta: any) => ({
           ...conta,
           dataLancamento: new Date(conta.dataLancamento),
           dataVencimento: new Date(conta.dataVencimento),
