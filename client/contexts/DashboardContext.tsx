@@ -143,16 +143,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const totalReceitasCaixa = receitasNaoBoletoMesAtual
       .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
 
-    console.log("[Dashboard] Cálculo de receitas:", {
-      totalReceitas: receitasMesAtual.length,
-      receitasComBoleto: receitasMesAtual.filter(l =>
-        l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
-        l.formaPagamento?.nome?.toLowerCase().includes("bancário")
-      ).length,
-      receitasSemBoleto: receitasNaoBoletoMesAtual.length,
-      totalReceitasCaixa
-    });
-
     const totalDespesasCaixa = lancamentosMesAtual
       .filter((l) => l.tipo === "despesa")
       .reduce((total, l) => total + l.valor, 0);
