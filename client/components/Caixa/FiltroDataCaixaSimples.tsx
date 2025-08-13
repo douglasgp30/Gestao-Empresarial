@@ -10,6 +10,7 @@ import { ptBR } from "date-fns/locale";
 export default function FiltroDataCaixaSimples() {
   const { filtros, setFiltros, isLoading } = useCaixa();
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Verificar e corrigir datas inválidas na inicialização
   useEffect(() => {
