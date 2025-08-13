@@ -6,9 +6,11 @@ export default function FiltroDataContas() {
   const { filtros, setFiltros, isLoading } = useContas();
 
   const handleDataInicioChange = (data: string) => {
+    console.log('📅 [CONTAS] handleDataInicioChange chamado com:', data);
     const novaData = new Date(data);
     // Normalizar para início do dia
     novaData.setHours(0, 0, 0, 0);
+    console.log('📅 [CONTAS] Nova data início:', novaData);
     setFiltros({
       ...filtros,
       dataInicio: novaData,
@@ -17,9 +19,11 @@ export default function FiltroDataContas() {
   };
 
   const handleDataFimChange = (data: string) => {
+    console.log('📅 [CONTAS] handleDataFimChange chamado com:', data);
     const novaData = new Date(data);
     // Normalizar para fim do dia
     novaData.setHours(23, 59, 59, 999);
+    console.log('📅 [CONTAS] Nova data fim:', novaData);
     setFiltros({
       ...filtros,
       dataFim: novaData,
@@ -28,11 +32,16 @@ export default function FiltroDataContas() {
   };
 
   const handleAplicar = () => {
+    console.log('🚀 [CONTAS] === HANDLE APLICAR CHAMADO ===');
+    console.log('📊 [CONTAS] Filtros atuais antes da aplicação:', filtros);
     const novosFiltros = {
       ...filtros,
       __timestamp: Date.now(),
     };
+    console.log('📊 [CONTAS] Novos filtros a serem aplicados:', novosFiltros);
     setFiltros(novosFiltros);
+    console.log('📊 [CONTAS] setFiltros chamado com sucesso');
+    console.log('🚀 [CONTAS] === HANDLE APLICAR FINALIZADO ===');
   };
 
   const handleLimpar = () => {
