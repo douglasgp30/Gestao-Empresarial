@@ -77,7 +77,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [contas, setContas] = useState<Conta[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [carregandoTimeout, setCarregandoTimeout] = useState<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [filtros, setFiltros] = useState(() => {
     // Usar data atual do sistema
     const agora = new Date();
