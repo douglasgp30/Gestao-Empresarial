@@ -237,6 +237,7 @@ export function ListaLancamentosSimples() {
         title: "Sucesso",
         description: "Lançamento excluído com sucesso!",
       });
+      setLancamentoParaExcluir(null);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       toast({
@@ -246,7 +247,6 @@ export function ListaLancamentosSimples() {
       });
     } finally {
       setExcluindo(false);
-      setLancamentoParaExcluir(null);
     }
   };
 
