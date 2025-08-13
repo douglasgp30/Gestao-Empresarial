@@ -147,7 +147,7 @@ model Funcionario {
   tipoAcesso        String?  // "Administrador", "Operador", "Técnico"
   login             String?  @unique
   senha             String?
-  permissoes        String? // JSON das permissões
+  permissoes        String? // JSON das permiss��es
   dataCriacao       DateTime @default(now())
 
   // Relacionamentos
@@ -352,7 +352,7 @@ model ContaLancamento {
   @@map("contas_lancamentos_enhanced")
   @@index([dataVencimento])
   @@index([dataPagamento])
-  @@index([tipo])
+  @@index([tipo], map: "contas_lancamentos_tipo_idx")
   @@index([status])
   @@index([codigoCliente])
   @@index([codigoFornecedor])
@@ -363,7 +363,6 @@ model ContaLancamento {
   @@index([numeroNF])
   @@index([ehRecorrente])
   @@index([proximoVencimento])
-  @@index([tipo])
   @@index([dataCriacao])
   @@index([ativo])
   @@index([aprovado])
