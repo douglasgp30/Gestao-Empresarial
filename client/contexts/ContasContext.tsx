@@ -293,8 +293,14 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       );
     }, 60000); // Atualizar a cada minuto
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      clearInterval(interval);
+      // Limpar timeout de carregamento se existir
+      if (carregandoTimeout) {
+        clearTimeout(carregandoTimeout);
+      }
+    };
+  }, [carregandoTimeout]);
 
   // Calcular totais baseados nas contas já filtradas pela API
   const totais = React.useMemo(() => {
