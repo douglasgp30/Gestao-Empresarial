@@ -175,26 +175,24 @@ export default function FiltroDataGoogleAds({
     },
   ];
 
-  // Determinar qual período está selecionado baseado nas datas atuais
-  useEffect(() => {
+  // Inicializar período selecionado apenas uma vez
+  React.useEffect(() => {
     if (!dataInicio || !dataFim) return;
 
     const inicioAtual = parseISO(dataInicio);
     const fimAtual = parseISO(dataFim);
 
-    for (const opcao of opcoesPeriodo) {
-      if (opcao.id === "personalizar") continue;
+    // Verificar se as datas correspondem a "hoje"
+    const hoje = new Date();
+    const inicioHoje = startOfDay(hoje);
+    const fimHoje = endOfDay(hoje);
 
-      const { inicio, fim } = opcao.calcularDatas();
-
-      if (isSameDay(inicioAtual, inicio) && isSameDay(fimAtual, fim)) {
-        setPeriodoSelecionado(opcao.id);
-        return;
-      }
+    if (isSameDay(inicioAtual, inicioHoje) && isSameDay(fimAtual, fimHoje)) {
+      setPeriodoSelecionado("hoje");
+    } else {
+      setPeriodoSelecionado("personalizar");
     }
-
-    setPeriodoSelecionado("personalizar");
-  }, [dataInicio, dataFim]);
+  }, []); // Executar apenas uma vez na inicialização
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
