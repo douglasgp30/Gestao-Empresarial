@@ -19,9 +19,11 @@ export default function FiltroDataCaixa() {
   };
 
   const handleDataFimChange = (data: string) => {
+    console.log('🔍 CAIXA handleDataFimChange chamado com:', data);
     const novaData = new Date(data);
     // Normalizar para fim do dia
     novaData.setHours(23, 59, 59, 999);
+    console.log('🔍 CAIXA Nova data fim:', novaData);
     setFiltros({
       ...filtros,
       dataFim: novaData,
@@ -30,6 +32,8 @@ export default function FiltroDataCaixa() {
   };
 
   const handleAplicar = () => {
+    console.log('🔍 CAIXA handleAplicar chamado');
+    console.log('🔍 CAIXA Filtros atuais:', filtros);
     const novosFiltros = {
       ...filtros,
       __timestamp: Date.now(),
