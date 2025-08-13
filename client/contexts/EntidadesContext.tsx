@@ -195,6 +195,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       ]);
 
       // Atualizar estados com dados do banco
+      if (descricoesECategoriasResponse.data) setDescricoesECategorias(descricoesECategoriasResponse.data);
       if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
       if (formasPagamentoResponse.data)
         setFormasPagamento(formasPagamentoResponse.data);
