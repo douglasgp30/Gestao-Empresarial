@@ -261,11 +261,9 @@ export default function FiltroDataGoogleAds({
       onDataFimChange(format(dateRange.to, "yyyy-MM-dd"));
       setPeriodoSelecionado("personalizar");
 
-      setTimeout(() => {
-        onAplicar();
-        setIsOpen(false);
-        setShowCalendar(false);
-      }, 10);
+      onAplicar();
+      setIsOpen(false);
+      setShowCalendar(false);
     } else if (tempDataInicio && tempDataFim) {
       onDataInicioChange(tempDataInicio);
       onDataFimChange(tempDataFim);
