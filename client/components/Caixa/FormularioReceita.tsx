@@ -664,13 +664,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           </div>
 
           {/* Campos avançados */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3 p-3 bg-gray-50/70 rounded-lg border border-gray-200/70 shadow-sm">
             <Switch
               id="campos-avancados"
               checked={mostrarCamposAvancados}
               onCheckedChange={setMostrarCamposAvancados}
+              className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-300"
             />
-            <Label htmlFor="campos-avancados">Mostrar campos avançados</Label>
+            <Label htmlFor="campos-avancados" className="font-medium text-sm text-gray-700 cursor-pointer">
+              Mostrar campos avançados
+            </Label>
           </div>
 
           {mostrarCamposAvancados && (
