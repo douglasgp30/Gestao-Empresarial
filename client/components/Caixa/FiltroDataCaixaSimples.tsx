@@ -55,31 +55,40 @@ export default function FiltroDataCaixaSimples() {
     let inicio: Date;
     let fim: Date;
 
+    // Normalizar hoje para evitar problemas de horário
+    const hojeNormalizado = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+
     switch (tipo) {
       case 'hoje':
-        inicio = startOfDay(hoje);
-        fim = endOfDay(hoje);
+        inicio = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 0, 0, 0, 0);
+        fim = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 23, 59, 59, 999);
         break;
       case 'ontem':
-        const ontem = subDays(hoje, 1);
-        inicio = startOfDay(ontem);
-        fim = endOfDay(ontem);
+        const ontem = new Date(hojeNormalizado);
+        ontem.setDate(ontem.getDate() - 1);
+        inicio = new Date(ontem.getFullYear(), ontem.getMonth(), ontem.getDate(), 0, 0, 0, 0);
+        fim = new Date(ontem.getFullYear(), ontem.getMonth(), ontem.getDate(), 23, 59, 59, 999);
         break;
       case 'esta-semana':
-        inicio = startOfWeek(hoje, { weekStartsOn: 1 });
-        fim = endOfDay(hoje);
+        const inicioSemana = startOfWeek(hojeNormalizado, { weekStartsOn: 1 });
+        inicio = new Date(inicioSemana.getFullYear(), inicioSemana.getMonth(), inicioSemana.getDate(), 0, 0, 0, 0);
+        fim = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 23, 59, 59, 999);
         break;
       case '7-dias':
-        inicio = startOfDay(subDays(hoje, 6));
-        fim = endOfDay(hoje);
+        const seteDiasAtras = new Date(hojeNormalizado);
+        seteDiasAtras.setDate(seteDiasAtras.getDate() - 6);
+        inicio = new Date(seteDiasAtras.getFullYear(), seteDiasAtras.getMonth(), seteDiasAtras.getDate(), 0, 0, 0, 0);
+        fim = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 23, 59, 59, 999);
         break;
       case 'este-mes':
-        inicio = startOfMonth(hoje);
-        fim = endOfDay(hoje);
+        inicio = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), 1, 0, 0, 0, 0);
+        fim = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 23, 59, 59, 999);
         break;
       case '30-dias':
-        inicio = startOfDay(subDays(hoje, 29));
-        fim = endOfDay(hoje);
+        const trintaDiasAtras = new Date(hojeNormalizado);
+        trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 29);
+        inicio = new Date(trintaDiasAtras.getFullYear(), trintaDiasAtras.getMonth(), trintaDiasAtras.getDate(), 0, 0, 0, 0);
+        fim = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 23, 59, 59, 999);
         break;
       default:
         return;
