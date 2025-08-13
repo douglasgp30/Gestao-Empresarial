@@ -6,15 +6,23 @@ const FuncionarioSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
   ehTecnico: z.boolean().default(false),
   percentualComissao: z.number().optional(),
-  email: z.string().email().optional(),
+  email: z.string().email().optional().or(z.literal("")),
   telefone: z.string().optional(),
   cargo: z.string().optional(),
   salario: z.number().optional(),
   temAcessoSistema: z.boolean().default(false),
   tipoAcesso: z.string().optional(),
-  login: z.string().optional(),
-  senha: z.string().optional(),
+  login: z.string().optional().or(z.literal("")),
+  senha: z.string().optional().or(z.literal("")),
   permissoes: z.string().optional(),
+}).transform((data) => {
+  // Transform empty strings to undefined/null for database
+  return {
+    ...data,
+    email: data.email === "" ? null : data.email,
+    login: data.login === "" ? null : data.login,
+    senha: data.senha === "" ? null : data.senha,
+  };
 });
 
 export const getFuncionarios: RequestHandler = async (req, res) => {
