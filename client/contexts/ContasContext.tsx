@@ -78,9 +78,10 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   const [contas, setContas] = useState<Conta[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filtros, setFiltros] = useState(() => {
-    // Forçar data atual real (14/08/2025)
-    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
-    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
+    // Usar data atual do sistema
+    const agora = new Date();
+    const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0, 0);
+    const fimHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
 
     return {
       dataInicio: inicioHoje,
