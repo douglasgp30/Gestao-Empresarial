@@ -70,11 +70,12 @@ export default function FiltroDataCaixaSimples() {
         fim = new Date(ontem.getFullYear(), ontem.getMonth(), ontem.getDate(), 23, 59, 59, 999);
         break;
       case 'esta-semana':
-        const inicioSemana = startOfWeek(hojeNormalizado, { weekStartsOn: 1 });
+        const inicioSemana = startOfWeek(hojeNormalizado, { weekStartsOn: 0 }); // 0 = domingo
         inicio = new Date(inicioSemana.getFullYear(), inicioSemana.getMonth(), inicioSemana.getDate(), 0, 0, 0, 0);
         fim = new Date(hojeNormalizado.getFullYear(), hojeNormalizado.getMonth(), hojeNormalizado.getDate(), 23, 59, 59, 999);
         break;
       case '7-dias':
+        // ��ltimos 7 dias incluindo hoje (hoje + 6 dias anteriores = 7 dias total)
         const seteDiasAtras = new Date(hojeNormalizado);
         seteDiasAtras.setDate(seteDiasAtras.getDate() - 6);
         inicio = new Date(seteDiasAtras.getFullYear(), seteDiasAtras.getMonth(), seteDiasAtras.getDate(), 0, 0, 0, 0);
