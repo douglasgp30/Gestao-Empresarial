@@ -340,6 +340,7 @@ model ContaLancamento {
   setor                 Setor?          @relation(fields: [setorId], references: [id])
   contaOrigem           ContaLancamento? @relation("ContaRecorrente", fields: [contaOrigemId], references: [id])
   contasRecorrentes     ContaLancamento[] @relation("ContaRecorrente")
+  descricaoECategoria   DescricaoECategoria? @relation("DescricaoCategoria", fields: [descricaoECategoriaId], references: [id])
 
   // Indexes for performance
   @@map("contas_lancamentos_enhanced")
