@@ -246,6 +246,8 @@ export default function ListaContas() {
       );
     });
 
+  console.log("[ListaContas] Contas após filtração:", contasFiltradas.length, contasFiltradas);
+
   const handleExcluir = (id: string) => {
     excluirConta(id);
     setContaParaExcluir(null);
