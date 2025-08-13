@@ -150,10 +150,12 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       };
 
 
+      console.log("[ContasContext] Enviando dados para API:", dadosApi);
       const response = await contasApi.criar(dadosApi);
       if (response.error) {
         throw new Error(response.error);
       }
+      console.log("[ContasContext] Conta criada com sucesso:", response);
 
       // Recarregar contas
       await carregarContas();
