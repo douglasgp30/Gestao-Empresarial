@@ -119,7 +119,6 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       }));
 
       setContas(contasFormatadas);
-      console.error("🔥 [DEBUG] Contas formatadas e setadas:", contasFormatadas.length, contasFormatadas);
     } catch (error) {
       console.error("Erro ao carregar contas:", error);
       // Em caso de erro, manter contas vazias
