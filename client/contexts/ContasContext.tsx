@@ -77,10 +77,18 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [contas, setContas] = useState<Conta[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filtros, setFiltros] = useState({
-    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-    dataFim: new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000), // 1 ano no futuro
-    tipo: "ambos" as "pagar" | "receber" | "ambos",
+  const [filtros, setFiltros] = useState(() => {
+    const hoje = new Date();
+    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const fimAno = new Date(hoje.getFullYear() + 1, 11, 31); // Fim do próximo ano
+    inicioMes.setHours(0, 0, 0, 0);
+    fimAno.setHours(23, 59, 59, 999);
+
+    return {
+      dataInicio: inicioMes,
+      dataFim: fimAno,
+      tipo: "ambos" as "pagar" | "receber" | "ambos",
+    };
   });
 
   // Função para carregar contas da API
