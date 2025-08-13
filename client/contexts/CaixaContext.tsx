@@ -65,14 +65,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0, 0);
     const fimHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
 
-    console.log('🔍 Debug CaixaContext datas iniciais:', {
-      agora,
-      inicioHoje,
-      fimHoje,
-      dataInicioString: inicioHoje.toISOString(),
-      dataFimString: fimHoje.toISOString()
-    });
-
     return {
       dataInicio: inicioHoje,
       dataFim: fimHoje,
