@@ -125,7 +125,7 @@ export default function FiltrosRelatoriosCompacto() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
               {/* Filtro de Data - 4 colunas */}
               <div className="lg:col-span-4">
-                <FiltroDataRelatorios />
+                <FiltroDataRelatoriosSimples />
               </div>
 
               {/* Filtro de Tipo - 3 colunas */}
