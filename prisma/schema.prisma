@@ -41,7 +41,7 @@ model DescricaoECategoria {
   nome        String   // Nome da descrição ou categoria
   tipo        String   // "receita" ou "despesa"
   tipoItem    String   // "descricao" ou "categoria"
-  categoria   String?  // Categoria pai (apenas para descriç��es)
+  categoria   String?  // Categoria pai (apenas para descrições)
   ativo       Boolean  @default(true)
   dataCriacao DateTime @default(now())
 
@@ -217,7 +217,7 @@ model LancamentoCaixa {
 
   @@map("lancamentos_caixa")
   @@index([dataHora])
-  @@index([conta, tipo])
+  @@index([tipo])
   @@index([funcionarioId])
   @@index([clienteId])
 }
