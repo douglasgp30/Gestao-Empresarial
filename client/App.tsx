@@ -65,17 +65,53 @@ const App = () => {
     const handleError = (event: ErrorEvent) => {
       if (
         event.message &&
-        event.message.includes('ResizeObserver loop completed with undelivered notifications')
+        (event.message.includes('ResizeObserver loop completed with undelivered notifications') ||
+         event.message.includes('ResizeObserver loop limit exceeded'))
       ) {
+        event.preventDefault();
         event.stopImmediatePropagation();
         return false;
       }
     };
 
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      if (
+        event.reason &&
+        typeof event.reason === 'string' &&
+        event.reason.includes('ResizeObserver loop completed with undelivered notifications')
+      ) {
+        event.preventDefault();
+        return false;
+      }
+    };
+
+    // Suprimir ResizeObserver em nível de window
+    const originalResizeObserver = window.ResizeObserver;
+    window.ResizeObserver = class extends originalResizeObserver {
+      constructor(callback: ResizeObserverCallback) {
+        const wrappedCallback: ResizeObserverCallback = (entries, observer) => {
+          try {
+            callback(entries, observer);
+          } catch (error) {
+            if (error instanceof Error &&
+                error.message.includes('ResizeObserver loop completed with undelivered notifications')) {
+              // Suprimir este erro específico
+              return;
+            }
+            throw error;
+          }
+        };
+        super(wrappedCallback);
+      }
+    };
+
     window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
 
     return () => {
       window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.ResizeObserver = originalResizeObserver;
     };
   }, []);
 
