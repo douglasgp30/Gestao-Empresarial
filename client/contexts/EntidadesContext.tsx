@@ -571,11 +571,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   const excluirCategoria = (id: string) => {
-    const categoriasAtualizadas = categorias.filter(
-      (categoria) => categoria.id !== id,
-    );
-    setCategorias(categoriasAtualizadas);
-    salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
+    try {
+      console.log("🗑️ [Categorias] Excluindo categoria:", id);
+
+      const categoriasAtualizadas = categorias.filter(
+        (categoria) => categoria.id !== id,
+      );
+
+      console.log("🗑️ [Categorias] Categorias após exclusão:", categoriasAtualizadas.length);
+
+      setCategorias(categoriasAtualizadas);
+      salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
+
+      toast.success("Categoria excluída com sucesso!");
+    } catch (error) {
+      console.error("❌ [Categorias] Erro ao excluir categoria:", error);
+      toast.error("Erro ao excluir categoria");
+    }
   };
 
   // === FUNÇÕES PARA CLIENTES (localStorage - temporário) ===
