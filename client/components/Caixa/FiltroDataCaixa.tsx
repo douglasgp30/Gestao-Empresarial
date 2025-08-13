@@ -6,9 +6,11 @@ export default function FiltroDataCaixa() {
   const { filtros, setFiltros, isLoading } = useCaixa();
 
   const handleDataInicioChange = (data: string) => {
+    console.log('📅 handleDataInicioChange chamado com:', data);
     const novaData = new Date(data);
     // Normalizar para início do dia
     novaData.setHours(0, 0, 0, 0);
+    console.log('📅 Nova data início:', novaData);
     setFiltros({
       ...filtros,
       dataInicio: novaData,
@@ -17,9 +19,11 @@ export default function FiltroDataCaixa() {
   };
 
   const handleDataFimChange = (data: string) => {
+    console.log('📅 handleDataFimChange chamado com:', data);
     const novaData = new Date(data);
     // Normalizar para fim do dia
     novaData.setHours(23, 59, 59, 999);
+    console.log('📅 Nova data fim:', novaData);
     setFiltros({
       ...filtros,
       dataFim: novaData,
