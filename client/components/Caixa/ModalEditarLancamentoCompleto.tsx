@@ -637,8 +637,8 @@ export function ModalEditarLancamentoCompleto({
 
             {/* Nota Fiscal apenas para receitas */}
             {lancamento.tipo === "receita" && (
-              <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
-                <div className="flex items-center space-x-2">
+              <div className="space-y-3 p-4 bg-blue-50/70 rounded-lg border border-blue-200/70 shadow-sm">
+                <div className="flex items-center space-x-3">
                   <Switch
                     id="nota-fiscal"
                     checked={formData.temNotaFiscal}
@@ -648,9 +648,9 @@ export function ModalEditarLancamentoCompleto({
                         setFormData((prev) => ({ ...prev, numeroNota: "" }));
                       }
                     }}
-                    className="data-[state=checked]:bg-blue-600"
+                    className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-blue-200"
                   />
-                  <Label htmlFor="nota-fiscal" className="font-medium text-sm">
+                  <Label htmlFor="nota-fiscal" className="font-medium text-sm text-blue-800 cursor-pointer">
                     Há nota fiscal para esta receita?
                   </Label>
                 </div>
