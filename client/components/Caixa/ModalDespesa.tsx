@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { toast } from "../ui/use-toast";
+import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
 
 export function ModalDespesa() {
@@ -29,6 +30,8 @@ export function ModalDespesa() {
     descricoes,
     formasPagamento,
     setores,
+    adicionarDescricao,
+    adicionarFormaPagamento,
     isLoading: entidadesLoading,
   } = useEntidades();
 
@@ -256,54 +259,51 @@ export function ModalDespesa() {
 
               <div className="space-y-2">
                 <Label htmlFor="descricao">Descrição da Despesa *</Label>
-                <Select
+                <SelectWithAdd
                   value={formData.descricao}
                   onValueChange={(value) =>
                     setFormData((prev) => ({ ...prev, descricao: value }))
                   }
-                  required
-                  disabled={!formData.categoria}
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        formData.categoria
-                          ? "Selecione a descrição"
-                          : "Primeiro selecione uma categoria"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {descricoesFiltradas.map((desc) => (
-                      <SelectItem key={desc.id} value={desc.id.toString()}>
-                        {desc.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={
+                    formData.categoria
+                      ? "Selecione a descrição"
+                      : "Primeiro selecione uma categoria"
+                  }
+                  options={descricoesFiltradas.map(desc => ({
+                    value: desc.id.toString(),
+                    label: desc.nome
+                  }))}
+                  onAddNew={async (nomeDescricao) => {
+                    await adicionarDescricao({
+                      nome: nomeDescricao,
+                      tipo: "despesa",
+                      categoria: formData.categoria,
+                    });
+                  }}
+                  addButtonText="Nova Descrição"
+                />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
-              <Select
+              <SelectWithAdd
                 value={formData.formaPagamento}
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, formaPagamento: value }))
                 }
-                required
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a forma" />
-                </SelectTrigger>
-                <SelectContent>
-                  {formasPagamento.map((forma) => (
-                    <SelectItem key={forma.id} value={forma.id.toString()}>
-                      {forma.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Selecione a forma"
+                options={formasPagamento.map(forma => ({
+                  value: forma.id.toString(),
+                  label: forma.nome
+                }))}
+                onAddNew={async (nomeForma) => {
+                  await adicionarFormaPagamento({
+                    nome: nomeForma,
+                  });
+                }}
+                addButtonText="Nova Forma"
+              />
             </div>
 
             <div className="space-y-2">
