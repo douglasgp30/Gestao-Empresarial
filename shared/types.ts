@@ -51,7 +51,6 @@ export interface LancamentoCaixa {
   valorLiquido?: number; // Valor líquido após descontos
   comissao?: number; // Comissão do técnico
   imposto?: number; // Impostos/taxas
-  conta: "empresa" | "pessoal"; // Define se é Empresa ou Pessoal (obrigatório)
   tipo: "receita" | "despesa"; // Receita ou Despesa (obrigatório)
   observacoes?: string; // Observações do lançamento
   numeroNota?: string; // Número da nota fiscal
