@@ -23,6 +23,7 @@ import {
   setoresApi,
   clientesApi,
 } from "../lib/apiService";
+import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
