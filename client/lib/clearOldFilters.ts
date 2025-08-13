@@ -27,5 +27,8 @@ export function clearOldDateFilters() {
 if (typeof window !== 'undefined') {
   // Sempre limpar para aplicar data correta (14/08/2025)
   clearOldDateFilters();
-  localStorage.setItem('filtersCleared_v3', 'true');
+  // Limpar também versões anteriores
+  localStorage.removeItem('filtersCleared_v2');
+  localStorage.removeItem('filtersCleared_v3');
+  localStorage.setItem('filtersCleared_v4', 'true');
 }
