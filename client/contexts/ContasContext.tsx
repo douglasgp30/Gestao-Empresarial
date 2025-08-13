@@ -241,17 +241,9 @@ export function ContasProvider({ children }: { children: ReactNode }) {
 
   // Recarregar quando filtros importantes mudarem
   useEffect(() => {
-    console.log('🔄 [CONTAS] useEffect disparado - filtros mudaram:');
-    console.log('🔄 [CONTAS] dataInicio:', filtros.dataInicio);
-    console.log('🔄 [CONTAS] dataFim:', filtros.dataFim);
-    console.log('🔄 [CONTAS] tipo:', filtros.tipo);
-    console.log('🔄 [CONTAS] status:', filtros.status);
-
     if (filtros.dataInicio && filtros.dataFim) {
-      console.log('🔄 [CONTAS] Chamando carregarContasDebounced...');
+      console.log('🔄 [CONTAS] Filtros mudaram, recarregando...');
       carregarContasDebounced();
-    } else {
-      console.log('❌ [CONTAS] Filtros incompletos - não carregando');
     }
   }, [filtros.dataInicio, filtros.dataFim, filtros.tipo, filtros.status, carregarContasDebounced]);
 
