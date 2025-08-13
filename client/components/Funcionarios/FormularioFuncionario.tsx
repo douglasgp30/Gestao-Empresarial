@@ -152,7 +152,10 @@ export default function FormularioFuncionario() {
       } else if (error?.message?.includes("email já está sendo usado")) {
         setErrors({ email: error.message });
       } else {
-        setErrors({ general: error?.message || "Erro ao criar funcionário. Tente novamente." });
+        setErrors({
+          general:
+            error?.message || "Erro ao criar funcionário. Tente novamente.",
+        });
       }
     } finally {
       setSubmitting(false);

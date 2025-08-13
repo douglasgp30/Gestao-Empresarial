@@ -6,49 +6,53 @@ import { ApiResponse } from "@shared/api";
 const router = Router();
 const prisma = new PrismaClient();
 
-const ContaLancamentoSchema = z.object({
-  valor: z.number().positive("Valor deve ser positivo"),
-  dataVencimento: z.string().transform((str) => new Date(str)),
-  codigoCliente: z.number().optional(),
-  codigoFornecedor: z.number().optional(),
-  tipo: z.enum(["receber", "pagar"]),
-  conta: z.enum(["empresa", "pessoal"]).default("empresa"),
-  formaPg: z.number().optional(),
-  observacoes: z.string().optional(),
-  descricaoCategoria: z.number().optional(),
-  pago: z.boolean().default(false),
-  dataPagamento: z
-    .string()
-    .optional()
-    .transform((str) => (str ? new Date(str) : undefined)),
-}).refine(
-  (data) => {
-    // Regra: tipo = receber → precisa ter codigoCliente e não pode ter codigoFornecedor
-    if (data.tipo === "receber") {
-      return data.codigoCliente && !data.codigoFornecedor;
-    }
-    // Regra: tipo = pagar → precisa ter codigoFornecedor e não pode ter codigoCliente
-    if (data.tipo === "pagar") {
-      return data.codigoFornecedor && !data.codigoCliente;
-    }
-    return true;
-  },
-  {
-    message: "Contas a receber devem ter cliente, contas a pagar devem ter fornecedor",
-  }
-).refine(
-  (data) => {
-    // Regra: Se pago = true → precisa ter dataPagamento e formaPg
-    if (data.pago) {
-      return data.dataPagamento && data.formaPg;
-    }
-    // Regra: Se pago = false → dataPagamento e formaPg devem estar nulos
-    return !data.dataPagamento && !data.formaPg;
-  },
-  {
-    message: "Contas pagas devem ter data de pagamento e forma de pagamento",
-  }
-);
+const ContaLancamentoSchema = z
+  .object({
+    valor: z.number().positive("Valor deve ser positivo"),
+    dataVencimento: z.string().transform((str) => new Date(str)),
+    codigoCliente: z.number().optional(),
+    codigoFornecedor: z.number().optional(),
+    tipo: z.enum(["receber", "pagar"]),
+    conta: z.enum(["empresa", "pessoal"]).default("empresa"),
+    formaPg: z.number().optional(),
+    observacoes: z.string().optional(),
+    descricaoCategoria: z.number().optional(),
+    pago: z.boolean().default(false),
+    dataPagamento: z
+      .string()
+      .optional()
+      .transform((str) => (str ? new Date(str) : undefined)),
+  })
+  .refine(
+    (data) => {
+      // Regra: tipo = receber → precisa ter codigoCliente e não pode ter codigoFornecedor
+      if (data.tipo === "receber") {
+        return data.codigoCliente && !data.codigoFornecedor;
+      }
+      // Regra: tipo = pagar → precisa ter codigoFornecedor e não pode ter codigoCliente
+      if (data.tipo === "pagar") {
+        return data.codigoFornecedor && !data.codigoCliente;
+      }
+      return true;
+    },
+    {
+      message:
+        "Contas a receber devem ter cliente, contas a pagar devem ter fornecedor",
+    },
+  )
+  .refine(
+    (data) => {
+      // Regra: Se pago = true → precisa ter dataPagamento e formaPg
+      if (data.pago) {
+        return data.dataPagamento && data.formaPg;
+      }
+      // Regra: Se pago = false → dataPagamento e formaPg devem estar nulos
+      return !data.dataPagamento && !data.formaPg;
+    },
+    {
+      message: "Contas pagas devem ter data de pagamento e forma de pagamento",
+    },
+  );
 
 // GET /api/contas - Listar contas com filtros
 router.get("/", async (req, res) => {
@@ -99,14 +103,14 @@ router.get("/", async (req, res) => {
     console.log("🔍 [API CONTAS] Dados encontrados:", {
       total: contas.length,
       filtros: { dataInicio, dataFim, tipo, pago, categoria },
-      primeiros3: contas.slice(0, 3).map(c => ({
+      primeiros3: contas.slice(0, 3).map((c) => ({
         id: c.codLancamentoContas,
         tipo: c.tipo,
         valor: c.valor,
         vencimento: c.dataVencimento,
         cliente: c.cliente?.nome,
-        fornecedor: c.fornecedor?.nome
-      }))
+        fornecedor: c.fornecedor?.nome,
+      })),
     });
 
     const response: ApiResponse<typeof contas> = {
@@ -127,7 +131,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     console.log("🔍 [API CONTAS] Dados recebidos para criar conta:", req.body);
-    
+
     const dados = ContaLancamentoSchema.parse(req.body);
 
     const conta = await prisma.contaLancamento.create({
@@ -145,7 +149,7 @@ router.post("/", async (req, res) => {
       tipo: conta.tipo,
       valor: conta.valor,
       cliente: conta.cliente?.nome,
-      fornecedor: conta.fornecedor?.nome
+      fornecedor: conta.fornecedor?.nome,
     });
 
     const response: ApiResponse<typeof conta> = {
@@ -308,16 +312,11 @@ router.get("/totais", async (req, res) => {
         .filter((c) => {
           const vencimento = new Date(c.dataVencimento);
           vencimento.setHours(23, 59, 59, 999);
-          return (
-            hoje.toDateString() === vencimento.toDateString() &&
-            !c.pago
-          );
+          return hoje.toDateString() === vencimento.toDateString() && !c.pago;
         })
         .reduce((sum, c) => sum + c.valor, 0),
       totalAtrasadas: contas
-        .filter(
-          (c) => new Date(c.dataVencimento) < hoje && !c.pago,
-        )
+        .filter((c) => new Date(c.dataVencimento) < hoje && !c.pago)
         .reduce((sum, c) => sum + c.valor, 0),
       totalPagas: contas
         .filter((c) => c.pago)

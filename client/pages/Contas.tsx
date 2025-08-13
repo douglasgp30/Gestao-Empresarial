@@ -3,7 +3,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, DollarSign, Clock, AlertTriangle, RefreshCw } from "lucide-react";
+import {
+  Plus,
+  DollarSign,
+  Clock,
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
 import { ContasProvider, useContas } from "@/contexts/ContasContext";
 import { FiltroDataContasSimples } from "@/components/Contas/FiltroDataContasSimples";
 import { FormularioConta } from "@/components/Contas/FormularioConta";
@@ -15,7 +21,8 @@ import { ptBR } from "date-fns/locale";
 
 function ContasContent() {
   const { contas, carregando, forcarRecarregamento } = useContas();
-  const [contaParaEditar, setContaParaEditar] = useState<ContaLancamento | null>(null);
+  const [contaParaEditar, setContaParaEditar] =
+    useState<ContaLancamento | null>(null);
   const [abaSelecionada, setAbaSelecionada] = useState("lista");
 
   // Calcular totais
@@ -33,9 +40,7 @@ function ContasContent() {
       vencendoHoje: contas.filter((c) => {
         const vencimento = new Date(c.dataVencimento);
         vencimento.setHours(23, 59, 59, 999);
-        return (
-          hoje.toDateString() === vencimento.toDateString() && !c.pago
-        );
+        return hoje.toDateString() === vencimento.toDateString() && !c.pago;
       }).length,
       atrasadas: contas.filter((c) => {
         const vencimento = new Date(c.dataVencimento);
@@ -67,21 +72,19 @@ function ContasContent() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Contas a Pagar e Receber</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Contas a Pagar e Receber
+          </h1>
           <p className="text-muted-foreground">
             Gerencie suas contas com vencimento por data de vencimento
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button 
-            onClick={forcarRecarregamento}
-            variant="outline"
-            size="sm"
-          >
+          <Button onClick={forcarRecarregamento} variant="outline" size="sm">
             <RefreshCw className="mr-2 h-4 w-4" />
             Recarregar
           </Button>
-          <Button 
+          <Button
             onClick={() => {
               setContaParaEditar(null);
               setAbaSelecionada("formulario");
@@ -152,9 +155,7 @@ function ContasContent() {
             <div className="text-2xl font-bold text-red-600">
               {totais.atrasadas}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Contas em atraso
-            </p>
+            <p className="text-xs text-muted-foreground">Contas em atraso</p>
           </CardContent>
         </Card>
 
@@ -167,9 +168,7 @@ function ContasContent() {
             <div className="text-2xl font-bold text-green-600">
               {totais.pagas}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Contas quitadas
-            </p>
+            <p className="text-xs text-muted-foreground">Contas quitadas</p>
           </CardContent>
         </Card>
       </div>

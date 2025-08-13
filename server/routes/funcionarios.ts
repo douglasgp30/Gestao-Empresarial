@@ -2,28 +2,30 @@ import { RequestHandler } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
 
-const FuncionarioSchema = z.object({
-  nome: z.string().min(1, "Nome é obrigatório"),
-  ehTecnico: z.boolean().default(false),
-  percentualComissao: z.number().optional(),
-  email: z.string().email().optional().or(z.literal("")),
-  telefone: z.string().optional(),
-  cargo: z.string().optional(),
-  salario: z.number().optional(),
-  temAcessoSistema: z.boolean().default(false),
-  tipoAcesso: z.string().optional(),
-  login: z.string().optional().or(z.literal("")),
-  senha: z.string().optional().or(z.literal("")),
-  permissoes: z.string().optional(),
-}).transform((data) => {
-  // Transform empty strings to undefined/null for database
-  return {
-    ...data,
-    email: data.email === "" ? null : data.email,
-    login: data.login === "" ? null : data.login,
-    senha: data.senha === "" ? null : data.senha,
-  };
-});
+const FuncionarioSchema = z
+  .object({
+    nome: z.string().min(1, "Nome é obrigatório"),
+    ehTecnico: z.boolean().default(false),
+    percentualComissao: z.number().optional(),
+    email: z.string().email().optional().or(z.literal("")),
+    telefone: z.string().optional(),
+    cargo: z.string().optional(),
+    salario: z.number().optional(),
+    temAcessoSistema: z.boolean().default(false),
+    tipoAcesso: z.string().optional(),
+    login: z.string().optional().or(z.literal("")),
+    senha: z.string().optional().or(z.literal("")),
+    permissoes: z.string().optional(),
+  })
+  .transform((data) => {
+    // Transform empty strings to undefined/null for database
+    return {
+      ...data,
+      email: data.email === "" ? null : data.email,
+      login: data.login === "" ? null : data.login,
+      senha: data.senha === "" ? null : data.senha,
+    };
+  });
 
 export const getFuncionarios: RequestHandler = async (req, res) => {
   try {
@@ -114,16 +116,24 @@ export const createFuncionario: RequestHandler = async (req, res) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Dados inválidos", details: error.errors });
-    } else if (error && typeof error === 'object' && 'code' in error) {
+    } else if (error && typeof error === "object" && "code" in error) {
       // Handle Prisma errors
-      if (error.code === 'P2002') {
+      if (error.code === "P2002") {
         const target = (error as any).meta?.target;
-        if (target && target.includes('login')) {
-          res.status(400).json({ error: "Este login já está sendo usado por outro funcionário" });
+        if (target && target.includes("login")) {
+          res
+            .status(400)
+            .json({
+              error: "Este login já está sendo usado por outro funcionário",
+            });
           return;
         }
-        if (target && target.includes('email')) {
-          res.status(400).json({ error: "Este email já está sendo usado por outro funcionário" });
+        if (target && target.includes("email")) {
+          res
+            .status(400)
+            .json({
+              error: "Este email já está sendo usado por outro funcionário",
+            });
           return;
         }
         res.status(400).json({ error: "Dados já existem no sistema" });

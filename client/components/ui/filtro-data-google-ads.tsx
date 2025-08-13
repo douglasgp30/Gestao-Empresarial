@@ -71,7 +71,7 @@ export default function FiltroDataGoogleAds({
     if (dataInicio && dataFim) {
       return {
         from: parseISO(dataInicio),
-        to: parseISO(dataFim)
+        to: parseISO(dataFim),
       };
     }
     return undefined;
@@ -86,7 +86,7 @@ export default function FiltroDataGoogleAds({
     if (value && tempDataFim) {
       setDateRange({
         from: parseISO(value),
-        to: parseISO(tempDataFim)
+        to: parseISO(tempDataFim),
       });
     }
   };
@@ -96,7 +96,7 @@ export default function FiltroDataGoogleAds({
     if (tempDataInicio && value) {
       setDateRange({
         from: parseISO(tempDataInicio),
-        to: parseISO(value)
+        to: parseISO(value),
       });
     }
   };
@@ -259,9 +259,9 @@ export default function FiltroDataGoogleAds({
   };
 
   const aplicarPeriodo = (opcao: OpcaoPeriodo) => {
-    console.log('🚀 FILTRO aplicarPeriodo chamado com:', opcao.id);
+    console.log("🚀 FILTRO aplicarPeriodo chamado com:", opcao.id);
     if (opcao.id === "personalizar") {
-      console.log('📝 FILTRO Modo personalizar ativado');
+      console.log("📝 FILTRO Modo personalizar ativado");
       // Sincronizar campos temporários com os valores atuais
       setTempDataInicio(dataInicio || "");
       setTempDataFim(dataFim || "");
@@ -270,7 +270,7 @@ export default function FiltroDataGoogleAds({
       if (dataInicio && dataFim) {
         setDateRange({
           from: parseISO(dataInicio),
-          to: parseISO(dataFim)
+          to: parseISO(dataFim),
         });
       }
 
@@ -279,34 +279,45 @@ export default function FiltroDataGoogleAds({
     }
 
     const { inicio, fim } = opcao.calcularDatas();
-    console.log('🚀 FILTRO Datas calculadas:', { inicio, fim });
+    console.log("🚀 FILTRO Datas calculadas:", { inicio, fim });
     setPeriodoSelecionado(opcao.id);
 
     // Aplicar as datas imediatamente
     const dataInicioFormatada = format(inicio, "yyyy-MM-dd");
     const dataFimFormatada = format(fim, "yyyy-MM-dd");
 
-    console.log('🚀 FILTRO Chamando handlers:', { dataInicioFormatada, dataFimFormatada });
+    console.log("🚀 FILTRO Chamando handlers:", {
+      dataInicioFormatada,
+      dataFimFormatada,
+    });
     onDataInicioChange(dataInicioFormatada);
     onDataFimChange(dataFimFormatada);
 
     // Aplicar os filtros imediatamente
-    console.log('🚀 FILTRO Chamando onAplicar');
+    console.log("🚀 FILTRO Chamando onAplicar");
     onAplicar();
     setIsOpen(false);
   };
 
   const aplicarDatasPersonalizadas = () => {
-    console.log('🚀 FILTRO aplicarDatasPersonalizadas chamado');
-    console.log('🚀 FILTRO dateRange:', dateRange);
-    console.log('🚀 FILTRO tempDataInicio:', tempDataInicio, 'tempDataFim:', tempDataFim);
+    console.log("🚀 FILTRO aplicarDatasPersonalizadas chamado");
+    console.log("🚀 FILTRO dateRange:", dateRange);
+    console.log(
+      "🚀 FILTRO tempDataInicio:",
+      tempDataInicio,
+      "tempDataFim:",
+      tempDataFim,
+    );
 
     // Priorizar dateRange do calendário se disponível
     if (dateRange?.from && dateRange?.to) {
       const dataInicioFormatada = format(dateRange.from, "yyyy-MM-dd");
       const dataFimFormatada = format(dateRange.to, "yyyy-MM-dd");
 
-      console.log('🚀 FILTRO Usando dateRange:', { dataInicioFormatada, dataFimFormatada });
+      console.log("🚀 FILTRO Usando dateRange:", {
+        dataInicioFormatada,
+        dataFimFormatada,
+      });
       onDataInicioChange(dataInicioFormatada);
       onDataFimChange(dataFimFormatada);
 
@@ -316,24 +327,26 @@ export default function FiltroDataGoogleAds({
     }
     // Caso contrário, usar campos temporários
     else if (tempDataInicio && tempDataFim) {
-      console.log('🚀 FILTRO Usando campos temporários:', { tempDataInicio, tempDataFim });
+      console.log("🚀 FILTRO Usando campos temporários:", {
+        tempDataInicio,
+        tempDataFim,
+      });
       onDataInicioChange(tempDataInicio);
       onDataFimChange(tempDataFim);
 
       // Sincronizar dateRange
       setDateRange({
         from: parseISO(tempDataInicio),
-        to: parseISO(tempDataFim)
+        to: parseISO(tempDataFim),
       });
-    }
-    else {
-      console.log('🚀 FILTRO Nenhuma data válida encontrada');
+    } else {
+      console.log("🚀 FILTRO Nenhuma data válida encontrada");
       // Se nenhum estiver preenchido, não fazer nada
       return;
     }
 
     setPeriodoSelecionado("personalizar");
-    console.log('🚀 FILTRO Chamando onAplicar');
+    console.log("🚀 FILTRO Chamando onAplicar");
     onAplicar();
     setIsOpen(false);
     setShowCalendar(false);
@@ -352,14 +365,17 @@ export default function FiltroDataGoogleAds({
       <div
         className="relative filtro-data-google-ads w-full max-w-sm"
         ref={dropdownRef}
-        style={{ zIndex: isOpen ? 9999 : 'auto' }}
+        style={{ zIndex: isOpen ? 9999 : "auto" }}
       >
         <Button
           variant="outline"
           onClick={() => {
-            console.log('🖱️ FILTRO Clique no botão principal, isOpen atual:', isOpen);
+            console.log(
+              "🖱️ FILTRO Clique no botão principal, isOpen atual:",
+              isOpen,
+            );
             setIsOpen(!isOpen);
-            console.log('🖱️ FILTRO Novo estado isOpen:', !isOpen);
+            console.log("🖱️ FILTRO Novo estado isOpen:", !isOpen);
           }}
           className="w-full justify-between h-10 px-4 text-sm font-normal"
           disabled={isLoading}
@@ -372,9 +388,11 @@ export default function FiltroDataGoogleAds({
         </Button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-[9999] w-[280px]"
-               onLoad={() => console.log('🔍 FILTRO Dropdown renderizado')}
-               ref={(el) => el && console.log('🔍 FILTRO Dropdown montado no DOM')}>
+          <div
+            className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-[9999] w-[280px]"
+            onLoad={() => console.log("🔍 FILTRO Dropdown renderizado")}
+            ref={(el) => el && console.log("🔍 FILTRO Dropdown montado no DOM")}
+          >
             {!showCalendar ? (
               <div className="p-3">
                 {/* Lista de opções simples */}
@@ -382,8 +400,10 @@ export default function FiltroDataGoogleAds({
                   {/* Personalizar no topo */}
                   <button
                     onClick={() => {
-                      console.log('🖱️ FILTRO Clique: Personalizar');
-                      aplicarPeriodo(opcoesPeriodo.find(o => o.id === "personalizar")!)
+                      console.log("🖱️ FILTRO Clique: Personalizar");
+                      aplicarPeriodo(
+                        opcoesPeriodo.find((o) => o.id === "personalizar")!,
+                      );
                     }}
                     className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
                       periodoSelecionado === "personalizar"
@@ -398,23 +418,25 @@ export default function FiltroDataGoogleAds({
 
                   {/* Outras opções */}
                   {opcoesPeriodo
-                    .filter(opcao => opcao.id !== "personalizar")
+                    .filter((opcao) => opcao.id !== "personalizar")
                     .map((opcao) => (
-                    <button
-                      key={opcao.id}
-                      onClick={() => {
-                        console.log(`🖱️ FILTRO Clique: ${opcao.label} (${opcao.id})`);
-                        aplicarPeriodo(opcao);
-                      }}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
-                        periodoSelecionado === opcao.id
-                          ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
-                      {opcao.label}
-                    </button>
-                  ))}
+                      <button
+                        key={opcao.id}
+                        onClick={() => {
+                          console.log(
+                            `🖱️ FILTRO Clique: ${opcao.label} (${opcao.id})`,
+                          );
+                          aplicarPeriodo(opcao);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
+                          periodoSelecionado === opcao.id
+                            ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {opcao.label}
+                      </button>
+                    ))}
                 </div>
               </div>
             ) : (
@@ -442,7 +464,9 @@ export default function FiltroDataGoogleAds({
                     <Input
                       type="date"
                       value={tempDataInicio || dataInicio}
-                      onChange={(e) => handleTempDataInicioChange(e.target.value)}
+                      onChange={(e) =>
+                        handleTempDataInicioChange(e.target.value)
+                      }
                       className="h-8 text-xs w-full"
                     />
                   </div>
@@ -464,7 +488,7 @@ export default function FiltroDataGoogleAds({
                   <Button
                     size="sm"
                     onClick={() => {
-                      console.log('🖱️ FILTRO Clique: Botão Aplicar');
+                      console.log("🖱️ FILTRO Clique: Botão Aplicar");
                       aplicarDatasPersonalizadas();
                     }}
                     className="flex-1 h-7 text-xs"

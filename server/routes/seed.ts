@@ -155,10 +155,10 @@ router.post("/accounts", async (req, res) => {
     const hoje = new Date();
     const amanha = new Date(hoje);
     amanha.setDate(hoje.getDate() + 1);
-    
+
     const semanaQueVem = new Date(hoje);
     semanaQueVem.setDate(hoje.getDate() + 7);
-    
+
     const mesQueVem = new Date(hoje);
     mesQueVem.setMonth(hoje.getMonth() + 1);
 
@@ -175,7 +175,7 @@ router.post("/accounts", async (req, res) => {
           // Conta a receber - vence hoje
           prisma.contaLancamento.create({
             data: {
-              valor: 500.00,
+              valor: 500.0,
               dataVencimento: hoje,
               codigoCliente: primeiroCliente.id,
               tipo: "receber",
@@ -185,12 +185,14 @@ router.post("/accounts", async (req, res) => {
               pago: false,
             },
           }),
-          
+
           // Conta a receber - já paga
           prisma.contaLancamento.create({
             data: {
-              valor: 1200.00,
-              dataVencimento: new Date(hoje.getTime() - 5 * 24 * 60 * 60 * 1000), // 5 dias atrás
+              valor: 1200.0,
+              dataVencimento: new Date(
+                hoje.getTime() - 5 * 24 * 60 * 60 * 1000,
+              ), // 5 dias atrás
               codigoCliente: segundoCliente?.id || primeiroCliente.id,
               tipo: "receber",
               conta: "empresa",
@@ -201,11 +203,11 @@ router.post("/accounts", async (req, res) => {
               formaPg: 2, // PIX
             },
           }),
-          
+
           // Conta a pagar - vence amanhã
           prisma.contaLancamento.create({
             data: {
-              valor: 350.00,
+              valor: 350.0,
               dataVencimento: amanha,
               codigoFornecedor: primeiroFornecedor.id,
               tipo: "pagar",
@@ -215,11 +217,11 @@ router.post("/accounts", async (req, res) => {
               pago: false,
             },
           }),
-          
+
           // Conta a pagar - vence semana que vem
           prisma.contaLancamento.create({
             data: {
-              valor: 120.00,
+              valor: 120.0,
               dataVencimento: semanaQueVem,
               codigoFornecedor: segundoFornecedor?.id || primeiroFornecedor.id,
               tipo: "pagar",
@@ -229,11 +231,11 @@ router.post("/accounts", async (req, res) => {
               pago: false,
             },
           }),
-          
+
           // Conta a receber - vence mês que vem
           prisma.contaLancamento.create({
             data: {
-              valor: 2500.00,
+              valor: 2500.0,
               dataVencimento: mesQueVem,
               codigoCliente: primeiroCliente.id,
               tipo: "receber",
@@ -248,7 +250,9 @@ router.post("/accounts", async (req, res) => {
     }
 
     const response: ApiResponse<{ message: string }> = {
-      data: { message: "Dados básicos do sistema de contas criados com sucesso!" },
+      data: {
+        message: "Dados básicos do sistema de contas criados com sucesso!",
+      },
     };
 
     res.json(response);

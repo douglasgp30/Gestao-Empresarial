@@ -17,7 +17,9 @@ async function apiRequest<T>(
 ): Promise<ApiResponse<T>> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      console.log(`[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`);
+      console.log(
+        `[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`,
+      );
 
       // Adicionar timeout para evitar travamentos
       const controller = new AbortController();
@@ -57,7 +59,10 @@ async function apiRequest<T>(
       console.log(`[ApiService] Dados recebidos:`, data);
       return { data };
     } catch (error) {
-      console.error(`[ApiService] Erro na comunicação (tentativa ${attempt + 1}):`, error);
+      console.error(
+        `[ApiService] Erro na comunicação (tentativa ${attempt + 1}):`,
+        error,
+      );
 
       // Se é a última tentativa, retornar o erro
       if (attempt === retries) {
@@ -65,15 +70,16 @@ async function apiRequest<T>(
         if (
           error instanceof TypeError &&
           (error.message.includes("Failed to fetch") ||
-           error.message.includes("NetworkError") ||
-           error.stack?.includes("fullstory.com"))
+            error.message.includes("NetworkError") ||
+            error.stack?.includes("fullstory.com"))
         ) {
           return {
-            error: "Servidor não disponível. Verifique se o backend está rodando.",
+            error:
+              "Servidor não disponível. Verifique se o backend está rodando.",
           };
         }
 
-        if (error.name === 'AbortError') {
+        if (error.name === "AbortError") {
           return {
             error: "Requisição expirou. Tente novamente.",
           };
@@ -84,8 +90,10 @@ async function apiRequest<T>(
 
       // Aguardar antes de tentar novamente (backoff exponencial aumentado)
       const delay = Math.pow(2, attempt) * 2000; // Aumentado para 2s, 4s, 8s...
-      console.log(`[ApiService] Aguardando ${delay}ms antes da próxima tentativa...`);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      console.log(
+        `[ApiService] Aguardando ${delay}ms antes da próxima tentativa...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 
@@ -274,7 +282,7 @@ export const contasApi = {
   listar: (filtros?: any) => {
     const params = new URLSearchParams();
     if (filtros) {
-      Object.keys(filtros).forEach(key => {
+      Object.keys(filtros).forEach((key) => {
         if (filtros[key] !== undefined && filtros[key] !== null) {
           params.append(key, filtros[key].toString());
         }
@@ -283,31 +291,37 @@ export const contasApi = {
     const queryString = params.toString();
     return apiRequest<any[]>(`/contas${queryString ? `?${queryString}` : ""}`);
   },
-  criar: (dados: any) => apiRequest("/contas", {
-    method: "POST",
-    body: JSON.stringify(dados),
-  }),
-  atualizar: (id: number, dados: any) => apiRequest(`/contas/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(dados),
-  }),
-  excluir: (id: number) => apiRequest(`/contas/${id}`, {
-    method: "DELETE",
-  }),
-  marcarComoPaga: (id: number) => apiRequest(`/contas/${id}/pagar`, {
-    method: "PATCH",
-  }),
+  criar: (dados: any) =>
+    apiRequest("/contas", {
+      method: "POST",
+      body: JSON.stringify(dados),
+    }),
+  atualizar: (id: number, dados: any) =>
+    apiRequest(`/contas/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(dados),
+    }),
+  excluir: (id: number) =>
+    apiRequest(`/contas/${id}`, {
+      method: "DELETE",
+    }),
+  marcarComoPaga: (id: number) =>
+    apiRequest(`/contas/${id}/pagar`, {
+      method: "PATCH",
+    }),
   obterTotais: (filtros?: any) => {
     const params = new URLSearchParams();
     if (filtros) {
-      Object.keys(filtros).forEach(key => {
+      Object.keys(filtros).forEach((key) => {
         if (filtros[key] !== undefined && filtros[key] !== null) {
           params.append(key, filtros[key].toString());
         }
       });
     }
     const queryString = params.toString();
-    return apiRequest<any>(`/contas/totais${queryString ? `?${queryString}` : ""}`);
+    return apiRequest<any>(
+      `/contas/totais${queryString ? `?${queryString}` : ""}`,
+    );
   },
 };
 
@@ -315,19 +329,23 @@ export const contasApi = {
 // Main apiService object for general HTTP methods
 export const apiService = {
   get: <T>(endpoint: string) => apiRequest<T>(endpoint),
-  post: <T>(endpoint: string, data?: any) => apiRequest<T>(endpoint, {
-    method: "POST",
-    body: data ? JSON.stringify(data) : undefined,
-  }),
-  put: <T>(endpoint: string, data?: any) => apiRequest<T>(endpoint, {
-    method: "PUT",
-    body: data ? JSON.stringify(data) : undefined,
-  }),
-  patch: <T>(endpoint: string, data?: any) => apiRequest<T>(endpoint, {
-    method: "PATCH",
-    body: data ? JSON.stringify(data) : undefined,
-  }),
-  delete: <T>(endpoint: string) => apiRequest<T>(endpoint, {
-    method: "DELETE",
-  }),
+  post: <T>(endpoint: string, data?: any) =>
+    apiRequest<T>(endpoint, {
+      method: "POST",
+      body: data ? JSON.stringify(data) : undefined,
+    }),
+  put: <T>(endpoint: string, data?: any) =>
+    apiRequest<T>(endpoint, {
+      method: "PUT",
+      body: data ? JSON.stringify(data) : undefined,
+    }),
+  patch: <T>(endpoint: string, data?: any) =>
+    apiRequest<T>(endpoint, {
+      method: "PATCH",
+      body: data ? JSON.stringify(data) : undefined,
+    }),
+  delete: <T>(endpoint: string) =>
+    apiRequest<T>(endpoint, {
+      method: "DELETE",
+    }),
 };

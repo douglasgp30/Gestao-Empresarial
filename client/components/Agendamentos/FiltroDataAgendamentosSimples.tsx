@@ -7,14 +7,35 @@ export default function FiltroDataAgendamentosSimples() {
 
   // Verificar e corrigir datas inválidas na inicialização
   useEffect(() => {
-    if (!filtros?.dataInicio || !filtros?.dataFim || 
-        !(filtros.dataInicio instanceof Date) || !(filtros.dataFim instanceof Date) ||
-        isNaN(filtros.dataInicio.getTime()) || isNaN(filtros.dataFim.getTime())) {
-      console.log('🔧 Corrigindo datas inválidas nos filtros de agendamentos');
+    if (
+      !filtros?.dataInicio ||
+      !filtros?.dataFim ||
+      !(filtros.dataInicio instanceof Date) ||
+      !(filtros.dataFim instanceof Date) ||
+      isNaN(filtros.dataInicio.getTime()) ||
+      isNaN(filtros.dataFim.getTime())
+    ) {
+      console.log("🔧 Corrigindo datas inválidas nos filtros de agendamentos");
       const hoje = new Date();
-      const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
-      const fimHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
-      
+      const inicioHoje = new Date(
+        hoje.getFullYear(),
+        hoje.getMonth(),
+        hoje.getDate(),
+        0,
+        0,
+        0,
+        0,
+      );
+      const fimHoje = new Date(
+        hoje.getFullYear(),
+        hoje.getMonth(),
+        hoje.getDate(),
+        23,
+        59,
+        59,
+        999,
+      );
+
       setFiltros({
         ...filtros,
         dataInicio: inicioHoje,

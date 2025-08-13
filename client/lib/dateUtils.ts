@@ -4,19 +4,19 @@
  */
 export function formatDate(date: Date | string | null | undefined): string {
   if (!date) return "-";
-  
+
   try {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+
     // Verificar se é uma data válida
     if (isNaN(dateObj.getTime())) {
-      console.warn('Data inválida recebida:', date);
+      console.warn("Data inválida recebida:", date);
       return "-";
     }
-    
+
     return dateObj.toLocaleDateString("pt-BR");
   } catch (error) {
-    console.warn('Erro ao formatar data:', date, error);
+    console.warn("Erro ao formatar data:", date, error);
     return "-";
   }
 }
@@ -26,18 +26,18 @@ export function formatDate(date: Date | string | null | undefined): string {
  */
 export function formatDateTime(date: Date | string | null | undefined): string {
   if (!date) return "-";
-  
+
   try {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+
     if (isNaN(dateObj.getTime())) {
-      console.warn('Data inválida recebida:', date);
+      console.warn("Data inválida recebida:", date);
       return "-";
     }
-    
+
     return dateObj.toLocaleString("pt-BR");
   } catch (error) {
-    console.warn('Erro ao formatar data e hora:', date, error);
+    console.warn("Erro ao formatar data e hora:", date, error);
     return "-";
   }
 }
@@ -45,7 +45,10 @@ export function formatDateTime(date: Date | string | null | undefined): string {
 /**
  * Formatar intervalo de datas
  */
-export function formatDateRange(dataInicio: Date | string, dataFim: Date | string): string {
+export function formatDateRange(
+  dataInicio: Date | string,
+  dataFim: Date | string,
+): string {
   const inicio = formatDate(dataInicio);
   const fim = formatDate(dataFim);
 
@@ -61,13 +64,13 @@ export function formatDateRange(dataInicio: Date | string, dataFim: Date | strin
 export function gerarDataHoraAutomatica(): string {
   const agora = new Date();
 
-  const dia = agora.getDate().toString().padStart(2, '0');
-  const mes = (agora.getMonth() + 1).toString().padStart(2, '0');
+  const dia = agora.getDate().toString().padStart(2, "0");
+  const mes = (agora.getMonth() + 1).toString().padStart(2, "0");
   const ano = agora.getFullYear();
 
-  const hora = agora.getHours().toString().padStart(2, '0');
-  const minuto = agora.getMinutes().toString().padStart(2, '0');
-  const segundo = agora.getSeconds().toString().padStart(2, '0');
+  const hora = agora.getHours().toString().padStart(2, "0");
+  const minuto = agora.getMinutes().toString().padStart(2, "0");
+  const segundo = agora.getSeconds().toString().padStart(2, "0");
 
   return `${dia}-${mes}-${ano} ${hora}:${minuto}:${segundo}`;
 }
@@ -79,12 +82,14 @@ export function isFormaPagamentoCartao(nomeFormaPagamento: string): boolean {
   if (!nomeFormaPagamento) return false;
 
   const nome = nomeFormaPagamento.toLowerCase();
-  return nome.includes('cartão') ||
-         nome.includes('cartao') ||
-         nome.includes('débito') ||
-         nome.includes('debito') ||
-         nome.includes('crédito') ||
-         nome.includes('credito');
+  return (
+    nome.includes("cartão") ||
+    nome.includes("cartao") ||
+    nome.includes("débito") ||
+    nome.includes("debito") ||
+    nome.includes("crédito") ||
+    nome.includes("credito")
+  );
 }
 
 /**
@@ -109,6 +114,6 @@ export function getHojeFim(): Date {
 export function getDefaultDateRange() {
   return {
     dataInicio: getHojeInicio(),
-    dataFim: getHojeFim()
+    dataFim: getHojeFim(),
   };
 }

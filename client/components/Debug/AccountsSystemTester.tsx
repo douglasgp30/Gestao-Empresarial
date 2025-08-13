@@ -21,14 +21,34 @@ export function AccountsSystemTester() {
     setResultados([]);
 
     const testes: TestResult[] = [
-      { name: "Seed de dados básicos", status: "pending", message: "Iniciando..." },
+      {
+        name: "Seed de dados básicos",
+        status: "pending",
+        message: "Iniciando...",
+      },
       { name: "Buscar clientes", status: "pending", message: "Iniciando..." },
-      { name: "Buscar fornecedores", status: "pending", message: "Iniciando..." },
-      { name: "Buscar formas de pagamento", status: "pending", message: "Iniciando..." },
+      {
+        name: "Buscar fornecedores",
+        status: "pending",
+        message: "Iniciando...",
+      },
+      {
+        name: "Buscar formas de pagamento",
+        status: "pending",
+        message: "Iniciando...",
+      },
       { name: "Buscar categorias", status: "pending", message: "Iniciando..." },
       { name: "Listar contas", status: "pending", message: "Iniciando..." },
-      { name: "Criar conta a receber", status: "pending", message: "Iniciando..." },
-      { name: "Criar conta a pagar", status: "pending", message: "Iniciando..." },
+      {
+        name: "Criar conta a receber",
+        status: "pending",
+        message: "Iniciando...",
+      },
+      {
+        name: "Criar conta a pagar",
+        status: "pending",
+        message: "Iniciando...",
+      },
       { name: "Calcular totais", status: "pending", message: "Iniciando..." },
     ];
 
@@ -66,7 +86,9 @@ export function AccountsSystemTester() {
 
       // 3. Buscar fornecedores
       try {
-        const fornecedoresResponse = await apiService.get("/contas/fornecedores");
+        const fornecedoresResponse = await apiService.get(
+          "/contas/fornecedores",
+        );
         fornecedores = fornecedoresResponse.data || [];
         testes[2].status = "success";
         testes[2].message = `${fornecedores.length} fornecedores encontrados`;
@@ -105,12 +127,14 @@ export function AccountsSystemTester() {
 
       // 6. Listar contas
       try {
-        const hoje = new Date().toISOString().split('T')[0];
+        const hoje = new Date().toISOString().split("T")[0];
         const dataFim = new Date();
         dataFim.setDate(dataFim.getDate() + 30);
-        const dataFimStr = dataFim.toISOString().split('T')[0];
-        
-        const contasResponse = await apiService.get(`/contas?dataInicio=${hoje}&dataFim=${dataFimStr}`);
+        const dataFimStr = dataFim.toISOString().split("T")[0];
+
+        const contasResponse = await apiService.get(
+          `/contas?dataInicio=${hoje}&dataFim=${dataFimStr}`,
+        );
         const contas = contasResponse.data || [];
         testes[5].status = "success";
         testes[5].message = `${contas.length} contas encontradas`;
@@ -120,7 +144,7 @@ export function AccountsSystemTester() {
           valor: c.valor,
           cliente: c.cliente?.nome,
           fornecedor: c.fornecedor?.nome,
-          vencimento: new Date(c.dataVencimento).toLocaleDateString('pt-BR')
+          vencimento: new Date(c.dataVencimento).toLocaleDateString("pt-BR"),
         }));
       } catch (error) {
         testes[5].status = "error";
@@ -132,17 +156,24 @@ export function AccountsSystemTester() {
       if (clientes.length > 0 && categorias.length > 0) {
         try {
           const novaContaReceber = {
-            valor: 500.00,
-            dataVencimento: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            valor: 500.0,
+            dataVencimento: new Date(
+              Date.now() + 7 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
             codigoCliente: clientes[0].id,
             tipo: "receber",
             conta: "empresa",
             observacoes: "Teste de conta a receber",
-            descricaoCategoria: categorias.find((c: any) => c.tipo === 'receita')?.id,
-            pago: false
+            descricaoCategoria: categorias.find(
+              (c: any) => c.tipo === "receita",
+            )?.id,
+            pago: false,
           };
 
-          const contaCriada = await apiService.post("/contas", novaContaReceber);
+          const contaCriada = await apiService.post(
+            "/contas",
+            novaContaReceber,
+          );
           testes[6].status = "success";
           testes[6].message = `Conta a receber criada - ID: ${contaCriada.data?.codLancamentoContas}`;
           testes[6].data = contaCriada.data;
@@ -160,14 +191,18 @@ export function AccountsSystemTester() {
       if (fornecedores.length > 0 && categorias.length > 0) {
         try {
           const novaContaPagar = {
-            valor: 300.00,
-            dataVencimento: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+            valor: 300.0,
+            dataVencimento: new Date(
+              Date.now() + 15 * 24 * 60 * 60 * 1000,
+            ).toISOString(),
             codigoFornecedor: fornecedores[0].id,
             tipo: "pagar",
             conta: "empresa",
             observacoes: "Teste de conta a pagar",
-            descricaoCategoria: categorias.find((c: any) => c.tipo === 'despesa')?.id,
-            pago: false
+            descricaoCategoria: categorias.find(
+              (c: any) => c.tipo === "despesa",
+            )?.id,
+            pago: false,
           };
 
           const contaCriada = await apiService.post("/contas", novaContaPagar);
@@ -186,27 +221,28 @@ export function AccountsSystemTester() {
 
       // 9. Calcular totais
       try {
-        const hoje = new Date().toISOString().split('T')[0];
+        const hoje = new Date().toISOString().split("T")[0];
         const dataFim = new Date();
         dataFim.setDate(dataFim.getDate() + 30);
-        const dataFimStr = dataFim.toISOString().split('T')[0];
-        
-        const totaisResponse = await apiService.get(`/contas/totais?dataInicio=${hoje}&dataFim=${dataFimStr}`);
+        const dataFimStr = dataFim.toISOString().split("T")[0];
+
+        const totaisResponse = await apiService.get(
+          `/contas/totais?dataInicio=${hoje}&dataFim=${dataFimStr}`,
+        );
         const totais = totaisResponse.data;
         testes[8].status = "success";
         testes[8].message = `Totais calculados com sucesso`;
         testes[8].data = {
-          totalReceber: `R$ ${totais?.totalReceber?.toFixed(2) || '0,00'}`,
-          totalPagar: `R$ ${totais?.totalPagar?.toFixed(2) || '0,00'}`,
-          vencendoHoje: `R$ ${totais?.totalVencendoHoje?.toFixed(2) || '0,00'}`,
-          atrasadas: `R$ ${totais?.totalAtrasadas?.toFixed(2) || '0,00'}`
+          totalReceber: `R$ ${totais?.totalReceber?.toFixed(2) || "0,00"}`,
+          totalPagar: `R$ ${totais?.totalPagar?.toFixed(2) || "0,00"}`,
+          vencendoHoje: `R$ ${totais?.totalVencendoHoje?.toFixed(2) || "0,00"}`,
+          atrasadas: `R$ ${totais?.totalAtrasadas?.toFixed(2) || "0,00"}`,
         };
       } catch (error) {
         testes[8].status = "error";
         testes[8].message = `Erro: ${error}`;
       }
       setResultados([...testes]);
-
     } catch (error) {
       console.error("Erro geral nos testes:", error);
     } finally {
@@ -241,11 +277,7 @@ export function AccountsSystemTester() {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Teste do Sistema de Contas</span>
-          <Button 
-            onClick={executarTestes} 
-            disabled={testando}
-            className="ml-4"
-          >
+          <Button onClick={executarTestes} disabled={testando} className="ml-4">
             {testando ? (
               <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
             ) : (
@@ -258,7 +290,10 @@ export function AccountsSystemTester() {
       <CardContent>
         <div className="space-y-4">
           {resultados.map((resultado, index) => (
-            <div key={index} className="flex items-start space-x-3 p-3 border rounded-lg">
+            <div
+              key={index}
+              className="flex items-start space-x-3 p-3 border rounded-lg"
+            >
               <div className="flex-shrink-0 mt-0.5">
                 {getStatusIcon(resultado.status)}
               </div>
@@ -269,7 +304,9 @@ export function AccountsSystemTester() {
                     {resultado.status}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">{resultado.message}</p>
+                <p className="text-sm text-muted-foreground">
+                  {resultado.message}
+                </p>
                 {resultado.data && (
                   <div className="mt-2 p-2 bg-muted rounded text-xs">
                     <pre className="whitespace-pre-wrap break-words">

@@ -38,8 +38,24 @@ export default function FiltroDataContas() {
   const handleLimpar = () => {
     // Usar data atual do sistema
     const agora = new Date();
-    const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0, 0);
-    const fimHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
+    const inicioHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const fimHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
     setFiltros({
       ...filtros,
       dataInicio: inicioHoje,
@@ -51,8 +67,8 @@ export default function FiltroDataContas() {
   // Função para formatar data sem problemas de timezone
   const formatDateForInput = (date: Date): string => {
     const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 

@@ -3,14 +3,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarIcon, Save, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useContas } from "@/contexts/ContasContext";
 import { ContaLancamento } from "@shared/types";
 import { useCurrencyInput } from "@/hooks/use-currency-input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -20,15 +30,18 @@ interface FormularioContaProps {
   onSuccess?: () => void;
 }
 
-export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaProps) {
+export function FormularioConta({
+  contaParaEditar,
+  onSuccess,
+}: FormularioContaProps) {
   const { toast } = useToast();
-  const { 
-    adicionarConta, 
-    atualizarConta, 
-    clientes, 
-    fornecedores, 
-    formasPagamento, 
-    categorias 
+  const {
+    adicionarConta,
+    atualizarConta,
+    clientes,
+    fornecedores,
+    formasPagamento,
+    categorias,
   } = useContas();
 
   const [salvando, setSalvando] = useState(false);
@@ -64,7 +77,8 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
         conta: contaParaEditar.conta,
         formaPg: contaParaEditar.formaPg?.toString() || "",
         observacoes: contaParaEditar.observacoes || "",
-        descricaoCategoria: contaParaEditar.descricaoCategoria?.toString() || "",
+        descricaoCategoria:
+          contaParaEditar.descricaoCategoria?.toString() || "",
         pago: contaParaEditar.pago,
         dataPagamento: contaParaEditar.dataPagamento,
       });
@@ -78,8 +92,10 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
 
     try {
       // Validações obrigatórias
-      const valorNumerico = parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", "."));
-      
+      const valorNumerico = parseFloat(
+        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
+      );
+
       if (!valorNumerico || valorNumerico <= 0) {
         toast({
           title: "Erro de Validação",
@@ -129,15 +145,28 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
       const dadosConta = {
         valor: valorNumerico,
         dataVencimento: formData.dataVencimento,
-        codigoCliente: formData.tipo === "receber" ? parseInt(formData.codigoCliente) : undefined,
-        codigoFornecedor: formData.tipo === "pagar" ? parseInt(formData.codigoFornecedor) : undefined,
+        codigoCliente:
+          formData.tipo === "receber"
+            ? parseInt(formData.codigoCliente)
+            : undefined,
+        codigoFornecedor:
+          formData.tipo === "pagar"
+            ? parseInt(formData.codigoFornecedor)
+            : undefined,
         tipo: formData.tipo,
         conta: formData.conta,
-        formaPg: formData.pago && formData.formaPg ? parseInt(formData.formaPg) : undefined,
+        formaPg:
+          formData.pago && formData.formaPg
+            ? parseInt(formData.formaPg)
+            : undefined,
         observacoes: formData.observacoes || undefined,
-        descricaoCategoria: formData.descricaoCategoria ? parseInt(formData.descricaoCategoria) : undefined,
+        descricaoCategoria: formData.descricaoCategoria
+          ? parseInt(formData.descricaoCategoria)
+          : undefined,
         pago: formData.pago,
-        dataPagamento: formData.pago ? (formData.dataPagamento || new Date()) : undefined,
+        dataPagamento: formData.pago
+          ? formData.dataPagamento || new Date()
+          : undefined,
       };
 
       console.log("🔍 [FORM CONTA] Enviando dados:", dadosConta);
@@ -188,7 +217,7 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
   };
 
   const handleTipoChange = (novoTipo: "receber" | "pagar") => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       tipo: novoTipo,
       codigoCliente: "", // Limpar cliente ao mudar tipo
@@ -210,10 +239,7 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="tipo">Tipo *</Label>
-              <Select
-                value={formData.tipo}
-                onValueChange={handleTipoChange}
-              >
+              <Select value={formData.tipo} onValueChange={handleTipoChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
@@ -229,7 +255,7 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
               <Select
                 value={formData.conta}
                 onValueChange={(value: "empresa" | "pessoal") =>
-                  setFormData(prev => ({ ...prev, conta: value }))
+                  setFormData((prev) => ({ ...prev, conta: value }))
                 }
               >
                 <SelectTrigger>
@@ -251,7 +277,7 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
                 <Select
                   value={formData.codigoCliente}
                   onValueChange={(value) =>
-                    setFormData(prev => ({ ...prev, codigoCliente: value }))
+                    setFormData((prev) => ({ ...prev, codigoCliente: value }))
                   }
                 >
                   <SelectTrigger>
@@ -259,7 +285,10 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
                   </SelectTrigger>
                   <SelectContent>
                     {clientes.map((cliente) => (
-                      <SelectItem key={cliente.id} value={cliente.id.toString()}>
+                      <SelectItem
+                        key={cliente.id}
+                        value={cliente.id.toString()}
+                      >
                         {cliente.nome} - {cliente.telefonePrincipal}
                       </SelectItem>
                     ))}
@@ -272,7 +301,10 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
                 <Select
                   value={formData.codigoFornecedor}
                   onValueChange={(value) =>
-                    setFormData(prev => ({ ...prev, codigoFornecedor: value }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      codigoFornecedor: value,
+                    }))
                   }
                 >
                   <SelectTrigger>
@@ -280,8 +312,12 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
                   </SelectTrigger>
                   <SelectContent>
                     {fornecedores.map((fornecedor) => (
-                      <SelectItem key={fornecedor.id} value={fornecedor.id.toString()}>
-                        {fornecedor.nome} {fornecedor.telefone && `- ${fornecedor.telefone}`}
+                      <SelectItem
+                        key={fornecedor.id}
+                        value={fornecedor.id.toString()}
+                      >
+                        {fornecedor.nome}{" "}
+                        {fornecedor.telefone && `- ${fornecedor.telefone}`}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -312,9 +348,10 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {formData.dataVencimento
-                    ? format(formData.dataVencimento, "dd/MM/yyyy", { locale: ptBR })
-                    : "Selecione a data"
-                  }
+                    ? format(formData.dataVencimento, "dd/MM/yyyy", {
+                        locale: ptBR,
+                      })
+                    : "Selecione a data"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -322,7 +359,10 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
                   mode="single"
                   selected={formData.dataVencimento}
                   onSelect={(date) =>
-                    setFormData(prev => ({ ...prev, dataVencimento: date || new Date() }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      dataVencimento: date || new Date(),
+                    }))
                   }
                   initialFocus
                 />
@@ -336,7 +376,7 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
             <Select
               value={formData.descricaoCategoria}
               onValueChange={(value) =>
-                setFormData(prev => ({ ...prev, descricaoCategoria: value }))
+                setFormData((prev) => ({ ...prev, descricaoCategoria: value }))
               }
             >
               <SelectTrigger>
@@ -345,7 +385,10 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
               <SelectContent>
                 <SelectItem value="">Nenhuma</SelectItem>
                 {categorias.map((categoria) => (
-                  <SelectItem key={categoria.id} value={categoria.id.toString()}>
+                  <SelectItem
+                    key={categoria.id}
+                    value={categoria.id.toString()}
+                  >
                     {categoria.nome} ({categoria.tipo})
                   </SelectItem>
                 ))}
@@ -360,7 +403,7 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
               id="pago"
               checked={formData.pago}
               onChange={(e) =>
-                setFormData(prev => ({ ...prev, pago: e.target.checked }))
+                setFormData((prev) => ({ ...prev, pago: e.target.checked }))
               }
               className="h-4 w-4"
             />
@@ -374,7 +417,7 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
               <Select
                 value={formData.formaPg}
                 onValueChange={(value) =>
-                  setFormData(prev => ({ ...prev, formaPg: value }))
+                  setFormData((prev) => ({ ...prev, formaPg: value }))
                 }
               >
                 <SelectTrigger>
@@ -398,18 +441,17 @@ export function FormularioConta({ contaParaEditar, onSuccess }: FormularioContaP
               id="observacoes"
               value={formData.observacoes}
               onChange={(e) =>
-                setFormData(prev => ({ ...prev, observacoes: e.target.value }))
+                setFormData((prev) => ({
+                  ...prev,
+                  observacoes: e.target.value,
+                }))
               }
               placeholder="Observações sobre a conta"
               rows={3}
             />
           </div>
 
-          <Button
-            type="submit"
-            disabled={salvando}
-            className="w-full"
-          >
+          <Button type="submit" disabled={salvando} className="w-full">
             {salvando && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
             {contaParaEditar ? "Atualizar Conta" : "Adicionar Conta"}
           </Button>
