@@ -98,10 +98,9 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       clearTimeout(carregandoTimeout);
     }
 
-    // Criar novo timeout com debounce de 300ms
+    // Criar novo timeout com debounce de 500ms (aumentado para ser mais estável)
     const novoTimeout = setTimeout(async () => {
       try {
-        console.log('🔄 [CONTAS CONTEXT] Iniciando carregamento de contas...');
         setIsLoading(true);
 
         // Preparar filtros para a API
@@ -112,8 +111,6 @@ export function ContasProvider({ children }: { children: ReactNode }) {
           status: filtros.status !== 'todos' ? filtros.status : undefined,
         };
 
-        console.log('🔄 [CONTAS CONTEXT] Filtros enviados para API:', filtrosApi);
-
         const response = await contasApi.listar(filtrosApi);
         if (response.error) {
           console.error("Erro ao carregar contas:", response.error);
@@ -123,8 +120,6 @@ export function ContasProvider({ children }: { children: ReactNode }) {
 
         // Verificar se response.data é um array
         const contasData = Array.isArray(response.data) ? response.data : [];
-
-        console.log('🔄 [CONTAS CONTEXT] Contas recebidas da API:', contasData.length);
 
         // Converter dados da API para o formato do contexto
         const contasFormatadas = contasData.map((c: any) => ({
@@ -149,7 +144,6 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         }));
 
         setContas(contasFormatadas);
-        console.log('🔄 [CONTAS CONTEXT] Contas carregadas com sucesso:', contasFormatadas.length);
       } catch (error) {
         console.error("Erro ao carregar contas:", error);
         // Em caso de erro, manter contas vazias
@@ -157,7 +151,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       } finally {
         setIsLoading(false);
       }
-    }, 300); // Debounce de 300ms
+    }, 500); // Debounce de 500ms
 
     setCarregandoTimeout(novoTimeout);
   }, [filtros, carregandoTimeout, user?.id]);
