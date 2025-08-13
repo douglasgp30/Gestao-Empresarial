@@ -87,15 +87,10 @@ export default function FiltroDataGoogleAds({
     {
       id: "hoje",
       label: "Hoje",
-      calcularDatas: () => {
-        // Forçar exatamente o dia 14/08/2025
-        const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
-        const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
-        return {
-          inicio: inicioHoje,
-          fim: fimHoje,
-        };
-      },
+      calcularDatas: () => ({
+        inicio: startOfDay(hoje),
+        fim: endOfDay(hoje),
+      }),
     },
     {
       id: "ontem",
