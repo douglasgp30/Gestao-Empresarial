@@ -105,20 +105,20 @@ export function ContasProvider({ children }: { children: ReactNode }) {
       const contasFormatadas = contasData.map((c: any) => ({
         id: c.id.toString(),
         tipo: c.tipo,
-        descricao: c.descricao,
-        valor: c.valor,
+        descricao: c.descricao || "Sem descrição",
+        valor: c.valor || 0,
         dataVencimento: new Date(c.dataVencimento),
         dataPagamento: c.dataPagamento ? new Date(c.dataPagamento) : undefined,
         // Mapear status do servidor para o cliente
-        status: c.status === "pago" ? "paga" : c.status,
-        observacoes: c.observacoes,
-        categoria: c.categoria,
-        dataCriacao: new Date(c.dataCriacao),
+        status: c.status === "pago" ? "paga" : c.status || "pendente",
+        observacoes: c.observacoes || "",
+        categoria: c.categoria || "",
+        dataCriacao: new Date(c.dataCriacao || new Date()),
         // Campos de compatibilidade
-        fornecedorCliente: c.descricao, // Usar descrição como nome do fornecedor/cliente
-        tipoPagamento: c.categoria,
+        fornecedorCliente: c.descricao || "Sem descrição", // Usar descrição como nome do fornecedor/cliente
+        tipoPagamento: c.categoria || "",
         funcionarioId: user?.id || "1",
-        clienteId: c.clienteId,
+        clienteId: c.clienteId || undefined,
       }));
 
       setContas(contasFormatadas);
