@@ -142,7 +142,7 @@ export default function FiltroDataCaixaSimples() {
     <div className="space-y-1">
       <Label className="text-xs font-medium text-gray-600">Período dos Lançamentos</Label>
       
-      <div className="relative w-full max-w-sm">
+      <div className="relative w-full max-w-sm" ref={dropdownRef}>
         <Button
           variant="outline"
           onClick={toggleDropdown}
