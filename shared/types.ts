@@ -81,6 +81,12 @@ export interface Conta {
   observacoes?: string;
   categoria?: string;
   dataCriacao: Date;
+  // Campos para compatibilidade com o sistema atual
+  fornecedorCliente?: string; // Nome do fornecedor/cliente (legacy)
+  tipoPagamento?: string; // Forma de pagamento (legacy)
+  funcionarioId?: string; // ID do funcionário responsável
+  // Novo campo para vincular com a tabela de clientes
+  clienteId?: string; // ID do cliente da tabela clientes
 }
 
 export interface Campanha {
