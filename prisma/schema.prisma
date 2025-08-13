@@ -199,6 +199,9 @@ model LancamentoCaixa {
   campanhaId        Int?     // Puxa da tabela Campanhas
   clienteId         Int?     // Puxa da tabela Clientes
 
+  // Unified descriptions and categories
+  descricaoECategoriaId Int? // FK to unified table
+
   // Relacionamentos
   descricao      Descricao      @relation(fields: [descricaoId], references: [id])
   formaPagamento FormaPagamento @relation(fields: [formaPagamentoId], references: [id])
