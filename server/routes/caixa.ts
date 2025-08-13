@@ -384,10 +384,9 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
 
 export const getTotaisCaixa: RequestHandler = async (req, res) => {
   try {
-    const { dataInicio, dataFim, conta } = req.query;
+    const { dataInicio, dataFim } = req.query;
 
     const where: any = {};
-    if (conta) where.conta = conta;
 
     // Filtros de data baseados em dataHora DateTime
     if (dataInicio || dataFim) {
