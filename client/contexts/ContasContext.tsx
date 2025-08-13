@@ -200,10 +200,17 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         setFormasPagamento(formasResponse.data.data);
       }
 
-      // Carregar categorias
-      const categoriasResponse = await apiService.get("/contas/categorias");
+      // Carregar categorias da tabela unificada
+      const categoriasResponse = await apiService.get("/descricoes-e-categorias/categorias");
       if (categoriasResponse.data && categoriasResponse.data.data) {
-        setCategorias(categoriasResponse.data.data);
+        // Convert unified format to the expected format
+        const categoriasFormatadas = categoriasResponse.data.data.map((item: any) => ({
+          id: item.id,
+          nome: item.nome,
+          tipo: item.tipo,
+          dataCriacao: new Date(item.dataCriacao)
+        }));
+        setCategorias(categoriasFormatadas);
       }
     } catch (error) {
       console.error("❌ [CONTAS] Erro ao carregar dados auxiliares:", error);
