@@ -172,6 +172,13 @@ export default function FormularioFuncionario() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* General Error Display */}
+          {errors.general && (
+            <div className="p-4 border border-red-200 bg-red-50 rounded-md">
+              <p className="text-sm text-red-600">{errors.general}</p>
+            </div>
+          )}
+
           {/* Dados Pessoais */}
           <Card>
             <CardHeader>
