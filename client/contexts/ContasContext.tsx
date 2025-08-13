@@ -187,10 +187,20 @@ export function ContasProvider({ children }: { children: ReactNode }) {
 
       setContas(contasFormatadas);
       console.log('🔍 [CONTAS] Contas formatadas e definidas no estado:', contasFormatadas);
+
+      // Salvar backup no localStorage
+      salvarContasNoLocalStorage(contasFormatadas);
     } catch (error) {
       console.error("Erro ao carregar contas:", error);
-      // Em caso de erro, manter contas vazias
-      setContas([]);
+
+      // Em caso de erro, tentar carregar do localStorage
+      const contasLocal = carregarContasDoLocalStorage();
+      if (contasLocal.length > 0) {
+        console.log('🔄 [CONTAS] Usando dados do localStorage como fallback');
+        setContas(contasLocal);
+      } else {
+        setContas([]);
+      }
     } finally {
       setIsLoading(false);
     }
