@@ -212,6 +212,16 @@ export interface Categoria {
   dataCriacao: Date;
 }
 
+export interface DescricaoECategoria {
+  id: string;
+  nome: string;
+  tipo: "receita" | "despesa";
+  tipoItem: "descricao" | "categoria";
+  categoria?: string;
+  ativo: boolean;
+  dataCriacao: Date;
+}
+
 export interface FormaPagamento {
   id: string; // CodigoForma
   nome: string; // FormaPagamento (obrigatório)
