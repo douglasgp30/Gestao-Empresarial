@@ -155,6 +155,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   // Estados para entidades no banco
+  const [descricoesECategorias, setDescricoesECategorias] = useState<DescricaoECategoria[]>([]);
   const [descricoes, setDescricoes] = useState<Descricao[]>([]);
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
