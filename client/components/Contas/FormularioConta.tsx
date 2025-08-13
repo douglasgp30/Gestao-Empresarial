@@ -58,14 +58,29 @@ export default function FormularioConta() {
     e.preventDefault();
 
     const valor = parseFloat(formData.valor);
-    if (!valor || valor <= 0) return;
+    if (!valor || valor <= 0) {
+      console.log("Valor inválido:", formData.valor);
+      return;
+    }
 
     // Para contas a receber, verificar se o cliente foi selecionado
     if (activeTab === "receber") {
-      if (!formData.cliente || !formData.dataVencimento) return;
+      if (!formData.cliente || !formData.dataVencimento) {
+        console.log("Cliente ou data de vencimento não preenchidos:", {
+          cliente: formData.cliente,
+          dataVencimento: formData.dataVencimento
+        });
+        return;
+      }
     } else {
       // Para contas a pagar, verificar fornecedor
-      if (!formData.fornecedorCliente || !formData.dataVencimento) return;
+      if (!formData.fornecedorCliente || !formData.dataVencimento) {
+        console.log("Fornecedor ou data de vencimento não preenchidos:", {
+          fornecedorCliente: formData.fornecedorCliente,
+          dataVencimento: formData.dataVencimento
+        });
+        return;
+      }
     }
 
     // Buscar dados do cliente se for conta a receber
