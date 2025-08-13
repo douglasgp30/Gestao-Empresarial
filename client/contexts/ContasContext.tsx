@@ -97,25 +97,34 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const adicionarConta = (novaConta: Omit<Conta, "id" | "funcionarioId">) => {
-    const id = Date.now().toString();
-    const conta: Conta = {
-      ...novaConta,
-      id,
-      funcionarioId: user?.id || "1",
-      status: getStatusConta(novaConta.dataVencimento, "pendente"),
-    };
+  const adicionarConta = async (novaConta: Omit<Conta, "id" | "funcionarioId">) => {
+    try {
+      setIsLoading(true);
 
-    setContas((prev) => {
-      const novasContas = [...prev, conta];
-      // Salvar no localStorage
-      try {
-        localStorage.setItem("contas", JSON.stringify(novasContas));
-      } catch (error) {
-        console.warn("Erro ao salvar contas no localStorage:", error);
+      // Preparar dados para a API
+      const dadosApi = {
+        tipo: novaConta.tipo,
+        descricao: novaConta.descricao || `Conta ${novaConta.tipo === "receber" ? "a receber" : "a pagar"}`,
+        valor: novaConta.valor,
+        dataVencimento: novaConta.dataVencimento.toISOString().split("T")[0],
+        status: "pendente",
+        observacoes: novaConta.observacoes,
+        categoria: novaConta.categoria,
+      };
+
+      const response = await contasApi.criar(dadosApi);
+      if (response.error) {
+        throw new Error(response.error);
       }
-      return novasContas;
-    });
+
+      // Recarregar contas
+      await carregarContas();
+    } catch (error) {
+      console.error("Erro ao adicionar conta:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const editarConta = (id: string, dadosAtualizados: Partial<Conta>) => {
