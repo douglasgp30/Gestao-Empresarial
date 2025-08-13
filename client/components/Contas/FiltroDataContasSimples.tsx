@@ -7,7 +7,7 @@ import { Calendar, ChevronDown } from "lucide-react";
 import { format, startOfDay, endOfDay, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-export default function FiltroDataContasSimples() {
+export function FiltroDataContasSimples() {
   const { filtros, setFiltros, isLoading } = useContas();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
