@@ -552,9 +552,9 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {contasVencendo.map((conta) => (
+                  {contasVencendo.map((conta, index) => (
                     <div
-                      key={conta.id}
+                      key={`conta-${conta.id}-${index}`}
                       className="flex items-center justify-between"
                     >
                       <div className="flex items-center space-x-3">
