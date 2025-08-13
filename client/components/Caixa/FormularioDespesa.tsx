@@ -114,7 +114,6 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "despesa",
-        conta: formData.conta,
         valor: valorInput.numericValue,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
