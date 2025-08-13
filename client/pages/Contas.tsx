@@ -189,10 +189,14 @@ function ContasContent() {
         </TabsContent>
 
         <TabsContent value="formulario" className="space-y-4">
-          <FormularioConta 
+          <FormularioConta
             contaParaEditar={contaParaEditar || undefined}
             onSuccess={handleSuccessForm}
           />
+        </TabsContent>
+
+        <TabsContent value="teste" className="space-y-4">
+          <AccountsSystemTester />
         </TabsContent>
       </Tabs>
 
