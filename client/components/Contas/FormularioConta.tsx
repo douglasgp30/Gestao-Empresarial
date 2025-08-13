@@ -54,7 +54,7 @@ export function FormularioConta({
     conta: "empresa" as "empresa" | "pessoal",
     formaPg: "",
     observacoes: "",
-    descricaoCategoria: "",
+    descricaoCategoria: "0",
     pago: false,
     dataPagamento: undefined as Date | undefined,
   });
