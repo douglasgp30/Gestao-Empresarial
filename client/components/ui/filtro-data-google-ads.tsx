@@ -231,6 +231,18 @@ export default function FiltroDataGoogleAds({
 
   const aplicarPeriodo = (opcao: OpcaoPeriodo) => {
     if (opcao.id === "personalizar") {
+      // Sincronizar campos temporários com os valores atuais
+      setTempDataInicio(dataInicio || "");
+      setTempDataFim(dataFim || "");
+
+      // Sincronizar dateRange com os valores atuais
+      if (dataInicio && dataFim) {
+        setDateRange({
+          from: parseISO(dataInicio),
+          to: parseISO(dataFim)
+        });
+      }
+
       setShowCalendar(true);
       return;
     }
