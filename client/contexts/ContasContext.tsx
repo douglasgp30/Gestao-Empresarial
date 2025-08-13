@@ -189,6 +189,8 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
 
+      console.log('🔍 [CONTAS] Adicionando nova conta:', novaConta);
+
       // Preparar dados para a API
       const dadosApi = {
         tipo: novaConta.tipo,
@@ -200,12 +202,16 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         categoria: novaConta.tipoPagamento || novaConta.categoria,
       };
 
+      console.log('🔍 [CONTAS] Dados preparados para a API:', dadosApi);
 
       const response = await contasApi.criar(dadosApi);
+      console.log('🔍 [CONTAS] Resposta da criação:', response);
+
       if (response.error) {
         throw new Error(response.error);
       }
 
+      console.log('🔍 [CONTAS] Conta criada com sucesso, recarregando lista...');
       // Recarregar contas
       await carregarContas();
     } catch (error) {
