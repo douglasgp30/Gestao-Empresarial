@@ -17,7 +17,7 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { Settings, GripVertical, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Settings, GripVertical, Eye, EyeOff, RotateCcw, Lock } from "lucide-react";
 import { ColumnConfig } from "../../hooks/use-table-columns";
 
 interface ColumnManagerProps {
