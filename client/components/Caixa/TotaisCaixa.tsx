@@ -35,17 +35,6 @@ export function TotaisCaixa() {
         </div>
       </div>
 
-      {totais.boletos > 0 && (
-        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-          <FileText className="h-4 w-4 text-amber-600" />
-          <div className="text-center">
-            <p className="text-xs text-amber-700/70 font-medium">Boletos</p>
-            <p className="text-sm font-bold text-amber-700">
-              {formatarMoeda(totais.boletos)}
-            </p>
-          </div>
-        </div>
-      )}
 
       <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
         <TrendingDown className="h-4 w-4 text-red-600" />
