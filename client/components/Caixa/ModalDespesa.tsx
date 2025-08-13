@@ -68,17 +68,6 @@ export function ModalDespesa() {
     return getDescricoes("despesa", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
-  // Obter categorias únicas das descrições de despesa
-  const categoriasDespesa = useCallback(() => {
-    return [
-      ...new Set(
-        descricoesDespesa()
-          .map((d) => d.categoria)
-          .filter((categoria) => categoria && categoria.trim() !== ""),
-      ),
-    ].sort();
-  }, [descricoesDespesa]);
-
   const resetForm = () => {
     setFormData({
       data: new Date().toISOString().split("T")[0],
