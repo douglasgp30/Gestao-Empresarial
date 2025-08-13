@@ -28,17 +28,20 @@ interface SelectWithAddProps {
   label?: string;
   required?: boolean;
   disabled?: boolean;
-  items: Array<{ id: string; nome: string; [key: string]: any }>;
-  onAddNew: (item: any) => Promise<void>;
-  addNewTitle: string;
-  addNewDescription: string;
-  addNewFields: Array<{
+  // Suporte para ambos os formatos
+  items?: Array<{ id: string; nome: string; [key: string]: any }>;
+  options?: Array<{ value: string; label: string; [key: string]: any }>;
+  onAddNew: (item: any) => Promise<void> | Promise<boolean> | void;
+  addNewTitle?: string;
+  addNewDescription?: string;
+  addNewFields?: Array<{
     key: string;
     label: string;
     type?: "text" | "select";
     required?: boolean;
     options?: Array<{ value: string; label: string }>;
   }>;
+  addButtonText?: string;
   renderItem?: (item: any) => string;
   className?: string;
 }
@@ -51,11 +54,13 @@ export default function SelectWithAdd({
   required = false,
   disabled = false,
   items,
+  options,
   onAddNew,
-  addNewTitle,
-  addNewDescription,
-  addNewFields,
-  renderItem = (item) => item.nome,
+  addNewTitle = "Adicionar Novo",
+  addNewDescription = "Adicione um novo item",
+  addNewFields = [{ key: "nome", label: "Nome", required: true }],
+  addButtonText = "Novo",
+  renderItem = (item) => item.nome || item.label,
   className = "",
 }: SelectWithAddProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -65,21 +70,46 @@ export default function SelectWithAdd({
     string | null
   >(null);
 
+  // Normalizar os dados para um formato único
+  const normalizedItems = React.useMemo(() => {
+    if (items && Array.isArray(items)) {
+      return items.map(item => ({
+        id: item.id,
+        nome: item.nome,
+        label: item.nome,
+        value: item.id.toString(),
+        ...item
+      }));
+    }
+
+    if (options && Array.isArray(options)) {
+      return options.map(option => ({
+        id: option.value,
+        nome: option.label,
+        label: option.label,
+        value: option.value,
+        ...option
+      }));
+    }
+
+    return [];
+  }, [items, options]);
+
   // Auto-selecionar item recém-criado
   useEffect(() => {
-    if (newlyCreatedItemName) {
+    if (newlyCreatedItemName && normalizedItems.length > 0) {
       // Procurar o item recém-criado na lista
-      const newItem = items.find(
+      const newItem = normalizedItems.find(
         (item) =>
           item.nome?.toLowerCase() === newlyCreatedItemName.toLowerCase(),
       );
 
       if (newItem && !value) {
-        onValueChange(newItem.id.toString());
+        onValueChange(newItem.value);
         setNewlyCreatedItemName(null);
       }
     }
-  }, [items, newlyCreatedItemName, value, onValueChange]);
+  }, [normalizedItems, newlyCreatedItemName, value, onValueChange]);
 
   const handleAddNew = async () => {
     // Validar campos obrigatórios
@@ -147,10 +177,10 @@ export default function SelectWithAdd({
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
-            {items
+            {normalizedItems
               .filter((item) => {
                 // Filtrar itens com IDs inválidos
-                const id = item.id;
+                const id = item.id || item.value;
                 return (
                   id != null &&
                   id !== "" &&
@@ -159,7 +189,7 @@ export default function SelectWithAdd({
                 );
               })
               .map((item) => (
-                <SelectItem key={item.id} value={item.id.toString()}>
+                <SelectItem key={item.value} value={item.value}>
                   {renderItem(item)}
                 </SelectItem>
               ))}
