@@ -32,7 +32,9 @@ export function CleanFakeData() {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error("Server response error:", errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
@@ -46,7 +48,7 @@ export function CleanFakeData() {
 
         toast({
           title: "✅ Limpeza Concluída!",
-          description: `${totalRemovidos} registros fictícios removidos. Sistema agora cont��m apenas dados reais.`,
+          description: `${totalRemovidos} registros fictícios removidos. Sistema agora contém apenas dados reais.`,
           variant: "default",
         });
       } else {
