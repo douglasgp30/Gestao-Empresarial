@@ -7,6 +7,9 @@ import {
   Clock,
   AlertTriangle,
   RefreshCw,
+  TrendingUp,
+  TrendingDown,
+  FileText,
 } from "lucide-react";
 import { ContasProvider, useContas } from "@/contexts/ContasContext";
 import { FiltroDataContasSimples } from "@/components/Contas/FiltroDataContasSimples";
