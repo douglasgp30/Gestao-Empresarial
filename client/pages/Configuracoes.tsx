@@ -846,10 +846,9 @@ export default function Configuracoes() {
         <TabsContent value="testes" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>🧪 Testes do Sistema</CardTitle>
+              <CardTitle>📊 Status do Sistema</CardTitle>
               <CardDescription>
-                Execute testes automatizados para verificar a integridade das
-                funcionalidades principais
+                Acompanhe o status dos módulos do sistema
               </CardDescription>
             </CardHeader>
             <CardContent>
