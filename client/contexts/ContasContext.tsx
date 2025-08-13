@@ -340,7 +340,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     editarConta,
     excluirConta,
     marcarComoPaga,
-    setFiltros,
+    setFiltros: setFiltrosComLog,
     isLoading,
   };
 
