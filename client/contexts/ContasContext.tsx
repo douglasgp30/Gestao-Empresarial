@@ -81,7 +81,7 @@ export function ContasProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [filtros, setFiltros] = useState({
     dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-    dataFim: new Date(),
+    dataFim: new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000), // 1 ano no futuro
     tipo: "ambos" as "pagar" | "receber" | "ambos",
   });
 
