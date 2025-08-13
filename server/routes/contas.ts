@@ -87,6 +87,8 @@ router.post("/", async (req, res) => {
       data: dados,
     });
 
+    console.log("[Contas] Conta criada com sucesso:", conta);
+
     const response: ApiResponse<typeof conta> = {
       success: true,
       data: conta,
