@@ -59,15 +59,12 @@ export default function FiltrosContasCompacto() {
 
   const limparFiltros = () => {
     const hoje = new Date();
-    // Usar o mesmo padrão do contexto - últimos 3 meses até próximos 12 meses
-    const inicioRange = new Date(hoje.getFullYear(), hoje.getMonth() - 3, 1);
-    const fimRange = new Date(hoje.getFullYear(), hoje.getMonth() + 12, 0);
-    inicioRange.setHours(0, 0, 0, 0);
-    fimRange.setHours(23, 59, 59, 999);
+    const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
+    const fimHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
 
     const filtrosLimpos = {
-      dataInicio: inicioRange,
-      dataFim: fimRange,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
       tipo: "ambos" as const,
       status: "",
       fornecedorCliente: "",
