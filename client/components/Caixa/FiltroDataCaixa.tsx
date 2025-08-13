@@ -52,7 +52,9 @@ export default function FiltroDataCaixa() {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    const formatted = `${year}-${month}-${day}`;
+    console.log('🔍 Debug formatação:', { date, formatted });
+    return formatted;
   };
 
   return (
