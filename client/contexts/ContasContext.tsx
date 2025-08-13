@@ -181,26 +181,26 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     try {
       // Carregar clientes
       const clientesResponse = await apiService.get("/contas/clientes");
-      if (clientesResponse.data) {
-        setClientes(clientesResponse.data);
+      if (clientesResponse.data && clientesResponse.data.data) {
+        setClientes(clientesResponse.data.data);
       }
 
       // Carregar fornecedores
       const fornecedoresResponse = await apiService.get("/contas/fornecedores");
-      if (fornecedoresResponse.data) {
-        setFornecedores(fornecedoresResponse.data);
+      if (fornecedoresResponse.data && fornecedoresResponse.data.data) {
+        setFornecedores(fornecedoresResponse.data.data);
       }
 
       // Carregar formas de pagamento
       const formasResponse = await apiService.get("/formas-pagamento");
-      if (formasResponse.data) {
-        setFormasPagamento(formasResponse.data);
+      if (formasResponse.data && formasResponse.data.data) {
+        setFormasPagamento(formasResponse.data.data);
       }
 
       // Carregar categorias
       const categoriasResponse = await apiService.get("/contas/categorias");
-      if (categoriasResponse.data) {
-        setCategorias(categoriasResponse.data);
+      if (categoriasResponse.data && categoriasResponse.data.data) {
+        setCategorias(categoriasResponse.data.data);
       }
     } catch (error) {
       console.error("❌ [CONTAS] Erro ao carregar dados auxiliares:", error);
