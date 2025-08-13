@@ -67,13 +67,50 @@ export default function FiltroDataGoogleAds({
   const [isOpen, setIsOpen] = useState(false);
   const [periodoSelecionado, setPeriodoSelecionado] =
     useState<PeriodoPredefinido>("hoje");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    if (dataInicio && dataFim) {
+      return {
+        from: parseISO(dataInicio),
+        to: parseISO(dataFim),
+      };
+    }
+    return undefined;
+  });
   const [showCalendar, setShowCalendar] = useState(false);
-  const [tempDataInicio, setTempDataInicio] = useState("");
-  const [tempDataFim, setTempDataFim] = useState("");
+  const [tempDataInicio, setTempDataInicio] = useState(dataInicio || "");
+  const [tempDataFim, setTempDataFim] = useState(dataFim || "");
+
+  // Sincronizar campos temporários com dateRange
+  const handleTempDataInicioChange = (value: string) => {
+    setTempDataInicio(value);
+    if (value && tempDataFim) {
+      setDateRange({
+        from: parseISO(value),
+        to: parseISO(tempDataFim),
+      });
+    }
+  };
+
+  const handleTempDataFimChange = (value: string) => {
+    setTempDataFim(value);
+    if (tempDataInicio && value) {
+      setDateRange({
+        from: parseISO(tempDataInicio),
+        to: parseISO(value),
+      });
+    }
+  };
+
+  // Sincronizar dateRange com campos temporários
+  React.useEffect(() => {
+    if (dateRange?.from && dateRange?.to) {
+      setTempDataInicio(format(dateRange.from, "yyyy-MM-dd"));
+      setTempDataFim(format(dateRange.to, "yyyy-MM-dd"));
+    }
+  }, [dateRange]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const hoje = new Date();
+  const hoje = new Date(); // Usar data atual do sistema
 
   const opcoesPeriodo: OpcaoPeriodo[] = [
     {
@@ -175,26 +212,20 @@ export default function FiltroDataGoogleAds({
     },
   ];
 
-  // Determinar qual período está selecionado baseado nas datas atuais
-  useEffect(() => {
+  // Detectar período baseado nas props
+  React.useEffect(() => {
     if (!dataInicio || !dataFim) return;
 
     const inicioAtual = parseISO(dataInicio);
     const fimAtual = parseISO(dataFim);
 
-    for (const opcao of opcoesPeriodo) {
-      if (opcao.id === "personalizar") continue;
-
-      const { inicio, fim } = opcao.calcularDatas();
-
-      if (isSameDay(inicioAtual, inicio) && isSameDay(fimAtual, fim)) {
-        setPeriodoSelecionado(opcao.id);
-        return;
-      }
+    // Se as datas são iguais (mesmo dia), é "hoje"
+    if (isSameDay(inicioAtual, fimAtual)) {
+      setPeriodoSelecionado("hoje");
+    } else {
+      setPeriodoSelecionado("personalizar");
     }
-
-    setPeriodoSelecionado("personalizar");
-  }, [dataInicio, dataFim]);
+  }, [dataInicio, dataFim]); // Executar sempre que as props mudarem
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -228,51 +259,97 @@ export default function FiltroDataGoogleAds({
   };
 
   const aplicarPeriodo = (opcao: OpcaoPeriodo) => {
+    console.log("🚀 FILTRO aplicarPeriodo chamado com:", opcao.id);
     if (opcao.id === "personalizar") {
+      console.log("📝 FILTRO Modo personalizar ativado");
+      // Sincronizar campos temporários com os valores atuais
+      setTempDataInicio(dataInicio || "");
+      setTempDataFim(dataFim || "");
+
+      // Sincronizar dateRange com os valores atuais
+      if (dataInicio && dataFim) {
+        setDateRange({
+          from: parseISO(dataInicio),
+          to: parseISO(dataFim),
+        });
+      }
+
       setShowCalendar(true);
       return;
     }
 
     const { inicio, fim } = opcao.calcularDatas();
-
+    console.log("🚀 FILTRO Datas calculadas:", { inicio, fim });
     setPeriodoSelecionado(opcao.id);
 
     // Aplicar as datas imediatamente
     const dataInicioFormatada = format(inicio, "yyyy-MM-dd");
     const dataFimFormatada = format(fim, "yyyy-MM-dd");
 
+    console.log("🚀 FILTRO Chamando handlers:", {
+      dataInicioFormatada,
+      dataFimFormatada,
+    });
     onDataInicioChange(dataInicioFormatada);
     onDataFimChange(dataFimFormatada);
 
-    // Aplicar os filtros após um pequeno delay
-    setTimeout(() => {
-      onAplicar();
-      setIsOpen(false);
-    }, 10);
+    // Aplicar os filtros imediatamente
+    console.log("🚀 FILTRO Chamando onAplicar");
+    onAplicar();
+    setIsOpen(false);
   };
 
   const aplicarDatasPersonalizadas = () => {
-    if (dateRange?.from && dateRange?.to) {
-      onDataInicioChange(format(dateRange.from, "yyyy-MM-dd"));
-      onDataFimChange(format(dateRange.to, "yyyy-MM-dd"));
-      setPeriodoSelecionado("personalizar");
+    console.log("🚀 FILTRO aplicarDatasPersonalizadas chamado");
+    console.log("🚀 FILTRO dateRange:", dateRange);
+    console.log(
+      "🚀 FILTRO tempDataInicio:",
+      tempDataInicio,
+      "tempDataFim:",
+      tempDataFim,
+    );
 
-      setTimeout(() => {
-        onAplicar();
-        setIsOpen(false);
-        setShowCalendar(false);
-      }, 10);
-    } else if (tempDataInicio && tempDataFim) {
+    // Priorizar dateRange do calendário se disponível
+    if (dateRange?.from && dateRange?.to) {
+      const dataInicioFormatada = format(dateRange.from, "yyyy-MM-dd");
+      const dataFimFormatada = format(dateRange.to, "yyyy-MM-dd");
+
+      console.log("🚀 FILTRO Usando dateRange:", {
+        dataInicioFormatada,
+        dataFimFormatada,
+      });
+      onDataInicioChange(dataInicioFormatada);
+      onDataFimChange(dataFimFormatada);
+
+      // Sincronizar campos temporários
+      setTempDataInicio(dataInicioFormatada);
+      setTempDataFim(dataFimFormatada);
+    }
+    // Caso contrário, usar campos temporários
+    else if (tempDataInicio && tempDataFim) {
+      console.log("🚀 FILTRO Usando campos temporários:", {
+        tempDataInicio,
+        tempDataFim,
+      });
       onDataInicioChange(tempDataInicio);
       onDataFimChange(tempDataFim);
-      setPeriodoSelecionado("personalizar");
 
-      setTimeout(() => {
-        onAplicar();
-        setIsOpen(false);
-        setShowCalendar(false);
-      }, 10);
+      // Sincronizar dateRange
+      setDateRange({
+        from: parseISO(tempDataInicio),
+        to: parseISO(tempDataFim),
+      });
+    } else {
+      console.log("🚀 FILTRO Nenhuma data válida encontrada");
+      // Se nenhum estiver preenchido, não fazer nada
+      return;
     }
+
+    setPeriodoSelecionado("personalizar");
+    console.log("🚀 FILTRO Chamando onAplicar");
+    onAplicar();
+    setIsOpen(false);
+    setShowCalendar(false);
   };
 
   const voltarParaOpcoes = () => {
@@ -288,10 +365,18 @@ export default function FiltroDataGoogleAds({
       <div
         className="relative filtro-data-google-ads w-full max-w-sm"
         ref={dropdownRef}
+        style={{ zIndex: isOpen ? 9999 : "auto" }}
       >
         <Button
           variant="outline"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            console.log(
+              "🖱️ FILTRO Clique no botão principal, isOpen atual:",
+              isOpen,
+            );
+            setIsOpen(!isOpen);
+            console.log("🖱️ FILTRO Novo estado isOpen:", !isOpen);
+          }}
           className="w-full justify-between h-10 px-4 text-sm font-normal"
           disabled={isLoading}
         >
@@ -303,17 +388,47 @@ export default function FiltroDataGoogleAds({
         </Button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-[700px]">
+          <div
+            className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-[9999] w-[280px]"
+            onLoad={() => console.log("🔍 FILTRO Dropdown renderizado")}
+            ref={(el) => el && console.log("🔍 FILTRO Dropdown montado no DOM")}
+          >
             {!showCalendar ? (
-              <div className="flex">
-                {/* Lista de opções predefinidas */}
-                <div className="w-72 p-4 border-r border-gray-200">
-                  <div className="space-y-2">
-                    {opcoesPeriodo.map((opcao) => (
+              <div className="p-3">
+                {/* Lista de opções simples */}
+                <div className="space-y-1">
+                  {/* Personalizar no topo */}
+                  <button
+                    onClick={() => {
+                      console.log("🖱️ FILTRO Clique: Personalizar");
+                      aplicarPeriodo(
+                        opcoesPeriodo.find((o) => o.id === "personalizar")!,
+                      );
+                    }}
+                    className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
+                      periodoSelecionado === "personalizar"
+                        ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    📅 Personalizar
+                  </button>
+
+                  <div className="border-t border-gray-200 my-2"></div>
+
+                  {/* Outras opções */}
+                  {opcoesPeriodo
+                    .filter((opcao) => opcao.id !== "personalizar")
+                    .map((opcao) => (
                       <button
                         key={opcao.id}
-                        onClick={() => aplicarPeriodo(opcao)}
-                        className={`w-full text-left px-4 py-3 text-sm rounded-lg hover:bg-gray-100 transition-colors ${
+                        onClick={() => {
+                          console.log(
+                            `🖱️ FILTRO Clique: ${opcao.label} (${opcao.id})`,
+                          );
+                          aplicarPeriodo(opcao);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors ${
                           periodoSelecionado === opcao.id
                             ? "bg-blue-100 text-blue-800 font-medium border border-blue-200"
                             : "text-gray-700 hover:bg-gray-50"
@@ -322,185 +437,75 @@ export default function FiltroDataGoogleAds({
                         {opcao.label}
                       </button>
                     ))}
-                  </div>
-                </div>
-
-                {/* Preview das datas */}
-                <div className="flex-1 p-6">
-                  <div className="mb-6">
-                    <div className="text-sm font-medium text-gray-500 mb-3">
-                      Período selecionado:
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900 mb-6">
-                      {formatarPeriodoDisplay()}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6 mb-8">
-                    <div className="bg-gray-50 p-4 rounded-lg border">
-                      <label className="text-sm font-semibold text-gray-600 block mb-2">
-                        Data de início*
-                      </label>
-                      <div className="text-base font-medium text-gray-900">
-                        {dataInicio
-                          ? parseISO(dataInicio).toLocaleDateString("pt-BR")
-                          : "-"}
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-lg border">
-                      <label className="text-sm font-semibold text-gray-600 block mb-2">
-                        Data de término
-                      </label>
-                      <div className="text-base font-medium text-gray-900">
-                        {dataFim
-                          ? parseISO(dataFim).toLocaleDateString("pt-BR")
-                          : "-"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <Button
-                      size="lg"
-                      onClick={() => {
-                        if (periodoSelecionado !== "personalizar") {
-                          const opcaoAtual = opcoesPeriodo.find(
-                            (o) => o.id === periodoSelecionado,
-                          );
-                          if (opcaoAtual) aplicarPeriodo(opcaoAtual);
-                        } else {
-                          aplicarDatasPersonalizadas();
-                        }
-                      }}
-                      className="flex-1 h-12 text-base font-semibold"
-                    >
-                      <Check className="h-5 w-5 mr-2" />
-                      Aplicar
-                    </Button>
-                    {onLimpar && (
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        onClick={() => {
-                          onLimpar();
-                          setIsOpen(false);
-                        }}
-                        className="h-12 px-6 text-base"
-                      >
-                        Cancelar
-                      </Button>
-                    )}
-                  </div>
                 </div>
               </div>
             ) : (
-              <div className="p-6">
-                {/* Header do calendário personalizado */}
-                <div className="flex items-center justify-between mb-6">
+              <div className="p-3">
+                {/* Header compacto */}
+                <div className="flex items-center justify-between mb-3">
                   <Button
                     variant="ghost"
-                    size="default"
+                    size="sm"
                     onClick={voltarParaOpcoes}
-                    className="text-sm font-medium"
+                    className="text-xs p-1 h-6"
                   >
                     ← Voltar
                   </Button>
-                  <h3 className="text-lg font-semibold">
-                    Datas personalizadas
-                  </h3>
-                  <div></div>
+                  <span className="text-sm font-medium">Personalizar</span>
+                  <div className="w-6"></div>
                 </div>
 
-                {/* Campos de data manual */}
-                <div className="grid grid-cols-2 gap-6 mb-8">
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <Label className="text-sm font-semibold text-gray-600 mb-3 block">
-                      Data de início*
+                {/* Campos de data inline compactos */}
+                <div className="space-y-2 mb-3">
+                  <div>
+                    <Label className="text-xs text-gray-600 mb-1 block">
+                      Data de início
                     </Label>
                     <Input
                       type="date"
                       value={tempDataInicio || dataInicio}
-                      onChange={(e) => setTempDataInicio(e.target.value)}
-                      className="h-12 text-base font-medium"
+                      onChange={(e) =>
+                        handleTempDataInicioChange(e.target.value)
+                      }
+                      className="h-8 text-xs w-full"
                     />
                   </div>
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <Label className="text-sm font-semibold text-gray-600 mb-3 block">
+                  <div>
+                    <Label className="text-xs text-gray-600 mb-1 block">
                       Data de término
                     </Label>
                     <Input
                       type="date"
                       value={tempDataFim || dataFim}
-                      onChange={(e) => setTempDataFim(e.target.value)}
-                      className="h-12 text-base font-medium"
+                      onChange={(e) => handleTempDataFimChange(e.target.value)}
+                      className="h-8 text-xs w-full"
                     />
                   </div>
                 </div>
 
-                {/* Calendário duplo */}
-                <div className="border border-gray-200 rounded-lg p-5 bg-gray-50">
-                  <DayPicker
-                    mode="range"
-                    selected={dateRange}
-                    onSelect={setDateRange}
-                    numberOfMonths={2}
-                    locale={ptBR}
-                    className="text-base"
-                    classNames={{
-                      months:
-                        "flex flex-col sm:flex-row space-y-6 sm:space-x-8 sm:space-y-0",
-                      month: "space-y-5",
-                      caption:
-                        "flex justify-center pt-3 relative items-center mb-5",
-                      caption_label: "text-lg font-bold text-gray-800",
-                      nav: "space-x-3 flex items-center",
-                      nav_button:
-                        "h-10 w-10 bg-white p-0 opacity-70 hover:opacity-100 rounded-lg border border-gray-300 hover:bg-gray-100 transition-all duration-200 shadow-sm",
-                      nav_button_previous: "absolute left-3",
-                      nav_button_next: "absolute right-3",
-                      table: "w-full border-collapse space-y-2",
-                      head_row: "flex mb-3",
-                      head_cell:
-                        "text-gray-600 rounded-lg w-11 h-11 font-semibold text-sm flex items-center justify-center",
-                      row: "flex w-full mt-2",
-                      cell: "text-center text-base p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-lg last:[&:has([aria-selected])]:rounded-r-lg focus-within:relative focus-within:z-20",
-                      day: "h-11 w-11 p-0 font-medium aria-selected:opacity-100 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-150 text-base flex items-center justify-center border border-transparent hover:border-gray-200",
-                      day_selected:
-                        "bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white font-semibold border-blue-600 shadow-md",
-                      day_today:
-                        "bg-blue-100 text-blue-800 font-bold border-blue-300",
-                      day_outside: "text-gray-400 opacity-60",
-                      day_disabled: "text-gray-300 opacity-40",
-                      day_range_middle:
-                        "aria-selected:bg-blue-100 aria-selected:text-blue-800",
-                      day_hidden: "invisible",
-                    }}
-                  />
-                </div>
-
-                {/* Botões do calendário */}
-                <div className="flex gap-4 mt-8">
+                {/* Botões compactos */}
+                <div className="flex gap-2">
                   <Button
-                    size="lg"
-                    onClick={aplicarDatasPersonalizadas}
-                    className="flex-1 h-12 text-base font-semibold"
-                    disabled={
-                      (!dateRange?.from || !dateRange?.to) &&
-                      (!tempDataInicio || !tempDataFim)
-                    }
+                    size="sm"
+                    onClick={() => {
+                      console.log("🖱️ FILTRO Clique: Botão Aplicar");
+                      aplicarDatasPersonalizadas();
+                    }}
+                    className="flex-1 h-7 text-xs"
+                    disabled={!tempDataInicio || !tempDataFim}
                   >
-                    <Check className="h-5 w-5 mr-2" />
-                    Aplicar período
+                    <Check className="h-3 w-3 mr-1" />
+                    Aplicar
                   </Button>
                   <Button
-                    size="lg"
+                    size="sm"
                     variant="outline"
                     onClick={() => {
                       setDateRange(undefined);
                       setTempDataInicio("");
                       setTempDataFim("");
                     }}
-                    className="h-12 px-6 text-base"
+                    className="h-7 px-2 text-xs"
                   >
                     Limpar
                   </Button>

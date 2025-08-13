@@ -54,10 +54,16 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Filtros padrão
-  const [filtros, setFiltros] = useState<FiltrosAgendamento>({
-    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-    dataFim: new Date(),
-    status: "todos",
+  const [filtros, setFiltros] = useState<FiltrosAgendamento>(() => {
+    // Forçar data atual real (14/08/2025)
+    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
+    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
+
+    return {
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
+      status: "todos",
+    };
   });
 
   // Carregar dados iniciais

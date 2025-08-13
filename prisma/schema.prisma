@@ -54,7 +54,9 @@ model FormaPagamento {
   dataCriacao DateTime @default(now())
 
   // Relacionamentos
-  lancamentos LancamentoCaixa[]
+  lancamentos    LancamentoCaixa[]
+  contasReceber  ContaLancamento[] @relation("FormaPagamentoReceber")
+  contasPagar    ContaLancamento[] @relation("FormaPagamentoPagar")
 
   @@map("formas_pagamento")
 }
@@ -72,8 +74,9 @@ model Cliente {
   dataCriacao        DateTime @default(now())
 
   // Relacionamentos
-  agendamentos Agendamento[]
-  lancamentos  LancamentoCaixa[]
+  agendamentos   Agendamento[]
+  lancamentos    LancamentoCaixa[]
+  contasReceber  ContaLancamento[] @relation("ClienteContas")
 
   @@map("clientes")
   @@index([cpf])
@@ -86,7 +89,22 @@ model Fornecedor {
   telefone    String?
   dataCriacao DateTime @default(now())
 
+  // Relacionamentos
+  contasPagar ContaLancamento[] @relation("FornecedorContas")
+
   @@map("fornecedores")
+}
+
+model Categoria {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  tipo        String   // "receita" ou "despesa"
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  contas ContaLancamento[]
+
+  @@map("categorias")
 }
 
 model Funcionario {
@@ -171,6 +189,38 @@ model LancamentoCaixa {
   @@index([clienteId])
 }
 
+// Nova tabela de contas seguindo o PRD fornecido
+model ContaLancamento {
+  codLancamentoContas Int      @id @default(autoincrement()) // BIGSERIAL PK
+  dataLancamento      DateTime @default(now()) // TIMESTAMP
+  valor               Float    // NUMERIC(12,2)
+  dataVencimento      DateTime // DATE
+  codigoCliente       Int?     // BIGINT FK clientes(id) - Condicional
+  codigoFornecedor    Int?     // BIGINT FK fornecedores(id) - Condicional
+  tipo                String   // ENUM('receber','pagar')
+  conta               String   @default("empresa") // ENUM('empresa','pessoal')
+  formaPg             Int?     // SMALLINT FK formas_pagamento(id) - Condicional
+  observacoes         String?  // TEXT
+  descricaoCategoria  Int?     // SMALLINT FK categorias(id)
+  pago                Boolean  @default(false) // BOOLEAN
+  dataPagamento       DateTime? // TIMESTAMP - Condicional
+
+  // Relacionamentos
+  cliente        Cliente?        @relation("ClienteContas", fields: [codigoCliente], references: [id])
+  fornecedor     Fornecedor?     @relation("FornecedorContas", fields: [codigoFornecedor], references: [id])
+  formaPagamento FormaPagamento? @relation("FormaPagamentoReceber", fields: [formaPg], references: [id])
+  formaPagamentoPagar FormaPagamento? @relation("FormaPagamentoPagar", fields: [formaPg], references: [id])
+  categoria      Categoria?      @relation(fields: [descricaoCategoria], references: [id])
+
+  @@map("contas_lancamentos")
+  @@index([dataVencimento])
+  @@index([tipo])
+  @@index([pago])
+  @@index([codigoCliente])
+  @@index([codigoFornecedor])
+}
+
+// Manter tabela antiga para compatibilidade temporária
 model Conta {
   id            Int      @id @default(autoincrement())
   tipo          String // "pagar" ou "receber"

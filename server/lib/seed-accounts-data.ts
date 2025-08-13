@@ -1,14 +1,11 @@
-import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { ApiResponse } from "@shared/api";
 
-const router = Router();
 const prisma = new PrismaClient();
 
-router.post("/accounts", async (req, res) => {
-  try {
-    console.log("🌱 Criando dados básicos para o sistema de contas...");
+export async function seedAccountsData() {
+  console.log("🌱 Criando dados básicos para o sistema de contas...");
 
+  try {
     // Criar categorias básicas
     const categorias = await Promise.all([
       prisma.categoria.upsert({
@@ -58,6 +55,8 @@ router.post("/accounts", async (req, res) => {
       }),
     ]);
 
+    console.log("✅ Categorias criadas:", categorias.length);
+
     // Criar alguns fornecedores básicos
     const fornecedores = await Promise.all([
       prisma.fornecedor.upsert({
@@ -98,10 +97,12 @@ router.post("/accounts", async (req, res) => {
       }),
     ]);
 
+    console.log("✅ Fornecedores criados:", fornecedores.length);
+
     // Criar alguns clientes de exemplo (se não existirem)
     const clientesExistentes = await prisma.cliente.count();
     if (clientesExistentes === 0) {
-      await Promise.all([
+      const clientes = await Promise.all([
         prisma.cliente.create({
           data: {
             nome: "João Silva",
@@ -127,28 +128,42 @@ router.post("/accounts", async (req, res) => {
           },
         }),
       ]);
+
+      console.log("✅ Clientes de exemplo criados:", clientes.length);
     }
 
     // Verificar se existem formas de pagamento
     const formasExistentes = await prisma.formaPagamento.count();
     if (formasExistentes === 0) {
-      await Promise.all([
+      const formasPagamento = await Promise.all([
         prisma.formaPagamento.create({
-          data: { nome: "Dinheiro" },
+          data: {
+            nome: "Dinheiro",
+          },
         }),
         prisma.formaPagamento.create({
-          data: { nome: "PIX" },
+          data: {
+            nome: "PIX",
+          },
         }),
         prisma.formaPagamento.create({
-          data: { nome: "Cartão de Débito" },
+          data: {
+            nome: "Cartão de Débito",
+          },
         }),
         prisma.formaPagamento.create({
-          data: { nome: "Cartão de Crédito" },
+          data: {
+            nome: "Cartão de Crédito",
+          },
         }),
         prisma.formaPagamento.create({
-          data: { nome: "Transferência Bancária" },
+          data: {
+            nome: "Transferência Bancária",
+          },
         }),
       ]);
+
+      console.log("✅ Formas de pagamento criadas:", formasPagamento.length);
     }
 
     // Criar algumas contas de exemplo
@@ -171,7 +186,7 @@ router.post("/accounts", async (req, res) => {
     if (primeiroCliente && primeiroFornecedor) {
       const contasExistentes = await prisma.contaLancamento.count();
       if (contasExistentes === 0) {
-        await Promise.all([
+        const contasExemplo = await Promise.all([
           // Conta a receber - vence hoje
           prisma.contaLancamento.create({
             data: {
@@ -246,23 +261,27 @@ router.post("/accounts", async (req, res) => {
             },
           }),
         ]);
+
+        console.log("✅ Contas de exemplo criadas:", contasExemplo.length);
       }
     }
 
-    const response: ApiResponse<{ message: string }> = {
-      data: {
-        message: "Dados básicos do sistema de contas criados com sucesso!",
-      },
-    };
-
-    res.json(response);
+    console.log("🎉 Dados básicos do sistema de contas criados com sucesso!");
   } catch (error) {
     console.error("❌ Erro ao criar dados básicos:", error);
-    const response: ApiResponse<null> = {
-      error: "Erro interno do servidor",
-    };
-    res.status(500).json(response);
+    throw error;
   }
-});
+}
 
-export default router;
+// Executar se for chamado diretamente
+if (require.main === module) {
+  seedAccountsData()
+    .then(() => {
+      console.log("✅ Seed concluído com sucesso!");
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error("❌ Erro no seed:", error);
+      process.exit(1);
+    });
+}

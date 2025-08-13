@@ -100,11 +100,17 @@ const RelatoriosContext = createContext<RelatoriosContextType | undefined>(
 
 export function RelatoriosProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [filtros, setFiltros] = useState<RelatorioFiltros>({
-    periodo: {
-      dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-      dataFim: new Date(),
-    },
+  const [filtros, setFiltros] = useState<RelatorioFiltros>(() => {
+    // Forçar data atual real (14/08/2025)
+    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
+    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
+
+    return {
+      periodo: {
+        dataInicio: inicioHoje,
+        dataFim: fimHoje,
+      },
+    };
   });
 
   // Estados para armazenar os relatórios calculados

@@ -11,7 +11,7 @@ export default function FiltroDataContas() {
     novaData.setHours(0, 0, 0, 0);
     setFiltros({
       ...filtros,
-      dataVencimentoInicio: novaData,
+      dataInicio: novaData,
       __timestamp: Date.now(),
     });
   };
@@ -22,7 +22,7 @@ export default function FiltroDataContas() {
     novaData.setHours(23, 59, 59, 999);
     setFiltros({
       ...filtros,
-      dataVencimentoFim: novaData,
+      dataFim: novaData,
       __timestamp: Date.now(),
     });
   };
@@ -36,25 +36,50 @@ export default function FiltroDataContas() {
   };
 
   const handleLimpar = () => {
-    const hoje = new Date();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    // Usar data atual do sistema
+    const agora = new Date();
+    const inicioHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const fimHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
     setFiltros({
       ...filtros,
-      dataVencimentoInicio: inicioMes,
-      dataVencimentoFim: fimMes,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
+      __timestamp: Date.now(),
     });
   };
 
-  // Verificar se o contexto tem as propriedades de data de vencimento
-  const dataInicio =
-    filtros.dataVencimentoInicio || filtros.dataInicio || new Date();
-  const dataFim = filtros.dataVencimentoFim || filtros.dataFim || new Date();
+  // Função para formatar data sem problemas de timezone
+  const formatDateForInput = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Usar as datas do contexto diretamente
+  const dataInicio = filtros.dataInicio || new Date();
+  const dataFim = filtros.dataFim || new Date();
 
   return (
     <FiltroDataGoogleAds
-      dataInicio={dataInicio.toISOString().split("T")[0]}
-      dataFim={dataFim.toISOString().split("T")[0]}
+      dataInicio={formatDateForInput(dataInicio)}
+      dataFim={formatDateForInput(dataFim)}
       onDataInicioChange={handleDataInicioChange}
       onDataFimChange={handleDataFimChange}
       onAplicar={handleAplicar}

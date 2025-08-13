@@ -6,28 +6,62 @@ import { ApiResponse } from "@shared/api";
 const router = Router();
 const prisma = new PrismaClient();
 
-const ContaSchema = z.object({
-  tipo: z.enum(["pagar", "receber"]),
-  descricao: z.string().min(1, "Descrição é obrigatória"),
-  valor: z.number().positive("Valor deve ser positivo"),
-  dataVencimento: z.string().transform((str) => new Date(str)),
-  dataPagamento: z
-    .string()
-    .optional()
-    .transform((str) => (str ? new Date(str) : undefined)),
-  status: z.enum(["pendente", "pago", "atrasado"]).default("pendente"),
-  observacoes: z.string().optional(),
-  categoria: z.string().optional(),
-});
+const ContaLancamentoSchema = z
+  .object({
+    valor: z.number().positive("Valor deve ser positivo"),
+    dataVencimento: z.string().transform((str) => new Date(str)),
+    codigoCliente: z.number().optional(),
+    codigoFornecedor: z.number().optional(),
+    tipo: z.enum(["receber", "pagar"]),
+    conta: z.enum(["empresa", "pessoal"]).default("empresa"),
+    formaPg: z.number().optional(),
+    observacoes: z.string().optional(),
+    descricaoCategoria: z.number().optional(),
+    pago: z.boolean().default(false),
+    dataPagamento: z
+      .string()
+      .optional()
+      .transform((str) => (str ? new Date(str) : undefined)),
+  })
+  .refine(
+    (data) => {
+      // Regra: tipo = receber → precisa ter codigoCliente e não pode ter codigoFornecedor
+      if (data.tipo === "receber") {
+        return data.codigoCliente && !data.codigoFornecedor;
+      }
+      // Regra: tipo = pagar → precisa ter codigoFornecedor e não pode ter codigoCliente
+      if (data.tipo === "pagar") {
+        return data.codigoFornecedor && !data.codigoCliente;
+      }
+      return true;
+    },
+    {
+      message:
+        "Contas a receber devem ter cliente, contas a pagar devem ter fornecedor",
+    },
+  )
+  .refine(
+    (data) => {
+      // Regra: Se pago = true → precisa ter dataPagamento e formaPg
+      if (data.pago) {
+        return data.dataPagamento && data.formaPg;
+      }
+      // Regra: Se pago = false → dataPagamento e formaPg devem estar nulos
+      return !data.dataPagamento && !data.formaPg;
+    },
+    {
+      message: "Contas pagas devem ter data de pagamento e forma de pagamento",
+    },
+  );
 
 // GET /api/contas - Listar contas com filtros
 router.get("/", async (req, res) => {
   try {
-    const { dataInicio, dataFim, tipo, status, categoria } = req.query;
+    const { dataInicio, dataFim, tipo, pago, categoria } = req.query;
 
     const where: any = {};
 
-    // Filtro por data de vencimento
+    // Filtro por data de vencimento (não mais data de lançamento)
     if (dataInicio || dataFim) {
       where.dataVencimento = {};
       if (dataInicio) {
@@ -43,25 +77,43 @@ router.get("/", async (req, res) => {
       where.tipo = tipo;
     }
 
-    // Filtro por status
-    if (status && status !== "todos") {
-      where.status = status;
+    // Filtro por status de pagamento
+    if (pago !== undefined && pago !== "todos") {
+      where.pago = pago === "true";
     }
 
     // Filtro por categoria
     if (categoria && categoria !== "todos") {
-      where.categoria = categoria;
+      where.descricaoCategoria = parseInt(categoria as string);
     }
 
-    const contas = await prisma.conta.findMany({
+    const contas = await prisma.contaLancamento.findMany({
       where,
+      include: {
+        cliente: true,
+        fornecedor: true,
+        formaPagamento: true,
+        categoria: true,
+      },
       orderBy: {
         dataVencimento: "desc",
       },
     });
 
+    console.log("🔍 [API CONTAS] Dados encontrados:", {
+      total: contas.length,
+      filtros: { dataInicio, dataFim, tipo, pago, categoria },
+      primeiros3: contas.slice(0, 3).map((c) => ({
+        id: c.codLancamentoContas,
+        tipo: c.tipo,
+        valor: c.valor,
+        vencimento: c.dataVencimento,
+        cliente: c.cliente?.nome,
+        fornecedor: c.fornecedor?.nome,
+      })),
+    });
+
     const response: ApiResponse<typeof contas> = {
-      success: true,
       data: contas,
     };
 
@@ -69,7 +121,6 @@ router.get("/", async (req, res) => {
   } catch (error) {
     console.error("Erro ao buscar contas:", error);
     const response: ApiResponse<null> = {
-      success: false,
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -79,14 +130,29 @@ router.get("/", async (req, res) => {
 // POST /api/contas - Criar nova conta
 router.post("/", async (req, res) => {
   try {
-    const dados = ContaSchema.parse(req.body);
+    console.log("🔍 [API CONTAS] Dados recebidos para criar conta:", req.body);
 
-    const conta = await prisma.conta.create({
+    const dados = ContaLancamentoSchema.parse(req.body);
+
+    const conta = await prisma.contaLancamento.create({
       data: dados,
+      include: {
+        cliente: true,
+        fornecedor: true,
+        formaPagamento: true,
+        categoria: true,
+      },
+    });
+
+    console.log("✅ [API CONTAS] Conta criada com sucesso:", {
+      id: conta.codLancamentoContas,
+      tipo: conta.tipo,
+      valor: conta.valor,
+      cliente: conta.cliente?.nome,
+      fornecedor: conta.fornecedor?.nome,
     });
 
     const response: ApiResponse<typeof conta> = {
-      success: true,
       data: conta,
     };
 
@@ -96,7 +162,6 @@ router.post("/", async (req, res) => {
 
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
-        success: false,
         error: "Dados inválidos",
         details: error.errors,
       };
@@ -104,7 +169,6 @@ router.post("/", async (req, res) => {
     }
 
     const response: ApiResponse<null> = {
-      success: false,
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -115,15 +179,20 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const dados = ContaSchema.partial().parse(req.body);
+    const dados = ContaLancamentoSchema.partial().parse(req.body);
 
-    const conta = await prisma.conta.update({
-      where: { id },
+    const conta = await prisma.contaLancamento.update({
+      where: { codLancamentoContas: id },
       data: dados,
+      include: {
+        cliente: true,
+        fornecedor: true,
+        formaPagamento: true,
+        categoria: true,
+      },
     });
 
     const response: ApiResponse<typeof conta> = {
-      success: true,
       data: conta,
     };
 
@@ -133,7 +202,6 @@ router.put("/:id", async (req, res) => {
 
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
-        success: false,
         error: "Dados inválidos",
         details: error.errors,
       };
@@ -141,7 +209,6 @@ router.put("/:id", async (req, res) => {
     }
 
     const response: ApiResponse<null> = {
-      success: false,
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -153,12 +220,11 @@ router.delete("/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
-    await prisma.conta.delete({
-      where: { id },
+    await prisma.contaLancamento.delete({
+      where: { codLancamentoContas: id },
     });
 
     const response: ApiResponse<null> = {
-      success: true,
       data: null,
     };
 
@@ -166,7 +232,6 @@ router.delete("/:id", async (req, res) => {
   } catch (error) {
     console.error("Erro ao excluir conta:", error);
     const response: ApiResponse<null> = {
-      success: false,
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -177,17 +242,31 @@ router.delete("/:id", async (req, res) => {
 router.patch("/:id/pagar", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const { formaPg } = req.body;
 
-    const conta = await prisma.conta.update({
-      where: { id },
+    if (!formaPg) {
+      const response: ApiResponse<null> = {
+        error: "Forma de pagamento é obrigatória para marcar como pago",
+      };
+      return res.status(400).json(response);
+    }
+
+    const conta = await prisma.contaLancamento.update({
+      where: { codLancamentoContas: id },
       data: {
-        status: "pago",
+        pago: true,
         dataPagamento: new Date(),
+        formaPg: parseInt(formaPg),
+      },
+      include: {
+        cliente: true,
+        fornecedor: true,
+        formaPagamento: true,
+        categoria: true,
       },
     });
 
     const response: ApiResponse<typeof conta> = {
-      success: true,
       data: conta,
     };
 
@@ -195,7 +274,6 @@ router.patch("/:id/pagar", async (req, res) => {
   } catch (error) {
     console.error("Erro ao marcar conta como paga:", error);
     const response: ApiResponse<null> = {
-      success: false,
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);
@@ -218,43 +296,40 @@ router.get("/totais", async (req, res) => {
       }
     }
 
-    const contas = await prisma.conta.findMany({ where });
+    const contas = await prisma.contaLancamento.findMany({ where });
+
+    const hoje = new Date();
+    hoje.setHours(23, 59, 59, 999);
 
     const totais = {
       totalPagar: contas
-        .filter((c) => c.tipo === "pagar" && c.status !== "pago")
+        .filter((c) => c.tipo === "pagar" && !c.pago)
         .reduce((sum, c) => sum + c.valor, 0),
       totalReceber: contas
-        .filter((c) => c.tipo === "receber" && c.status !== "pago")
+        .filter((c) => c.tipo === "receber" && !c.pago)
         .reduce((sum, c) => sum + c.valor, 0),
       totalVencendoHoje: contas
         .filter((c) => {
-          const hoje = new Date();
           const vencimento = new Date(c.dataVencimento);
-          return (
-            hoje.toDateString() === vencimento.toDateString() &&
-            c.status !== "pago"
-          );
+          vencimento.setHours(23, 59, 59, 999);
+          return hoje.toDateString() === vencimento.toDateString() && !c.pago;
         })
         .reduce((sum, c) => sum + c.valor, 0),
       totalAtrasadas: contas
-        .filter(
-          (c) => new Date(c.dataVencimento) < new Date() && c.status !== "pago",
-        )
+        .filter((c) => new Date(c.dataVencimento) < hoje && !c.pago)
         .reduce((sum, c) => sum + c.valor, 0),
       totalPagas: contas
-        .filter((c) => c.status === "pago")
+        .filter((c) => c.pago)
         .reduce((sum, c) => sum + c.valor, 0),
       totalContasRecebidas: contas
-        .filter((c) => c.tipo === "receber" && c.status === "pago")
+        .filter((c) => c.tipo === "receber" && c.pago)
         .reduce((sum, c) => sum + c.valor, 0),
       totalContasPagas: contas
-        .filter((c) => c.tipo === "pagar" && c.status === "pago")
+        .filter((c) => c.tipo === "pagar" && c.pago)
         .reduce((sum, c) => sum + c.valor, 0),
     };
 
     const response: ApiResponse<typeof totais> = {
-      success: true,
       data: totais,
     };
 
@@ -262,7 +337,84 @@ router.get("/totais", async (req, res) => {
   } catch (error) {
     console.error("Erro ao calcular totais:", error);
     const response: ApiResponse<null> = {
-      success: false,
+      error: "Erro interno do servidor",
+    };
+    res.status(500).json(response);
+  }
+});
+
+// GET /api/contas/clientes - Listar clientes para dropdown
+router.get("/clientes", async (req, res) => {
+  try {
+    const clientes = await prisma.cliente.findMany({
+      orderBy: { nome: "asc" },
+      select: {
+        id: true,
+        nome: true,
+        telefonePrincipal: true,
+      },
+    });
+
+    const response: ApiResponse<typeof clientes> = {
+      data: clientes,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Erro ao buscar clientes:", error);
+    const response: ApiResponse<null> = {
+      error: "Erro interno do servidor",
+    };
+    res.status(500).json(response);
+  }
+});
+
+// GET /api/contas/fornecedores - Listar fornecedores para dropdown
+router.get("/fornecedores", async (req, res) => {
+  try {
+    const fornecedores = await prisma.fornecedor.findMany({
+      orderBy: { nome: "asc" },
+      select: {
+        id: true,
+        nome: true,
+        telefone: true,
+      },
+    });
+
+    const response: ApiResponse<typeof fornecedores> = {
+      data: fornecedores,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Erro ao buscar fornecedores:", error);
+    const response: ApiResponse<null> = {
+      error: "Erro interno do servidor",
+    };
+    res.status(500).json(response);
+  }
+});
+
+// GET /api/contas/categorias - Listar categorias para dropdown
+router.get("/categorias", async (req, res) => {
+  try {
+    const categorias = await prisma.categoria.findMany({
+      orderBy: { nome: "asc" },
+      select: {
+        id: true,
+        nome: true,
+        tipo: true,
+      },
+    });
+
+    const response: ApiResponse<typeof categorias> = {
+      data: categorias,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Erro ao buscar categorias:", error);
+    const response: ApiResponse<null> = {
       error: "Erro interno do servidor",
     };
     res.status(500).json(response);

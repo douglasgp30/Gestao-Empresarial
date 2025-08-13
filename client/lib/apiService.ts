@@ -9,59 +9,95 @@ export interface ApiResponse<T> {
   details?: any;
 }
 
-// Função utilitária para fazer requests
+// Função utilitária para fazer requests com retry
 async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {},
+  retries = 2,
 ): Promise<ApiResponse<T>> {
-  try {
-    console.log(`[ApiService] Fazendo requisição para: ${API_BASE}${endpoint}`);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      console.log(
+        `[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`,
+      );
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
-      ...options,
-    });
+      // Adicionar timeout para evitar travamentos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-    console.log(
-      `[ApiService] Resposta recebida: ${response.status} ${response.statusText}`,
-    );
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...options.headers,
+        },
+        signal: controller.signal,
+        ...options,
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error(`[ApiService] Erro HTTP ${response.status}:`, errorData);
-      return {
-        error: errorData.error || `Erro HTTP ${response.status}`,
-        details: errorData.details,
-      };
+      clearTimeout(timeoutId);
+
+      console.log(
+        `[ApiService] Resposta recebida: ${response.status} ${response.statusText}`,
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`[ApiService] Erro HTTP ${response.status}:`, errorData);
+        return {
+          error: errorData.error || `Erro HTTP ${response.status}`,
+          details: errorData.details,
+        };
+      }
+
+      // Status 204 (No Content) não tem corpo de resposta
+      if (response.status === 204) {
+        console.log(`[ApiService] Resposta 204 - No Content`);
+        return { data: null };
+      }
+
+      const data = await response.json();
+      console.log(`[ApiService] Dados recebidos:`, data);
+      return { data };
+    } catch (error) {
+      console.error(
+        `[ApiService] Erro na comunicação (tentativa ${attempt + 1}):`,
+        error,
+      );
+
+      // Se é a última tentativa, retornar o erro
+      if (attempt === retries) {
+        // Verificar se é um erro de rede ou do FullStory
+        if (
+          error instanceof TypeError &&
+          (error.message.includes("Failed to fetch") ||
+            error.message.includes("NetworkError") ||
+            error.stack?.includes("fullstory.com"))
+        ) {
+          return {
+            error:
+              "Servidor não disponível. Verifique se o backend está rodando.",
+          };
+        }
+
+        if (error.name === "AbortError") {
+          return {
+            error: "Requisição expirou. Tente novamente.",
+          };
+        }
+
+        return { error: "Erro de comunicação com o servidor" };
+      }
+
+      // Aguardar antes de tentar novamente (backoff exponencial aumentado)
+      const delay = Math.pow(2, attempt) * 2000; // Aumentado para 2s, 4s, 8s...
+      console.log(
+        `[ApiService] Aguardando ${delay}ms antes da próxima tentativa...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
-
-    // Status 204 (No Content) não tem corpo de resposta
-    if (response.status === 204) {
-      console.log(`[ApiService] Resposta 204 - No Content`);
-      return { data: null };
-    }
-
-    const data = await response.json();
-    console.log(`[ApiService] Dados recebidos:`, data);
-    return { data };
-  } catch (error) {
-    console.error("[ApiService] Erro na comunicação:", error);
-
-    // Verificar se é um erro de rede
-    if (
-      error instanceof TypeError &&
-      error.message.includes("Failed to fetch")
-    ) {
-      return {
-        error: "Servidor não disponível. Verifique se o backend está rodando.",
-      };
-    }
-
-    return { error: "Erro de comunicação com o servidor" };
   }
+
+  return { error: "Erro de comunicação com o servidor" };
 }
 
 // === CAMPANHAS ===
@@ -237,6 +273,79 @@ export const clientesApi = {
     }),
   excluir: (id: number) =>
     apiRequest<void>(`/clientes/${id}`, {
+      method: "DELETE",
+    }),
+};
+
+// === CONTAS ===
+export const contasApi = {
+  listar: (filtros?: any) => {
+    const params = new URLSearchParams();
+    if (filtros) {
+      Object.keys(filtros).forEach((key) => {
+        if (filtros[key] !== undefined && filtros[key] !== null) {
+          params.append(key, filtros[key].toString());
+        }
+      });
+    }
+    const queryString = params.toString();
+    return apiRequest<any[]>(`/contas${queryString ? `?${queryString}` : ""}`);
+  },
+  criar: (dados: any) =>
+    apiRequest("/contas", {
+      method: "POST",
+      body: JSON.stringify(dados),
+    }),
+  atualizar: (id: number, dados: any) =>
+    apiRequest(`/contas/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(dados),
+    }),
+  excluir: (id: number) =>
+    apiRequest(`/contas/${id}`, {
+      method: "DELETE",
+    }),
+  marcarComoPaga: (id: number) =>
+    apiRequest(`/contas/${id}/pagar`, {
+      method: "PATCH",
+    }),
+  obterTotais: (filtros?: any) => {
+    const params = new URLSearchParams();
+    if (filtros) {
+      Object.keys(filtros).forEach((key) => {
+        if (filtros[key] !== undefined && filtros[key] !== null) {
+          params.append(key, filtros[key].toString());
+        }
+      });
+    }
+    const queryString = params.toString();
+    return apiRequest<any>(
+      `/contas/totais${queryString ? `?${queryString}` : ""}`,
+    );
+  },
+};
+
+// === GENERAL API SERVICE ===
+// Main apiService object for general HTTP methods
+export const apiService = {
+  get: <T>(endpoint: string) => apiRequest<T>(endpoint),
+  post: <T>(endpoint: string, data?: any) =>
+    apiRequest<T>(endpoint, {
+      method: "POST",
+      body: data ? JSON.stringify(data) : undefined,
+    }),
+  put: <T>(endpoint: string, data?: any) =>
+    apiRequest<T>(endpoint, {
+      method: "PUT",
+      body: data ? JSON.stringify(data) : undefined,
+    }),
+  patch: <T>(endpoint: string, data?: any) =>
+    apiRequest<T>(endpoint, {
+      method: "PATCH",
+      body: data ? JSON.stringify(data) : undefined,
+    }),
+  delete: <T>(endpoint: string) =>
+    apiRequest<T>(endpoint, {
       method: "DELETE",
     }),
 };

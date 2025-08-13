@@ -59,21 +59,44 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filtros, setFiltros] = useState({
-    dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // 30 dias atrás
-    dataFim: new Date(),
-    tipo: "todos" as "receita" | "despesa" | "todos",
-    formaPagamento: "todas",
-    tecnico: "todos",
-    campanha: "todas",
-    setor: "todos",
-    cidade: "todas",
-    conta: "todas",
-    categoria: "todas",
-    descricao: "todas",
-    cliente: "todos",
-    cidade: "todas",
-    numeroNota: "",
+  const [filtros, setFiltros] = useState(() => {
+    // Usar data atual do sistema mas normalizando para o dia correto
+    const agora = new Date();
+    const inicioHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const fimHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
+
+    return {
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
+      tipo: "todos" as "receita" | "despesa" | "todos",
+      formaPagamento: "todas",
+      tecnico: "todos",
+      campanha: "todas",
+      setor: "todos",
+      cidade: "todas",
+      conta: "todas",
+      categoria: "todas",
+      descricao: "todas",
+      cliente: "todos",
+      cidade: "todas",
+      numeroNota: "",
+    };
   });
 
   // Função para carregar todos os dados

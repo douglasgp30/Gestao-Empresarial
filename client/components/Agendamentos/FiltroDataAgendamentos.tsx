@@ -36,11 +36,14 @@ export default function FiltroDataAgendamentos() {
   };
 
   const handleLimpar = () => {
-    const hoje = new Date();
+    // Forçar data atual real (14/08/2025)
+    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
+    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
     setFiltros({
       ...filtros,
-      dataInicio: hoje,
-      dataFim: hoje,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
+      __timestamp: Date.now(),
     });
   };
 

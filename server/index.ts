@@ -50,6 +50,7 @@ import {
 } from "./routes/caixa";
 
 import contasRouter from "./routes/contas";
+import seedRouter from "./routes/seed";
 import { cleanFakeDataRoute } from "./routes/clean";
 
 import {
@@ -166,6 +167,9 @@ export function createServer(): Express {
 
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
+
+  // Rotas de Seed
+  app.use("/api/seed", seedRouter);
 
   // Rotas de Clientes
   app.get("/api/clientes", getClientes);

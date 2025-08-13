@@ -36,13 +36,14 @@ export default function FiltroDataRelatorios() {
   };
 
   const handleLimpar = () => {
-    const hoje = new Date();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    // Forçar data atual real (14/08/2025)
+    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
+    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
     setFiltros({
       ...filtros,
-      dataInicio: inicioMes,
-      dataFim: fimMes,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
+      __timestamp: Date.now(),
     });
   };
 

@@ -131,9 +131,21 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       },
     );
 
-    const totalReceitasCaixa = lancamentosMesAtual
-      .filter((l) => l.tipo === "receita")
-      .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    // Filtrar receitas do mês atual, excluindo boletos
+    const receitasMesAtual = lancamentosMesAtual.filter(
+      (l) => l.tipo === "receita",
+    );
+    const receitasNaoBoletoMesAtual = receitasMesAtual.filter(
+      (l) =>
+        !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
+        !l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
+    );
+
+    // Total de receitas = apenas receitas líquidas (sem boletos)
+    const totalReceitasCaixa = receitasNaoBoletoMesAtual.reduce(
+      (total, l) => total + (l.valorLiquido || l.valor),
+      0,
+    );
 
     const totalDespesasCaixa = lancamentosMesAtual
       .filter((l) => l.tipo === "despesa")
@@ -202,10 +214,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       totalContasPagas;
 
     // CÁLCULO TOTAL ALCANÇADO DA META
-    // Meta é sempre do mês atual, baseado em receitas do caixa
-    const receitasCaixaMesAtual = lancamentosMesAtual
-      .filter((l) => l.tipo === "receita")
-      .reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    // Meta é sempre do mês atual, baseado em receitas líquidas (sem boletos)
+    const receitasCaixaMesAtual = receitasNaoBoletoMesAtual.reduce(
+      (total, l) => total + (l.valorLiquido || l.valor),
+      0,
+    );
 
     console.log(
       "[Dashboard] Meta mês atual: R$",

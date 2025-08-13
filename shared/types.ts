@@ -81,6 +81,35 @@ export interface Conta {
   observacoes?: string;
   categoria?: string;
   dataCriacao: Date;
+  // Campos para compatibilidade com o sistema atual
+  fornecedorCliente?: string; // Nome do fornecedor/cliente (legacy)
+  tipoPagamento?: string; // Forma de pagamento (legacy)
+  funcionarioId?: string; // ID do funcionário responsável
+  // Novo campo para vincular com a tabela de clientes
+  clienteId?: string; // ID do cliente da tabela clientes
+}
+
+// Nova interface seguindo o PRD fornecido
+export interface ContaLancamento {
+  codLancamentoContas: number; // BIGSERIAL PK
+  dataLancamento: Date; // TIMESTAMP
+  valor: number; // NUMERIC(12,2)
+  dataVencimento: Date; // DATE
+  codigoCliente?: number; // BIGINT FK clientes(id) - Condicional
+  codigoFornecedor?: number; // BIGINT FK fornecedores(id) - Condicional
+  tipo: "receber" | "pagar"; // ENUM('receber','pagar')
+  conta: "empresa" | "pessoal"; // ENUM('empresa','pessoal')
+  formaPg?: number; // SMALLINT FK formas_pagamento(id) - Condicional
+  observacoes?: string; // TEXT
+  descricaoCategoria?: number; // SMALLINT FK categorias(id)
+  pago: boolean; // BOOLEAN
+  dataPagamento?: Date; // TIMESTAMP - Condicional
+
+  // Relacionamentos expandidos
+  cliente?: Cliente;
+  fornecedor?: Fornecedor;
+  formaPagamento?: FormaPagamento;
+  categoria?: Categoria;
 }
 
 export interface Campanha {
@@ -177,7 +206,7 @@ export interface Subdescricao {
 }
 
 export interface Categoria {
-  id: string;
+  id: number;
   nome: string;
   tipo: "receita" | "despesa";
   dataCriacao: Date;

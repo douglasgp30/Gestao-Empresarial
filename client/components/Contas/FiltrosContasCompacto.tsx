@@ -16,7 +16,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
-import FiltroDataContas from "./FiltroDataContas";
+import FiltroDataContasSimples from "./FiltroDataContasSimples";
 import {
   Filter,
   ChevronDown,
@@ -58,13 +58,13 @@ export default function FiltrosContasCompacto() {
   };
 
   const limparFiltros = () => {
-    const hoje = new Date();
-    const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const fimMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    // Forçar data atual real (14/08/2025)
+    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
+    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
 
     const filtrosLimpos = {
-      dataInicio: inicioMes,
-      dataFim: fimMes,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
       tipo: "ambos" as const,
       status: "",
       fornecedorCliente: "",
@@ -153,7 +153,7 @@ export default function FiltrosContasCompacto() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
               {/* Filtro de Data - 4 colunas */}
               <div className="lg:col-span-4">
-                <FiltroDataContas />
+                <FiltroDataContasSimples />
               </div>
 
               {/* Filtro de Tipo - 3 colunas */}

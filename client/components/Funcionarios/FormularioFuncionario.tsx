@@ -46,6 +46,7 @@ export default function FormularioFuncionario() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const resetForm = () => {
     setFormData({
@@ -60,6 +61,7 @@ export default function FormularioFuncionario() {
       ativo: true,
     });
     setErrors({});
+    setSubmitting(false);
   };
 
   const validarFormulario = () => {
@@ -74,10 +76,10 @@ export default function FormularioFuncionario() {
       if (!formData.login.trim()) {
         newErrors.login =
           "Login é obrigatório para funcionários com acesso ao sistema";
-      } else if (formData.login.length < 3) {
+      } else if (formData.login.trim().length < 3) {
         newErrors.login = "Login deve ter pelo menos 3 caracteres";
       } else {
-        // Verificar se o login já existe
+        // Verificar se o login já existe (frontend validation)
         const loginExistente = funcionarios.find(
           (func) =>
             func.login?.toLowerCase() === formData.login.trim().toLowerCase(),
@@ -118,23 +120,45 @@ export default function FormularioFuncionario() {
 
     if (!validarFormulario()) return;
 
+    setSubmitting(true);
+    setErrors({}); // Clear previous errors
+
     try {
-      await adicionarFuncionario({
+      const funcionarioData: any = {
         nomeCompleto: formData.nomeCompleto.trim(),
         ehTecnico: formData.ehTecnico,
-        login: formData.login.trim().toLowerCase(),
-        senha: formData.senha,
         permissaoAcesso: formData.permissaoAcesso,
         tipoAcesso: formData.tipoAcesso,
         percentualComissao: parseFloat(formData.percentualComissao),
         ativo: formData.ativo,
-      });
+      };
+
+      // Only include login and senha if user has system access
+      if (formData.permissaoAcesso) {
+        funcionarioData.login = formData.login.trim().toLowerCase();
+        funcionarioData.senha = formData.senha;
+      }
+
+      await adicionarFuncionario(funcionarioData);
 
       resetForm();
       setIsOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao adicionar funcionário:", error);
-      // TODO: Mostrar erro para o usuário
+
+      // Check if error message indicates login already exists
+      if (error?.message?.includes("login já está sendo usado")) {
+        setErrors({ login: error.message });
+      } else if (error?.message?.includes("email já está sendo usado")) {
+        setErrors({ email: error.message });
+      } else {
+        setErrors({
+          general:
+            error?.message || "Erro ao criar funcionário. Tente novamente.",
+        });
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -158,6 +182,13 @@ export default function FormularioFuncionario() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* General Error Display */}
+          {errors.general && (
+            <div className="p-4 border border-red-200 bg-red-50 rounded-md">
+              <p className="text-sm text-red-600">{errors.general}</p>
+            </div>
+          )}
+
           {/* Dados Pessoais */}
           <Card>
             <CardHeader>
@@ -376,8 +407,8 @@ export default function FormularioFuncionario() {
             >
               Cancelar
             </Button>
-            <Button type="submit" className="flex-1">
-              Cadastrar Funcionário
+            <Button type="submit" className="flex-1" disabled={submitting}>
+              {submitting ? "Cadastrando..." : "Cadastrar Funcionário"}
             </Button>
           </div>
         </form>
