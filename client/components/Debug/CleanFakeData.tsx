@@ -9,14 +9,27 @@ export function CleanFakeData() {
   const [lastResults, setLastResults] = useState<any>(null);
 
   const cleanFakeData = async () => {
+    // Evitar chamadas duplicadas
+    if (isLoading) {
+      console.log("Limpeza já em andamento, ignorando nova chamada");
+      return;
+    }
+
     setIsLoading(true);
     try {
+      // Criar AbortController para timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
+
       const response = await fetch("/api/clean-fake-data", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -42,9 +55,19 @@ export function CleanFakeData() {
     } catch (error) {
       console.error("Erro ao limpar dados fictícios:", error);
 
-      const errorMessage = error instanceof Error
-        ? error.message
-        : "Erro desconhecido ao limpar dados fictícios";
+      let errorMessage = "Erro desconhecido ao limpar dados fictícios";
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = "Operação cancelada por timeout (30s). Tente novamente.";
+        } else if (error.message.includes('body stream already read')) {
+          errorMessage = "Erro de comunicação. Aguarde um momento e tente novamente.";
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
 
       toast({
         title: "Erro",
