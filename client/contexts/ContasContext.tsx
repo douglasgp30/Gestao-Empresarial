@@ -137,7 +137,11 @@ export function ContasProvider({ children }: { children: ReactNode }) {
         status: filtros.status !== 'todos' ? filtros.status : undefined,
       };
 
+      console.log(`🔍 [CONTAS] Tentativa ${tentativa} - Enviando filtros para API:`, filtrosApi);
+      console.log(`🔍 [CONTAS] URL que será chamada: /api/contas?${new URLSearchParams(filtrosApi).toString()}`);
+
       const response = await contasApi.listar(filtrosApi);
+      console.log('🔍 [CONTAS] Resposta da API recebida:', response);
 
       if (response.error) {
         console.error("Erro ao carregar contas:", response.error);
