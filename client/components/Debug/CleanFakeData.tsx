@@ -13,14 +13,23 @@ export function CleanFakeData() {
     try {
       const response = await fetch("/api/clean-fake-data", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
 
       if (data.success) {
         setLastResults(data.data);
 
-        const totalRemovidos = Object.values(data.data.removidos).reduce((a: any, b: any) => a + b, 0);
+        const totalRemovidos = data.data?.removidos
+          ? Object.values(data.data.removidos).reduce((a: any, b: any) => a + b, 0)
+          : 0;
 
         toast({
           title: "✅ Limpeza Concluída!",
@@ -32,9 +41,14 @@ export function CleanFakeData() {
       }
     } catch (error) {
       console.error("Erro ao limpar dados fictícios:", error);
+
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Erro desconhecido ao limpar dados fictícios";
+
       toast({
         title: "Erro",
-        description: "Erro ao limpar dados fictícios",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
