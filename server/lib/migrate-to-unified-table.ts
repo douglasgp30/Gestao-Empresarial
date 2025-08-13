@@ -113,7 +113,8 @@ export async function migrateToUnifiedTable() {
 }
 
 // Script para executar a migração
-if (require.main === module) {
+const isMain = import.meta.url === `file://${process.argv[1]}`;
+if (isMain) {
   migrateToUnifiedTable()
     .then((result) => {
       console.log('Resultado da migração:', result);
