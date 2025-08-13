@@ -47,6 +47,7 @@ export default function FormularioConta() {
     setFormData({
       dataVencimento: "",
       fornecedorCliente: "",
+      cliente: "",
       tipoPagamento: "",
       valor: "",
       observacoes: "",
