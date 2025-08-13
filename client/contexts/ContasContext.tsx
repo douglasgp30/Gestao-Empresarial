@@ -146,10 +146,23 @@ export function ContasProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função para carregar com debounce usando useRef
+  const carregarContasDebounced = useCallback(() => {
+    // Cancelar timeout anterior se existir
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Criar novo timeout com debounce de 300ms
+    timeoutRef.current = setTimeout(() => {
+      carregarContas();
+    }, 300);
+  }, []);
+
   // Carregar contas na inicialização
   useEffect(() => {
     carregarContasDebounced();
-  }, []);
+  }, [carregarContasDebounced]);
 
   // Função para atualizar filtros
   const setFiltrosComLog = (novosFiltros: any) => {
