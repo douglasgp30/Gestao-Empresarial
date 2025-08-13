@@ -79,6 +79,35 @@ export default function FiltroDataGoogleAds({
   const [showCalendar, setShowCalendar] = useState(false);
   const [tempDataInicio, setTempDataInicio] = useState(dataInicio || "");
   const [tempDataFim, setTempDataFim] = useState(dataFim || "");
+
+  // Sincronizar campos temporários com dateRange
+  const handleTempDataInicioChange = (value: string) => {
+    setTempDataInicio(value);
+    if (value && tempDataFim) {
+      setDateRange({
+        from: parseISO(value),
+        to: parseISO(tempDataFim)
+      });
+    }
+  };
+
+  const handleTempDataFimChange = (value: string) => {
+    setTempDataFim(value);
+    if (tempDataInicio && value) {
+      setDateRange({
+        from: parseISO(tempDataInicio),
+        to: parseISO(value)
+      });
+    }
+  };
+
+  // Sincronizar dateRange com campos temporários
+  React.useEffect(() => {
+    if (dateRange?.from && dateRange?.to) {
+      setTempDataInicio(format(dateRange.from, "yyyy-MM-dd"));
+      setTempDataFim(format(dateRange.to, "yyyy-MM-dd"));
+    }
+  }, [dateRange]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const hoje = new Date(); // Usar data atual do sistema
