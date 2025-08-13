@@ -70,6 +70,8 @@ export function FiltrosCaixaCompacto() {
     };
     setFiltrosLocal(filtrosLimpos);
     setFiltros(filtrosLimpos);
+    // Fechar os filtros avançados após limpar
+    setFiltrosAvancadosAbertos(false);
   };
 
   // Contar filtros ativos (além das datas)
