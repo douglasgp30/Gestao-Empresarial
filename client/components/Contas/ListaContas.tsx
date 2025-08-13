@@ -356,12 +356,22 @@ export function ListaContas({ onEditarConta }: ListaContasProps) {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => onEditarConta?.(conta)}
-                            >
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
+                            <ModalEditarConta
+                              conta={conta}
+                              trigger={
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Editar
+                                </DropdownMenuItem>
+                              }
+                              onSuccess={() => {
+                                forcarRecarregamento();
+                                toast({
+                                  title: "Sucesso",
+                                  description: "Conta atualizada com sucesso!",
+                                });
+                              }}
+                            />
                             {!conta.pago && (
                               <DropdownMenuItem
                                 onClick={() => setContaParaPagar(conta)}
