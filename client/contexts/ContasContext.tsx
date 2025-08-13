@@ -29,7 +29,7 @@ interface ContasContextType {
     totalContasRecebidas: number;
     totalContasPagas: number;
   };
-  adicionarConta: (conta: Omit<Conta, "id" | "funcionarioId">) => void;
+  adicionarConta: (conta: Omit<Conta, "id" | "funcionarioId">) => Promise<void>;
   editarConta: (id: string, conta: Partial<Conta>) => void;
   excluirConta: (id: string) => void;
   marcarComoPaga: (id: string) => void;
