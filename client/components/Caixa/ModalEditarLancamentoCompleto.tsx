@@ -821,7 +821,7 @@ export function ModalEditarLancamentoCompleto({
             )}
 
             {/* Resumo financeiro para despesas */}
-            {lancamento.tipo === "despesa" && valorInput.numericValue > 0 && (
+            {lancamento.tipo === "despesa" && (valorInput.numericValue || 0) > 0 && (
               <div className="p-4 bg-red-50 rounded-lg">
                 <h4 className="font-medium text-red-800 mb-2">
                   Resumo da Despesa
@@ -830,7 +830,7 @@ export function ModalEditarLancamentoCompleto({
                   <div>
                     <span className="text-gray-600">Valor a ser debitado:</span>
                     <div className="font-medium text-red-600 text-lg">
-                      R$ {valorInput.numericValue.toFixed(2).replace(".", ",")}
+                      R$ {(valorInput.numericValue || 0).toFixed(2).replace(".", ",")}
                     </div>
                   </div>
                   <div>
