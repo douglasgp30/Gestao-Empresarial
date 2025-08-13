@@ -97,7 +97,6 @@ export interface ContaLancamento {
   codigoCliente?: number; // BIGINT FK clientes(id) - Condicional
   codigoFornecedor?: number; // BIGINT FK fornecedores(id) - Condicional
   tipo: "receber" | "pagar"; // ENUM('receber','pagar')
-  conta: "empresa" | "pessoal"; // ENUM('empresa','pessoal')
   formaPg?: number; // SMALLINT FK formas_pagamento(id) - Condicional
   observacoes?: string; // TEXT
   descricaoCategoria?: number; // SMALLINT FK categorias(id)
