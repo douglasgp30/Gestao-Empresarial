@@ -160,7 +160,7 @@ export default function FiltroDataCaixaSimples() {
                   <div>
                     <Input
                       type="date"
-                      value={formatDateForInput(filtros.dataInicio)}
+                      value={formatDateForInput(dataInicio)}
                       onChange={(e) => {
                         const novaData = new Date(e.target.value);
                         novaData.setHours(0, 0, 0, 0);
@@ -176,7 +176,7 @@ export default function FiltroDataCaixaSimples() {
                   <div>
                     <Input
                       type="date"
-                      value={formatDateForInput(filtros.dataFim)}
+                      value={formatDateForInput(dataFim)}
                       onChange={(e) => {
                         const novaData = new Date(e.target.value);
                         novaData.setHours(23, 59, 59, 999);
