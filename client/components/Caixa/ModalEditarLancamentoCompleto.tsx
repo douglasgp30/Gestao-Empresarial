@@ -742,7 +742,7 @@ export function ModalEditarLancamentoCompleto({
                     <div>
                       <span className="text-gray-600">Valor Total:</span>
                       <div className="font-medium">
-                        R$ {(valorInput.numericValue || 0).toFixed(2).replace(".", ",")}
+                        R$ {Number(valorInput.numericValue || 0).toFixed(2).replace(".", ",")}
                       </div>
                     </div>
                     <div>
