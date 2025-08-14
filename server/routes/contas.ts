@@ -394,6 +394,53 @@ router.get("/fornecedores", async (req, res) => {
   }
 });
 
+// POST /api/contas/fornecedores - Criar novo fornecedor
+router.post("/fornecedores", async (req, res) => {
+  try {
+    console.log("🔍 [API CONTAS] Dados recebidos para criar fornecedor:", req.body);
+
+    const { nome, telefone, email, endereco } = req.body;
+
+    // Validação básica
+    if (!nome || typeof nome !== 'string' || !nome.trim()) {
+      const response: ApiResponse<null> = {
+        error: "Nome do fornecedor é obrigatório",
+      };
+      return res.status(400).json(response);
+    }
+
+    const fornecedor = await prisma.fornecedor.create({
+      data: {
+        nome: nome.trim(),
+        telefone: telefone || null,
+      },
+      select: {
+        id: true,
+        nome: true,
+        telefone: true,
+        dataCriacao: true,
+      },
+    });
+
+    console.log("✅ [API CONTAS] Fornecedor criado com sucesso:", {
+      id: fornecedor.id,
+      nome: fornecedor.nome,
+    });
+
+    const response: ApiResponse<typeof fornecedor> = {
+      data: fornecedor,
+    };
+
+    res.status(201).json(response);
+  } catch (error) {
+    console.error("Erro ao criar fornecedor:", error);
+    const response: ApiResponse<null> = {
+      error: "Erro interno do servidor",
+    };
+    res.status(500).json(response);
+  }
+});
+
 // GET /api/contas/categorias - Listar categorias para dropdown (usando tabela unificada)
 router.get("/categorias", async (req, res) => {
   try {
