@@ -304,12 +304,14 @@ export function ModalContasPagar({
                 <Calendar
                   mode="single"
                   selected={formData.dataVencimento}
-                  onSelect={(date) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      dataVencimento: date || new Date(),
-                    }))
-                  }
+                  onSelect={(date) => {
+                    if (date) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        dataVencimento: date,
+                      }));
+                    }
+                  }}
                   locale={ptBR}
                   initialFocus
                 />
@@ -526,9 +528,14 @@ export function ModalContasPagar({
                   <Calendar
                     mode="single"
                     selected={formData.dataPagamento}
-                    onSelect={(date) =>
-                      setFormData((prev) => ({ ...prev, dataPagamento: date }))
-                    }
+                    onSelect={(date) => {
+                      if (date) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          dataPagamento: date,
+                        }));
+                      }
+                    }}
                     locale={ptBR}
                     initialFocus
                   />

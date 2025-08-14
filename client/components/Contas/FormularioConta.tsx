@@ -162,9 +162,7 @@ export function FormularioConta({
             ? parseInt(formData.descricaoCategoria)
             : undefined,
         pago: formData.pago,
-        dataPagamento: formData.pago
-          ? formData.dataPagamento || new Date()
-          : undefined,
+        dataPagamento: formData.pago ? formData.dataPagamento : undefined,
       };
 
       console.log("🔍 [FORM CONTA] Enviando dados:", dadosConta);
@@ -335,12 +333,14 @@ export function FormularioConta({
                 <Calendar
                   mode="single"
                   selected={formData.dataVencimento}
-                  onSelect={(date) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      dataVencimento: date || new Date(),
-                    }))
-                  }
+                  onSelect={(date) => {
+                    if (date) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        dataVencimento: date,
+                      }));
+                    }
+                  }}
                   locale={ptBR}
                   initialFocus
                 />
