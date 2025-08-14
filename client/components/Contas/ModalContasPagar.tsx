@@ -70,7 +70,6 @@ export function ModalContasPagar({
     valor: "",
     dataVencimento: new Date(),
     codigoFornecedor: "",
-    conta: "empresa" as "empresa" | "pessoal",
     formaPg: "",
     observacoes: "",
     descricao: "",
