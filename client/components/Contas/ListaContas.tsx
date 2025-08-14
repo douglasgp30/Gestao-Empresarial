@@ -369,10 +369,10 @@ export function ListaContas({}: ListaContasProps) {
                             {!conta.pago && (
                               <DropdownMenuItem
                                 onClick={() => setContaParaPagar(conta)}
-                                className="py-1 px-2 text-xs"
+                                className="py-1 px-2 text-xs h-auto min-h-0"
                               >
-                                <CheckCircle className="mr-1 h-3 w-3" />
-                                Marcar como Pago
+                                <CheckCircle className="mr-1 h-3 w-3 shrink-0" />
+                                <span className="text-xs">Marcar como Pago</span>
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
