@@ -171,7 +171,7 @@ export function ModalEditarConta({
             : undefined,
         pago: formData.pago,
         dataPagamento: formData.pago
-          ? formData.dataPagamento || new Date()
+          ? formData.dataPagamento
           : undefined,
       };
 
@@ -332,12 +332,14 @@ export function ModalEditarConta({
                   <Calendar
                     mode="single"
                     selected={formData.dataVencimento}
-                    onSelect={(date) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        dataVencimento: date || new Date(),
-                      }))
-                    }
+                    onSelect={(date) => {
+                      if (date) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          dataVencimento: date,
+                        }))
+                      }
+                    }}
                     locale={ptBR}
                     initialFocus
                   />
@@ -422,7 +424,7 @@ export function ModalEditarConta({
                   observacoes: e.target.value,
                 }))
               }
-              placeholder="Observações sobre a conta"
+              placeholder="Observaç��es sobre a conta"
               rows={3}
             />
           </div>
