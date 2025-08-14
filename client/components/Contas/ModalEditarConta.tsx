@@ -38,7 +38,11 @@ interface ModalEditarContaProps {
   onSuccess?: () => void;
 }
 
-export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarContaProps) {
+export function ModalEditarConta({
+  conta,
+  trigger,
+  onSuccess,
+}: ModalEditarContaProps) {
   const { toast } = useToast();
   const {
     atualizarConta,
@@ -56,7 +60,6 @@ export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarConta
     codigoCliente: "",
     codigoFornecedor: "",
     tipo: "receber" as "receber" | "pagar",
-    conta: "empresa" as "empresa" | "pessoal",
     formaPg: "",
     observacoes: "",
     descricaoCategoria: "0",
@@ -79,7 +82,6 @@ export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarConta
         codigoCliente: conta.codigoCliente?.toString() || "",
         codigoFornecedor: conta.codigoFornecedor?.toString() || "",
         tipo: conta.tipo,
-        conta: conta.conta,
         formaPg: conta.formaPg?.toString() || "",
         observacoes: conta.observacoes || "",
         descricaoCategoria: conta.descricaoCategoria?.toString() || "0",
@@ -158,15 +160,15 @@ export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarConta
             ? parseInt(formData.codigoFornecedor)
             : undefined,
         tipo: formData.tipo,
-        conta: formData.conta,
         formaPg:
           formData.pago && formData.formaPg
             ? parseInt(formData.formaPg)
             : undefined,
         observacoes: formData.observacoes || undefined,
-        descricaoCategoria: formData.descricaoCategoria && formData.descricaoCategoria !== "0"
-          ? parseInt(formData.descricaoCategoria)
-          : undefined,
+        descricaoCategoria:
+          formData.descricaoCategoria && formData.descricaoCategoria !== "0"
+            ? parseInt(formData.descricaoCategoria)
+            : undefined,
         pago: formData.pago,
         dataPagamento: formData.pago
           ? formData.dataPagamento || new Date()
@@ -226,38 +228,18 @@ export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarConta
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-          {/* Tipo e Conta */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="tipo">Tipo *</Label>
-              <Select value={formData.tipo} onValueChange={handleTipoChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="receber">Conta a Receber</SelectItem>
-                  <SelectItem value="pagar">Conta a Pagar</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="conta">Conta *</Label>
-              <Select
-                value={formData.conta}
-                onValueChange={(value: "empresa" | "pessoal") =>
-                  setFormData((prev) => ({ ...prev, conta: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a conta" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="empresa">Empresa</SelectItem>
-                  <SelectItem value="pessoal">Pessoal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Tipo */}
+          <div className="space-y-2">
+            <Label htmlFor="tipo">Tipo *</Label>
+            <Select value={formData.tipo} onValueChange={handleTipoChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="receber">Conta a Receber</SelectItem>
+                <SelectItem value="pagar">Conta a Pagar</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Cliente/Fornecedor */}
@@ -356,6 +338,7 @@ export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarConta
                         dataVencimento: date || new Date(),
                       }))
                     }
+                    locale={ptBR}
                     initialFocus
                   />
                 </PopoverContent>

@@ -51,7 +51,6 @@ export function FormularioConta({
     codigoCliente: "",
     codigoFornecedor: "",
     tipo: "receber" as "receber" | "pagar",
-    conta: "empresa" as "empresa" | "pessoal",
     formaPg: "",
     observacoes: "",
     descricaoCategoria: "0",
@@ -74,7 +73,6 @@ export function FormularioConta({
         codigoCliente: contaParaEditar.codigoCliente?.toString() || "",
         codigoFornecedor: contaParaEditar.codigoFornecedor?.toString() || "",
         tipo: contaParaEditar.tipo,
-        conta: contaParaEditar.conta,
         formaPg: contaParaEditar.formaPg?.toString() || "",
         observacoes: contaParaEditar.observacoes || "",
         descricaoCategoria:
@@ -154,15 +152,15 @@ export function FormularioConta({
             ? parseInt(formData.codigoFornecedor)
             : undefined,
         tipo: formData.tipo,
-        conta: formData.conta,
         formaPg:
           formData.pago && formData.formaPg
             ? parseInt(formData.formaPg)
             : undefined,
         observacoes: formData.observacoes || undefined,
-        descricaoCategoria: formData.descricaoCategoria && formData.descricaoCategoria !== "0"
-          ? parseInt(formData.descricaoCategoria)
-          : undefined,
+        descricaoCategoria:
+          formData.descricaoCategoria && formData.descricaoCategoria !== "0"
+            ? parseInt(formData.descricaoCategoria)
+            : undefined,
         pago: formData.pago,
         dataPagamento: formData.pago
           ? formData.dataPagamento || new Date()
@@ -193,7 +191,6 @@ export function FormularioConta({
           codigoCliente: "",
           codigoFornecedor: "",
           tipo: "receber",
-          conta: "empresa",
           formaPg: "",
           observacoes: "",
           descricaoCategoria: "0",
@@ -236,37 +233,17 @@ export function FormularioConta({
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tipo */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="tipo">Tipo *</Label>
-              <Select value={formData.tipo} onValueChange={handleTipoChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="receber">Conta a Receber</SelectItem>
-                  <SelectItem value="pagar">Conta a Pagar</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="conta">Conta *</Label>
-              <Select
-                value={formData.conta}
-                onValueChange={(value: "empresa" | "pessoal") =>
-                  setFormData((prev) => ({ ...prev, conta: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a conta" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="empresa">Empresa</SelectItem>
-                  <SelectItem value="pessoal">Pessoal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="tipo">Tipo *</Label>
+            <Select value={formData.tipo} onValueChange={handleTipoChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="receber">Conta a Receber</SelectItem>
+                <SelectItem value="pagar">Conta a Pagar</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Cliente/Fornecedor */}
@@ -364,6 +341,7 @@ export function FormularioConta({
                       dataVencimento: date || new Date(),
                     }))
                   }
+                  locale={ptBR}
                   initialFocus
                 />
               </PopoverContent>

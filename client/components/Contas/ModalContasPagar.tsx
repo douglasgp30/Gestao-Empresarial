@@ -70,7 +70,6 @@ export function ModalContasPagar({
     valor: "",
     dataVencimento: new Date(),
     codigoFornecedor: "",
-    conta: "empresa" as "empresa" | "pessoal",
     formaPg: "",
     observacoes: "",
     descricao: "",
@@ -95,7 +94,6 @@ export function ModalContasPagar({
       valor: "",
       dataVencimento: new Date(),
       codigoFornecedor: "",
-      conta: "empresa",
       formaPg: "",
       observacoes: "",
       descricao: "",
@@ -114,7 +112,6 @@ export function ModalContasPagar({
         valor: contaParaEditar.valor.toString(),
         dataVencimento: contaParaEditar.dataVencimento,
         codigoFornecedor: contaParaEditar.codigoFornecedor?.toString() || "",
-        conta: contaParaEditar.conta,
         formaPg: contaParaEditar.formaPg?.toString() || "",
         observacoes: contaParaEditar.observacoes || "",
         descricao: contaParaEditar.descricao || "",
@@ -211,7 +208,6 @@ export function ModalContasPagar({
         valor: valorNumerico,
         dataVencimento: formData.dataVencimento,
         codigoFornecedor: parseInt(formData.codigoFornecedor),
-        conta: formData.conta,
         formaPg: parseInt(formData.formaPg),
         observacoes: formData.observacoes,
         descricao: formData.descricao,
@@ -314,6 +310,7 @@ export function ModalContasPagar({
                       dataVencimento: date || new Date(),
                     }))
                   }
+                  locale={ptBR}
                   initialFocus
                 />
               </PopoverContent>
@@ -476,25 +473,6 @@ export function ModalContasPagar({
             />
           </div>
 
-          {/* Conta */}
-          <div className="space-y-2">
-            <Label htmlFor="conta">Conta</Label>
-            <Select
-              value={formData.conta}
-              onValueChange={(value: "empresa" | "pessoal") =>
-                setFormData((prev) => ({ ...prev, conta: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="empresa">Empresa</SelectItem>
-                <SelectItem value="pessoal">Pessoal</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Observações */}
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
@@ -551,6 +529,7 @@ export function ModalContasPagar({
                     onSelect={(date) =>
                       setFormData((prev) => ({ ...prev, dataPagamento: date }))
                     }
+                    locale={ptBR}
                     initialFocus
                   />
                 </PopoverContent>

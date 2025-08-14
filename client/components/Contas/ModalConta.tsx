@@ -57,7 +57,6 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
     codigoCliente: "",
     codigoFornecedor: "",
     tipo: "receber" as "receber" | "pagar",
-    conta: "empresa" as "empresa" | "pessoal",
     formaPg: "",
     observacoes: "",
     descricaoCategoria: "0",
@@ -79,7 +78,6 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
       codigoCliente: "",
       codigoFornecedor: "",
       tipo: "receber",
-      conta: "empresa",
       formaPg: "",
       observacoes: "",
       descricaoCategoria: "0",
@@ -98,7 +96,6 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
         codigoCliente: contaParaEditar.codigoCliente?.toString() || "",
         codigoFornecedor: contaParaEditar.codigoFornecedor?.toString() || "",
         tipo: contaParaEditar.tipo,
-        conta: contaParaEditar.conta,
         formaPg: contaParaEditar.formaPg?.toString() || "",
         observacoes: contaParaEditar.observacoes || "",
         descricaoCategoria:
@@ -180,15 +177,15 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
             ? parseInt(formData.codigoFornecedor)
             : undefined,
         tipo: formData.tipo,
-        conta: formData.conta,
         formaPg:
           formData.pago && formData.formaPg
             ? parseInt(formData.formaPg)
             : undefined,
         observacoes: formData.observacoes || undefined,
-        descricaoCategoria: formData.descricaoCategoria && formData.descricaoCategoria !== "0"
-          ? parseInt(formData.descricaoCategoria)
-          : undefined,
+        descricaoCategoria:
+          formData.descricaoCategoria && formData.descricaoCategoria !== "0"
+            ? parseInt(formData.descricaoCategoria)
+            : undefined,
         pago: formData.pago,
         dataPagamento: formData.pago
           ? formData.dataPagamento || new Date()
@@ -261,43 +258,25 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
             {contaParaEditar ? "Editar Conta" : "Nova Conta"}
           </DialogTitle>
           <DialogDescription className="text-sm">
-            {contaParaEditar ? "Atualize os dados da conta" : "Registre uma nova conta a pagar ou receber"}
+            {contaParaEditar
+              ? "Atualize os dados da conta"
+              : "Registre uma nova conta a pagar ou receber"}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-          {/* Tipo e Conta */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="tipo">Tipo *</Label>
-              <Select value={formData.tipo} onValueChange={handleTipoChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="receber">Conta a Receber</SelectItem>
-                  <SelectItem value="pagar">Conta a Pagar</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="conta">Conta *</Label>
-              <Select
-                value={formData.conta}
-                onValueChange={(value: "empresa" | "pessoal") =>
-                  setFormData((prev) => ({ ...prev, conta: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a conta" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="empresa">Empresa</SelectItem>
-                  <SelectItem value="pessoal">Pessoal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Tipo */}
+          <div className="space-y-2">
+            <Label htmlFor="tipo">Tipo *</Label>
+            <Select value={formData.tipo} onValueChange={handleTipoChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="receber">Conta a Receber</SelectItem>
+                <SelectItem value="pagar">Conta a Pagar</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Cliente/Fornecedor */}
@@ -333,7 +312,10 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
                       </Button>
                     }
                     onClienteAdicionado={(cliente) => {
-                      setFormData((prev) => ({ ...prev, codigoCliente: cliente.id }));
+                      setFormData((prev) => ({
+                        ...prev,
+                        codigoCliente: cliente.id,
+                      }));
                       toast({
                         title: "Cliente Adicionado",
                         description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
@@ -413,6 +395,7 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
                         dataVencimento: date || new Date(),
                       }))
                     }
+                    locale={ptBR}
                     initialFocus
                   />
                 </PopoverContent>
@@ -519,7 +502,11 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
               className="flex-1 bg-blue-600 hover:bg-blue-700"
               disabled={salvando}
             >
-              {salvando ? "Salvando..." : contaParaEditar ? "Atualizar Conta" : "Adicionar Conta"}
+              {salvando
+                ? "Salvando..."
+                : contaParaEditar
+                  ? "Atualizar Conta"
+                  : "Adicionar Conta"}
             </Button>
           </div>
         </form>
