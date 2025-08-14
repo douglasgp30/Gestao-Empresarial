@@ -182,9 +182,10 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
             ? parseInt(formData.formaPg)
             : undefined,
         observacoes: formData.observacoes || undefined,
-        descricaoCategoria: formData.descricaoCategoria && formData.descricaoCategoria !== "0"
-          ? parseInt(formData.descricaoCategoria)
-          : undefined,
+        descricaoCategoria:
+          formData.descricaoCategoria && formData.descricaoCategoria !== "0"
+            ? parseInt(formData.descricaoCategoria)
+            : undefined,
         pago: formData.pago,
         dataPagamento: formData.pago
           ? formData.dataPagamento || new Date()
@@ -257,7 +258,9 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
             {contaParaEditar ? "Editar Conta" : "Nova Conta"}
           </DialogTitle>
           <DialogDescription className="text-sm">
-            {contaParaEditar ? "Atualize os dados da conta" : "Registre uma nova conta a pagar ou receber"}
+            {contaParaEditar
+              ? "Atualize os dados da conta"
+              : "Registre uma nova conta a pagar ou receber"}
           </DialogDescription>
         </DialogHeader>
 
@@ -309,7 +312,10 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
                       </Button>
                     }
                     onClienteAdicionado={(cliente) => {
-                      setFormData((prev) => ({ ...prev, codigoCliente: cliente.id }));
+                      setFormData((prev) => ({
+                        ...prev,
+                        codigoCliente: cliente.id,
+                      }));
                       toast({
                         title: "Cliente Adicionado",
                         description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
@@ -496,7 +502,11 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
               className="flex-1 bg-blue-600 hover:bg-blue-700"
               disabled={salvando}
             >
-              {salvando ? "Salvando..." : contaParaEditar ? "Atualizar Conta" : "Adicionar Conta"}
+              {salvando
+                ? "Salvando..."
+                : contaParaEditar
+                  ? "Atualizar Conta"
+                  : "Adicionar Conta"}
             </Button>
           </div>
         </form>

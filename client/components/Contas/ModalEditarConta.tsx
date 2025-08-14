@@ -38,7 +38,11 @@ interface ModalEditarContaProps {
   onSuccess?: () => void;
 }
 
-export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarContaProps) {
+export function ModalEditarConta({
+  conta,
+  trigger,
+  onSuccess,
+}: ModalEditarContaProps) {
   const { toast } = useToast();
   const {
     atualizarConta,
@@ -161,9 +165,10 @@ export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarConta
             ? parseInt(formData.formaPg)
             : undefined,
         observacoes: formData.observacoes || undefined,
-        descricaoCategoria: formData.descricaoCategoria && formData.descricaoCategoria !== "0"
-          ? parseInt(formData.descricaoCategoria)
-          : undefined,
+        descricaoCategoria:
+          formData.descricaoCategoria && formData.descricaoCategoria !== "0"
+            ? parseInt(formData.descricaoCategoria)
+            : undefined,
         pago: formData.pago,
         dataPagamento: formData.pago
           ? formData.dataPagamento || new Date()

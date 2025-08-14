@@ -397,12 +397,15 @@ router.get("/fornecedores", async (req, res) => {
 // POST /api/contas/fornecedores - Criar novo fornecedor
 router.post("/fornecedores", async (req, res) => {
   try {
-    console.log("🔍 [API CONTAS] Dados recebidos para criar fornecedor:", req.body);
+    console.log(
+      "🔍 [API CONTAS] Dados recebidos para criar fornecedor:",
+      req.body,
+    );
 
     const { nome, telefone, email, endereco } = req.body;
 
     // Validação básica
-    if (!nome || typeof nome !== 'string' || !nome.trim()) {
+    if (!nome || typeof nome !== "string" || !nome.trim()) {
       const response: ApiResponse<null> = {
         error: "Nome do fornecedor é obrigatório",
       };

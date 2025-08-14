@@ -423,7 +423,6 @@ export function ModalContasReceber({
             />
           </div>
 
-
           {/* Observa��ões */}
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
