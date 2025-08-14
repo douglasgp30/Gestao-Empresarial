@@ -552,6 +552,7 @@ export function ModalContasPagar({
                     onSelect={(date) =>
                       setFormData((prev) => ({ ...prev, dataPagamento: date }))
                     }
+                    locale={ptBR}
                     initialFocus
                   />
                 </PopoverContent>
