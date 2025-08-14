@@ -356,6 +356,7 @@ export function ModalEditarConta({ conta, trigger, onSuccess }: ModalEditarConta
                         dataVencimento: date || new Date(),
                       }))
                     }
+                    locale={ptBR}
                     initialFocus
                   />
                 </PopoverContent>
