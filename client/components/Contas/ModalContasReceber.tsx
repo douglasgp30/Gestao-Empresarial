@@ -268,12 +268,14 @@ export function ModalContasReceber({
                 <Calendar
                   mode="single"
                   selected={formData.dataVencimento}
-                  onSelect={(date) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      dataVencimento: date || new Date(),
-                    }))
-                  }
+                  onSelect={(date) => {
+                    if (date) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        dataVencimento: date,
+                      }))
+                    }
+                  }}
                   locale={ptBR}
                   initialFocus
                 />
