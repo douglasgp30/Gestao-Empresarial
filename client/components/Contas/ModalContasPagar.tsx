@@ -112,7 +112,6 @@ export function ModalContasPagar({
         valor: contaParaEditar.valor.toString(),
         dataVencimento: contaParaEditar.dataVencimento,
         codigoFornecedor: contaParaEditar.codigoFornecedor?.toString() || "",
-        conta: contaParaEditar.conta,
         formaPg: contaParaEditar.formaPg?.toString() || "",
         observacoes: contaParaEditar.observacoes || "",
         descricao: contaParaEditar.descricao || "",
