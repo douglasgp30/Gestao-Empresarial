@@ -478,9 +478,11 @@ export function ModalContasReceber({
                   <Calendar
                     mode="single"
                     selected={formData.dataPagamento}
-                    onSelect={(date) =>
-                      setFormData((prev) => ({ ...prev, dataPagamento: date }))
-                    }
+                    onSelect={(date) => {
+                      if (date) {
+                        setFormData((prev) => ({ ...prev, dataPagamento: date }))
+                      }
+                    }}
                     locale={ptBR}
                     initialFocus
                   />
