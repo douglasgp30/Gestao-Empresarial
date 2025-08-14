@@ -314,6 +314,7 @@ export function ModalContasPagar({
                       dataVencimento: date || new Date(),
                     }))
                   }
+                  locale={ptBR}
                   initialFocus
                 />
               </PopoverContent>
