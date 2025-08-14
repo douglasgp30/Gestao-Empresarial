@@ -42,8 +42,10 @@ function ContasContent() {
           <div className="flex justify-center lg:justify-start">
             <FiltroDataContasSimples />
           </div>
-          <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+          <div style={{ margin: "30px 0 0 10px" }}>
             <ModalDescricoesAvancado />
+          </div>
+          <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
           </div>
         </div>
 
