@@ -208,7 +208,6 @@ export function ModalContasPagar({
         valor: valorNumerico,
         dataVencimento: formData.dataVencimento,
         codigoFornecedor: parseInt(formData.codigoFornecedor),
-        conta: formData.conta,
         formaPg: parseInt(formData.formaPg),
         observacoes: formData.observacoes,
         descricao: formData.descricao,
