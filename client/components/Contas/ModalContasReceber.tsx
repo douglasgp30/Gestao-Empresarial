@@ -72,7 +72,6 @@ export function ModalContasReceber({
     valor: "",
     dataVencimento: new Date(),
     codigoCliente: "",
-    conta: "empresa" as "empresa" | "pessoal",
     formaPg: "",
     observacoes: "",
     descricao: "",
@@ -96,7 +95,6 @@ export function ModalContasReceber({
       valor: "",
       dataVencimento: new Date(),
       codigoCliente: "",
-      conta: "empresa",
       formaPg: "",
       observacoes: "",
       descricao: "",
@@ -114,7 +112,6 @@ export function ModalContasReceber({
         valor: contaParaEditar.valor.toString(),
         dataVencimento: contaParaEditar.dataVencimento,
         codigoCliente: contaParaEditar.codigoCliente?.toString() || "",
-        conta: contaParaEditar.conta,
         formaPg: contaParaEditar.formaPg?.toString() || "",
         observacoes: contaParaEditar.observacoes || "",
         descricao: contaParaEditar.descricao || "",
@@ -173,7 +170,6 @@ export function ModalContasReceber({
         valor: valorNumerico,
         dataVencimento: formData.dataVencimento,
         codigoCliente: parseInt(formData.codigoCliente),
-        conta: formData.conta,
         formaPg: parseInt(formData.formaPg),
         observacoes: formData.observacoes,
         descricao: formData.descricao,
@@ -427,24 +423,6 @@ export function ModalContasReceber({
             />
           </div>
 
-          {/* Conta */}
-          <div className="space-y-2">
-            <Label htmlFor="conta">Conta</Label>
-            <Select
-              value={formData.conta}
-              onValueChange={(value: "empresa" | "pessoal") =>
-                setFormData((prev) => ({ ...prev, conta: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="empresa">Empresa</SelectItem>
-                <SelectItem value="pessoal">Pessoal</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Observa��ões */}
           <div className="space-y-2">

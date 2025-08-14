@@ -57,7 +57,6 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
     codigoCliente: "",
     codigoFornecedor: "",
     tipo: "receber" as "receber" | "pagar",
-    conta: "empresa" as "empresa" | "pessoal",
     formaPg: "",
     observacoes: "",
     descricaoCategoria: "0",
@@ -79,7 +78,6 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
       codigoCliente: "",
       codigoFornecedor: "",
       tipo: "receber",
-      conta: "empresa",
       formaPg: "",
       observacoes: "",
       descricaoCategoria: "0",
@@ -98,7 +96,6 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
         codigoCliente: contaParaEditar.codigoCliente?.toString() || "",
         codigoFornecedor: contaParaEditar.codigoFornecedor?.toString() || "",
         tipo: contaParaEditar.tipo,
-        conta: contaParaEditar.conta,
         formaPg: contaParaEditar.formaPg?.toString() || "",
         observacoes: contaParaEditar.observacoes || "",
         descricaoCategoria:
@@ -180,7 +177,6 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
             ? parseInt(formData.codigoFornecedor)
             : undefined,
         tipo: formData.tipo,
-        conta: formData.conta,
         formaPg:
           formData.pago && formData.formaPg
             ? parseInt(formData.formaPg)
@@ -266,38 +262,18 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-          {/* Tipo e Conta */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="tipo">Tipo *</Label>
-              <Select value={formData.tipo} onValueChange={handleTipoChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="receber">Conta a Receber</SelectItem>
-                  <SelectItem value="pagar">Conta a Pagar</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="conta">Conta *</Label>
-              <Select
-                value={formData.conta}
-                onValueChange={(value: "empresa" | "pessoal") =>
-                  setFormData((prev) => ({ ...prev, conta: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a conta" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="empresa">Empresa</SelectItem>
-                  <SelectItem value="pessoal">Pessoal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Tipo */}
+          <div className="space-y-2">
+            <Label htmlFor="tipo">Tipo *</Label>
+            <Select value={formData.tipo} onValueChange={handleTipoChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="receber">Conta a Receber</SelectItem>
+                <SelectItem value="pagar">Conta a Pagar</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Cliente/Fornecedor */}
