@@ -170,9 +170,7 @@ export function ModalEditarConta({
             ? parseInt(formData.descricaoCategoria)
             : undefined,
         pago: formData.pago,
-        dataPagamento: formData.pago
-          ? formData.dataPagamento
-          : undefined,
+        dataPagamento: formData.pago ? formData.dataPagamento : undefined,
       };
 
       console.log("🔍 [MODAL EDITAR CONTA] Enviando dados:", dadosConta);
@@ -337,7 +335,7 @@ export function ModalEditarConta({
                         setFormData((prev) => ({
                           ...prev,
                           dataVencimento: date,
-                        }))
+                        }));
                       }
                     }}
                     locale={ptBR}

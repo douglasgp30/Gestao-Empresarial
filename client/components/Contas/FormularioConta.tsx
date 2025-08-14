@@ -162,9 +162,7 @@ export function FormularioConta({
             ? parseInt(formData.descricaoCategoria)
             : undefined,
         pago: formData.pago,
-        dataPagamento: formData.pago
-          ? formData.dataPagamento
-          : undefined,
+        dataPagamento: formData.pago ? formData.dataPagamento : undefined,
       };
 
       console.log("🔍 [FORM CONTA] Enviando dados:", dadosConta);
@@ -340,7 +338,7 @@ export function FormularioConta({
                       setFormData((prev) => ({
                         ...prev,
                         dataVencimento: date,
-                      }))
+                      }));
                     }
                   }}
                   locale={ptBR}

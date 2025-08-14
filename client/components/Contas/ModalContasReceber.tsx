@@ -273,7 +273,7 @@ export function ModalContasReceber({
                       setFormData((prev) => ({
                         ...prev,
                         dataVencimento: date,
-                      }))
+                      }));
                     }
                   }}
                   locale={ptBR}
@@ -480,7 +480,10 @@ export function ModalContasReceber({
                     selected={formData.dataPagamento}
                     onSelect={(date) => {
                       if (date) {
-                        setFormData((prev) => ({ ...prev, dataPagamento: date }))
+                        setFormData((prev) => ({
+                          ...prev,
+                          dataPagamento: date,
+                        }));
                       }
                     }}
                     locale={ptBR}

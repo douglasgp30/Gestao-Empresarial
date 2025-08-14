@@ -372,7 +372,9 @@ export function ListaContas({}: ListaContasProps) {
                                 className="py-1 px-2 text-xs h-auto min-h-0"
                               >
                                 <CheckCircle className="mr-1 h-3 w-3 shrink-0" />
-                                <span className="text-xs">Marcar como Pago</span>
+                                <span className="text-xs">
+                                  Marcar como Pago
+                                </span>
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
