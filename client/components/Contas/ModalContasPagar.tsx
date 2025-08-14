@@ -473,25 +473,6 @@ export function ModalContasPagar({
             />
           </div>
 
-          {/* Conta */}
-          <div className="space-y-2">
-            <Label htmlFor="conta">Conta</Label>
-            <Select
-              value={formData.conta}
-              onValueChange={(value: "empresa" | "pessoal") =>
-                setFormData((prev) => ({ ...prev, conta: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="empresa">Empresa</SelectItem>
-                <SelectItem value="pessoal">Pessoal</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Observações */}
           <div className="space-y-2">
             <Label htmlFor="observacoes">Observações</Label>
