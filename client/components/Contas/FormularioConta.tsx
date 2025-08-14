@@ -364,6 +364,7 @@ export function FormularioConta({
                       dataVencimento: date || new Date(),
                     }))
                   }
+                  locale={ptBR}
                   initialFocus
                 />
               </PopoverContent>
