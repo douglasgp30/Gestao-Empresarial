@@ -139,6 +139,11 @@ export default function ModalDescricoesSimples() {
       });
 
       if (!response.ok) {
+        if (response.status === 400) {
+          // Erro de validação (ex: categoria com descrições vinculadas)
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `Erro de validação`);
+        }
         throw new Error(`Erro ${response.status}`);
       }
 
