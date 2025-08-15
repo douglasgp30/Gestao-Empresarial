@@ -268,8 +268,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         formasPagamentoResponse,
         funcionariosResponse,
         tecnicosResponse,
-        setoresResponse,
-        cidadesResponse,
+        localizacoesResponse,
       ] = await Promise.all([
         apiCache.executeWithCache("entidades-descricoes", () =>
           descricoesECategoriasApi.listar(),
