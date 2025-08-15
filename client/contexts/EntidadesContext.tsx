@@ -477,7 +477,39 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      await setoresApi.criar(novoSetor);
+
+      // Se o setor tem uma propriedade 'cidade' (nome), precisamos resolver para cidadeId
+      let setorParaEnviar = { ...novoSetor };
+
+      if ('cidade' in novoSetor && novoSetor.cidade && !('cidadeId' in novoSetor)) {
+        // Buscar ID da cidade pelo nome
+        const cidadesResponse = await setoresApi.listarCidades();
+        if (cidadesResponse.data) {
+          let cidadeEncontrada;
+          if (typeof cidadesResponse.data[0] === 'string') {
+            // Formato antigo - criar setor com nome da cidade
+            setorParaEnviar = novoSetor;
+          } else {
+            // Formato novo - buscar ID da cidade
+            cidadeEncontrada = cidadesResponse.data.find((c: any) =>
+              c.nome.toLowerCase() === novoSetor.cidade.toLowerCase()
+            );
+
+            if (cidadeEncontrada) {
+              setorParaEnviar = {
+                nome: novoSetor.nome,
+                cidadeId: cidadeEncontrada.id
+              };
+              // Remover propriedade 'cidade' do objeto
+              delete (setorParaEnviar as any).cidade;
+            } else {
+              throw new Error(`Cidade "${novoSetor.cidade}" não encontrada`);
+            }
+          }
+        }
+      }
+
+      await setoresApi.criar(setorParaEnviar);
       const [setoresResponse, cidadesResponse] = await Promise.all([
         setoresApi.listar(),
         setoresApi.listarCidades(),
@@ -501,7 +533,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       toast.success("Setor adicionado!");
     } catch (error) {
       console.error("Erro ao adicionar setor:", error);
-      toast.error("Erro ao adicionar setor");
+      toast.error(`Erro ao adicionar setor: ${error.message || 'Tente novamente'}`);
       throw error;
     }
   };
