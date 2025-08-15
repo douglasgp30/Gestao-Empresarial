@@ -386,6 +386,15 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const atualizarFiltros = useCallback((novosFiltros: Partial<FiltrosContas>) => {
+    console.log("🔄 [CONTAS] Atualizando filtros:", novosFiltros);
+    setFiltros((prev) => ({
+      ...prev,
+      ...novosFiltros,
+      __timestamp: Date.now(),
+    }));
+  }, []);
+
   const forcarRecarregamento = useCallback(() => {
     console.log("🔄 [CONTAS] Forçando recarregamento manual");
     setFiltros((prev) => ({
