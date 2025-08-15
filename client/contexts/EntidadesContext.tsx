@@ -220,7 +220,21 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setFornecedores(fornecedoresStorage);
     } catch (error) {
       console.error("Erro ao carregar entidades:", error);
-      setError("Erro ao carregar dados do servidor");
+
+      // Verificar se é erro de rede
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        setError("Erro de conexão. Verificando servidor...");
+        console.log("Tentando reconectar em 2s...");
+
+        // Tentar reconectar após 2 segundos
+        setTimeout(() => {
+          if (!isCarregando) { // Só tentar se não estiver carregando
+            carregarDados();
+          }
+        }, 2000);
+      } else {
+        setError("Erro ao carregar dados do servidor");
+      }
 
       // Definir dados padrão em caso de erro para evitar crashes
       setDescricoesECategorias([]);
@@ -232,6 +246,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setCidades([]);
     } finally {
       setIsLoading(false);
+      setIsCarregando(false);
     }
   };
 
