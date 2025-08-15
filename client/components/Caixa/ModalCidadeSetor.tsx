@@ -384,7 +384,7 @@ export default function ModalCidadeSetor() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {setores.map((setor) => (
+                        {(Array.isArray(setores) ? setores : []).map((setor) => (
                           <TableRow key={setor.id}>
                             <TableCell>
                               <div className="flex items-center space-x-2">

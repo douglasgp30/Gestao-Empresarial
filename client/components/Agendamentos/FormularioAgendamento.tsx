@@ -106,7 +106,7 @@ export default function FormularioAgendamento({
     }
 
     if (!formData.descricaoServico.trim()) {
-      novosErros.descricaoServico = "Descrição do serviço é obrigatória";
+      novosErros.descricaoServico = "Descri��ão do serviço é obrigatória";
     }
 
     if (!formData.setor) {
@@ -491,7 +491,7 @@ export default function FormularioAgendamento({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="sem_tecnico">Nenhum técnico</SelectItem>
-                {tecnicos.map((tecnico) => (
+                {(Array.isArray(tecnicos) ? tecnicos : []).map((tecnico) => (
                   <SelectItem key={tecnico.id} value={tecnico.nomeCompleto}>
                     {tecnico.nomeCompleto}
                   </SelectItem>
