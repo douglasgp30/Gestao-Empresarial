@@ -381,10 +381,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               disabled={!formData.categoria}
               items={descricoesFiltradas}
               onAddNew={async (data) => {
-                await adicionarDescricao({
+                await adicionarDescricaoECategoria({
                   nome: data.nome,
                   tipo: "receita",
                   categoria: formData.categoria,
+                  tipoItem: "descricao",
+                  ativo: true,
                 });
               }}
               addNewTitle="Nova Descrição de Receita"
