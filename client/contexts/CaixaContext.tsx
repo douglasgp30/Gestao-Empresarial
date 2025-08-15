@@ -112,8 +112,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      // Carregar campanhas
-      const campanhasResponse = await campanhasApi.listar();
+      // Carregar campanhas usando loadingManager
+      const campanhasResponse = await loadingManager.executeWithControl("campanhas", () => campanhasApi.listar());
       if (campanhasResponse.error) {
         console.error("Erro ao carregar campanhas:", campanhasResponse.error);
       } else {
