@@ -156,6 +156,8 @@ export default function ModalDescricoesSimples() {
         method: "DELETE",
       });
 
+      console.log('🟡 Response status:', response.status, response.statusText);
+
       if (!response.ok) {
         if (response.status === 400) {
           // Erro de validação (ex: categoria com descrições vinculadas)
