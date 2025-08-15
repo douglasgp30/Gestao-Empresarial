@@ -236,23 +236,44 @@ export default function ModalCidadeSetorSimples() {
     if (!itemToDelete || isDeleting) return;
 
     setIsDeleting(true);
-    try {
-      console.log('🟡 Excluindo:', itemToDelete.tipo, itemToDelete.nome);
 
-      if (itemToDelete.tipo === "setor") {
-        // Excluir setor
+    if (itemToDelete.tipo === "setor") {
+      // Excluir setor
+      try {
+        console.log('🟡 Excluindo setor:', itemToDelete.nome);
         await excluirSetor(itemToDelete.id || itemToDelete.nome);
-        toast.success("Setor excluído com sucesso");
-      } else {
-        // Excluir cidade - verificar dependências primeiro
-        const setoresVinculados = setores.filter(s => s.cidade === itemToDelete.nome);
-        
-        if (setoresVinculados.length > 0) {
-          const nomesSetores = setoresVinculados.map(s => s.nome).join(", ");
-          throw new Error(`Não é possível excluir a cidade "${itemToDelete.nome}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`);
-        }
 
-        // Se chegou aqui, pode excluir
+        toast.success("Setor excluído com sucesso");
+        setShowConfirm(false);
+        setItemToDelete(null);
+      } catch (error) {
+        console.error('❌ Erro ao excluir setor:', error);
+        const errorMessage = error instanceof Error ? error.message : "Erro ao excluir setor";
+        toast.error(errorMessage);
+      }
+    } else {
+      // Excluir cidade - verificar dependências primeiro
+      console.log('🟡 Excluindo cidade:', itemToDelete.nome);
+
+      const setoresVinculados = setores.filter(s => s.cidade === itemToDelete.nome);
+
+      if (setoresVinculados.length > 0) {
+        const nomesSetores = setoresVinculados.map(s => s.nome).join(", ");
+        console.log('⚠️ Validação: cidade possui setores vinculados:', nomesSetores);
+
+        // Mostrar mensagem informativa sem lançar erro
+        toast.error(
+          `Não é possível excluir a cidade "${itemToDelete.nome}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
+          { duration: 8000 } // Toast mais longo para dar tempo de ler
+        );
+
+        // Não fechar o modal - usuário pode tentar novamente após ver dependências
+        setIsDeleting(false);
+        return;
+      }
+
+      // Se chegou aqui, pode excluir
+      try {
         const response = await fetch(`/api/setores/cidades/${encodeURIComponent(itemToDelete.nome)}`, {
           method: "DELETE",
         });
@@ -262,19 +283,18 @@ export default function ModalCidadeSetorSimples() {
           throw new Error(errorData.error || `Erro HTTP ${response.status}`);
         }
 
+        console.log('✅ Cidade excluída com sucesso');
         toast.success("Cidade excluída com sucesso");
+        setShowConfirm(false);
+        setItemToDelete(null);
+      } catch (error) {
+        console.error('❌ Erro ao excluir cidade:', error);
+        const errorMessage = error instanceof Error ? error.message : "Erro ao excluir cidade";
+        toast.error(errorMessage);
       }
-
-      setShowConfirm(false);
-      setItemToDelete(null);
-
-    } catch (error) {
-      console.error('❌ Erro no handleDelete:', error);
-      const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
-      toast.error(`Falha na exclusão: ${errorMessage}`);
-    } finally {
-      setIsDeleting(false);
     }
+
+    setIsDeleting(false);
   };
 
   if (!isOpen) {
