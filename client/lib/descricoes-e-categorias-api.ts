@@ -135,20 +135,21 @@ export const descricoesECategoriasApi = {
       });
 
       if (!response.ok) {
-        // Melhor tratamento para diferentes status
+        // Melhor tratamento para diferentes status de erro
         if (response.status === 404) {
           throw new Error("Item não encontrado");
         }
 
+        // Só tenta parse JSON se não for status 204/200 (sucesso)
         try {
           const errorData = await response.json();
           throw new Error(errorData.error || `HTTP ${response.status}`);
         } catch {
-          // Se não conseguir parsear JSON (status 204 por exemplo)
           throw new Error(`Erro HTTP ${response.status}`);
         }
       }
 
+      // Para status 200/204 (sucesso), retorna direto sem tentar parse JSON
       return { data: null };
     } catch (error) {
       console.error("Erro ao excluir item:", error);
