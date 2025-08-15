@@ -36,14 +36,20 @@ export default function TestDeleteApi() {
         const contentType = response.headers.get("content-type");
         console.log("Content-Type:", contentType);
         
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
+        // Clonar response para poder tentar múltiplas leituras
+        try {
+          const responseClone = response.clone();
+          const errorData = await responseClone.json();
           console.log("Error data:", errorData);
-          setResult(`❌ Erro: ${errorData.error || 'Erro desconhecido'}`);
-        } else {
-          const textData = await response.text();
-          console.log("Text data:", textData);
-          setResult(`❌ Erro HTTP ${response.status}: ${response.statusText}`);
+          setResult(`❌ Erro JSON: ${errorData.error || 'Erro desconhecido'}`);
+        } catch (jsonError) {
+          try {
+            const textData = await response.text();
+            console.log("Text data:", textData);
+            setResult(`❌ Erro Text: ${textData || response.statusText}`);
+          } catch (textError) {
+            setResult(`❌ Erro HTTP ${response.status}: ${response.statusText}`);
+          }
         }
         return;
       }
