@@ -57,7 +57,7 @@ import {
   XCircle,
   Folder,
 } from "lucide-react";
-import { toast } from "../ui/use-toast";
+import { toast } from "sonner";
 
 export default function ModalDescricoesAvancado() {
   const {
