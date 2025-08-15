@@ -54,9 +54,20 @@ async function apiRequest<T>(
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error(`[ApiService] Erro HTTP ${response.status}:`, errorData);
+        console.error(`[ApiService] Erro HTTP ${response.status}:`, JSON.stringify(errorData, null, 2));
+
+        // Garantir que error seja sempre uma string
+        let errorMessage = `Erro HTTP ${response.status}`;
+        if (errorData.error) {
+          if (typeof errorData.error === 'string') {
+            errorMessage = errorData.error;
+          } else {
+            errorMessage = JSON.stringify(errorData.error);
+          }
+        }
+
         return {
-          error: errorData.error || `Erro HTTP ${response.status}`,
+          error: errorMessage,
           details: errorData.details,
         };
       }
