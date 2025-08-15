@@ -208,9 +208,13 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
       if (descricoesVinculadas.length > 0) {
         const nomesDescricoes = descricoesVinculadas.map(d => d.nome).join(", ");
 
+        const errorMessage = `Não é possível excluir a categoria "${item.nome}" pois existem ${descricoesVinculadas.length} descrição(ões) vinculada(s): ${nomesDescricoes}. Remova ou realoque estas descrições primeiro.`;
+
         const response: ApiResponse<null> = {
-          error: `Não é possível excluir a categoria "${item.nome}" pois existem ${descricoesVinculadas.length} descrição(ões) vinculada(s): ${nomesDescricoes}. Remova ou realoque estas descrições primeiro.`,
+          error: errorMessage,
         };
+
+        console.log('🔴 DEBUG SERVER - Enviando erro 400:', JSON.stringify(response, null, 2));
         return res.status(400).json(response);
       }
     }
