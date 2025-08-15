@@ -269,9 +269,9 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                   <SelectValue placeholder="Selecione a categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categoriasDespesa.map((categoria) => (
-                    <SelectItem key={categoria} value={categoria}>
-                      {categoria}
+                  {categorias.map((categoria) => (
+                    <SelectItem key={categoria.nome} value={categoria.nome}>
+                      {categoria.nome}
                     </SelectItem>
                   ))}
                 </SelectContent>
