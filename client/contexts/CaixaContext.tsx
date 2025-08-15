@@ -11,6 +11,7 @@ import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
 import { caixaApi, campanhasApi } from "../lib/apiService";
 import { loadingManager } from "../lib/loadingManager";
+import { apiCache } from "../lib/apiCache";
 import {
   shouldSkipLoading,
   getLoadingDelay,
