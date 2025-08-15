@@ -558,8 +558,14 @@ export default function ModalCidadeSetorSimples() {
                   {(Array.isArray(cidades) ? cidades : [])
                     .filter(cidade => cidade != null && cidade !== '')
                     .map((cidade, index) => (
-                      <option key={`option-${index}`} value={typeof cidade === 'object' ? cidade.nome : cidade}>
-                        {typeof cidade === 'object' ? cidade.nome : cidade}
+                      <option key={`option-${index}`} value={
+                        typeof cidade === 'object'
+                          ? (cidade?.nome || String(cidade))
+                          : String(cidade)
+                      }>
+                        {typeof cidade === 'object'
+                          ? (cidade?.nome || String(cidade))
+                          : String(cidade)}
                       </option>
                     ),
                   )}
