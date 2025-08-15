@@ -81,6 +81,7 @@ export default function ModalDescricoesAvancado() {
   const [tipoAtivo, setTipoAtivo] = useState<"receita" | "despesa">("receita");
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isConfirmingDeletion, setIsConfirmingDeletion] = useState(false);
 
   const [formDescricao, setFormDescricao] = useState({
     nome: "",
@@ -203,29 +204,41 @@ export default function ModalDescricoesAvancado() {
   };
 
   const handleExcluir = async () => {
-    if (!itemParaExcluir) return;
+    if (!itemParaExcluir || isDeleting || isConfirmingDeletion) return;
+
+    console.log('🔴 [Modal] Iniciando exclusão:', itemParaExcluir.nome);
 
     try {
       setIsDeleting(true);
+      setIsConfirmingDeletion(true);
 
-      // Manter referência do item, mas NÃO fechar o dialog ainda
+      // Manter referência do item
       const itemTemp = itemParaExcluir;
 
+      console.log('🔴 [Modal] Chamando API de exclusão...');
       await excluirDescricaoECategoria(itemTemp.id.toString());
 
-      // Só fechar o AlertDialog APÓS exclusão bem-sucedida
-      setItemParaExcluir(null);
+      console.log('✅ [Modal] Exclusão bem-sucedida, fechando dialog...');
+
+      // Debounce o fechamento para evitar conflitos
+      setTimeout(() => {
+        setItemParaExcluir(null);
+        setIsConfirmingDeletion(false);
+      }, 150);
 
       // O toast do sucesso já é exibido pelo Context
     } catch (error) {
-      console.error("Erro ao excluir:", error);
+      console.error('❌ [Modal] Erro ao excluir:', error);
+      setIsConfirmingDeletion(false);
       toast({
         title: "Erro",
         description: "Erro ao excluir item. Tente novamente.",
         variant: "destructive",
       });
     } finally {
-      setIsDeleting(false);
+      setTimeout(() => {
+        setIsDeleting(false);
+      }, 200);
     }
   };
 
@@ -377,7 +390,7 @@ export default function ModalDescricoesAvancado() {
                       <DialogHeader>
                         <DialogTitle>Nova Descrição de Receita</DialogTitle>
                         <DialogDescription>
-                          Adicione uma nova descrição para receitas
+                          Adicione uma nova descriç��o para receitas
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
@@ -594,7 +607,14 @@ export default function ModalDescricoesAvancado() {
       </Dialog>
 
       {/* Alert Dialog para Confirmação de Exclusão */}
-      <AlertDialog open={!!itemParaExcluir} onOpenChange={() => setItemParaExcluir(null)}>
+      <AlertDialog
+        open={!!itemParaExcluir && !isConfirmingDeletion}
+        onOpenChange={(open) => {
+          if (!open && !isDeleting && !isConfirmingDeletion) {
+            setItemParaExcluir(null);
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
@@ -604,13 +624,22 @@ export default function ModalDescricoesAvancado() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel
+              disabled={isDeleting || isConfirmingDeletion}
+              onClick={() => {
+                if (!isDeleting && !isConfirmingDeletion) {
+                  setItemParaExcluir(null);
+                }
+              }}
+            >
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleExcluir}
-              disabled={isDeleting}
+              disabled={isDeleting || isConfirmingDeletion}
               className="bg-red-600 hover:bg-red-700"
             >
-              {isDeleting ? "Excluindo..." : "Excluir"}
+              {isDeleting || isConfirmingDeletion ? "Excluindo..." : "Excluir"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
