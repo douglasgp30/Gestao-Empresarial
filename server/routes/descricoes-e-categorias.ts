@@ -134,9 +134,11 @@ const createDescricaoECategoria: RequestHandler = async (req, res) => {
     res.status(201).json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("[DescricaoECategoria] Erro de validação Zod:", error.errors);
+      console.error("[DescricaoECategoria] Dados que causaram erro:", JSON.stringify(req.body, null, 2));
       const response: ApiResponse<null> = {
         error:
-          "Dados inválidos: " + error.errors.map((e) => e.message).join(", "),
+          "Dados inválidos: " + error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(", "),
       };
       res.status(400).json(response);
     } else {
