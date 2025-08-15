@@ -101,6 +101,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           const nomes = data.data.map((cat: any) => cat.nome).sort();
           setCategoriasReceita(nomes);
           console.log("[FormularioReceita] Categorias carregadas:", nomes);
+          console.log("[FormularioReceita] Dados completos das categorias:", data.data);
+        } else {
+          console.log("[FormularioReceita] Nenhuma categoria encontrada na resposta:", data);
         }
       } catch (error) {
         console.error("[FormularioReceita] Erro ao carregar categorias:", error);
