@@ -154,8 +154,11 @@ export function FormularioConta({
               })()
             : undefined,
         codigoFornecedor:
-          formData.tipo === "pagar"
-            ? parseInt(formData.codigoFornecedor)
+          formData.tipo === "pagar" && formData.codigoFornecedor
+            ? (() => {
+                const parsed = parseInt(formData.codigoFornecedor);
+                return isNaN(parsed) ? undefined : parsed;
+              })()
             : undefined,
         tipo: formData.tipo,
         formaPg:
