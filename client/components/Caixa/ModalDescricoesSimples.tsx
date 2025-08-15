@@ -177,13 +177,24 @@ export default function ModalDescricoesSimples() {
       });
 
       if (!response.ok) {
+        console.log('🔴 DEBUG - Response status:', response.status);
+        console.log('🔴 DEBUG - Response headers:', {
+          contentType: response.headers.get('content-type'),
+          contentLength: response.headers.get('content-length')
+        });
+
         const errorMessage = await parseErrorResponse(response);
+        console.log('🔴 DEBUG - Error message recebida:', JSON.stringify(errorMessage));
+        console.log('🔴 DEBUG - Tipo da mensagem:', typeof errorMessage);
+        console.log('🔴 DEBUG - Length da mensagem:', errorMessage?.length);
 
         // Se a mensagem está vazia ou é genérica, usar fallback mais informativo
         if (!errorMessage || errorMessage.trim() === '' || errorMessage === 'Erro HTTP 400:' || errorMessage === `Erro HTTP ${response.status}: ${response.statusText}`) {
+          console.log('🔴 DEBUG - Usando fallback');
           throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
         }
 
+        console.log('🔴 DEBUG - Usando mensagem do servidor');
         throw new Error(errorMessage);
       }
 
