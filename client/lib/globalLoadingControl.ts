@@ -61,10 +61,10 @@ class GlobalLoadingControl {
   }
 
   getLoadingDelay(baseDelay: number = 1000): number {
-    if (!this.isHotReloading) return Math.random() * 500; // Delay mínimo em produção
+    if (!this.isHotReloading) return Math.random() * 200; // Delay menor em produção
 
     // Em desenvolvimento, delays maiores e mais espaçados
-    return Math.random() * baseDelay + baseDelay;
+    return Math.random() * baseDelay + baseDelay * 0.5;
   }
 
   forceUnblock() {
