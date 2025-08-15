@@ -26,7 +26,7 @@ import {
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 import { loadingManager } from "../lib/loadingManager";
-import { shouldSkipAutoLoad, getDevDelay } from "../lib/devUtils";
+import { shouldSkipLoading, getLoadingDelay } from "../lib/globalLoadingControl";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
