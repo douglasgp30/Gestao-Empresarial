@@ -58,6 +58,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCarregando, setIsCarregando] = useState(false);
   const [filtros, setFiltros] = useState(() => {
     // Usar data atual do sistema mas normalizando para o dia correto
     const agora = new Date();
@@ -338,7 +339,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
-      setError("Erro ao editar lançamento");
+      setError("Erro ao editar lan��amento");
       throw error;
     }
   };
