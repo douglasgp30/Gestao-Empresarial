@@ -241,7 +241,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
             percentualServico: true,
           },
         },
-        setor: true,
+
         campanha: true,
         cliente: true,
       },
@@ -471,7 +471,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
             percentualServico: true,
           },
         },
-        setor: true,
+
         campanha: true,
         cliente: true,
       },
@@ -588,7 +588,7 @@ export const updateLancamento: RequestHandler = async (req, res) => {
             percentualServico: true,
           },
         },
-        setor: true,
+
         campanha: true,
         cliente: true,
       },
