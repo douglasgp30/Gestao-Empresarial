@@ -159,10 +159,15 @@ export default function ModalDescricoesSimples() {
       if (!response.ok) {
         if (response.status === 400) {
           // Erro de validação (ex: categoria com descrições vinculadas)
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Erro de validação`);
+          try {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Erro de validação: código ${response.status}`);
+          } catch (parseError) {
+            // Se não conseguir fazer parse do JSON, usar mensagem genérica
+            throw new Error(`Erro de validação: não foi possível completar a operação (código ${response.status})`);
+          }
         }
-        throw new Error(`Erro ${response.status}`);
+        throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
       }
 
       console.log('✅ Excluído com sucesso');
