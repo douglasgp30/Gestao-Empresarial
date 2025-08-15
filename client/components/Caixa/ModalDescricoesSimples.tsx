@@ -62,9 +62,11 @@ export default function ModalDescricoesSimples() {
 
   // Filtrar dados usando o sistema unificado com memoização otimizada
   const categoriasReceitas = useMemo(() => {
-    return descricoesECategorias.filter(
+    const filtered = descricoesECategorias.filter(
       (item) => item.tipoItem === "categoria" && item.ativo && item.tipo === "receita"
     );
+    console.log(`[ModalDescricoesSimples] Categorias de receita filtradas: ${filtered.length}`, filtered);
+    return filtered;
   }, [descricoesECategorias]);
 
   const categoriasDespesas = useMemo(() => {
