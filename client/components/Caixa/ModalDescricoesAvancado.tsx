@@ -624,16 +624,19 @@ export default function ModalDescricoesAvancado() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
+            <Button
+              variant="outline"
               disabled={isDeleting}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 if (!isDeleting) {
                   setItemParaExcluir(null);
                 }
               }}
             >
               Cancelar
-            </AlertDialogCancel>
+            </Button>
             <Button
               onClick={(e) => {
                 e.preventDefault();
