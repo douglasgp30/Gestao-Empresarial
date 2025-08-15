@@ -207,9 +207,7 @@ export default function ModalCidadeSetorSimples() {
       // Recarregar dados para atualizar a lista de cidades
       await recarregarTudo();
 
-      toast.success(
-        `Cidade "${nomeCidade}" adicionada com sucesso (setor Centro criado automaticamente)`,
-      );
+      toast.success(`Cidade "${nomeCidade}" adicionada com sucesso!`);
       resetFormCidade();
     } catch (error) {
       console.error("Erro ao adicionar cidade:", error);
