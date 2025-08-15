@@ -220,9 +220,23 @@ export default function ModalCidadeSetorSimples() {
 
     setIsSaving(true);
     try {
+      const nomeSetor = formSetor.nome.trim();
+      const nomeCidade = formSetor.cidade;
+
+      // Verificar se o setor já existe nesta cidade
+      const setorExistente = setores.find(s =>
+        s.nome.toLowerCase() === nomeSetor.toLowerCase() &&
+        s.cidade === nomeCidade
+      );
+
+      if (setorExistente) {
+        toast.error(`O setor "${nomeSetor}" já existe na cidade "${nomeCidade}"`);
+        return;
+      }
+
       await adicionarSetor({
-        nome: formSetor.nome.trim(),
-        cidade: formSetor.cidade,
+        nome: nomeSetor,
+        cidade: nomeCidade,
       });
 
       // Recarregar dados para garantir atualização
