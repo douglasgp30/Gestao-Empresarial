@@ -229,11 +229,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isLoading],
   );
 
-  // Carregar dados na inicialização com debounce
+  // Carregar dados na inicialização com debounce maior para sequencializar
   useEffect(() => {
     const timeout = setTimeout(() => {
       carregarDados();
-    }, 150); // Delay um pouco maior que EntidadesContext para evitar sobrecarga
+    }, 2000); // Delay maior (2s) para carregar depois do EntidadesContext
 
     return () => clearTimeout(timeout);
   }, []);
@@ -302,7 +302,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      // Recarregar lançamentos
+      // Recarregar lan��amentos
       await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
