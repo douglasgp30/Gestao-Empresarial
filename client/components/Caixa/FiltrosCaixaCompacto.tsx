@@ -98,20 +98,22 @@ export function FiltrosCaixaCompacto() {
     [caixaLoading, entidadesLoading, clientesLoading]
   );
 
-  // Obter categorias únicas das descrições
-  const categorias = [
+  // Obter categorias únicas das descrições - memoizado
+  const categorias = useMemo(() => [
     ...new Set(
       descricoes
         .map((d) => d.categoria)
         .filter((categoria) => categoria && categoria.trim() !== ""),
     ),
-  ].sort();
+  ].sort(), [descricoes]);
 
-  // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas =
+  // Filtrar descrições pela categoria selecionada - memoizado
+  const descricoesFiltradas = useMemo(() =>
     filtrosLocal.categoria !== "todas"
       ? descricoes.filter((d) => d.categoria === filtrosLocal.categoria)
-      : descricoes;
+      : descricoes,
+    [descricoes, filtrosLocal.categoria]
+  );
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
