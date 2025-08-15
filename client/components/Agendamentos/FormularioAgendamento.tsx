@@ -377,8 +377,13 @@ export default function FormularioAgendamento({
                 <SelectContent>
                   {setores
                     .filter(
-                      (setor) =>
-                        !formData.cidade || setor.cidade === formData.cidade,
+                      (setor) => {
+                        if (!formData.cidade) return true;
+                        const nomeCidadeSetor = typeof setor.cidade === 'object'
+                          ? setor.cidade?.nome
+                          : setor.cidade;
+                        return nomeCidadeSetor === formData.cidade;
+                      }
                     )
                     .map((setor) => (
                       <SelectItem key={setor.id} value={setor.id.toString()}>
