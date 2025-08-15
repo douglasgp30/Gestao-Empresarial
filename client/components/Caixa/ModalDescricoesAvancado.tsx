@@ -94,11 +94,30 @@ export default function ModalDescricoesAvancado() {
     tipo: "receita" as "receita" | "despesa",
   });
 
-  // Filtrar dados usando o sistema unificado com memoização
-  const categoriasReceitas = useMemo(() => getCategorias("receita"), [getCategorias]);
-  const categoriasDespesas = useMemo(() => getCategorias("despesa"), [getCategorias]);
-  const descricoesReceitas = useMemo(() => getDescricoes("receita"), [getDescricoes]);
-  const descricoesDespesas = useMemo(() => getDescricoes("despesa"), [getDescricoes]);
+  // Filtrar dados usando o sistema unificado com memoização otimizada
+  const categoriasReceitas = useMemo(() => {
+    return descricoesECategorias.filter(
+      (item) => item.tipoItem === "categoria" && item.ativo && item.tipo === "receita"
+    );
+  }, [descricoesECategorias]);
+
+  const categoriasDespesas = useMemo(() => {
+    return descricoesECategorias.filter(
+      (item) => item.tipoItem === "categoria" && item.ativo && item.tipo === "despesa"
+    );
+  }, [descricoesECategorias]);
+
+  const descricoesReceitas = useMemo(() => {
+    return descricoesECategorias.filter(
+      (item) => item.tipoItem === "descricao" && item.ativo && item.tipo === "receita"
+    );
+  }, [descricoesECategorias]);
+
+  const descricoesDespesas = useMemo(() => {
+    return descricoesECategorias.filter(
+      (item) => item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa"
+    );
+  }, [descricoesECategorias]);
 
   const resetFormDescricao = () => {
     setFormDescricao({
@@ -390,7 +409,7 @@ export default function ModalDescricoesAvancado() {
                       <DialogHeader>
                         <DialogTitle>Nova Descrição de Receita</DialogTitle>
                         <DialogDescription>
-                          Adicione uma nova descriç��o para receitas
+                          Adicione uma nova descrição para receitas
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
