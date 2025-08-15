@@ -356,17 +356,17 @@ export function FormularioConta({
           <div className="space-y-2">
             <Label htmlFor="categoria">Categoria</Label>
             <Select
-              value={formData.descricaoCategoria}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, descricaoCategoria: value }))
-              }
+              value={formData.categoria}
+              onValueChange={(value) => {
+                setFormData((prev) => ({ ...prev, categoria: value, descricao: "0" }));
+              }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="0">Nenhuma</SelectItem>
-                {categorias.map((categoria) => (
+                {getCategorias().map((categoria) => (
                   <SelectItem
                     key={categoria.id}
                     value={categoria.id.toString()}
@@ -377,6 +377,37 @@ export function FormularioConta({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Descrição */}
+          {formData.categoria !== "0" && (
+            <div className="space-y-2">
+              <Label htmlFor="descricao">Descrição</Label>
+              <Select
+                value={formData.descricao}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, descricao: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione uma descrição" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">Nenhuma</SelectItem>
+                  {getDescricoes(
+                    undefined,
+                    getCategorias().find(c => c.id.toString() === formData.categoria)?.nome
+                  ).map((descricao) => (
+                    <SelectItem
+                      key={descricao.id}
+                      value={descricao.id.toString()}
+                    >
+                      {descricao.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Status de Pagamento */}
           <div className="flex items-center space-x-2">
