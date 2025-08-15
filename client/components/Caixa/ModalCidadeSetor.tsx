@@ -272,7 +272,7 @@ export default function ModalCidadeSetor() {
                           <SelectValue placeholder="Selecione uma cidade" />
                         </SelectTrigger>
                         <SelectContent>
-                          {cidades.map((cidade, index) => (
+                          {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
                             <SelectItem
                               key={`cidade-${index}-${cidade}`}
                               value={cidade}
@@ -336,7 +336,7 @@ export default function ModalCidadeSetor() {
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {cidades.map((cidade, index) => (
+                    {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
                       <Badge
                         key={`cidade-badge-${index}-${cidade}`}
                         variant="secondary"

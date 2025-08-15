@@ -224,7 +224,7 @@ export default function ModalCidades() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {cidades.map((cidade, index) => (
+                  {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
                     <TableRow key={`cidade-${index}-${cidade}`}>
                       <TableCell>
                         <div className="flex items-center space-x-2">
