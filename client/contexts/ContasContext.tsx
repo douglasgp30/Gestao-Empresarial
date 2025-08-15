@@ -426,11 +426,19 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     carregarContas(filtros);
   }, [carregarContas, filtros]);
 
-  // Carregar dados auxiliares na inicialização com delay
+  // Carregar dados auxiliares na inicialização com proteção para hot reload
   useEffect(() => {
+    // Durante hot reload, não carregar automaticamente
+    if (typeof window !== 'undefined' && (window.location.href.includes('reload=') || window.location.href.includes('?t='))) {
+      console.log('[ContasContext] Hot reload detectado, pulando carregamento automático');
+      return;
+    }
+
+    const delay = Math.random() * 2000 + 5000; // Delay aleatório entre 5-7s
     const timeout = setTimeout(() => {
+      console.log('[ContasContext] Iniciando carregamento após delay de', delay, 'ms');
       carregarDadosAuxiliares();
-    }, 3000); // Delay de 3s para carregar por último
+    }, delay);
 
     return () => clearTimeout(timeout);
   }, [carregarDadosAuxiliares]);
