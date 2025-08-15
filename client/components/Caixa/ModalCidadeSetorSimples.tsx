@@ -504,7 +504,11 @@ export default function ModalCidadeSetorSimples() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleShowDependencies(typeof cidade === 'object' ? cidade.nome : cidade)}
+                          onClick={() => handleShowDependencies(
+                            typeof cidade === 'object'
+                              ? (cidade?.nome || String(cidade))
+                              : String(cidade)
+                          )}
                           className="text-blue-600 hover:text-blue-700"
                           title="Ver setores vinculados"
                         >
