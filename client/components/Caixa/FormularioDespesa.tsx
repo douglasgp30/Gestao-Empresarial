@@ -34,9 +34,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
   const {
-    descricoes,
     formasPagamento,
-    adicionarDescricao,
     adicionarFormaPagamento,
     isLoading: entidadesLoading,
   } = useEntidades();
