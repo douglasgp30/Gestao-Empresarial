@@ -569,25 +569,40 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const adicionarCidade = async (cidade: { nome: string }) => {
     try {
       setError(null);
-      const response = await setoresApi.listarCidades();
-      if (response.data) {
-        // Processar response.data considerando formato
-        let cidadesExistentes: string[] = [];
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          if (typeof response.data[0] === "string") {
-            cidadesExistentes = response.data;
-          } else {
-            cidadesExistentes = response.data.map((cidade: any) => cidade.nome);
-          }
-        }
 
-        const novasCidades = [...cidadesExistentes, cidade.nome];
-        setCidades([...new Set(novasCidades)]);
+      // Usar a nova API de cidades
+      const response = await fetch("/api/cidades", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cidade),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao criar cidade');
       }
+
+      // Recarregar lista de cidades
+      const cidadesResponse = await setoresApi.listarCidades();
+      if (cidadesResponse.data) {
+        if (
+          Array.isArray(cidadesResponse.data) &&
+          cidadesResponse.data.length > 0
+        ) {
+          if (typeof cidadesResponse.data[0] === "string") {
+            setCidades(cidadesResponse.data);
+          } else {
+            setCidades(cidadesResponse.data.map((c: any) => c.nome));
+          }
+        } else {
+          setCidades([]);
+        }
+      }
+
       toast.success("Cidade adicionada!");
     } catch (error) {
       console.error("Erro ao adicionar cidade:", error);
-      toast.error("Erro ao adicionar cidade");
+      toast.error(`Erro ao adicionar cidade: ${error.message || 'Tente novamente'}`);
       throw error;
     }
   };
