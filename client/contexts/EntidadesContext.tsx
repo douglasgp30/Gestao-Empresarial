@@ -257,7 +257,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
       
       if (cidadesResponse.data) {
-        setCidades(cidadesResponse.data);
+        // Verificar se são objetos (nova estrutura) ou strings (estrutura antiga)
+        if (Array.isArray(cidadesResponse.data) && cidadesResponse.data.length > 0) {
+          if (typeof cidadesResponse.data[0] === 'string') {
+            // Estrutura antiga: array de strings
+            setCidades(cidadesResponse.data);
+          } else {
+            // Nova estrutura: array de objetos {id, nome, ativo}
+            setCidades(cidadesResponse.data.map((cidade: any) => cidade.nome));
+          }
+        } else {
+          setCidades([]);
+        }
       }
 
       // Carregar dados do localStorage (compatibilidade)
