@@ -402,30 +402,6 @@ export default function ModalCidadeSetorSimples() {
 
         {/* Conteúdo */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-          {/* Debug: Mostrar dados brutos */}
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
-            <h4 className="font-semibold mb-2">Debug: Dados de Cidades e Setores</h4>
-            <div className="text-sm">
-              <p><strong>Total cidades:</strong> {cidades.length}</p>
-              <p><strong>Total setores:</strong> {setores.length}</p>
-              {cidades.length > 0 && (
-                <details className="mt-2">
-                  <summary className="cursor-pointer font-medium">Ver dados de cidades</summary>
-                  <pre className="mt-2 text-xs bg-white p-2 border rounded overflow-auto max-h-20">
-                    {JSON.stringify(cidades, null, 2)}
-                  </pre>
-                </details>
-              )}
-              {setores.length > 0 && (
-                <details className="mt-2">
-                  <summary className="cursor-pointer font-medium">Ver dados de setores</summary>
-                  <pre className="mt-2 text-xs bg-white p-2 border rounded overflow-auto max-h-20">
-                    {JSON.stringify(setores, null, 2)}
-                  </pre>
-                </details>
-              )}
-            </div>
-          </div>
 
           {/* Cidades */}
           <Card className="mb-6">
