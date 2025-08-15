@@ -103,13 +103,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     ),
   ].sort();
 
-  // Verificar se forma de pagamento é cartão
-  const isFormaPagamentoCartao =
-    formData.formaPagamento &&
-    formasPagamento
-      .find((f) => f.id.toString() === formData.formaPagamento)
-      ?.nome?.toLowerCase()
-      .includes("cartão");
+  // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
+  const isFormaPagamentoCartao = React.useMemo(() => {
+    return formData.formaPagamento &&
+      formasPagamento
+        .find((f) => f.id.toString() === formData.formaPagamento)
+        ?.nome?.toLowerCase()
+        .includes("cartão");
+  }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente usando os hooks de moeda
   const valorCalculado = valorInput.numericValue;
