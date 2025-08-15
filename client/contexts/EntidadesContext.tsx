@@ -227,6 +227,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função de recarregamento otimizada com debounce para reduzir piscar
+  const recarregarDescricoesECategorias = useCallback(async () => {
+    try {
+      const response = await descricoesECategoriasApi.listar();
+      if (response.data) {
+        setDescricoesECategorias(response.data);
+      }
+    } catch (error) {
+      console.error("Erro ao recarregar descrições e categorias:", error);
+    }
+  }, []);
+
   // === FUNÇÕES PARA TABELA UNIFICADA ===
   const getCategorias = (tipo?: "receita" | "despesa") => {
     return descricoesECategorias.filter(
