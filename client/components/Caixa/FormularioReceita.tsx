@@ -89,22 +89,15 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Filtrar descrições de receita
-  const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
+  // Usar tabela unificada para categorias e descrições
+  const categoriasReceita = React.useMemo(() => {
+    return getCategorias("receita").map((cat) => cat.nome).sort();
+  }, [getCategorias]);
 
-  // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = formData.categoria
-    ? descricoesReceita.filter((d) => d.categoria === formData.categoria)
-    : [];
-
-  // Obter categorias únicas das descrições de receita
-  const categoriasReceita = [
-    ...new Set(
-      descricoesReceita
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
+  const descricoesFiltradas = React.useMemo(() => {
+    if (!formData.categoria) return [];
+    return getDescricoes("receita", formData.categoria);
+  }, [formData.categoria, getDescricoes]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
