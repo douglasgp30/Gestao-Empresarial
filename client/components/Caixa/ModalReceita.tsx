@@ -93,13 +93,14 @@ export function ModalReceita() {
     return getDescricoes("receita", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
-  // Verificar se forma de pagamento é cartão
-  const isFormaPagamentoCartao =
-    formData.formaPagamento &&
-    formasPagamento
-      .find((f) => f.id.toString() === formData.formaPagamento)
-      ?.nome?.toLowerCase()
-      .includes("cartão");
+  // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
+  const isFormaPagamentoCartao = React.useMemo(() => {
+    return formData.formaPagamento &&
+      formasPagamento
+        .find((f) => f.id.toString() === formData.formaPagamento)
+        ?.nome?.toLowerCase()
+        .includes("cartão");
+  }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente
   const valorCalculado = parseFloat(formData.valor) || 0;
