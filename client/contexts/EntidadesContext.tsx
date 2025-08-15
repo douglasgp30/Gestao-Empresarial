@@ -25,6 +25,7 @@ import {
   clientesApi,
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
+import { loadingManager } from "../lib/loadingManager";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
