@@ -38,9 +38,9 @@ function CaixaContent() {
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         {/* Botões de configuração */}
         <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-          <ModalCampanhas />
+          <ModalCampanhasSimples />
           <ModalDescricoesSimples />
-          <ModalCidadeSetor />
+          <ModalCidadeSetorSimples />
         </div>
 
         {/* Totais alinhados à direita */}
