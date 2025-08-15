@@ -459,6 +459,7 @@ model Agendamento {
   // Chaves estrangeiras
   clienteId     Int
   funcionarioId Int?
+  localizacaoId Int?
 
   // Relacionamentos
   cliente     Cliente      @relation(fields: [clienteId], references: [id])
