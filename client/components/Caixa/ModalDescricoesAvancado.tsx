@@ -194,17 +194,21 @@ export default function ModalDescricoesAvancado() {
     }
   };
 
-  // SOLUÇÃO DEFINITIVA: Chamar API diretamente como os componentes que funcionam
+  // SOLUÇÃO DEFINITIVA: Chamar API diretamente e controlar estado rigorosamente
   const handleExcluir = async () => {
     if (!itemParaExcluir || isDeleting) return;
 
     setIsDeleting(true);
+
     try {
       console.log('🟡 [Modal] Iniciando exclusão:', itemParaExcluir.nome);
 
-      // Chamar API diretamente, não através do Context
+      // Chamar API diretamente, sem usar Context
       const response = await fetch(`/api/descricoes-e-categorias/${itemParaExcluir.id}`, {
         method: "DELETE",
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       console.log('🟡 [Modal] Response status:', response.status);
@@ -215,15 +219,23 @@ export default function ModalDescricoesAvancado() {
 
       console.log('✅ [Modal] Exclusão bem-sucedida');
 
+      // Limpar primeiro, depois recarregar
+      setItemParaExcluir(null);
+
+      // Aguardar um pouco para UI se estabilizar
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // Recarregar dados manualmente
       await recarregarDescricoesECategorias();
 
+      // Toast de sucesso
       toast.success(`${itemParaExcluir.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`);
 
-      setItemParaExcluir(null);
     } catch (error) {
       console.error('❌ [Modal] Erro ao excluir:', error);
       toast.error("Erro ao excluir item. Tente novamente.");
+
+      // Manter o modal aberto em caso de erro
     } finally {
       setIsDeleting(false);
     }
@@ -593,10 +605,15 @@ export default function ModalDescricoesAvancado() {
         </DialogContent>
       </Dialog>
 
-      {/* IMPLEMENTAÇÃO MINIMALISTA - IGUAL AOS OUTROS COMPONENTES QUE FUNCIONAM */}
+      {/* IMPLEMENTAÇÃO ANTI-TRAVAMENTO COM CONTROLE RIGOROSO */}
       <AlertDialog
         open={!!itemParaExcluir}
-        onOpenChange={() => setItemParaExcluir(null)}
+        onOpenChange={(open) => {
+          // Só fechar se não estiver deletando
+          if (!open && !isDeleting) {
+            setItemParaExcluir(null);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -607,9 +624,22 @@ export default function ModalDescricoesAvancado() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel
+              disabled={isDeleting}
+              onClick={() => {
+                if (!isDeleting) {
+                  setItemParaExcluir(null);
+                }
+              }}
+            >
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleExcluir}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleExcluir();
+              }}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700"
             >
