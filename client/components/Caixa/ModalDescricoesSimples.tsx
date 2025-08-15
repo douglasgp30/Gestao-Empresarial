@@ -49,9 +49,14 @@ export default function ModalDescricoesSimples() {
 
   // Carregar dados quando o modal é aberto
   useEffect(() => {
-    if (isOpen && descricoesECategorias.length === 0) {
-      console.log("[ModalDescricoesSimples] Modal aberto, carregando dados...");
-      recarregarDescricoesECategorias();
+    console.log(`[ModalDescricoesSimples] Modal isOpen: ${isOpen}, descricoesECategorias.length: ${descricoesECategorias.length}`);
+    if (isOpen) {
+      if (descricoesECategorias.length === 0) {
+        console.log("[ModalDescricoesSimples] Modal aberto sem dados, carregando...");
+        recarregarDescricoesECategorias();
+      } else {
+        console.log("[ModalDescricoesSimples] Modal aberto com dados já carregados");
+      }
     }
   }, [isOpen, descricoesECategorias.length, recarregarDescricoesECategorias]);
 
