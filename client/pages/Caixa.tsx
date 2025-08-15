@@ -4,7 +4,7 @@ import { EntidadesProvider } from "../contexts/EntidadesContext";
 import { ModalReceita } from "../components/Caixa/ModalReceita";
 import { ModalDespesa } from "../components/Caixa/ModalDespesa";
 import ModalCampanhas from "../components/Caixa/ModalCampanhas";
-import ModalDescricoesAvancado from "../components/Caixa/ModalDescricoesAvancado";
+import ModalDescricoesSimples from "../components/Caixa/ModalDescricoesSimples";
 import ModalCidadeSetor from "../components/Caixa/ModalCidadeSetor";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
