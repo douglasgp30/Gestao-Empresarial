@@ -182,30 +182,32 @@ export default function ModalDescricoesSimples() {
       });
 
       if (!response.ok) {
-        // Simplificar: sempre tentar JSON primeiro, depois texto
         let errorMessage = `Erro HTTP ${response.status}: ${response.statusText}`;
 
         try {
-          // Clonar response para poder tentar múltiplas leituras se necessário
-          const responseClone = response.clone();
-          const errorData = await responseClone.json();
-          console.log('🟡 Parsed JSON error data:', errorData);
+          // Verificar o content-type para decidir como processar
+          const contentType = response.headers.get('content-type') || '';
 
-          if (errorData && errorData.error) {
-            errorMessage = errorData.error;
-          }
-        } catch (jsonError) {
-          console.log('🟡 JSON parse failed, trying text...', jsonError);
+          if (contentType.includes('application/json')) {
+            // Se é JSON, tentar parse JSON
+            const errorData = await response.json();
+            console.log('🟡 Parsed JSON error data:', errorData);
 
-          try {
+            if (errorData && errorData.error) {
+              errorMessage = errorData.error;
+            }
+          } else {
+            // Se não é JSON, ler como texto
             const textData = await response.text();
             console.log('🟡 Text error data:', textData);
-            if (textData) {
+
+            if (textData && textData.trim()) {
               errorMessage = textData;
             }
-          } catch (textError) {
-            console.error('🔴 Both JSON and text parsing failed:', textError);
           }
+        } catch (parseError) {
+          console.log('🟡 Error parsing response body:', parseError);
+          // Manter a mensagem padrão se não conseguir fazer parse
         }
 
         throw new Error(errorMessage);
