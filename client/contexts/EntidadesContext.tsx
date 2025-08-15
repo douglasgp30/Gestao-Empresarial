@@ -379,10 +379,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       await recarregarDescricoesECategorias();
-      toast.success("Item excluído com sucesso!");
+      // Removendo toast do context - deixar componente gerenciar
     } catch (error) {
       console.error("Erro ao excluir item:", error);
-      toast.error("Erro ao excluir item");
+      setError("Erro ao excluir item");
       throw error;
     }
   };
