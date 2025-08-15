@@ -321,12 +321,22 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Recarregar lançamentos quando os filtros mudarem
   useEffect(() => {
+    // Usar throttling para evitar múltiplas chamadas
+    if (contextThrottle.isThrottled("CaixaContext-filtros", 2000)) {
+      console.log("[CaixaContext] Filtros throttled, ignorando...");
+      return;
+    }
+
     const timeoutId = setTimeout(() => {
-      carregarLancamentos(true);
-    }, 500); // Debounce aumentado para reduzir piscar
+      contextThrottle.execute(
+        "CaixaContext-filtros",
+        () => carregarLancamentos(true),
+        2000 // 2 segundos de throttle
+      );
+    }, 800); // Debounce ainda maior
 
     return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias, carregarLancamentos]);
+  }, [filtrosDependencias]); // Remover carregarLancamentos das dependências
 
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
