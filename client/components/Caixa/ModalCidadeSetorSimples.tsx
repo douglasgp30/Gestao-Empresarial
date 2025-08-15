@@ -292,6 +292,10 @@ export default function ModalCidadeSetorSimples() {
         }
 
         console.log('✅ Cidade excluída com sucesso');
+
+        // Recarregar dados para atualizar a lista de cidades
+        await recarregarTudo();
+
         toast.success("Cidade excluída com sucesso");
         setShowConfirm(false);
         setItemToDelete(null);
