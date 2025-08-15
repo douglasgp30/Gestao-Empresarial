@@ -562,6 +562,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             label="Campanha"
             required={false}
             items={campanhas}
+            renderItem={(item) => item.nome}
             onAddNew={async (data) => {
               await adicionarCampanha({
                 nome: data.nome,
