@@ -138,7 +138,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         console.log(
           "📡 [CaixaContext] Erro de rede detectado durante hot reload, ignorando...",
         );
-        // Durante hot reload, não mostrar erro persistente ao usuário
+        // Durante hot reload, não mostrar erro persistente ao usu��rio
         setError(null);
         // Não tentar reconectar automaticamente para evitar loops
       } else {
@@ -269,16 +269,25 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Recarregar lançamentos quando os filtros mudarem
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      carregarLancamentos(true);
-    }, 300); // Debounce aumentado para reduzir piscar
-
-    return () => clearTimeout(timeoutId);
+  // Memoizar string das dependências para evitar loops
+  const filtrosDependencias = useMemo(() => {
+    return JSON.stringify({
+      dataInicio: filtros.dataInicio.toISOString().split('T')[0],
+      dataFim: filtros.dataFim.toISOString().split('T')[0],
+      tipo: filtros.tipo,
+      formaPagamento: filtros.formaPagamento,
+      tecnico: filtros.tecnico,
+      campanha: filtros.campanha,
+      setor: filtros.setor,
+      categoria: filtros.categoria,
+      descricao: filtros.descricao,
+      cliente: filtros.cliente,
+      cidade: filtros.cidade,
+      numeroNota: filtros.numeroNota,
+    });
   }, [
-    filtros.dataInicio.getTime(),
-    filtros.dataFim.getTime(),
+    filtros.dataInicio,
+    filtros.dataFim,
     filtros.tipo,
     filtros.formaPagamento,
     filtros.tecnico,
@@ -290,6 +299,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.cidade,
     filtros.numeroNota,
   ]);
+
+  // Recarregar lançamentos quando os filtros mudarem
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      carregarLancamentos(true);
+    }, 500); // Debounce aumentado para reduzir piscar
+
+    return () => clearTimeout(timeoutId);
+  }, [filtrosDependencias, carregarLancamentos]);
 
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
