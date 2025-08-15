@@ -170,31 +170,17 @@ export default function ModalDescricoesSimples() {
 
     setIsDeleting(true);
     try {
-      console.log('🟡 Excluindo:', {
-        id: itemToDelete.id,
-        nome: itemToDelete.nome,
-        tipo: itemToDelete.tipo
-      });
+      console.log('🟡 Excluindo:', itemToDelete.nome);
 
       const response = await fetch(`/api/descricoes-e-categorias/${itemToDelete.id}`, {
         method: "DELETE",
       });
 
-      console.log('🟡 Response status:', response.status, response.statusText);
-      console.log('🟡 Response headers:', {
-        contentType: response.headers.get('content-type'),
-        contentLength: response.headers.get('content-length'),
-      });
-
       if (!response.ok) {
-        console.log('🔴 Erro HTTP detectado - status:', response.status);
-
-        // Ler a resposta uma única vez e usar parseErrorResponse
         const errorMessage = await parseErrorResponse(response);
-        console.log('🔴 Mensagem de erro parseada:', errorMessage);
 
+        // Se a mensagem está vazia ou é genérica, usar fallback mais informativo
         if (!errorMessage || errorMessage.trim() === '' || errorMessage === 'Erro HTTP 400:' || errorMessage === `Erro HTTP ${response.status}: ${response.statusText}`) {
-          console.log('🔴 Mensagem vazia ou genérica detectada, usando fallback');
           throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
         }
 
