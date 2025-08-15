@@ -263,7 +263,7 @@ export default function ModalCidadeSetorSimples() {
 
         // Mostrar mensagem informativa sem lançar erro
         toast.error(
-          `Não é possível excluir a cidade "${itemToDelete.nome}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
+          `⚠️ Não é possível excluir a cidade "${itemToDelete.nome}" pois existem ${setoresVinculados.length} setor(es) vinculado(s). Use o botão "👁️ Ver" para visualizar as dependências.`,
           { duration: 8000 } // Toast mais longo para dar tempo de ler
         );
 
