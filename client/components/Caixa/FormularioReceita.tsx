@@ -50,6 +50,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     adicionarSetor,
     isLoading: entidadesLoading,
     // Usar tabela unificada
+    descricoesECategorias,
     getCategorias,
     getDescricoes,
     adicionarDescricaoECategoria,
