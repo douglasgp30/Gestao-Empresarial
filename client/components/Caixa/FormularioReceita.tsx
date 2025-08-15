@@ -537,6 +537,32 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
+          {/* Campanha - movido para antes de Cliente */}
+          <SelectWithAdd
+            value={formData.campanha}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, campanha: value }))
+            }
+            placeholder="Selecione a campanha"
+            label="Campanha"
+            required={false}
+            items={campanhas}
+            onAddNew={async (data) => {
+              await adicionarCampanha({
+                nome: data.nome,
+              });
+            }}
+            addNewTitle="Nova Campanha"
+            addNewDescription="Adicione uma nova campanha de marketing."
+            addNewFields={[
+              {
+                key: "nome",
+                label: "Nome da Campanha",
+                required: true,
+              },
+            ]}
+          />
+
           {/* Cliente */}
           <div className="space-y-2">
             <Label htmlFor="cliente">Cliente</Label>
@@ -575,32 +601,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               />
             </div>
           </div>
-
-          {/* Campanha */}
-          <SelectWithAdd
-            value={formData.campanha}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, campanha: value }))
-            }
-            placeholder="Selecione a campanha"
-            label="Campanha"
-            required={false}
-            items={campanhas}
-            onAddNew={async (data) => {
-              await adicionarCampanha({
-                nome: data.nome,
-              });
-            }}
-            addNewTitle="Nova Campanha"
-            addNewDescription="Adicione uma nova campanha de marketing."
-            addNewFields={[
-              {
-                key: "nome",
-                label: "Nome da Campanha",
-                required: true,
-              },
-            ]}
-          />
 
           {/* Nota Fiscal */}
           <div className="space-y-3 p-4 bg-blue-50/70 rounded-lg border border-blue-200/70 shadow-sm">
