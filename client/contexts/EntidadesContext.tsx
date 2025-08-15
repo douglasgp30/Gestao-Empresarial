@@ -208,6 +208,25 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     [descricoesECategorias],
   );
 
+  // === FUNÇÕES PARA LOCALIZAÇÃO GEOGRÁFICA (MEMOIZADAS) ===
+  const getCidades = useCallback(() => {
+    return localizacoesGeograficas.filter(
+      (item) => item.tipoItem === "cidade" && item.ativo,
+    );
+  }, [localizacoesGeograficas]);
+
+  const getSetores = useCallback(
+    (cidade?: string) => {
+      return localizacoesGeograficas.filter(
+        (item) =>
+          item.tipoItem === "setor" &&
+          item.ativo &&
+          (cidade ? item.cidade === cidade : true),
+      );
+    },
+    [localizacoesGeograficas],
+  );
+
   const getTecnicos = useCallback(() => {
     // Combinar técnicos específicos + funcionários que são técnicos
     const tecnicosEspecificos = tecnicos || [];
