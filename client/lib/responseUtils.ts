@@ -13,16 +13,20 @@ export async function parseErrorResponse(response: Response): Promise<string> {
     if (contentType.includes('application/json')) {
       // Se é JSON, tentar parse JSON
       const errorData = await response.json();
+      console.log('🔵 parseErrorResponse - errorData recebido:', JSON.stringify(errorData, null, 2));
 
       if (errorData && errorData.error) {
+        console.log('🔵 parseErrorResponse - Retornando errorData.error:', errorData.error);
         return errorData.error;
       }
 
       // Se não tem campo error, tentar outras propriedades comuns
       if (errorData && errorData.message) {
+        console.log('🔵 parseErrorResponse - Retornando errorData.message:', errorData.message);
         return errorData.message;
       }
 
+      console.log('🔵 parseErrorResponse - Nenhum campo error/message encontrado, retornando default');
       return defaultMessage;
     } else {
       // Se não é JSON, ler como texto
