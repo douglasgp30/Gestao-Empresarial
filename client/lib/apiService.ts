@@ -232,7 +232,7 @@ export const setoresApi = {
     const query = params.toString() ? `?${params.toString()}` : "";
     return apiRequest<any[]>(`/setores${query}`);
   },
-  listarCidades: () => apiRequest<string[]>("/cidades"),
+  listarCidades: () => apiRequest<any[]>("/cidades"),
   criar: (setor: any) =>
     apiRequest<any>("/setores", {
       method: "POST",
