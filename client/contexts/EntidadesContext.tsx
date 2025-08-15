@@ -145,6 +145,7 @@ function salvarEntidadeNoStorage<T>(key: string, data: T[]) {
 export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCarregando, setIsCarregando] = useState(false);
 
   // Estados para entidades no banco
   const [descricoesECategorias, setDescricoesECategorias] = useState<
