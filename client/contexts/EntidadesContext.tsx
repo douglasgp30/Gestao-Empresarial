@@ -649,7 +649,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       toast.success("Cidade adicionada!");
     } catch (error) {
       console.error("Erro ao adicionar cidade:", error);
-      toast.error(`Erro ao adicionar cidade: ${error.message || 'Tente novamente'}`);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error(`Erro ao adicionar cidade: ${errorMessage}`);
       throw error;
     }
   };
