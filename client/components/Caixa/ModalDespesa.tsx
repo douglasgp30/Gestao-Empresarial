@@ -70,6 +70,12 @@ export function ModalDespesa() {
     return getDescricoes("despesa", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
+  // Filtrar setores pela cidade selecionada
+  const setoresFiltrados = React.useMemo(() => {
+    if (!formData.cidade) return [];
+    return (Array.isArray(setores) ? setores : []).filter(setor => setor.cidade === formData.cidade);
+  }, [formData.cidade, setores]);
+
   const resetForm = () => {
     setFormData({
       data: new Date().toISOString().split("T")[0],
