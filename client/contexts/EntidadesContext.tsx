@@ -353,6 +353,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
+      setContextLoading("EntidadesContext", false);
+
+      // Salvar dados válidos no cache
+      if (!error) {
+        setCachedData("entidades-data", {
+          descricoesECategorias,
+          formasPagamento,
+          funcionarios,
+          tecnicos,
+          setores,
+          cidades,
+        });
+      }
     }
   }, [isCarregando]);
 
