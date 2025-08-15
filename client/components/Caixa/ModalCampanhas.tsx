@@ -84,11 +84,7 @@ export default function ModalCampanhas() {
       await carregarDados();
     } catch (error) {
       console.error("Erro ao criar campanha:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao criar campanha. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao criar campanha. Tente novamente.");
     }
   };
 
