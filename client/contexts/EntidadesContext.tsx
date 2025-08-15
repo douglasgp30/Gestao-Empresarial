@@ -357,11 +357,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar dados na inicialização com debounce maior para reduzir sobrecarga
+  // Carregar dados na inicialização com proteção para hot reload
   useEffect(() => {
+    // Durante hot reload, não carregar automaticamente para evitar sobrecarga
+    if (shouldSkipAutoLoad()) {
+      console.log('[EntidadesContext] Hot reload detectado, pulando carregamento automático');
+      return;
+    }
+
+    const delay = getDevDelay(2000); // Delay aleatório entre 2-4s em dev
     const timeout = setTimeout(() => {
+      console.log('[EntidadesContext] Iniciando carregamento após delay de', delay, 'ms');
       carregarDados();
-    }, 1000); // Delay maior (1s) para evitar sobrecarga durante hot reload
+    }, delay);
 
     return () => clearTimeout(timeout);
   }, []);
