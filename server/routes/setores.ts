@@ -95,10 +95,7 @@ export const createSetor: RequestHandler = async (req, res) => {
     const setorExistente = await prisma.setor.findFirst({
       where: {
         cidadeId: data.cidadeId,
-        nome: {
-          equals: data.nome,
-          mode: "insensitive",
-        },
+        nome: data.nome,
         ativo: true,
       },
     });
