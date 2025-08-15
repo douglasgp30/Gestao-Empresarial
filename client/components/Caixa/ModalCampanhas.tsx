@@ -133,11 +133,7 @@ export default function ModalCampanhas() {
       await carregarDados();
     } catch (error) {
       console.error("Erro ao excluir campanha:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao excluir campanha. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao excluir campanha. Tente novamente.");
     }
   };
 
