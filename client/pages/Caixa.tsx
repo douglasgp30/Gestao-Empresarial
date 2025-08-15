@@ -10,6 +10,7 @@ import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
 import { DollarSign } from "lucide-react";
+import { CreateTestData } from "../components/Debug/CreateTestData";
 
 function CaixaContent() {
   return (
@@ -46,6 +47,9 @@ function CaixaContent() {
         {/* Totais alinhados à direita */}
         <TotaisCaixa />
       </div>
+
+      {/* Debug - Criar dados de teste */}
+      <CreateTestData />
 
       {/* Filtros */}
       <FiltrosCaixaCompacto />
