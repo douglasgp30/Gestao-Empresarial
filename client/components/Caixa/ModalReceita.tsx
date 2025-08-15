@@ -94,6 +94,12 @@ export function ModalReceita() {
     return getDescricoes("receita", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
+  // Filtrar setores pela cidade selecionada
+  const setoresFiltrados = React.useMemo(() => {
+    if (!formData.cidade) return [];
+    return (Array.isArray(setores) ? setores : []).filter(setor => setor.cidade === formData.cidade);
+  }, [formData.cidade, setores]);
+
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
     return (
