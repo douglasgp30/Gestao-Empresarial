@@ -27,13 +27,12 @@ import {
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 import { loadingManager } from "../lib/loadingManager";
+import { apiCache } from "../lib/apiCache";
 import {
   shouldSkipLoading,
   getLoadingDelay,
   isContextLoading,
   setContextLoading,
-  getCachedData,
-  setCachedData,
 } from "../lib/globalLoadingControl";
 
 interface EntidadesContextType {
