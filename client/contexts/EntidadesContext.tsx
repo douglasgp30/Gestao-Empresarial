@@ -515,7 +515,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // === FUNÇÕES CRUD PARA SETORES ===
+  // === FUNÇÕES CRUD PARA LOCALIZAÇÃO GEOGRÁFICA ===
   const adicionarSetor = async (
     novoSetor: Omit<Setor, "id" | "dataCriacao">,
   ) => {
