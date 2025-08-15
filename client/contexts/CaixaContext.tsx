@@ -378,7 +378,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         delete dadosApi.campanha;
       }
       if (dadosAtualizados.clienteId) {
-        dadosApi.clienteId = parseInt(dadosAtualizados.clienteId);
+        const parsedClienteId = parseInt(dadosAtualizados.clienteId);
+        if (!isNaN(parsedClienteId)) {
+          dadosApi.clienteId = parsedClienteId;
+        }
       }
 
       // Limpar campos undefined para evitar problemas na API
@@ -390,8 +393,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("Dados para API de edição:", dadosApi);
 
+      const parsedId = parseInt(id);
+      if (isNaN(parsedId)) {
+        throw new Error("ID inválido para atualização");
+      }
+
       const response = await caixaApi.atualizarLancamento(
-        parseInt(id),
+        parsedId,
         dadosApi,
       );
       if (response.error) {
