@@ -80,6 +80,7 @@ export default function ModalDescricoesAvancado() {
 
   const [tipoAtivo, setTipoAtivo] = useState<"receita" | "despesa">("receita");
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [formDescricao, setFormDescricao] = useState({
     nome: "",
@@ -205,14 +206,10 @@ export default function ModalDescricoesAvancado() {
     if (!itemParaExcluir) return;
 
     try {
+      setIsDeleting(true);
       await excluirDescricaoECategoria(itemParaExcluir.id.toString());
-      
-      toast({
-        title: "Sucesso!",
-        description: `${itemParaExcluir.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`,
-        variant: "default",
-      });
 
+      // O toast do sucesso já é exibido pelo Context, evitar duplicação
       setItemParaExcluir(null);
     } catch (error) {
       console.error("Erro ao excluir:", error);
@@ -221,6 +218,8 @@ export default function ModalDescricoesAvancado() {
         description: "Erro ao excluir item. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -599,10 +598,14 @@ export default function ModalDescricoesAvancado() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleExcluir} className="bg-red-600 hover:bg-red-700">
-              Excluir
-            </AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+            <Button
+              onClick={handleExcluir}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? "Excluindo..." : "Excluir"}
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
