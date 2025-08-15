@@ -9,19 +9,30 @@ const SetorSchema = z.object({
 
 export const getSetores: RequestHandler = async (req, res) => {
   try {
-    const { cidadeId } = req.query;
-    const where: any = { ativo: true };
+    const { cidade } = req.query;
+    const where: any = {};
 
-    if (cidadeId) where.cidadeId = parseInt(cidadeId as string);
+    if (cidade) where.cidade = cidade as string;
 
-    const setores = await prisma.setor.findMany({
-      where,
-      include: {
-        cidade: true,
-      },
-      orderBy: [{ cidade: { nome: "asc" } }, { nome: "asc" }],
-    });
-    res.json(setores);
+    // Verificar se a coluna cidadeId existe (nova estrutura) ou usar a antiga
+    try {
+      const setores = await prisma.setor.findMany({
+        where: { ...where, ativo: true },
+        include: {
+          cidade: true,
+        },
+        orderBy: [{ cidade: { nome: "asc" } }, { nome: "asc" }],
+      });
+      res.json(setores);
+    } catch (includeError) {
+      // Fallback para estrutura antiga
+      console.log("Usando estrutura antiga de setores");
+      const setores = await prisma.setor.findMany({
+        where,
+        orderBy: [{ cidade: "asc" }, { nome: "asc" }],
+      });
+      res.json(setores);
+    }
   } catch (error) {
     console.error("Erro ao buscar setores:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
