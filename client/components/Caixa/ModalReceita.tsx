@@ -333,7 +333,7 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoriasReceita().map((categoria) => (
+                    {categoriasReceita.map((categoria) => (
                       <SelectItem key={categoria} value={categoria}>
                         {categoria}
                       </SelectItem>
