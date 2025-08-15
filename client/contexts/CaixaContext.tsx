@@ -135,18 +135,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Verificar se é erro de rede durante hot reload
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
         console.log(
-          "📡 [CaixaContext] Erro de rede detectado, aguardando reconexão...",
+          "📡 [CaixaContext] Erro de rede detectado durante hot reload, ignorando...",
         );
         // Durante hot reload, não mostrar erro persistente ao usuário
         setError(null);
-
-        // Tentar reconectar após 4 segundos
-        setTimeout(() => {
-          if (!isCarregando) {
-            console.log("🔄 [CaixaContext] Tentando reconectar...");
-            carregarDados();
-          }
-        }, 4000);
+        // Não tentar reconectar automaticamente para evitar loops
       } else {
         setError("Erro ao carregar dados do servidor");
       }
