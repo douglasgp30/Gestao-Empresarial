@@ -20,6 +20,8 @@ interface FiltrosContas {
   tipo: "receber" | "pagar" | "ambos";
   pago: "true" | "false" | "todos";
   categoria: string;
+  status?: string;
+  fornecedorCliente?: string;
   __timestamp?: number;
 }
 
@@ -28,6 +30,7 @@ interface ContasContextType {
   filtros: FiltrosContas;
   setFiltros: (filtros: FiltrosContas) => void;
   carregando: boolean;
+  isLoading: boolean;
   erro: string | null;
   adicionarConta: (
     conta: Omit<ContaLancamento, "codLancamentoContas" | "dataLancamento">,
@@ -390,14 +393,14 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
-  // Carregar contas quando os filtros mudarem
+  // Carregar contas quando os filtros mudarem (apenas no timestamp para evitar loops)
   useEffect(() => {
     console.log(
-      "🔍 [CONTAS] useEffect carregarContas disparado. Filtros:",
-      filtros,
+      "🔍 [CONTAS] useEffect carregarContas disparado. Timestamp:",
+      filtros.__timestamp,
     );
     carregarContas();
-  }, [carregarContas, filtros.__timestamp]);
+  }, [filtros.__timestamp]);
 
   // Carregar dados auxiliares na inicialização
   useEffect(() => {
@@ -409,6 +412,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     filtros,
     setFiltros,
     carregando,
+    isLoading: carregando,
     erro,
     adicionarConta,
     atualizarConta,
