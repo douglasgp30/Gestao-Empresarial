@@ -42,6 +42,7 @@ import {
   createSetor,
   updateSetor,
   deleteSetor,
+  deleteCidade,
 } from "./routes/setores";
 
 import {
