@@ -1,5 +1,7 @@
 // Serviço para comunicação com a API
 
+import { nativeFetch, isFetchIntercepted } from "./nativeFetch";
+
 const API_BASE = "/api";
 
 // Tipos para as respostas da API
