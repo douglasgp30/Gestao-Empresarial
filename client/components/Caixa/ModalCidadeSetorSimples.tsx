@@ -122,13 +122,18 @@ function ModalDependenciasSetor({
 
 export default function ModalCidadeSetorSimples() {
   const {
-    setores,
-    cidades,
-    adicionarSetor,
-    adicionarCidade,
-    excluirSetor,
+    localizacoesGeograficas,
+    getCidades,
+    getSetores,
+    adicionarLocalizacaoGeografica,
+    editarLocalizacaoGeografica,
+    excluirLocalizacaoGeografica,
     recarregarTudo,
   } = useEntidades();
+
+  // Derivar cidades e setores das localizações
+  const cidades = getCidades();
+  const setores = getSetores();
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -159,10 +164,10 @@ export default function ModalCidadeSetorSimples() {
   // Carregar dados quando o modal é aberto
   useEffect(() => {
     console.log(
-      `[ModalCidadeSetorSimples] Modal isOpen: ${isOpen}, cidades.length: ${cidades.length}, setores.length: ${setores.length}`,
+      `[ModalCidadeSetorSimples] Modal isOpen: ${isOpen}, cidades.length: ${cidades?.length || 0}, setores.length: ${setores?.length || 0}`,
     );
     if (isOpen) {
-      if (cidades.length === 0 || setores.length === 0) {
+      if (!cidades || !setores || cidades.length === 0 || setores.length === 0) {
         console.log(
           "[ModalCidadeSetorSimples] Modal aberto sem dados, carregando...",
         );
@@ -173,7 +178,7 @@ export default function ModalCidadeSetorSimples() {
         );
       }
     }
-  }, [isOpen, cidades.length, setores.length, recarregarTudo]);
+  }, [isOpen, cidades?.length, setores?.length, recarregarTudo]);
 
   const resetFormCidade = () => {
     setFormCidade({ nome: "" });
