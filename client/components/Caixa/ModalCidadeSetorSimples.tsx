@@ -494,7 +494,11 @@ export default function ModalCidadeSetorSimples() {
                       key={`cidade-${index}`}
                       className="flex items-center justify-between p-3 border rounded-lg"
                     >
-                      <span className="font-medium">{typeof cidade === 'object' ? cidade.nome : cidade}</span>
+                      <span className="font-medium">{
+                        typeof cidade === 'object'
+                          ? (cidade?.nome || String(cidade))
+                          : String(cidade)
+                      }</span>
                       <div className="flex gap-1">
                         <Button
                           variant="ghost"
