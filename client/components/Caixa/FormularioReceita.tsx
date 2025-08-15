@@ -134,17 +134,28 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     taxaCartao;
 
   // Calcular comissão baseada no percentual do técnico sobre o valor líquido
-  const comissaoCalculada = (() => {
-    if (formData.tecnicoResponsavel) {
+  const comissaoCalculada = React.useMemo(() => {
+    if (formData.tecnicoResponsavel && valorLiquidoCalculado > 0) {
       const tecnico = tecnicos.find(
         (t) => t.id.toString() === formData.tecnicoResponsavel,
       );
-      if (tecnico && tecnico.percentualComissao) {
-        return valorLiquidoCalculado * (tecnico.percentualComissao / 100);
+      if (tecnico) {
+        // Usar percentualComissao ou percentualServico como fallback
+        const percentual = tecnico.percentualComissao || tecnico.percentualServico || 0;
+        if (percentual > 0) {
+          const comissao = valorLiquidoCalculado * (percentual / 100);
+          console.log('Calculando comissão:', {
+            tecnico: tecnico.nome || tecnico.nomeCompleto,
+            percentual,
+            valorLiquido: valorLiquidoCalculado,
+            comissao
+          });
+          return comissao;
+        }
       }
     }
     return 0;
-  })();
+  }, [formData.tecnicoResponsavel, valorLiquidoCalculado, tecnicos]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
@@ -489,14 +500,18 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                           tecnico.id !== "" &&
                           tecnico.id !== 0,
                       )
-                      .map((tecnico) => (
-                        <SelectItem
-                          key={tecnico.id}
-                          value={tecnico.id.toString()}
-                        >
-                          {tecnico.nome || tecnico.nomeCompleto}
-                        </SelectItem>
-                      ))
+                      .map((tecnico) => {
+                        const percentual = tecnico.percentualComissao || tecnico.percentualServico || 0;
+                        const nome = tecnico.nome || tecnico.nomeCompleto;
+                        return (
+                          <SelectItem
+                            key={tecnico.id}
+                            value={tecnico.id.toString()}
+                          >
+                            {nome} {percentual > 0 && `(${percentual}%)`}
+                          </SelectItem>
+                        );
+                      })
                   )}
                 </SelectContent>
               </Select>
