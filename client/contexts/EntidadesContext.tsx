@@ -175,8 +175,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
   const [tecnicos, setTecnicos] = useState<any[]>([]);
-  const [setores, setSetores] = useState<Setor[]>([]);
-  const [cidades, setCidades] = useState<string[]>([]);
+  const [localizacoesGeograficas, setLocalizacoesGeograficas] = useState<LocalizacaoGeografica[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
