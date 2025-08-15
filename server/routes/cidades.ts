@@ -2,7 +2,6 @@ import { RequestHandler, Router } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
 
-const router = Router();
 
 const CidadeSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
