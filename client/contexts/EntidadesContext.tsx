@@ -30,6 +30,10 @@ import { loadingManager } from "../lib/loadingManager";
 import {
   shouldSkipLoading,
   getLoadingDelay,
+  isContextLoading,
+  setContextLoading,
+  getCachedData,
+  setCachedData,
 } from "../lib/globalLoadingControl";
 
 interface EntidadesContextType {
