@@ -15,15 +15,14 @@ import {
   FormaPagamento,
   Cliente,
   Fornecedor,
-  Setor,
-  Cidade,
+  LocalizacaoGeografica,
 } from "@shared/types";
 import {
   descricoesApi,
   formasPagamentoApi,
   funcionariosApi,
-  setoresApi,
   clientesApi,
+  localizacoesGeograficasApi,
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 import { loadingManager } from "../lib/loadingManager";
