@@ -14,6 +14,8 @@ import { loadingManager } from "../lib/loadingManager";
 import {
   shouldSkipLoading,
   getLoadingDelay,
+  isContextLoading,
+  setContextLoading,
 } from "../lib/globalLoadingControl";
 
 interface CaixaContextType {
@@ -138,7 +140,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         console.log(
           "📡 [CaixaContext] Erro de rede detectado durante hot reload, ignorando...",
         );
-        // Durante hot reload, não mostrar erro persistente ao usu��rio
+        // Durante hot reload, não mostrar erro persistente ao usuário
         setError(null);
         // Não tentar reconectar automaticamente para evitar loops
       } else {
