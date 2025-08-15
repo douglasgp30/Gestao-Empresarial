@@ -22,21 +22,18 @@ const LancamentoCaixaSchema = z.object({
   descricao: z.string().optional(),
 
   // Campos obrigatórios
-  formaPagamentoId: z
-    .number()
-    .positive("Forma de pagamento é obrigatória")
-    .optional(),
+  formaPagamentoId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
   formaPagamento: z.string().optional(), // Para compatibilidade
 
   // Campos opcionais
-  subdescricaoId: z.number().positive().optional(),
-  funcionarioId: z.number().positive().optional(),
+  subdescricaoId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
+  funcionarioId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
   tecnicoResponsavel: z.string().optional(), // Para compatibilidade
-  setorId: z.number().positive().optional(),
+  setorId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
   setor: z.string().optional(), // Para compatibilidade
-  campanhaId: z.number().positive().optional(),
+  campanhaId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
   campanha: z.string().optional(), // Para compatibilidade
-  clienteId: z.number().positive().optional(),
+  clienteId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
 });
 
 // Função para gerar dataHora no formato DD-MM-AAAA HH:MM:SS
