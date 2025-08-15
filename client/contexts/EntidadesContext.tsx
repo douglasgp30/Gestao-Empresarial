@@ -307,37 +307,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setTecnicos(tecnicosResponse.data);
       }
 
-      if (setoresResponse.data) {
-        setSetores(setoresResponse.data);
-      }
-
-      if (cidadesResponse.data) {
-        let cidadesArray = cidadesResponse.data;
-
-        // Se cidadesResponse.data tem propriedade data, extrair o array
-        if (
-          cidadesResponse.data.data &&
-          Array.isArray(cidadesResponse.data.data)
-        ) {
-          cidadesArray = cidadesResponse.data.data;
-        }
-
-        // Sempre converter para array de strings, independente da estrutura
-        if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          const cidadesString = cidadesArray.map((cidade: any) => {
-            if (typeof cidade === "string") {
-              return cidade;
-            } else if (cidade && cidade.nome) {
-              return cidade.nome;
-            } else {
-              console.warn("Cidade com estrutura inválida:", cidade);
-              return String(cidade);
-            }
-          });
-          setCidades(cidadesString);
-        } else {
-          setCidades([]);
-        }
+      if (localizacoesResponse.data) {
+        setLocalizacoesGeograficas(localizacoesResponse.data);
+        console.log(
+          `[EntidadesContext] Carregadas ${localizacoesResponse.data.length} localizações geográficas`,
+        );
       }
 
       // Carregar dados do localStorage (compatibilidade)
