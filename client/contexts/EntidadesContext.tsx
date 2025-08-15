@@ -370,7 +370,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const excluirDescricaoECategoria = async (id: string) => {
     try {
       setError(null);
-      await descricoesECategoriasApi.excluir(parseInt(id));
+      const response = await descricoesECategoriasApi.excluir(parseInt(id));
+
+      // Verificar se a API retornou erro antes de prosseguir
+      if (response.error) {
+        setError(response.error);
+        throw new Error(response.error);
+      }
+
       await recarregarDescricoesECategorias();
       toast.success("Item excluído com sucesso!");
     } catch (error) {
