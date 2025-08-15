@@ -8,6 +8,7 @@ import { FileText, Plus, Trash2, Tag, CheckCircle, XCircle, Folder, Eye } from "
 import { toast } from "sonner";
 import ModalDependenciasCategoria from "./ModalDependenciasCategoria";
 import TestDeleteApi from "../Debug/TestDeleteApi";
+import TestApiEndpoints from "../Debug/TestApiEndpoints";
 
 export default function ModalDescricoesSimples() {
   const {
