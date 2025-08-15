@@ -39,7 +39,7 @@ import {
 } from "../ui/alert-dialog";
 import { Megaphone, Plus, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { campanhasApi } from "../../lib/apiService";
-import { toast } from "../ui/use-toast";
+import { toast } from "sonner";
 
 export default function ModalCampanhas() {
   const { campanhas, carregarDados } = useCaixa();
