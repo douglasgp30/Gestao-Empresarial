@@ -395,9 +395,14 @@ export default function ModalCidadeSetorSimples() {
               ✕
             </Button>
           </div>
-          <p className="text-sm text-gray-600 mt-2">
-            Gerencie as cidades e setores. Ao criar uma cidade, um setor "Centro" é criado automaticamente.
-          </p>
+          <div className="text-sm text-gray-600 mt-2">
+            <p><strong>Como funciona:</strong></p>
+            <ul className="list-disc list-inside mt-1 space-y-1">
+              <li>Ao criar uma cidade, um setor "Centro" é criado automaticamente</li>
+              <li>Cidades existem apenas enquanto tiverem pelo menos um setor</li>
+              <li>Para remover uma cidade, exclua todos os seus setores ou use o botão "Excluir cidade"</li>
+            </ul>
+          </div>
         </div>
 
         {/* Conteúdo */}
