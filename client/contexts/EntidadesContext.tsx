@@ -333,6 +333,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setCidades([]);
     } finally {
       setIsLoading(false);
+      setIsCarregando(false);
     }
   }, []);
 
