@@ -179,6 +179,10 @@ export default function ModalCidadeSetorSimples() {
     setIsSaving(true);
     try {
       await adicionarCidade({ nome: formCidade.nome.trim() });
+
+      // Recarregar dados para atualizar a lista de cidades
+      await recarregarTudo();
+
       toast.success("Cidade adicionada com sucesso");
       resetFormCidade();
     } catch (error) {
