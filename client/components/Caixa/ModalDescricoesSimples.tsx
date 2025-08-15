@@ -221,7 +221,13 @@ export default function ModalDescricoesSimples() {
       console.error('❌ Stack:', error instanceof Error ? error.stack : 'N/A');
 
       const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
-      toast.error(`Falha na exclusão: ${errorMessage}`);
+
+      // Se a mensagem está vazia ou só tem "Erro HTTP 400:", mostrar mensagem mais clara
+      if (!errorMessage || errorMessage.trim() === '' || errorMessage === 'Erro HTTP 400:') {
+        toast.error("Não foi possível excluir o item. Verifique se não há dependências vinculadas.");
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setIsDeleting(false);
     }
