@@ -653,27 +653,6 @@ export function ModalReceita() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="campanha">Campanha</Label>
-              <SelectWithAdd
-                value={formData.campanha}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, campanha: value }))
-                }
-                placeholder="Selecione a campanha"
-                options={campanhas.map((campanha) => ({
-                  value: campanha.id.toString(),
-                  label: campanha.nome,
-                }))}
-                onAddNew={async (nomeCampanha) => {
-                  await adicionarCampanha({
-                    nome: nomeCampanha,
-                  });
-                }}
-                addButtonText="Nova Campanha"
-              />
-            </div>
-
             {/* Resumo financeiro */}
             {formData.valor && (
               <div className="p-4 bg-green-50 rounded-lg">
