@@ -535,15 +535,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
       if (cidadesResponse.data) {
+        let cidadesArray = cidadesResponse.data;
+
+        // Se cidadesResponse.data tem propriedade data, extrair o array
+        if (cidadesResponse.data.data && Array.isArray(cidadesResponse.data.data)) {
+          cidadesArray = cidadesResponse.data.data;
+        }
+
         // Processar cidades considerando formato
-        if (
-          Array.isArray(cidadesResponse.data) &&
-          cidadesResponse.data.length > 0
-        ) {
-          if (typeof cidadesResponse.data[0] === "string") {
-            setCidades(cidadesResponse.data);
+        if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
+          if (typeof cidadesArray[0] === "string") {
+            setCidades(cidadesArray);
           } else {
-            setCidades(cidadesResponse.data.map((cidade: any) => cidade.nome));
+            setCidades(cidadesArray.map((cidade: any) => cidade.nome));
           }
         } else {
           setCidades([]);
