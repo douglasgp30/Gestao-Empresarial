@@ -66,6 +66,7 @@ export default function ModalDescricoesAvancado() {
     getDescricoes,
     adicionarDescricaoECategoria,
     excluirDescricaoECategoria,
+    recarregarDescricoesECategorias,
     isLoading,
   } = useEntidades();
 
