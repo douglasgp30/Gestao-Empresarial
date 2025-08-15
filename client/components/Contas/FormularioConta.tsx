@@ -194,7 +194,8 @@ export function FormularioConta({
           tipo: "receber",
           formaPg: "",
           observacoes: "",
-          descricaoCategoria: "0",
+          categoria: "0",
+          descricao: "0",
           pago: false,
           dataPagamento: undefined,
         });
