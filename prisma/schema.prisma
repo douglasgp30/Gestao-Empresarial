@@ -58,6 +58,26 @@ model DescricaoECategoria {
   @@index([ativo])
 }
 
+// Tabela unificada para Cidades e Setores (baseada no padrão de DescricaoECategoria)
+model LocalizacaoGeografica {
+  id          Int      @id @default(autoincrement())
+  nome        String   // Nome da cidade ou setor
+  tipoItem    String   // "cidade" ou "setor"
+  cidade      String?  // Cidade pai (apenas para setores)
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  lancamentos  LancamentoCaixa[]
+  agendamentos Agendamento[]
+  contas       ContaLancamento[]
+
+  @@map("localizacoes_geograficas")
+  @@index([tipoItem])
+  @@index([ativo])
+  @@index([cidade])
+}
+
 model Subdescricao {
   id          Int      @id @default(autoincrement()) // CodigoSubdescricao
   nome        String   // Subdescricao (obrigatório)
