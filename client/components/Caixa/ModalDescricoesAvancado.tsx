@@ -82,6 +82,7 @@ export default function ModalDescricoesAvancado() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConfirmingDeletion, setIsConfirmingDeletion] = useState(false);
+  const isExecutingDelete = useRef(false);
 
   const [formDescricao, setFormDescricao] = useState({
     nome: "",
