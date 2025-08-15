@@ -98,7 +98,12 @@ export function ModalReceita() {
   const setoresFiltrados = React.useMemo(() => {
     if (!formData.cidade) return [];
     return (Array.isArray(setores) ? setores : []).filter(
-      (setor) => setor.cidade === formData.cidade,
+      (setor) => {
+        const nomeCidadeSetor = typeof setor.cidade === 'object'
+          ? setor.cidade?.nome
+          : setor.cidade;
+        return nomeCidadeSetor === formData.cidade;
+      },
     );
   }, [formData.cidade, setores]);
 
