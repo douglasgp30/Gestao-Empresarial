@@ -309,7 +309,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         numeroNota: novoLancamento.numeroNota,
         arquivoNota: novoLancamento.arquivoNota,
         clienteId: novoLancamento.clienteId
-          ? parseInt(novoLancamento.clienteId)
+          ? (() => {
+              const parsed = parseInt(novoLancamento.clienteId);
+              return isNaN(parsed) ? undefined : parsed;
+            })()
           : undefined,
 
         // Sistema unificado - enviar categoria e descrição diretamente
