@@ -509,7 +509,17 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setError(null);
       const response = await setoresApi.listarCidades();
       if (response.data) {
-        const novasCidades = [...response.data, cidade.nome];
+        // Processar response.data considerando formato
+        let cidadesExistentes: string[] = [];
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          if (typeof response.data[0] === 'string') {
+            cidadesExistentes = response.data;
+          } else {
+            cidadesExistentes = response.data.map((cidade: any) => cidade.nome);
+          }
+        }
+
+        const novasCidades = [...cidadesExistentes, cidade.nome];
         setCidades([...new Set(novasCidades)]);
       }
       toast.success("Cidade adicionada!");
