@@ -183,6 +183,37 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
+    // Buscar o item que será excluído
+    const item = await prisma.descricaoECategoria.findUnique({
+      where: { id },
+    });
+
+    if (!item) {
+      const response: ApiResponse<null> = {
+        error: "Item não encontrado",
+      };
+      return res.status(404).json(response);
+    }
+
+    // Se for uma categoria, verificar se existem descrições que dependem dela
+    if (item.tipoItem === "categoria") {
+      const descricoesVinculadas = await prisma.descricaoECategoria.findMany({
+        where: {
+          tipoItem: "descricao",
+          categoria: item.nome,
+          ativo: true,
+        },
+      });
+
+      if (descricoesVinculadas.length > 0) {
+        const nomesDescricoes = descricoesVinculadas.map(d => d.nome).join(", ");
+        const response: ApiResponse<null> = {
+          error: `Não é possível excluir a categoria "${item.nome}" pois existem ${descricoesVinculadas.length} descrição(ões) vinculada(s): ${nomesDescricoes}. Remova ou realoque estas descrições primeiro.`,
+        };
+        return res.status(400).json(response);
+      }
+    }
+
     // Soft delete - apenas marcar como inativo
     await prisma.descricaoECategoria.update({
       where: { id },
