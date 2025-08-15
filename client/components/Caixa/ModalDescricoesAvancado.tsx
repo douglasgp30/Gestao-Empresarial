@@ -207,10 +207,14 @@ export default function ModalDescricoesAvancado() {
 
     try {
       setIsDeleting(true);
-      await excluirDescricaoECategoria(itemParaExcluir.id.toString());
 
-      // O toast do sucesso já é exibido pelo Context, evitar duplicação
+      // Fechar o AlertDialog primeiro para evitar interferência
+      const itemTemp = itemParaExcluir;
       setItemParaExcluir(null);
+
+      await excluirDescricaoECategoria(itemTemp.id.toString());
+
+      // O toast do sucesso já é exibido pelo Context
     } catch (error) {
       console.error("Erro ao excluir:", error);
       toast({
@@ -599,13 +603,13 @@ export default function ModalDescricoesAvancado() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
-            <Button
+            <AlertDialogAction
               onClick={handleExcluir}
               disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700"
             >
               {isDeleting ? "Excluindo..." : "Excluir"}
-            </Button>
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
