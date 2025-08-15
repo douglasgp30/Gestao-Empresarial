@@ -223,31 +223,6 @@ export const funcionariosApi = {
     }),
 };
 
-// === SETORES ===
-export const setoresApi = {
-  listar: (ativos?: boolean, cidade?: string) => {
-    const params = new URLSearchParams();
-    if (ativos !== undefined) params.append("ativos", String(ativos));
-    if (cidade) params.append("cidade", cidade);
-    const query = params.toString() ? `?${params.toString()}` : "";
-    return apiRequest<any[]>(`/setores${query}`);
-  },
-  listarCidades: () => apiRequest<any[]>("/cidades"),
-  criar: (setor: any) =>
-    apiRequest<any>("/setores", {
-      method: "POST",
-      body: JSON.stringify(setor),
-    }),
-  atualizar: (id: number, setor: any) =>
-    apiRequest<any>(`/setores/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(setor),
-    }),
-  excluir: (id: number) =>
-    apiRequest<void>(`/setores/${id}`, {
-      method: "DELETE",
-    }),
-};
 
 // === CAIXA ===
 export const caixaApi = {
@@ -256,7 +231,6 @@ export const caixaApi = {
     dataFim?: string;
     tipo?: string;
     funcionarioId?: number;
-    setorId?: number;
     campanhaId?: number;
     formaPagamentoId?: number;
   }) => {
