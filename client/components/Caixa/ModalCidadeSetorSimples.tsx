@@ -344,7 +344,7 @@ export default function ModalCidadeSetorSimples() {
       }
     } else {
       // Excluir cidade - verificar dependências primeiro
-      console.log("🟡 Excluindo cidade:", itemToDelete.nome);
+      console.log("��� Excluindo cidade:", itemToDelete.nome);
 
       const setoresVinculados = setores.filter(
         (s) => {
@@ -402,17 +402,25 @@ export default function ModalCidadeSetorSimples() {
       // Se chegou aqui, pode excluir usando a nova API
       try {
         // Primeiro, buscar o ID da cidade pelo nome
+        console.log("🔍 Buscando cidade para exclusão:", itemToDelete.nome);
+
         const cidadesResponse = await fetch("/api/cidades");
         const cidadesData = await cidadesResponse.json();
+
+        console.log("🔍 Resposta da API de cidades:", cidadesData);
 
         let cidadesArray = cidadesData.data || cidadesData;
         if (cidadesData.data && Array.isArray(cidadesData.data)) {
           cidadesArray = cidadesData.data;
         }
 
+        console.log("🔍 Array de cidades processado:", cidadesArray);
+
         const cidadeEncontrada = cidadesArray.find(
           (c: any) => c.nome === itemToDelete.nome,
         );
+
+        console.log("🔍 Cidade encontrada:", cidadeEncontrada);
 
         if (!cidadeEncontrada) {
           throw new Error(`Cidade "${itemToDelete.nome}" não encontrada`);
