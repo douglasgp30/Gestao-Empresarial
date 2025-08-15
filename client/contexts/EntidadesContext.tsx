@@ -335,7 +335,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
       setIsCarregando(false);
     }
-  }, []);
+  }, [isCarregando]);
 
   // === RECARREGAMENTO OTIMIZADO ===
   const recarregarDescricoesECategorias = useCallback(async () => {
