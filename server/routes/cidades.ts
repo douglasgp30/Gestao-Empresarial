@@ -91,10 +91,7 @@ export const updateCidade: RequestHandler = async (req, res) => {
       const cidadeExistente = await prisma.cidade.findFirst({
         where: {
           id: { not: id },
-          nome: {
-            equals: data.nome,
-            mode: "insensitive",
-          },
+          nome: data.nome,
         },
       });
 
