@@ -133,34 +133,7 @@ export default function ModalCampanhasSimples() {
       console.log('🟡 Response status:', response.status, response.statusText);
 
       if (!response.ok) {
-        let errorMessage = `Erro HTTP ${response.status}: ${response.statusText}`;
-
-        try {
-          // Verificar o content-type para decidir como processar
-          const contentType = response.headers.get('content-type') || '';
-
-          if (contentType.includes('application/json')) {
-            // Se é JSON, tentar parse JSON
-            const errorData = await response.json();
-            console.log('🟡 Parsed JSON error data:', errorData);
-
-            if (errorData && errorData.error) {
-              errorMessage = errorData.error;
-            }
-          } else {
-            // Se não é JSON, ler como texto
-            const textData = await response.text();
-            console.log('🟡 Text error data:', textData);
-
-            if (textData && textData.trim()) {
-              errorMessage = textData;
-            }
-          }
-        } catch (parseError) {
-          console.log('🟡 Error parsing response body:', parseError);
-          // Manter a mensagem padrão se não conseguir fazer parse
-        }
-
+        const errorMessage = await parseErrorResponse(response);
         throw new Error(errorMessage);
       }
 
