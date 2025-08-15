@@ -4,6 +4,7 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { runMigration, checkMigration } from "./routes/migrate";
 import { seedUnifiedData } from "./routes/seed-unified-data";
+import { cleanCategories, listCategories } from "./routes/clean-categories";
 
 // Importar rotas do banco de dados
 import {
@@ -194,6 +195,10 @@ export function createServer(): Express {
   app.post("/api/migrate/unified-descriptions", runMigration);
   app.get("/api/migrate/check", checkMigration);
   app.post("/api/seed/unified-data", seedUnifiedData);
+
+  // Limpeza de dados
+  app.delete("/api/clean/categories", cleanCategories);
+  app.get("/api/clean/categories", listCategories);
 
   return app;
 }
