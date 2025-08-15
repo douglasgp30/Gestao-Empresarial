@@ -123,9 +123,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       await carregarLancamentos();
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
-      setError("Erro ao carregar dados do servidor");
+
+      // Verificar se é erro de rede
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        setError("Erro de conexão. Tentando reconectar...");
+        console.log("CaixaContext: Tentando reconectar em 2s...");
+
+        // Tentar reconectar após 2 segundos
+        setTimeout(() => {
+          if (!isCarregando) {
+            carregarDados();
+          }
+        }, 2000);
+      } else {
+        setError("Erro ao carregar dados do servidor");
+      }
     } finally {
       setIsLoading(false);
+      setIsCarregando(false);
     }
   };
 
