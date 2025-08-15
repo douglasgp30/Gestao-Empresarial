@@ -90,7 +90,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
-  const carregarContas = useCallback(async () => {
+  const carregarContas = useCallback(async (filtrosAtivos: FiltrosContas) => {
     try {
       setCarregando(true);
       setErro(null);
@@ -98,28 +98,28 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       const params = new URLSearchParams();
       params.append(
         "dataInicio",
-        filtros.dataInicio.toISOString().split("T")[0],
+        filtrosAtivos.dataInicio.toISOString().split("T")[0],
       );
-      params.append("dataFim", filtros.dataFim.toISOString().split("T")[0]);
+      params.append("dataFim", filtrosAtivos.dataFim.toISOString().split("T")[0]);
 
-      if (filtros.tipo !== "ambos") {
-        params.append("tipo", filtros.tipo);
+      if (filtrosAtivos.tipo !== "ambos") {
+        params.append("tipo", filtrosAtivos.tipo);
       }
 
-      if (filtros.pago !== "todos") {
-        params.append("pago", filtros.pago);
+      if (filtrosAtivos.pago !== "todos") {
+        params.append("pago", filtrosAtivos.pago);
       }
 
-      if (filtros.categoria !== "todos") {
-        params.append("categoria", filtros.categoria);
+      if (filtrosAtivos.categoria !== "todos") {
+        params.append("categoria", filtrosAtivos.categoria);
       }
 
-      console.log("🔍 [CONTAS] Carregando contas com filtros:", {
-        dataInicio: filtros.dataInicio.toISOString().split("T")[0],
-        dataFim: filtros.dataFim.toISOString().split("T")[0],
-        tipo: filtros.tipo,
-        pago: filtros.pago,
-        categoria: filtros.categoria,
+      console.log("��� [CONTAS] Carregando contas com filtros:", {
+        dataInicio: filtrosAtivos.dataInicio.toISOString().split("T")[0],
+        dataFim: filtrosAtivos.dataFim.toISOString().split("T")[0],
+        tipo: filtrosAtivos.tipo,
+        pago: filtrosAtivos.pago,
+        categoria: filtrosAtivos.categoria,
       });
 
       const response = await apiService.get(`/contas?${params.toString()}`);
@@ -183,7 +183,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setCarregando(false);
     }
-  }, [filtros]);
+  }, []);
 
   const carregarDadosAuxiliares = useCallback(async () => {
     try {
