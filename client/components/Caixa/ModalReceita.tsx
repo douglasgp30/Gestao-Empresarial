@@ -358,10 +358,12 @@ export function ModalReceita() {
                     label: desc.nome,
                   }))}
                   onAddNew={async (nomeDescricao) => {
-                    await adicionarDescricao({
+                    await adicionarDescricaoECategoria({
                       nome: nomeDescricao,
                       tipo: "receita",
                       categoria: formData.categoria,
+                      tipoItem: "descricao",
+                      ativo: true,
                     });
                   }}
                   addButtonText="Nova Descrição"
