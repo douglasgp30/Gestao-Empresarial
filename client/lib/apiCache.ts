@@ -15,7 +15,6 @@ class ApiCache {
     if (
       key.includes("entidades") ||
       key.includes("funcionarios") ||
-      key.includes("setores") ||
       key.includes("formas-pagamento")
     ) {
       return this.cacheTimes.entidades;
