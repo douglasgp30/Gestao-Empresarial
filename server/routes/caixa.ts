@@ -455,7 +455,12 @@ export const createLancamento: RequestHandler = async (req, res) => {
     res.status(201).json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: "Dados inválidos", details: error.errors });
+      console.error("[Caixa] Erro de validação Zod:", error.errors);
+      console.error("[Caixa] Dados que causaram erro:", JSON.stringify(req.body, null, 2));
+      res.status(400).json({
+        error: "Dados inválidos: " + error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(", "),
+        details: error.errors
+      });
     } else {
       console.error("Erro ao criar lançamento:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
