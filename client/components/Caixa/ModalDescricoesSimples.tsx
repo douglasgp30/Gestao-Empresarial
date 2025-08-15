@@ -181,9 +181,12 @@ export default function ModalDescricoesSimples() {
       toast.success("Item excluído com sucesso");
 
     } catch (error) {
-      console.error('❌ Erro:', error);
+      console.error('❌ Erro no handleDelete:', error);
+      console.error('❌ Tipo do erro:', typeof error);
+      console.error('❌ Stack:', error instanceof Error ? error.stack : 'N/A');
+
       const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
-      toast.error(errorMessage);
+      toast.error(`Falha na exclusão: ${errorMessage}`);
     } finally {
       setIsDeleting(false);
     }
