@@ -63,6 +63,7 @@ export const createCidade: RequestHandler = async (req, res) => {
 
     const cidade = await prisma.cidade.create({ data });
 
+    console.log("[Cidades] Cidade criada com sucesso:", cidade);
     const response: ApiResponse<typeof cidade> = { data: cidade };
     res.status(201).json(response);
   } catch (error) {
