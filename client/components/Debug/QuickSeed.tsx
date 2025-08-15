@@ -7,38 +7,37 @@ export function QuickSeed() {
 
   const createData = async () => {
     setIsCreating(true);
-    
+
     try {
       console.log("🚀 Criando dados de teste...");
-      
+
       const response = await fetch("/api/seed/unified-data", {
         method: "POST",
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
-      
+
       const result = await response.json();
       console.log("📝 Resultado:", result);
-      
+
       if (result.success) {
         toast({
           title: "✅ Dados criados!",
           description: `${result.stats?.total || 0} itens criados`,
-          variant: "default"
+          variant: "default",
         });
       } else {
         toast({
           title: "ℹ️ Info",
           description: result.message || "Dados já existem",
-          variant: "default"
+          variant: "default",
         });
       }
-      
     } catch (error) {
       console.error("❌ Erro:", error);
       toast({
         title: "Erro",
         description: "Erro ao criar dados",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsCreating(false);
@@ -46,8 +45,8 @@ export function QuickSeed() {
   };
 
   return (
-    <Button 
-      onClick={createData} 
+    <Button
+      onClick={createData}
       disabled={isCreating}
       variant="outline"
       size="sm"

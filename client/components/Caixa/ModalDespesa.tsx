@@ -73,7 +73,9 @@ export function ModalDespesa() {
   // Filtrar setores pela cidade selecionada
   const setoresFiltrados = React.useMemo(() => {
     if (!formData.cidade) return [];
-    return (Array.isArray(setores) ? setores : []).filter(setor => setor.cidade === formData.cidade);
+    return (Array.isArray(setores) ? setores : []).filter(
+      (setor) => setor.cidade === formData.cidade,
+    );
   }, [formData.cidade, setores]);
 
   const resetForm = () => {
@@ -307,7 +309,7 @@ export function ModalDespesa() {
                     setFormData((prev) => ({
                       ...prev,
                       cidade: value,
-                      setor: "" // Limpar setor quando cidade muda
+                      setor: "", // Limpar setor quando cidade muda
                     }))
                   }
                 >
@@ -315,11 +317,16 @@ export function ModalDespesa() {
                     <SelectValue placeholder="Selecione a cidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
-                      <SelectItem key={`cidade-${index}-${cidade}`} value={cidade}>
-                        {cidade}
-                      </SelectItem>
-                    ))}
+                    {(Array.isArray(cidades) ? cidades : []).map(
+                      (cidade, index) => (
+                        <SelectItem
+                          key={`cidade-${index}-${cidade}`}
+                          value={cidade}
+                        >
+                          {cidade}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -333,11 +340,13 @@ export function ModalDespesa() {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={
-                      formData.cidade
-                        ? "Selecione o setor"
-                        : "Primeiro selecione uma cidade"
-                    } />
+                    <SelectValue
+                      placeholder={
+                        formData.cidade
+                          ? "Selecione o setor"
+                          : "Primeiro selecione uma cidade"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {setoresFiltrados.map((setor) => (

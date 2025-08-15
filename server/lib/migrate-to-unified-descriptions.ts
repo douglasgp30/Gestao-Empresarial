@@ -1,13 +1,15 @@
 import { prisma } from "./database";
 
 export async function migrateToUnifiedDescriptions() {
-  console.log("🔄 Iniciando migração para sistema unificado de descrições/categorias...");
+  console.log(
+    "🔄 Iniciando migração para sistema unificado de descrições/categorias...",
+  );
 
   try {
     // 1. Migrar categorias antigas para sistema unificado
     console.log("📂 Migrando categorias antigas...");
     const categoriasAntigas = await prisma.categoria.findMany({
-      where: { ativo: true }
+      where: { ativo: true },
     });
 
     for (const categoria of categoriasAntigas) {
@@ -15,8 +17,8 @@ export async function migrateToUnifiedDescriptions() {
         where: {
           nome: categoria.nome,
           tipo: categoria.tipo,
-          tipoItem: "categoria"
-        }
+          tipoItem: "categoria",
+        },
       });
 
       if (!existente) {
@@ -25,10 +27,12 @@ export async function migrateToUnifiedDescriptions() {
             nome: categoria.nome,
             tipo: categoria.tipo,
             tipoItem: "categoria",
-            ativo: true
-          }
+            ativo: true,
+          },
         });
-        console.log(`✅ Categoria migrada: ${categoria.nome} (${categoria.tipo})`);
+        console.log(
+          `✅ Categoria migrada: ${categoria.nome} (${categoria.tipo})`,
+        );
       }
     }
 
@@ -36,7 +40,7 @@ export async function migrateToUnifiedDescriptions() {
     console.log("📝 Migrando descrições antigas...");
     const descricoesAntigas = await prisma.descricao.findMany({
       where: { ativo: true },
-      include: { categoria: true }
+      include: { categoria: true },
     });
 
     for (const descricao of descricoesAntigas) {
@@ -48,8 +52,8 @@ export async function migrateToUnifiedDescriptions() {
           nome: descricao.nome,
           categoria: categoria.nome,
           tipo: categoria.tipo,
-          tipoItem: "descricao"
-        }
+          tipoItem: "descricao",
+        },
       });
 
       if (!existente) {
@@ -59,10 +63,12 @@ export async function migrateToUnifiedDescriptions() {
             categoria: categoria.nome,
             tipo: categoria.tipo,
             tipoItem: "descricao",
-            ativo: true
-          }
+            ativo: true,
+          },
         });
-        console.log(`✅ Descrição migrada: ${descricao.nome} (${categoria.nome})`);
+        console.log(
+          `✅ Descrição migrada: ${descricao.nome} (${categoria.nome})`,
+        );
       }
     }
 
@@ -71,13 +77,13 @@ export async function migrateToUnifiedDescriptions() {
     const lancamentosSemUnificado = await prisma.lancamentoCaixa.findMany({
       where: {
         descricaoECategoriaId: null,
-        descricaoId: { not: null }
+        descricaoId: { not: null },
       },
       include: {
         descricao: {
-          include: { categoria: true }
-        }
-      }
+          include: { categoria: true },
+        },
+      },
     });
 
     for (const lancamento of lancamentosSemUnificado) {
@@ -88,14 +94,14 @@ export async function migrateToUnifiedDescriptions() {
           nome: lancamento.descricao.nome,
           categoria: lancamento.descricao.categoria.nome,
           tipo: lancamento.descricao.categoria.tipo,
-          tipoItem: "descricao"
-        }
+          tipoItem: "descricao",
+        },
       });
 
       if (descricaoUnificada) {
         await prisma.lancamentoCaixa.update({
           where: { id: lancamento.id },
-          data: { descricaoECategoriaId: descricaoUnificada.id }
+          data: { descricaoECategoriaId: descricaoUnificada.id },
         });
         console.log(`✅ Lançamento atualizado: ID ${lancamento.id}`);
       }
@@ -103,12 +109,12 @@ export async function migrateToUnifiedDescriptions() {
 
     // 4. Verificar estatísticas da migração
     const statsUnificado = await prisma.descricaoECategoria.groupBy({
-      by: ['tipoItem', 'tipo'],
-      _count: { id: true }
+      by: ["tipoItem", "tipo"],
+      _count: { id: true },
     });
 
     const totalLancamentosUnificados = await prisma.lancamentoCaixa.count({
-      where: { descricaoECategoriaId: { not: null } }
+      where: { descricaoECategoriaId: { not: null } },
     });
 
     console.log("\n📊 Estatísticas da migração:");
@@ -116,11 +122,12 @@ export async function migrateToUnifiedDescriptions() {
     for (const stat of statsUnificado) {
       console.log(`  ${stat.tipoItem} ${stat.tipo}: ${stat._count.id} itens`);
     }
-    console.log(`  Lançamentos usando sistema unificado: ${totalLancamentosUnificados}`);
+    console.log(
+      `  Lançamentos usando sistema unificado: ${totalLancamentosUnificados}`,
+    );
 
     console.log("\n✅ Migração concluída com sucesso!");
     return true;
-
   } catch (error) {
     console.error("❌ Erro na migração:", error);
     throw error;
@@ -132,22 +139,25 @@ export async function checkMigrationNeeded() {
   const lancamentosSemUnificado = await prisma.lancamentoCaixa.count({
     where: {
       descricaoECategoriaId: null,
-      descricaoId: { not: null }
-    }
+      descricaoId: { not: null },
+    },
   });
 
   const categoriasAntigasAtivas = await prisma.categoria.count({
-    where: { ativo: true }
+    where: { ativo: true },
   });
 
   const descricoesAntigasAtivas = await prisma.descricao.count({
-    where: { ativo: true }
+    where: { ativo: true },
   });
 
   return {
-    needed: lancamentosSemUnificado > 0 || categoriasAntigasAtivas > 0 || descricoesAntigasAtivas > 0,
+    needed:
+      lancamentosSemUnificado > 0 ||
+      categoriasAntigasAtivas > 0 ||
+      descricoesAntigasAtivas > 0,
     lancamentosSemUnificado,
     categoriasAntigasAtivas,
-    descricoesAntigasAtivas
+    descricoesAntigasAtivas,
   };
 }

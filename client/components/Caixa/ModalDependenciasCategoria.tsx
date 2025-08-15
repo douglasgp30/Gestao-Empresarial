@@ -29,7 +29,7 @@ export default function ModalDependenciasCategoria({
           desc.tipoItem === "descricao" &&
           desc.categoria === categoria.nome &&
           desc.ativo &&
-          desc.tipo === categoria.tipo
+          desc.tipo === categoria.tipo,
       );
       setDescricoesVinculadas(vinculadas);
     }
@@ -45,7 +45,9 @@ export default function ModalDependenciasCategoria({
         {/* Header */}
         <div className="p-6 border-b">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-full ${temVinculadas ? 'bg-amber-100' : 'bg-green-100'}`}>
+            <div
+              className={`p-2 rounded-full ${temVinculadas ? "bg-amber-100" : "bg-green-100"}`}
+            >
               {temVinculadas ? (
                 <AlertTriangle className="h-5 w-5 text-amber-600" />
               ) : (
@@ -73,14 +75,19 @@ export default function ModalDependenciasCategoria({
                   Não é possível excluir esta categoria
                 </span>
               </div>
-              
+
               <p className="text-sm text-gray-600 mb-4">
-                Esta categoria possui <strong>{descricoesVinculadas.length}</strong> descrição(ões) vinculada(s):
+                Esta categoria possui{" "}
+                <strong>{descricoesVinculadas.length}</strong> descrição(ões)
+                vinculada(s):
               </p>
 
               <div className="space-y-2">
                 {descricoesVinculadas.map((desc) => (
-                  <div key={desc.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                  <div
+                    key={desc.id}
+                    className="flex items-center gap-2 p-2 bg-gray-50 rounded"
+                  >
                     <FileText className="h-4 w-4 text-gray-500" />
                     <span className="text-sm">{desc.nome}</span>
                     <Badge variant="outline" className="ml-auto text-xs">
@@ -95,8 +102,7 @@ export default function ModalDependenciasCategoria({
                   <strong>Para excluir esta categoria:</strong>
                   <br />
                   • Exclua primeiro todas as descrições vinculadas, ou
-                  <br />
-                  • Mova as descrições para outra categoria
+                  <br />• Mova as descrições para outra categoria
                 </p>
               </div>
             </div>
@@ -104,13 +110,12 @@ export default function ModalDependenciasCategoria({
             <div>
               <div className="flex items-center gap-2 mb-4 text-green-700">
                 <Eye className="h-4 w-4" />
-                <span className="font-medium">
-                  Categoria pode ser excluída
-                </span>
+                <span className="font-medium">Categoria pode ser excluída</span>
               </div>
-              
+
               <p className="text-sm text-gray-600">
-                Esta categoria não possui descrições vinculadas e pode ser excluída com segurança.
+                Esta categoria não possui descrições vinculadas e pode ser
+                excluída com segurança.
               </p>
             </div>
           )}
@@ -118,10 +123,7 @@ export default function ModalDependenciasCategoria({
 
         {/* Footer */}
         <div className="p-6 border-t">
-          <Button
-            onClick={onClose}
-            className="w-full"
-          >
+          <Button onClick={onClose} className="w-full">
             Entendi
           </Button>
         </div>

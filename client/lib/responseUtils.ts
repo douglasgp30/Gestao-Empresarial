@@ -14,12 +14,20 @@ export async function parseErrorResponse(response: Response): Promise<string> {
     try {
       const errorData = await responseClone.json();
 
-      if (errorData && typeof errorData.error === 'string' && errorData.error.trim()) {
+      if (
+        errorData &&
+        typeof errorData.error === "string" &&
+        errorData.error.trim()
+      ) {
         return errorData.error;
       }
 
       // Se não tem campo error, tentar outras propriedades comuns
-      if (errorData && typeof errorData.message === 'string' && errorData.message.trim()) {
+      if (
+        errorData &&
+        typeof errorData.message === "string" &&
+        errorData.message.trim()
+      ) {
         return errorData.message;
       }
 
@@ -37,7 +45,7 @@ export async function parseErrorResponse(response: Response): Promise<string> {
     }
     return defaultMessage;
   } catch (parseError) {
-    console.log('🔴 Error parsing response body:', parseError);
+    console.log("🔴 Error parsing response body:", parseError);
     // Retornar mensagem padrão se não conseguir fazer parse
     return defaultMessage;
   }
@@ -50,13 +58,16 @@ export async function parseErrorResponse(response: Response): Promise<string> {
  * @returns Promise<Response> - A resposta se bem-sucedida
  * @throws Error - Com mensagem de erro parsed se houver erro HTTP
  */
-export async function safeFetch(url: string, options?: RequestInit): Promise<Response> {
+export async function safeFetch(
+  url: string,
+  options?: RequestInit,
+): Promise<Response> {
   const response = await fetch(url, options);
-  
+
   if (!response.ok) {
     const errorMessage = await parseErrorResponse(response);
     throw new Error(errorMessage);
   }
-  
+
   return response;
 }

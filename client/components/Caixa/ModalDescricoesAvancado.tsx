@@ -88,25 +88,29 @@ export default function ModalDescricoesAvancado() {
   // Filtrar dados usando o sistema unificado com memoização otimizada
   const categoriasReceitas = useMemo(() => {
     return descricoesECategorias.filter(
-      (item) => item.tipoItem === "categoria" && item.ativo && item.tipo === "receita"
+      (item) =>
+        item.tipoItem === "categoria" && item.ativo && item.tipo === "receita",
     );
   }, [descricoesECategorias]);
 
   const categoriasDespesas = useMemo(() => {
     return descricoesECategorias.filter(
-      (item) => item.tipoItem === "categoria" && item.ativo && item.tipo === "despesa"
+      (item) =>
+        item.tipoItem === "categoria" && item.ativo && item.tipo === "despesa",
     );
   }, [descricoesECategorias]);
 
   const descricoesReceitas = useMemo(() => {
     return descricoesECategorias.filter(
-      (item) => item.tipoItem === "descricao" && item.ativo && item.tipo === "receita"
+      (item) =>
+        item.tipoItem === "descricao" && item.ativo && item.tipo === "receita",
     );
   }, [descricoesECategorias]);
 
   const descricoesDespesas = useMemo(() => {
     return descricoesECategorias.filter(
-      (item) => item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa"
+      (item) =>
+        item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa",
     );
   }, [descricoesECategorias]);
 
@@ -193,28 +197,32 @@ export default function ModalDescricoesAvancado() {
     setIsDeleting(true);
 
     try {
-      console.log('🟡 Excluindo:', itemBackup.nome);
+      console.log("🟡 Excluindo:", itemBackup.nome);
 
       // API call direta
-      const response = await fetch(`/api/descricoes-e-categorias/${itemBackup.id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/descricoes-e-categorias/${itemBackup.id}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (!response.ok) {
         throw new Error(`Erro ${response.status}`);
       }
 
-      console.log('✅ Excluído com sucesso');
+      console.log("✅ Excluído com sucesso");
 
       // Recarregar dados primeiro
       await recarregarDescricoesECategorias();
 
       // Só depois fechar modal e mostrar sucesso
       setItemParaExcluir(null);
-      toast.success(`${itemBackup.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`);
-
+      toast.success(
+        `${itemBackup.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`,
+      );
     } catch (error) {
-      console.error('❌ Erro:', error);
+      console.error("❌ Erro:", error);
       toast.error("Erro ao excluir item");
     } finally {
       setIsDeleting(false);
@@ -223,10 +231,10 @@ export default function ModalDescricoesAvancado() {
 
   const formatDate = (date: Date | string) => {
     try {
-      const d = typeof date === 'string' ? new Date(date) : date;
-      return d.toLocaleDateString('pt-BR');
+      const d = typeof date === "string" ? new Date(date) : date;
+      return d.toLocaleDateString("pt-BR");
     } catch {
-      return 'Data inválida';
+      return "Data inválida";
     }
   };
 
@@ -259,7 +267,13 @@ export default function ModalDescricoesAvancado() {
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs value={tipoAtivo} onValueChange={(value) => setTipoAtivo(value as "receita" | "despesa")} className="flex-1">
+          <Tabs
+            value={tipoAtivo}
+            onValueChange={(value) =>
+              setTipoAtivo(value as "receita" | "despesa")
+            }
+            className="flex-1"
+          >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="receita" className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4" />
@@ -271,7 +285,10 @@ export default function ModalDescricoesAvancado() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="receita" className="space-y-4 overflow-auto max-h-[60vh]">
+            <TabsContent
+              value="receita"
+              className="space-y-4 overflow-auto max-h-[60vh]"
+            >
               {/* Categorias de Receita */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -279,9 +296,20 @@ export default function ModalDescricoesAvancado() {
                     <Tag className="h-4 w-4" />
                     Categorias de Receita ({categoriasReceitas.length})
                   </CardTitle>
-                  <Dialog open={isNewCategoriaOpen} onOpenChange={setIsNewCategoriaOpen}>
+                  <Dialog
+                    open={isNewCategoriaOpen}
+                    onOpenChange={setIsNewCategoriaOpen}
+                  >
                     <DialogTrigger asChild>
-                      <Button size="sm" onClick={() => setFormCategoria({...formCategoria, tipo: "receita"})}>
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          setFormCategoria({
+                            ...formCategoria,
+                            tipo: "receita",
+                          })
+                        }
+                      >
                         <Plus className="h-4 w-4 mr-1" />
                         Nova
                       </Button>
@@ -295,22 +323,35 @@ export default function ModalDescricoesAvancado() {
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
-                          <Label htmlFor="nome-categoria">Nome da Categoria *</Label>
+                          <Label htmlFor="nome-categoria">
+                            Nome da Categoria *
+                          </Label>
                           <Input
                             id="nome-categoria"
                             value={formCategoria.nome}
-                            onChange={(e) => setFormCategoria({...formCategoria, nome: e.target.value})}
+                            onChange={(e) =>
+                              setFormCategoria({
+                                ...formCategoria,
+                                nome: e.target.value,
+                              })
+                            }
                             placeholder="Ex: Serviços, Vendas..."
                           />
                         </div>
                         <div className="flex gap-2 justify-end">
-                          <Button variant="outline" onClick={() => {
-                            setIsNewCategoriaOpen(false);
-                            resetFormCategoria();
-                          }}>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setIsNewCategoriaOpen(false);
+                              resetFormCategoria();
+                            }}
+                          >
                             Cancelar
                           </Button>
-                          <Button onClick={handleAdicionarCategoria} disabled={isSaving}>
+                          <Button
+                            onClick={handleAdicionarCategoria}
+                            disabled={isSaving}
+                          >
                             {isSaving ? "Salvando..." : "Salvar"}
                           </Button>
                         </div>
@@ -326,9 +367,14 @@ export default function ModalDescricoesAvancado() {
                   ) : (
                     <div className="space-y-2">
                       {categoriasReceitas.map((categoria) => (
-                        <div key={categoria.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div
+                          key={categoria.id}
+                          className="flex items-center justify-between p-3 border rounded-lg"
+                        >
                           <div>
-                            <span className="font-medium">{categoria.nome}</span>
+                            <span className="font-medium">
+                              {categoria.nome}
+                            </span>
                             <Badge variant="outline" className="ml-2">
                               {categoria.ativo ? "Ativo" : "Inativo"}
                             </Badge>
@@ -341,11 +387,13 @@ export default function ModalDescricoesAvancado() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                               <DropdownMenuItem
-                                onClick={() => setItemParaExcluir({
-                                  id: categoria.id,
-                                  tipo: "categoria",
-                                  nome: categoria.nome,
-                                })}
+                                onClick={() =>
+                                  setItemParaExcluir({
+                                    id: categoria.id,
+                                    tipo: "categoria",
+                                    nome: categoria.nome,
+                                  })
+                                }
                                 className="text-red-600"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
@@ -367,9 +415,20 @@ export default function ModalDescricoesAvancado() {
                     <FileText className="h-4 w-4" />
                     Descrições de Receita ({descricoesReceitas.length})
                   </CardTitle>
-                  <Dialog open={isNewDescricaoOpen} onOpenChange={setIsNewDescricaoOpen}>
+                  <Dialog
+                    open={isNewDescricaoOpen}
+                    onOpenChange={setIsNewDescricaoOpen}
+                  >
                     <DialogTrigger asChild>
-                      <Button size="sm" onClick={() => setFormDescricao({...formDescricao, tipo: "receita"})}>
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          setFormDescricao({
+                            ...formDescricao,
+                            tipo: "receita",
+                          })
+                        }
+                      >
                         <Plus className="h-4 w-4 mr-1" />
                         Nova
                       </Button>
@@ -386,7 +445,12 @@ export default function ModalDescricoesAvancado() {
                           <Label htmlFor="categoria-select">Categoria *</Label>
                           <Select
                             value={formDescricao.categoria}
-                            onValueChange={(value) => setFormDescricao({...formDescricao, categoria: value})}
+                            onValueChange={(value) =>
+                              setFormDescricao({
+                                ...formDescricao,
+                                categoria: value,
+                              })
+                            }
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Selecione uma categoria" />
@@ -401,22 +465,35 @@ export default function ModalDescricoesAvancado() {
                           </Select>
                         </div>
                         <div>
-                          <Label htmlFor="nome-descricao">Nome da Descrição *</Label>
+                          <Label htmlFor="nome-descricao">
+                            Nome da Descrição *
+                          </Label>
                           <Input
                             id="nome-descricao"
                             value={formDescricao.nome}
-                            onChange={(e) => setFormDescricao({...formDescricao, nome: e.target.value})}
+                            onChange={(e) =>
+                              setFormDescricao({
+                                ...formDescricao,
+                                nome: e.target.value,
+                              })
+                            }
                             placeholder="Ex: Conserto de Celular, Venda de Produto..."
                           />
                         </div>
                         <div className="flex gap-2 justify-end">
-                          <Button variant="outline" onClick={() => {
-                            setIsNewDescricaoOpen(false);
-                            resetFormDescricao();
-                          }}>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setIsNewDescricaoOpen(false);
+                              resetFormDescricao();
+                            }}
+                          >
                             Cancelar
                           </Button>
-                          <Button onClick={handleAdicionarDescricao} disabled={isSaving}>
+                          <Button
+                            onClick={handleAdicionarDescricao}
+                            disabled={isSaving}
+                          >
                             {isSaving ? "Salvando..." : "Salvar"}
                           </Button>
                         </div>
@@ -432,9 +509,14 @@ export default function ModalDescricoesAvancado() {
                   ) : (
                     <div className="space-y-2">
                       {descricoesReceitas.map((descricao) => (
-                        <div key={descricao.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div
+                          key={descricao.id}
+                          className="flex items-center justify-between p-3 border rounded-lg"
+                        >
                           <div>
-                            <span className="font-medium">{descricao.nome}</span>
+                            <span className="font-medium">
+                              {descricao.nome}
+                            </span>
                             <Badge variant="secondary" className="ml-2">
                               {descricao.categoria || "Sem categoria"}
                             </Badge>
@@ -450,11 +532,13 @@ export default function ModalDescricoesAvancado() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                               <DropdownMenuItem
-                                onClick={() => setItemParaExcluir({
-                                  id: descricao.id,
-                                  tipo: "descricao",
-                                  nome: descricao.nome,
-                                })}
+                                onClick={() =>
+                                  setItemParaExcluir({
+                                    id: descricao.id,
+                                    tipo: "descricao",
+                                    nome: descricao.nome,
+                                  })
+                                }
                                 className="text-red-600"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
@@ -470,7 +554,10 @@ export default function ModalDescricoesAvancado() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="despesa" className="space-y-4 overflow-auto max-h-[60vh]">
+            <TabsContent
+              value="despesa"
+              className="space-y-4 overflow-auto max-h-[60vh]"
+            >
               {/* Categorias de Despesa */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -478,9 +565,20 @@ export default function ModalDescricoesAvancado() {
                     <Tag className="h-4 w-4" />
                     Categorias de Despesa ({categoriasDespesas.length})
                   </CardTitle>
-                  <Dialog open={isNewCategoriaOpen} onOpenChange={setIsNewCategoriaOpen}>
+                  <Dialog
+                    open={isNewCategoriaOpen}
+                    onOpenChange={setIsNewCategoriaOpen}
+                  >
                     <DialogTrigger asChild>
-                      <Button size="sm" onClick={() => setFormCategoria({...formCategoria, tipo: "despesa"})}>
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          setFormCategoria({
+                            ...formCategoria,
+                            tipo: "despesa",
+                          })
+                        }
+                      >
                         <Plus className="h-4 w-4 mr-1" />
                         Nova
                       </Button>
@@ -495,9 +593,14 @@ export default function ModalDescricoesAvancado() {
                   ) : (
                     <div className="space-y-2">
                       {categoriasDespesas.map((categoria) => (
-                        <div key={categoria.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div
+                          key={categoria.id}
+                          className="flex items-center justify-between p-3 border rounded-lg"
+                        >
                           <div>
-                            <span className="font-medium">{categoria.nome}</span>
+                            <span className="font-medium">
+                              {categoria.nome}
+                            </span>
                             <Badge variant="outline" className="ml-2">
                               {categoria.ativo ? "Ativo" : "Inativo"}
                             </Badge>
@@ -510,11 +613,13 @@ export default function ModalDescricoesAvancado() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                               <DropdownMenuItem
-                                onClick={() => setItemParaExcluir({
-                                  id: categoria.id,
-                                  tipo: "categoria",
-                                  nome: categoria.nome,
-                                })}
+                                onClick={() =>
+                                  setItemParaExcluir({
+                                    id: categoria.id,
+                                    tipo: "categoria",
+                                    nome: categoria.nome,
+                                  })
+                                }
                                 className="text-red-600"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
@@ -536,9 +641,20 @@ export default function ModalDescricoesAvancado() {
                     <FileText className="h-4 w-4" />
                     Descrições de Despesa ({descricoesDespesas.length})
                   </CardTitle>
-                  <Dialog open={isNewDescricaoOpen} onOpenChange={setIsNewDescricaoOpen}>
+                  <Dialog
+                    open={isNewDescricaoOpen}
+                    onOpenChange={setIsNewDescricaoOpen}
+                  >
                     <DialogTrigger asChild>
-                      <Button size="sm" onClick={() => setFormDescricao({...formDescricao, tipo: "despesa"})}>
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          setFormDescricao({
+                            ...formDescricao,
+                            tipo: "despesa",
+                          })
+                        }
+                      >
                         <Plus className="h-4 w-4 mr-1" />
                         Nova
                       </Button>
@@ -553,9 +669,14 @@ export default function ModalDescricoesAvancado() {
                   ) : (
                     <div className="space-y-2">
                       {descricoesDespesas.map((descricao) => (
-                        <div key={descricao.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div
+                          key={descricao.id}
+                          className="flex items-center justify-between p-3 border rounded-lg"
+                        >
                           <div>
-                            <span className="font-medium">{descricao.nome}</span>
+                            <span className="font-medium">
+                              {descricao.nome}
+                            </span>
                             <Badge variant="secondary" className="ml-2">
                               {descricao.categoria || "Sem categoria"}
                             </Badge>
@@ -571,11 +692,13 @@ export default function ModalDescricoesAvancado() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                               <DropdownMenuItem
-                                onClick={() => setItemParaExcluir({
-                                  id: descricao.id,
-                                  tipo: "descricao",
-                                  nome: descricao.nome,
-                                })}
+                                onClick={() =>
+                                  setItemParaExcluir({
+                                    id: descricao.id,
+                                    tipo: "descricao",
+                                    nome: descricao.nome,
+                                  })
+                                }
                                 className="text-red-600"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
@@ -601,7 +724,9 @@ export default function ModalDescricoesAvancado() {
         onConfirm={handleExcluir}
         isDeleting={isDeleting}
         titulo="Confirmar Exclusão"
-        descricao={itemParaExcluir?.tipo === "categoria" ? "a categoria" : "a descrição"}
+        descricao={
+          itemParaExcluir?.tipo === "categoria" ? "a categoria" : "a descrição"
+        }
         nomeItem={itemParaExcluir?.nome || ""}
       />
     </>

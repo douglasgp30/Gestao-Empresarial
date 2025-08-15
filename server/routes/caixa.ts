@@ -22,7 +22,10 @@ const LancamentoCaixaSchema = z.object({
   descricao: z.string().optional(),
 
   // Campos obrigatórios
-  formaPagamentoId: z.number().positive("Forma de pagamento é obrigatória").optional(),
+  formaPagamentoId: z
+    .number()
+    .positive("Forma de pagamento é obrigatória")
+    .optional(),
   formaPagamento: z.string().optional(), // Para compatibilidade
 
   // Campos opcionais
@@ -42,7 +45,11 @@ function gerarDataHora(): Date {
 }
 
 // Função para resolver ID de descrição/categoria usando sistema unificado
-async function resolverDescricaoECategoria(categoria: string, descricao: string, tipo: "receita" | "despesa") {
+async function resolverDescricaoECategoria(
+  categoria: string,
+  descricao: string,
+  tipo: "receita" | "despesa",
+) {
   try {
     // Buscar ou criar a descrição no sistema unificado
     let descricaoItem = await prisma.descricaoECategoria.findFirst({
@@ -51,8 +58,8 @@ async function resolverDescricaoECategoria(categoria: string, descricao: string,
         categoria: categoria,
         tipo: tipo,
         tipoItem: "descricao",
-        ativo: true
-      }
+        ativo: true,
+      },
     });
 
     if (!descricaoItem) {
@@ -63,8 +70,8 @@ async function resolverDescricaoECategoria(categoria: string, descricao: string,
           categoria: categoria,
           tipo: tipo,
           tipoItem: "descricao",
-          ativo: true
-        }
+          ativo: true,
+        },
       });
     }
 
@@ -82,7 +89,7 @@ async function resolverIds(data: any) {
   // Resolver forma de pagamento
   if (data.formaPagamento && !data.formaPagamentoId) {
     const formaPagamento = await prisma.formaPagamento.findFirst({
-      where: { nome: { contains: data.formaPagamento, mode: 'insensitive' } }
+      where: { nome: { contains: data.formaPagamento, mode: "insensitive" } },
     });
     if (formaPagamento) {
       ids.formaPagamentoId = formaPagamento.id;
@@ -94,7 +101,7 @@ async function resolverIds(data: any) {
   // Resolver técnico responsável
   if (data.tecnicoResponsavel && !data.funcionarioId) {
     const funcionario = await prisma.funcionario.findFirst({
-      where: { id: parseInt(data.tecnicoResponsavel) }
+      where: { id: parseInt(data.tecnicoResponsavel) },
     });
     if (funcionario) {
       ids.funcionarioId = funcionario.id;
@@ -106,7 +113,7 @@ async function resolverIds(data: any) {
   // Resolver setor
   if (data.setor && !data.setorId) {
     const setor = await prisma.setor.findFirst({
-      where: { nome: { contains: data.setor, mode: 'insensitive' } }
+      where: { nome: { contains: data.setor, mode: "insensitive" } },
     });
     if (setor) {
       ids.setorId = setor.id;
@@ -118,7 +125,7 @@ async function resolverIds(data: any) {
   // Resolver campanha
   if (data.campanha && !data.campanhaId) {
     const campanha = await prisma.campanha.findFirst({
-      where: { nome: { contains: data.campanha, mode: 'insensitive' } }
+      where: { nome: { contains: data.campanha, mode: "insensitive" } },
     });
     if (campanha) {
       ids.campanhaId = campanha.id;
@@ -161,7 +168,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     // Filtro por categoria usando sistema unificado
     if (categoria && categoria !== "todas") {
       where.descricaoECategoria = {
-        categoria: categoria
+        categoria: categoria,
       };
     }
 
@@ -199,7 +206,15 @@ export const getLancamentos: RequestHandler = async (req, res) => {
         descricaoECategoria: true, // Incluir sistema unificado
         subdescricao: true,
         formaPagamento: true,
-        funcionario: { select: { id: true, nome: true, cargo: true, percentualComissao: true, percentualServico: true } },
+        funcionario: {
+          select: {
+            id: true,
+            nome: true,
+            cargo: true,
+            percentualComissao: true,
+            percentualServico: true,
+          },
+        },
         setor: true,
         campanha: true,
         cliente: true,
@@ -231,9 +246,9 @@ export const createLancamento: RequestHandler = async (req, res) => {
     let descricaoECategoriaId = null;
     if (data.categoria && data.descricao) {
       descricaoECategoriaId = await resolverDescricaoECategoria(
-        data.categoria, 
-        data.descricao, 
-        data.tipo
+        data.categoria,
+        data.descricao,
+        data.tipo,
       );
       console.log("[Caixa] DescricaoECategoria ID:", descricaoECategoriaId);
     }
@@ -272,14 +287,21 @@ export const createLancamento: RequestHandler = async (req, res) => {
     if (ids.funcionarioId && data.valorLiquido && data.tipo === "receita") {
       const funcionario = await prisma.funcionario.findUnique({
         where: { id: ids.funcionarioId },
-        select: { percentualComissao: true, percentualServico: true, nome: true }
+        select: {
+          percentualComissao: true,
+          percentualServico: true,
+          nome: true,
+        },
       });
 
       if (funcionario) {
-        const percentual = funcionario.percentualComissao || funcionario.percentualServico || 0;
+        const percentual =
+          funcionario.percentualComissao || funcionario.percentualServico || 0;
         if (percentual > 0) {
           comissaoCalculada = data.valorLiquido * (percentual / 100);
-          console.log(`[Caixa] Comissão calculada automaticamente: ${funcionario.nome} - ${percentual}% = R$ ${comissaoCalculada.toFixed(2)}`);
+          console.log(
+            `[Caixa] Comissão calculada automaticamente: ${funcionario.nome} - ${percentual}% = R$ ${comissaoCalculada.toFixed(2)}`,
+          );
         }
       }
     }
@@ -296,7 +318,9 @@ export const createLancamento: RequestHandler = async (req, res) => {
         formaPagamento ? "EXISTS" : "NOT FOUND",
       );
       if (!formaPagamento) {
-        return res.status(400).json({ error: "Forma de pagamento não encontrada" });
+        return res
+          .status(400)
+          .json({ error: "Forma de pagamento não encontrada" });
       }
     }
 
@@ -412,7 +436,15 @@ export const createLancamento: RequestHandler = async (req, res) => {
         descricaoECategoria: true, // Incluir sistema unificado
         subdescricao: true,
         formaPagamento: true,
-        funcionario: { select: { id: true, nome: true, cargo: true, percentualComissao: true, percentualServico: true } },
+        funcionario: {
+          select: {
+            id: true,
+            nome: true,
+            cargo: true,
+            percentualComissao: true,
+            percentualServico: true,
+          },
+        },
         setor: true,
         campanha: true,
         cliente: true,
@@ -482,14 +514,21 @@ export const updateLancamento: RequestHandler = async (req, res) => {
     if (ids.funcionarioId && data.valorLiquido && data.tipo === "receita") {
       const funcionario = await prisma.funcionario.findUnique({
         where: { id: ids.funcionarioId },
-        select: { percentualComissao: true, percentualServico: true, nome: true }
+        select: {
+          percentualComissao: true,
+          percentualServico: true,
+          nome: true,
+        },
       });
 
       if (funcionario) {
-        const percentual = funcionario.percentualComissao || funcionario.percentualServico || 0;
+        const percentual =
+          funcionario.percentualComissao || funcionario.percentualServico || 0;
         if (percentual > 0) {
           dadosAtualizacao.comissao = data.valorLiquido * (percentual / 100);
-          console.log(`[Caixa] Comissão recalculada: ${funcionario.nome} - ${percentual}% = R$ ${dadosAtualizacao.comissao.toFixed(2)}`);
+          console.log(
+            `[Caixa] Comissão recalculada: ${funcionario.nome} - ${percentual}% = R$ ${dadosAtualizacao.comissao.toFixed(2)}`,
+          );
         }
       }
     }
@@ -502,7 +541,15 @@ export const updateLancamento: RequestHandler = async (req, res) => {
         descricaoECategoria: true,
         subdescricao: true,
         formaPagamento: true,
-        funcionario: { select: { id: true, nome: true, cargo: true, percentualComissao: true, percentualServico: true } },
+        funcionario: {
+          select: {
+            id: true,
+            nome: true,
+            cargo: true,
+            percentualComissao: true,
+            percentualServico: true,
+          },
+        },
         setor: true,
         campanha: true,
         cliente: true,

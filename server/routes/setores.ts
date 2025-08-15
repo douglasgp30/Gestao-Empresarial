@@ -92,7 +92,7 @@ export const createSetor: RequestHandler = async (req, res) => {
 
     if (setorExistente) {
       return res.status(400).json({
-        error: `Já existe um setor "${data.nome}" na cidade "${cidade.nome}"`
+        error: `Já existe um setor "${data.nome}" na cidade "${cidade.nome}"`,
       });
     }
 
@@ -160,7 +160,7 @@ export const deleteCidade: RequestHandler = async (req, res) => {
     });
 
     if (setoresVinculados.length > 0) {
-      const nomesSetores = setoresVinculados.map(s => s.nome).join(", ");
+      const nomesSetores = setoresVinculados.map((s) => s.nome).join(", ");
       return res.status(400).json({
         error: `Não é possível excluir a cidade "${cidade}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
       });

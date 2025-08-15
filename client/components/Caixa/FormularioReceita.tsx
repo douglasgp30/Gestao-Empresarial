@@ -94,20 +94,33 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     const carregarCategorias = async () => {
       try {
         setCarregandoCategorias(true);
-        const response = await fetch("/api/descricoes-e-categorias/categorias?tipo=receita");
+        const response = await fetch(
+          "/api/descricoes-e-categorias/categorias?tipo=receita",
+        );
         const data = await response.json();
 
         if (data.data) {
           // Remove duplicates and sort
-          const nomes = [...new Set(data.data.map((cat: any) => cat.nome))].sort();
+          const nomes = [
+            ...new Set(data.data.map((cat: any) => cat.nome)),
+          ].sort();
           setCategoriasReceita(nomes);
           console.log("[FormularioReceita] Categorias carregadas:", nomes);
-          console.log("[FormularioReceita] Dados completos das categorias:", data.data);
+          console.log(
+            "[FormularioReceita] Dados completos das categorias:",
+            data.data,
+          );
         } else {
-          console.log("[FormularioReceita] Nenhuma categoria encontrada na resposta:", data);
+          console.log(
+            "[FormularioReceita] Nenhuma categoria encontrada na resposta:",
+            data,
+          );
         }
       } catch (error) {
-        console.error("[FormularioReceita] Erro ao carregar categorias:", error);
+        console.error(
+          "[FormularioReceita] Erro ao carregar categorias:",
+          error,
+        );
       } finally {
         setCarregandoCategorias(false);
       }
@@ -126,16 +139,24 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
       try {
         const response = await fetch(
-          `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`
+          `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`,
         );
         const data = await response.json();
 
         if (data.data) {
           setDescricoesFiltradas(data.data);
-          console.log("[FormularioReceita] Descrições carregadas para", formData.categoria, ":", data.data.length);
+          console.log(
+            "[FormularioReceita] Descrições carregadas para",
+            formData.categoria,
+            ":",
+            data.data.length,
+          );
         }
       } catch (error) {
-        console.error("[FormularioReceita] Erro ao carregar descrições:", error);
+        console.error(
+          "[FormularioReceita] Erro ao carregar descrições:",
+          error,
+        );
         setDescricoesFiltradas([]);
       }
     };
@@ -150,7 +171,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
 
     const forma = formasPagamento.find(
-      (f) => f.id.toString() === formData.formaPagamento
+      (f) => f.id.toString() === formData.formaPagamento,
     );
 
     return forma?.nome?.toLowerCase().includes("cartão") || false;
@@ -185,14 +206,15 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       );
       if (tecnico) {
         // Usar percentualComissao ou percentualServico como fallback
-        const percentual = tecnico.percentualComissao || tecnico.percentualServico || 0;
+        const percentual =
+          tecnico.percentualComissao || tecnico.percentualServico || 0;
         if (percentual > 0) {
           const comissao = valorLiquidoCalculado * (percentual / 100);
-          console.log('Calculando comissão:', {
+          console.log("Calculando comissão:", {
             tecnico: tecnico.nome || tecnico.nomeCompleto,
             percentual,
             valorLiquido: valorLiquidoCalculado,
-            comissao
+            comissao,
           });
           return comissao;
         }
@@ -348,7 +370,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   };
 
   // Só mostrar loading se realmente não há dados essenciais
-  const isLoadingEssential = carregandoCategorias || (entidadesLoading && formasPagamento.length === 0);
+  const isLoadingEssential =
+    carregandoCategorias || (entidadesLoading && formasPagamento.length === 0);
 
   if (isLoadingEssential) {
     return (
@@ -429,7 +452,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     </div>
                   ) : (
                     categoriasReceita.map((categoria, index) => (
-                      <SelectItem key={`categoria-${index}-${categoria}`} value={categoria}>
+                      <SelectItem
+                        key={`categoria-${index}-${categoria}`}
+                        value={categoria}
+                      >
                         {categoria}
                       </SelectItem>
                     ))
@@ -471,7 +497,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
                   // Recarregar descrições
                   const reloadResponse = await fetch(
-                    `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`
+                    `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`,
                   );
                   const reloadData = await reloadResponse.json();
                   if (reloadData.data) {
@@ -580,7 +606,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                           tecnico.id !== 0,
                       )
                       .map((tecnico) => {
-                        const percentual = tecnico.percentualComissao || tecnico.percentualServico || 0;
+                        const percentual =
+                          tecnico.percentualComissao ||
+                          tecnico.percentualServico ||
+                          0;
                         const nome = tecnico.nome || tecnico.nomeCompleto;
                         return (
                           <SelectItem

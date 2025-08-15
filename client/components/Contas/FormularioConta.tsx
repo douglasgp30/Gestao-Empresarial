@@ -358,7 +358,11 @@ export function FormularioConta({
             <Select
               value={formData.categoria}
               onValueChange={(value) => {
-                setFormData((prev) => ({ ...prev, categoria: value, descricao: "0" }));
+                setFormData((prev) => ({
+                  ...prev,
+                  categoria: value,
+                  descricao: "0",
+                }));
               }}
             >
               <SelectTrigger>
@@ -395,7 +399,9 @@ export function FormularioConta({
                   <SelectItem value="0">Nenhuma</SelectItem>
                   {getDescricoes(
                     undefined,
-                    getCategorias().find(c => c.id.toString() === formData.categoria)?.nome
+                    getCategorias().find(
+                      (c) => c.id.toString() === formData.categoria,
+                    )?.nome,
                   ).map((descricao) => (
                     <SelectItem
                       key={descricao.id}

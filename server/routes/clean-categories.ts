@@ -7,25 +7,26 @@ export const cleanCategories: RequestHandler = async (req, res) => {
 
     // Remover todas as categorias e descrições da tabela unificada
     const deletedCount = await prisma.descricaoECategoria.deleteMany({});
-    console.log(`[CLEAN] Removidos ${deletedCount.count} itens da tabela unificada`);
+    console.log(
+      `[CLEAN] Removidos ${deletedCount.count} itens da tabela unificada`,
+    );
 
     // Verificar total final
     const finalCount = await prisma.descricaoECategoria.count();
-    
+
     res.json({
       success: true,
       message: `Tabela unificada limpa! ${deletedCount.count} itens removidos.`,
       stats: {
         removed: deletedCount.count,
-        remaining: finalCount
-      }
+        remaining: finalCount,
+      },
     });
-
   } catch (error) {
     console.error("[CLEAN] Erro ao limpar dados:", error);
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Erro desconhecido"
+      error: error instanceof Error ? error.message : "Erro desconhecido",
     });
   }
 };
@@ -33,15 +34,11 @@ export const cleanCategories: RequestHandler = async (req, res) => {
 export const listCategories: RequestHandler = async (req, res) => {
   try {
     const items = await prisma.descricaoECategoria.findMany({
-      orderBy: [
-        { tipoItem: "asc" },
-        { tipo: "asc" },
-        { nome: "asc" }
-      ]
+      orderBy: [{ tipoItem: "asc" }, { tipo: "asc" }, { nome: "asc" }],
     });
 
-    const categorias = items.filter(item => item.tipoItem === "categoria");
-    const descricoes = items.filter(item => item.tipoItem === "descricao");
+    const categorias = items.filter((item) => item.tipoItem === "categoria");
+    const descricoes = items.filter((item) => item.tipoItem === "descricao");
 
     res.json({
       success: true,
@@ -50,16 +47,15 @@ export const listCategories: RequestHandler = async (req, res) => {
       stats: {
         categorias: categorias.length,
         descricoes: descricoes.length,
-        receitas: items.filter(item => item.tipo === "receita").length,
-        despesas: items.filter(item => item.tipo === "despesa").length,
-      }
+        receitas: items.filter((item) => item.tipo === "receita").length,
+        despesas: items.filter((item) => item.tipo === "despesa").length,
+      },
     });
-
   } catch (error) {
     console.error("[LIST] Erro ao listar dados:", error);
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Erro desconhecido"
+      error: error instanceof Error ? error.message : "Erro desconhecido",
     });
   }
 };

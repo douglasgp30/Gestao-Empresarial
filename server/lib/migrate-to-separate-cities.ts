@@ -1,7 +1,9 @@
 import { prisma } from "./database";
 
 export async function migrateToSeparateCities() {
-  console.log("[Migration] Iniciando migração para tabela separada de cidades...");
+  console.log(
+    "[Migration] Iniciando migração para tabela separada de cidades...",
+  );
 
   try {
     // 1. Buscar todas as cidades únicas dos setores existentes
@@ -14,17 +16,23 @@ export async function migrateToSeparateCities() {
       },
     });
 
-    console.log(`[Migration] Encontrados ${setoresExistentes.length} setores existentes`);
+    console.log(
+      `[Migration] Encontrados ${setoresExistentes.length} setores existentes`,
+    );
 
     // 2. Extrair cidades únicas
-    const cidadesUnicas = [...new Set(setoresExistentes.map(s => s.cidade))];
-    console.log(`[Migration] Cidades únicas encontradas: ${cidadesUnicas.join(", ")}`);
+    const cidadesUnicas = [...new Set(setoresExistentes.map((s) => s.cidade))];
+    console.log(
+      `[Migration] Cidades únicas encontradas: ${cidadesUnicas.join(", ")}`,
+    );
 
     // 3. Verificar se a tabela de cidades já existe e tem dados
     try {
       const cidadesExistentes = await prisma.cidade.findMany();
       if (cidadesExistentes.length > 0) {
-        console.log(`[Migration] Tabela de cidades já tem ${cidadesExistentes.length} registros, pulando migração`);
+        console.log(
+          `[Migration] Tabela de cidades já tem ${cidadesExistentes.length} registros, pulando migração`,
+        );
         return;
       }
     } catch (error) {
@@ -42,20 +50,25 @@ export async function migrateToSeparateCities() {
           },
         });
         cidadesCriadas.push(cidade);
-        console.log(`[Migration] Cidade criada: ${cidade.nome} (ID: ${cidade.id})`);
+        console.log(
+          `[Migration] Cidade criada: ${cidade.nome} (ID: ${cidade.id})`,
+        );
       } catch (error) {
         console.error(`[Migration] Erro ao criar cidade ${nomeCidade}:`, error);
       }
     }
 
-    console.log(`[Migration] ${cidadesCriadas.length} cidades criadas com sucesso`);
+    console.log(
+      `[Migration] ${cidadesCriadas.length} cidades criadas com sucesso`,
+    );
 
     // 5. Atualizar setores para usar a chave estrangeira
     // Nota: Como estamos mudando a estrutura, vamos precisar fazer isso manualmente
     // através de SQL direto ou recriar os setores
 
-    console.log("[Migration] Migração concluída! Nota: Os setores precisarão ser recriados com a nova estrutura.");
-
+    console.log(
+      "[Migration] Migração concluída! Nota: Os setores precisarão ser recriados com a nova estrutura.",
+    );
   } catch (error) {
     console.error("[Migration] Erro na migração:", error);
     throw error;

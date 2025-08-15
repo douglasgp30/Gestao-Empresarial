@@ -66,7 +66,8 @@ export const createCidade: RequestHandler = async (req, res) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
-        error: "Dados inválidos: " + error.errors.map((e) => e.message).join(", "),
+        error:
+          "Dados inválidos: " + error.errors.map((e) => e.message).join(", "),
       };
       res.status(400).json(response);
     } else {
@@ -115,7 +116,8 @@ export const updateCidade: RequestHandler = async (req, res) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       const response: ApiResponse<null> = {
-        error: "Dados inválidos: " + error.errors.map((e) => e.message).join(", "),
+        error:
+          "Dados inválidos: " + error.errors.map((e) => e.message).join(", "),
       };
       res.status(400).json(response);
     } else {
@@ -154,7 +156,7 @@ export const deleteCidade: RequestHandler = async (req, res) => {
     });
 
     if (setoresVinculados.length > 0) {
-      const nomesSetores = setoresVinculados.map(s => s.nome).join(", ");
+      const nomesSetores = setoresVinculados.map((s) => s.nome).join(", ");
       const response: ApiResponse<null> = {
         error: `Não é possível excluir a cidade "${cidade.nome}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
       };

@@ -9,39 +9,54 @@ export default function TestApiEndpoints() {
       console.log(`[TestAPI] Testando ${name}:`, url);
       const response = await fetch(url);
       const data = await response.json();
-      
-      setResults(prev => ({
+
+      setResults((prev) => ({
         ...prev,
         [name]: {
           status: response.status,
           data: data,
-          count: Array.isArray(data.data) ? data.data.length : 'N/A'
-        }
+          count: Array.isArray(data.data) ? data.data.length : "N/A",
+        },
       }));
-      
+
       console.log(`[TestAPI] ${name} resultado:`, data);
     } catch (error) {
-      setResults(prev => ({
+      setResults((prev) => ({
         ...prev,
         [name]: {
-          error: error instanceof Error ? error.message : 'Erro desconhecido'
-        }
+          error: error instanceof Error ? error.message : "Erro desconhecido",
+        },
       }));
     }
   };
 
   const endpoints = [
-    { name: "Todas descrições/categorias", url: "/api/descricoes-e-categorias" },
-    { name: "Categorias receita", url: "/api/descricoes-e-categorias/categorias?tipo=receita" },
-    { name: "Categorias despesa", url: "/api/descricoes-e-categorias/categorias?tipo=despesa" },
-    { name: "Descrições receita", url: "/api/descricoes-e-categorias/descricoes?tipo=receita" },
-    { name: "Descrições despesa", url: "/api/descricoes-e-categorias/descricoes?tipo=despesa" },
+    {
+      name: "Todas descrições/categorias",
+      url: "/api/descricoes-e-categorias",
+    },
+    {
+      name: "Categorias receita",
+      url: "/api/descricoes-e-categorias/categorias?tipo=receita",
+    },
+    {
+      name: "Categorias despesa",
+      url: "/api/descricoes-e-categorias/categorias?tipo=despesa",
+    },
+    {
+      name: "Descrições receita",
+      url: "/api/descricoes-e-categorias/descricoes?tipo=receita",
+    },
+    {
+      name: "Descrições despesa",
+      url: "/api/descricoes-e-categorias/descricoes?tipo=despesa",
+    },
   ];
 
   return (
     <div className="p-4 border rounded-lg bg-blue-50">
       <h3 className="font-semibold mb-4">Debug: Testar Endpoints da API</h3>
-      
+
       <div className="grid grid-cols-2 gap-2 mb-4">
         {endpoints.map((endpoint) => (
           <Button
@@ -55,15 +70,17 @@ export default function TestApiEndpoints() {
         ))}
       </div>
 
-      <Button 
+      <Button
         onClick={() => {
-          endpoints.forEach(endpoint => testEndpoint(endpoint.name, endpoint.url));
+          endpoints.forEach((endpoint) =>
+            testEndpoint(endpoint.name, endpoint.url),
+          );
         }}
         className="w-full mb-4"
       >
         Testar Todos
       </Button>
-      
+
       {Object.keys(results).length > 0 && (
         <div className="space-y-2">
           <h4 className="font-medium">Resultados:</h4>
@@ -74,10 +91,14 @@ export default function TestApiEndpoints() {
                 <div className="text-red-600">❌ {result.error}</div>
               ) : (
                 <div>
-                  <div className="text-green-600">✅ Status: {result.status}</div>
+                  <div className="text-green-600">
+                    ✅ Status: {result.status}
+                  </div>
                   <div>📊 Count: {result.count}</div>
                   <details className="mt-1">
-                    <summary className="cursor-pointer text-gray-600">Ver dados</summary>
+                    <summary className="cursor-pointer text-gray-600">
+                      Ver dados
+                    </summary>
                     <pre className="text-xs mt-1 bg-gray-50 p-1 rounded overflow-auto max-h-20">
                       {JSON.stringify(result.data, null, 2)}
                     </pre>

@@ -206,7 +206,9 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
       });
 
       if (descricoesVinculadas.length > 0) {
-        const nomesDescricoes = descricoesVinculadas.map(d => d.nome).join(", ");
+        const nomesDescricoes = descricoesVinculadas
+          .map((d) => d.nome)
+          .join(", ");
 
         const errorMessage = `Não é possível excluir a categoria "${item.nome}" pois existem ${descricoesVinculadas.length} descrição(ões) vinculada(s): ${nomesDescricoes}. Remova ou realoque estas descrições primeiro.`;
 

@@ -493,24 +493,30 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   }, [carregarDadosAuxiliares]);
 
   // Funções para acessar dados unificados
-  const getCategorias = useCallback((tipo?: string) => {
-    return descricoes.filter(
-      (item) =>
-        item.tipoItem === "categoria" &&
-        item.ativo &&
-        (!tipo || item.tipo === tipo),
-    );
-  }, [descricoes]);
+  const getCategorias = useCallback(
+    (tipo?: string) => {
+      return descricoes.filter(
+        (item) =>
+          item.tipoItem === "categoria" &&
+          item.ativo &&
+          (!tipo || item.tipo === tipo),
+      );
+    },
+    [descricoes],
+  );
 
-  const getDescricoes = useCallback((tipo?: string, categoria?: string) => {
-    return descricoes.filter(
-      (item) =>
-        item.tipoItem === "descricao" &&
-        item.ativo &&
-        (!tipo || item.tipo === tipo) &&
-        (!categoria || item.categoria === categoria),
-    );
-  }, [descricoes]);
+  const getDescricoes = useCallback(
+    (tipo?: string, categoria?: string) => {
+      return descricoes.filter(
+        (item) =>
+          item.tipoItem === "descricao" &&
+          item.ativo &&
+          (!tipo || item.tipo === tipo) &&
+          (!categoria || item.categoria === categoria),
+      );
+    },
+    [descricoes],
+  );
 
   const value: ContasContextType = {
     contas,

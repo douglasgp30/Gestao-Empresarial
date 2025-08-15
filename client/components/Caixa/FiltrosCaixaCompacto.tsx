@@ -264,14 +264,16 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
-                          {(Array.isArray(tecnicos) ? tecnicos : []).map((tecnico) => (
-                            <SelectItem
-                              key={tecnico.id}
-                              value={tecnico.id.toString()}
-                            >
-                              {tecnico.nome}
-                            </SelectItem>
-                          ))}
+                          {(Array.isArray(tecnicos) ? tecnicos : []).map(
+                            (tecnico) => (
+                              <SelectItem
+                                key={tecnico.id}
+                                value={tecnico.id.toString()}
+                              >
+                                {tecnico.nome}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -296,11 +298,13 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
-                          {(Array.isArray(cidades) ? cidades : []).map((cidade) => (
-                            <SelectItem key={cidade} value={cidade}>
-                              {cidade}
-                            </SelectItem>
-                          ))}
+                          {(Array.isArray(cidades) ? cidades : []).map(
+                            (cidade) => (
+                              <SelectItem key={cidade} value={cidade}>
+                                {cidade}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -322,14 +326,16 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
-                          {(Array.isArray(setores) ? setores : []).map((setor) => (
-                            <SelectItem
-                              key={setor.id}
-                              value={setor.id.toString()}
-                            >
-                              {setor.nome} - {setor.cidade}
-                            </SelectItem>
-                          ))}
+                          {(Array.isArray(setores) ? setores : []).map(
+                            (setor) => (
+                              <SelectItem
+                                key={setor.id}
+                                value={setor.id.toString()}
+                              >
+                                {setor.nome} - {setor.cidade}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -463,14 +469,16 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
-                          {(Array.isArray(campanhas) ? campanhas : []).map((campanha) => (
-                            <SelectItem
-                              key={campanha.id}
-                              value={campanha.id.toString()}
-                            >
-                              {campanha.nome}
-                            </SelectItem>
-                          ))}
+                          {(Array.isArray(campanhas) ? campanhas : []).map(
+                            (campanha) => (
+                              <SelectItem
+                                key={campanha.id}
+                                value={campanha.id.toString()}
+                              >
+                                {campanha.nome}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                     </div>

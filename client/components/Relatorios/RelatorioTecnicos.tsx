@@ -39,8 +39,7 @@ function formatDate(date: Date): string {
 }
 
 export default function RelatorioTecnicos() {
-  const { relatorioTecnicos, exportarPDF, exportarExcel } =
-    useRelatorios();
+  const { relatorioTecnicos, exportarPDF, exportarExcel } = useRelatorios();
 
   // Se o relatório ainda não foi calculado, não renderizar
   if (!relatorioTecnicos) {
@@ -297,9 +296,15 @@ export default function RelatorioTecnicos() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {(Array.isArray(relatorio.performanceTecnicos) ? relatorio.performanceTecnicos : []).map((tecnico, index) => {
+              {(Array.isArray(relatorio.performanceTecnicos)
+                ? relatorio.performanceTecnicos
+                : []
+              ).map((tecnico, index) => {
                 const maxValor = Math.max(
-                  ...(Array.isArray(relatorio.performanceTecnicos) ? relatorio.performanceTecnicos : []).map((t) => t.valorTotal),
+                  ...(Array.isArray(relatorio.performanceTecnicos)
+                    ? relatorio.performanceTecnicos
+                    : []
+                  ).map((t) => t.valorTotal),
                 );
                 const porcentagem =
                   maxValor > 0 ? (tecnico.valorTotal / maxValor) * 100 : 0;

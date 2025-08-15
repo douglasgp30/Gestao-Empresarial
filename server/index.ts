@@ -90,7 +90,6 @@ export function createServer(): Express {
     res.json({ message: "pong", timestamp: new Date().toISOString() });
   });
 
-
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
   app.post(
     "/api/clean-fake-data",
@@ -159,9 +158,12 @@ export function createServer(): Express {
 
       // Buscar setores existentes
       const setores = await prisma.setor.findMany();
-      const cidadesUnicas = [...new Set(setores.map(s => s.cidade))];
+      const cidadesUnicas = [...new Set(setores.map((s) => s.cidade))];
 
-      console.log(`[API] Encontradas ${cidadesUnicas.length} cidades únicas:`, cidadesUnicas);
+      console.log(
+        `[API] Encontradas ${cidadesUnicas.length} cidades únicas:`,
+        cidadesUnicas,
+      );
 
       // Criar cidades
       const cidadesCriadas = [];
@@ -176,7 +178,7 @@ export function createServer(): Express {
 
       res.json({
         message: "Migração concluída com sucesso!",
-        cidadesCriadas: cidadesCriadas.length
+        cidadesCriadas: cidadesCriadas.length,
       });
     } catch (error) {
       console.error("Erro na migração:", error);

@@ -331,7 +331,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      console.log("[CaixaContext] Lançamento criado com sucesso:", response.data?.id);
+      console.log(
+        "[CaixaContext] Lançamento criado com sucesso:",
+        response.data?.id,
+      );
 
       // Recarregar lançamentos
       await carregarLancamentos(true);

@@ -21,7 +21,7 @@ async function apiRequest<T>(
     try {
       console.log(
         `[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`,
-        `Fetch interceptado: ${isFetchIntercepted()}`
+        `Fetch interceptado: ${isFetchIntercepted()}`,
       );
 
       // Adicionar timeout para evitar travamentos - aumentado para 30s durante hot reload
@@ -33,7 +33,9 @@ async function apiRequest<T>(
 
       // Se fetch foi interceptado e estamos tendo problemas, usar o nativo
       if (attempt > 0 && isFetchIntercepted()) {
-        console.log(`[ApiService] Usando fetch nativo devido a interceptação detectada (tentativa ${attempt + 1})`);
+        console.log(
+          `[ApiService] Usando fetch nativo devido a interceptação detectada (tentativa ${attempt + 1})`,
+        );
         fetchToUse = nativeFetch;
       }
 
@@ -54,12 +56,15 @@ async function apiRequest<T>(
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error(`[ApiService] Erro HTTP ${response.status}:`, JSON.stringify(errorData, null, 2));
+        console.error(
+          `[ApiService] Erro HTTP ${response.status}:`,
+          JSON.stringify(errorData, null, 2),
+        );
 
         // Garantir que error seja sempre uma string
         let errorMessage = `Erro HTTP ${response.status}`;
         if (errorData.error) {
-          if (typeof errorData.error === 'string') {
+          if (typeof errorData.error === "string") {
             errorMessage = errorData.error;
           } else {
             errorMessage = JSON.stringify(errorData.error);
@@ -88,15 +93,20 @@ async function apiRequest<T>(
       );
 
       // Verificar se é um erro relacionado ao FullStory
-      const isFullStoryError = error instanceof TypeError &&
+      const isFullStoryError =
+        error instanceof TypeError &&
         (error.stack?.includes("fullstory.com") ||
-         error.stack?.includes("fs.js") ||
-         error.message.includes("Failed to fetch"));
+          error.stack?.includes("fs.js") ||
+          error.message.includes("Failed to fetch"));
 
       // Se é erro do FullStory e não é a última tentativa, aguardar e tentar novamente
       if (isFullStoryError && attempt < retries) {
-        console.log(`[ApiService] Erro de third-party detectado, aguardando antes de tentar novamente...`);
-        await new Promise(resolve => setTimeout(resolve, 1500 * (attempt + 1))); // Delay progressivo
+        console.log(
+          `[ApiService] Erro de third-party detectado, aguardando antes de tentar novamente...`,
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1500 * (attempt + 1)),
+        ); // Delay progressivo
         continue;
       }
 
@@ -104,7 +114,8 @@ async function apiRequest<T>(
       if (attempt === retries) {
         if (isFullStoryError) {
           return {
-            error: "Problema de conectividade. Recarregue a página se o problema persistir.",
+            error:
+              "Problema de conectividade. Recarregue a página se o problema persistir.",
           };
         }
 

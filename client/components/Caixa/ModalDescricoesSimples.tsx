@@ -4,7 +4,16 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { FileText, Plus, Trash2, Tag, CheckCircle, XCircle, Folder, Eye } from "lucide-react";
+import {
+  FileText,
+  Plus,
+  Trash2,
+  Tag,
+  CheckCircle,
+  XCircle,
+  Folder,
+  Eye,
+} from "lucide-react";
 import { toast } from "sonner";
 import ModalDependenciasCategoria from "./ModalDependenciasCategoria";
 
@@ -48,13 +57,19 @@ export default function ModalDescricoesSimples() {
 
   // Carregar dados quando o modal é aberto
   useEffect(() => {
-    console.log(`[ModalDescricoesSimples] Modal isOpen: ${isOpen}, descricoesECategorias.length: ${descricoesECategorias.length}`);
+    console.log(
+      `[ModalDescricoesSimples] Modal isOpen: ${isOpen}, descricoesECategorias.length: ${descricoesECategorias.length}`,
+    );
     if (isOpen) {
       if (descricoesECategorias.length === 0) {
-        console.log("[ModalDescricoesSimples] Modal aberto sem dados, carregando...");
+        console.log(
+          "[ModalDescricoesSimples] Modal aberto sem dados, carregando...",
+        );
         recarregarDescricoesECategorias();
       } else {
-        console.log("[ModalDescricoesSimples] Modal aberto com dados já carregados");
+        console.log(
+          "[ModalDescricoesSimples] Modal aberto com dados já carregados",
+        );
       }
     }
   }, [isOpen, descricoesECategorias.length, recarregarDescricoesECategorias]);
@@ -62,29 +77,39 @@ export default function ModalDescricoesSimples() {
   // Filtrar dados usando o sistema unificado com memoização otimizada
   const categoriasReceitas = useMemo(() => {
     const filtered = descricoesECategorias.filter(
-      (item) => item.tipoItem === "categoria" && item.ativo && item.tipo === "receita"
+      (item) =>
+        item.tipoItem === "categoria" && item.ativo && item.tipo === "receita",
     );
-    console.log(`[ModalDescricoesSimples] Categorias de receita filtradas: ${filtered.length}`, filtered);
+    console.log(
+      `[ModalDescricoesSimples] Categorias de receita filtradas: ${filtered.length}`,
+      filtered,
+    );
     return filtered;
   }, [descricoesECategorias]);
 
   const categoriasDespesas = useMemo(() => {
     return descricoesECategorias.filter(
-      (item) => item.tipoItem === "categoria" && item.ativo && item.tipo === "despesa"
+      (item) =>
+        item.tipoItem === "categoria" && item.ativo && item.tipo === "despesa",
     );
   }, [descricoesECategorias]);
 
   const descricoesReceitas = useMemo(() => {
     const filtered = descricoesECategorias.filter(
-      (item) => item.tipoItem === "descricao" && item.ativo && item.tipo === "receita"
+      (item) =>
+        item.tipoItem === "descricao" && item.ativo && item.tipo === "receita",
     );
-    console.log(`[ModalDescricoesSimples] Descrições de receita filtradas: ${filtered.length}`, filtered);
+    console.log(
+      `[ModalDescricoesSimples] Descrições de receita filtradas: ${filtered.length}`,
+      filtered,
+    );
     return filtered;
   }, [descricoesECategorias]);
 
   const descricoesDespesas = useMemo(() => {
     return descricoesECategorias.filter(
-      (item) => item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa"
+      (item) =>
+        item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa",
     );
   }, [descricoesECategorias]);
 
@@ -167,18 +192,25 @@ export default function ModalDescricoesSimples() {
 
     setIsDeleting(true);
     try {
-      console.log('🟡 Excluindo:', itemToDelete.nome);
+      console.log("🟡 Excluindo:", itemToDelete.nome);
 
-      const response = await fetch(`/api/descricoes-e-categorias/${itemToDelete.id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/descricoes-e-categorias/${itemToDelete.id}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (!response.ok) {
         // Tratamento direto e simples do erro
         try {
           const errorData = await response.json();
 
-          if (errorData && errorData.error && typeof errorData.error === 'string') {
+          if (
+            errorData &&
+            errorData.error &&
+            typeof errorData.error === "string"
+          ) {
             throw new Error(errorData.error);
           }
         } catch (jsonError) {
@@ -186,31 +218,39 @@ export default function ModalDescricoesSimples() {
         }
 
         // Fallback
-        throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
+        throw new Error(
+          "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.",
+        );
       }
 
       // Status 204 (No Content) indica sucesso na exclusão
       if (response.status === 204) {
-        console.log('✅ Excluído com sucesso (status 204)');
+        console.log("✅ Excluído com sucesso (status 204)");
       } else {
-        console.log('✅ Excluído com sucesso (status ' + response.status + ')');
+        console.log("✅ Excluído com sucesso (status " + response.status + ")");
       }
 
       await recarregarDescricoesECategorias();
       setShowConfirm(false);
       setItemToDelete(null);
       toast.success("Item excluído com sucesso");
-
     } catch (error) {
-      console.error('❌ Erro no handleDelete:', error);
-      console.error('❌ Tipo do erro:', typeof error);
-      console.error('❌ Stack:', error instanceof Error ? error.stack : 'N/A');
+      console.error("❌ Erro no handleDelete:", error);
+      console.error("❌ Tipo do erro:", typeof error);
+      console.error("❌ Stack:", error instanceof Error ? error.stack : "N/A");
 
-      const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao excluir item";
 
       // Se a mensagem está vazia ou só tem "Erro HTTP 400:", mostrar mensagem mais clara
-      if (!errorMessage || errorMessage.trim() === '' || errorMessage === 'Erro HTTP 400:') {
-        toast.error("Não foi possível excluir o item. Verifique se não há dependências vinculadas.");
+      if (
+        !errorMessage ||
+        errorMessage.trim() === "" ||
+        errorMessage === "Erro HTTP 400:"
+      ) {
+        toast.error(
+          "Não foi possível excluir o item. Verifique se não há dependências vinculadas.",
+        );
       } else {
         toast.error(errorMessage);
       }
@@ -236,11 +276,13 @@ export default function ModalDescricoesSimples() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Folder className="h-5 w-5" />
-              <h2 className="text-xl font-semibold">Gerenciar Categorias e Descrições</h2>
+              <h2 className="text-xl font-semibold">
+                Gerenciar Categorias e Descrições
+              </h2>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setIsOpen(false)}
               disabled={isDeleting}
             >
@@ -254,7 +296,6 @@ export default function ModalDescricoesSimples() {
 
         {/* Tabs */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-
           <div className="flex mb-6 mt-6">
             <Button
               variant={tipoAtivo === "receita" ? "default" : "ghost"}
@@ -279,8 +320,12 @@ export default function ModalDescricoesSimples() {
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <Tag className="h-4 w-4" />
-                  Categorias de {tipoAtivo === "receita" ? "Receita" : "Despesa"} 
-                  ({tipoAtivo === "receita" ? categoriasReceitas.length : categoriasDespesas.length})
+                  Categorias de{" "}
+                  {tipoAtivo === "receita" ? "Receita" : "Despesa"}(
+                  {tipoAtivo === "receita"
+                    ? categoriasReceitas.length
+                    : categoriasDespesas.length}
+                  )
                 </span>
               </CardTitle>
             </CardHeader>
@@ -298,8 +343,14 @@ export default function ModalDescricoesSimples() {
               </div>
 
               <div className="space-y-2">
-                {(tipoAtivo === "receita" ? categoriasReceitas : categoriasDespesas).map((categoria) => (
-                  <div key={categoria.id} className="flex items-center justify-between p-3 border rounded-lg">
+                {(tipoAtivo === "receita"
+                  ? categoriasReceitas
+                  : categoriasDespesas
+                ).map((categoria) => (
+                  <div
+                    key={categoria.id}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <span className="font-medium">{categoria.nome}</span>
                     <div className="flex gap-1">
                       <Button
@@ -333,8 +384,12 @@ export default function ModalDescricoesSimples() {
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <FileText className="h-4 w-4" />
-                  Descrições de {tipoAtivo === "receita" ? "Receita" : "Despesa"}
-                  ({tipoAtivo === "receita" ? descricoesReceitas.length : descricoesDespesas.length})
+                  Descrições de{" "}
+                  {tipoAtivo === "receita" ? "Receita" : "Despesa"}(
+                  {tipoAtivo === "receita"
+                    ? descricoesReceitas.length
+                    : descricoesDespesas.length}
+                  )
                 </span>
               </CardTitle>
             </CardHeader>
@@ -342,11 +397,19 @@ export default function ModalDescricoesSimples() {
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <select
                   value={formDescricao.categoria}
-                  onChange={(e) => setFormDescricao({...formDescricao, categoria: e.target.value})}
+                  onChange={(e) =>
+                    setFormDescricao({
+                      ...formDescricao,
+                      categoria: e.target.value,
+                    })
+                  }
                   className="p-2 border rounded"
                 >
                   <option value="">Selecione uma categoria</option>
-                  {(tipoAtivo === "receita" ? categoriasReceitas : categoriasDespesas).map((cat) => (
+                  {(tipoAtivo === "receita"
+                    ? categoriasReceitas
+                    : categoriasDespesas
+                  ).map((cat) => (
                     <option key={cat.id} value={cat.nome}>
                       {cat.nome}
                     </option>
@@ -355,20 +418,34 @@ export default function ModalDescricoesSimples() {
                 <Input
                   placeholder="Nome da descrição"
                   value={formDescricao.nome}
-                  onChange={(e) => setFormDescricao({...formDescricao, nome: e.target.value})}
+                  onChange={(e) =>
+                    setFormDescricao({ ...formDescricao, nome: e.target.value })
+                  }
                 />
               </div>
-              <Button onClick={handleAdicionarDescricao} disabled={isSaving} className="mb-4">
+              <Button
+                onClick={handleAdicionarDescricao}
+                disabled={isSaving}
+                className="mb-4"
+              >
                 <Plus className="h-4 w-4 mr-1" />
                 Adicionar Descrição
               </Button>
 
               <div className="space-y-2">
-                {(tipoAtivo === "receita" ? descricoesReceitas : descricoesDespesas).map((descricao) => (
-                  <div key={descricao.id} className="flex items-center justify-between p-3 border rounded-lg">
+                {(tipoAtivo === "receita"
+                  ? descricoesReceitas
+                  : descricoesDespesas
+                ).map((descricao) => (
+                  <div
+                    key={descricao.id}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <div>
                       <span className="font-medium">{descricao.nome}</span>
-                      <span className="ml-2 text-sm text-gray-500">({descricao.categoria})</span>
+                      <span className="ml-2 text-sm text-gray-500">
+                        ({descricao.categoria})
+                      </span>
                     </div>
                     <Button
                       variant="ghost"
@@ -391,7 +468,8 @@ export default function ModalDescricoesSimples() {
             <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
               <h3 className="text-lg font-semibold mb-2">Confirmar Exclusão</h3>
               <p className="text-gray-600 mb-4">
-                Tem certeza que deseja excluir {itemToDelete?.tipo} "{itemToDelete?.nome}"?
+                Tem certeza que deseja excluir {itemToDelete?.tipo} "
+                {itemToDelete?.nome}"?
               </p>
               <div className="flex gap-2">
                 <Button

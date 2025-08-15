@@ -47,35 +47,35 @@ interface SelectWithAddProps<T = any> {
 // Função para extrair valor e label do item
 function getItemProps(item: any, renderItem?: (item: any) => string) {
   if (!item) return { value: "", label: "" };
-  
+
   // Se tem renderItem customizado, usar ele
   if (renderItem) {
     const label = renderItem(item);
     const value = item.id?.toString() || item.nome || label;
     return { value, label };
   }
-  
+
   // Se é um objeto simples com value/label
   if (item.value && item.label) {
     return { value: item.value, label: item.label };
   }
-  
+
   // Se é DescricaoECategoria ou similar
   if (item.id && item.nome) {
     return { value: item.id.toString(), label: item.nome };
   }
-  
+
   // Se é FormaPagamento, Setor, Campanha, etc.
   if (item.nome) {
     const value = item.id?.toString() || item.nome;
     return { value, label: item.nome };
   }
-  
+
   // Fallback para string simples
   if (typeof item === "string") {
     return { value: item, label: item };
   }
-  
+
   return { value: "", label: "" };
 }
 
@@ -101,13 +101,13 @@ export default function SelectWithAdd<T = any>({
   const handleAddNew = async () => {
     // Validar campos obrigatórios
     const missingFields = addNewFields.filter(
-      field => field.required && !formData[field.key]?.trim()
+      (field) => field.required && !formData[field.key]?.trim(),
     );
 
     if (missingFields.length > 0) {
       toast({
         title: "Campos obrigatórios",
-        description: `Preencha: ${missingFields.map(f => f.label).join(", ")}`,
+        description: `Preencha: ${missingFields.map((f) => f.label).join(", ")}`,
         variant: "destructive",
       });
       return;
@@ -118,13 +118,13 @@ export default function SelectWithAdd<T = any>({
     setIsSubmitting(true);
     try {
       await onAddNew(formData);
-      
+
       toast({
         title: "Sucesso",
         description: `${addNewTitle} criado com sucesso!`,
         variant: "default",
       });
-      
+
       setIsDialogOpen(false);
       setFormData({});
     } catch (error) {
@@ -147,8 +147,8 @@ export default function SelectWithAdd<T = any>({
   // Processar itens para obter value/label
   const processedItems = Array.isArray(items)
     ? items
-        .map(item => getItemProps(item, renderItem))
-        .filter(item => item.value && item.label)
+        .map((item) => getItemProps(item, renderItem))
+        .filter((item) => item.value && item.label)
     : [];
 
   return (
@@ -158,7 +158,7 @@ export default function SelectWithAdd<T = any>({
           {label} {required && "*"}
         </Label>
       )}
-      
+
       <div className="flex gap-2">
         <Select value={value} onValueChange={onValueChange} disabled={disabled}>
           <SelectTrigger className="flex-1">
@@ -171,7 +171,10 @@ export default function SelectWithAdd<T = any>({
               </div>
             ) : (
               processedItems.map((item, index) => (
-                <SelectItem key={`item-${index}-${item.value || item.label}`} value={item.value}>
+                <SelectItem
+                  key={`item-${index}-${item.value || item.label}`}
+                  value={item.value}
+                >
                   {item.label}
                 </SelectItem>
               ))
@@ -195,9 +198,7 @@ export default function SelectWithAdd<T = any>({
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>{addNewTitle}</DialogTitle>
-                <DialogDescription>
-                  {addNewDescription}
-                </DialogDescription>
+                <DialogDescription>{addNewDescription}</DialogDescription>
               </DialogHeader>
 
               <div className="grid gap-4 py-4">
@@ -212,9 +213,9 @@ export default function SelectWithAdd<T = any>({
                       placeholder={`Digite ${field.label.toLowerCase()}`}
                       value={formData[field.key] || ""}
                       onChange={(e) =>
-                        setFormData(prev => ({
+                        setFormData((prev) => ({
                           ...prev,
-                          [field.key]: e.target.value
+                          [field.key]: e.target.value,
                         }))
                       }
                       onKeyDown={(e) => {

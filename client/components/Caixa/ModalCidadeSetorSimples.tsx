@@ -26,7 +26,7 @@ function ModalDependenciasSetor({
   useEffect(() => {
     if (cidade && todosSetores) {
       const vinculados = todosSetores.filter(
-        (setor) => setor.cidade === cidade.nome
+        (setor) => setor.cidade === cidade.nome,
       );
       setSetoresVinculados(vinculados);
     }
@@ -41,7 +41,9 @@ function ModalDependenciasSetor({
       <div className="bg-white rounded-lg max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
         <div className="p-6 border-b">
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-full ${temVinculados ? 'bg-amber-100' : 'bg-green-100'}`}>
+            <div
+              className={`p-2 rounded-full ${temVinculados ? "bg-amber-100" : "bg-green-100"}`}
+            >
               {temVinculados ? (
                 <Building className="h-5 w-5 text-amber-600" />
               ) : (
@@ -49,12 +51,8 @@ function ModalDependenciasSetor({
               )}
             </div>
             <div>
-              <h3 className="text-lg font-semibold">
-                Dependências da Cidade
-              </h3>
-              <p className="text-sm text-gray-600">
-                "{cidade.nome}"
-              </p>
+              <h3 className="text-lg font-semibold">Dependências da Cidade</h3>
+              <p className="text-sm text-gray-600">"{cidade.nome}"</p>
             </div>
           </div>
         </div>
@@ -68,14 +66,18 @@ function ModalDependenciasSetor({
                   Não é possível excluir esta cidade
                 </span>
               </div>
-              
+
               <p className="text-sm text-gray-600 mb-4">
-                Esta cidade possui <strong>{setoresVinculados.length}</strong> setor(es) vinculado(s):
+                Esta cidade possui <strong>{setoresVinculados.length}</strong>{" "}
+                setor(es) vinculado(s):
               </p>
 
               <div className="space-y-2">
                 {setoresVinculados.map((setor) => (
-                  <div key={setor.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                  <div
+                    key={setor.id}
+                    className="flex items-center gap-2 p-2 bg-gray-50 rounded"
+                  >
                     <Building className="h-4 w-4 text-gray-500" />
                     <span className="text-sm">{setor.nome}</span>
                   </div>
@@ -87,8 +89,7 @@ function ModalDependenciasSetor({
                   <strong>Para excluir esta cidade:</strong>
                   <br />
                   • Exclua primeiro todos os setores vinculados, ou
-                  <br />
-                  • Mova os setores para outra cidade
+                  <br />• Mova os setores para outra cidade
                 </p>
               </div>
             </div>
@@ -96,13 +97,12 @@ function ModalDependenciasSetor({
             <div>
               <div className="flex items-center gap-2 mb-4 text-green-700">
                 <Eye className="h-4 w-4" />
-                <span className="font-medium">
-                  Cidade pode ser excluída
-                </span>
+                <span className="font-medium">Cidade pode ser excluída</span>
               </div>
-              
+
               <p className="text-sm text-gray-600">
-                Esta cidade não possui setores vinculados e pode ser excluída com segurança.
+                Esta cidade não possui setores vinculados e pode ser excluída
+                com segurança.
               </p>
             </div>
           )}
@@ -119,7 +119,14 @@ function ModalDependenciasSetor({
 }
 
 export default function ModalCidadeSetorSimples() {
-  const { setores, cidades, adicionarSetor, adicionarCidade, excluirSetor, recarregarTudo } = useEntidades();
+  const {
+    setores,
+    cidades,
+    adicionarSetor,
+    adicionarCidade,
+    excluirSetor,
+    recarregarTudo,
+  } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -149,13 +156,19 @@ export default function ModalCidadeSetorSimples() {
 
   // Carregar dados quando o modal é aberto
   useEffect(() => {
-    console.log(`[ModalCidadeSetorSimples] Modal isOpen: ${isOpen}, cidades.length: ${cidades.length}, setores.length: ${setores.length}`);
+    console.log(
+      `[ModalCidadeSetorSimples] Modal isOpen: ${isOpen}, cidades.length: ${cidades.length}, setores.length: ${setores.length}`,
+    );
     if (isOpen) {
       if (cidades.length === 0 || setores.length === 0) {
-        console.log("[ModalCidadeSetorSimples] Modal aberto sem dados, carregando...");
+        console.log(
+          "[ModalCidadeSetorSimples] Modal aberto sem dados, carregando...",
+        );
         recarregarTudo();
       } else {
-        console.log("[ModalCidadeSetorSimples] Modal aberto com dados já carregados");
+        console.log(
+          "[ModalCidadeSetorSimples] Modal aberto com dados já carregados",
+        );
       }
     }
   }, [isOpen, cidades.length, setores.length, recarregarTudo]);
@@ -195,7 +208,9 @@ export default function ModalCidadeSetorSimples() {
       // Recarregar dados para atualizar a lista de cidades
       await recarregarTudo();
 
-      toast.success(`Cidade "${nomeCidade}" adicionada com sucesso (setor Centro criado automaticamente)`);
+      toast.success(
+        `Cidade "${nomeCidade}" adicionada com sucesso (setor Centro criado automaticamente)`,
+      );
       resetFormCidade();
     } catch (error) {
       console.error("Erro ao adicionar cidade:", error);
@@ -224,13 +239,16 @@ export default function ModalCidadeSetorSimples() {
       const nomeCidade = formSetor.cidade;
 
       // Verificar se o setor já existe nesta cidade
-      const setorExistente = setores.find(s =>
-        s.nome.toLowerCase() === nomeSetor.toLowerCase() &&
-        s.cidade === nomeCidade
+      const setorExistente = setores.find(
+        (s) =>
+          s.nome.toLowerCase() === nomeSetor.toLowerCase() &&
+          s.cidade === nomeCidade,
       );
 
       if (setorExistente) {
-        toast.error(`O setor "${nomeSetor}" já existe na cidade "${nomeCidade}"`);
+        toast.error(
+          `O setor "${nomeSetor}" já existe na cidade "${nomeCidade}"`,
+        );
         return;
       }
 
@@ -273,11 +291,13 @@ export default function ModalCidadeSetorSimples() {
 
     if (itemToDelete.tipo === "setor") {
       // Excluir setor - verificar se é o último da cidade
-      console.log('🟡 Verificando exclusão de setor:', itemToDelete.nome);
+      console.log("🟡 Verificando exclusão de setor:", itemToDelete.nome);
 
-      const setorParaExcluir = setores.find(s => s.id === itemToDelete.id);
+      const setorParaExcluir = setores.find((s) => s.id === itemToDelete.id);
       if (setorParaExcluir) {
-        const setoresDaMesmaCidade = setores.filter(s => s.cidade === setorParaExcluir.cidade);
+        const setoresDaMesmaCidade = setores.filter(
+          (s) => s.cidade === setorParaExcluir.cidade,
+        );
 
         if (setoresDaMesmaCidade.length === 1) {
           // É o último setor da cidade
@@ -287,9 +307,9 @@ export default function ModalCidadeSetorSimples() {
               duration: 10000,
               action: {
                 label: "Entendi",
-                onClick: () => {}
-              }
-            }
+                onClick: () => {},
+              },
+            },
           );
           setIsDeleting(false);
           return;
@@ -298,26 +318,32 @@ export default function ModalCidadeSetorSimples() {
 
       // Se chegou aqui, pode excluir
       try {
-        console.log('🟡 Excluindo setor:', itemToDelete.nome);
+        console.log("🟡 Excluindo setor:", itemToDelete.nome);
         await excluirSetor(itemToDelete.id || itemToDelete.nome);
 
         toast.success("Setor excluído com sucesso");
         setShowConfirm(false);
         setItemToDelete(null);
       } catch (error) {
-        console.error('❌ Erro ao excluir setor:', error);
-        const errorMessage = error instanceof Error ? error.message : "Erro ao excluir setor";
+        console.error("❌ Erro ao excluir setor:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Erro ao excluir setor";
         toast.error(errorMessage);
       }
     } else {
       // Excluir cidade - verificar dependências primeiro
-      console.log('🟡 Excluindo cidade:', itemToDelete.nome);
+      console.log("🟡 Excluindo cidade:", itemToDelete.nome);
 
-      const setoresVinculados = setores.filter(s => s.cidade === itemToDelete.nome);
+      const setoresVinculados = setores.filter(
+        (s) => s.cidade === itemToDelete.nome,
+      );
 
       if (setoresVinculados.length > 0) {
-        const nomesSetores = setoresVinculados.map(s => s.nome).join(", ");
-        console.log('⚠️ Validação: cidade possui setores vinculados:', nomesSetores);
+        const nomesSetores = setoresVinculados.map((s) => s.nome).join(", ");
+        console.log(
+          "⚠️ Validação: cidade possui setores vinculados:",
+          nomesSetores,
+        );
 
         // Mostrar mensagem informativa sem lançar erro
         toast.error(
@@ -328,9 +354,9 @@ export default function ModalCidadeSetorSimples() {
               label: "👁️ Ver Dependências",
               onClick: () => {
                 handleShowDependencies(itemToDelete.nome);
-              }
-            }
-          }
+              },
+            },
+          },
         );
 
         // Não fechar o modal - usuário pode tentar novamente após ver dependências
@@ -340,16 +366,19 @@ export default function ModalCidadeSetorSimples() {
 
       // Se chegou aqui, pode excluir
       try {
-        const response = await fetch(`/api/setores/cidades/${encodeURIComponent(itemToDelete.nome)}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `/api/setores/cidades/${encodeURIComponent(itemToDelete.nome)}`,
+          {
+            method: "DELETE",
+          },
+        );
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.error || `Erro HTTP ${response.status}`);
         }
 
-        console.log('✅ Cidade excluída com sucesso');
+        console.log("✅ Cidade excluída com sucesso");
 
         // Recarregar dados para atualizar a lista de cidades
         await recarregarTudo();
@@ -358,8 +387,9 @@ export default function ModalCidadeSetorSimples() {
         setShowConfirm(false);
         setItemToDelete(null);
       } catch (error) {
-        console.error('❌ Erro ao excluir cidade:', error);
-        const errorMessage = error instanceof Error ? error.message : "Erro ao excluir cidade";
+        console.error("❌ Erro ao excluir cidade:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "Erro ao excluir cidade";
         toast.error(errorMessage);
       }
     }
@@ -369,7 +399,12 @@ export default function ModalCidadeSetorSimples() {
 
   if (!isOpen) {
     return (
-      <Button variant="outline" size="sm" onClick={() => setIsOpen(true)} className="gap-1 text-xs">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setIsOpen(true)}
+        className="gap-1 text-xs"
+      >
         <MapPin className="h-3 w-3" />
         Cidades/Setores
       </Button>
@@ -384,11 +419,13 @@ export default function ModalCidadeSetorSimples() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5" />
-              <h2 className="text-xl font-semibold">Gerenciar Cidades e Setores</h2>
+              <h2 className="text-xl font-semibold">
+                Gerenciar Cidades e Setores
+              </h2>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setIsOpen(false)}
               disabled={isDeleting}
             >
@@ -396,13 +433,15 @@ export default function ModalCidadeSetorSimples() {
             </Button>
           </div>
           <div className="text-sm text-gray-600 mt-2">
-            <p>Para remover uma cidade, é necessário excluir todos os setores vinculados a ela.</p>
+            <p>
+              Para remover uma cidade, é necessário excluir todos os setores
+              vinculados a ela.
+            </p>
           </div>
         </div>
 
         {/* Conteúdo */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-
           {/* Cidades */}
           <Card className="mb-6">
             <CardHeader>
@@ -412,7 +451,10 @@ export default function ModalCidadeSetorSimples() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleAdicionarCidade} className="flex gap-2 mb-4">
+              <form
+                onSubmit={handleAdicionarCidade}
+                className="flex gap-2 mb-4"
+              >
                 <Input
                   placeholder="Nome da cidade"
                   value={formCidade.nome}
@@ -426,31 +468,38 @@ export default function ModalCidadeSetorSimples() {
               </form>
 
               <div className="space-y-2">
-                {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
-                  <div key={`cidade-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
-                    <span className="font-medium">{cidade}</span>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleShowDependencies(cidade)}
-                        className="text-blue-600 hover:text-blue-700"
-                        title="Ver setores vinculados"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleConfirmDelete({ nome: cidade }, "cidade")}
-                        className="text-red-600 hover:text-red-700"
-                        title="Excluir cidade"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                {(Array.isArray(cidades) ? cidades : []).map(
+                  (cidade, index) => (
+                    <div
+                      key={`cidade-${index}`}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <span className="font-medium">{cidade}</span>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleShowDependencies(cidade)}
+                          className="text-blue-600 hover:text-blue-700"
+                          title="Ver setores vinculados"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            handleConfirmDelete({ nome: cidade }, "cidade")
+                          }
+                          className="text-red-600 hover:text-red-700"
+                          title="Excluir cidade"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ),
+                )}
                 {cidades.length === 0 && (
                   <p className="text-center text-gray-500 py-4">
                     Nenhuma cidade cadastrada
@@ -469,24 +518,33 @@ export default function ModalCidadeSetorSimples() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleAdicionarSetor} className="grid grid-cols-2 gap-2 mb-4">
+              <form
+                onSubmit={handleAdicionarSetor}
+                className="grid grid-cols-2 gap-2 mb-4"
+              >
                 <select
                   value={formSetor.cidade}
-                  onChange={(e) => setFormSetor({...formSetor, cidade: e.target.value})}
+                  onChange={(e) =>
+                    setFormSetor({ ...formSetor, cidade: e.target.value })
+                  }
                   className="p-2 border rounded"
                 >
                   <option value="">Selecione uma cidade</option>
-                  {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
-                    <option key={`option-${index}`} value={cidade}>
-                      {cidade}
-                    </option>
-                  ))}
+                  {(Array.isArray(cidades) ? cidades : []).map(
+                    (cidade, index) => (
+                      <option key={`option-${index}`} value={cidade}>
+                        {cidade}
+                      </option>
+                    ),
+                  )}
                 </select>
                 <div className="flex gap-2">
                   <Input
                     placeholder="Nome do setor"
                     value={formSetor.nome}
-                    onChange={(e) => setFormSetor({...formSetor, nome: e.target.value})}
+                    onChange={(e) =>
+                      setFormSetor({ ...formSetor, nome: e.target.value })
+                    }
                     className="flex-1"
                   />
                   <Button type="submit" disabled={isSaving}>
@@ -498,10 +556,15 @@ export default function ModalCidadeSetorSimples() {
 
               <div className="space-y-2">
                 {(Array.isArray(setores) ? setores : []).map((setor) => (
-                  <div key={setor.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={setor.id}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <div>
                       <span className="font-medium">{setor.nome}</span>
-                      <span className="ml-2 text-sm text-gray-500">({setor.cidade})</span>
+                      <span className="ml-2 text-sm text-gray-500">
+                        ({setor.cidade})
+                      </span>
                     </div>
                     <Button
                       variant="ghost"
@@ -530,7 +593,8 @@ export default function ModalCidadeSetorSimples() {
             <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
               <h3 className="text-lg font-semibold mb-2">Confirmar Exclusão</h3>
               <p className="text-gray-600 mb-4">
-                Tem certeza que deseja excluir {itemToDelete?.tipo} "{itemToDelete?.nome}"?
+                Tem certeza que deseja excluir {itemToDelete?.tipo} "
+                {itemToDelete?.nome}"?
               </p>
               <div className="flex gap-2">
                 <Button

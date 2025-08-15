@@ -49,7 +49,8 @@ export default function ModalConfirmacaoExclusao({
             </DialogTitle>
           </div>
           <DialogDescription className="text-left">
-            Tem certeza que deseja excluir {descricao} <strong>"{nomeItem}"</strong>?
+            Tem certeza que deseja excluir {descricao}{" "}
+            <strong>"{nomeItem}"</strong>?
             <br />
             <span className="text-red-600 font-medium">
               Esta ação não pode ser desfeita.

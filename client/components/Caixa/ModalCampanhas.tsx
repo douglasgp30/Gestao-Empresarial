@@ -248,49 +248,55 @@ export default function ModalCampanhas() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {(Array.isArray(campanhas) ? campanhas : []).map((campanha) => (
-                      <TableRow key={campanha.id}>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <div className="bg-primary/10 p-2 rounded-full">
-                              <Megaphone className="h-4 w-4 text-primary" />
+                    {(Array.isArray(campanhas) ? campanhas : []).map(
+                      (campanha) => (
+                        <TableRow key={campanha.id}>
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <div className="bg-primary/10 p-2 rounded-full">
+                                <Megaphone className="h-4 w-4 text-primary" />
+                              </div>
+                              <span className="font-medium">
+                                {campanha.nome}
+                              </span>
                             </div>
-                            <span className="font-medium">{campanha.nome}</span>
-                          </div>
-                        </TableCell>
+                          </TableCell>
 
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {formatDate(campanha.dataCriacao)}
-                          </span>
-                        </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-muted-foreground">
+                              {formatDate(campanha.dataCriacao)}
+                            </span>
+                          </TableCell>
 
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => abrirEdicao(campanha)}
-                              >
-                                <Edit className="h-4 w-4 mr-2" />
-                                Editar
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => setCampanhaParaExcluir(campanha)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Excluir
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => abrirEdicao(campanha)}
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Editar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onClick={() =>
+                                    setCampanhaParaExcluir(campanha)
+                                  }
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Excluir
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ),
+                    )}
                   </TableBody>
                 </Table>
               </div>

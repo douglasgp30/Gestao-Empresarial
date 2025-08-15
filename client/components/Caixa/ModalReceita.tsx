@@ -97,7 +97,9 @@ export function ModalReceita() {
   // Filtrar setores pela cidade selecionada
   const setoresFiltrados = React.useMemo(() => {
     if (!formData.cidade) return [];
-    return (Array.isArray(setores) ? setores : []).filter(setor => setor.cidade === formData.cidade);
+    return (Array.isArray(setores) ? setores : []).filter(
+      (setor) => setor.cidade === formData.cidade,
+    );
   }, [formData.cidade, setores]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
@@ -492,7 +494,7 @@ export function ModalReceita() {
                     setFormData((prev) => ({
                       ...prev,
                       cidade: value,
-                      setor: "" // Limpar setor quando cidade muda
+                      setor: "", // Limpar setor quando cidade muda
                     }))
                   }
                 >
@@ -500,11 +502,16 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione a cidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
-                      <SelectItem key={`cidade-${index}-${cidade}`} value={cidade}>
-                        {cidade}
-                      </SelectItem>
-                    ))}
+                    {(Array.isArray(cidades) ? cidades : []).map(
+                      (cidade, index) => (
+                        <SelectItem
+                          key={`cidade-${index}-${cidade}`}
+                          value={cidade}
+                        >
+                          {cidade}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -519,11 +526,13 @@ export function ModalReceita() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={
-                    formData.cidade
-                      ? "Selecione o setor"
-                      : "Primeiro selecione uma cidade"
-                  } />
+                  <SelectValue
+                    placeholder={
+                      formData.cidade
+                        ? "Selecione o setor"
+                        : "Primeiro selecione uma cidade"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {setoresFiltrados.map((setor) => (
@@ -544,10 +553,12 @@ export function ModalReceita() {
                   setFormData((prev) => ({ ...prev, campanha: value }))
                 }
                 placeholder="Selecione a campanha"
-                options={(Array.isArray(campanhas) ? campanhas : []).map((campanha) => ({
-                  value: campanha.id.toString(),
-                  label: campanha.nome,
-                }))}
+                options={(Array.isArray(campanhas) ? campanhas : []).map(
+                  (campanha) => ({
+                    value: campanha.id.toString(),
+                    label: campanha.nome,
+                  }),
+                )}
                 onAddNew={async (nomeCampanha) => {
                   await adicionarCampanha({
                     nome: nomeCampanha,

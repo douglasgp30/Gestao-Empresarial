@@ -432,14 +432,16 @@ export default function FormularioAgendamento({
                   <SelectValue placeholder="Selecione a cidade" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
-                    <SelectItem
-                      key={`cidade-${index}-${cidade}`}
-                      value={cidade}
-                    >
-                      {cidade}
-                    </SelectItem>
-                  ))}
+                  {(Array.isArray(cidades) ? cidades : []).map(
+                    (cidade, index) => (
+                      <SelectItem
+                        key={`cidade-${index}-${cidade}`}
+                        value={cidade}
+                      >
+                        {cidade}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
               <Button

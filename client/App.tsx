@@ -91,8 +91,9 @@ const App = () => {
             "ResizeObserver loop completed with undelivered notifications",
           ) ||
           event.message.includes("ResizeObserver loop limit exceeded") ||
-          event.message.includes("Failed to fetch") &&
-          (event.filename?.includes("fullstory.com") || event.filename?.includes("fs.js")))
+          (event.message.includes("Failed to fetch") &&
+            (event.filename?.includes("fullstory.com") ||
+              event.filename?.includes("fs.js"))))
       ) {
         event.preventDefault();
         event.stopImmediatePropagation();

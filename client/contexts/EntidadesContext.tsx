@@ -173,24 +173,30 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
-  const getCategorias = useCallback((tipo?: "receita" | "despesa") => {
-    return descricoesECategorias.filter(
-      (item) =>
-        item.tipoItem === "categoria" &&
-        item.ativo &&
-        (tipo ? item.tipo === tipo : true),
-    );
-  }, [descricoesECategorias]);
+  const getCategorias = useCallback(
+    (tipo?: "receita" | "despesa") => {
+      return descricoesECategorias.filter(
+        (item) =>
+          item.tipoItem === "categoria" &&
+          item.ativo &&
+          (tipo ? item.tipo === tipo : true),
+      );
+    },
+    [descricoesECategorias],
+  );
 
-  const getDescricoes = useCallback((tipo?: "receita" | "despesa", categoria?: string) => {
-    return descricoesECategorias.filter(
-      (item) =>
-        item.tipoItem === "descricao" &&
-        item.ativo &&
-        (tipo ? item.tipo === tipo : true) &&
-        (categoria ? item.categoria === categoria : true),
-    );
-  }, [descricoesECategorias]);
+  const getDescricoes = useCallback(
+    (tipo?: "receita" | "despesa", categoria?: string) => {
+      return descricoesECategorias.filter(
+        (item) =>
+          item.tipoItem === "descricao" &&
+          item.ativo &&
+          (tipo ? item.tipo === tipo : true) &&
+          (categoria ? item.categoria === categoria : true),
+      );
+    },
+    [descricoesECategorias],
+  );
 
   const getTecnicos = useCallback(() => {
     // Combinar técnicos específicos + funcionários que são técnicos
@@ -207,7 +213,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return tecnicosCombinados.filter(t => t.id && t.id !== 0);
+    return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
   }, [funcionarios, tecnicos]);
 
   // === CARREGAMENTO DE DADOS COM DEBOUNCE ===
@@ -237,29 +243,34 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       // Atualizar estados com dados do banco
       if (descricoesECategoriasResponse.data) {
         setDescricoesECategorias(descricoesECategoriasResponse.data);
-        console.log(`[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas`);
+        console.log(
+          `[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas`,
+        );
       }
-      
+
       if (formasPagamentoResponse.data) {
         setFormasPagamento(formasPagamentoResponse.data);
       }
-      
+
       if (funcionariosResponse.data) {
         setFuncionarios(funcionariosResponse.data);
       }
-      
+
       if (tecnicosResponse.data) {
         setTecnicos(tecnicosResponse.data);
       }
-      
+
       if (setoresResponse.data) {
         setSetores(setoresResponse.data);
       }
-      
+
       if (cidadesResponse.data) {
         // Verificar se são objetos (nova estrutura) ou strings (estrutura antiga)
-        if (Array.isArray(cidadesResponse.data) && cidadesResponse.data.length > 0) {
-          if (typeof cidadesResponse.data[0] === 'string') {
+        if (
+          Array.isArray(cidadesResponse.data) &&
+          cidadesResponse.data.length > 0
+        ) {
+          if (typeof cidadesResponse.data[0] === "string") {
             // Estrutura antiga: array de strings
             setCidades(cidadesResponse.data);
           } else {
@@ -272,9 +283,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       // Carregar dados do localStorage (compatibilidade)
-      const categoriasStorage = carregarEntidadeDoStorage<Categoria>("categorias", []);
-      const clientesStorage = carregarEntidadeDoStorage<Cliente>("clientes", []);
-      const fornecedoresStorage = carregarEntidadeDoStorage<Fornecedor>("fornecedores", []);
+      const categoriasStorage = carregarEntidadeDoStorage<Categoria>(
+        "categorias",
+        [],
+      );
+      const clientesStorage = carregarEntidadeDoStorage<Cliente>(
+        "clientes",
+        [],
+      );
+      const fornecedoresStorage = carregarEntidadeDoStorage<Fornecedor>(
+        "fornecedores",
+        [],
+      );
 
       setCategorias(categoriasStorage);
       setClientes(clientesStorage);
@@ -284,7 +304,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Erro ao carregar entidades:", error);
       setError("Erro ao carregar dados do servidor");
-      
+
       // Dados padrão em caso de erro
       setDescricoesECategorias([]);
       setFormasPagamento([]);
@@ -304,7 +324,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       const response = await descricoesECategoriasApi.listar();
       if (response.data) {
         setDescricoesECategorias(response.data);
-        console.log(`[EntidadesContext] Recarregadas ${response.data.length} descrições/categorias`);
+        console.log(
+          `[EntidadesContext] Recarregadas ${response.data.length} descrições/categorias`,
+        );
       }
     } catch (error) {
       console.error("Erro ao recarregar descrições e categorias:", error);
@@ -335,7 +357,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
       console.log("[EntidadesContext] Adicionando item:", novoItem);
-      
+
       const response = await descricoesECategoriasApi.criar(novoItem);
       if (response.error) {
         setError(response.error);
@@ -344,8 +366,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       // Recarregar apenas a tabela unificada (otimizado)
       await recarregarDescricoesECategorias();
-      
-      console.log("[EntidadesContext] Item adicionado com sucesso:", response.data?.id);
+
+      console.log(
+        "[EntidadesContext] Item adicionado com sucesso:",
+        response.data?.id,
+      );
       toast.success("Item adicionado com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar item:", error);
@@ -447,7 +472,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   // === FUNÇÕES CRUD PARA SETORES ===
-  const adicionarSetor = async (novoSetor: Omit<Setor, "id" | "dataCriacao">) => {
+  const adicionarSetor = async (
+    novoSetor: Omit<Setor, "id" | "dataCriacao">,
+  ) => {
     try {
       setError(null);
       await setoresApi.criar(novoSetor);
@@ -458,8 +485,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       if (setoresResponse.data) setSetores(setoresResponse.data);
       if (cidadesResponse.data) {
         // Processar cidades considerando formato
-        if (Array.isArray(cidadesResponse.data) && cidadesResponse.data.length > 0) {
-          if (typeof cidadesResponse.data[0] === 'string') {
+        if (
+          Array.isArray(cidadesResponse.data) &&
+          cidadesResponse.data.length > 0
+        ) {
+          if (typeof cidadesResponse.data[0] === "string") {
             setCidades(cidadesResponse.data);
           } else {
             setCidades(cidadesResponse.data.map((cidade: any) => cidade.nome));
@@ -512,7 +542,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         // Processar response.data considerando formato
         let cidadesExistentes: string[] = [];
         if (Array.isArray(response.data) && response.data.length > 0) {
-          if (typeof response.data[0] === 'string') {
+          if (typeof response.data[0] === "string") {
             cidadesExistentes = response.data;
           } else {
             cidadesExistentes = response.data.map((cidade: any) => cidade.nome);
@@ -534,11 +564,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const adicionarDescricao = async () => {
     console.warn("adicionarDescricao: Use adicionarDescricaoECategoria");
   };
-  
+
   const editarDescricao = async () => {
     console.warn("editarDescricao: Use editarDescricaoECategoria");
   };
-  
+
   const excluirDescricao = async () => {
     console.warn("excluirDescricao: Use excluirDescricaoECategoria");
   };
@@ -546,11 +576,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const adicionarCategoria = () => {
     console.warn("adicionarCategoria: Use adicionarDescricaoECategoria");
   };
-  
+
   const editarCategoria = () => {
     console.warn("editarCategoria: Use editarDescricaoECategoria");
   };
-  
+
   const excluirCategoria = () => {
     console.warn("excluirCategoria: Use excluirDescricaoECategoria");
   };
@@ -558,11 +588,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const adicionarFuncionario = async () => {
     console.warn("adicionarFuncionario: Funcionalidade não implementada");
   };
-  
+
   const editarFuncionario = async () => {
     console.warn("editarFuncionario: Funcionalidade não implementada");
   };
-  
+
   const excluirFuncionario = async () => {
     console.warn("excluirFuncionario: Funcionalidade não implementada");
   };
@@ -570,11 +600,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const adicionarCliente = async () => {
     console.warn("adicionarCliente: Funcionalidade não implementada");
   };
-  
+
   const editarCliente = async () => {
     console.warn("editarCliente: Funcionalidade não implementada");
   };
-  
+
   const excluirCliente = async () => {
     console.warn("excluirCliente: Funcionalidade não implementada");
   };
@@ -582,11 +612,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const adicionarFornecedor = () => {
     console.warn("adicionarFornecedor: Funcionalidade não implementada");
   };
-  
+
   const editarFornecedor = () => {
     console.warn("editarFornecedor: Funcionalidade não implementada");
   };
-  
+
   const excluirFornecedor = () => {
     console.warn("excluirFornecedor: Funcionalidade não implementada");
   };
@@ -594,79 +624,82 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const recarregarTudo = carregarDados;
 
   // === VALUE DO CONTEXTO ===
-  const value = useMemo(() => ({
-    // Sistema unificado
-    descricoesECategorias,
-    getCategorias,
-    getDescricoes,
-    adicionarDescricaoECategoria,
-    editarDescricaoECategoria,
-    excluirDescricaoECategoria,
+  const value = useMemo(
+    () => ({
+      // Sistema unificado
+      descricoesECategorias,
+      getCategorias,
+      getDescricoes,
+      adicionarDescricaoECategoria,
+      editarDescricaoECategoria,
+      excluirDescricaoECategoria,
 
-    // Entidades principais
-    formasPagamento,
-    adicionarFormaPagamento,
-    editarFormaPagamento,
-    excluirFormaPagamento,
+      // Entidades principais
+      formasPagamento,
+      adicionarFormaPagamento,
+      editarFormaPagamento,
+      excluirFormaPagamento,
 
-    funcionarios,
-    tecnicos,
-    getTecnicos,
-    adicionarFuncionario,
-    editarFuncionario,
-    excluirFuncionario,
+      funcionarios,
+      tecnicos,
+      getTecnicos,
+      adicionarFuncionario,
+      editarFuncionario,
+      excluirFuncionario,
 
-    setores,
-    cidades,
-    adicionarSetor,
-    editarSetor,
-    excluirSetor,
-    adicionarCidade,
+      setores,
+      cidades,
+      adicionarSetor,
+      editarSetor,
+      excluirSetor,
+      adicionarCidade,
 
-    // Compatibilidade
-    descricoes,
-    categorias,
-    adicionarDescricao,
-    editarDescricao,
-    excluirDescricao,
-    adicionarCategoria,
-    editarCategoria,
-    excluirCategoria,
+      // Compatibilidade
+      descricoes,
+      categorias,
+      adicionarDescricao,
+      editarDescricao,
+      excluirDescricao,
+      adicionarCategoria,
+      editarCategoria,
+      excluirCategoria,
 
-    clientes,
-    adicionarCliente,
-    editarCliente,
-    excluirCliente,
+      clientes,
+      adicionarCliente,
+      editarCliente,
+      excluirCliente,
 
-    fornecedores,
-    adicionarFornecedor,
-    editarFornecedor,
-    excluirFornecedor,
+      fornecedores,
+      adicionarFornecedor,
+      editarFornecedor,
+      excluirFornecedor,
 
-    // Estados
-    isLoading,
-    error,
-    recarregarTudo,
-    recarregarDescricoesECategorias,
-  }), [
-    descricoesECategorias,
-    getCategorias,
-    getDescricoes,
-    formasPagamento,
-    funcionarios,
-    tecnicos,
-    getTecnicos,
-    setores,
-    cidades,
-    descricoes,
-    categorias,
-    clientes,
-    fornecedores,
-    isLoading,
-    error,
-    carregarDados,
-    recarregarDescricoesECategorias,
-  ]);
+      // Estados
+      isLoading,
+      error,
+      recarregarTudo,
+      recarregarDescricoesECategorias,
+    }),
+    [
+      descricoesECategorias,
+      getCategorias,
+      getDescricoes,
+      formasPagamento,
+      funcionarios,
+      tecnicos,
+      getTecnicos,
+      setores,
+      cidades,
+      descricoes,
+      categorias,
+      clientes,
+      fornecedores,
+      isLoading,
+      error,
+      carregarDados,
+      recarregarDescricoesECategorias,
+    ],
+  );
 
   return (
     <EntidadesContext.Provider value={value}>
@@ -678,7 +711,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 export function useEntidades() {
   const context = useContext(EntidadesContext);
   if (context === undefined) {
-    throw new Error("useEntidades deve ser usado dentro de um EntidadesProvider");
+    throw new Error(
+      "useEntidades deve ser usado dentro de um EntidadesProvider",
+    );
   }
   return context;
 }

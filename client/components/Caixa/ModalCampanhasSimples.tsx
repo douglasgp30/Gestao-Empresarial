@@ -34,13 +34,19 @@ export default function ModalCampanhasSimples() {
 
   // Carregar dados quando o modal é aberto
   useEffect(() => {
-    console.log(`[ModalCampanhasSimples] Modal isOpen: ${isOpen}, campanhas.length: ${campanhas.length}`);
+    console.log(
+      `[ModalCampanhasSimples] Modal isOpen: ${isOpen}, campanhas.length: ${campanhas.length}`,
+    );
     if (isOpen) {
       if (campanhas.length === 0) {
-        console.log("[ModalCampanhasSimples] Modal aberto sem dados, carregando...");
+        console.log(
+          "[ModalCampanhasSimples] Modal aberto sem dados, carregando...",
+        );
         carregarDados();
       } else {
-        console.log("[ModalCampanhasSimples] Modal aberto com dados já carregados");
+        console.log(
+          "[ModalCampanhasSimples] Modal aberto com dados já carregados",
+        );
       }
     }
   }, [isOpen, campanhas.length, carregarDados]);
@@ -124,13 +130,13 @@ export default function ModalCampanhasSimples() {
 
     setIsDeleting(true);
     try {
-      console.log('🟡 Excluindo campanha:', itemToDelete.nome);
+      console.log("🟡 Excluindo campanha:", itemToDelete.nome);
 
       const response = await fetch(`/api/campanhas/${itemToDelete.id}`, {
         method: "DELETE",
       });
 
-      console.log('🟡 Response status:', response.status, response.statusText);
+      console.log("🟡 Response status:", response.status, response.statusText);
 
       if (!response.ok) {
         const errorMessage = await parseErrorResponse(response);
@@ -139,19 +145,19 @@ export default function ModalCampanhasSimples() {
 
       // Status 204 (No Content) indica sucesso na exclusão
       if (response.status === 204) {
-        console.log('✅ Excluído com sucesso (status 204)');
+        console.log("✅ Excluído com sucesso (status 204)");
       } else {
-        console.log('✅ Excluído com sucesso (status ' + response.status + ')');
+        console.log("✅ Excluído com sucesso (status " + response.status + ")");
       }
 
       await carregarDados();
       setShowConfirm(false);
       setItemToDelete(null);
       toast.success("Campanha excluída com sucesso");
-
     } catch (error) {
-      console.error('❌ Erro no handleDelete:', error);
-      const errorMessage = error instanceof Error ? error.message : "Erro ao excluir campanha";
+      console.error("❌ Erro no handleDelete:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao excluir campanha";
       toast.error(`Falha na exclusão: ${errorMessage}`);
     } finally {
       setIsDeleting(false);
@@ -171,7 +177,12 @@ export default function ModalCampanhasSimples() {
 
   if (!isOpen) {
     return (
-      <Button variant="outline" size="sm" onClick={() => setIsOpen(true)} className="gap-1 text-xs">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setIsOpen(true)}
+        className="gap-1 text-xs"
+      >
         <Megaphone className="h-3 w-3" />
         Campanhas
       </Button>
@@ -188,9 +199,9 @@ export default function ModalCampanhasSimples() {
               <Megaphone className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-semibold">Gerenciar Campanhas</h2>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setIsOpen(false)}
               disabled={isDeleting}
             >
@@ -204,7 +215,6 @@ export default function ModalCampanhasSimples() {
 
         {/* Conteúdo */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-
           {/* Formulário de criação */}
           <Card className="mb-6">
             <CardHeader>
@@ -231,9 +241,7 @@ export default function ModalCampanhasSimples() {
           {/* Lista de campanhas */}
           <Card>
             <CardHeader>
-              <CardTitle>
-                Campanhas Cadastradas ({campanhas.length})
-              </CardTitle>
+              <CardTitle>Campanhas Cadastradas ({campanhas.length})</CardTitle>
             </CardHeader>
             <CardContent>
               {campanhas.length === 0 ? (
@@ -242,31 +250,36 @@ export default function ModalCampanhasSimples() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {(Array.isArray(campanhas) ? campanhas : []).map((campanha) => (
-                    <div key={campanha.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <span className="font-medium">{campanha.nome}</span>
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditClick(campanha)}
-                          className="text-blue-600 hover:text-blue-700"
-                          title="Editar campanha"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleConfirmDelete(campanha)}
-                          className="text-red-600 hover:text-red-700"
-                          title="Excluir campanha"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                  {(Array.isArray(campanhas) ? campanhas : []).map(
+                    (campanha) => (
+                      <div
+                        key={campanha.id}
+                        className="flex items-center justify-between p-3 border rounded-lg"
+                      >
+                        <span className="font-medium">{campanha.nome}</span>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditClick(campanha)}
+                            className="text-blue-600 hover:text-blue-700"
+                            title="Editar campanha"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleConfirmDelete(campanha)}
+                            className="text-red-600 hover:text-red-700"
+                            title="Excluir campanha"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ),
+                  )}
                 </div>
               )}
             </CardContent>
@@ -279,7 +292,8 @@ export default function ModalCampanhasSimples() {
             <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
               <h3 className="text-lg font-semibold mb-2">Confirmar Exclusão</h3>
               <p className="text-gray-600 mb-4">
-                Tem certeza que deseja excluir a campanha "{itemToDelete?.nome}"?
+                Tem certeza que deseja excluir a campanha "{itemToDelete?.nome}
+                "?
               </p>
               <div className="flex gap-2">
                 <Button
@@ -336,11 +350,7 @@ export default function ModalCampanhasSimples() {
                   >
                     Cancelar
                   </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSaving}
-                    className="flex-1"
-                  >
+                  <Button type="submit" disabled={isSaving} className="flex-1">
                     {isSaving ? "Salvando..." : "Salvar"}
                   </Button>
                 </div>
