@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Megaphone, Plus, Trash2, Edit } from "lucide-react";
 import { toast } from "sonner";
 import { campanhasApi } from "../../lib/apiService";
+import { parseErrorResponse } from "../../lib/responseUtils";
 
 export default function ModalCampanhasSimples() {
   const { campanhas, carregarDados } = useCaixa();
