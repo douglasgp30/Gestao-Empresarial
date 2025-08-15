@@ -293,11 +293,45 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               disabled={!formData.categoria}
               items={descricoesFiltradas}
               onAddNew={async (data) => {
-                await adicionarDescricao({
-                  nome: data.nome,
-                  categoria: formData.categoria,
-                  tipo: "despesa",
-                });
+                try {
+                  const response = await fetch("/api/descricoes-e-categorias", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      nome: data.nome,
+                      tipo: "despesa",
+                      tipoItem: "descricao",
+                      categoria: formData.categoria,
+                    }),
+                  });
+
+                  if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                  }
+
+                  // Recarregar descrições
+                  const descricoesResponse = await fetch(
+                    `/api/descricoes-e-categorias/descricoes?tipo=despesa&categoria=${encodeURIComponent(formData.categoria)}`,
+                  );
+                  const descricoesResult = await descricoesResponse.json();
+                  if (descricoesResult.data) {
+                    setDescricoes(descricoesResult.data);
+                  }
+
+                  toast({
+                    title: "Sucesso!",
+                    description: "Descrição adicionada com sucesso",
+                  });
+                } catch (error) {
+                  console.error("Erro ao adicionar descrição:", error);
+                  toast({
+                    title: "Erro",
+                    description: "Erro ao adicionar descrição",
+                    variant: "destructive",
+                  });
+                }
               }}
               addNewTitle="Nova Descrição de Despesa"
               addNewDescription="Adicione uma nova descrição para despesas."
