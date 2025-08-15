@@ -9,14 +9,17 @@ const SetorSchema = z.object({
 
 export const getSetores: RequestHandler = async (req, res) => {
   try {
-    const { cidade } = req.query;
-    const where: any = {};
+    const { cidadeId } = req.query;
+    const where: any = { ativo: true };
 
-    if (cidade) where.cidade = cidade as string;
+    if (cidadeId) where.cidadeId = parseInt(cidadeId as string);
 
     const setores = await prisma.setor.findMany({
       where,
-      orderBy: [{ cidade: "asc" }, { nome: "asc" }],
+      include: {
+        cidade: true,
+      },
+      orderBy: [{ cidade: { nome: "asc" } }, { nome: "asc" }],
     });
     res.json(setores);
   } catch (error) {
