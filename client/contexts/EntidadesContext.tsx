@@ -110,23 +110,7 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Entidades essenciais básicas - apenas o mínimo necessário para funcionamento
-const entidadesEssenciais = {
-  categorias: [
-    {
-      id: "1",
-      nome: "Serviços",
-      tipo: "receita" as const,
-      dataCriacao: new Date(),
-    },
-    {
-      id: "2",
-      nome: "Operacional",
-      tipo: "despesa" as const,
-      dataCriacao: new Date(),
-    },
-  ],
-};
+// Remover dados fictícios - usar apenas dados reais do banco
 
 // Funções para localStorage (para entidades que ainda não migraram)
 function carregarEntidadeDoStorage<T>(
