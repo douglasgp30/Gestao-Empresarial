@@ -269,19 +269,27 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // Carregar dados na inicialização com controle global
+  // Carregar dados na inicialização com controle global e throttling
   useEffect(() => {
     if (shouldSkipLoading("CaixaContext")) return;
 
-    const delay = getLoadingDelay(4000);
+    // Verificar throttling
+    if (contextThrottle.isThrottled("CaixaContext-initial", 6000)) {
+      console.log("[CaixaContext] Carregamento inicial throttled, ignorando...");
+      return;
+    }
+
+    const delay = getLoadingDelay(5000); // Delay maior
     const timeout = setTimeout(() => {
       if (!shouldSkipLoading("CaixaContext")) {
-        console.log(
-          "[CaixaContext] Iniciando carregamento após delay de",
-          delay,
-          "ms",
+        contextThrottle.execute(
+          "CaixaContext-initial",
+          () => {
+            console.log("[CaixaContext] Iniciando carregamento com throttling");
+            return carregarDados();
+          },
+          6000 // 6 segundos de throttle
         );
-        carregarDados();
       }
     }, delay);
 
