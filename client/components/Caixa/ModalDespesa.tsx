@@ -47,6 +47,8 @@ export function ModalDespesa() {
     categoria: "",
     descricao: "",
     formaPagamento: "",
+    cidade: "",
+    setor: "",
     observacoes: "",
   });
 
