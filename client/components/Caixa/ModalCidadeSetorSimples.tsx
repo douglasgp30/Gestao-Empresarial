@@ -212,6 +212,10 @@ export default function ModalCidadeSetorSimples() {
         nome: formSetor.nome.trim(),
         cidade: formSetor.cidade,
       });
+
+      // Recarregar dados para garantir atualização
+      await recarregarTudo();
+
       toast.success("Setor adicionado com sucesso");
       resetFormSetor();
     } catch (error) {
