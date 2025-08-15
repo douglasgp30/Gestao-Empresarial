@@ -197,10 +197,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       if (setoresResponse.data) setSetores(setoresResponse.data);
       if (cidadesResponse.data) setCidades(cidadesResponse.data);
 
-      // Carregar dados do localStorage
+      // Carregar dados do localStorage sem dados fictícios
       const categoriasStorage = carregarEntidadeDoStorage<Categoria>(
         "categorias",
-        entidadesEssenciais.categorias,
+        [], // Usar array vazio ao invés de dados fictícios
       );
       const clientesStorage = carregarEntidadeDoStorage<Cliente>("clientes");
       const fornecedoresStorage =
@@ -791,7 +791,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     isLoading,
     error,
 
-    // Funções para tabela unificada
+    // Funç��es para tabela unificada
     getCategorias,
     getDescricoes,
     adicionarDescricaoECategoria,
