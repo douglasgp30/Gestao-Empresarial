@@ -36,20 +36,6 @@ import {
   deleteFuncionario,
 } from "./routes/funcionarios";
 
-import {
-  getSetores,
-  getCidades,
-  createSetor,
-  updateSetor,
-  deleteSetor,
-  deleteCidade,
-} from "./routes/setores";
-import {
-  getCidades as getCidadesNovo,
-  createCidade,
-  updateCidade,
-  deleteCidade as deleteCidadeNovo,
-} from "./routes/cidades";
 
 import {
   getLancamentos,
@@ -130,20 +116,6 @@ export function createServer(): Express {
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
 
-  // Rotas de Cidades (nova tabela separada)
-  app.get("/api/cidades", getCidadesNovo);
-  app.post("/api/cidades", createCidade);
-  app.put("/api/cidades/:id", updateCidade);
-  app.delete("/api/cidades/:id", deleteCidadeNovo);
-
-  // Rotas de Setores
-  app.get("/api/setores", getSetores);
-  app.post("/api/setores", createSetor);
-  app.put("/api/setores/:id", updateSetor);
-  app.delete("/api/setores/:id", deleteSetor);
-
-  // Rota legada para compatibilidade
-  app.delete("/api/setores/cidades/:cidade", deleteCidade);
 
   // Rota de migração (apenas para desenvolvimento)
   app.post("/api/migrate/separate-cities", async (req, res) => {
