@@ -669,23 +669,19 @@ export function ModalReceita() {
                   <div>
                     <span className="text-gray-600">Valor Líquido:</span>
                     <div className="font-medium">
-                      R$ {parseFloat(formData.valorLiquido || "0").toFixed(2)}
+                      R$ {valorLiquidoCalculado.toFixed(2)}
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Comissão:</span>
                     <div className="font-medium">
-                      R$ {parseFloat(formData.comissao || "0").toFixed(2)}
+                      R$ {comissaoCalculada.toFixed(2)}
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Para Empresa:</span>
                     <div className="font-medium text-green-600">
-                      R${" "}
-                      {(
-                        parseFloat(formData.valorLiquido || "0") -
-                        parseFloat(formData.comissao || "0")
-                      ).toFixed(2)}
+                      R$ {(valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
                     </div>
                   </div>
                 </div>
