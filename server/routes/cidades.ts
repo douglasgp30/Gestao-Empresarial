@@ -176,9 +176,4 @@ export const deleteCidade: RequestHandler = async (req, res) => {
 };
 
 // Rotas
-router.get("/", getCidades);
-router.post("/", createCidade);
-router.put("/:id", updateCidade);
-router.delete("/:id", deleteCidade);
-
-export default router;
+// Routes are exported individually and registered in server/index.ts
