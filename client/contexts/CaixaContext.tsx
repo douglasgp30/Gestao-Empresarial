@@ -163,11 +163,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   // Função para carregar lançamentos com base nos filtros
-  const carregarLancamentos = React.useCallback(
+  const carregarLancamentos = useCallback(
     async (forceLoad = false) => {
       try {
         // Evitar múltiplas chamadas simultâneas, exceto quando forçado
-        if (isLoading && !forceLoad) return;
+        if (isCarregando && !forceLoad) {
+          console.log("[CaixaContext] Carregamento de lançamentos já em andamento, ignorando...");
+          return;
+        }
 
         const filtrosApi: any = {
           dataInicio: formatarDataParaServidor(filtros.dataInicio),
