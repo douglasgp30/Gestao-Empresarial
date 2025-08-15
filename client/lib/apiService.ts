@@ -224,6 +224,61 @@ export const funcionariosApi = {
 };
 
 
+// === LOCALIZAÇÃO GEOGRÁFICA (CIDADES E SETORES) ===
+export const localizacoesGeograficasApi = {
+  // Listar todas as localizações
+  listar: (filtros?: {
+    tipo?: "cidade" | "setor";
+    ativo?: boolean;
+    cidade?: string;
+  }) => {
+    const params = new URLSearchParams();
+    if (filtros) {
+      Object.entries(filtros).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, String(value));
+      });
+    }
+    const query = params.toString() ? `?${params.toString()}` : "";
+    return apiRequest<any[]>(`/localizacoes-geograficas${query}`);
+  },
+
+  // Listar apenas cidades
+  listarCidades: () => apiRequest<any[]>("/cidades"),
+
+  // Listar setores (opcionalmente filtrados por cidade)
+  listarSetores: (cidade?: string) => {
+    const params = new URLSearchParams();
+    if (cidade) params.append("cidade", cidade);
+    const query = params.toString() ? `?${params.toString()}` : "";
+    return apiRequest<any[]>(`/setores${query}`);
+  },
+
+  // Criar nova localização
+  criar: (localizacao: {
+    nome: string;
+    tipoItem: "cidade" | "setor";
+    cidade?: string;
+    ativo?: boolean;
+  }) =>
+    apiRequest<any>("/localizacoes-geograficas", {
+      method: "POST",
+      body: JSON.stringify(localizacao),
+    }),
+
+  // Atualizar localização
+  atualizar: (id: number, localizacao: any) =>
+    apiRequest<any>(`/localizacoes-geograficas/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(localizacao),
+    }),
+
+  // Excluir localização
+  excluir: (id: number) =>
+    apiRequest<void>(`/localizacoes-geograficas/${id}`, {
+      method: "DELETE",
+    }),
+};
+
 // === CAIXA ===
 export const caixaApi = {
   listarLancamentos: (filtros?: {
