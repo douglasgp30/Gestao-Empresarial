@@ -248,7 +248,7 @@ export default function ModalCampanhas() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {campanhas.map((campanha) => (
+                    {(Array.isArray(campanhas) ? campanhas : []).map((campanha) => (
                       <TableRow key={campanha.id}>
                         <TableCell>
                           <div className="flex items-center space-x-2">

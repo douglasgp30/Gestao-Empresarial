@@ -264,7 +264,7 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
-                          {tecnicos.map((tecnico) => (
+                          {(Array.isArray(tecnicos) ? tecnicos : []).map((tecnico) => (
                             <SelectItem
                               key={tecnico.id}
                               value={tecnico.id.toString()}
@@ -322,7 +322,7 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
-                          {setores.map((setor) => (
+                          {(Array.isArray(setores) ? setores : []).map((setor) => (
                             <SelectItem
                               key={setor.id}
                               value={setor.id.toString()}
@@ -463,7 +463,7 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
-                          {campanhas.map((campanha) => (
+                          {(Array.isArray(campanhas) ? campanhas : []).map((campanha) => (
                             <SelectItem
                               key={campanha.id}
                               value={campanha.id.toString()}
