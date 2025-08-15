@@ -189,13 +189,14 @@ export default function ModalDescricoesAvancado() {
   const handleExcluir = async () => {
     if (!itemParaExcluir || isDeleting) return;
 
+    const itemBackup = itemParaExcluir; // Backup para não perder referência
     setIsDeleting(true);
 
     try {
-      console.log('🟡 Excluindo:', itemParaExcluir.nome);
+      console.log('🟡 Excluindo:', itemBackup.nome);
 
       // API call direta
-      const response = await fetch(`/api/descricoes-e-categorias/${itemParaExcluir.id}`, {
+      const response = await fetch(`/api/descricoes-e-categorias/${itemBackup.id}`, {
         method: "DELETE",
       });
 
@@ -205,14 +206,12 @@ export default function ModalDescricoesAvancado() {
 
       console.log('✅ Excluído com sucesso');
 
-      // Fechar modal
-      setItemParaExcluir(null);
-
-      // Recarregar dados
+      // Recarregar dados primeiro
       await recarregarDescricoesECategorias();
 
-      // Mostrar sucesso
-      toast.success("Item excluído com sucesso");
+      // Só depois fechar modal e mostrar sucesso
+      setItemParaExcluir(null);
+      toast.success(`${itemBackup.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`);
 
     } catch (error) {
       console.error('❌ Erro:', error);
