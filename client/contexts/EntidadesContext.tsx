@@ -275,15 +275,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           cidadesArray = cidadesResponse.data.data;
         }
 
-        // Verificar se são objetos (nova estrutura) ou strings (estrutura antiga)
+        // Sempre converter para array de strings, independente da estrutura
         if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          if (typeof cidadesArray[0] === "string") {
-            // Estrutura antiga: array de strings
-            setCidades(cidadesArray);
-          } else {
-            // Nova estrutura: array de objetos {id, nome, ativo}
-            setCidades(cidadesArray.map((cidade: any) => cidade.nome));
-          }
+          const cidadesString = cidadesArray.map((cidade: any) => {
+            if (typeof cidade === "string") {
+              return cidade;
+            } else if (cidade && cidade.nome) {
+              return cidade.nome;
+            } else {
+              console.warn("Cidade com estrutura inválida:", cidade);
+              return String(cidade);
+            }
+          });
+          setCidades(cidadesString);
         } else {
           setCidades([]);
         }
