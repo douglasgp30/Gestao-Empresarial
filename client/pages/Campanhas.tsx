@@ -31,6 +31,7 @@ import {
   Megaphone,
   Eye,
 } from "lucide-react";
+import TestLocalizacoesApi from "../components/Debug/TestLocalizacoesApi";
 
 export default function Campanhas() {
   const { campanhas, lancamentos } = useCaixa();
