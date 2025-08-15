@@ -240,11 +240,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isLoading],
   );
 
-  // Carregar dados na inicialização com debounce maior para sequencializar
+  // Carregar dados na inicialização com proteção para hot reload
   useEffect(() => {
+    // Durante hot reload, não carregar automaticamente
+    if (shouldSkipAutoLoad()) {
+      console.log('[CaixaContext] Hot reload detectado, pulando carregamento automático');
+      return;
+    }
+
+    const delay = getDevDelay(4000); // Delay aleatório entre 4-8s em dev, depois do EntidadesContext
     const timeout = setTimeout(() => {
+      console.log('[CaixaContext] Iniciando carregamento após delay de', delay, 'ms');
       carregarDados();
-    }, 2000); // Delay maior (2s) para carregar depois do EntidadesContext
+    }, delay);
 
     return () => clearTimeout(timeout);
   }, []);
