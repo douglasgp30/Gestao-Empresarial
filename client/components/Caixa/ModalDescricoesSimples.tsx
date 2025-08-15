@@ -187,7 +187,12 @@ export default function ModalDescricoesSimples() {
         throw new Error(errorMessage);
       }
 
-      console.log('✅ Excluído com sucesso');
+      // Status 204 (No Content) indica sucesso na exclusão
+      if (response.status === 204) {
+        console.log('✅ Excluído com sucesso (status 204)');
+      } else {
+        console.log('✅ Excluído com sucesso (status ' + response.status + ')');
+      }
 
       await recarregarDescricoesECategorias();
       setShowConfirm(false);
