@@ -21,6 +21,7 @@ async function apiRequest<T>(
     try {
       console.log(
         `[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`,
+        `Fetch interceptado: ${isFetchIntercepted()}`
       );
 
       // Adicionar timeout para evitar travamentos - aumentado para 30s durante hot reload
