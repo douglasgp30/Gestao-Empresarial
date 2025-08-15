@@ -283,11 +283,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         apiCache.executeWithCache("entidades-tecnicos", () =>
           funcionariosApi.listarTecnicos(),
         ),
-        apiCache.executeWithCache("entidades-setores", () =>
-          setoresApi.listar(),
-        ),
-        apiCache.executeWithCache("entidades-cidades", () =>
-          setoresApi.listarCidades(),
+        apiCache.executeWithCache("entidades-localizacoes", () =>
+          localizacoesGeograficasApi.listar(),
         ),
       ]);
 
