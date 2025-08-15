@@ -815,12 +815,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       editarFuncionario,
       excluirFuncionario,
 
-      setores,
-      cidades,
-      adicionarSetor,
-      editarSetor,
-      excluirSetor,
-      adicionarCidade,
+      localizacoesGeograficas,
+      getCidades,
+      getSetores,
+      adicionarLocalizacaoGeografica,
+      editarLocalizacaoGeografica,
+      excluirLocalizacaoGeografica,
 
       // Compatibilidade
       descricoes,
