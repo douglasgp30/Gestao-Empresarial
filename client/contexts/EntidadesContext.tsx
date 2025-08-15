@@ -882,6 +882,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     // Funções utilitárias
     carregarDados,
+
+    // Carregamento manual para quando necessário
+    carregarDadosManual: () => {
+      console.log('[EntidadesContext] Carregamento manual solicitado');
+      return carregarDados();
+    },
   };
 
   return (
