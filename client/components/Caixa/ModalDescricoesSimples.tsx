@@ -379,6 +379,17 @@ export default function ModalDescricoesSimples() {
             </div>
           </div>
         )}
+
+        {/* Modal de dependências */}
+        <ModalDependenciasCategoria
+          isOpen={showDependencies}
+          onClose={() => {
+            setShowDependencies(false);
+            setCategoriaParaDependencias(null);
+          }}
+          categoria={categoriaParaDependencias}
+          todasDescricoes={descricoesECategorias}
+        />
       </div>
     </div>
   );
