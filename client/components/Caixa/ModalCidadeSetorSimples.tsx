@@ -293,7 +293,13 @@ export default function ModalCidadeSetorSimples() {
       const setorParaExcluir = setores.find((s) => s.id === itemToDelete.id);
       if (setorParaExcluir) {
         const setoresDaMesmaCidade = setores.filter(
-          (s) => s.cidade === setorParaExcluir.cidade,
+          (s) => {
+            const nomeCidadeS = typeof s.cidade === 'object' ? s.cidade?.nome : s.cidade;
+            const nomeCidadeParaExcluir = typeof setorParaExcluir.cidade === 'object'
+              ? setorParaExcluir.cidade?.nome
+              : setorParaExcluir.cidade;
+            return nomeCidadeS === nomeCidadeParaExcluir;
+          },
         );
 
         if (setoresDaMesmaCidade.length === 1) {
