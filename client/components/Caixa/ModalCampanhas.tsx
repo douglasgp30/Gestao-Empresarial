@@ -73,11 +73,7 @@ export default function ModalCampanhas() {
       });
 
       if (response.error) {
-        toast({
-          title: "Erro",
-          description: response.error,
-          variant: "destructive",
-        });
+        toast.error(response.error);
         return;
       }
 
@@ -117,11 +113,7 @@ export default function ModalCampanhas() {
       });
 
       if (response.error) {
-        toast({
-          title: "Erro",
-          description: response.error,
-          variant: "destructive",
-        });
+        toast.error(response.error);
         return;
       }
 
@@ -149,11 +141,7 @@ export default function ModalCampanhas() {
       const response = await campanhasApi.excluir(campanha.id);
 
       if (response.error) {
-        toast({
-          title: "Erro",
-          description: response.error,
-          variant: "destructive",
-        });
+        toast.error(response.error);
         return;
       }
 
