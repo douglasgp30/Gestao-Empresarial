@@ -505,7 +505,7 @@ export default function ModalCidadeSetorSimples() {
                   className="p-2 border rounded"
                 >
                   <option value="">Selecione uma cidade</option>
-                  {cidades.map((cidade, index) => (
+                  {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
                     <option key={`option-${index}`} value={cidade}>
                       {cidade}
                     </option>
