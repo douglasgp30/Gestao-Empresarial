@@ -81,8 +81,6 @@ export default function ModalDescricoesAvancado() {
   const [tipoAtivo, setTipoAtivo] = useState<"receita" | "despesa">("receita");
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isConfirmingDeletion, setIsConfirmingDeletion] = useState(false);
-  const isExecutingDelete = useRef(false);
 
   const [formDescricao, setFormDescricao] = useState({
     nome: "",
@@ -223,45 +221,23 @@ export default function ModalDescricoesAvancado() {
     }
   };
 
+  // IMPLEMENTAÇÃO MINIMALISTA - igual aos outros componentes que funcionam
   const handleExcluir = async () => {
-    if (!itemParaExcluir || isDeleting || isConfirmingDeletion || isExecutingDelete.current) return;
+    if (!itemParaExcluir || isDeleting) return;
 
-    console.log('🔴 [Modal] Iniciando exclusão:', itemParaExcluir.nome);
-
+    setIsDeleting(true);
     try {
-      isExecutingDelete.current = true;
-      setIsDeleting(true);
-      setIsConfirmingDeletion(true);
-
-      // Manter referência do item
-      const itemTemp = itemParaExcluir;
-
-      console.log('🔴 [Modal] Chamando API de exclusão...');
-      await excluirDescricaoECategoria(itemTemp.id.toString());
-
-      console.log('✅ [Modal] Exclusão bem-sucedida, fechando dialog...');
-
-      // Debounce o fechamento para evitar conflitos
-      setTimeout(() => {
-        setItemParaExcluir(null);
-        setIsConfirmingDeletion(false);
-        isExecutingDelete.current = false;
-      }, 150);
-
-      // O toast do sucesso já é exibido pelo Context
+      await excluirDescricaoECategoria(itemParaExcluir.id.toString());
+      setItemParaExcluir(null);
     } catch (error) {
-      console.error('❌ [Modal] Erro ao excluir:', error);
-      setIsConfirmingDeletion(false);
-      isExecutingDelete.current = false;
+      console.error('Erro ao excluir:', error);
       toast({
         title: "Erro",
         description: "Erro ao excluir item. Tente novamente.",
         variant: "destructive",
       });
     } finally {
-      setTimeout(() => {
-        setIsDeleting(false);
-      }, 200);
+      setIsDeleting(false);
     }
   };
 
@@ -583,7 +559,7 @@ export default function ModalDescricoesAvancado() {
                 <CardContent>
                   {descricoesDespesas.length === 0 ? (
                     <p className="text-sm text-gray-500 text-center py-4">
-                      Nenhuma descriç��o de despesa cadastrada
+                      Nenhuma descrição de despesa cadastrada
                     </p>
                   ) : (
                     <div className="space-y-2">
@@ -629,14 +605,10 @@ export default function ModalDescricoesAvancado() {
         </DialogContent>
       </Dialog>
 
-      {/* Alert Dialog para Confirmação de Exclusão */}
+      {/* IMPLEMENTAÇÃO MINIMALISTA - IGUAL AOS OUTROS COMPONENTES QUE FUNCIONAM */}
       <AlertDialog
-        open={!!itemParaExcluir && !isConfirmingDeletion}
-        onOpenChange={(open) => {
-          if (!open && !isDeleting && !isConfirmingDeletion) {
-            setItemParaExcluir(null);
-          }
-        }}
+        open={!!itemParaExcluir}
+        onOpenChange={() => setItemParaExcluir(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -647,22 +619,13 @@ export default function ModalDescricoesAvancado() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={isDeleting || isConfirmingDeletion}
-              onClick={() => {
-                if (!isDeleting && !isConfirmingDeletion) {
-                  setItemParaExcluir(null);
-                }
-              }}
-            >
-              Cancelar
-            </AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleExcluir}
-              disabled={isDeleting || isConfirmingDeletion}
+              disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700"
             >
-              {isDeleting || isConfirmingDeletion ? "Excluindo..." : "Excluir"}
+              {isDeleting ? "Excluindo..." : "Excluir"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
