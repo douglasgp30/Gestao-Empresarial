@@ -221,16 +221,38 @@ export default function ModalDescricoesAvancado() {
     }
   };
 
-  // IMPLEMENTAÇÃO MINIMALISTA - igual aos outros componentes que funcionam
+  // SOLUÇÃO DEFINITIVA: Chamar API diretamente como os componentes que funcionam
   const handleExcluir = async () => {
     if (!itemParaExcluir || isDeleting) return;
 
     setIsDeleting(true);
     try {
-      await excluirDescricaoECategoria(itemParaExcluir.id.toString());
+      console.log('🟡 [Modal] Iniciando exclusão:', itemParaExcluir.nome);
+
+      // Chamar API diretamente, não através do Context
+      const response = await fetch(`/api/descricoes-e-categorias/${itemParaExcluir.id}`, {
+        method: "DELETE",
+      });
+
+      console.log('🟡 [Modal] Response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      console.log('✅ [Modal] Exclusão bem-sucedida');
+
+      // Recarregar dados manualmente
+      await recarregarDescricoesECategorias();
+
+      toast({
+        title: "Sucesso!",
+        description: `${itemParaExcluir.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`,
+      });
+
       setItemParaExcluir(null);
     } catch (error) {
-      console.error('Erro ao excluir:', error);
+      console.error('❌ [Modal] Erro ao excluir:', error);
       toast({
         title: "Erro",
         description: "Erro ao excluir item. Tente novamente.",
