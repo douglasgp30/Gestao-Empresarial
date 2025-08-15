@@ -456,7 +456,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresApi.listarCidades(),
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
-      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+      if (cidadesResponse.data) {
+        // Processar cidades considerando formato
+        if (Array.isArray(cidadesResponse.data) && cidadesResponse.data.length > 0) {
+          if (typeof cidadesResponse.data[0] === 'string') {
+            setCidades(cidadesResponse.data);
+          } else {
+            setCidades(cidadesResponse.data.map((cidade: any) => cidade.nome));
+          }
+        } else {
+          setCidades([]);
+        }
+      }
       toast.success("Setor adicionado!");
     } catch (error) {
       console.error("Erro ao adicionar setor:", error);
