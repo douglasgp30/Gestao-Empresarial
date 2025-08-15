@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { FileText, Plus, Trash2, Tag, CheckCircle, XCircle, Folder, Eye } from "lucide-react";
 import { toast } from "sonner";
 import ModalDependenciasCategoria from "./ModalDependenciasCategoria";
+import TestDeleteApi from "../Debug/TestDeleteApi";
 
 export default function ModalDescricoesSimples() {
   const {
