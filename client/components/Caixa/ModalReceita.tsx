@@ -39,11 +39,10 @@ export function ModalReceita() {
     formasPagamento,
     getTecnicos,
     setores,
-    adicionarDescricao,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
-    // Unified data source
+    // Usar apenas tabela unificada
     getCategorias,
     getDescricoes,
     adicionarDescricaoECategoria,
