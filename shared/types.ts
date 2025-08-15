@@ -246,6 +246,16 @@ export interface Fornecedor {
   dataCriacao: Date;
 }
 
+// Localização Geográfica Unificada (Cidades e Setores)
+export interface LocalizacaoGeografica {
+  id: number;
+  nome: string;
+  tipoItem: "cidade" | "setor"; // Tipo do item
+  cidade?: string; // Cidade pai (apenas para setores)
+  ativo: boolean;
+  dataCriacao: Date;
+}
+
 
 export interface BackupConfig {
   localBackup: string;
