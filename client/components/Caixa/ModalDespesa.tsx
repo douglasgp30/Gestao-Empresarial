@@ -30,6 +30,7 @@ export function ModalDespesa() {
     descricoes,
     formasPagamento,
     setores,
+    cidades,
     adicionarDescricao,
     adicionarFormaPagamento,
     isLoading: entidadesLoading,
