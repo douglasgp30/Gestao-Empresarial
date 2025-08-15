@@ -268,7 +268,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         let cidadesArray = cidadesResponse.data;
 
         // Se cidadesResponse.data tem propriedade data, extrair o array
-        if (cidadesResponse.data.data && Array.isArray(cidadesResponse.data.data)) {
+        if (
+          cidadesResponse.data.data &&
+          Array.isArray(cidadesResponse.data.data)
+        ) {
           cidadesArray = cidadesResponse.data.data;
         }
 
@@ -485,7 +488,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       // Se o setor tem uma propriedade 'cidade' (nome), precisamos resolver para cidadeId
       let setorParaEnviar = { ...novoSetor };
 
-      if ('cidade' in novoSetor && novoSetor.cidade && !('cidadeId' in novoSetor)) {
+      if (
+        "cidade" in novoSetor &&
+        novoSetor.cidade &&
+        !("cidadeId" in novoSetor)
+      ) {
         // Buscar ID da cidade pelo nome
         const cidadesResponse = await setoresApi.listarCidades();
         console.log("[EntidadesContext] Resposta de cidades:", cidadesResponse);
@@ -495,30 +502,38 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           let cidadesArray = cidadesResponse.data;
 
           // Se cidadesResponse.data tem propriedade data, extrair o array
-          if (cidadesResponse.data.data && Array.isArray(cidadesResponse.data.data)) {
+          if (
+            cidadesResponse.data.data &&
+            Array.isArray(cidadesResponse.data.data)
+          ) {
             cidadesArray = cidadesResponse.data.data;
           }
 
           // Verificar se é array válido
           if (!Array.isArray(cidadesArray)) {
-            console.error("[EntidadesContext] cidadesArray não é um array:", cidadesArray);
+            console.error(
+              "[EntidadesContext] cidadesArray não é um array:",
+              cidadesArray,
+            );
             throw new Error("Erro ao carregar lista de cidades");
           }
 
           if (cidadesArray.length > 0) {
-            if (typeof cidadesArray[0] === 'string') {
+            if (typeof cidadesArray[0] === "string") {
               // Formato antigo - criar setor com nome da cidade
               setorParaEnviar = novoSetor;
             } else {
               // Formato novo - buscar ID da cidade
-              cidadeEncontrada = cidadesArray.find((c: any) =>
-                c.nome && c.nome.toLowerCase() === novoSetor.cidade.toLowerCase()
+              cidadeEncontrada = cidadesArray.find(
+                (c: any) =>
+                  c.nome &&
+                  c.nome.toLowerCase() === novoSetor.cidade.toLowerCase(),
               );
 
               if (cidadeEncontrada) {
                 setorParaEnviar = {
                   nome: novoSetor.nome,
-                  cidadeId: cidadeEncontrada.id
+                  cidadeId: cidadeEncontrada.id,
                 };
                 // Remover propriedade 'cidade' do objeto
                 delete (setorParaEnviar as any).cidade;
@@ -527,7 +542,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
               }
             }
           } else {
-            throw new Error("Nenhuma cidade encontrada. Cadastre uma cidade primeiro.");
+            throw new Error(
+              "Nenhuma cidade encontrada. Cadastre uma cidade primeiro.",
+            );
           }
         }
       }
@@ -542,7 +559,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         let cidadesArray = cidadesResponse.data;
 
         // Se cidadesResponse.data tem propriedade data, extrair o array
-        if (cidadesResponse.data.data && Array.isArray(cidadesResponse.data.data)) {
+        if (
+          cidadesResponse.data.data &&
+          Array.isArray(cidadesResponse.data.data)
+        ) {
           cidadesArray = cidadesResponse.data.data;
         }
 
@@ -560,7 +580,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       toast.success("Setor adicionado!");
     } catch (error) {
       console.error("Erro ao adicionar setor:", error);
-      toast.error(`Erro ao adicionar setor: ${error.message || 'Tente novamente'}`);
+      toast.error(
+        `Erro ao adicionar setor: ${error.message || "Tente novamente"}`,
+      );
       throw error;
     }
   };
@@ -613,19 +635,26 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       if (!response.ok) {
-        const errorMessage = responseData?.error || `Erro HTTP ${response.status}`;
+        const errorMessage =
+          responseData?.error || `Erro HTTP ${response.status}`;
         throw new Error(errorMessage);
       }
 
       // Recarregar lista de cidades
       const cidadesResponse = await setoresApi.listarCidades();
-      console.log("[EntidadesContext] Resposta ao recarregar cidades:", cidadesResponse);
+      console.log(
+        "[EntidadesContext] Resposta ao recarregar cidades:",
+        cidadesResponse,
+      );
 
       if (cidadesResponse.data) {
         let cidadesArray = cidadesResponse.data;
 
         // Se cidadesResponse.data tem propriedade data, extrair o array
-        if (cidadesResponse.data.data && Array.isArray(cidadesResponse.data.data)) {
+        if (
+          cidadesResponse.data.data &&
+          Array.isArray(cidadesResponse.data.data)
+        ) {
           cidadesArray = cidadesResponse.data.data;
         }
 
@@ -643,7 +672,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       toast.success("Cidade adicionada!");
     } catch (error) {
       console.error("Erro ao adicionar cidade:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro desconhecido";
       toast.error(`Erro ao adicionar cidade: ${errorMessage}`);
       throw error;
     }

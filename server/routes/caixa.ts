@@ -4,10 +4,21 @@ import { z } from "zod";
 
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
-  valor: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive("Valor deve ser positivo")),
-  valorRecebido: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
-  valorLiquido: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
-  comissao: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
+  valor: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive("Valor deve ser positivo")),
+  valorRecebido: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number())
+    .optional(),
+  valorLiquido: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number())
+    .optional(),
+  comissao: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number())
+    .optional(),
   imposto: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
   observacoes: z.string().optional(),
   numeroNota: z.string().optional(),
@@ -22,18 +33,36 @@ const LancamentoCaixaSchema = z.object({
   descricao: z.string().optional(),
 
   // Campos obrigatórios
-  formaPagamentoId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
+  formaPagamentoId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
   formaPagamento: z.string().optional(), // Para compatibilidade
 
   // Campos opcionais
-  subdescricaoId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
-  funcionarioId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
+  subdescricaoId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
+  funcionarioId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
   tecnicoResponsavel: z.string().optional(), // Para compatibilidade
-  setorId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
+  setorId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
   setor: z.string().optional(), // Para compatibilidade
-  campanhaId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
+  campanhaId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
   campanha: z.string().optional(), // Para compatibilidade
-  clienteId: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive()).optional(),
+  clienteId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
 });
 
 // Função para gerar dataHora no formato DD-MM-AAAA HH:MM:SS
@@ -453,10 +482,17 @@ export const createLancamento: RequestHandler = async (req, res) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("[Caixa] Erro de validação Zod:", error.errors);
-      console.error("[Caixa] Dados que causaram erro:", JSON.stringify(req.body, null, 2));
+      console.error(
+        "[Caixa] Dados que causaram erro:",
+        JSON.stringify(req.body, null, 2),
+      );
       res.status(400).json({
-        error: "Dados inválidos: " + error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(", "),
-        details: error.errors
+        error:
+          "Dados inválidos: " +
+          error.errors
+            .map((e) => `${e.path.join(".")}: ${e.message}`)
+            .join(", "),
+        details: error.errors,
       });
     } else {
       console.error("Erro ao criar lançamento:", error);

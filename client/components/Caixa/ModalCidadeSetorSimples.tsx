@@ -372,8 +372,8 @@ export default function ModalCidadeSetorSimples() {
           cidadesArray = cidadesData.data;
         }
 
-        const cidadeEncontrada = cidadesArray.find((c: any) =>
-          c.nome === itemToDelete.nome
+        const cidadeEncontrada = cidadesArray.find(
+          (c: any) => c.nome === itemToDelete.nome,
         );
 
         if (!cidadeEncontrada) {
@@ -393,7 +393,8 @@ export default function ModalCidadeSetorSimples() {
         }
 
         if (!response.ok) {
-          const errorMessage = responseData?.error || `Erro HTTP ${response.status}`;
+          const errorMessage =
+            responseData?.error || `Erro HTTP ${response.status}`;
           throw new Error(errorMessage);
         }
 

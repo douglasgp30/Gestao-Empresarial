@@ -398,10 +398,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw new Error("ID inválido para atualização");
       }
 
-      const response = await caixaApi.atualizarLancamento(
-        parsedId,
-        dadosApi,
-      );
+      const response = await caixaApi.atualizarLancamento(parsedId, dadosApi);
       if (response.error) {
         setError(response.error);
         throw new Error(response.error);

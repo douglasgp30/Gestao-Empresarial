@@ -2,7 +2,6 @@ import { RequestHandler, Router } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
 
-
 const CidadeSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
 });
@@ -39,9 +38,15 @@ export const getCidades: RequestHandler = async (req, res) => {
 // POST /api/cidades - Criar nova cidade
 export const createCidade: RequestHandler = async (req, res) => {
   try {
-    console.log("[Cidades] Dados recebidos para criar cidade:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "[Cidades] Dados recebidos para criar cidade:",
+      JSON.stringify(req.body, null, 2),
+    );
     const data = CidadeSchema.parse(req.body);
-    console.log("[Cidades] Dados após validação:", JSON.stringify(data, null, 2));
+    console.log(
+      "[Cidades] Dados após validação:",
+      JSON.stringify(data, null, 2),
+    );
 
     // Verificar se já existe uma cidade com esse nome (SQLite case insensitive by default)
     const cidadeExistente = await prisma.cidade.findFirst({

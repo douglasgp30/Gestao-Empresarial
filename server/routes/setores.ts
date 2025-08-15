@@ -17,7 +17,7 @@ export const getSetores: RequestHandler = async (req, res) => {
       // Tentar buscar pela nova estrutura primeiro
       try {
         const cidadeObj = await prisma.cidade.findFirst({
-          where: { nome: cidade as string }
+          where: { nome: cidade as string },
         });
         if (cidadeObj) {
           where.cidadeId = cidadeObj.id;
@@ -38,13 +38,17 @@ export const getSetores: RequestHandler = async (req, res) => {
         orderBy: [{ cidade: { nome: "asc" } }, { nome: "asc" }],
       });
 
-      console.log(`[Setores] Encontrados ${setores.length} setores com nova estrutura`);
+      console.log(
+        `[Setores] Encontrados ${setores.length} setores com nova estrutura`,
+      );
       res.json(setores);
     } catch (includeError) {
       // Fallback para estrutura antiga
       console.log("[Setores] Usando estrutura antiga de setores");
       const setores = await prisma.setor.findMany({
-        where: cidade ? { cidade: cidade as string, ativo: true } : { ativo: true },
+        where: cidade
+          ? { cidade: cidade as string, ativo: true }
+          : { ativo: true },
         orderBy: [{ cidade: "asc" }, { nome: "asc" }],
       });
       res.json(setores);
@@ -78,9 +82,15 @@ export const getCidades: RequestHandler = async (req, res) => {
 
 export const createSetor: RequestHandler = async (req, res) => {
   try {
-    console.log("[Setores] Dados recebidos para criar setor:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "[Setores] Dados recebidos para criar setor:",
+      JSON.stringify(req.body, null, 2),
+    );
     const data = SetorSchema.parse(req.body);
-    console.log("[Setores] Dados após validação:", JSON.stringify(data, null, 2));
+    console.log(
+      "[Setores] Dados após validação:",
+      JSON.stringify(data, null, 2),
+    );
 
     // Verificar se a cidade existe
     const cidade = await prisma.cidade.findUnique({
@@ -182,7 +192,7 @@ export const deleteCidade: RequestHandler = async (req, res) => {
     const setoresVinculados = await prisma.setor.findMany({
       where: {
         cidadeId: cidade.id,
-        ativo: true
+        ativo: true,
       },
       include: {
         cidade: true,
