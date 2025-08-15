@@ -229,12 +229,10 @@ export function ModalReceita() {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
-        valor: parseFloat(formData.valor),
-        valorLiquido:
-          parseFloat(formData.valorLiquido) || parseFloat(formData.valor),
-        valorQueEntrou:
-          parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
-        comissao: parseFloat(formData.comissao) || 0,
+        valor: valorCalculado,
+        valorLiquido: valorLiquidoCalculado,
+        valorQueEntrou: valorQueEntrouCalculado,
+        comissao: comissaoCalculada,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
