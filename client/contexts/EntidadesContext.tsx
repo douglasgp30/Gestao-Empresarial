@@ -177,7 +177,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      // Carregar dados do banco
+      // Carregar dados do banco usando loadingManager para evitar sobrecarga
       const [
         descricoesECategoriasResponse,
         descricoesResponse,
@@ -187,13 +187,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
-        descricoesECategoriasApi.listar(),
-        descricoesApi.listar(),
-        formasPagamentoApi.listar(),
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-        setoresApi.listar(),
-        setoresApi.listarCidades(),
+        loadingManager.executeWithControl("descricoes-categorias", () => descricoesECategoriasApi.listar()),
+        loadingManager.executeWithControl("descricoes", () => descricoesApi.listar()),
+        loadingManager.executeWithControl("formas-pagamento", () => formasPagamentoApi.listar()),
+        loadingManager.executeWithControl("funcionarios", () => funcionariosApi.listar()),
+        loadingManager.executeWithControl("tecnicos", () => funcionariosApi.listarTecnicos()),
+        loadingManager.executeWithControl("setores", () => setoresApi.listar()),
+        loadingManager.executeWithControl("cidades", () => setoresApi.listarCidades()),
       ]);
 
       // Atualizar estados com dados do banco
