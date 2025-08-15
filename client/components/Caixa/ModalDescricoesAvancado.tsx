@@ -634,7 +634,7 @@ export default function ModalDescricoesAvancado() {
             >
               Cancelar
             </AlertDialogCancel>
-            <AlertDialogAction
+            <Button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -644,7 +644,7 @@ export default function ModalDescricoesAvancado() {
               className="bg-red-600 hover:bg-red-700"
             >
               {isDeleting ? "Excluindo..." : "Excluir"}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
