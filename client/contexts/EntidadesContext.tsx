@@ -353,9 +353,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar dados na inicialização
+  // Carregar dados na inicialização com debounce
   useEffect(() => {
-    carregarDados();
+    const timeout = setTimeout(() => {
+      carregarDados();
+    }, 100); // Pequeno delay para evitar chamadas múltiplas no hot reload
+
+    return () => clearTimeout(timeout);
   }, []);
 
   // === FUNÇÕES PARA DESCRIÇÕES (API) ===
