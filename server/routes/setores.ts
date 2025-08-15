@@ -10,25 +10,41 @@ const SetorSchema = z.object({
 export const getSetores: RequestHandler = async (req, res) => {
   try {
     const { cidade } = req.query;
-    const where: any = {};
+    const where: any = { ativo: true };
 
-    if (cidade) where.cidade = cidade as string;
+    // Filtrar por cidade se especificado
+    if (cidade) {
+      // Tentar buscar pela nova estrutura primeiro
+      try {
+        const cidadeObj = await prisma.cidade.findFirst({
+          where: { nome: cidade as string }
+        });
+        if (cidadeObj) {
+          where.cidadeId = cidadeObj.id;
+        }
+      } catch (error) {
+        // Fallback para estrutura antiga
+        where.cidade = cidade as string;
+      }
+    }
 
-    // Verificar se a coluna cidadeId existe (nova estrutura) ou usar a antiga
+    // Buscar setores com dados da cidade incluídos
     try {
       const setores = await prisma.setor.findMany({
-        where: { ...where, ativo: true },
+        where,
         include: {
           cidade: true,
         },
         orderBy: [{ cidade: { nome: "asc" } }, { nome: "asc" }],
       });
+
+      console.log(`[Setores] Encontrados ${setores.length} setores com nova estrutura`);
       res.json(setores);
     } catch (includeError) {
       // Fallback para estrutura antiga
-      console.log("Usando estrutura antiga de setores");
+      console.log("[Setores] Usando estrutura antiga de setores");
       const setores = await prisma.setor.findMany({
-        where,
+        where: cidade ? { cidade: cidade as string, ativo: true } : { ativo: true },
         orderBy: [{ cidade: "asc" }, { nome: "asc" }],
       });
       res.json(setores);
