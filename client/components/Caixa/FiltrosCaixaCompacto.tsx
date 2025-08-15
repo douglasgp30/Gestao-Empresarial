@@ -76,8 +76,8 @@ export function FiltrosCaixaCompacto() {
     setFiltrosAvancadosAbertos(false);
   }, [setFiltros]);
 
-  // Contar filtros ativos (além das datas)
-  const contarFiltrosAtivos = () => {
+  // Contar filtros ativos (além das datas) - memoizado
+  const filtrosAtivos = useMemo(() => {
     let count = 0;
     if (filtrosLocal.tipo !== "todos") count++;
     if (filtrosLocal.formaPagamento !== "todas") count++;
@@ -91,10 +91,12 @@ export function FiltrosCaixaCompacto() {
     if (filtrosLocal.numeroNota && filtrosLocal.numeroNota.trim() !== "")
       count++;
     return count;
-  };
+  }, [filtrosLocal]);
 
-  const filtrosAtivos = contarFiltrosAtivos();
-  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
+  const isLoading = useMemo(() =>
+    caixaLoading || entidadesLoading || clientesLoading,
+    [caixaLoading, entidadesLoading, clientesLoading]
+  );
 
   // Obter categorias únicas das descrições
   const categorias = [
