@@ -189,8 +189,8 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
       data: { ativo: false },
     });
 
-    const response: ApiResponse<null> = { data: null };
-    res.status(204).json(response);
+    // Status 204 não deve retornar JSON
+    res.status(204).send();
   } catch (error) {
     console.error("Erro ao desativar item:", error);
     const response: ApiResponse<null> = {
