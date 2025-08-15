@@ -119,7 +119,7 @@ function ModalDependenciasSetor({
 }
 
 export default function ModalCidadeSetorSimples() {
-  const { setores, cidades, adicionarSetor, adicionarCidade, excluirSetor } = useEntidades();
+  const { setores, cidades, adicionarSetor, adicionarCidade, excluirSetor, recarregarTudo } = useEntidades();
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
