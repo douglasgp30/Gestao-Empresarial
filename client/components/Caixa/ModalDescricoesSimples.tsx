@@ -189,23 +189,12 @@ export default function ModalDescricoesSimples() {
       if (!response.ok) {
         console.log('🔴 Erro HTTP detectado - status:', response.status);
 
-        // Tentar ler o corpo da resposta para debug
-        try {
-          const responseClone = response.clone();
-          const errorText = await responseClone.text();
-          console.log('🔴 Corpo da resposta de erro:', errorText);
-        } catch (readError) {
-          console.log('🔴 Erro ao ler corpo da resposta:', readError);
-        }
-
+        // Ler a resposta uma única vez e usar parseErrorResponse
         const errorMessage = await parseErrorResponse(response);
         console.log('🔴 Mensagem de erro parseada:', errorMessage);
-        console.log('🔴 Tipo da mensagem:', typeof errorMessage);
-        console.log('🔴 Comprimento da mensagem:', errorMessage?.length);
-        console.log('🔴 Mensagem como string:', JSON.stringify(errorMessage));
 
-        if (!errorMessage || errorMessage.trim() === '' || errorMessage === 'Erro HTTP 400:') {
-          console.log('🔴 Mensagem vazia detectada, usando fallback');
+        if (!errorMessage || errorMessage.trim() === '' || errorMessage === 'Erro HTTP 400:' || errorMessage === `Erro HTTP ${response.status}: ${response.statusText}`) {
+          console.log('🔴 Mensagem vazia ou genérica detectada, usando fallback');
           throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
         }
 
