@@ -207,6 +207,7 @@ model LancamentoCaixa {
   funcionarioId     Int?     // Puxa da tabela Técnicos
   campanhaId        Int?     // Puxa da tabela Campanhas
   clienteId         Int?     // Puxa da tabela Clientes
+  localizacaoId     Int?     // Puxa da tabela Localizações Geográficas
 
   // Unified descriptions and categories
   descricaoECategoriaId Int? // FK to unified table
@@ -219,6 +220,7 @@ model LancamentoCaixa {
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
   cliente        Cliente?       @relation(fields: [clienteId], references: [id])
   descricaoECategoria DescricaoECategoria? @relation(fields: [descricaoECategoriaId], references: [id])
+  localizacao    LocalizacaoGeografica? @relation(fields: [localizacaoId], references: [id])
 
   @@map("lancamentos_caixa")
   @@index([dataHora])
