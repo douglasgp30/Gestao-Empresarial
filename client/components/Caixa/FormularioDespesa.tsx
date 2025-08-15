@@ -59,22 +59,77 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   const [carregandoCategorias, setCarregandoCategorias] = useState(false);
   const [carregandoDescricoes, setCarregandoDescricoes] = useState(false);
 
-  // Filtrar descrições de despesa
-  const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
+  // Carregar categorias de despesa
+  useEffect(() => {
+    const carregarCategorias = async () => {
+      try {
+        setCarregandoCategorias(true);
+        const response = await fetch(
+          "/api/descricoes-e-categorias/categorias?tipo=despesa",
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.data) {
+          setCategorias(result.data);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar categorias",
+          variant: "destructive",
+        });
+      } finally {
+        setCarregandoCategorias(false);
+      }
+    };
+
+    carregarCategorias();
+  }, []);
+
+  // Carregar descrições quando categoria mudar
+  useEffect(() => {
+    if (!formData.categoria) {
+      setDescricoes([]);
+      return;
+    }
+
+    const carregarDescricoes = async () => {
+      try {
+        setCarregandoDescricoes(true);
+        const response = await fetch(
+          `/api/descricoes-e-categorias/descricoes?tipo=despesa&categoria=${encodeURIComponent(formData.categoria)}`,
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.data) {
+          setDescricoes(result.data);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar descrições:", error);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar descrições",
+          variant: "destructive",
+        });
+      } finally {
+        setCarregandoDescricoes(false);
+      }
+    };
+
+    carregarDescricoes();
+  }, [formData.categoria]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = formData.categoria
-    ? descricoesDespesa.filter((d) => d.categoria === formData.categoria)
-    : [];
-
-  // Obter categorias únicas das descrições de despesa
-  const categoriasDespesa = [
-    ...new Set(
-      descricoesDespesa
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
+  const descricoesFiltradas = descricoes;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
