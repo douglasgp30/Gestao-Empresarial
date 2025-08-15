@@ -125,17 +125,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
 
-      // Verificar se é erro de rede
+      // Verificar se é erro de rede durante hot reload
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        setError("Erro de conexão. Tentando reconectar...");
-        console.log("CaixaContext: Tentando reconectar em 2s...");
+        console.log("📡 [CaixaContext] Erro de rede detectado, aguardando reconexão...");
+        // Durante hot reload, não mostrar erro persistente ao usuário
+        setError(null);
 
-        // Tentar reconectar após 2 segundos
+        // Tentar reconectar após 4 segundos
         setTimeout(() => {
           if (!isCarregando) {
+            console.log("🔄 [CaixaContext] Tentando reconectar...");
             carregarDados();
           }
-        }, 2000);
+        }, 4000);
       } else {
         setError("Erro ao carregar dados do servidor");
       }
@@ -302,7 +304,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      // Recarregar lan��amentos
+      // Recarregar lançamentos
       await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
