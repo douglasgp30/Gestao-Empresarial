@@ -26,6 +26,7 @@ import {
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 import { loadingManager } from "../lib/loadingManager";
+import { shouldSkipAutoLoad, getDevDelay } from "../lib/devUtils";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
@@ -741,7 +742,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       toast.success("Categoria excluída com sucesso!");
     } catch (error) {
-      console.error("����� [Categorias] Erro ao excluir categoria:", error);
+      console.error("��� [Categorias] Erro ao excluir categoria:", error);
       toast.error("Erro ao excluir categoria");
     }
   };
