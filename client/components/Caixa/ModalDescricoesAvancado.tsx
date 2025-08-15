@@ -522,7 +522,7 @@ export default function ModalDescricoesAvancado() {
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="gap-1 text-xs">
             <FileText className="h-3 w-3" />
-            Descrições
+            Categoria/Descrição
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
