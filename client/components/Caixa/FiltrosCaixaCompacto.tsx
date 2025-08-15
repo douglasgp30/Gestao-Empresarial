@@ -51,11 +51,11 @@ export function FiltrosCaixaCompacto() {
     setFiltrosLocal(filtrosMemoizados);
   }, [filtrosMemoizados]);
 
-  const aplicarFiltros = () => {
+  const aplicarFiltros = useCallback(() => {
     setFiltros(filtrosLocal);
-  };
+  }, [filtrosLocal, setFiltros]);
 
-  const limparFiltros = () => {
+  const limparFiltros = useCallback(() => {
     const filtrosLimpos = {
       dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
       dataFim: new Date(),
@@ -74,7 +74,7 @@ export function FiltrosCaixaCompacto() {
     setFiltros(filtrosLimpos);
     // Fechar os filtros avançados após limpar
     setFiltrosAvancadosAbertos(false);
-  };
+  }, [setFiltros]);
 
   // Contar filtros ativos (além das datas)
   const contarFiltrosAtivos = () => {
