@@ -12,6 +12,7 @@ import { useAuth } from "./AuthContext";
 import { caixaApi, campanhasApi } from "../lib/apiService";
 import { loadingManager } from "../lib/loadingManager";
 import { apiCache } from "../lib/apiCache";
+import { contextThrottle } from "../lib/contextThrottle";
 import {
   shouldSkipLoading,
   getLoadingDelay,
