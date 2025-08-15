@@ -361,6 +361,7 @@ model ContaLancamento {
   funcionarioLanc       Funcionario?    @relation("FuncionarioLancamento", fields: [funcionarioLancamento], references: [id])
   funcionarioPag        Funcionario?    @relation("FuncionarioPagamento", fields: [funcionarioPagamento], references: [id])
   funcionarioCob        Funcionario?    @relation("FuncionarioCobranca", fields: [funcionarioCobranca], references: [id])
+  cidade                Cidade?         @relation(fields: [cidadeId], references: [id])
   setor                 Setor?          @relation(fields: [setorId], references: [id])
   contaOrigem           ContaLancamento? @relation("ContaRecorrente", fields: [contaOrigemId], references: [id])
   contasRecorrentes     ContaLancamento[] @relation("ContaRecorrente")
