@@ -58,23 +58,18 @@ export const getSetores: RequestHandler = async (req, res) => {
 export const getCidades: RequestHandler = async (req, res) => {
   try {
     // Tentar usar a nova tabela de cidades
-    try {
-      const cidades = await prisma.cidade.findMany({
-        where: { ativo: true },
-        orderBy: { nome: "asc" },
-      });
-      res.json(cidades);
-    } catch (newTableError) {
-      // Fallback para extrair cidades dos setores (estrutura antiga)
-      console.log("Usando fallback: extraindo cidades dos setores");
-      const setores = await prisma.setor.findMany({
-        select: { cidade: true },
-        distinct: ["cidade"],
-        orderBy: { cidade: "asc" },
-      });
-      const cidadesSimples = setores.map((item) => item.cidade);
-      res.json(cidadesSimples);
-    }
+    const cidades = await prisma.cidade.findMany({
+      where: { ativo: true },
+      orderBy: { nome: "asc" },
+      include: {
+        _count: {
+          select: { setores: true },
+        },
+      },
+    });
+
+    console.log(`[Cidades] Encontradas ${cidades.length} cidades`);
+    res.json(cidades);
   } catch (error) {
     console.error("Erro ao buscar cidades:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
