@@ -230,20 +230,6 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Verificar cache primeiro
-    const cachedData = getCachedData("entidades-data");
-    if (cachedData) {
-      console.log("[EntidadesContext] Usando dados do cache");
-      setDescricoesECategorias(cachedData.descricoesECategorias || []);
-      setFormasPagamento(cachedData.formasPagamento || []);
-      setFuncionarios(cachedData.funcionarios || []);
-      setTecnicos(cachedData.tecnicos || []);
-      setSetores(cachedData.setores || []);
-      setCidades(cachedData.cidades || []);
-      setIsLoading(false);
-      return;
-    }
-
     console.log("[EntidadesContext] Iniciando carregamento de dados...");
     setContextLoading("EntidadesContext", true);
     setIsCarregando(true);
@@ -251,7 +237,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      // Priorizar tabela unificada
+      // Usar cache agressivo para reduzir chamadas
       const [
         descricoesECategoriasResponse,
         formasPagamentoResponse,
@@ -260,12 +246,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
-        descricoesECategoriasApi.listar(),
-        formasPagamentoApi.listar(),
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-        setoresApi.listar(),
-        setoresApi.listarCidades(),
+        apiCache.executeWithCache('entidades-descricoes', () => descricoesECategoriasApi.listar()),
+        apiCache.executeWithCache('entidades-formas-pagamento', () => formasPagamentoApi.listar()),
+        apiCache.executeWithCache('entidades-funcionarios', () => funcionariosApi.listar()),
+        apiCache.executeWithCache('entidades-tecnicos', () => funcionariosApi.listarTecnicos()),
+        apiCache.executeWithCache('entidades-setores', () => setoresApi.listar()),
+        apiCache.executeWithCache('entidades-cidades', () => setoresApi.listarCidades()),
       ]);
 
       // Atualizar estados com dados do banco
