@@ -199,10 +199,9 @@ export default function ModalCidadeSetorSimples() {
         return;
       }
 
-      // Como as cidades são extraídas dos setores, vamos criar um setor "Centro" para a nova cidade
-      await adicionarSetor({
-        nome: "Centro",
-        cidade: nomeCidade,
+      // Usar a nova API de cidades
+      await adicionarCidade({
+        nome: nomeCidade,
       });
 
       // Recarregar dados para atualizar a lista de cidades
@@ -247,7 +246,7 @@ export default function ModalCidadeSetorSimples() {
 
       if (setorExistente) {
         toast.error(
-          `O setor "${nomeSetor}" já existe na cidade "${nomeCidade}"`,
+          `O setor "${nomeSetor}" j�� existe na cidade "${nomeCidade}"`,
         );
         return;
       }
