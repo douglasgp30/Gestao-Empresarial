@@ -252,7 +252,7 @@ export default function ModalCampanhasSimples() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {campanhas.map((campanha) => (
+                  {(Array.isArray(campanhas) ? campanhas : []).map((campanha) => (
                     <div key={campanha.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <span className="font-medium">{campanha.nome}</span>
                       <div className="flex gap-1">
