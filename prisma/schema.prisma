@@ -301,6 +301,9 @@ model ContaLancamento {
   // Unified descriptions and categories
   descricaoECategoriaId Int?     // FK to unified table
 
+  // Geographic Information
+  localizacaoId         Int?     // FK to localizacao geografica
+
   // Recurring Information
   ehRecorrente          Boolean  @default(false) // Is recurring
   tipoRecorrencia       String?  // "mensal", "trimestral", "semestral", "anual"
