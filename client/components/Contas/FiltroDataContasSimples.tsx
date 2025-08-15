@@ -12,7 +12,7 @@ import {
 import { ptBR } from "date-fns/locale";
 
 export function FiltroDataContasSimples() {
-  const { filtros, setFiltros, isLoading } = useContas();
+  const { filtros, atualizarFiltros, isLoading } = useContas();
   const [open, setOpen] = useState(false);
 
   // Verificar e corrigir datas inválidas na inicialização
