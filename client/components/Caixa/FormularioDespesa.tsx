@@ -54,6 +54,10 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categorias, setCategorias] = useState<{ nome: string; tipo: string }[]>([]);
+  const [descricoes, setDescricoes] = useState<{ nome: string; categoria: string }[]>([]);
+  const [carregandoCategorias, setCarregandoCategorias] = useState(false);
+  const [carregandoDescricoes, setCarregandoDescricoes] = useState(false);
 
   // Filtrar descrições de despesa
   const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
