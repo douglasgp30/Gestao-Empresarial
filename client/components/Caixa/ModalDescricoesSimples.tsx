@@ -200,6 +200,15 @@ export default function ModalDescricoesSimples() {
 
         const errorMessage = await parseErrorResponse(response);
         console.log('🔴 Mensagem de erro parseada:', errorMessage);
+        console.log('🔴 Tipo da mensagem:', typeof errorMessage);
+        console.log('🔴 Comprimento da mensagem:', errorMessage?.length);
+        console.log('🔴 Mensagem como string:', JSON.stringify(errorMessage));
+
+        if (!errorMessage || errorMessage.trim() === '' || errorMessage === 'Erro HTTP 400:') {
+          console.log('🔴 Mensagem vazia detectada, usando fallback');
+          throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
+        }
+
         throw new Error(errorMessage);
       }
 
