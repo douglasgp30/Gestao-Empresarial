@@ -190,12 +190,38 @@ export function createServer(): Express {
   // Rota de migração (apenas para desenvolvimento)
   app.post("/api/migrate/separate-cities", async (req, res) => {
     try {
-      const { migrateToSeparateCities } = require("./lib/migrate-to-separate-cities");
-      await migrateToSeparateCities();
-      res.json({ message: "Migração concluída com sucesso!" });
+      console.log("[API] Iniciando migração manual...");
+
+      // Verificar se a tabela cidade existe e tem dados
+      const cidades = await prisma.cidade.findMany();
+      if (cidades.length > 0) {
+        return res.json({ message: "Migração já foi executada anteriormente" });
+      }
+
+      // Buscar setores existentes
+      const setores = await prisma.setor.findMany();
+      const cidadesUnicas = [...new Set(setores.map(s => s.cidade))];
+
+      console.log(`[API] Encontradas ${cidadesUnicas.length} cidades únicas:`, cidadesUnicas);
+
+      // Criar cidades
+      const cidadesCriadas = [];
+      for (const nomeCidade of cidadesUnicas) {
+        const cidade = await prisma.cidade.create({
+          data: { nome: nomeCidade, ativo: true },
+        });
+        cidadesCriadas.push(cidade);
+      }
+
+      console.log(`[API] ${cidadesCriadas.length} cidades criadas`);
+
+      res.json({
+        message: "Migração concluída com sucesso!",
+        cidadesCriadas: cidadesCriadas.length
+      });
     } catch (error) {
       console.error("Erro na migração:", error);
-      res.status(500).json({ error: "Erro na migração" });
+      res.status(500).json({ error: "Erro na migração: " + error.message });
     }
   });
 
