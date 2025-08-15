@@ -161,6 +161,7 @@ export function ModalReceita() {
       descricao: "",
       formaPagamento: "",
       tecnicoResponsavel: "",
+      cidade: "",
       setor: "",
       campanha: "",
       cliente: "",
