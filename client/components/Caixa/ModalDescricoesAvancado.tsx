@@ -136,20 +136,12 @@ export default function ModalDescricoesAvancado() {
 
   const handleAdicionarDescricao = async () => {
     if (!formDescricao.nome.trim()) {
-      toast({
-        title: "Erro",
-        description: "Nome da descrição é obrigatório",
-        variant: "destructive",
-      });
+      toast.error("Nome da descrição é obrigatório");
       return;
     }
 
     if (!formDescricao.categoria) {
-      toast({
-        title: "Erro", 
-        description: "Categoria é obrigatória",
-        variant: "destructive",
-      });
+      toast.error("Categoria é obrigatória");
       return;
     }
 
@@ -163,21 +155,13 @@ export default function ModalDescricoesAvancado() {
         ativo: true,
       });
 
-      toast({
-        title: "Sucesso!",
-        description: "Descrição adicionada com sucesso",
-        variant: "default",
-      });
+      toast.success("Descrição adicionada com sucesso");
 
       resetFormDescricao();
       setIsNewDescricaoOpen(false);
     } catch (error) {
       console.error("Erro ao adicionar descrição:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao adicionar descrição. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao adicionar descrição. Tente novamente.");
     } finally {
       setIsSaving(false);
     }
@@ -185,11 +169,7 @@ export default function ModalDescricoesAvancado() {
 
   const handleAdicionarCategoria = async () => {
     if (!formCategoria.nome.trim()) {
-      toast({
-        title: "Erro",
-        description: "Nome da categoria é obrigatório",
-        variant: "destructive",
-      });
+      toast.error("Nome da categoria é obrigatório");
       return;
     }
 
@@ -202,21 +182,13 @@ export default function ModalDescricoesAvancado() {
         ativo: true,
       });
 
-      toast({
-        title: "Sucesso!",
-        description: "Categoria adicionada com sucesso",
-        variant: "default",
-      });
+      toast.success("Categoria adicionada com sucesso");
 
       resetFormCategoria();
       setIsNewCategoriaOpen(false);
     } catch (error) {
       console.error("Erro ao adicionar categoria:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao adicionar categoria. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao adicionar categoria. Tente novamente.");
     } finally {
       setIsSaving(false);
     }
@@ -246,19 +218,12 @@ export default function ModalDescricoesAvancado() {
       // Recarregar dados manualmente
       await recarregarDescricoesECategorias();
 
-      toast({
-        title: "Sucesso!",
-        description: `${itemParaExcluir.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`,
-      });
+      toast.success(`${itemParaExcluir.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`);
 
       setItemParaExcluir(null);
     } catch (error) {
       console.error('❌ [Modal] Erro ao excluir:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao excluir item. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao excluir item. Tente novamente.");
     } finally {
       setIsDeleting(false);
     }
