@@ -372,7 +372,7 @@ export default function ModalCidadeSetorSimples() {
             </Button>
           </div>
           <p className="text-sm text-gray-600 mt-2">
-            Gerencie as cidades e setores para organização
+            Gerencie as cidades e setores. Ao criar uma cidade, um setor "Centro" é criado automaticamente.
           </p>
         </div>
 
