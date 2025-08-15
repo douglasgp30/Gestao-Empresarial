@@ -484,27 +484,46 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       if ('cidade' in novoSetor && novoSetor.cidade && !('cidadeId' in novoSetor)) {
         // Buscar ID da cidade pelo nome
         const cidadesResponse = await setoresApi.listarCidades();
+        console.log("[EntidadesContext] Resposta de cidades:", cidadesResponse);
+
         if (cidadesResponse.data) {
           let cidadeEncontrada;
-          if (typeof cidadesResponse.data[0] === 'string') {
-            // Formato antigo - criar setor com nome da cidade
-            setorParaEnviar = novoSetor;
-          } else {
-            // Formato novo - buscar ID da cidade
-            cidadeEncontrada = cidadesResponse.data.find((c: any) =>
-              c.nome.toLowerCase() === novoSetor.cidade.toLowerCase()
-            );
+          let cidadesArray = cidadesResponse.data;
 
-            if (cidadeEncontrada) {
-              setorParaEnviar = {
-                nome: novoSetor.nome,
-                cidadeId: cidadeEncontrada.id
-              };
-              // Remover propriedade 'cidade' do objeto
-              delete (setorParaEnviar as any).cidade;
+          // Se cidadesResponse.data tem propriedade data, extrair o array
+          if (cidadesResponse.data.data && Array.isArray(cidadesResponse.data.data)) {
+            cidadesArray = cidadesResponse.data.data;
+          }
+
+          // Verificar se é array válido
+          if (!Array.isArray(cidadesArray)) {
+            console.error("[EntidadesContext] cidadesArray não é um array:", cidadesArray);
+            throw new Error("Erro ao carregar lista de cidades");
+          }
+
+          if (cidadesArray.length > 0) {
+            if (typeof cidadesArray[0] === 'string') {
+              // Formato antigo - criar setor com nome da cidade
+              setorParaEnviar = novoSetor;
             } else {
-              throw new Error(`Cidade "${novoSetor.cidade}" não encontrada`);
+              // Formato novo - buscar ID da cidade
+              cidadeEncontrada = cidadesArray.find((c: any) =>
+                c.nome && c.nome.toLowerCase() === novoSetor.cidade.toLowerCase()
+              );
+
+              if (cidadeEncontrada) {
+                setorParaEnviar = {
+                  nome: novoSetor.nome,
+                  cidadeId: cidadeEncontrada.id
+                };
+                // Remover propriedade 'cidade' do objeto
+                delete (setorParaEnviar as any).cidade;
+              } else {
+                throw new Error(`Cidade "${novoSetor.cidade}" não encontrada`);
+              }
             }
+          } else {
+            throw new Error("Nenhuma cidade encontrada. Cadastre uma cidade primeiro.");
           }
         }
       }
