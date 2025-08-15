@@ -371,8 +371,22 @@ export default function ModalCidadeSetorSimples() {
         );
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Erro HTTP ${response.status}`);
+          let errorMessage = `Erro HTTP ${response.status}`;
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (parseError) {
+            console.error("Erro ao parsear resposta de erro:", parseError);
+          }
+          throw new Error(errorMessage);
+        }
+
+        // Consumir response bem-sucedido se necessário
+        try {
+          await response.json();
+        } catch (parseError) {
+          // Se não conseguir parsear, não é crítico
+          console.log("Response processado com sucesso");
         }
 
         console.log("✅ Cidade excluída com sucesso");
