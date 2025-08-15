@@ -354,7 +354,7 @@ export function ModalReceita() {
                       ? "Selecione a descrição"
                       : "Primeiro selecione uma categoria"
                   }
-                  options={descricoesFiltradas().map((desc) => ({
+                  options={descricoesFiltradas.map((desc) => ({
                     value: desc.id.toString(),
                     label: desc.nome,
                   }))}
