@@ -52,11 +52,6 @@ function CaixaContent() {
 
       {/* Lista de Lançamentos */}
       <ListaLancamentosSimples />
-
-      {/* DEBUG: Componente de teste temporário */}
-      <div className="mt-8">
-        <TesteCarregamentoDados />
-      </div>
     </div>
   );
 }
