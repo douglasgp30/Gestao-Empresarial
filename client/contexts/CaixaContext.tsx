@@ -8,6 +8,7 @@ import React, {
 import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
 import { caixaApi, campanhasApi } from "../lib/apiService";
+import { loadingManager } from "../lib/loadingManager";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
