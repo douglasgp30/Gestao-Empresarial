@@ -112,7 +112,13 @@ export const updateSetor: RequestHandler = async (req, res) => {
 export const deleteSetor: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    await prisma.setor.delete({ where: { id } });
+
+    // Soft delete - apenas marcar como inativo
+    await prisma.setor.update({
+      where: { id },
+      data: { ativo: false },
+    });
+
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao excluir setor:", error);
