@@ -224,11 +224,12 @@ export default function ModalDescricoesAvancado() {
   };
 
   const handleExcluir = async () => {
-    if (!itemParaExcluir || isDeleting || isConfirmingDeletion) return;
+    if (!itemParaExcluir || isDeleting || isConfirmingDeletion || isExecutingDelete.current) return;
 
     console.log('🔴 [Modal] Iniciando exclusão:', itemParaExcluir.nome);
 
     try {
+      isExecutingDelete.current = true;
       setIsDeleting(true);
       setIsConfirmingDeletion(true);
 
@@ -244,12 +245,14 @@ export default function ModalDescricoesAvancado() {
       setTimeout(() => {
         setItemParaExcluir(null);
         setIsConfirmingDeletion(false);
+        isExecutingDelete.current = false;
       }, 150);
 
       // O toast do sucesso já é exibido pelo Context
     } catch (error) {
       console.error('❌ [Modal] Erro ao excluir:', error);
       setIsConfirmingDeletion(false);
+      isExecutingDelete.current = false;
       toast({
         title: "Erro",
         description: "Erro ao excluir item. Tente novamente.",
@@ -580,7 +583,7 @@ export default function ModalDescricoesAvancado() {
                 <CardContent>
                   {descricoesDespesas.length === 0 ? (
                     <p className="text-sm text-gray-500 text-center py-4">
-                      Nenhuma descrição de despesa cadastrada
+                      Nenhuma descriç��o de despesa cadastrada
                     </p>
                   ) : (
                     <div className="space-y-2">
