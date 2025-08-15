@@ -361,14 +361,28 @@ export default function ModalCidadeSetorSimples() {
         return;
       }
 
-      // Se chegou aqui, pode excluir
+      // Se chegou aqui, pode excluir usando a nova API
       try {
-        const response = await fetch(
-          `/api/setores/cidades/${encodeURIComponent(itemToDelete.nome)}`,
-          {
-            method: "DELETE",
-          },
+        // Primeiro, buscar o ID da cidade pelo nome
+        const cidadesResponse = await fetch("/api/cidades");
+        const cidadesData = await cidadesResponse.json();
+
+        let cidadesArray = cidadesData.data || cidadesData;
+        if (cidadesData.data && Array.isArray(cidadesData.data)) {
+          cidadesArray = cidadesData.data;
+        }
+
+        const cidadeEncontrada = cidadesArray.find((c: any) =>
+          c.nome === itemToDelete.nome
         );
+
+        if (!cidadeEncontrada) {
+          throw new Error(`Cidade "${itemToDelete.nome}" não encontrada`);
+        }
+
+        const response = await fetch(`/api/cidades/${cidadeEncontrada.id}`, {
+          method: "DELETE",
+        });
 
         // Ler response uma única vez
         let responseData;
