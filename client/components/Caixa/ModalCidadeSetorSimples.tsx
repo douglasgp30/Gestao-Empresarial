@@ -347,7 +347,12 @@ export default function ModalCidadeSetorSimples() {
       console.log("🟡 Excluindo cidade:", itemToDelete.nome);
 
       const setoresVinculados = setores.filter(
-        (s) => s.cidade === itemToDelete.nome,
+        (s) => {
+          const nomeCidadeSetor = typeof s.cidade === 'object'
+            ? s.cidade?.nome
+            : s.cidade;
+          return nomeCidadeSetor === itemToDelete.nome;
+        },
       );
 
       if (setoresVinculados.length > 0) {
