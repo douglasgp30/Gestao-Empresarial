@@ -163,18 +163,36 @@ model Funcionario {
   @@index([tipoAcesso])
 }
 
-model Setor {
-  id          Int      @id @default(autoincrement()) // CodigoSetor
-  cidade      String   // Cidade (obrigatório)
-  nome        String   // Setor/bairro (obrigatório)
+model Cidade {
+  id          Int      @id @default(autoincrement())
+  nome        String   @unique // Nome da cidade deve ser único
+  ativo       Boolean  @default(true)
   dataCriacao DateTime @default(now())
 
   // Relacionamentos
+  setores      Setor[]
+  lancamentos  LancamentoCaixa[]
+  agendamentos Agendamento[]
+  contas       ContaLancamento[]
+
+  @@map("cidades")
+}
+
+model Setor {
+  id          Int      @id @default(autoincrement()) // CodigoSetor
+  cidadeId    Int      // Chave estrangeira para Cidade
+  nome        String   // Setor/bairro (obrigatório)
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  cidade       Cidade            @relation(fields: [cidadeId], references: [id])
   lancamentos  LancamentoCaixa[]
   agendamentos Agendamento[]
   contas       ContaLancamento[]
 
   @@map("setores")
+  @@unique([cidadeId, nome]) // Não permitir setores duplicados na mesma cidade
 }
 
 model LancamentoCaixa {
