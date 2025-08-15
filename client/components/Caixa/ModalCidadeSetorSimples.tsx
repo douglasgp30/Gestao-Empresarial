@@ -26,7 +26,12 @@ function ModalDependenciasSetor({
   useEffect(() => {
     if (cidade && todosSetores) {
       const vinculados = todosSetores.filter(
-        (setor) => setor.cidade === cidade.nome,
+        (setor) => {
+          const nomeCidadeSetor = typeof setor.cidade === 'object'
+            ? setor.cidade?.nome
+            : setor.cidade;
+          return nomeCidadeSetor === cidade.nome;
+        },
       );
       setSetoresVinculados(vinculados);
     }
