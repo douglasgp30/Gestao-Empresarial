@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useEntidades } from "../../contexts/EntidadesContext";
-import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -58,26 +57,29 @@ import {
   XCircle,
   Folder,
 } from "lucide-react";
+import { toast } from "../ui/use-toast";
 
 export default function ModalDescricoesAvancado() {
   const {
-    descricoes,
-    categorias,
-    adicionarDescricao,
-    excluirDescricao,
-    adicionarCategoria,
-    excluirCategoria,
+    descricoesECategorias,
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
+    excluirDescricaoECategoria,
+    isLoading,
   } = useEntidades();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isNewDescricaoOpen, setIsNewDescricaoOpen] = useState(false);
   const [isNewCategoriaOpen, setIsNewCategoriaOpen] = useState(false);
   const [itemParaExcluir, setItemParaExcluir] = useState<{
-    id: string;
+    id: number;
     tipo: "descricao" | "categoria";
     nome: string;
   } | null>(null);
 
   const [tipoAtivo, setTipoAtivo] = useState<"receita" | "despesa">("receita");
+  const [isSaving, setIsSaving] = useState(false);
 
   const [formDescricao, setFormDescricao] = useState({
     nome: "",
@@ -90,16 +92,16 @@ export default function ModalDescricoesAvancado() {
     tipo: "receita" as "receita" | "despesa",
   });
 
-  // Filtrar dados por tipo
-  const descricoesReceitas = descricoes.filter((d) => d.tipo === "receita");
-  const descriçoesDespesas = descricoes.filter((d) => d.tipo === "despesa");
-  const categoriasReceitas = categorias.filter((c) => c.tipo === "receita");
-  const categoriasDespesas = categorias.filter((c) => c.tipo === "despesa");
+  // Filtrar dados usando o sistema unificado
+  const categoriasReceitas = getCategorias("receita");
+  const categoriasDespesas = getCategorias("despesa");
+  const descricoesReceitas = getDescricoes("receita");
+  const descricoesDespesas = getDescricoes("despesa");
 
   const resetFormDescricao = () => {
     setFormDescricao({
       nome: "",
-      tipo: tipoAtivo,
+      tipo: "receita",
       categoria: "",
     });
   };
@@ -107,608 +109,498 @@ export default function ModalDescricoesAvancado() {
   const resetFormCategoria = () => {
     setFormCategoria({
       nome: "",
-      tipo: tipoAtivo,
+      tipo: "receita",
     });
   };
 
-  const handleSubmitDescricao = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formDescricao.nome.trim()) return;
+  const handleAdicionarDescricao = async () => {
+    if (!formDescricao.nome.trim()) {
+      toast({
+        title: "Erro",
+        description: "Nome da descrição é obrigatório",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    adicionarDescricao({
-      nome: formDescricao.nome.trim(),
-      tipo: formDescricao.tipo,
-      categoria: formDescricao.categoria || undefined,
-    });
+    if (!formDescricao.categoria) {
+      toast({
+        title: "Erro", 
+        description: "Categoria é obrigatória",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    resetFormDescricao();
-    setIsNewDescricaoOpen(false);
+    setIsSaving(true);
+    try {
+      await adicionarDescricaoECategoria({
+        nome: formDescricao.nome.trim(),
+        tipo: formDescricao.tipo,
+        categoria: formDescricao.categoria,
+        tipoItem: "descricao",
+        ativo: true,
+      });
+
+      toast({
+        title: "Sucesso!",
+        description: "Descrição adicionada com sucesso",
+        variant: "default",
+      });
+
+      resetFormDescricao();
+      setIsNewDescricaoOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar descrição:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao adicionar descrição. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleSubmitCategoria = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formCategoria.nome.trim()) return;
+  const handleAdicionarCategoria = async () => {
+    if (!formCategoria.nome.trim()) {
+      toast({
+        title: "Erro",
+        description: "Nome da categoria é obrigatório",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    adicionarCategoria({
-      nome: formCategoria.nome.trim(),
-      tipo: formCategoria.tipo,
-    });
+    setIsSaving(true);
+    try {
+      await adicionarDescricaoECategoria({
+        nome: formCategoria.nome.trim(),
+        tipo: formCategoria.tipo,
+        tipoItem: "categoria",
+        ativo: true,
+      });
 
-    resetFormCategoria();
-    setIsNewCategoriaOpen(false);
+      toast({
+        title: "Sucesso!",
+        description: "Categoria adicionada com sucesso",
+        variant: "default",
+      });
+
+      resetFormCategoria();
+      setIsNewCategoriaOpen(false);
+    } catch (error) {
+      console.error("Erro ao adicionar categoria:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao adicionar categoria. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleExcluir = async () => {
     if (!itemParaExcluir) return;
 
     try {
-      if (itemParaExcluir.tipo === "descricao") {
-        await excluirDescricao(itemParaExcluir.id);
-      } else {
-        excluirCategoria(itemParaExcluir.id);
-      }
+      await excluirDescricaoECategoria(itemParaExcluir.id.toString());
+      
+      toast({
+        title: "Sucesso!",
+        description: `${itemParaExcluir.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`,
+        variant: "default",
+      });
+
       setItemParaExcluir(null);
     } catch (error) {
-      console.error("Erro ao excluir item:", error);
-      // O erro já foi tratado no contexto, não precisa fazer nada aqui
+      console.error("Erro ao excluir:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir item. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
-  const abrirModalDescricao = (tipo: "receita" | "despesa") => {
-    setFormDescricao({ ...formDescricao, tipo });
-    setIsNewDescricaoOpen(true);
+  const formatDate = (date: Date | string) => {
+    try {
+      const d = typeof date === 'string' ? new Date(date) : date;
+      return d.toLocaleDateString('pt-BR');
+    } catch {
+      return 'Data inválida';
+    }
   };
-
-  const abrirModalCategoria = (tipo: "receita" | "despesa") => {
-    setFormCategoria({ ...formCategoria, tipo });
-    setIsNewCategoriaOpen(true);
-  };
-
-  const renderTabReceitas = () => (
-    <div className="space-y-6">
-      {/* Seção Categorias */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Folder className="h-5 w-5 text-green-600" />
-              <CardTitle className="text-green-600">
-                Categorias de Receitas
-              </CardTitle>
-            </div>
-            <Button
-              onClick={() => abrirModalCategoria("receita")}
-              size="sm"
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Nova Categoria
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {categoriasReceitas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma categoria cadastrada
-            </p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {categoriasReceitas.map((categoria) => (
-                <div key={categoria.id} className="flex items-center">
-                  <Badge
-                    variant="outline"
-                    className="text-green-600 border-green-200"
-                  >
-                    {categoria.nome}
-                  </Badge>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 ml-1"
-                      >
-                        <MoreVertical className="h-3 w-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Editar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() =>
-                          setItemParaExcluir({
-                            id: categoria.id,
-                            tipo: "categoria",
-                            nome: categoria.nome,
-                          })
-                        }
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Excluir
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Seção Descrições */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <CardTitle className="text-green-600">
-                Descrições de Receitas
-              </CardTitle>
-            </div>
-            <Button
-              onClick={() => abrirModalDescricao("receita")}
-              size="sm"
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Nova Descrição
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {descricoesReceitas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma descrição cadastrada
-            </p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Categoria</TableHead>
-                  <TableHead>Data Criação</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {descricoesReceitas.map((descricao) => (
-                  <TableRow key={descricao.id}>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        <span className="font-medium">{descricao.nome}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {descricao.categoria ? (
-                        <Badge
-                          variant="outline"
-                          className="text-green-600 border-green-200"
-                        >
-                          {descricao.categoria}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          Sem categoria
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        <span>{formatDate(descricao.dataCriacao)}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Edit className="h-4 w-4 mr-2" />
-                            Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-red-600"
-                            onClick={() =>
-                              setItemParaExcluir({
-                                id: descricao.id,
-                                tipo: "descricao",
-                                nome: descricao.nome,
-                              })
-                            }
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Excluir
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const renderTabDespesas = () => (
-    <div className="space-y-6">
-      {/* Seção Categorias */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Folder className="h-5 w-5 text-red-600" />
-              <CardTitle className="text-red-600">
-                Categorias de Despesas
-              </CardTitle>
-            </div>
-            <Button
-              onClick={() => abrirModalCategoria("despesa")}
-              size="sm"
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Nova Categoria
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {categoriasDespesas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma categoria cadastrada
-            </p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {categoriasDespesas.map((categoria) => (
-                <div key={categoria.id} className="flex items-center">
-                  <Badge
-                    variant="outline"
-                    className="text-red-600 border-red-200"
-                  >
-                    {categoria.nome}
-                  </Badge>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 ml-1"
-                      >
-                        <MoreVertical className="h-3 w-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Editar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() =>
-                          setItemParaExcluir({
-                            id: categoria.id,
-                            tipo: "categoria",
-                            nome: categoria.nome,
-                          })
-                        }
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Excluir
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Seção Descrições */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <XCircle className="h-5 w-5 text-red-600" />
-              <CardTitle className="text-red-600">
-                Descrições de Despesas
-              </CardTitle>
-            </div>
-            <Button
-              onClick={() => abrirModalDescricao("despesa")}
-              size="sm"
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Nova Descrição
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {descriçoesDespesas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma descrição cadastrada
-            </p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Categoria</TableHead>
-                  <TableHead>Data Criação</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {descriçoesDespesas.map((descricao) => (
-                  <TableRow key={descricao.id}>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <XCircle className="h-4 w-4 text-red-600" />
-                        <span className="font-medium">{descricao.nome}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {descricao.categoria ? (
-                        <Badge
-                          variant="outline"
-                          className="text-red-600 border-red-200"
-                        >
-                          {descricao.categoria}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          Sem categoria
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        <span>{formatDate(descricao.dataCriacao)}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Edit className="h-4 w-4 mr-2" />
-                            Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-red-600"
-                            onClick={() =>
-                              setItemParaExcluir({
-                                id: descricao.id,
-                                tipo: "descricao",
-                                nome: descricao.nome,
-                              })
-                            }
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Excluir
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-1 text-xs">
-            <FileText className="h-3 w-3" />
-            Categoria/Descrição
+          <Button variant="outline" size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            Categorias/Descrições
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              Gerenciar Descrições e Categorias
+              <Folder className="h-5 w-5" />
+              Gerenciar Categorias e Descrições
             </DialogTitle>
             <DialogDescription>
-              Organize suas descrições por categorias, separadas entre receitas
-              e despesas
+              Gerencie as categorias e descrições para receitas e despesas
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs defaultValue="receitas" className="w-full">
+          <Tabs value={tipoAtivo} onValueChange={(value) => setTipoAtivo(value as "receita" | "despesa")} className="flex-1">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger
-                value="receitas"
-                className="flex items-center gap-2"
-                onClick={() => setTipoAtivo("receita")}
-              >
+              <TabsTrigger value="receita" className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4" />
                 Receitas
               </TabsTrigger>
-              <TabsTrigger
-                value="despesas"
-                className="flex items-center gap-2"
-                onClick={() => setTipoAtivo("despesa")}
-              >
+              <TabsTrigger value="despesa" className="flex items-center gap-2">
                 <XCircle className="h-4 w-4" />
                 Despesas
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="receitas" className="mt-6">
-              {renderTabReceitas()}
+            <TabsContent value="receita" className="space-y-4 overflow-auto max-h-[60vh]">
+              {/* Categorias de Receita */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Tag className="h-4 w-4" />
+                    Categorias de Receita ({categoriasReceitas.length})
+                  </CardTitle>
+                  <Dialog open={isNewCategoriaOpen} onOpenChange={setIsNewCategoriaOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" onClick={() => setFormCategoria({...formCategoria, tipo: "receita"})}>
+                        <Plus className="h-4 w-4 mr-1" />
+                        Nova
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Nova Categoria de Receita</DialogTitle>
+                        <DialogDescription>
+                          Adicione uma nova categoria para receitas
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="nome-categoria">Nome da Categoria *</Label>
+                          <Input
+                            id="nome-categoria"
+                            value={formCategoria.nome}
+                            onChange={(e) => setFormCategoria({...formCategoria, nome: e.target.value})}
+                            placeholder="Ex: Serviços, Vendas..."
+                          />
+                        </div>
+                        <div className="flex gap-2 justify-end">
+                          <Button variant="outline" onClick={() => {
+                            setIsNewCategoriaOpen(false);
+                            resetFormCategoria();
+                          }}>
+                            Cancelar
+                          </Button>
+                          <Button onClick={handleAdicionarCategoria} disabled={isSaving}>
+                            {isSaving ? "Salvando..." : "Salvar"}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  {categoriasReceitas.length === 0 ? (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      Nenhuma categoria de receita cadastrada
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {categoriasReceitas.map((categoria) => (
+                        <div key={categoria.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <span className="font-medium">{categoria.nome}</span>
+                            <Badge variant="outline" className="ml-2">
+                              {categoria.ativo ? "Ativo" : "Inativo"}
+                            </Badge>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() => setItemParaExcluir({
+                                  id: categoria.id,
+                                  tipo: "categoria",
+                                  nome: categoria.nome,
+                                })}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Descrições de Receita */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Descrições de Receita ({descricoesReceitas.length})
+                  </CardTitle>
+                  <Dialog open={isNewDescricaoOpen} onOpenChange={setIsNewDescricaoOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" onClick={() => setFormDescricao({...formDescricao, tipo: "receita"})}>
+                        <Plus className="h-4 w-4 mr-1" />
+                        Nova
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Nova Descrição de Receita</DialogTitle>
+                        <DialogDescription>
+                          Adicione uma nova descrição para receitas
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="categoria-select">Categoria *</Label>
+                          <Select
+                            value={formDescricao.categoria}
+                            onValueChange={(value) => setFormDescricao({...formDescricao, categoria: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione uma categoria" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categoriasReceitas.map((cat) => (
+                                <SelectItem key={cat.id} value={cat.nome}>
+                                  {cat.nome}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="nome-descricao">Nome da Descrição *</Label>
+                          <Input
+                            id="nome-descricao"
+                            value={formDescricao.nome}
+                            onChange={(e) => setFormDescricao({...formDescricao, nome: e.target.value})}
+                            placeholder="Ex: Conserto de Celular, Venda de Produto..."
+                          />
+                        </div>
+                        <div className="flex gap-2 justify-end">
+                          <Button variant="outline" onClick={() => {
+                            setIsNewDescricaoOpen(false);
+                            resetFormDescricao();
+                          }}>
+                            Cancelar
+                          </Button>
+                          <Button onClick={handleAdicionarDescricao} disabled={isSaving}>
+                            {isSaving ? "Salvando..." : "Salvar"}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  {descricoesReceitas.length === 0 ? (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      Nenhuma descrição de receita cadastrada
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {descricoesReceitas.map((descricao) => (
+                        <div key={descricao.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <span className="font-medium">{descricao.nome}</span>
+                            <Badge variant="secondary" className="ml-2">
+                              {descricao.categoria || "Sem categoria"}
+                            </Badge>
+                            <Badge variant="outline" className="ml-2">
+                              {descricao.ativo ? "Ativo" : "Inativo"}
+                            </Badge>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() => setItemParaExcluir({
+                                  id: descricao.id,
+                                  tipo: "descricao",
+                                  nome: descricao.nome,
+                                })}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
 
-            <TabsContent value="despesas" className="mt-6">
-              {renderTabDespesas()}
+            <TabsContent value="despesa" className="space-y-4 overflow-auto max-h-[60vh]">
+              {/* Categorias de Despesa */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Tag className="h-4 w-4" />
+                    Categorias de Despesa ({categoriasDespesas.length})
+                  </CardTitle>
+                  <Dialog open={isNewCategoriaOpen} onOpenChange={setIsNewCategoriaOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" onClick={() => setFormCategoria({...formCategoria, tipo: "despesa"})}>
+                        <Plus className="h-4 w-4 mr-1" />
+                        Nova
+                      </Button>
+                    </DialogTrigger>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  {categoriasDespesas.length === 0 ? (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      Nenhuma categoria de despesa cadastrada
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {categoriasDespesas.map((categoria) => (
+                        <div key={categoria.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <span className="font-medium">{categoria.nome}</span>
+                            <Badge variant="outline" className="ml-2">
+                              {categoria.ativo ? "Ativo" : "Inativo"}
+                            </Badge>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() => setItemParaExcluir({
+                                  id: categoria.id,
+                                  tipo: "categoria",
+                                  nome: categoria.nome,
+                                })}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Descrições de Despesa */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Descrições de Despesa ({descricoesDespesas.length})
+                  </CardTitle>
+                  <Dialog open={isNewDescricaoOpen} onOpenChange={setIsNewDescricaoOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" onClick={() => setFormDescricao({...formDescricao, tipo: "despesa"})}>
+                        <Plus className="h-4 w-4 mr-1" />
+                        Nova
+                      </Button>
+                    </DialogTrigger>
+                  </Dialog>
+                </CardHeader>
+                <CardContent>
+                  {descricoesDespesas.length === 0 ? (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      Nenhuma descrição de despesa cadastrada
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {descricoesDespesas.map((descricao) => (
+                        <div key={descricao.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <span className="font-medium">{descricao.nome}</span>
+                            <Badge variant="secondary" className="ml-2">
+                              {descricao.categoria || "Sem categoria"}
+                            </Badge>
+                            <Badge variant="outline" className="ml-2">
+                              {descricao.ativo ? "Ativo" : "Inativo"}
+                            </Badge>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() => setItemParaExcluir({
+                                  id: descricao.id,
+                                  tipo: "descricao",
+                                  nome: descricao.nome,
+                                })}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </DialogContent>
       </Dialog>
 
-      {/* Modal para Nova Descrição */}
-      <Dialog open={isNewDescricaoOpen} onOpenChange={setIsNewDescricaoOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Nova Descrição de{" "}
-              {formDescricao.tipo === "receita" ? "Receita" : "Despesa"}
-            </DialogTitle>
-            <DialogDescription>
-              Adicione uma nova descrição padrão para{" "}
-              {formDescricao.tipo === "receita" ? "serviços" : "despesas"}
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmitDescricao} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="nome">Nome da Descrição *</Label>
-              <Input
-                id="nome"
-                value={formDescricao.nome}
-                onChange={(e) =>
-                  setFormDescricao({ ...formDescricao, nome: e.target.value })
-                }
-                placeholder={
-                  formDescricao.tipo === "receita"
-                    ? "Ex: Desentupimento de pia"
-                    : "Ex: Combustível"
-                }
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Categoria</Label>
-              <Select
-                value={formDescricao.categoria}
-                onValueChange={(value) =>
-                  setFormDescricao({ ...formDescricao, categoria: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(formDescricao.tipo === "receita"
-                    ? categoriasReceitas
-                    : categoriasDespesas
-                  ).map((categoria) => (
-                    <SelectItem key={categoria.id} value={categoria.nome}>
-                      {categoria.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsNewDescricaoOpen(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" className="flex-1">
-                Criar Descrição
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal para Nova Categoria */}
-      <Dialog open={isNewCategoriaOpen} onOpenChange={setIsNewCategoriaOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Nova Categoria de{" "}
-              {formCategoria.tipo === "receita" ? "Receita" : "Despesa"}
-            </DialogTitle>
-            <DialogDescription>
-              Adicione uma nova categoria para organizar suas{" "}
-              {formCategoria.tipo === "receita" ? "receitas" : "despesas"}
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmitCategoria} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="nomeCategoria">Nome da Categoria *</Label>
-              <Input
-                id="nomeCategoria"
-                value={formCategoria.nome}
-                onChange={(e) =>
-                  setFormCategoria({ ...formCategoria, nome: e.target.value })
-                }
-                placeholder={
-                  formCategoria.tipo === "receita"
-                    ? "Ex: Serviços, Taxas"
-                    : "Ex: Operacional, Administrativo"
-                }
-                required
-              />
-            </div>
-
-            <div className="flex gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsNewCategoriaOpen(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" className="flex-1">
-                Criar Categoria
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog de confirmação de exclusão */}
-      <AlertDialog
-        open={!!itemParaExcluir}
-        onOpenChange={() => setItemParaExcluir(null)}
-      >
+      {/* Alert Dialog para Confirmação de Exclusão */}
+      <AlertDialog open={!!itemParaExcluir} onOpenChange={() => setItemParaExcluir(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir "{itemParaExcluir?.nome}"? Esta
-              ação não pode ser desfeita.
+              Tem certeza que deseja excluir a {itemParaExcluir?.tipo} "{itemParaExcluir?.nome}"?
+              Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleExcluir}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={handleExcluir} className="bg-red-600 hover:bg-red-700">
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
