@@ -216,7 +216,8 @@ model LancamentoCaixa {
   // Chaves estrangeiras opcionais
   subdescricaoId    Int?     // Puxa da tabela Subdescrição
   funcionarioId     Int?     // Puxa da tabela Técnicos
-  setorId           Int?     // Puxa da tabela Cidades e Setores
+  cidadeId          Int?     // Puxa da tabela Cidades
+  setorId           Int?     // Puxa da tabela Setores
   campanhaId        Int?     // Puxa da tabela Campanhas
   clienteId         Int?     // Puxa da tabela Clientes
 
@@ -440,7 +441,7 @@ model ContaBancaria {
   @@map("contas_bancarias")
 }
 
-// Manter tabela antiga para compatibilidade temporária
+// Manter tabela antiga para compatibilidade tempor��ria
 model Conta {
   id            Int      @id @default(autoincrement())
   tipo          String // "pagar" ou "receber"
