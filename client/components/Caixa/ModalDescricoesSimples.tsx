@@ -47,6 +47,14 @@ export default function ModalDescricoesSimples() {
     nome: "",
   });
 
+  // Carregar dados quando o modal é aberto
+  useEffect(() => {
+    if (isOpen && descricoesECategorias.length === 0) {
+      console.log("[ModalDescricoesSimples] Modal aberto, carregando dados...");
+      recarregarDescricoesECategorias();
+    }
+  }, [isOpen, descricoesECategorias.length, recarregarDescricoesECategorias]);
+
   // Filtrar dados usando o sistema unificado com memoização otimizada
   const categoriasReceitas = useMemo(() => {
     return descricoesECategorias.filter(
@@ -227,7 +235,7 @@ export default function ModalDescricoesSimples() {
 
         {/* Tabs */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-          {/* Debug component - remover em produção */}
+          {/* Debug component - remover em produç��o */}
           <TestDeleteApi />
 
           <div className="flex mb-6 mt-6">
