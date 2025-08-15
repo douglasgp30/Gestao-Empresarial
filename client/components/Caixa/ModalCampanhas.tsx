@@ -114,11 +114,7 @@ export default function ModalCampanhas() {
       await carregarDados();
     } catch (error) {
       console.error("Erro ao editar campanha:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao editar campanha. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao editar campanha. Tente novamente.");
     }
   };
 
