@@ -125,6 +125,7 @@ const getDescricoes: RequestHandler = async (req, res) => {
 // POST /api/descricoes-e-categorias - Criar novo item
 const createDescricaoECategoria: RequestHandler = async (req, res) => {
   try {
+    console.log("[DescricaoECategoria] Dados recebidos:", JSON.stringify(req.body, null, 2));
     const data = DescricaoECategoriaSchema.parse(req.body);
 
     const item = await prisma.descricaoECategoria.create({ data });
