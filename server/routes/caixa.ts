@@ -86,7 +86,7 @@ async function resolverIds(data: any) {
   // Resolver forma de pagamento
   if (data.formaPagamento && !data.formaPagamentoId) {
     const formaPagamento = await prisma.formaPagamento.findFirst({
-      where: { nome: { contains: data.formaPagamento, mode: "insensitive" } },
+      where: { nome: { contains: data.formaPagamento } },
     });
     if (formaPagamento) {
       ids.formaPagamentoId = formaPagamento.id;
