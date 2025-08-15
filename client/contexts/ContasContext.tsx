@@ -161,6 +161,14 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error("❌ [CONTAS] Erro ao carregar contas:", error);
+
+      // Se é erro de rede durante hot reload, não mostrar erro ao usuário
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        console.log("📡 [CONTAS] Erro de rede detectado, aguardando reconexão...");
+        // Não definir erro para o usuário durante hot reload
+        return;
+      }
+
       setErro("Erro ao carregar contas");
 
       // Tentar carregar do localStorage como fallback
