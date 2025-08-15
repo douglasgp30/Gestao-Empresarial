@@ -2,6 +2,9 @@
 class GlobalLoadingControl {
   private isHotReloading: boolean = false;
   private loadingBlocked: boolean = false;
+  private loadingStates: Map<string, boolean> = new Map();
+  private cache: Map<string, { data: any; timestamp: number }> = new Map();
+  private readonly CACHE_DURATION = 5000; // 5 segundos
 
   constructor() {
     // Detectar hot reload através da URL
