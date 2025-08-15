@@ -122,7 +122,7 @@ async function resolverIds(data: any) {
   // Resolver campanha
   if (data.campanha && !data.campanhaId) {
     const campanha = await prisma.campanha.findFirst({
-      where: { nome: { contains: data.campanha, mode: "insensitive" } },
+      where: { nome: { contains: data.campanha } },
     });
     if (campanha) {
       ids.campanhaId = campanha.id;
