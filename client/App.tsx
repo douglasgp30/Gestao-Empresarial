@@ -46,7 +46,7 @@ console.info = (...args: any[]) => {
   originalInfo.apply(console, args);
 };
 
-import { Toaster } from "@/components/ui/toaster";
+// import { Toaster } from "@/components/ui/toaster"; // Removido - usando apenas Sonner
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
