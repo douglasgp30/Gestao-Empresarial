@@ -86,3 +86,28 @@ export const deleteSetor: RequestHandler = async (req, res) => {
     res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
+
+export const deleteCidade: RequestHandler = async (req, res) => {
+  try {
+    const cidade = decodeURIComponent(req.params.cidade);
+
+    // Verificar se existem setores vinculados a esta cidade
+    const setoresVinculados = await prisma.setor.findMany({
+      where: { cidade },
+    });
+
+    if (setoresVinculados.length > 0) {
+      const nomesSetores = setoresVinculados.map(s => s.nome).join(", ");
+      return res.status(400).json({
+        error: `Não é possível excluir a cidade "${cidade}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
+      });
+    }
+
+    // Se chegou aqui, pode excluir (na verdade não há uma tabela de cidades,
+    // então não há nada para excluir fisicamente)
+    res.status(204).send();
+  } catch (error) {
+    console.error("Erro ao excluir cidade:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
