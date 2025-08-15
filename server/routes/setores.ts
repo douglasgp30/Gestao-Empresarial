@@ -44,7 +44,40 @@ export const getCidades: RequestHandler = async (req, res) => {
 export const createSetor: RequestHandler = async (req, res) => {
   try {
     const data = SetorSchema.parse(req.body);
-    const setor = await prisma.setor.create({ data });
+
+    // Verificar se a cidade existe
+    const cidade = await prisma.cidade.findUnique({
+      where: { id: data.cidadeId },
+    });
+
+    if (!cidade) {
+      return res.status(400).json({ error: "Cidade não encontrada" });
+    }
+
+    // Verificar se já existe um setor com esse nome nesta cidade
+    const setorExistente = await prisma.setor.findFirst({
+      where: {
+        cidadeId: data.cidadeId,
+        nome: {
+          equals: data.nome,
+          mode: "insensitive",
+        },
+        ativo: true,
+      },
+    });
+
+    if (setorExistente) {
+      return res.status(400).json({
+        error: `Já existe um setor "${data.nome}" na cidade "${cidade.nome}"`
+      });
+    }
+
+    const setor = await prisma.setor.create({
+      data,
+      include: {
+        cidade: true,
+      },
+    });
     res.status(201).json(setor);
   } catch (error) {
     if (error instanceof z.ZodError) {
