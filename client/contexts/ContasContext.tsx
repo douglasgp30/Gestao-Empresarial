@@ -198,6 +198,12 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const carregarDadosAuxiliares = useCallback(async () => {
+    // Durante hot reload, não carregar dados auxiliares
+    if (typeof window !== 'undefined' && (window.location.href.includes('reload=') || window.location.href.includes('?t='))) {
+      console.log('[ContasContext] Hot reload detectado, pulando carregamento de dados auxiliares');
+      return;
+    }
+
     try {
       // Carregar clientes
       const clientesResponse = await apiService.get("/contas/clientes");
