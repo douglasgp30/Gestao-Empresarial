@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
