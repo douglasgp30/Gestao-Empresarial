@@ -347,10 +347,8 @@ export function FiltroDataContasSimples() {
                           59,
                           999,
                         );
-                        setFiltros({
-                          ...filtros,
+                        atualizarFiltros({
                           dataFim: novaData,
-                          __timestamp: Date.now(),
                         });
                       }}
                       className="h-8 text-xs"
