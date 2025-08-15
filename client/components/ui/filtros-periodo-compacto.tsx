@@ -320,10 +320,8 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "hoje" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log("Clicou em Hoje"); // Debug
               const hoje = new Date();
               const dataFormatada = hoje.toISOString().split("T")[0];
-              console.log("Data formatada:", dataFormatada); // Debug
 
               // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataFormatada);
