@@ -293,6 +293,58 @@ export function ModalDespesa() {
               />
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="cidade">Cidade</Label>
+                <Select
+                  value={formData.cidade}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      cidade: value,
+                      setor: "" // Limpar setor quando cidade muda
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a cidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
+                      <SelectItem key={`cidade-${index}-${cidade}`} value={cidade}>
+                        {cidade}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="setor">Setor</Label>
+                <Select
+                  value={formData.setor}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, setor: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={
+                      formData.cidade
+                        ? "Selecione o setor"
+                        : "Primeiro selecione uma cidade"
+                    } />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {setoresFiltrados.map((setor) => (
+                      <SelectItem key={setor.id} value={setor.id.toString()}>
+                        {setor.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="observacoes">Observações</Label>
               <Textarea
