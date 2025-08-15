@@ -93,11 +93,11 @@ export default function ModalDescricoesAvancado() {
     tipo: "receita" as "receita" | "despesa",
   });
 
-  // Filtrar dados usando o sistema unificado
-  const categoriasReceitas = getCategorias("receita");
-  const categoriasDespesas = getCategorias("despesa");
-  const descricoesReceitas = getDescricoes("receita");
-  const descricoesDespesas = getDescricoes("despesa");
+  // Filtrar dados usando o sistema unificado com memoização
+  const categoriasReceitas = useMemo(() => getCategorias("receita"), [getCategorias]);
+  const categoriasDespesas = useMemo(() => getCategorias("despesa"), [getCategorias]);
+  const descricoesReceitas = useMemo(() => getDescricoes("receita"), [getDescricoes]);
+  const descricoesDespesas = useMemo(() => getDescricoes("despesa"), [getDescricoes]);
 
   const resetFormDescricao = () => {
     setFormDescricao({
