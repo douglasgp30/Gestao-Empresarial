@@ -342,7 +342,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setFormasPagamento([]);
       setFuncionarios([]);
       setTecnicos([]);
-      setSetores([]);
+      setLocalizacoesGeograficas([]);
       setCidades([]);
     } finally {
       setIsLoading(false);
@@ -531,7 +531,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         !("cidadeId" in novoSetor)
       ) {
         // Buscar ID da cidade pelo nome
-        const cidadesResponse = await setoresApi.listarCidades();
+        const cidadesResponse = await localizacoesGeograficasApi.listarCidades();
         console.log("[EntidadesContext] Resposta de cidades:", cidadesResponse);
 
         if (cidadesResponse.data) {
@@ -586,12 +586,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      await setoresApi.criar(setorParaEnviar);
-      const [setoresResponse, cidadesResponse] = await Promise.all([
-        setoresApi.listar(),
-        setoresApi.listarCidades(),
-      ]);
-      if (setoresResponse.data) setSetores(setoresResponse.data);
+      await localizacoesGeograficasApi.criar(setorParaEnviar);
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) setLocalizacoesGeograficas(response.data);
       if (cidadesResponse.data) {
         let cidadesArray = cidadesResponse.data;
 
@@ -633,9 +630,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const editarSetor = async (id: string, dadosAtualizados: Partial<Setor>) => {
     try {
       setError(null);
-      await setoresApi.atualizar(parseInt(id), dadosAtualizados);
-      const response = await setoresApi.listar();
-      if (response.data) setSetores(response.data);
+      await localizacoesGeograficasApi.atualizar(parseInt(id), dadosAtualizados);
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) setLocalizacoesGeograficas(response.data);
       toast.success("Setor atualizado!");
     } catch (error) {
       console.error("Erro ao editar setor:", error);
@@ -647,9 +644,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const excluirSetor = async (id: string) => {
     try {
       setError(null);
-      await setoresApi.excluir(parseInt(id));
-      const response = await setoresApi.listar();
-      if (response.data) setSetores(response.data);
+      await localizacoesGeograficasApi.excluir(parseInt(id));
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) setLocalizacoesGeograficas(response.data);
       toast.success("Setor excluído!");
     } catch (error) {
       console.error("Erro ao excluir setor:", error);
@@ -684,7 +681,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar lista de cidades
-      const cidadesResponse = await setoresApi.listarCidades();
+      const cidadesResponse = await localizacoesGeograficasApi.listarCidades();
       console.log(
         "[EntidadesContext] Resposta ao recarregar cidades:",
         cidadesResponse,
@@ -856,8 +853,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       funcionarios,
       tecnicos,
       getTecnicos,
-      setores,
-      cidades,
+      localizacoesGeograficas,
       descricoes,
       categorias,
       clientes,
