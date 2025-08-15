@@ -3,6 +3,8 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useMemo,
+  useCallback,
   ReactNode,
 } from "react";
 import { LancamentoCaixa, Campanha } from "@shared/types";
