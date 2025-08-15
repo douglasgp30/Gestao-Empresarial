@@ -225,6 +225,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         console.error("Erro ao carregar lançamentos:", error);
+
+        // Se é erro de rede durante hot reload, não mostrar erro ao usuário
+        if (error instanceof Error && error.message.includes("Failed to fetch")) {
+          console.log("📡 [CaixaContext] Erro de rede ao carregar lançamentos, ignorando...");
+          // Não definir erro para o usuário durante hot reload
+          return;
+        }
+
         setError("Erro ao carregar lançamentos");
       }
     },
