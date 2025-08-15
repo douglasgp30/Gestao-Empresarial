@@ -185,48 +185,38 @@ export default function ModalDescricoesAvancado() {
     }
   };
 
-  // SOLUÇÃO DEFINITIVA: Chamar API diretamente e controlar estado rigorosamente
+  // SOLUÇÃO SUPER SIMPLES: API + Estado mínimo
   const handleExcluir = async () => {
     if (!itemParaExcluir || isDeleting) return;
 
     setIsDeleting(true);
 
     try {
-      console.log('🟡 [Modal] Iniciando exclusão:', itemParaExcluir.nome);
+      console.log('🟡 Excluindo:', itemParaExcluir.nome);
 
-      // Chamar API diretamente, sem usar Context
+      // API call direta
       const response = await fetch(`/api/descricoes-e-categorias/${itemParaExcluir.id}`, {
         method: "DELETE",
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
 
-      console.log('🟡 [Modal] Response status:', response.status);
-
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(`Erro ${response.status}`);
       }
 
-      console.log('✅ [Modal] Exclusão bem-sucedida');
+      console.log('✅ Excluído com sucesso');
 
-      // Limpar primeiro, depois recarregar
+      // Fechar modal
       setItemParaExcluir(null);
 
-      // Aguardar um pouco para UI se estabilizar
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Recarregar dados manualmente
+      // Recarregar dados
       await recarregarDescricoesECategorias();
 
-      // Toast de sucesso
-      toast.success(`${itemParaExcluir.tipo === "categoria" ? "Categoria" : "Descrição"} excluída com sucesso`);
+      // Mostrar sucesso
+      toast.success("Item excluído com sucesso");
 
     } catch (error) {
-      console.error('❌ [Modal] Erro ao excluir:', error);
-      toast.error("Erro ao excluir item. Tente novamente.");
-
-      // Manter o modal aberto em caso de erro
+      console.error('❌ Erro:', error);
+      toast.error("Erro ao excluir item");
     } finally {
       setIsDeleting(false);
     }
