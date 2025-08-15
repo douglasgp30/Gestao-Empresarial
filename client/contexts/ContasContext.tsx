@@ -114,7 +114,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         params.append("categoria", filtrosAtivos.categoria);
       }
 
-      console.log("��� [CONTAS] Carregando contas com filtros:", {
+      console.log("🔍 [CONTAS] Carregando contas com filtros:", {
         dataInicio: filtrosAtivos.dataInicio.toISOString().split("T")[0],
         dataFim: filtrosAtivos.dataFim.toISOString().split("T")[0],
         tipo: filtrosAtivos.tipo,
@@ -399,8 +399,8 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       "🔍 [CONTAS] useEffect carregarContas disparado. Timestamp:",
       filtros.__timestamp,
     );
-    carregarContas();
-  }, [filtros.__timestamp]);
+    carregarContas(filtros);
+  }, [carregarContas, filtros]);
 
   // Carregar dados auxiliares na inicialização
   useEffect(() => {
