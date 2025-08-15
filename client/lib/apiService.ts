@@ -73,28 +73,26 @@ async function apiRequest<T>(
         error,
       );
 
+      // Verificar se é um erro relacionado ao FullStory
+      const isFullStoryError = error instanceof TypeError &&
+        (error.stack?.includes("fullstory.com") ||
+         error.stack?.includes("fs.js") ||
+         error.message.includes("Failed to fetch"));
+
+      // Se é erro do FullStory e não é a última tentativa, aguardar e tentar novamente
+      if (isFullStoryError && attempt < retries) {
+        console.log(`[ApiService] Erro de third-party detectado, aguardando antes de tentar novamente...`);
+        await new Promise(resolve => setTimeout(resolve, 1500 * (attempt + 1))); // Delay progressivo
+        continue;
+      }
+
       // Se é a última tentativa, retornar o erro
       if (attempt === retries) {
-        // Verificar se é um erro de rede ou do FullStory
-      if (
-        error instanceof TypeError &&
-        (error.message.includes("Failed to fetch") ||
-          error.message.includes("NetworkError") ||
-          error.stack?.includes("fullstory.com") ||
-          error.stack?.includes("fs.js"))
-      ) {
-        // Se não é a última tentativa e é erro de FullStory, aguardar um pouco
-        if (attempt < retries && error.stack?.includes("fullstory.com")) {
-          console.log(`[ApiService] Erro do FullStory detectado, aguardando antes de tentar novamente...`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          continue;
+        if (isFullStoryError) {
+          return {
+            error: "Problema de conectividade. Recarregue a página se o problema persistir.",
+          };
         }
-
-        return {
-          error:
-            "Problema de conectividade detectado. Tente recarregar a página.",
-        };
-      }
 
         if (error.name === "AbortError") {
           return {
