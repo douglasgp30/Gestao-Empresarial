@@ -488,8 +488,9 @@ export default function ModalCidadeSetorSimples() {
               </form>
 
               <div className="space-y-2">
-                {(Array.isArray(cidades) ? cidades : []).map(
-                  (cidade, index) => (
+                {(Array.isArray(cidades) ? cidades : [])
+                  .filter(cidade => cidade != null && cidade !== '')
+                  .map((cidade, index) => (
                     <div
                       key={`cidade-${index}`}
                       className="flex items-center justify-between p-3 border rounded-lg"
@@ -554,8 +555,9 @@ export default function ModalCidadeSetorSimples() {
                   className="p-2 border rounded"
                 >
                   <option value="">Selecione uma cidade</option>
-                  {(Array.isArray(cidades) ? cidades : []).map(
-                    (cidade, index) => (
+                  {(Array.isArray(cidades) ? cidades : [])
+                    .filter(cidade => cidade != null && cidade !== '')
+                    .map((cidade, index) => (
                       <option key={`option-${index}`} value={typeof cidade === 'object' ? cidade.nome : cidade}>
                         {typeof cidade === 'object' ? cidade.nome : cidade}
                       </option>
