@@ -122,7 +122,7 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Função para salvar entidade no localStorage com validação
+// Funç��o para salvar entidade no localStorage com validação
 function salvarEntidadeNoStorage<T>(
   chave: string,
   dados: T[],
@@ -361,22 +361,32 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // === CARREGAMENTO INICIAL ===
+  // === CARREGAMENTO INICIAL COM THROTTLING ===
   useEffect(() => {
     if (shouldSkipLoading("EntidadesContext")) {
       console.log("[EntidadesContext] Carregamento ignorado (skip loading)");
       return;
     }
 
-    const delay = getLoadingDelay(2000); // Delay menor
+    // Usar throttling agressivo para evitar múltiplos carregamentos
+    if (contextThrottle.isThrottled("EntidadesContext-initial", 5000)) {
+      console.log("[EntidadesContext] Carregamento throttled, ignorando...");
+      return;
+    }
+
+    const delay = getLoadingDelay(3000); // Delay maior
     const timeout = setTimeout(() => {
       if (!shouldSkipLoading("EntidadesContext")) {
-        carregarDados();
+        contextThrottle.execute(
+          "EntidadesContext-initial",
+          () => carregarDados(),
+          5000 // 5 segundos de throttle
+        );
       }
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, [carregarDados]);
+  }, []); // Remover carregarDados das dependências
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
   const adicionarDescricaoECategoria = async (
