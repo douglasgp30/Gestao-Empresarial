@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import ModalDependenciasCategoria from "./ModalDependenciasCategoria";
 import TestDeleteApi from "../Debug/TestDeleteApi";
 import TestApiEndpoints from "../Debug/TestApiEndpoints";
+import { parseErrorResponse } from "../../lib/responseUtils";
 
 export default function ModalDescricoesSimples() {
   const {
