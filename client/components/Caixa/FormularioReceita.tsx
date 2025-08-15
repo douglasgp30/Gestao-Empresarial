@@ -89,27 +89,29 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Usar tabela unificada para categorias e descrições
+  // Usar tabela unificada para categorias e descrições com dependências estáveis
   const categoriasReceita = React.useMemo(() => {
     return getCategorias("receita")
       .map((cat) => cat.nome)
       .sort();
-  }, [getCategorias]);
+  }, [descricoesECategorias, getCategorias]);
 
   const descricoesFiltradas = React.useMemo(() => {
     if (!formData.categoria) return [];
     return getDescricoes("receita", formData.categoria);
-  }, [formData.categoria, getDescricoes]);
+  }, [formData.categoria, descricoesECategorias, getDescricoes]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
-    return (
-      formData.formaPagamento &&
-      formasPagamento
-        .find((f) => f.id.toString() === formData.formaPagamento)
-        ?.nome?.toLowerCase()
-        .includes("cartão")
+    if (!formData.formaPagamento || formasPagamento.length === 0) {
+      return false;
+    }
+
+    const forma = formasPagamento.find(
+      (f) => f.id.toString() === formData.formaPagamento
     );
+
+    return forma?.nome?.toLowerCase().includes("cartão") || false;
   }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente usando os hooks de moeda
@@ -303,13 +305,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
   };
 
-  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
+  // Só mostrar loading se realmente não há dados essenciais
+  const isLoadingEssential = entidadesLoading && descricoesECategorias.length === 0;
 
-  if (isLoading) {
+  if (isLoadingEssential) {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-center">Carregando dados...</div>
+          <div className="text-center text-muted-foreground">
+            Carregando dados...
+          </div>
         </CardContent>
       </Card>
     );
