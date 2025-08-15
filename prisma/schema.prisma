@@ -464,6 +464,7 @@ model Agendamento {
   // Relacionamentos
   cliente     Cliente      @relation(fields: [clienteId], references: [id])
   funcionario Funcionario? @relation(fields: [funcionarioId], references: [id])
+  localizacao LocalizacaoGeografica? @relation(fields: [localizacaoId], references: [id])
 
   @@map("agendamentos")
 }
