@@ -165,9 +165,13 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar funcionários da API na inicialização
+  // Carregar funcionários da API na inicialização com delay
   useEffect(() => {
-    carregarFuncionarios();
+    const timeout = setTimeout(() => {
+      carregarFuncionarios();
+    }, 4000); // Delay de 4s para carregar após outros contextos
+
+    return () => clearTimeout(timeout);
   }, []);
 
   const [filtros, setFiltros] = useState({
