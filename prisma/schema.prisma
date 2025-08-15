@@ -200,7 +200,7 @@ model LancamentoCaixa {
   dataHora          DateTime // Data e hora do lançamento
   valor             Float    // Valor do lançamento (obrigatório)
   valorRecebido     Float?   // Valor efetivamente recebido (obrigatório para cartão)
-  valorLiquido      Float?   // Valor líquido após descontos
+  valorLiquido      Float?   // Valor líquido ap��s descontos
   comissao          Float?   // Comissão do técnico
   imposto           Float?   // Impostos/taxas
   observacoes       String?  // Observações do lançamento
@@ -229,6 +229,7 @@ model LancamentoCaixa {
   formaPagamento FormaPagamento @relation(fields: [formaPagamentoId], references: [id])
   subdescricao   Subdescricao?  @relation(fields: [subdescricaoId], references: [id])
   funcionario    Funcionario?   @relation(fields: [funcionarioId], references: [id])
+  cidade         Cidade?        @relation(fields: [cidadeId], references: [id])
   setor          Setor?         @relation(fields: [setorId], references: [id])
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
   cliente        Cliente?       @relation(fields: [clienteId], references: [id])
@@ -441,7 +442,7 @@ model ContaBancaria {
   @@map("contas_bancarias")
 }
 
-// Manter tabela antiga para compatibilidade tempor��ria
+// Manter tabela antiga para compatibilidade temporária
 model Conta {
   id            Int      @id @default(autoincrement())
   tipo          String // "pagar" ou "receber"
