@@ -129,6 +129,7 @@ export function ModalDespesa() {
         valor: parseFloat(formData.valor),
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
+        setor: formData.setor || undefined,
         observacoes: formData.observacoes || undefined,
       });
 
