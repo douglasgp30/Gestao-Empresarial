@@ -170,7 +170,11 @@ export default function ModalDescricoesSimples() {
 
     setIsDeleting(true);
     try {
-      console.log('🟡 Excluindo:', itemToDelete.nome);
+      console.log('🟡 Excluindo:', {
+        id: itemToDelete.id,
+        nome: itemToDelete.nome,
+        tipo: itemToDelete.tipo
+      });
 
       const response = await fetch(`/api/descricoes-e-categorias/${itemToDelete.id}`, {
         method: "DELETE",
@@ -183,7 +187,19 @@ export default function ModalDescricoesSimples() {
       });
 
       if (!response.ok) {
+        console.log('🔴 Erro HTTP detectado - status:', response.status);
+
+        // Tentar ler o corpo da resposta para debug
+        try {
+          const responseClone = response.clone();
+          const errorText = await responseClone.text();
+          console.log('🔴 Corpo da resposta de erro:', errorText);
+        } catch (readError) {
+          console.log('🔴 Erro ao ler corpo da resposta:', readError);
+        }
+
         const errorMessage = await parseErrorResponse(response);
+        console.log('🔴 Mensagem de erro parseada:', errorMessage);
         throw new Error(errorMessage);
       }
 
