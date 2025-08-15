@@ -305,7 +305,7 @@ export default function ModalCidadeSetorSimples() {
         if (setoresDaMesmaCidade.length === 1) {
           // É o último setor da cidade
           toast.error(
-            `⚠️ Não é possível excluir o setor "${itemToDelete.nome}" pois é o último setor da cidade "${setorParaExcluir.cidade}". Isso faria a cidade desaparecer. Para remover a cidade, use o botão de excluir cidade.`,
+            `⚠️ Não é possível excluir o setor "${itemToDelete.nome}" pois é o último setor da cidade "${typeof setorParaExcluir.cidade === 'object' ? setorParaExcluir.cidade?.nome : setorParaExcluir.cidade}". Isso faria a cidade desaparecer. Para remover a cidade, use o botão de excluir cidade.`,
             {
               duration: 10000,
               action: {
