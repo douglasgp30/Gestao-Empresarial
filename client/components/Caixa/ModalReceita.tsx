@@ -122,27 +122,7 @@ export function ModalReceita() {
     return 0;
   })();
 
-  // Atualizar campos calculados apenas quando necessário
-  useEffect(() => {
-    const novoValorLiquido = valorLiquidoCalculado.toFixed(2);
-    const novaComissao = comissaoCalculada.toFixed(2);
-
-    if (
-      formData.valorLiquido !== novoValorLiquido ||
-      formData.comissao !== novaComissao
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        valorLiquido: novoValorLiquido,
-        comissao: novaComissao,
-      }));
-    }
-  }, [
-    valorLiquidoCalculado,
-    comissaoCalculada,
-    formData.valorLiquido,
-    formData.comissao,
-  ]);
+  // Remover useEffect que causa piscar da tela - valores calculados serão mostrados apenas no resumo
 
   // Resetar valorQueEntrou quando mudança de Cartão para outras formas
   useEffect(() => {
@@ -380,7 +360,7 @@ export function ModalReceita() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição do Serviço *</Label>
+                <Label htmlFor="descricao">Descri��ão do Serviço *</Label>
                 <SelectWithAdd
                   value={formData.descricao}
                   onValueChange={(value) =>
