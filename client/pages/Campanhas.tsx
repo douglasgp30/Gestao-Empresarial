@@ -328,6 +328,18 @@ export default function Campanhas() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Teste de Localização Geográfica */}
+      <Card className="bg-yellow-50 border-yellow-200">
+        <CardHeader>
+          <CardTitle className="text-yellow-800">
+            🧪 Teste de API - Localização Geográfica
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TestLocalizacoesApi />
+        </CardContent>
+      </Card>
     </div>
   );
 }
