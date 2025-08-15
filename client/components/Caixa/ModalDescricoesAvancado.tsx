@@ -233,7 +233,16 @@ export default function ModalDescricoesAvancado() {
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          // Bloquear fechamento se estiver deletando
+          if (!open && isDeleting) {
+            return;
+          }
+          setIsOpen(open);
+        }}
+      >
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
             <FileText className="h-4 w-4 mr-2" />
