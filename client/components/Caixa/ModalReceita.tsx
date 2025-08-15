@@ -122,19 +122,7 @@ export function ModalReceita() {
 
   // Remover useEffect que causa piscar da tela - valores calculados serão mostrados apenas no resumo
 
-  // Resetar valorQueEntrou quando mudança de Cartão para outras formas
-  useEffect(() => {
-    if (
-      !isFormaPagamentoCartao &&
-      formData.valorQueEntrou &&
-      formData.valorQueEntrou !== formData.valor
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        valorQueEntrou: "",
-      }));
-    }
-  }, [isFormaPagamentoCartao]);
+  // Remover useEffect que causa piscar ao resetar valorQueEntrou
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
@@ -653,17 +641,11 @@ export function ModalReceita() {
                 <h4 className="font-medium text-green-800 mb-2">
                   Resumo Financeiro
                 </h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                   <div>
                     <span className="text-gray-600">Valor Total:</span>
                     <div className="font-medium">
                       R$ {parseFloat(formData.valor || "0").toFixed(2)}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Valor Líquido:</span>
-                    <div className="font-medium">
-                      R$ {valorLiquidoCalculado.toFixed(2)}
                     </div>
                   </div>
                   <div>
