@@ -4,8 +4,9 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { FileText, Plus, Trash2, Tag, CheckCircle, XCircle, Folder } from "lucide-react";
+import { FileText, Plus, Trash2, Tag, CheckCircle, XCircle, Folder, Eye } from "lucide-react";
 import { toast } from "sonner";
+import ModalDependenciasCategoria from "./ModalDependenciasCategoria";
 
 export default function ModalDescricoesSimples() {
   const {
