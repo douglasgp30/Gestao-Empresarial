@@ -669,11 +669,17 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         }
 
         if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          if (typeof cidadesArray[0] === "string") {
-            setCidades(cidadesArray);
-          } else {
-            setCidades(cidadesArray.map((c: any) => c.nome));
-          }
+          const cidadesString = cidadesArray.map((cidade: any) => {
+            if (typeof cidade === "string") {
+              return cidade;
+            } else if (cidade && cidade.nome) {
+              return cidade.nome;
+            } else {
+              console.warn("Cidade com estrutura inválida:", cidade);
+              return String(cidade);
+            }
+          });
+          setCidades(cidadesString);
         } else {
           setCidades([]);
         }
