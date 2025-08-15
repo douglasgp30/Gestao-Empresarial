@@ -39,7 +39,7 @@ function CaixaContent() {
         {/* Botões de configuração */}
         <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
           <ModalCampanhas />
-          <ModalDescricoesAvancado />
+          <ModalDescricoesSimples />
           <ModalCidadeSetor />
         </div>
 
