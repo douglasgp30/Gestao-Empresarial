@@ -77,18 +77,18 @@ export function ModalReceita() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Filtrar descrições de receita usando tabela unificada - usando useCallback para evitar re-renderizações
-  const categoriasReceita = useCallback(() => {
+  // Usar useMemo ao invés de useCallback para evitar re-renderizações desnecessárias
+  const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
     return categorias.map((cat) => cat.nome).sort();
   }, [getCategorias]);
 
-  const descricoesReceita = useCallback(() => {
+  const descricoesReceita = React.useMemo(() => {
     return getDescricoes("receita");
   }, [getDescricoes]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = useCallback(() => {
+  const descricoesFiltradas = React.useMemo(() => {
     if (!formData.categoria) return [];
     return getDescricoes("receita", formData.categoria);
   }, [formData.categoria, getDescricoes]);
