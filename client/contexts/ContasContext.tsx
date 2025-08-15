@@ -12,6 +12,7 @@ import {
   Fornecedor,
   FormaPagamento,
   Categoria,
+  DescricaoECategoria,
 } from "@shared/types";
 
 interface FiltrosContas {
@@ -52,6 +53,9 @@ interface ContasContextType {
   fornecedores: Fornecedor[];
   formasPagamento: FormaPagamento[];
   categorias: Categoria[];
+  descricoes: DescricaoECategoria[];
+  getCategorias: (tipo?: string) => DescricaoECategoria[];
+  getDescricoes: (tipo?: string, categoria?: string) => DescricaoECategoria[];
 
   // Funções para adicionar entidades
   adicionarFornecedor: (
@@ -90,6 +94,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [descricoes, setDescricoes] = useState<DescricaoECategoria[]>([]);
 
   const carregarContas = useCallback(async (filtrosAtivos: FiltrosContas) => {
     try {
@@ -246,6 +251,14 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           }),
         );
         setCategorias(categoriasFormatadas);
+      }
+
+      // Carregar descrições da tabela unificada
+      const descricoesResponse = await apiService.get(
+        "/descricoes-e-categorias",
+      );
+      if (descricoesResponse.data && descricoesResponse.data.data) {
+        setDescricoes(descricoesResponse.data.data);
       }
     } catch (error) {
       console.error("❌ [CONTAS] Erro ao carregar dados auxiliares:", error);
@@ -479,6 +492,26 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timeout);
   }, [carregarDadosAuxiliares]);
 
+  // Funções para acessar dados unificados
+  const getCategorias = useCallback((tipo?: string) => {
+    return descricoes.filter(
+      (item) =>
+        item.tipoItem === "categoria" &&
+        item.ativo &&
+        (!tipo || item.tipo === tipo),
+    );
+  }, [descricoes]);
+
+  const getDescricoes = useCallback((tipo?: string, categoria?: string) => {
+    return descricoes.filter(
+      (item) =>
+        item.tipoItem === "descricao" &&
+        item.ativo &&
+        (!tipo || item.tipo === tipo) &&
+        (!categoria || item.categoria === categoria),
+    );
+  }, [descricoes]);
+
   const value: ContasContextType = {
     contas,
     filtros,
@@ -496,6 +529,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     fornecedores,
     formasPagamento,
     categorias,
+    descricoes,
+    getCategorias,
+    getDescricoes,
     adicionarFornecedor,
   };
 
