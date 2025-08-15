@@ -296,7 +296,7 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
-                          {cidades.map((cidade) => (
+                          {(Array.isArray(cidades) ? cidades : []).map((cidade) => (
                             <SelectItem key={cidade} value={cidade}>
                               {cidade}
                             </SelectItem>
