@@ -98,7 +98,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       categoria: "todas",
       descricao: "todas",
       cliente: "todos",
-      cidade: "todas",
       numeroNota: "",
     };
   });
