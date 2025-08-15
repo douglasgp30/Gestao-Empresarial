@@ -518,7 +518,11 @@ export default function ModalCidadeSetorSimples() {
                           variant="ghost"
                           size="sm"
                           onClick={() =>
-                            handleConfirmDelete({ nome: typeof cidade === 'object' ? cidade.nome : cidade }, "cidade")
+                            handleConfirmDelete({
+                              nome: typeof cidade === 'object'
+                                ? (cidade?.nome || String(cidade))
+                                : String(cidade)
+                            }, "cidade")
                           }
                           className="text-red-600 hover:text-red-700"
                           title="Excluir cidade"
