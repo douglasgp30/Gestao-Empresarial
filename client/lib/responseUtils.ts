@@ -10,11 +10,8 @@ export async function parseErrorResponse(response: Response): Promise<string> {
     // Clonar a resposta para não consumir o stream original
     const responseClone = response.clone();
 
-    // Verificar o content-type para decidir como processar
-    const contentType = responseClone.headers.get('content-type') || '';
-
-    if (contentType.includes('application/json')) {
-      // Se é JSON, tentar parse JSON
+    // Tentar JSON primeiro, independente do content-type
+    try {
       const errorData = await responseClone.json();
       console.log('🔵 DEBUG parseErrorResponse - errorData:', JSON.stringify(errorData, null, 2));
 
@@ -34,21 +31,22 @@ export async function parseErrorResponse(response: Response): Promise<string> {
         console.log('🔵 DEBUG parseErrorResponse - Retornando JSON.stringify:', JSON.stringify(errorData));
         return JSON.stringify(errorData);
       }
+    } catch (jsonError) {
+      console.log('🔵 DEBUG parseErrorResponse - Não é JSON, tentando texto:', jsonError);
 
-      console.log('🔵 DEBUG parseErrorResponse - Retornando defaultMessage');
-      return defaultMessage;
-    } else {
-      // Se não é JSON, ler como texto
-      const textData = await responseClone.text();
+      // Se não conseguiu fazer parse JSON, tentar como texto
+      const textData = await response.clone().text();
+      console.log('🔵 DEBUG parseErrorResponse - Dados texto:', textData);
 
       if (textData && textData.trim()) {
         return textData;
       }
-
-      return defaultMessage;
     }
+
+    console.log('🔵 DEBUG parseErrorResponse - Retornando defaultMessage');
+    return defaultMessage;
   } catch (parseError) {
-    console.log('🟡 Error parsing response body:', parseError);
+    console.log('🔴 Error parsing response body:', parseError);
     // Retornar mensagem padrão se não conseguir fazer parse
     return defaultMessage;
   }
