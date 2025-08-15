@@ -211,7 +211,7 @@ export interface Categoria {
 }
 
 export interface DescricaoECategoria {
-  id: string;
+  id: number;
   nome: string;
   tipo: "receita" | "despesa";
   tipoItem: "descricao" | "categoria";
