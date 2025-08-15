@@ -101,7 +101,10 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         "dataInicio",
         filtrosAtivos.dataInicio.toISOString().split("T")[0],
       );
-      params.append("dataFim", filtrosAtivos.dataFim.toISOString().split("T")[0]);
+      params.append(
+        "dataFim",
+        filtrosAtivos.dataFim.toISOString().split("T")[0],
+      );
 
       if (filtrosAtivos.tipo !== "ambos") {
         params.append("tipo", filtrosAtivos.tipo);
@@ -386,14 +389,17 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  const atualizarFiltros = useCallback((novosFiltros: Partial<FiltrosContas>) => {
-    console.log("🔄 [CONTAS] Atualizando filtros:", novosFiltros);
-    setFiltros((prev) => ({
-      ...prev,
-      ...novosFiltros,
-      __timestamp: Date.now(),
-    }));
-  }, []);
+  const atualizarFiltros = useCallback(
+    (novosFiltros: Partial<FiltrosContas>) => {
+      console.log("🔄 [CONTAS] Atualizando filtros:", novosFiltros);
+      setFiltros((prev) => ({
+        ...prev,
+        ...novosFiltros,
+        __timestamp: Date.now(),
+      }));
+    },
+    [],
+  );
 
   const forcarRecarregamento = useCallback(() => {
     console.log("🔄 [CONTAS] Forçando recarregamento manual");

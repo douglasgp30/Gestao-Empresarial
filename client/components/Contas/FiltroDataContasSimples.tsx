@@ -5,10 +5,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar, ChevronDown } from "lucide-react";
-import {
-  format,
-  startOfWeek,
-} from "date-fns";
+import { format, startOfWeek } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function FiltroDataContasSimples() {
