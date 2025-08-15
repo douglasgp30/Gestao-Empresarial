@@ -63,21 +63,27 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   useEffect(() => {
     const carregarCategorias = async () => {
       try {
+        console.log("🟡 [FormularioDespesa] Iniciando carregamento de categorias...");
         setCarregandoCategorias(true);
         const response = await fetch(
           "/api/descricoes-e-categorias/categorias?tipo=despesa",
         );
+
+        console.log("🟡 [FormularioDespesa] Response categorias:", response.status);
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
 
         const result = await response.json();
+        console.log("🟡 [FormularioDespesa] Dados categorias recebidos:", result);
+
         if (result.data) {
           setCategorias(result.data);
+          console.log("✅ [FormularioDespesa] Categorias carregadas:", result.data.length);
         }
       } catch (error) {
-        console.error("Erro ao carregar categorias:", error);
+        console.error("❌ [FormularioDespesa] Erro ao carregar categorias:", error);
         toast({
           title: "Erro",
           description: "Erro ao carregar categorias",
