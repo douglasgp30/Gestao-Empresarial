@@ -4,11 +4,11 @@ import { z } from "zod";
 
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
-  valor: z.number().positive("Valor deve ser positivo"),
-  valorRecebido: z.number().optional(),
-  valorLiquido: z.number().optional(),
-  comissao: z.number().optional(),
-  imposto: z.number().optional(),
+  valor: z.union([z.number(), z.string()]).pipe(z.coerce.number().positive("Valor deve ser positivo")),
+  valorRecebido: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
+  valorLiquido: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
+  comissao: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
+  imposto: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
   observacoes: z.string().optional(),
   numeroNota: z.string().optional(),
   arquivoNota: z.string().optional(),
