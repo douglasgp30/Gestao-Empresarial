@@ -219,7 +219,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === CARREGAMENTO DE DADOS COM DEBOUNCE ===
   const carregarDados = useCallback(async () => {
+    // Evitar múltiplos carregamentos simultâneos
+    if (isCarregando) {
+      console.log("[EntidadesContext] Carregamento já em andamento, ignorando...");
+      return;
+    }
+
     console.log("[EntidadesContext] Iniciando carregamento de dados...");
+    setIsCarregando(true);
     setIsLoading(true);
     setError(null);
 
