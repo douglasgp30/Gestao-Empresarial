@@ -7,30 +7,34 @@ export async function parseErrorResponse(response: Response): Promise<string> {
   const defaultMessage = `Erro HTTP ${response.status}: ${response.statusText}`;
 
   try {
+    // Clonar a resposta para não consumir o stream original
+    const responseClone = response.clone();
+
     // Verificar o content-type para decidir como processar
-    const contentType = response.headers.get('content-type') || '';
+    const contentType = responseClone.headers.get('content-type') || '';
 
     if (contentType.includes('application/json')) {
       // Se é JSON, tentar parse JSON
-      const errorData = await response.json();
-      console.log('🔵 parseErrorResponse - errorData recebido:', JSON.stringify(errorData, null, 2));
+      const errorData = await responseClone.json();
 
-      if (errorData && errorData.error) {
-        console.log('🔵 parseErrorResponse - Retornando errorData.error:', errorData.error);
+      if (errorData && typeof errorData.error === 'string' && errorData.error.trim()) {
         return errorData.error;
       }
 
       // Se não tem campo error, tentar outras propriedades comuns
-      if (errorData && errorData.message) {
-        console.log('🔵 parseErrorResponse - Retornando errorData.message:', errorData.message);
+      if (errorData && typeof errorData.message === 'string' && errorData.message.trim()) {
         return errorData.message;
       }
 
-      console.log('🔵 parseErrorResponse - Nenhum campo error/message encontrado, retornando default');
+      // Se tem errorData mas sem campos úteis, tentar stringify
+      if (errorData && Object.keys(errorData).length > 0) {
+        return JSON.stringify(errorData);
+      }
+
       return defaultMessage;
     } else {
       // Se não é JSON, ler como texto
-      const textData = await response.text();
+      const textData = await responseClone.text();
 
       if (textData && textData.trim()) {
         return textData;
