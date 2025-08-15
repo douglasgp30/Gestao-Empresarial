@@ -77,10 +77,7 @@ export default function ModalCampanhas() {
         return;
       }
 
-      toast({
-        title: "Sucesso",
-        description: "Campanha criada com sucesso!",
-      });
+      toast.success("Campanha criada com sucesso!");
 
       resetForm();
       setIsNewCampanhaOpen(false);
