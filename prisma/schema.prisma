@@ -471,11 +471,13 @@ model Agendamento {
   // Chaves estrangeiras
   clienteId     Int
   funcionarioId Int?
+  cidadeId      Int?
   setorId       Int?
 
   // Relacionamentos
   cliente     Cliente      @relation(fields: [clienteId], references: [id])
   funcionario Funcionario? @relation(fields: [funcionarioId], references: [id])
+  cidade      Cidade?      @relation(fields: [cidadeId], references: [id])
   setor       Setor?       @relation(fields: [setorId], references: [id])
 
   @@map("agendamentos")
