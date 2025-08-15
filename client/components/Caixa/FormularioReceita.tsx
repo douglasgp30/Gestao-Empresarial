@@ -46,10 +46,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     formasPagamento,
     getTecnicos,
     setores,
-    adicionarDescricao,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
+    // Usar tabela unificada
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
   } = useEntidades();
   const {
     clientes,
