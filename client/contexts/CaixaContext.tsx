@@ -213,7 +213,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           filtrosApi.categoria = filtros.categoria;
         }
 
-        const response = await caixaApi.listarLancamentos(filtrosApi);
+        // Criar chave de cache baseada nos filtros
+        const cacheKey = `caixa-lancamentos-${JSON.stringify(filtrosApi)}`;
+        const response = await apiCache.executeWithCache(
+          cacheKey,
+          () => caixaApi.listarLancamentos(filtrosApi),
+          forceLoad
+        );
         if (response.error) {
           setError(response.error);
         } else {
