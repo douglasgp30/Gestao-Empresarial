@@ -172,6 +172,7 @@ export function createServer(): Express {
   app.post("/api/setores", createSetor);
   app.put("/api/setores/:id", updateSetor);
   app.delete("/api/setores/:id", deleteSetor);
+  app.delete("/api/setores/cidades/:cidade", deleteCidade);
 
   // Rotas de Caixa
   app.get("/api/caixa/lancamentos", getLancamentos);
