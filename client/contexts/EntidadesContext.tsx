@@ -265,17 +265,21 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       if (cidadesResponse.data) {
+        let cidadesArray = cidadesResponse.data;
+
+        // Se cidadesResponse.data tem propriedade data, extrair o array
+        if (cidadesResponse.data.data && Array.isArray(cidadesResponse.data.data)) {
+          cidadesArray = cidadesResponse.data.data;
+        }
+
         // Verificar se são objetos (nova estrutura) ou strings (estrutura antiga)
-        if (
-          Array.isArray(cidadesResponse.data) &&
-          cidadesResponse.data.length > 0
-        ) {
-          if (typeof cidadesResponse.data[0] === "string") {
+        if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
+          if (typeof cidadesArray[0] === "string") {
             // Estrutura antiga: array de strings
-            setCidades(cidadesResponse.data);
+            setCidades(cidadesArray);
           } else {
             // Nova estrutura: array de objetos {id, nome, ativo}
-            setCidades(cidadesResponse.data.map((cidade: any) => cidade.nome));
+            setCidades(cidadesArray.map((cidade: any) => cidade.nome));
           }
         } else {
           setCidades([]);
