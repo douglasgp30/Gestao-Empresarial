@@ -98,7 +98,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         const data = await response.json();
 
         if (data.data) {
-          const nomes = data.data.map((cat: any) => cat.nome).sort();
+          // Remove duplicates and sort
+          const nomes = [...new Set(data.data.map((cat: any) => cat.nome))].sort();
           setCategoriasReceita(nomes);
           console.log("[FormularioReceita] Categorias carregadas:", nomes);
           console.log("[FormularioReceita] Dados completos das categorias:", data.data);
@@ -427,8 +428,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                       Nenhuma categoria de receita encontrada
                     </div>
                   ) : (
-                    categoriasReceita.map((categoria) => (
-                      <SelectItem key={categoria} value={categoria}>
+                    categoriasReceita.map((categoria, index) => (
+                      <SelectItem key={`categoria-${index}-${categoria}`} value={categoria}>
                         {categoria}
                       </SelectItem>
                     ))
