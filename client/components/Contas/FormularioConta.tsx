@@ -42,6 +42,8 @@ export function FormularioConta({
     fornecedores,
     formasPagamento,
     categorias,
+    getCategorias,
+    getDescricoes,
   } = useContas();
 
   const [salvando, setSalvando] = useState(false);
@@ -53,7 +55,8 @@ export function FormularioConta({
     tipo: "receber" as "receber" | "pagar",
     formaPg: "",
     observacoes: "",
-    descricaoCategoria: "0",
+    categoria: "0",
+    descricao: "0",
     pago: false,
     dataPagamento: undefined as Date | undefined,
   });
