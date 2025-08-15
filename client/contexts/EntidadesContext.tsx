@@ -604,23 +604,17 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(cidade),
       });
 
-      if (!response.ok) {
-        let errorMessage = 'Erro ao criar cidade';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
-        } catch (parseError) {
-          console.error("Erro ao parsear resposta de erro:", parseError);
-        }
-        throw new Error(errorMessage);
+      // Ler response uma única vez
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (parseError) {
+        responseData = null;
       }
 
-      // Consumir o response bem-sucedido
-      try {
-        await response.json();
-      } catch (parseError) {
-        // Se não conseguir parsear, não é crítico para o sucesso da operação
-        console.log("Response criado com sucesso mas sem JSON válido");
+      if (!response.ok) {
+        const errorMessage = responseData?.error || `Erro HTTP ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       // Recarregar lista de cidades
