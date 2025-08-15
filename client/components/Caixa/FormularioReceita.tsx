@@ -148,12 +148,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
 
-  // Resetar valorQueEntrou quando mudança de Cartão para outras formas
-  useEffect(() => {
-    if (!isFormaPagamentoCartao && valorQueEntrouInput.numericValue > 0) {
-      valorQueEntrouInput.reset();
-    }
-  }, [isFormaPagamentoCartao, valorQueEntrouInput]);
+  // Remover useEffect que causa piscar da tela
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
