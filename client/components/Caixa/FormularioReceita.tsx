@@ -24,6 +24,7 @@ import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingUp, UserPlus } from "lucide-react";
+import { QuickSeed } from "../Debug/QuickSeed";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
@@ -364,13 +365,18 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   return (
     <Card>
       <CardHeader className="p-4 sm:p-6">
-        <CardTitle className="flex items-center gap-2 text-green-600 text-lg sm:text-xl">
-          <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
-          Lançar Receita
-        </CardTitle>
-        <CardDescription className="text-sm">
-          Registre uma nova entrada no caixa
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-green-600 text-lg sm:text-xl">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+              Lançar Receita
+            </CardTitle>
+            <CardDescription className="text-sm">
+              Registre uma nova entrada no caixa
+            </CardDescription>
+          </div>
+          <QuickSeed />
+        </div>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         <form
