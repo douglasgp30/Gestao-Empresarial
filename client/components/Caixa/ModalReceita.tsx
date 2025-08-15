@@ -487,7 +487,7 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione o setor" />
                   </SelectTrigger>
                   <SelectContent>
-                    {setores.map((setor) => (
+                    {(Array.isArray(setores) ? setores : []).map((setor) => (
                       <SelectItem key={setor.id} value={setor.id.toString()}>
                         {setor.nome} - {setor.cidade}
                       </SelectItem>
@@ -506,7 +506,7 @@ export function ModalReceita() {
                   setFormData((prev) => ({ ...prev, campanha: value }))
                 }
                 placeholder="Selecione a campanha"
-                options={campanhas.map((campanha) => ({
+                options={(Array.isArray(campanhas) ? campanhas : []).map((campanha) => ({
                   value: campanha.id.toString(),
                   label: campanha.nome,
                 }))}

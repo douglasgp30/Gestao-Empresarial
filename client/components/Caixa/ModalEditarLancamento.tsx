@@ -308,7 +308,7 @@ export function ModalEditarLancamento({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Nenhum</SelectItem>
-                    {tecnicos.map((tecnico) => (
+                    {(Array.isArray(tecnicos) ? tecnicos : []).map((tecnico) => (
                       <SelectItem
                         key={tecnico.id}
                         value={tecnico.id.toString()}
