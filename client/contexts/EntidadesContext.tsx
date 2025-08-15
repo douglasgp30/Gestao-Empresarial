@@ -87,13 +87,20 @@ interface EntidadesContextType {
   excluirFuncionario: (id: string) => Promise<void>;
   getTecnicos: () => any[];
 
-  // Setores
-  setores: Setor[];
-  cidades: string[];
-  adicionarSetor: (setor: Omit<Setor, "id" | "dataCriacao">) => Promise<void>;
-  editarSetor: (id: string, setor: Partial<Setor>) => Promise<void>;
-  excluirSetor: (id: string) => Promise<void>;
-  adicionarCidade: (cidade: { nome: string }) => Promise<void>;
+  // Localização Geográfica (Cidades e Setores unificados)
+  localizacoesGeograficas: LocalizacaoGeografica[];
+  adicionarLocalizacaoGeografica: (
+    localizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">
+  ) => Promise<void>;
+  editarLocalizacaoGeografica: (
+    id: number,
+    localizacao: Partial<LocalizacaoGeografica>
+  ) => Promise<void>;
+  excluirLocalizacaoGeografica: (id: number) => Promise<void>;
+
+  // Funções de conveniência para filtrar localizações
+  getCidades: () => LocalizacaoGeografica[];
+  getSetores: (cidade?: string) => LocalizacaoGeografica[];
 
   // Clientes (API)
   clientes: Cliente[];
