@@ -10,25 +10,45 @@ const SetorSchema = z.object({
 export const getSetores: RequestHandler = async (req, res) => {
   try {
     const { cidade } = req.query;
-    const where: any = {};
+    const where: any = { ativo: true };
 
-    if (cidade) where.cidade = cidade as string;
+    // Filtrar por cidade se especificado
+    if (cidade) {
+      // Tentar buscar pela nova estrutura primeiro
+      try {
+        const cidadeObj = await prisma.cidade.findFirst({
+          where: { nome: cidade as string },
+        });
+        if (cidadeObj) {
+          where.cidadeId = cidadeObj.id;
+        }
+      } catch (error) {
+        // Fallback para estrutura antiga
+        where.cidade = cidade as string;
+      }
+    }
 
-    // Verificar se a coluna cidadeId existe (nova estrutura) ou usar a antiga
+    // Buscar setores com dados da cidade incluídos
     try {
       const setores = await prisma.setor.findMany({
-        where: { ...where, ativo: true },
+        where,
         include: {
           cidade: true,
         },
         orderBy: [{ cidade: { nome: "asc" } }, { nome: "asc" }],
       });
+
+      console.log(
+        `[Setores] Encontrados ${setores.length} setores com nova estrutura`,
+      );
       res.json(setores);
     } catch (includeError) {
       // Fallback para estrutura antiga
-      console.log("Usando estrutura antiga de setores");
+      console.log("[Setores] Usando estrutura antiga de setores");
       const setores = await prisma.setor.findMany({
-        where,
+        where: cidade
+          ? { cidade: cidade as string, ativo: true }
+          : { ativo: true },
         orderBy: [{ cidade: "asc" }, { nome: "asc" }],
       });
       res.json(setores);
@@ -42,23 +62,18 @@ export const getSetores: RequestHandler = async (req, res) => {
 export const getCidades: RequestHandler = async (req, res) => {
   try {
     // Tentar usar a nova tabela de cidades
-    try {
-      const cidades = await prisma.cidade.findMany({
-        where: { ativo: true },
-        orderBy: { nome: "asc" },
-      });
-      res.json(cidades);
-    } catch (newTableError) {
-      // Fallback para extrair cidades dos setores (estrutura antiga)
-      console.log("Usando fallback: extraindo cidades dos setores");
-      const setores = await prisma.setor.findMany({
-        select: { cidade: true },
-        distinct: ["cidade"],
-        orderBy: { cidade: "asc" },
-      });
-      const cidadesSimples = setores.map((item) => item.cidade);
-      res.json(cidadesSimples);
-    }
+    const cidades = await prisma.cidade.findMany({
+      where: { ativo: true },
+      orderBy: { nome: "asc" },
+      include: {
+        _count: {
+          select: { setores: true },
+        },
+      },
+    });
+
+    console.log(`[Cidades] Encontradas ${cidades.length} cidades`);
+    res.json(cidades);
   } catch (error) {
     console.error("Erro ao buscar cidades:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
@@ -67,7 +82,15 @@ export const getCidades: RequestHandler = async (req, res) => {
 
 export const createSetor: RequestHandler = async (req, res) => {
   try {
+    console.log(
+      "[Setores] Dados recebidos para criar setor:",
+      JSON.stringify(req.body, null, 2),
+    );
     const data = SetorSchema.parse(req.body);
+    console.log(
+      "[Setores] Dados após validação:",
+      JSON.stringify(data, null, 2),
+    );
 
     // Verificar se a cidade existe
     const cidade = await prisma.cidade.findUnique({
@@ -82,10 +105,7 @@ export const createSetor: RequestHandler = async (req, res) => {
     const setorExistente = await prisma.setor.findFirst({
       where: {
         cidadeId: data.cidadeId,
-        nome: {
-          equals: data.nome,
-          mode: "insensitive",
-        },
+        nome: data.nome,
         ativo: true,
       },
     });
@@ -102,6 +122,8 @@ export const createSetor: RequestHandler = async (req, res) => {
         cidade: true,
       },
     });
+
+    console.log("[Setores] Setor criado com sucesso:", setor);
     res.status(201).json(setor);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -152,22 +174,45 @@ export const deleteSetor: RequestHandler = async (req, res) => {
 
 export const deleteCidade: RequestHandler = async (req, res) => {
   try {
-    const cidade = decodeURIComponent(req.params.cidade);
+    const nomeCidade = decodeURIComponent(req.params.cidade);
+    console.log(`[Setores] Tentando excluir cidade: ${nomeCidade}`);
 
-    // Verificar se existem setores vinculados a esta cidade
+    // Buscar a cidade pelo nome na nova tabela
+    const cidade = await prisma.cidade.findFirst({
+      where: { nome: nomeCidade },
+    });
+
+    if (!cidade) {
+      return res.status(404).json({
+        error: `Cidade "${nomeCidade}" não encontrada`,
+      });
+    }
+
+    // Verificar se existem setores vinculados a esta cidade usando a nova estrutura
     const setoresVinculados = await prisma.setor.findMany({
-      where: { cidade },
+      where: {
+        cidadeId: cidade.id,
+        ativo: true,
+      },
+      include: {
+        cidade: true,
+      },
     });
 
     if (setoresVinculados.length > 0) {
       const nomesSetores = setoresVinculados.map((s) => s.nome).join(", ");
       return res.status(400).json({
-        error: `Não é possível excluir a cidade "${cidade}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
+        error: `Não é possível excluir a cidade "${nomeCidade}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
       });
     }
 
-    // Se chegou aqui, pode excluir (na verdade não há uma tabela de cidades,
-    // então não há nada para excluir fisicamente)
+    // Excluir a cidade da nova tabela (soft delete)
+    await prisma.cidade.update({
+      where: { id: cidade.id },
+      data: { ativo: false },
+    });
+
+    console.log(`[Setores] Cidade "${nomeCidade}" marcada como inativa`);
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao excluir cidade:", error);

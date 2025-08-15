@@ -2,8 +2,6 @@ import { RequestHandler, Router } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
 
-const router = Router();
-
 const CidadeSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
 });
@@ -40,15 +38,20 @@ export const getCidades: RequestHandler = async (req, res) => {
 // POST /api/cidades - Criar nova cidade
 export const createCidade: RequestHandler = async (req, res) => {
   try {
+    console.log(
+      "[Cidades] Dados recebidos para criar cidade:",
+      JSON.stringify(req.body, null, 2),
+    );
     const data = CidadeSchema.parse(req.body);
+    console.log(
+      "[Cidades] Dados após validação:",
+      JSON.stringify(data, null, 2),
+    );
 
-    // Verificar se já existe uma cidade com esse nome
+    // Verificar se já existe uma cidade com esse nome (SQLite case insensitive by default)
     const cidadeExistente = await prisma.cidade.findFirst({
       where: {
-        nome: {
-          equals: data.nome,
-          mode: "insensitive", // Case insensitive
-        },
+        nome: data.nome,
       },
     });
 
@@ -61,6 +64,7 @@ export const createCidade: RequestHandler = async (req, res) => {
 
     const cidade = await prisma.cidade.create({ data });
 
+    console.log("[Cidades] Cidade criada com sucesso:", cidade);
     const response: ApiResponse<typeof cidade> = { data: cidade };
     res.status(201).json(response);
   } catch (error) {
@@ -91,10 +95,7 @@ export const updateCidade: RequestHandler = async (req, res) => {
       const cidadeExistente = await prisma.cidade.findFirst({
         where: {
           id: { not: id },
-          nome: {
-            equals: data.nome,
-            mode: "insensitive",
-          },
+          nome: data.nome,
         },
       });
 
@@ -180,9 +181,4 @@ export const deleteCidade: RequestHandler = async (req, res) => {
 };
 
 // Rotas
-router.get("/", getCidades);
-router.post("/", createCidade);
-router.put("/:id", updateCidade);
-router.delete("/:id", deleteCidade);
-
-export default router;
+// Routes are exported individually and registered in server/index.ts

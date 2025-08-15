@@ -199,18 +199,15 @@ export default function ModalCidadeSetorSimples() {
         return;
       }
 
-      // Como as cidades são extraídas dos setores, vamos criar um setor "Centro" para a nova cidade
-      await adicionarSetor({
-        nome: "Centro",
-        cidade: nomeCidade,
+      // Usar a nova API de cidades
+      await adicionarCidade({
+        nome: nomeCidade,
       });
 
       // Recarregar dados para atualizar a lista de cidades
       await recarregarTudo();
 
-      toast.success(
-        `Cidade "${nomeCidade}" adicionada com sucesso (setor Centro criado automaticamente)`,
-      );
+      toast.success(`Cidade "${nomeCidade}" adicionada com sucesso!`);
       resetFormCidade();
     } catch (error) {
       console.error("Erro ao adicionar cidade:", error);
@@ -247,7 +244,7 @@ export default function ModalCidadeSetorSimples() {
 
       if (setorExistente) {
         toast.error(
-          `O setor "${nomeSetor}" já existe na cidade "${nomeCidade}"`,
+          `O setor "${nomeSetor}" j�� existe na cidade "${nomeCidade}"`,
         );
         return;
       }
@@ -364,18 +361,41 @@ export default function ModalCidadeSetorSimples() {
         return;
       }
 
-      // Se chegou aqui, pode excluir
+      // Se chegou aqui, pode excluir usando a nova API
       try {
-        const response = await fetch(
-          `/api/setores/cidades/${encodeURIComponent(itemToDelete.nome)}`,
-          {
-            method: "DELETE",
-          },
+        // Primeiro, buscar o ID da cidade pelo nome
+        const cidadesResponse = await fetch("/api/cidades");
+        const cidadesData = await cidadesResponse.json();
+
+        let cidadesArray = cidadesData.data || cidadesData;
+        if (cidadesData.data && Array.isArray(cidadesData.data)) {
+          cidadesArray = cidadesData.data;
+        }
+
+        const cidadeEncontrada = cidadesArray.find(
+          (c: any) => c.nome === itemToDelete.nome,
         );
 
+        if (!cidadeEncontrada) {
+          throw new Error(`Cidade "${itemToDelete.nome}" não encontrada`);
+        }
+
+        const response = await fetch(`/api/cidades/${cidadeEncontrada.id}`, {
+          method: "DELETE",
+        });
+
+        // Ler response uma única vez
+        let responseData;
+        try {
+          responseData = await response.json();
+        } catch (parseError) {
+          responseData = null;
+        }
+
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Erro HTTP ${response.status}`);
+          const errorMessage =
+            responseData?.error || `Erro HTTP ${response.status}`;
+          throw new Error(errorMessage);
         }
 
         console.log("✅ Cidade excluída com sucesso");

@@ -147,12 +147,18 @@ export function FormularioConta({
         valor: valorNumerico,
         dataVencimento: formData.dataVencimento,
         codigoCliente:
-          formData.tipo === "receber"
-            ? parseInt(formData.codigoCliente)
+          formData.tipo === "receber" && formData.codigoCliente
+            ? (() => {
+                const parsed = parseInt(formData.codigoCliente);
+                return isNaN(parsed) ? undefined : parsed;
+              })()
             : undefined,
         codigoFornecedor:
-          formData.tipo === "pagar"
-            ? parseInt(formData.codigoFornecedor)
+          formData.tipo === "pagar" && formData.codigoFornecedor
+            ? (() => {
+                const parsed = parseInt(formData.codigoFornecedor);
+                return isNaN(parsed) ? undefined : parsed;
+              })()
             : undefined,
         tipo: formData.tipo,
         formaPg:

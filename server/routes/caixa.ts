@@ -4,11 +4,22 @@ import { z } from "zod";
 
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
-  valor: z.number().positive("Valor deve ser positivo"),
-  valorRecebido: z.number().optional(),
-  valorLiquido: z.number().optional(),
-  comissao: z.number().optional(),
-  imposto: z.number().optional(),
+  valor: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive("Valor deve ser positivo")),
+  valorRecebido: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number())
+    .optional(),
+  valorLiquido: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number())
+    .optional(),
+  comissao: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number())
+    .optional(),
+  imposto: z.union([z.number(), z.string()]).pipe(z.coerce.number()).optional(),
   observacoes: z.string().optional(),
   numeroNota: z.string().optional(),
   arquivoNota: z.string().optional(),
@@ -23,20 +34,35 @@ const LancamentoCaixaSchema = z.object({
 
   // Campos obrigatórios
   formaPagamentoId: z
-    .number()
-    .positive("Forma de pagamento é obrigatória")
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
     .optional(),
   formaPagamento: z.string().optional(), // Para compatibilidade
 
   // Campos opcionais
-  subdescricaoId: z.number().positive().optional(),
-  funcionarioId: z.number().positive().optional(),
+  subdescricaoId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
+  funcionarioId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
   tecnicoResponsavel: z.string().optional(), // Para compatibilidade
-  setorId: z.number().positive().optional(),
+  setorId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
   setor: z.string().optional(), // Para compatibilidade
-  campanhaId: z.number().positive().optional(),
+  campanhaId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
   campanha: z.string().optional(), // Para compatibilidade
-  clienteId: z.number().positive().optional(),
+  clienteId: z
+    .union([z.number(), z.string()])
+    .pipe(z.coerce.number().positive())
+    .optional(),
 });
 
 // Função para gerar dataHora no formato DD-MM-AAAA HH:MM:SS
@@ -89,7 +115,7 @@ async function resolverIds(data: any) {
   // Resolver forma de pagamento
   if (data.formaPagamento && !data.formaPagamentoId) {
     const formaPagamento = await prisma.formaPagamento.findFirst({
-      where: { nome: { contains: data.formaPagamento, mode: "insensitive" } },
+      where: { nome: { contains: data.formaPagamento } },
     });
     if (formaPagamento) {
       ids.formaPagamentoId = formaPagamento.id;
@@ -113,7 +139,7 @@ async function resolverIds(data: any) {
   // Resolver setor
   if (data.setor && !data.setorId) {
     const setor = await prisma.setor.findFirst({
-      where: { nome: { contains: data.setor, mode: "insensitive" } },
+      where: { nome: { contains: data.setor } },
     });
     if (setor) {
       ids.setorId = setor.id;
@@ -125,7 +151,7 @@ async function resolverIds(data: any) {
   // Resolver campanha
   if (data.campanha && !data.campanhaId) {
     const campanha = await prisma.campanha.findFirst({
-      where: { nome: { contains: data.campanha, mode: "insensitive" } },
+      where: { nome: { contains: data.campanha } },
     });
     if (campanha) {
       ids.campanhaId = campanha.id;
@@ -455,7 +481,19 @@ export const createLancamento: RequestHandler = async (req, res) => {
     res.status(201).json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: "Dados inválidos", details: error.errors });
+      console.error("[Caixa] Erro de validação Zod:", error.errors);
+      console.error(
+        "[Caixa] Dados que causaram erro:",
+        JSON.stringify(req.body, null, 2),
+      );
+      res.status(400).json({
+        error:
+          "Dados inválidos: " +
+          error.errors
+            .map((e) => `${e.path.join(".")}: ${e.message}`)
+            .join(", "),
+        details: error.errors,
+      });
     } else {
       console.error("Erro ao criar lançamento:", error);
       res.status(500).json({ error: "Erro interno do servidor" });

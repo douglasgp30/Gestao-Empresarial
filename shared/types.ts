@@ -248,7 +248,8 @@ export interface Fornecedor {
 
 export interface Setor {
   id: string; // CodigoSetor
-  cidade: string; // Cidade (obrigatório)
+  cidade?: string; // Cidade - formato antigo (texto)
+  cidadeId?: number; // Cidade - novo formato (FK para tabela cidades)
   nome: string; // Setor/bairro (obrigatório)
   dataCriacao: Date;
 }
