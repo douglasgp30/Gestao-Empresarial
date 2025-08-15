@@ -182,7 +182,6 @@ const updateDescricaoECategoria: RequestHandler = async (req, res) => {
 const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    console.log(`🔵 [DELETE] Tentando excluir item ID: ${id}`);
 
     // Buscar o item que será excluído
     const item = await prisma.descricaoECategoria.findUnique({
@@ -190,24 +189,14 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
     });
 
     if (!item) {
-      console.log(`🔴 [DELETE] Item ${id} não encontrado`);
       const response: ApiResponse<null> = {
         error: "Item não encontrado",
       };
       return res.status(404).json(response);
     }
 
-    console.log(`🔵 [DELETE] Item encontrado:`, {
-      id: item.id,
-      nome: item.nome,
-      tipoItem: item.tipoItem,
-      ativo: item.ativo
-    });
-
     // Se for uma categoria, verificar se existem descrições que dependem dela
     if (item.tipoItem === "categoria") {
-      console.log(`🔵 [DELETE] Verificando dependências para categoria: ${item.nome}`);
-
       const descricoesVinculadas = await prisma.descricaoECategoria.findMany({
         where: {
           tipoItem: "descricao",
@@ -216,11 +205,8 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
         },
       });
 
-      console.log(`🔵 [DELETE] Encontradas ${descricoesVinculadas.length} descrições vinculadas`);
-
       if (descricoesVinculadas.length > 0) {
         const nomesDescricoes = descricoesVinculadas.map(d => d.nome).join(", ");
-        console.log(`🔴 [DELETE] BLOQUEADO - Descrições vinculadas: ${nomesDescricoes}`);
 
         const response: ApiResponse<null> = {
           error: `Não é possível excluir a categoria "${item.nome}" pois existem ${descricoesVinculadas.length} descrição(ões) vinculada(s): ${nomesDescricoes}. Remova ou realoque estas descrições primeiro.`,
