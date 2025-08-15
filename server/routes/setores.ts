@@ -115,6 +115,8 @@ export const createSetor: RequestHandler = async (req, res) => {
         cidade: true,
       },
     });
+
+    console.log("[Setores] Setor criado com sucesso:", setor);
     res.status(201).json(setor);
   } catch (error) {
     if (error instanceof z.ZodError) {
