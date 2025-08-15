@@ -177,18 +177,15 @@ export default function ModalDescricoesSimples() {
         // Tratamento direto e simples do erro
         try {
           const errorData = await response.json();
-          console.log('🔴 SIMPLE DEBUG - errorData:', JSON.stringify(errorData));
 
           if (errorData && errorData.error && typeof errorData.error === 'string') {
-            console.log('🔴 SIMPLE DEBUG - Usando mensagem do servidor:', errorData.error);
             throw new Error(errorData.error);
           }
         } catch (jsonError) {
-          console.log('🔴 SIMPLE DEBUG - Erro ao ler JSON:', jsonError);
+          // Falha ao ler JSON
         }
 
         // Fallback
-        console.log('🔴 SIMPLE DEBUG - Usando fallback');
         throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
       }
 
