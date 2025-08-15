@@ -264,10 +264,12 @@ export function ModalDespesa() {
                     label: desc.nome,
                   }))}
                   onAddNew={async (nomeDescricao) => {
-                    await adicionarDescricao({
+                    await adicionarDescricaoECategoria({
                       nome: nomeDescricao,
                       tipo: "despesa",
                       categoria: formData.categoria,
+                      tipoItem: "descricao",
+                      ativo: true,
                     });
                   }}
                   addButtonText="Nova Descrição"
