@@ -110,7 +110,7 @@ async function resolverIds(data: any) {
   // Resolver setor
   if (data.setor && !data.setorId) {
     const setor = await prisma.setor.findFirst({
-      where: { nome: { contains: data.setor, mode: "insensitive" } },
+      where: { nome: { contains: data.setor } },
     });
     if (setor) {
       ids.setorId = setor.id;
