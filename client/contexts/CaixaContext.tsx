@@ -254,6 +254,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
 
         setError("Erro ao carregar lançamentos");
+      } finally {
+        setContextLoading("CaixaContext-lancamentos", false);
       }
     },
     [filtros, isCarregando],
