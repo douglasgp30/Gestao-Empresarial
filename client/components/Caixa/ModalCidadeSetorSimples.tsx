@@ -153,12 +153,12 @@ export default function ModalCidadeSetorSimples() {
     if (isOpen) {
       if (cidades.length === 0 || setores.length === 0) {
         console.log("[ModalCidadeSetorSimples] Modal aberto sem dados, carregando...");
-        // Não temos uma função específica, vamos tentar usar as funções individuais
+        recarregarTudo();
       } else {
         console.log("[ModalCidadeSetorSimples] Modal aberto com dados já carregados");
       }
     }
-  }, [isOpen, cidades.length, setores.length]);
+  }, [isOpen, cidades.length, setores.length, recarregarTudo]);
 
   const resetFormCidade = () => {
     setFormCidade({ nome: "" });
