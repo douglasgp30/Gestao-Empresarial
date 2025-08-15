@@ -344,7 +344,7 @@ export default function ModalCidadeSetorSimples() {
 
         // Mostrar mensagem informativa sem lançar erro
         toast.error(
-          `⚠️ Não é possível excluir a cidade "${itemToDelete.nome}" pois existem ${setoresVinculados.length} setor(es) vinculado(s). Use o botão "👁️ Ver" para visualizar as dependências.`,
+          `⚠️ Não �� possível excluir a cidade "${itemToDelete.nome}" pois existem ${setoresVinculados.length} setor(es) vinculado(s). Use o botão "👁️ Ver" para visualizar as dependências.`,
           {
             duration: 8000, // Toast mais longo para dar tempo de ler
             action: {
@@ -499,7 +499,7 @@ export default function ModalCidadeSetorSimples() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleShowDependencies(cidade)}
+                          onClick={() => handleShowDependencies(typeof cidade === 'object' ? cidade.nome : cidade)}
                           className="text-blue-600 hover:text-blue-700"
                           title="Ver setores vinculados"
                         >
@@ -509,7 +509,7 @@ export default function ModalCidadeSetorSimples() {
                           variant="ghost"
                           size="sm"
                           onClick={() =>
-                            handleConfirmDelete({ nome: cidade }, "cidade")
+                            handleConfirmDelete({ nome: typeof cidade === 'object' ? cidade.nome : cidade }, "cidade")
                           }
                           className="text-red-600 hover:text-red-700"
                           title="Excluir cidade"
