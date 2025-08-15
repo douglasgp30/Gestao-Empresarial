@@ -247,12 +247,24 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
-        apiCache.executeWithCache('entidades-descricoes', () => descricoesECategoriasApi.listar()),
-        apiCache.executeWithCache('entidades-formas-pagamento', () => formasPagamentoApi.listar()),
-        apiCache.executeWithCache('entidades-funcionarios', () => funcionariosApi.listar()),
-        apiCache.executeWithCache('entidades-tecnicos', () => funcionariosApi.listarTecnicos()),
-        apiCache.executeWithCache('entidades-setores', () => setoresApi.listar()),
-        apiCache.executeWithCache('entidades-cidades', () => setoresApi.listarCidades()),
+        apiCache.executeWithCache("entidades-descricoes", () =>
+          descricoesECategoriasApi.listar(),
+        ),
+        apiCache.executeWithCache("entidades-formas-pagamento", () =>
+          formasPagamentoApi.listar(),
+        ),
+        apiCache.executeWithCache("entidades-funcionarios", () =>
+          funcionariosApi.listar(),
+        ),
+        apiCache.executeWithCache("entidades-tecnicos", () =>
+          funcionariosApi.listarTecnicos(),
+        ),
+        apiCache.executeWithCache("entidades-setores", () =>
+          setoresApi.listar(),
+        ),
+        apiCache.executeWithCache("entidades-cidades", () =>
+          setoresApi.listarCidades(),
+        ),
       ]);
 
       // Atualizar estados com dados do banco
@@ -380,7 +392,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         contextThrottle.execute(
           "EntidadesContext-initial",
           () => carregarDados(),
-          5000 // 5 segundos de throttle
+          5000, // 5 segundos de throttle
         );
       }
     }, delay);

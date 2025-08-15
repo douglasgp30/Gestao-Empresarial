@@ -1,20 +1,26 @@
 // Sistema de cache específico para APIs para reduzir chamadas repetitivas
 class ApiCache {
-  private cache: Map<string, { data: any; timestamp: number; expiry: number }> = new Map();
+  private cache: Map<string, { data: any; timestamp: number; expiry: number }> =
+    new Map();
   private pendingRequests: Map<string, Promise<any>> = new Map();
 
   // Tempo de cache por tipo de dados (em ms)
   private readonly cacheTimes = {
-    'entidades': 30000, // 30 segundos para entidades
-    'lancamentos': 10000, // 10 segundos para lançamentos
-    'default': 15000, // 15 segundos padrão
+    entidades: 30000, // 30 segundos para entidades
+    lancamentos: 10000, // 10 segundos para lançamentos
+    default: 15000, // 15 segundos padrão
   };
 
   private getCacheTime(key: string): number {
-    if (key.includes('entidades') || key.includes('funcionarios') || key.includes('setores') || key.includes('formas-pagamento')) {
+    if (
+      key.includes("entidades") ||
+      key.includes("funcionarios") ||
+      key.includes("setores") ||
+      key.includes("formas-pagamento")
+    ) {
       return this.cacheTimes.entidades;
     }
-    if (key.includes('lancamentos')) {
+    if (key.includes("lancamentos")) {
       return this.cacheTimes.lancamentos;
     }
     return this.cacheTimes.default;
@@ -43,7 +49,9 @@ class ApiCache {
       timestamp: Date.now(),
       expiry,
     });
-    console.log(`💾 [ApiCache] Cache salvo para ${key} (expira em ${expiry}ms)`);
+    console.log(
+      `💾 [ApiCache] Cache salvo para ${key} (expira em ${expiry}ms)`,
+    );
   }
 
   // Verificar se há requisição pendente
@@ -54,7 +62,7 @@ class ApiCache {
   // Marcar requisição como pendente
   setPendingRequest(key: string, promise: Promise<any>): void {
     this.pendingRequests.set(key, promise);
-    
+
     // Limpar quando finalizar
     promise.finally(() => {
       this.pendingRequests.delete(key);
@@ -65,7 +73,7 @@ class ApiCache {
   async executeWithCache<T>(
     key: string,
     fetcher: () => Promise<T>,
-    forceRefresh = false
+    forceRefresh = false,
   ): Promise<T> {
     // Verificar cache primeiro
     if (!forceRefresh) {
@@ -126,7 +134,7 @@ class ApiCache {
 export const apiCache = new ApiCache();
 
 // Limpar cache expirado a cada minuto
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   setInterval(() => {
     apiCache.cleanup();
   }, 60000);

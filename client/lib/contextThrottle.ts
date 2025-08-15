@@ -8,14 +8,16 @@ class ContextThrottle {
   execute<T>(
     key: string,
     fn: () => Promise<T> | T,
-    delay: number = this.DEFAULT_DELAY
+    delay: number = this.DEFAULT_DELAY,
   ): Promise<T> | null {
     const now = Date.now();
     const lastExecution = this.lastExecutions.get(key) || 0;
-    
+
     // Se executou recentemente, ignorar
     if (now - lastExecution < delay) {
-      console.log(`🛑 [ContextThrottle] Bloqueando execução de ${key} (throttled)`);
+      console.log(
+        `🛑 [ContextThrottle] Bloqueando execução de ${key} (throttled)`,
+      );
       return null;
     }
 
@@ -31,7 +33,7 @@ class ContextThrottle {
 
     // Executar função
     const result = fn();
-    
+
     // Se for Promise, aguardar conclusão
     if (result instanceof Promise) {
       return result.finally(() => {

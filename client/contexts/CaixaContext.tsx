@@ -219,7 +219,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         const response = await apiCache.executeWithCache(
           cacheKey,
           () => caixaApi.listarLancamentos(filtrosApi),
-          forceLoad
+          forceLoad,
         );
         if (response.error) {
           setError(response.error);
@@ -275,7 +275,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Verificar throttling
     if (contextThrottle.isThrottled("CaixaContext-initial", 6000)) {
-      console.log("[CaixaContext] Carregamento inicial throttled, ignorando...");
+      console.log(
+        "[CaixaContext] Carregamento inicial throttled, ignorando...",
+      );
       return;
     }
 
@@ -288,7 +290,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             console.log("[CaixaContext] Iniciando carregamento com throttling");
             return carregarDados();
           },
-          6000 // 6 segundos de throttle
+          6000, // 6 segundos de throttle
         );
       }
     }, delay);
@@ -339,7 +341,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       contextThrottle.execute(
         "CaixaContext-filtros",
         () => carregarLancamentos(true),
-        2000 // 2 segundos de throttle
+        2000, // 2 segundos de throttle
       );
     }, 800); // Debounce ainda maior
 
