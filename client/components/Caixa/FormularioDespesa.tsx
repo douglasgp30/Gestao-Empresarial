@@ -318,16 +318,25 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               items={descricoesFiltradas}
               onAddNew={async (data) => {
                 try {
+                  // Validate required fields before sending
+                  if (!data.nome || !data.nome.trim()) {
+                    throw new Error("Nome da descrição é obrigatório");
+                  }
+                  if (!formData.categoria || !formData.categoria.trim()) {
+                    throw new Error("Categoria deve ser selecionada primeiro");
+                  }
+
                   const response = await fetch("/api/descricoes-e-categorias", {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                      nome: data.nome,
+                      nome: data.nome.trim(),
                       tipo: "despesa",
                       tipoItem: "descricao",
-                      categoria: formData.categoria,
+                      categoria: formData.categoria.trim(),
+                      ativo: true,
                     }),
                   });
 
