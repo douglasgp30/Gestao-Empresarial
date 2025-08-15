@@ -177,33 +177,22 @@ export default function ModalDescricoesSimples() {
       });
 
       if (!response.ok) {
-        console.log('🔴 DEBUG - Response status:', response.status);
-        console.log('🔴 DEBUG - Response headers:', {
-          contentType: response.headers.get('content-type'),
-          contentLength: response.headers.get('content-length')
-        });
+        // Tratamento direto e simples do erro
+        try {
+          const errorData = await response.json();
+          console.log('🔴 SIMPLE DEBUG - errorData:', JSON.stringify(errorData));
 
-        const errorMessage = await parseErrorResponse(response);
-        console.log('🔴 DEBUG - Error message recebida:', JSON.stringify(errorMessage));
-        console.log('���� DEBUG - Tipo da mensagem:', typeof errorMessage);
-        console.log('🔴 DEBUG - Length da mensagem:', errorMessage?.length);
-
-        // Se a mensagem está vazia ou é genérica, usar fallback mais informativo
-        const isGenericError = !errorMessage ||
-                               errorMessage.trim() === '' ||
-                               errorMessage === 'Erro HTTP 400:' ||
-                               errorMessage === `Erro HTTP ${response.status}: ${response.statusText}` ||
-                               errorMessage === 'Erro HTTP 400: Bad Request';
-
-        console.log('🔴 DEBUG - É erro genérico?', isGenericError);
-
-        if (isGenericError) {
-          console.log('🔴 DEBUG - Usando fallback');
-          throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
+          if (errorData && errorData.error && typeof errorData.error === 'string') {
+            console.log('🔴 SIMPLE DEBUG - Usando mensagem do servidor:', errorData.error);
+            throw new Error(errorData.error);
+          }
+        } catch (jsonError) {
+          console.log('🔴 SIMPLE DEBUG - Erro ao ler JSON:', jsonError);
         }
 
-        console.log('🔴 DEBUG - Usando mensagem do servidor');
-        throw new Error(errorMessage);
+        // Fallback
+        console.log('🔴 SIMPLE DEBUG - Usando fallback');
+        throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
       }
 
       // Status 204 (No Content) indica sucesso na exclusão
