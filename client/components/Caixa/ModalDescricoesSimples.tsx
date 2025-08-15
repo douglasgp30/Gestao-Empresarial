@@ -174,7 +174,8 @@ export default function ModalDescricoesSimples() {
 
     } catch (error) {
       console.error('❌ Erro:', error);
-      toast.error("Erro ao excluir item");
+      const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
+      toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
     }
