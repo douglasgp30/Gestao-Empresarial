@@ -414,7 +414,13 @@ export default function ModalCidadeSetorSimples() {
 
         if (!response.ok) {
           const errorMessage =
-            responseData?.error || `Erro HTTP ${response.status}`;
+            responseData?.error || responseData?.message || `Erro HTTP ${response.status}`;
+          console.error("❌ Erro na API de cidades:", {
+            status: response.status,
+            statusText: response.statusText,
+            responseData,
+            errorMessage
+          });
           throw new Error(errorMessage);
         }
 
