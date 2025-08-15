@@ -121,9 +121,21 @@ class GlobalLoadingControl {
 
 export const globalLoadingControl = new GlobalLoadingControl();
 
-// Exportar função de conveniência
+// Exportar funções de conveniência
 export const shouldSkipLoading = (contextName: string = "Unknown") =>
   globalLoadingControl.shouldSkipLoading(contextName);
 
 export const getLoadingDelay = (baseDelay: number = 1000) =>
   globalLoadingControl.getLoadingDelay(baseDelay);
+
+export const isContextLoading = (contextName: string) =>
+  globalLoadingControl.isContextLoading(contextName);
+
+export const setContextLoading = (contextName: string, isLoading: boolean) =>
+  globalLoadingControl.setContextLoading(contextName, isLoading);
+
+export const getCachedData = (key: string) =>
+  globalLoadingControl.getCachedData(key);
+
+export const setCachedData = (key: string, data: any) =>
+  globalLoadingControl.setCachedData(key, data);
