@@ -265,9 +265,7 @@ export default function ModalDescricoesSimples() {
 
         {/* Tabs */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-          {/* Debug component - remover em produção */}
-          <TestApiEndpoints />
-          <TestDeleteApi />
+          {/* Debug component - pode remover em produção quando estável */}
 
           {/* Debug: Mostrar dados brutos */}
           <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
