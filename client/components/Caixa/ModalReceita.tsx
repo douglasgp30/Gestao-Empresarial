@@ -39,6 +39,7 @@ export function ModalReceita() {
     formasPagamento,
     getTecnicos,
     setores,
+    cidades,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
@@ -65,6 +66,7 @@ export function ModalReceita() {
     descricao: "",
     formaPagamento: "",
     tecnicoResponsavel: "",
+    cidade: "",
     setor: "",
     campanha: "",
     cliente: "",
@@ -91,6 +93,14 @@ export function ModalReceita() {
     if (!formData.categoria) return [];
     return getDescricoes("receita", formData.categoria);
   }, [formData.categoria, getDescricoes]);
+
+  // Filtrar setores pela cidade selecionada
+  const setoresFiltrados = React.useMemo(() => {
+    if (!formData.cidade) return [];
+    return (Array.isArray(setores) ? setores : []).filter(
+      (setor) => setor.cidade === formData.cidade,
+    );
+  }, [formData.cidade, setores]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
@@ -159,6 +169,7 @@ export function ModalReceita() {
       descricao: "",
       formaPagamento: "",
       tecnicoResponsavel: "",
+      cidade: "",
       setor: "",
       campanha: "",
       cliente: "",
@@ -476,25 +487,61 @@ export function ModalReceita() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="setor">Setor/Região</Label>
+                <Label htmlFor="cidade">Cidade</Label>
                 <Select
-                  value={formData.setor}
+                  value={formData.cidade}
                   onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, setor: value }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      cidade: value,
+                      setor: "", // Limpar setor quando cidade muda
+                    }))
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione o setor" />
+                    <SelectValue placeholder="Selecione a cidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    {setores.map((setor) => (
-                      <SelectItem key={setor.id} value={setor.id.toString()}>
-                        {setor.nome} - {setor.cidade}
-                      </SelectItem>
-                    ))}
+                    {(Array.isArray(cidades) ? cidades : []).map(
+                      (cidade, index) => (
+                        <SelectItem
+                          key={`cidade-${index}-${cidade}`}
+                          value={cidade}
+                        >
+                          {cidade}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="setor">Setor</Label>
+              <Select
+                value={formData.setor}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, setor: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      formData.cidade
+                        ? "Selecione o setor"
+                        : "Primeiro selecione uma cidade"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {setoresFiltrados.map((setor) => (
+                    <SelectItem key={setor.id} value={setor.id.toString()}>
+                      {setor.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Campanha - movido para antes de Cliente */}
@@ -506,10 +553,12 @@ export function ModalReceita() {
                   setFormData((prev) => ({ ...prev, campanha: value }))
                 }
                 placeholder="Selecione a campanha"
-                options={campanhas.map((campanha) => ({
-                  value: campanha.id.toString(),
-                  label: campanha.nome,
-                }))}
+                options={(Array.isArray(campanhas) ? campanhas : []).map(
+                  (campanha) => ({
+                    value: campanha.id.toString(),
+                    label: campanha.nome,
+                  }),
+                )}
                 onAddNew={async (nomeCampanha) => {
                   await adicionarCampanha({
                     nome: nomeCampanha,

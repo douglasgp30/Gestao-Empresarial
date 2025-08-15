@@ -3,9 +3,9 @@ import { CaixaProvider } from "../contexts/CaixaContext";
 import { EntidadesProvider } from "../contexts/EntidadesContext";
 import { ModalReceita } from "../components/Caixa/ModalReceita";
 import { ModalDespesa } from "../components/Caixa/ModalDespesa";
-import ModalCampanhas from "../components/Caixa/ModalCampanhas";
-import ModalDescricoesAvancado from "../components/Caixa/ModalDescricoesAvancado";
-import ModalCidadeSetor from "../components/Caixa/ModalCidadeSetor";
+import ModalCampanhasSimples from "../components/Caixa/ModalCampanhasSimples";
+import ModalDescricoesSimples from "../components/Caixa/ModalDescricoesSimples";
+import ModalCidadeSetorSimples from "../components/Caixa/ModalCidadeSetorSimples";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
@@ -38,9 +38,9 @@ function CaixaContent() {
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         {/* Botões de configuração */}
         <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-          <ModalCampanhas />
-          <ModalDescricoesAvancado />
-          <ModalCidadeSetor />
+          <ModalCampanhasSimples />
+          <ModalDescricoesSimples />
+          <ModalCidadeSetorSimples />
         </div>
 
         {/* Totais alinhados à direita */}

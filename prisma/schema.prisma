@@ -163,18 +163,36 @@ model Funcionario {
   @@index([tipoAcesso])
 }
 
-model Setor {
-  id          Int      @id @default(autoincrement()) // CodigoSetor
-  cidade      String   // Cidade (obrigatório)
-  nome        String   // Setor/bairro (obrigatório)
+model Cidade {
+  id          Int      @id @default(autoincrement())
+  nome        String   @unique // Nome da cidade deve ser único
+  ativo       Boolean  @default(true)
   dataCriacao DateTime @default(now())
 
   // Relacionamentos
+  setores      Setor[]
+  lancamentos  LancamentoCaixa[]
+  agendamentos Agendamento[]
+  contas       ContaLancamento[]
+
+  @@map("cidades")
+}
+
+model Setor {
+  id          Int      @id @default(autoincrement()) // CodigoSetor
+  cidadeId    Int      // Chave estrangeira para Cidade
+  nome        String   // Setor/bairro (obrigatório)
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  cidade       Cidade            @relation(fields: [cidadeId], references: [id])
   lancamentos  LancamentoCaixa[]
   agendamentos Agendamento[]
   contas       ContaLancamento[]
 
   @@map("setores")
+  @@unique([cidadeId, nome]) // Não permitir setores duplicados na mesma cidade
 }
 
 model LancamentoCaixa {
@@ -182,7 +200,7 @@ model LancamentoCaixa {
   dataHora          DateTime // Data e hora do lançamento
   valor             Float    // Valor do lançamento (obrigatório)
   valorRecebido     Float?   // Valor efetivamente recebido (obrigatório para cartão)
-  valorLiquido      Float?   // Valor líquido após descontos
+  valorLiquido      Float?   // Valor líquido ap��s descontos
   comissao          Float?   // Comissão do técnico
   imposto           Float?   // Impostos/taxas
   observacoes       String?  // Observações do lançamento
@@ -198,7 +216,8 @@ model LancamentoCaixa {
   // Chaves estrangeiras opcionais
   subdescricaoId    Int?     // Puxa da tabela Subdescrição
   funcionarioId     Int?     // Puxa da tabela Técnicos
-  setorId           Int?     // Puxa da tabela Cidades e Setores
+  cidadeId          Int?     // Puxa da tabela Cidades
+  setorId           Int?     // Puxa da tabela Setores
   campanhaId        Int?     // Puxa da tabela Campanhas
   clienteId         Int?     // Puxa da tabela Clientes
 
@@ -210,6 +229,7 @@ model LancamentoCaixa {
   formaPagamento FormaPagamento @relation(fields: [formaPagamentoId], references: [id])
   subdescricao   Subdescricao?  @relation(fields: [subdescricaoId], references: [id])
   funcionario    Funcionario?   @relation(fields: [funcionarioId], references: [id])
+  cidade         Cidade?        @relation(fields: [cidadeId], references: [id])
   setor          Setor?         @relation(fields: [setorId], references: [id])
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
   cliente        Cliente?       @relation(fields: [clienteId], references: [id])
@@ -343,6 +363,7 @@ model ContaLancamento {
   funcionarioLanc       Funcionario?    @relation("FuncionarioLancamento", fields: [funcionarioLancamento], references: [id])
   funcionarioPag        Funcionario?    @relation("FuncionarioPagamento", fields: [funcionarioPagamento], references: [id])
   funcionarioCob        Funcionario?    @relation("FuncionarioCobranca", fields: [funcionarioCobranca], references: [id])
+  cidade                Cidade?         @relation(fields: [cidadeId], references: [id])
   setor                 Setor?          @relation(fields: [setorId], references: [id])
   contaOrigem           ContaLancamento? @relation("ContaRecorrente", fields: [contaOrigemId], references: [id])
   contasRecorrentes     ContaLancamento[] @relation("ContaRecorrente")
@@ -452,11 +473,13 @@ model Agendamento {
   // Chaves estrangeiras
   clienteId     Int
   funcionarioId Int?
+  cidadeId      Int?
   setorId       Int?
 
   // Relacionamentos
   cliente     Cliente      @relation(fields: [clienteId], references: [id])
   funcionario Funcionario? @relation(fields: [funcionarioId], references: [id])
+  cidade      Cidade?      @relation(fields: [cidadeId], references: [id])
   setor       Setor?       @relation(fields: [setorId], references: [id])
 
   @@map("agendamentos")

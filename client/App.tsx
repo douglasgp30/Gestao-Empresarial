@@ -46,7 +46,7 @@ console.info = (...args: any[]) => {
   originalInfo.apply(console, args);
 };
 
-import { Toaster } from "@/components/ui/toaster";
+// import { Toaster } from "@/components/ui/toaster"; // Removido - usando apenas Sonner
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -90,7 +90,10 @@ const App = () => {
           event.message.includes(
             "ResizeObserver loop completed with undelivered notifications",
           ) ||
-          event.message.includes("ResizeObserver loop limit exceeded"))
+          event.message.includes("ResizeObserver loop limit exceeded") ||
+          (event.message.includes("Failed to fetch") &&
+            (event.filename?.includes("fullstory.com") ||
+              event.filename?.includes("fs.js"))))
       ) {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -128,8 +131,7 @@ const App = () => {
                 // Suprimir completamente erros do ResizeObserver
                 return;
               }
-              // Para outros erros, apenas log silencioso sem re-throw
-              console.debug("ResizeObserver callback error:", error);
+              // Para outros erros, silenciar sem re-throw
             }
           });
         };
@@ -173,7 +175,6 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
         <Sonner />
         <ConfigProvider>
           <AuthProvider>

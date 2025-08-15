@@ -1,5 +1,7 @@
 // Serviço para comunicação com a API
 
+import { nativeFetch, isFetchIntercepted } from "./nativeFetch";
+
 const API_BASE = "/api";
 
 // Tipos para as respostas da API
@@ -19,13 +21,25 @@ async function apiRequest<T>(
     try {
       console.log(
         `[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`,
+        `Fetch interceptado: ${isFetchIntercepted()}`,
       );
 
       // Adicionar timeout para evitar travamentos - aumentado para 30s durante hot reload
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout para evitar falhas durante reload
 
-      const response = await fetch(`${API_BASE}${endpoint}`, {
+      // Escolher qual fetch usar baseado na interceptação
+      let fetchToUse = window.fetch;
+
+      // Se fetch foi interceptado e estamos tendo problemas, usar o nativo
+      if (attempt > 0 && isFetchIntercepted()) {
+        console.log(
+          `[ApiService] Usando fetch nativo devido a interceptação detectada (tentativa ${attempt + 1})`,
+        );
+        fetchToUse = nativeFetch;
+      }
+
+      const response = await fetchToUse(`${API_BASE}${endpoint}`, {
         headers: {
           "Content-Type": "application/json",
           ...options.headers,
@@ -42,9 +56,23 @@ async function apiRequest<T>(
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error(`[ApiService] Erro HTTP ${response.status}:`, errorData);
+        console.error(
+          `[ApiService] Erro HTTP ${response.status}:`,
+          JSON.stringify(errorData, null, 2),
+        );
+
+        // Garantir que error seja sempre uma string
+        let errorMessage = `Erro HTTP ${response.status}`;
+        if (errorData.error) {
+          if (typeof errorData.error === "string") {
+            errorMessage = errorData.error;
+          } else {
+            errorMessage = JSON.stringify(errorData.error);
+          }
+        }
+
         return {
-          error: errorData.error || `Erro HTTP ${response.status}`,
+          error: errorMessage,
           details: errorData.details,
         };
       }
@@ -64,18 +92,30 @@ async function apiRequest<T>(
         error,
       );
 
+      // Verificar se é um erro relacionado ao FullStory
+      const isFullStoryError =
+        error instanceof TypeError &&
+        (error.stack?.includes("fullstory.com") ||
+          error.stack?.includes("fs.js") ||
+          error.message.includes("Failed to fetch"));
+
+      // Se é erro do FullStory e não é a última tentativa, aguardar e tentar novamente
+      if (isFullStoryError && attempt < retries) {
+        console.log(
+          `[ApiService] Erro de third-party detectado, aguardando antes de tentar novamente...`,
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1500 * (attempt + 1)),
+        ); // Delay progressivo
+        continue;
+      }
+
       // Se é a última tentativa, retornar o erro
       if (attempt === retries) {
-        // Verificar se é um erro de rede ou do FullStory
-        if (
-          error instanceof TypeError &&
-          (error.message.includes("Failed to fetch") ||
-            error.message.includes("NetworkError") ||
-            error.stack?.includes("fullstory.com"))
-        ) {
+        if (isFullStoryError) {
           return {
             error:
-              "Servidor não disponível. Verifique se o backend está rodando.",
+              "Problema de conectividade. Recarregue a página se o problema persistir.",
           };
         }
 

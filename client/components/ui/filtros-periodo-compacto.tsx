@@ -320,10 +320,8 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "hoje" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log("Clicou em Hoje"); // Debug
               const hoje = new Date();
               const dataFormatada = hoje.toISOString().split("T")[0];
-              console.log("Data formatada:", dataFormatada); // Debug
 
               // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataFormatada);
@@ -353,7 +351,6 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "esta-semana" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log("Clicou em Esta Semana"); // Debug
               const hoje = new Date();
               const inicioSemana = new Date(hoje);
               const dia = hoje.getDay();
@@ -367,7 +364,7 @@ export default function FiltrosPeriodoCompacto({
                 dataInicioSemana,
                 "Fim:",
                 dataHoje,
-              ); // Debug
+              );
 
               // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicioSemana);
@@ -397,7 +394,6 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-7" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log("Clicou em Últimos 7 Dias"); // Debug
               const hoje = new Date();
               const ultimos7 = new Date(
                 hoje.getTime() - 6 * 24 * 60 * 60 * 1000,
@@ -409,7 +405,7 @@ export default function FiltrosPeriodoCompacto({
                 dataInicio7,
                 "Fim:",
                 dataHoje,
-              ); // Debug
+              );
 
               // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicio7);
@@ -439,7 +435,6 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-15" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log("Clicou em Últimos 15 Dias"); // Debug
               const hoje = new Date();
               const ultimos15 = new Date(
                 hoje.getTime() - 14 * 24 * 60 * 60 * 1000,
@@ -451,7 +446,7 @@ export default function FiltrosPeriodoCompacto({
                 dataInicio15,
                 "Fim:",
                 dataHoje,
-              ); // Debug
+              );
 
               // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicio15);
@@ -481,7 +476,6 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "ultimos-30" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log("Clicou em Últimos 30 Dias"); // Debug
               const hoje = new Date();
               const ultimos30 = new Date(
                 hoje.getTime() - 29 * 24 * 60 * 60 * 1000,
@@ -493,7 +487,7 @@ export default function FiltrosPeriodoCompacto({
                 dataInicio30,
                 "Fim:",
                 dataHoje,
-              ); // Debug
+              );
 
               // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicio30);
@@ -523,7 +517,6 @@ export default function FiltrosPeriodoCompacto({
             variant={filtroAtivo === "este-mes" ? "default" : "ghost"}
             size="sm"
             onClick={() => {
-              console.log("Clicou em Este Mês"); // Debug
               const hoje = new Date();
               const inicioMes = new Date(
                 hoje.getFullYear(),
@@ -542,7 +535,7 @@ export default function FiltrosPeriodoCompacto({
                 dataInicioMes,
                 "Fim:",
                 dataFimMes,
-              ); // Debug
+              );
 
               // Simplificar: apenas atualizar estado local e chamar callbacks uma vez
               setLocalDataInicio(dataInicioMes);

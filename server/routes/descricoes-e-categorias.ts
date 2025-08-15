@@ -183,14 +183,51 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
+    // Buscar o item que será excluído
+    const item = await prisma.descricaoECategoria.findUnique({
+      where: { id },
+    });
+
+    if (!item) {
+      const response: ApiResponse<null> = {
+        error: "Item não encontrado",
+      };
+      return res.status(404).json(response);
+    }
+
+    // Se for uma categoria, verificar se existem descrições que dependem dela
+    if (item.tipoItem === "categoria") {
+      const descricoesVinculadas = await prisma.descricaoECategoria.findMany({
+        where: {
+          tipoItem: "descricao",
+          categoria: item.nome,
+          ativo: true,
+        },
+      });
+
+      if (descricoesVinculadas.length > 0) {
+        const nomesDescricoes = descricoesVinculadas
+          .map((d) => d.nome)
+          .join(", ");
+
+        const errorMessage = `Não é possível excluir a categoria "${item.nome}" pois existem ${descricoesVinculadas.length} descrição(ões) vinculada(s): ${nomesDescricoes}. Remova ou realoque estas descrições primeiro.`;
+
+        const response: ApiResponse<null> = {
+          error: errorMessage,
+        };
+
+        return res.status(400).json(response);
+      }
+    }
+
     // Soft delete - apenas marcar como inativo
     await prisma.descricaoECategoria.update({
       where: { id },
       data: { ativo: false },
     });
 
-    const response: ApiResponse<null> = { data: null };
-    res.status(204).json(response);
+    // Status 204 não deve retornar JSON
+    res.status(204).send();
   } catch (error) {
     console.error("Erro ao desativar item:", error);
     const response: ApiResponse<null> = {

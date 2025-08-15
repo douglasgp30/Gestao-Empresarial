@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
@@ -34,9 +34,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
   const {
-    descricoes,
     formasPagamento,
-    adicionarDescricao,
     adicionarFormaPagamento,
     isLoading: entidadesLoading,
   } = useEntidades();
@@ -56,23 +54,106 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categorias, setCategorias] = useState<
+    { nome: string; tipo: string }[]
+  >([]);
+  const [descricoes, setDescricoes] = useState<
+    { nome: string; categoria: string }[]
+  >([]);
+  const [carregandoCategorias, setCarregandoCategorias] = useState(false);
+  const [carregandoDescricoes, setCarregandoDescricoes] = useState(false);
 
-  // Filtrar descrições de despesa
-  const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
+  // Carregar categorias de despesa
+  useEffect(() => {
+    const carregarCategorias = async () => {
+      try {
+        console.log(
+          "🟡 [FormularioDespesa] Iniciando carregamento de categorias...",
+        );
+        setCarregandoCategorias(true);
+        const response = await fetch(
+          "/api/descricoes-e-categorias/categorias?tipo=despesa",
+        );
+
+        console.log(
+          "🟡 [FormularioDespesa] Response categorias:",
+          response.status,
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log(
+          "🟡 [FormularioDespesa] Dados categorias recebidos:",
+          result,
+        );
+
+        if (result.data) {
+          setCategorias(result.data);
+          console.log(
+            "✅ [FormularioDespesa] Categorias carregadas:",
+            result.data.length,
+          );
+        }
+      } catch (error) {
+        console.error(
+          "❌ [FormularioDespesa] Erro ao carregar categorias:",
+          error,
+        );
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar categorias",
+          variant: "destructive",
+        });
+      } finally {
+        setCarregandoCategorias(false);
+      }
+    };
+
+    carregarCategorias();
+  }, []);
+
+  // Carregar descrições quando categoria mudar
+  useEffect(() => {
+    if (!formData.categoria) {
+      setDescricoes([]);
+      return;
+    }
+
+    const carregarDescricoes = async () => {
+      try {
+        setCarregandoDescricoes(true);
+        const response = await fetch(
+          `/api/descricoes-e-categorias/descricoes?tipo=despesa&categoria=${encodeURIComponent(formData.categoria)}`,
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.data) {
+          setDescricoes(result.data);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar descrições:", error);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar descrições",
+          variant: "destructive",
+        });
+      } finally {
+        setCarregandoDescricoes(false);
+      }
+    };
+
+    carregarDescricoes();
+  }, [formData.categoria]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = formData.categoria
-    ? descricoesDespesa.filter((d) => d.categoria === formData.categoria)
-    : [];
-
-  // Obter categorias únicas das descrições de despesa
-  const categoriasDespesa = [
-    ...new Set(
-      descricoesDespesa
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
+  const descricoesFiltradas = descricoes;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -212,9 +293,9 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                   <SelectValue placeholder="Selecione a categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categoriasDespesa.map((categoria) => (
-                    <SelectItem key={categoria} value={categoria}>
-                      {categoria}
+                  {categorias.map((categoria) => (
+                    <SelectItem key={categoria.nome} value={categoria.nome}>
+                      {categoria.nome}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -236,11 +317,45 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               disabled={!formData.categoria}
               items={descricoesFiltradas}
               onAddNew={async (data) => {
-                await adicionarDescricao({
-                  nome: data.nome,
-                  categoria: formData.categoria,
-                  tipo: "despesa",
-                });
+                try {
+                  const response = await fetch("/api/descricoes-e-categorias", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      nome: data.nome,
+                      tipo: "despesa",
+                      tipoItem: "descricao",
+                      categoria: formData.categoria,
+                    }),
+                  });
+
+                  if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                  }
+
+                  // Recarregar descrições
+                  const descricoesResponse = await fetch(
+                    `/api/descricoes-e-categorias/descricoes?tipo=despesa&categoria=${encodeURIComponent(formData.categoria)}`,
+                  );
+                  const descricoesResult = await descricoesResponse.json();
+                  if (descricoesResult.data) {
+                    setDescricoes(descricoesResult.data);
+                  }
+
+                  toast({
+                    title: "Sucesso!",
+                    description: "Descrição adicionada com sucesso",
+                  });
+                } catch (error) {
+                  console.error("Erro ao adicionar descrição:", error);
+                  toast({
+                    title: "Erro",
+                    description: "Erro ao adicionar descrição",
+                    variant: "destructive",
+                  });
+                }
               }}
               addNewTitle="Nova Descrição de Despesa"
               addNewDescription="Adicione uma nova descrição para despesas."

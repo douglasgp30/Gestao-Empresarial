@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   ReactNode,
+  useMemo,
 } from "react";
 import { toast } from "sonner";
 import {
@@ -99,7 +100,7 @@ interface EntidadesContextType {
   editarCliente: (id: string, cliente: Partial<Cliente>) => Promise<void>;
   excluirCliente: (id: string) => Promise<void>;
 
-  // Fornecedores (mantém localStorage)
+  // Fornecedores (localStorage temporário)
   fornecedores: Fornecedor[];
   adicionarFornecedor: (
     fornecedor: Omit<Fornecedor, "id" | "dataCriacao">,
@@ -107,159 +108,205 @@ interface EntidadesContextType {
   editarFornecedor: (id: string, fornecedor: Partial<Fornecedor>) => void;
   excluirFornecedor: (id: string) => void;
 
-  carregarDados: () => Promise<void>;
+  // Controles gerais
   isLoading: boolean;
   error: string | null;
+  recarregarTudo: () => Promise<void>;
 }
 
 const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Remover dados fictícios - usar apenas dados reais do banco
-
-// Funções para localStorage (para entidades que ainda não migraram)
-function carregarEntidadeDoStorage<T>(
-  key: string,
-  defaultValue: T[] = [],
-): T[] {
+// Função para salvar entidade no localStorage com validação
+function salvarEntidadeNoStorage<T>(
+  chave: string,
+  dados: T[],
+  filtrarDadosFicticios = true,
+) {
   try {
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return parsed.map((item: any) => ({
-        ...item,
-        dataCriacao: new Date(item.dataCriacao),
-      }));
-    }
-    return defaultValue;
+    // Filtrar dados fictícios se solicitado
+    const dadosParaSalvar = filtrarDadosFicticios
+      ? dados.filter(
+          (item: any) =>
+            !item.nome?.includes("Fictício") &&
+            !item.nome?.includes("Teste") &&
+            !item.nome?.startsWith("fake_"),
+        )
+      : dados;
+
+    localStorage.setItem(chave, JSON.stringify(dadosParaSalvar));
   } catch (error) {
-    console.warn(`Erro ao carregar ${key} do localStorage:`, error);
-    return defaultValue;
+    console.error(`Erro ao salvar ${chave} no localStorage:`, error);
   }
 }
 
-function salvarEntidadeNoStorage<T>(key: string, data: T[]) {
+// Função para carregar entidade do localStorage com fallback
+function carregarEntidadeDoStorage<T>(
+  chave: string,
+  dadosPadrao: T[] = [],
+): T[] {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    const dados = localStorage.getItem(chave);
+    return dados ? JSON.parse(dados) : dadosPadrao;
   } catch (error) {
-    console.warn(`Erro ao salvar ${key} no localStorage:`, error);
+    console.error(`Erro ao carregar ${chave} do localStorage:`, error);
+    return dadosPadrao;
   }
 }
 
 export function EntidadesProvider({ children }: { children: ReactNode }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isCarregando, setIsCarregando] = useState(false);
-
-  // Estados para entidades no banco
+  // === ESTADOS PRINCIPAIS ===
   const [descricoesECategorias, setDescricoesECategorias] = useState<
     DescricaoECategoria[]
   >([]);
   const [descricoes, setDescricoes] = useState<Descricao[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
   const [tecnicos, setTecnicos] = useState<any[]>([]);
   const [setores, setSetores] = useState<Setor[]>([]);
   const [cidades, setCidades] = useState<string[]>([]);
-
-  // Estados para entidades no localStorage (temporário)
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Função para carregar todos os dados
-  const carregarDados = async () => {
-    // Evitar múltiplos carregamentos simultâneos
-    if (isCarregando) {
-      console.log("Carregamento já em andamento, ignorando...");
-      return;
-    }
+  // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
+  const getCategorias = useCallback(
+    (tipo?: "receita" | "despesa") => {
+      return descricoesECategorias.filter(
+        (item) =>
+          item.tipoItem === "categoria" &&
+          item.ativo &&
+          (tipo ? item.tipo === tipo : true),
+      );
+    },
+    [descricoesECategorias],
+  );
+
+  const getDescricoes = useCallback(
+    (tipo?: "receita" | "despesa", categoria?: string) => {
+      return descricoesECategorias.filter(
+        (item) =>
+          item.tipoItem === "descricao" &&
+          item.ativo &&
+          (tipo ? item.tipo === tipo : true) &&
+          (categoria ? item.categoria === categoria : true),
+      );
+    },
+    [descricoesECategorias],
+  );
+
+  const getTecnicos = useCallback(() => {
+    // Combinar técnicos específicos + funcionários que são técnicos
+    const tecnicosEspecificos = tecnicos || [];
+    const funcionariosTecnicos = (funcionarios || []).filter(
+      (func) => func.ehTecnico || func.tipoAcesso === "tecnico",
+    );
+
+    // Deduplicar por ID
+    const tecnicosCombinados = [...tecnicosEspecificos];
+    funcionariosTecnicos.forEach((funcTecnico) => {
+      if (!tecnicosCombinados.find((t) => t.id === funcTecnico.id)) {
+        tecnicosCombinados.push(funcTecnico);
+      }
+    });
+
+    return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
+  }, [funcionarios, tecnicos]);
+
+  // === CARREGAMENTO DE DADOS COM DEBOUNCE ===
+  const carregarDados = useCallback(async () => {
+    console.log("[EntidadesContext] Iniciando carregamento de dados...");
+    setIsLoading(true);
+    setError(null);
 
     try {
-      setIsCarregando(true);
-      setIsLoading(true);
-      setError(null);
-
-      // Carregar dados do banco usando loadingManager para evitar sobrecarga
+      // Priorizar tabela unificada
       const [
         descricoesECategoriasResponse,
-        descricoesResponse,
         formasPagamentoResponse,
         funcionariosResponse,
         tecnicosResponse,
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
-        loadingManager.executeWithControl("descricoes-categorias", () =>
-          descricoesECategoriasApi.listar(),
-        ),
-        loadingManager.executeWithControl("descricoes", () =>
-          descricoesApi.listar(),
-        ),
-        loadingManager.executeWithControl("formas-pagamento", () =>
-          formasPagamentoApi.listar(),
-        ),
-        loadingManager.executeWithControl("funcionarios", () =>
-          funcionariosApi.listar(),
-        ),
-        loadingManager.executeWithControl("tecnicos", () =>
-          funcionariosApi.listarTecnicos(),
-        ),
-        loadingManager.executeWithControl("setores", () => setoresApi.listar()),
-        loadingManager.executeWithControl("cidades", () =>
-          setoresApi.listarCidades(),
-        ),
+        descricoesECategoriasApi.listar(),
+        formasPagamentoApi.listar(),
+        funcionariosApi.listar(),
+        funcionariosApi.listarTecnicos(),
+        setoresApi.listar(),
+        setoresApi.listarCidades(),
       ]);
 
       // Atualizar estados com dados do banco
-      if (descricoesECategoriasResponse.data)
+      if (descricoesECategoriasResponse.data) {
         setDescricoesECategorias(descricoesECategoriasResponse.data);
-      if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
-      if (formasPagamentoResponse.data)
-        setFormasPagamento(formasPagamentoResponse.data);
-      if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
-      if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
-      if (setoresResponse.data) setSetores(setoresResponse.data);
-      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+        console.log(
+          `[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas`,
+        );
+      }
 
-      // Carregar dados do localStorage sem dados fictícios
+      if (formasPagamentoResponse.data) {
+        setFormasPagamento(formasPagamentoResponse.data);
+      }
+
+      if (funcionariosResponse.data) {
+        setFuncionarios(funcionariosResponse.data);
+      }
+
+      if (tecnicosResponse.data) {
+        setTecnicos(tecnicosResponse.data);
+      }
+
+      if (setoresResponse.data) {
+        setSetores(setoresResponse.data);
+      }
+
+      if (cidadesResponse.data) {
+        // Verificar se são objetos (nova estrutura) ou strings (estrutura antiga)
+        if (
+          Array.isArray(cidadesResponse.data) &&
+          cidadesResponse.data.length > 0
+        ) {
+          if (typeof cidadesResponse.data[0] === "string") {
+            // Estrutura antiga: array de strings
+            setCidades(cidadesResponse.data);
+          } else {
+            // Nova estrutura: array de objetos {id, nome, ativo}
+            setCidades(cidadesResponse.data.map((cidade: any) => cidade.nome));
+          }
+        } else {
+          setCidades([]);
+        }
+      }
+
+      // Carregar dados do localStorage (compatibilidade)
       const categoriasStorage = carregarEntidadeDoStorage<Categoria>(
         "categorias",
-        [], // Usar array vazio ao invés de dados fictícios
+        [],
       );
-      const clientesStorage = carregarEntidadeDoStorage<Cliente>("clientes");
-      const fornecedoresStorage =
-        carregarEntidadeDoStorage<Fornecedor>("fornecedores");
+      const clientesStorage = carregarEntidadeDoStorage<Cliente>(
+        "clientes",
+        [],
+      );
+      const fornecedoresStorage = carregarEntidadeDoStorage<Fornecedor>(
+        "fornecedores",
+        [],
+      );
 
       setCategorias(categoriasStorage);
       setClientes(clientesStorage);
       setFornecedores(fornecedoresStorage);
+
+      console.log("[EntidadesContext] Carregamento concluído com sucesso");
     } catch (error) {
       console.error("Erro ao carregar entidades:", error);
+      setError("Erro ao carregar dados do servidor");
 
-      // Verificar se é erro de rede durante hot reload
-      if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        console.log(
-          "📡 [EntidadesContext] Erro de rede detectado, aguardando reconexão...",
-        );
-        // Durante hot reload, não mostrar erro persistente ao usuário
-        setError(null);
-
-        // Tentar reconectar após 3 segundos
-        setTimeout(() => {
-          if (!isCarregando) {
-            console.log("🔄 [EntidadesContext] Tentando reconectar...");
-            carregarDados();
-          }
-        }, 3000);
-      } else {
-        setError("Erro ao carregar dados do servidor");
-      }
-
-      // Definir dados padrão em caso de erro para evitar crashes
+      // Dados padrão em caso de erro
       setDescricoesECategorias([]);
-      setDescricoes([]);
       setFormasPagamento([]);
       setFuncionarios([]);
       setTecnicos([]);
@@ -267,57 +314,67 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setCidades([]);
     } finally {
       setIsLoading(false);
-      setIsCarregando(false);
     }
-  };
+  }, []);
 
-  // Função de recarregamento otimizada com debounce para reduzir piscar
+  // === RECARREGAMENTO OTIMIZADO ===
   const recarregarDescricoesECategorias = useCallback(async () => {
     try {
+      console.log("[EntidadesContext] Recarregando descrições e categorias...");
       const response = await descricoesECategoriasApi.listar();
       if (response.data) {
         setDescricoesECategorias(response.data);
+        console.log(
+          `[EntidadesContext] Recarregadas ${response.data.length} descrições/categorias`,
+        );
       }
     } catch (error) {
       console.error("Erro ao recarregar descrições e categorias:", error);
     }
   }, []);
 
-  // === FUNÇÕES PARA TABELA UNIFICADA ===
-  const getCategorias = (tipo?: "receita" | "despesa") => {
-    return descricoesECategorias.filter(
-      (item) =>
-        item.tipoItem === "categoria" &&
-        item.ativo &&
-        (tipo ? item.tipo === tipo : true),
-    );
-  };
+  // === CARREGAMENTO INICIAL ===
+  useEffect(() => {
+    if (shouldSkipLoading("EntidadesContext")) {
+      console.log("[EntidadesContext] Carregamento ignorado (skip loading)");
+      return;
+    }
 
-  const getDescricoes = (tipo?: "receita" | "despesa", categoria?: string) => {
-    return descricoesECategorias.filter(
-      (item) =>
-        item.tipoItem === "descricao" &&
-        item.ativo &&
-        (tipo ? item.tipo === tipo : true) &&
-        (categoria ? item.categoria === categoria : true),
-    );
-  };
+    const delay = getLoadingDelay(2000); // Delay menor
+    const timeout = setTimeout(() => {
+      if (!shouldSkipLoading("EntidadesContext")) {
+        carregarDados();
+      }
+    }, delay);
 
+    return () => clearTimeout(timeout);
+  }, [carregarDados]);
+
+  // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
   const adicionarDescricaoECategoria = async (
     novoItem: Omit<DescricaoECategoria, "id" | "dataCriacao">,
   ) => {
     try {
       setError(null);
+      console.log("[EntidadesContext] Adicionando item:", novoItem);
+
       const response = await descricoesECategoriasApi.criar(novoItem);
       if (response.error) {
         setError(response.error);
         throw new Error(response.error);
       }
 
-      // Recarregar dados de forma otimizada
+      // Recarregar apenas a tabela unificada (otimizado)
       await recarregarDescricoesECategorias();
+
+      console.log(
+        "[EntidadesContext] Item adicionado com sucesso:",
+        response.data?.id,
+      );
+      toast.success("Item adicionado com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar item:", error);
+      toast.error("Erro ao adicionar item");
       throw error;
     }
   };
@@ -337,151 +394,48 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      // Recarregar dados de forma otimizada
       await recarregarDescricoesECategorias();
+      toast.success("Item atualizado com sucesso!");
     } catch (error) {
       console.error("Erro ao editar item:", error);
+      toast.error("Erro ao editar item");
       throw error;
     }
   };
 
   const excluirDescricaoECategoria = async (id: string) => {
     try {
-      console.log("🗑️ [Descrições e Categorias] Excluindo item:", id);
       setError(null);
-
       const response = await descricoesECategoriasApi.excluir(parseInt(id));
+
+      // Verificar se a API retornou erro antes de prosseguir
       if (response.error) {
         setError(response.error);
-        toast.error("Erro ao excluir item: " + response.error);
         throw new Error(response.error);
       }
 
-      // Recarregar dados de forma otimizada
       await recarregarDescricoesECategorias();
-
-      console.log("✅ [Descrições e Categorias] Item excluído com sucesso");
-      toast.success("Item excluído com sucesso!");
+      // Removendo toast do context - deixar componente gerenciar
     } catch (error) {
-      console.error(
-        "❌ [Descrições e Categorias] Erro ao excluir item:",
-        error,
-      );
-      if (!error.message?.includes("Erro ao excluir item:")) {
-        toast.error("Erro ao excluir item");
-      }
+      console.error("Erro ao excluir item:", error);
+      setError("Erro ao excluir item");
       throw error;
     }
   };
 
-  // Carregar dados na inicialização com controle global
-  useEffect(() => {
-    if (shouldSkipLoading("EntidadesContext")) return;
-
-    const delay = getLoadingDelay(2000);
-    const timeout = setTimeout(() => {
-      if (!shouldSkipLoading("EntidadesContext")) {
-        console.log(
-          "[EntidadesContext] Iniciando carregamento após delay de",
-          delay,
-          "ms",
-        );
-        carregarDados();
-      }
-    }, delay);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  // === FUNÇÕES PARA DESCRIÇÕES (API) ===
-  const adicionarDescricao = async (
-    novaDescricao: Omit<Descricao, "id" | "dataCriacao">,
-  ) => {
-    try {
-      setError(null);
-      const response = await descricoesApi.criar(novaDescricao);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar descrições
-      const descricoesResponse = await descricoesApi.listar();
-      if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
-    } catch (error) {
-      console.error("Erro ao adicionar descrição:", error);
-      throw error;
-    }
-  };
-
-  const editarDescricao = async (
-    id: string,
-    dadosAtualizados: Partial<Descricao>,
-  ) => {
-    try {
-      setError(null);
-      const response = await descricoesApi.atualizar(
-        parseInt(id),
-        dadosAtualizados,
-      );
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar descrições
-      const descricoesResponse = await descricoesApi.listar();
-      if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
-    } catch (error) {
-      console.error("Erro ao editar descrição:", error);
-      throw error;
-    }
-  };
-
-  const excluirDescricao = async (id: string) => {
-    try {
-      console.log("🗑️ [Descrições] Excluindo descrição:", id);
-      setError(null);
-
-      const response = await descricoesApi.excluir(parseInt(id));
-      if (response.error) {
-        setError(response.error);
-        toast.error("Erro ao excluir descrição: " + response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar descrições
-      const descricoesResponse = await descricoesApi.listar();
-      if (descricoesResponse.data) setDescricoes(descricoesResponse.data);
-
-      console.log("✅ [Descrições] Descrição excluída com sucesso");
-      toast.success("Descrição excluída com sucesso!");
-    } catch (error) {
-      console.error("❌ [Descrições] Erro ao excluir descrição:", error);
-      if (!error.message?.includes("Erro ao excluir descrição:")) {
-        toast.error("Erro ao excluir descrição");
-      }
-      throw error;
-    }
-  };
-
-  // === FUNÇÕES PARA FORMAS DE PAGAMENTO (API) ===
+  // === FUNÇÕES CRUD PARA FORMAS DE PAGAMENTO ===
   const adicionarFormaPagamento = async (
     novaForma: Omit<FormaPagamento, "id" | "dataCriacao">,
   ) => {
     try {
       setError(null);
-      const response = await formasPagamentoApi.criar(novaForma);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar formas de pagamento
-      const formasResponse = await formasPagamentoApi.listar();
-      if (formasResponse.data) setFormasPagamento(formasResponse.data);
+      await formasPagamentoApi.criar(novaForma);
+      const response = await formasPagamentoApi.listar();
+      if (response.data) setFormasPagamento(response.data);
+      toast.success("Forma de pagamento adicionada!");
     } catch (error) {
       console.error("Erro ao adicionar forma de pagamento:", error);
+      toast.error("Erro ao adicionar forma de pagamento");
       throw error;
     }
   };
@@ -492,20 +446,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      const response = await formasPagamentoApi.atualizar(
-        parseInt(id),
-        dadosAtualizados,
-      );
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar formas de pagamento
-      const formasResponse = await formasPagamentoApi.listar();
-      if (formasResponse.data) setFormasPagamento(formasResponse.data);
+      await formasPagamentoApi.atualizar(parseInt(id), dadosAtualizados);
+      const response = await formasPagamentoApi.listar();
+      if (response.data) setFormasPagamento(response.data);
+      toast.success("Forma de pagamento atualizada!");
     } catch (error) {
       console.error("Erro ao editar forma de pagamento:", error);
+      toast.error("Erro ao editar forma de pagamento");
       throw error;
     }
   };
@@ -513,152 +460,48 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const excluirFormaPagamento = async (id: string) => {
     try {
       setError(null);
-      const response = await formasPagamentoApi.excluir(parseInt(id));
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar formas de pagamento
-      const formasResponse = await formasPagamentoApi.listar();
-      if (formasResponse.data) setFormasPagamento(formasResponse.data);
+      await formasPagamentoApi.excluir(parseInt(id));
+      const response = await formasPagamentoApi.listar();
+      if (response.data) setFormasPagamento(response.data);
+      toast.success("Forma de pagamento excluída!");
     } catch (error) {
       console.error("Erro ao excluir forma de pagamento:", error);
+      toast.error("Erro ao excluir forma de pagamento");
       throw error;
     }
   };
 
-  // === FUNÇÕES PARA FUNCIONÁRIOS (API) ===
-  const getTecnicos = () => {
-    console.log("[EntidadesContext] getTecnicos chamado");
-    console.log("[EntidadesContext] Técnicos da API:", tecnicos.length);
-    console.log(
-      "[EntidadesContext] Funcionários carregados:",
-      funcionarios.length,
-    );
-
-    // Usar apenas dados da API (banco de dados) para evitar conflitos de ID
-    // Filtrar funcionários que estejam marcados como técnicos
-    const funcionariosTecnicos = funcionarios.filter(
-      (f) => f.ehTecnico === true,
-    );
-
-    console.log(
-      "[EntidadesContext] Funcionários técnicos encontrados:",
-      funcionariosTecnicos.length,
-    );
-
-    // Combinar técnicos específicos da API com funcionários marcados como técnicos
-    const todosTecnicos = [...tecnicos, ...funcionariosTecnicos];
-
-    // Remover duplicatas baseado no ID
-    const tecnicosUnicos = todosTecnicos.filter(
-      (tecnico, index, array) =>
-        array.findIndex((t) => t.id === tecnico.id) === index,
-    );
-
-    console.log(
-      "[EntidadesContext] Total de técnicos únicos:",
-      tecnicosUnicos.length,
-    );
-    console.log(
-      "[EntidadesContext] IDs dos técnicos:",
-      tecnicosUnicos.map((t) => t.id),
-    );
-
-    return tecnicosUnicos;
-  };
-
-  const adicionarFuncionario = async (novoFuncionario: any) => {
-    try {
-      setError(null);
-      const response = await funcionariosApi.criar(novoFuncionario);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar funcionários e técnicos
-      const [funcionariosResponse, tecnicosResponse] = await Promise.all([
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-      ]);
-      if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
-      if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
-    } catch (error) {
-      console.error("Erro ao adicionar funcionário:", error);
-      throw error;
-    }
-  };
-
-  const editarFuncionario = async (id: string, dadosAtualizados: any) => {
-    try {
-      setError(null);
-      const response = await funcionariosApi.atualizar(
-        parseInt(id),
-        dadosAtualizados,
-      );
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar funcionários e técnicos
-      const [funcionariosResponse, tecnicosResponse] = await Promise.all([
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-      ]);
-      if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
-      if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
-    } catch (error) {
-      console.error("Erro ao editar funcionário:", error);
-      throw error;
-    }
-  };
-
-  const excluirFuncionario = async (id: string) => {
-    try {
-      setError(null);
-      const response = await funcionariosApi.excluir(parseInt(id));
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar funcionários e técnicos
-      const [funcionariosResponse, tecnicosResponse] = await Promise.all([
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-      ]);
-      if (funcionariosResponse.data) setFuncionarios(funcionariosResponse.data);
-      if (tecnicosResponse.data) setTecnicos(tecnicosResponse.data);
-    } catch (error) {
-      console.error("Erro ao excluir funcionário:", error);
-      throw error;
-    }
-  };
-
-  // === FUNÇÕES PARA SETORES (API) ===
+  // === FUNÇÕES CRUD PARA SETORES ===
   const adicionarSetor = async (
     novoSetor: Omit<Setor, "id" | "dataCriacao">,
   ) => {
     try {
       setError(null);
-      const response = await setoresApi.criar(novoSetor);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar setores e cidades
+      await setoresApi.criar(novoSetor);
       const [setoresResponse, cidadesResponse] = await Promise.all([
         setoresApi.listar(),
         setoresApi.listarCidades(),
       ]);
       if (setoresResponse.data) setSetores(setoresResponse.data);
-      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+      if (cidadesResponse.data) {
+        // Processar cidades considerando formato
+        if (
+          Array.isArray(cidadesResponse.data) &&
+          cidadesResponse.data.length > 0
+        ) {
+          if (typeof cidadesResponse.data[0] === "string") {
+            setCidades(cidadesResponse.data);
+          } else {
+            setCidades(cidadesResponse.data.map((cidade: any) => cidade.nome));
+          }
+        } else {
+          setCidades([]);
+        }
+      }
+      toast.success("Setor adicionado!");
     } catch (error) {
       console.error("Erro ao adicionar setor:", error);
+      toast.error("Erro ao adicionar setor");
       throw error;
     }
   };
@@ -666,24 +509,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const editarSetor = async (id: string, dadosAtualizados: Partial<Setor>) => {
     try {
       setError(null);
-      const response = await setoresApi.atualizar(
-        parseInt(id),
-        dadosAtualizados,
-      );
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar setores e cidades
-      const [setoresResponse, cidadesResponse] = await Promise.all([
-        setoresApi.listar(),
-        setoresApi.listarCidades(),
-      ]);
-      if (setoresResponse.data) setSetores(setoresResponse.data);
-      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+      await setoresApi.atualizar(parseInt(id), dadosAtualizados);
+      const response = await setoresApi.listar();
+      if (response.data) setSetores(response.data);
+      toast.success("Setor atualizado!");
     } catch (error) {
       console.error("Erro ao editar setor:", error);
+      toast.error("Erro ao editar setor");
       throw error;
     }
   };
@@ -691,223 +523,183 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const excluirSetor = async (id: string) => {
     try {
       setError(null);
-      const response = await setoresApi.excluir(parseInt(id));
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar setores e cidades
-      const [setoresResponse, cidadesResponse] = await Promise.all([
-        setoresApi.listar(),
-        setoresApi.listarCidades(),
-      ]);
-      if (setoresResponse.data) setSetores(setoresResponse.data);
-      if (cidadesResponse.data) setCidades(cidadesResponse.data);
+      await setoresApi.excluir(parseInt(id));
+      const response = await setoresApi.listar();
+      if (response.data) setSetores(response.data);
+      toast.success("Setor excluído!");
     } catch (error) {
       console.error("Erro ao excluir setor:", error);
+      toast.error("Erro ao excluir setor");
       throw error;
     }
   };
 
-  // === FUNÇÃO PARA CIDADES ===
-  const adicionarCidade = async (novaCidade: { nome: string }) => {
-    if (!cidades.includes(novaCidade.nome)) {
-      const novasCidades = [...cidades, novaCidade.nome].sort();
-      setCidades(novasCidades);
-
-      // Recarregar cidades do banco para manter sincronizado
-      try {
-        const cidadesResponse = await setoresApi.listarCidades();
-        if (cidadesResponse.data) setCidades(cidadesResponse.data);
-      } catch (error) {
-        console.error("Erro ao recarregar cidades:", error);
-      }
-    }
-  };
-
-  // === FUNÇÕES PARA CATEGORIAS (localStorage - temporário) ===
-  const adicionarCategoria = (
-    novaCategoria: Omit<Categoria, "id" | "dataCriacao">,
-  ) => {
-    const categoria: Categoria = {
-      ...novaCategoria,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    const novasCategorias = [...categorias, categoria];
-    setCategorias(novasCategorias);
-    salvarEntidadeNoStorage("categorias", novasCategorias);
-  };
-
-  const editarCategoria = (
-    id: string,
-    dadosAtualizados: Partial<Categoria>,
-  ) => {
-    const categoriasAtualizadas = categorias.map((categoria) =>
-      categoria.id === id ? { ...categoria, ...dadosAtualizados } : categoria,
-    );
-    setCategorias(categoriasAtualizadas);
-    salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
-  };
-
-  const excluirCategoria = (id: string) => {
+  const adicionarCidade = async (cidade: { nome: string }) => {
     try {
-      console.log("🗑️ [Categorias] Excluindo categoria:", id);
+      setError(null);
+      const response = await setoresApi.listarCidades();
+      if (response.data) {
+        // Processar response.data considerando formato
+        let cidadesExistentes: string[] = [];
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          if (typeof response.data[0] === "string") {
+            cidadesExistentes = response.data;
+          } else {
+            cidadesExistentes = response.data.map((cidade: any) => cidade.nome);
+          }
+        }
 
-      const categoriasAtualizadas = categorias.filter(
-        (categoria) => categoria.id !== id,
-      );
-
-      console.log(
-        "🗑️ [Categorias] Categorias após exclusão:",
-        categoriasAtualizadas.length,
-      );
-
-      setCategorias(categoriasAtualizadas);
-      salvarEntidadeNoStorage("categorias", categoriasAtualizadas);
-
-      toast.success("Categoria excluída com sucesso!");
+        const novasCidades = [...cidadesExistentes, cidade.nome];
+        setCidades([...new Set(novasCidades)]);
+      }
+      toast.success("Cidade adicionada!");
     } catch (error) {
-      console.error("��� [Categorias] Erro ao excluir categoria:", error);
-      toast.error("Erro ao excluir categoria");
+      console.error("Erro ao adicionar cidade:", error);
+      toast.error("Erro ao adicionar cidade");
+      throw error;
     }
   };
 
-  // === FUNÇÕES PARA CLIENTES (localStorage - temporário) ===
-  const adicionarCliente = (
-    novoCliente: Omit<Cliente, "id" | "dataCriacao">,
-  ) => {
-    const cliente: Cliente = {
-      ...novoCliente,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    const novosClientes = [...clientes, cliente];
-    setClientes(novosClientes);
-    salvarEntidadeNoStorage("clientes", novosClientes);
-    return cliente;
+  // === FUNÇÕES LEGADAS (COMPATIBILIDADE) ===
+  const adicionarDescricao = async () => {
+    console.warn("adicionarDescricao: Use adicionarDescricaoECategoria");
   };
 
-  const editarCliente = (id: string, dadosAtualizados: Partial<Cliente>) => {
-    const clientesAtualizados = clientes.map((cliente) =>
-      cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
-    );
-    setClientes(clientesAtualizados);
-    salvarEntidadeNoStorage("clientes", clientesAtualizados);
+  const editarDescricao = async () => {
+    console.warn("editarDescricao: Use editarDescricaoECategoria");
   };
 
-  const excluirCliente = (id: string) => {
-    const clientesAtualizados = clientes.filter((cliente) => cliente.id !== id);
-    setClientes(clientesAtualizados);
-    salvarEntidadeNoStorage("clientes", clientesAtualizados);
+  const excluirDescricao = async () => {
+    console.warn("excluirDescricao: Use excluirDescricaoECategoria");
   };
 
-  // === FUNÇÕES PARA FORNECEDORES (localStorage - temporário) ===
-  const adicionarFornecedor = (
-    novoFornecedor: Omit<Fornecedor, "id" | "dataCriacao">,
-  ) => {
-    const fornecedor: Fornecedor = {
-      ...novoFornecedor,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    const novosFornecedores = [...fornecedores, fornecedor];
-    setFornecedores(novosFornecedores);
-    salvarEntidadeNoStorage("fornecedores", novosFornecedores);
+  const adicionarCategoria = () => {
+    console.warn("adicionarCategoria: Use adicionarDescricaoECategoria");
   };
 
-  const editarFornecedor = (
-    id: string,
-    dadosAtualizados: Partial<Fornecedor>,
-  ) => {
-    const fornecedoresAtualizados = fornecedores.map((fornecedor) =>
-      fornecedor.id === id
-        ? { ...fornecedor, ...dadosAtualizados }
-        : fornecedor,
-    );
-    setFornecedores(fornecedoresAtualizados);
-    salvarEntidadeNoStorage("fornecedores", fornecedoresAtualizados);
+  const editarCategoria = () => {
+    console.warn("editarCategoria: Use editarDescricaoECategoria");
   };
 
-  const excluirFornecedor = (id: string) => {
-    const fornecedoresAtualizados = fornecedores.filter(
-      (fornecedor) => fornecedor.id !== id,
-    );
-    setFornecedores(fornecedoresAtualizados);
-    salvarEntidadeNoStorage("fornecedores", fornecedoresAtualizados);
+  const excluirCategoria = () => {
+    console.warn("excluirCategoria: Use excluirDescricaoECategoria");
   };
 
-  const value = {
-    // Estados
-    descricoesECategorias,
-    categorias,
-    descricoes,
-    formasPagamento,
-    funcionarios,
-    tecnicos,
-    clientes,
-    fornecedores,
-    setores,
-    cidades,
-    isLoading,
-    error,
-
-    // Funç��es para tabela unificada
-    getCategorias,
-    getDescricoes,
-    adicionarDescricaoECategoria,
-    editarDescricaoECategoria,
-    excluirDescricaoECategoria,
-
-    // Funções para Categorias (localStorage - compatibilidade)
-    adicionarCategoria,
-    editarCategoria,
-    excluirCategoria,
-
-    // Funções para Descrições (API - compatibilidade)
-    adicionarDescricao,
-    editarDescricao,
-    excluirDescricao,
-
-    // Funções para Formas de Pagamento (API)
-    adicionarFormaPagamento,
-    editarFormaPagamento,
-    excluirFormaPagamento,
-
-    // Funções para Funcionários (API)
-    getTecnicos,
-    adicionarFuncionario,
-    editarFuncionario,
-    excluirFuncionario,
-
-    // Funções para Setores (API)
-    adicionarSetor,
-    editarSetor,
-    excluirSetor,
-
-    // Funções para Cidades
-    adicionarCidade,
-
-    // Funções para Clientes (localStorage)
-    adicionarCliente,
-    editarCliente,
-    excluirCliente,
-
-    // Funções para Fornecedores (localStorage)
-    adicionarFornecedor,
-    editarFornecedor,
-    excluirFornecedor,
-
-    // Funções utilitárias
-    carregarDados,
-
-    // Carregamento manual para quando necessário
-    carregarDadosManual: () => {
-      console.log("[EntidadesContext] Carregamento manual solicitado");
-      return carregarDados();
-    },
+  const adicionarFuncionario = async () => {
+    console.warn("adicionarFuncionario: Funcionalidade não implementada");
   };
+
+  const editarFuncionario = async () => {
+    console.warn("editarFuncionario: Funcionalidade não implementada");
+  };
+
+  const excluirFuncionario = async () => {
+    console.warn("excluirFuncionario: Funcionalidade não implementada");
+  };
+
+  const adicionarCliente = async () => {
+    console.warn("adicionarCliente: Funcionalidade não implementada");
+  };
+
+  const editarCliente = async () => {
+    console.warn("editarCliente: Funcionalidade não implementada");
+  };
+
+  const excluirCliente = async () => {
+    console.warn("excluirCliente: Funcionalidade não implementada");
+  };
+
+  const adicionarFornecedor = () => {
+    console.warn("adicionarFornecedor: Funcionalidade não implementada");
+  };
+
+  const editarFornecedor = () => {
+    console.warn("editarFornecedor: Funcionalidade não implementada");
+  };
+
+  const excluirFornecedor = () => {
+    console.warn("excluirFornecedor: Funcionalidade não implementada");
+  };
+
+  const recarregarTudo = carregarDados;
+
+  // === VALUE DO CONTEXTO ===
+  const value = useMemo(
+    () => ({
+      // Sistema unificado
+      descricoesECategorias,
+      getCategorias,
+      getDescricoes,
+      adicionarDescricaoECategoria,
+      editarDescricaoECategoria,
+      excluirDescricaoECategoria,
+
+      // Entidades principais
+      formasPagamento,
+      adicionarFormaPagamento,
+      editarFormaPagamento,
+      excluirFormaPagamento,
+
+      funcionarios,
+      tecnicos,
+      getTecnicos,
+      adicionarFuncionario,
+      editarFuncionario,
+      excluirFuncionario,
+
+      setores,
+      cidades,
+      adicionarSetor,
+      editarSetor,
+      excluirSetor,
+      adicionarCidade,
+
+      // Compatibilidade
+      descricoes,
+      categorias,
+      adicionarDescricao,
+      editarDescricao,
+      excluirDescricao,
+      adicionarCategoria,
+      editarCategoria,
+      excluirCategoria,
+
+      clientes,
+      adicionarCliente,
+      editarCliente,
+      excluirCliente,
+
+      fornecedores,
+      adicionarFornecedor,
+      editarFornecedor,
+      excluirFornecedor,
+
+      // Estados
+      isLoading,
+      error,
+      recarregarTudo,
+      recarregarDescricoesECategorias,
+    }),
+    [
+      descricoesECategorias,
+      getCategorias,
+      getDescricoes,
+      formasPagamento,
+      funcionarios,
+      tecnicos,
+      getTecnicos,
+      setores,
+      cidades,
+      descricoes,
+      categorias,
+      clientes,
+      fornecedores,
+      isLoading,
+      error,
+      carregarDados,
+      recarregarDescricoesECategorias,
+    ],
+  );
 
   return (
     <EntidadesContext.Provider value={value}>
@@ -919,7 +711,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 export function useEntidades() {
   const context = useContext(EntidadesContext);
   if (context === undefined) {
-    throw new Error("useEntidades must be used within a EntidadesProvider");
+    throw new Error(
+      "useEntidades deve ser usado dentro de um EntidadesProvider",
+    );
   }
   return context;
 }

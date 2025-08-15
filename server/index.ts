@@ -2,6 +2,9 @@ import "dotenv/config";
 import express, { Express } from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { runMigration, checkMigration } from "./routes/migrate";
+import { seedUnifiedData } from "./routes/seed-unified-data";
+import { cleanCategories, listCategories } from "./routes/clean-categories";
 
 // Importar rotas do banco de dados
 import {
@@ -39,7 +42,14 @@ import {
   createSetor,
   updateSetor,
   deleteSetor,
+  deleteCidade,
 } from "./routes/setores";
+import {
+  getCidades as getCidadesNovo,
+  createCidade,
+  updateCidade,
+  deleteCidade as deleteCidadeNovo,
+} from "./routes/cidades";
 
 import {
   getLancamentos,
@@ -78,48 +88,6 @@ export function createServer(): Express {
   app.get("/api/ping", (req, res) => {
     console.log("[Server] Ping recebido");
     res.json({ message: "pong", timestamp: new Date().toISOString() });
-  });
-
-  // Endpoint temporário de debug
-  app.get("/api/debug/db-status", async (req, res) => {
-    try {
-      const { prisma } = await import("./lib/database");
-
-      const counts = {
-        descricoes: await prisma.descricao.count(),
-        formasPagamento: await prisma.formaPagamento.count(),
-        funcionarios: await prisma.funcionario.count(),
-        setores: await prisma.setor.count(),
-        campanhas: await prisma.campanha.count(),
-        lancamentos: await prisma.lancamentoCaixa.count(),
-      };
-
-      const samples = {
-        descricoes: await prisma.descricao.findMany({ take: 3 }),
-        formasPagamento: await prisma.formaPagamento.findMany({ take: 3 }),
-        funcionarios: await prisma.funcionario.findMany({
-          take: 3,
-          select: { id: true, nome: true, tipoAcesso: true },
-        }),
-      };
-
-      res.json({ counts, samples });
-    } catch (error) {
-      console.error("[Debug] Erro ao verificar status do banco:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Endpoint para criar dados básicos
-  app.post("/api/debug/seed-basic-data", async (req, res) => {
-    try {
-      const { seedBasicData } = await import("./lib/seed-basic-data");
-      await seedBasicData();
-      res.json({ message: "Dados básicos criados com sucesso!" });
-    } catch (error) {
-      console.error("[Debug] Erro ao criar dados básicos:", error);
-      res.status(500).json({ error: error.message });
-    }
   });
 
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
@@ -162,12 +130,61 @@ export function createServer(): Express {
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
 
-  // Rotas de Setores e Cidades
+  // Rotas de Cidades (nova tabela separada)
+  app.get("/api/cidades", getCidadesNovo);
+  app.post("/api/cidades", createCidade);
+  app.put("/api/cidades/:id", updateCidade);
+  app.delete("/api/cidades/:id", deleteCidadeNovo);
+
+  // Rotas de Setores
   app.get("/api/setores", getSetores);
-  app.get("/api/cidades", getCidades);
   app.post("/api/setores", createSetor);
   app.put("/api/setores/:id", updateSetor);
   app.delete("/api/setores/:id", deleteSetor);
+
+  // Rota legada para compatibilidade
+  app.delete("/api/setores/cidades/:cidade", deleteCidade);
+
+  // Rota de migração (apenas para desenvolvimento)
+  app.post("/api/migrate/separate-cities", async (req, res) => {
+    try {
+      console.log("[API] Iniciando migração manual...");
+
+      // Verificar se a tabela cidade existe e tem dados
+      const cidades = await prisma.cidade.findMany();
+      if (cidades.length > 0) {
+        return res.json({ message: "Migração já foi executada anteriormente" });
+      }
+
+      // Buscar setores existentes
+      const setores = await prisma.setor.findMany();
+      const cidadesUnicas = [...new Set(setores.map((s) => s.cidade))];
+
+      console.log(
+        `[API] Encontradas ${cidadesUnicas.length} cidades únicas:`,
+        cidadesUnicas,
+      );
+
+      // Criar cidades
+      const cidadesCriadas = [];
+      for (const nomeCidade of cidadesUnicas) {
+        const cidade = await prisma.cidade.create({
+          data: { nome: nomeCidade, ativo: true },
+        });
+        cidadesCriadas.push(cidade);
+      }
+
+      console.log(`[API] ${cidadesCriadas.length} cidades criadas`);
+
+      res.json({
+        message: "Migração concluída com sucesso!",
+        cidadesCriadas: cidadesCriadas.length,
+      });
+    } catch (error) {
+      console.error("Erro na migração:", error);
+      res.status(500).json({ error: "Erro na migração: " + error.message });
+    }
+  });
 
   // Rotas de Caixa
   app.get("/api/caixa/lancamentos", getLancamentos);
@@ -187,6 +204,15 @@ export function createServer(): Express {
   app.post("/api/clientes", createCliente);
   app.put("/api/clientes/:id", updateCliente);
   app.delete("/api/clientes/:id", deleteCliente);
+
+  // Migração para sistema unificado
+  app.post("/api/migrate/unified-descriptions", runMigration);
+  app.get("/api/migrate/check", checkMigration);
+  app.post("/api/seed/unified-data", seedUnifiedData);
+
+  // Limpeza de dados
+  app.delete("/api/clean/categories", cleanCategories);
+  app.get("/api/clean/categories", listCategories);
 
   return app;
 }

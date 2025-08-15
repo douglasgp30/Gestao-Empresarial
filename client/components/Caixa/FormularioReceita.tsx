@@ -42,17 +42,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     isLoading: caixaLoading,
   } = useCaixa();
   const {
-    descricoes,
     formasPagamento,
     getTecnicos,
     setores,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
-    // Usar tabela unificada
-    getCategorias,
-    getDescricoes,
-    adicionarDescricaoECategoria,
   } = useEntidades();
   const {
     clientes,
@@ -89,27 +84,97 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Usar tabela unificada para categorias e descrições
-  const categoriasReceita = React.useMemo(() => {
-    return getCategorias("receita")
-      .map((cat) => cat.nome)
-      .sort();
-  }, [getCategorias]);
+  // Estados para categorias e descrições carregadas diretamente da API
+  const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
+  const [descricoesFiltradas, setDescricoesFiltradas] = useState<any[]>([]);
+  const [carregandoCategorias, setCarregandoCategorias] = useState(true);
 
-  const descricoesFiltradas = React.useMemo(() => {
-    if (!formData.categoria) return [];
-    return getDescricoes("receita", formData.categoria);
-  }, [formData.categoria, getDescricoes]);
+  // Carregar categorias de receita diretamente da API
+  useEffect(() => {
+    const carregarCategorias = async () => {
+      try {
+        setCarregandoCategorias(true);
+        const response = await fetch(
+          "/api/descricoes-e-categorias/categorias?tipo=receita",
+        );
+        const data = await response.json();
+
+        if (data.data) {
+          // Remove duplicates and sort
+          const nomes = [
+            ...new Set(data.data.map((cat: any) => cat.nome)),
+          ].sort();
+          setCategoriasReceita(nomes);
+          console.log("[FormularioReceita] Categorias carregadas:", nomes);
+          console.log(
+            "[FormularioReceita] Dados completos das categorias:",
+            data.data,
+          );
+        } else {
+          console.log(
+            "[FormularioReceita] Nenhuma categoria encontrada na resposta:",
+            data,
+          );
+        }
+      } catch (error) {
+        console.error(
+          "[FormularioReceita] Erro ao carregar categorias:",
+          error,
+        );
+      } finally {
+        setCarregandoCategorias(false);
+      }
+    };
+
+    carregarCategorias();
+  }, []);
+
+  // Carregar descrições quando categoria muda
+  useEffect(() => {
+    const carregarDescricoes = async () => {
+      if (!formData.categoria) {
+        setDescricoesFiltradas([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`,
+        );
+        const data = await response.json();
+
+        if (data.data) {
+          setDescricoesFiltradas(data.data);
+          console.log(
+            "[FormularioReceita] Descrições carregadas para",
+            formData.categoria,
+            ":",
+            data.data.length,
+          );
+        }
+      } catch (error) {
+        console.error(
+          "[FormularioReceita] Erro ao carregar descrições:",
+          error,
+        );
+        setDescricoesFiltradas([]);
+      }
+    };
+
+    carregarDescricoes();
+  }, [formData.categoria]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
-    return (
-      formData.formaPagamento &&
-      formasPagamento
-        .find((f) => f.id.toString() === formData.formaPagamento)
-        ?.nome?.toLowerCase()
-        .includes("cartão")
+    if (!formData.formaPagamento || formasPagamento.length === 0) {
+      return false;
+    }
+
+    const forma = formasPagamento.find(
+      (f) => f.id.toString() === formData.formaPagamento,
     );
+
+    return forma?.nome?.toLowerCase().includes("cartão") || false;
   }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente usando os hooks de moeda
@@ -134,17 +199,29 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     taxaCartao;
 
   // Calcular comissão baseada no percentual do técnico sobre o valor líquido
-  const comissaoCalculada = (() => {
-    if (formData.tecnicoResponsavel) {
+  const comissaoCalculada = React.useMemo(() => {
+    if (formData.tecnicoResponsavel && valorLiquidoCalculado > 0) {
       const tecnico = tecnicos.find(
         (t) => t.id.toString() === formData.tecnicoResponsavel,
       );
-      if (tecnico && tecnico.percentualComissao) {
-        return valorLiquidoCalculado * (tecnico.percentualComissao / 100);
+      if (tecnico) {
+        // Usar percentualComissao ou percentualServico como fallback
+        const percentual =
+          tecnico.percentualComissao || tecnico.percentualServico || 0;
+        if (percentual > 0) {
+          const comissao = valorLiquidoCalculado * (percentual / 100);
+          console.log("Calculando comissão:", {
+            tecnico: tecnico.nome || tecnico.nomeCompleto,
+            percentual,
+            valorLiquido: valorLiquidoCalculado,
+            comissao,
+          });
+          return comissao;
+        }
       }
     }
     return 0;
-  })();
+  }, [formData.tecnicoResponsavel, valorLiquidoCalculado, tecnicos]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
@@ -292,13 +369,17 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
   };
 
-  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
+  // Só mostrar loading se realmente não há dados essenciais
+  const isLoadingEssential =
+    carregandoCategorias || (entidadesLoading && formasPagamento.length === 0);
 
-  if (isLoading) {
+  if (isLoadingEssential) {
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-center">Carregando dados...</div>
+          <div className="text-center text-muted-foreground">
+            Carregando dados...
+          </div>
         </CardContent>
       </Card>
     );
@@ -361,11 +442,24 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <SelectValue placeholder="Selecione a categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categoriasReceita.map((categoria) => (
-                    <SelectItem key={categoria} value={categoria}>
-                      {categoria}
-                    </SelectItem>
-                  ))}
+                  {carregandoCategorias ? (
+                    <div className="px-2 py-1 text-sm text-gray-500">
+                      Carregando categorias...
+                    </div>
+                  ) : categoriasReceita.length === 0 ? (
+                    <div className="px-2 py-1 text-sm text-gray-500">
+                      Nenhuma categoria de receita encontrada
+                    </div>
+                  ) : (
+                    categoriasReceita.map((categoria, index) => (
+                      <SelectItem
+                        key={`categoria-${index}-${categoria}`}
+                        value={categoria}
+                      >
+                        {categoria}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -384,14 +478,35 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               required={true}
               disabled={!formData.categoria}
               items={descricoesFiltradas}
+              renderItem={(item) => item.nome}
               onAddNew={async (data) => {
-                await adicionarDescricaoECategoria({
-                  nome: data.nome,
-                  tipo: "receita",
-                  categoria: formData.categoria,
-                  tipoItem: "descricao",
-                  ativo: true,
-                });
+                try {
+                  const response = await fetch("/api/descricoes-e-categorias", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      nome: data.nome,
+                      tipo: "receita",
+                      categoria: formData.categoria,
+                      tipoItem: "descricao",
+                      ativo: true,
+                    }),
+                  });
+
+                  if (!response.ok) throw new Error("Erro ao criar descrição");
+
+                  // Recarregar descrições
+                  const reloadResponse = await fetch(
+                    `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`,
+                  );
+                  const reloadData = await reloadResponse.json();
+                  if (reloadData.data) {
+                    setDescricoesFiltradas(reloadData.data);
+                  }
+                } catch (error) {
+                  console.error("Erro ao adicionar descrição:", error);
+                  throw error;
+                }
               }}
               addNewTitle="Nova Descrição de Receita"
               addNewDescription="Adicione uma nova descrição de serviço para receitas."
@@ -415,6 +530,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               label="Forma de Pagamento"
               required={true}
               items={formasPagamento}
+              renderItem={(item) => item.nome}
               onAddNew={async (data) => {
                 await adicionarFormaPagamento({
                   nome: data.nome,
@@ -489,14 +605,21 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                           tecnico.id !== "" &&
                           tecnico.id !== 0,
                       )
-                      .map((tecnico) => (
-                        <SelectItem
-                          key={tecnico.id}
-                          value={tecnico.id.toString()}
-                        >
-                          {tecnico.nome || tecnico.nomeCompleto}
-                        </SelectItem>
-                      ))
+                      .map((tecnico) => {
+                        const percentual =
+                          tecnico.percentualComissao ||
+                          tecnico.percentualServico ||
+                          0;
+                        const nome = tecnico.nome || tecnico.nomeCompleto;
+                        return (
+                          <SelectItem
+                            key={tecnico.id}
+                            value={tecnico.id.toString()}
+                          >
+                            {nome} {percentual > 0 && `(${percentual}%)`}
+                          </SelectItem>
+                        );
+                      })
                   )}
                 </SelectContent>
               </Select>
@@ -545,6 +668,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             label="Campanha"
             required={false}
             items={campanhas}
+            renderItem={(item) => item.nome}
             onAddNew={async (data) => {
               await adicionarCampanha({
                 nome: data.nome,

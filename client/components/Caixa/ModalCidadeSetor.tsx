@@ -272,14 +272,16 @@ export default function ModalCidadeSetor() {
                           <SelectValue placeholder="Selecione uma cidade" />
                         </SelectTrigger>
                         <SelectContent>
-                          {cidades.map((cidade, index) => (
-                            <SelectItem
-                              key={`cidade-${index}-${cidade}`}
-                              value={cidade}
-                            >
-                              {cidade}
-                            </SelectItem>
-                          ))}
+                          {(Array.isArray(cidades) ? cidades : []).map(
+                            (cidade, index) => (
+                              <SelectItem
+                                key={`cidade-${index}-${cidade}`}
+                                value={cidade}
+                              >
+                                {cidade}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                       {cidades.length === 0 && (
@@ -336,15 +338,17 @@ export default function ModalCidadeSetor() {
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {cidades.map((cidade, index) => (
-                      <Badge
-                        key={`cidade-badge-${index}-${cidade}`}
-                        variant="secondary"
-                        className="px-3 py-1"
-                      >
-                        {cidade}
-                      </Badge>
-                    ))}
+                    {(Array.isArray(cidades) ? cidades : []).map(
+                      (cidade, index) => (
+                        <Badge
+                          key={`cidade-badge-${index}-${cidade}`}
+                          variant="secondary"
+                          className="px-3 py-1"
+                        >
+                          {cidade}
+                        </Badge>
+                      ),
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -384,59 +388,61 @@ export default function ModalCidadeSetor() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {setores.map((setor) => (
-                          <TableRow key={setor.id}>
-                            <TableCell>
-                              <div className="flex items-center space-x-2">
-                                <div className="bg-primary/10 p-2 rounded-full">
-                                  <MapPin className="h-4 w-4 text-primary" />
+                        {(Array.isArray(setores) ? setores : []).map(
+                          (setor) => (
+                            <TableRow key={setor.id}>
+                              <TableCell>
+                                <div className="flex items-center space-x-2">
+                                  <div className="bg-primary/10 p-2 rounded-full">
+                                    <MapPin className="h-4 w-4 text-primary" />
+                                  </div>
+                                  <span className="font-medium">
+                                    {setor.nome}
+                                  </span>
                                 </div>
-                                <span className="font-medium">
-                                  {setor.nome}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant="outline"
-                                className="flex items-center space-x-1 w-fit"
-                              >
-                                <Building className="h-3 w-3" />
-                                <span>{setor.cidade}</span>
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                                <Calendar className="h-3 w-3" />
-                                <span>{formatDate(setor.dataCriacao)}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="sm">
-                                    <MoreVertical className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    Editar
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    className="text-red-600"
-                                    onClick={() =>
-                                      setSetorParaExcluir(setor.id.toString())
-                                    }
-                                  >
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Excluir
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant="outline"
+                                  className="flex items-center space-x-1 w-fit"
+                                >
+                                  <Building className="h-3 w-3" />
+                                  <span>{setor.cidade}</span>
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                                  <Calendar className="h-3 w-3" />
+                                  <span>{formatDate(setor.dataCriacao)}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem>
+                                      <Edit className="h-4 w-4 mr-2" />
+                                      Editar
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      className="text-red-600"
+                                      onClick={() =>
+                                        setSetorParaExcluir(setor.id.toString())
+                                      }
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-2" />
+                                      Excluir
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          ),
+                        )}
                       </TableBody>
                     </Table>
                   </div>

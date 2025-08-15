@@ -22,12 +22,7 @@ import {
   TableRow,
 } from "../ui/table";
 import { Card, CardContent } from "../ui/card";
-import {
-  MapPin,
-  Calendar,
-  Plus,
-} from "lucide-react";
-
+import { MapPin, Calendar, Plus } from "lucide-react";
 
 export default function ModalCidades() {
   const { cidades, adicionarCidade } = useEntidades();
@@ -57,11 +52,11 @@ export default function ModalCidades() {
       if (!formData.cidadesEmMassa.trim()) return;
 
       const cidades = formData.cidadesEmMassa
-        .split('\n')
-        .map(linha => linha.trim())
-        .filter(linha => linha.length > 0);
+        .split("\n")
+        .map((linha) => linha.trim())
+        .filter((linha) => linha.length > 0);
 
-      cidades.forEach(nomeCidade => {
+      cidades.forEach((nomeCidade) => {
         adicionarCidade({
           nome: nomeCidade,
         });
@@ -96,7 +91,8 @@ export default function ModalCidades() {
             Cidades Cadastradas
           </DialogTitle>
           <DialogDescription>
-            Visualize todas as cidades onde prestamos serviços. Para cadastrar novas cidades, adicione-as ao lançar uma receita.
+            Visualize todas as cidades onde prestamos serviços. Para cadastrar
+            novas cidades, adicione-as ao lançar uma receita.
           </DialogDescription>
         </DialogHeader>
 
@@ -166,19 +162,25 @@ export default function ModalCidades() {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Label htmlFor="cidadesEmMassa">Cidades (uma por linha) *</Label>
+                      <Label htmlFor="cidadesEmMassa">
+                        Cidades (uma por linha) *
+                      </Label>
                       <Textarea
                         id="cidadesEmMassa"
                         value={formData.cidadesEmMassa}
                         onChange={(e) =>
-                          setFormData({ ...formData, cidadesEmMassa: e.target.value })
+                          setFormData({
+                            ...formData,
+                            cidadesEmMassa: e.target.value,
+                          })
                         }
                         placeholder="São Paulo\nRio de Janeiro\nBelo Horizonte\nRecife"
                         rows={6}
                         required
                       />
                       <p className="text-xs text-muted-foreground">
-                        Digite cada cidade em uma linha separada. Linhas vazias serão ignoradas.
+                        Digite cada cidade em uma linha separada. Linhas vazias
+                        serão ignoradas.
                       </p>
                     </div>
                   )}
@@ -210,7 +212,8 @@ export default function ModalCidades() {
                   Nenhuma cidade cadastrada
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  As cidades serão automaticamente cadastradas ao lançar receitas com novas localidades.
+                  As cidades serão automaticamente cadastradas ao lançar
+                  receitas com novas localidades.
                 </p>
               </CardContent>
             </Card>
@@ -224,25 +227,27 @@ export default function ModalCidades() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {cidades.map((cidade, index) => (
-                    <TableRow key={`cidade-${index}-${cidade}`}>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <div className="bg-primary/10 p-2 rounded-full">
-                            <MapPin className="h-4 w-4 text-primary" />
+                  {(Array.isArray(cidades) ? cidades : []).map(
+                    (cidade, index) => (
+                      <TableRow key={`cidade-${index}-${cidade}`}>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <div className="bg-primary/10 p-2 rounded-full">
+                              <MapPin className="h-4 w-4 text-primary" />
+                            </div>
+                            <span className="font-medium">{cidade}</span>
                           </div>
-                          <span className="font-medium">{cidade}</span>
-                        </div>
-                      </TableCell>
+                        </TableCell>
 
-                      <TableCell>
-                        <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          <span>-</span>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableCell>
+                          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                            <Calendar className="h-3 w-3" />
+                            <span>-</span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ),
+                  )}
                 </TableBody>
               </Table>
             </div>

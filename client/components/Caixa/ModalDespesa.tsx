@@ -30,6 +30,7 @@ export function ModalDespesa() {
     descricoes,
     formasPagamento,
     setores,
+    cidades,
     adicionarDescricao,
     adicionarFormaPagamento,
     isLoading: entidadesLoading,
@@ -46,6 +47,8 @@ export function ModalDespesa() {
     categoria: "",
     descricao: "",
     formaPagamento: "",
+    cidade: "",
+    setor: "",
     observacoes: "",
   });
 
@@ -67,6 +70,14 @@ export function ModalDespesa() {
     return getDescricoes("despesa", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
+  // Filtrar setores pela cidade selecionada
+  const setoresFiltrados = React.useMemo(() => {
+    if (!formData.cidade) return [];
+    return (Array.isArray(setores) ? setores : []).filter(
+      (setor) => setor.cidade === formData.cidade,
+    );
+  }, [formData.cidade, setores]);
+
   const resetForm = () => {
     setFormData({
       data: new Date().toISOString().split("T")[0],
@@ -74,6 +85,8 @@ export function ModalDespesa() {
       categoria: "",
       descricao: "",
       formaPagamento: "",
+      cidade: "",
+      setor: "",
       observacoes: "",
     });
   };
@@ -118,6 +131,7 @@ export function ModalDespesa() {
         valor: parseFloat(formData.valor),
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
+        setor: formData.setor || undefined,
         observacoes: formData.observacoes || undefined,
       });
 
@@ -252,10 +266,12 @@ export function ModalDespesa() {
                     label: desc.nome,
                   }))}
                   onAddNew={async (nomeDescricao) => {
-                    await adicionarDescricao({
+                    await adicionarDescricaoECategoria({
                       nome: nomeDescricao,
                       tipo: "despesa",
                       categoria: formData.categoria,
+                      tipoItem: "descricao",
+                      ativo: true,
                     });
                   }}
                   addButtonText="Nova Descrição"
@@ -282,6 +298,65 @@ export function ModalDespesa() {
                 }}
                 addButtonText="Nova Forma"
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="cidade">Cidade</Label>
+                <Select
+                  value={formData.cidade}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      cidade: value,
+                      setor: "", // Limpar setor quando cidade muda
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a cidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Array.isArray(cidades) ? cidades : []).map(
+                      (cidade, index) => (
+                        <SelectItem
+                          key={`cidade-${index}-${cidade}`}
+                          value={cidade}
+                        >
+                          {cidade}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="setor">Setor</Label>
+                <Select
+                  value={formData.setor}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, setor: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={
+                        formData.cidade
+                          ? "Selecione o setor"
+                          : "Primeiro selecione uma cidade"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {setoresFiltrados.map((setor) => (
+                      <SelectItem key={setor.id} value={setor.id.toString()}>
+                        {setor.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-2">

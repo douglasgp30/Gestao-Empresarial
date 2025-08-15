@@ -39,7 +39,7 @@ import {
 } from "../ui/alert-dialog";
 import { Megaphone, Plus, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { campanhasApi } from "../../lib/apiService";
-import { toast } from "../ui/use-toast";
+import { toast } from "sonner";
 
 export default function ModalCampanhas() {
   const { campanhas, carregarDados } = useCaixa();
@@ -63,11 +63,7 @@ export default function ModalCampanhas() {
     e.preventDefault();
 
     if (!formData.nome.trim()) {
-      toast({
-        title: "Erro",
-        description: "Nome da campanha é obrigatório",
-        variant: "destructive",
-      });
+      toast.error("Nome da campanha é obrigatório");
       return;
     }
 
@@ -77,29 +73,18 @@ export default function ModalCampanhas() {
       });
 
       if (response.error) {
-        toast({
-          title: "Erro",
-          description: response.error,
-          variant: "destructive",
-        });
+        toast.error(response.error);
         return;
       }
 
-      toast({
-        title: "Sucesso",
-        description: "Campanha criada com sucesso!",
-      });
+      toast.success("Campanha criada com sucesso!");
 
       resetForm();
       setIsNewCampanhaOpen(false);
       await carregarDados();
     } catch (error) {
       console.error("Erro ao criar campanha:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao criar campanha. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao criar campanha. Tente novamente.");
     }
   };
 
@@ -107,11 +92,7 @@ export default function ModalCampanhas() {
     e.preventDefault();
 
     if (!formData.nome.trim() || !campanhaParaEditar) {
-      toast({
-        title: "Erro",
-        description: "Nome da campanha é obrigatório",
-        variant: "destructive",
-      });
+      toast.error("Nome da campanha é obrigatório");
       return;
     }
 
@@ -121,18 +102,11 @@ export default function ModalCampanhas() {
       });
 
       if (response.error) {
-        toast({
-          title: "Erro",
-          description: response.error,
-          variant: "destructive",
-        });
+        toast.error(response.error);
         return;
       }
 
-      toast({
-        title: "Sucesso",
-        description: "Campanha atualizada com sucesso!",
-      });
+      toast.success("Campanha atualizada com sucesso!");
 
       resetForm();
       setIsEditCampanhaOpen(false);
@@ -140,11 +114,7 @@ export default function ModalCampanhas() {
       await carregarDados();
     } catch (error) {
       console.error("Erro ao editar campanha:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao editar campanha. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao editar campanha. Tente novamente.");
     }
   };
 
@@ -153,28 +123,17 @@ export default function ModalCampanhas() {
       const response = await campanhasApi.excluir(campanha.id);
 
       if (response.error) {
-        toast({
-          title: "Erro",
-          description: response.error,
-          variant: "destructive",
-        });
+        toast.error(response.error);
         return;
       }
 
-      toast({
-        title: "Sucesso",
-        description: "Campanha excluída com sucesso!",
-      });
+      toast.success("Campanha excluída com sucesso!");
 
       setCampanhaParaExcluir(null);
       await carregarDados();
     } catch (error) {
       console.error("Erro ao excluir campanha:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao excluir campanha. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao excluir campanha. Tente novamente.");
     }
   };
 
@@ -289,49 +248,55 @@ export default function ModalCampanhas() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {campanhas.map((campanha) => (
-                      <TableRow key={campanha.id}>
-                        <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <div className="bg-primary/10 p-2 rounded-full">
-                              <Megaphone className="h-4 w-4 text-primary" />
+                    {(Array.isArray(campanhas) ? campanhas : []).map(
+                      (campanha) => (
+                        <TableRow key={campanha.id}>
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              <div className="bg-primary/10 p-2 rounded-full">
+                                <Megaphone className="h-4 w-4 text-primary" />
+                              </div>
+                              <span className="font-medium">
+                                {campanha.nome}
+                              </span>
                             </div>
-                            <span className="font-medium">{campanha.nome}</span>
-                          </div>
-                        </TableCell>
+                          </TableCell>
 
-                        <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {formatDate(campanha.dataCriacao)}
-                          </span>
-                        </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-muted-foreground">
+                              {formatDate(campanha.dataCriacao)}
+                            </span>
+                          </TableCell>
 
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => abrirEdicao(campanha)}
-                              >
-                                <Edit className="h-4 w-4 mr-2" />
-                                Editar
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => setCampanhaParaExcluir(campanha)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Excluir
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => abrirEdicao(campanha)}
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Editar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onClick={() =>
+                                    setCampanhaParaExcluir(campanha)
+                                  }
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Excluir
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ),
+                    )}
                   </TableBody>
                 </Table>
               </div>

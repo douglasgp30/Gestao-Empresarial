@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
 
-// Schema com validação customizada para valorRecebido
+// Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
   valor: z.number().positive("Valor deve ser positivo"),
   valorRecebido: z.number().optional(),
@@ -17,21 +17,124 @@ const LancamentoCaixaSchema = z.object({
   }),
   data: z.string().optional(), // Data no formato YYYY-MM-DD
 
+  // Sistema unificado
+  categoria: z.string().optional(),
+  descricao: z.string().optional(),
+
   // Campos obrigatórios
-  descricaoId: z.number().positive("Descrição é obrigatória"),
-  formaPagamentoId: z.number().positive("Forma de pagamento é obrigatória"),
+  formaPagamentoId: z
+    .number()
+    .positive("Forma de pagamento é obrigatória")
+    .optional(),
+  formaPagamento: z.string().optional(), // Para compatibilidade
 
   // Campos opcionais
   subdescricaoId: z.number().positive().optional(),
   funcionarioId: z.number().positive().optional(),
+  tecnicoResponsavel: z.string().optional(), // Para compatibilidade
   setorId: z.number().positive().optional(),
+  setor: z.string().optional(), // Para compatibilidade
   campanhaId: z.number().positive().optional(),
+  campanha: z.string().optional(), // Para compatibilidade
   clienteId: z.number().positive().optional(),
 });
 
 // Função para gerar dataHora no formato DD-MM-AAAA HH:MM:SS
 function gerarDataHora(): Date {
   return new Date();
+}
+
+// Função para resolver ID de descrição/categoria usando sistema unificado
+async function resolverDescricaoECategoria(
+  categoria: string,
+  descricao: string,
+  tipo: "receita" | "despesa",
+) {
+  try {
+    // Buscar ou criar a descrição no sistema unificado
+    let descricaoItem = await prisma.descricaoECategoria.findFirst({
+      where: {
+        nome: descricao,
+        categoria: categoria,
+        tipo: tipo,
+        tipoItem: "descricao",
+        ativo: true,
+      },
+    });
+
+    if (!descricaoItem) {
+      // Criar nova descrição
+      descricaoItem = await prisma.descricaoECategoria.create({
+        data: {
+          nome: descricao,
+          categoria: categoria,
+          tipo: tipo,
+          tipoItem: "descricao",
+          ativo: true,
+        },
+      });
+    }
+
+    return descricaoItem.id;
+  } catch (error) {
+    console.error("Erro ao resolver descrição e categoria:", error);
+    return null;
+  }
+}
+
+// Função para resolver IDs de entidades
+async function resolverIds(data: any) {
+  const ids: any = {};
+
+  // Resolver forma de pagamento
+  if (data.formaPagamento && !data.formaPagamentoId) {
+    const formaPagamento = await prisma.formaPagamento.findFirst({
+      where: { nome: { contains: data.formaPagamento, mode: "insensitive" } },
+    });
+    if (formaPagamento) {
+      ids.formaPagamentoId = formaPagamento.id;
+    }
+  } else if (data.formaPagamentoId) {
+    ids.formaPagamentoId = data.formaPagamentoId;
+  }
+
+  // Resolver técnico responsável
+  if (data.tecnicoResponsavel && !data.funcionarioId) {
+    const funcionario = await prisma.funcionario.findFirst({
+      where: { id: parseInt(data.tecnicoResponsavel) },
+    });
+    if (funcionario) {
+      ids.funcionarioId = funcionario.id;
+    }
+  } else if (data.funcionarioId) {
+    ids.funcionarioId = data.funcionarioId;
+  }
+
+  // Resolver setor
+  if (data.setor && !data.setorId) {
+    const setor = await prisma.setor.findFirst({
+      where: { nome: { contains: data.setor, mode: "insensitive" } },
+    });
+    if (setor) {
+      ids.setorId = setor.id;
+    }
+  } else if (data.setorId) {
+    ids.setorId = data.setorId;
+  }
+
+  // Resolver campanha
+  if (data.campanha && !data.campanhaId) {
+    const campanha = await prisma.campanha.findFirst({
+      where: { nome: { contains: data.campanha, mode: "insensitive" } },
+    });
+    if (campanha) {
+      ids.campanhaId = campanha.id;
+    }
+  } else if (data.campanhaId) {
+    ids.campanhaId = data.campanhaId;
+  }
+
+  return ids;
 }
 
 export const getLancamentos: RequestHandler = async (req, res) => {
@@ -46,6 +149,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       formaPagamentoId,
       descricaoId,
       subdescricaoId,
+      categoria,
     } = req.query;
 
     const where: any = {};
@@ -60,6 +164,13 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     if (descricaoId) where.descricaoId = parseInt(descricaoId as string);
     if (subdescricaoId)
       where.subdescricaoId = parseInt(subdescricaoId as string);
+
+    // Filtro por categoria usando sistema unificado
+    if (categoria && categoria !== "todas") {
+      where.descricaoECategoria = {
+        categoria: categoria,
+      };
+    }
 
     // Filtros de data baseados em dataHora DateTime
     if (dataInicio || dataFim) {
@@ -92,9 +203,18 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       where,
       include: {
         descricao: true,
+        descricaoECategoria: true, // Incluir sistema unificado
         subdescricao: true,
         formaPagamento: true,
-        funcionario: { select: { id: true, nome: true, cargo: true } },
+        funcionario: {
+          select: {
+            id: true,
+            nome: true,
+            cargo: true,
+            percentualComissao: true,
+            percentualServico: true,
+          },
+        },
         setor: true,
         campanha: true,
         cliente: true,
@@ -118,11 +238,26 @@ export const createLancamento: RequestHandler = async (req, res) => {
     const data = LancamentoCaixaSchema.parse(req.body);
     console.log("[Caixa] Dados após validação:", JSON.stringify(data, null, 2));
 
+    // Resolver IDs de entidades
+    const ids = await resolverIds(data);
+    console.log("[Caixa] IDs resolvidos:", ids);
+
+    // Resolver descrição e categoria usando sistema unificado
+    let descricaoECategoriaId = null;
+    if (data.categoria && data.descricao) {
+      descricaoECategoriaId = await resolverDescricaoECategoria(
+        data.categoria,
+        data.descricao,
+        data.tipo,
+      );
+      console.log("[Caixa] DescricaoECategoria ID:", descricaoECategoriaId);
+    }
+
     // Verificar forma de pagamento e aplicar validações específicas
     let isBoleto = false;
-    if (data.formaPagamentoId) {
+    if (ids.formaPagamentoId) {
       const formaPagamento = await prisma.formaPagamento.findUnique({
-        where: { id: data.formaPagamentoId },
+        where: { id: ids.formaPagamentoId },
       });
 
       // Verificar se é cartão
@@ -147,55 +282,74 @@ export const createLancamento: RequestHandler = async (req, res) => {
       }
     }
 
+    // Calcular comissão automaticamente se há técnico responsável
+    let comissaoCalculada = data.comissao || 0;
+    if (ids.funcionarioId && data.valorLiquido && data.tipo === "receita") {
+      const funcionario = await prisma.funcionario.findUnique({
+        where: { id: ids.funcionarioId },
+        select: {
+          percentualComissao: true,
+          percentualServico: true,
+          nome: true,
+        },
+      });
+
+      if (funcionario) {
+        const percentual =
+          funcionario.percentualComissao || funcionario.percentualServico || 0;
+        if (percentual > 0) {
+          comissaoCalculada = data.valorLiquido * (percentual / 100);
+          console.log(
+            `[Caixa] Comissão calculada automaticamente: ${funcionario.nome} - ${percentual}% = R$ ${comissaoCalculada.toFixed(2)}`,
+          );
+        }
+      }
+    }
+
     // Verificar se os IDs de relacionamento existem
     console.log("[Caixa] Verificando se os IDs de relacionamento existem...");
 
-    if (data.descricaoId) {
-      const descricao = await prisma.descricao.findUnique({
-        where: { id: data.descricaoId },
-      });
-      console.log(
-        `[Caixa] Descrição ID ${data.descricaoId}:`,
-        descricao ? "EXISTS" : "NOT FOUND",
-      );
-    }
-
-    if (data.formaPagamentoId) {
+    if (ids.formaPagamentoId) {
       const formaPagamento = await prisma.formaPagamento.findUnique({
-        where: { id: data.formaPagamentoId },
+        where: { id: ids.formaPagamentoId },
       });
       console.log(
-        `[Caixa] Forma Pagamento ID ${data.formaPagamentoId}:`,
+        `[Caixa] Forma Pagamento ID ${ids.formaPagamentoId}:`,
         formaPagamento ? "EXISTS" : "NOT FOUND",
       );
+      if (!formaPagamento) {
+        return res
+          .status(400)
+          .json({ error: "Forma de pagamento não encontrada" });
+      }
     }
 
-    if (data.funcionarioId) {
+    if (ids.funcionarioId) {
       const funcionario = await prisma.funcionario.findUnique({
-        where: { id: data.funcionarioId },
+        where: { id: ids.funcionarioId },
       });
       console.log(
-        `[Caixa] Funcionário ID ${data.funcionarioId}:`,
+        `[Caixa] Funcionário ID ${ids.funcionarioId}:`,
         funcionario ? "EXISTS" : "NOT FOUND",
       );
     }
 
-    if (data.setorId) {
+    if (ids.setorId) {
       const setor = await prisma.setor.findUnique({
-        where: { id: data.setorId },
+        where: { id: ids.setorId },
       });
       console.log(
-        `[Caixa] Setor ID ${data.setorId}:`,
+        `[Caixa] Setor ID ${ids.setorId}:`,
         setor ? "EXISTS" : "NOT FOUND",
       );
     }
 
-    if (data.campanhaId) {
+    if (ids.campanhaId) {
       const campanha = await prisma.campanha.findUnique({
-        where: { id: data.campanhaId },
+        where: { id: ids.campanhaId },
       });
       console.log(
-        `[Caixa] Campanha ID ${data.campanhaId}:`,
+        `[Caixa] Campanha ID ${ids.campanhaId}:`,
         campanha ? "EXISTS" : "NOT FOUND",
       );
     }
@@ -247,32 +401,57 @@ export const createLancamento: RequestHandler = async (req, res) => {
       console.log("[Caixa] Usando data atual:", dataHoraLancamento);
     }
 
-    // Remover o campo 'data' do objeto que vai para o Prisma (ele não existe no schema)
-    const { data: dataFromRequest, clienteId, ...dadosLancamento } = data;
+    // Preparar dados para criação
+    const dadosLancamento: any = {
+      valor: data.valor,
+      valorRecebido: data.valorRecebido,
+      valorLiquido: data.valorLiquido,
+      comissao: comissaoCalculada, // Usar comissão calculada
+      imposto: data.imposto,
+      observacoes: data.observacoes,
+      numeroNota: data.numeroNota,
+      arquivoNota: data.arquivoNota,
+      tipo: data.tipo,
+      dataHora: dataHoraLancamento,
+      clienteId: clienteIdValido,
+      ...ids, // Adicionar IDs resolvidos
+    };
+
+    // Adicionar sistema unificado se disponível
+    if (descricaoECategoriaId) {
+      dadosLancamento.descricaoECategoriaId = descricaoECategoriaId;
+    }
+
+    // Marcar como boleto se for o caso (boletos não entram no caixa imediatamente)
+    if (isBoleto) {
+      dadosLancamento.observacoes = dadosLancamento.observacoes
+        ? `${dadosLancamento.observacoes} [BOLETO - Aguardando pagamento]`
+        : "[BOLETO - Aguardando pagamento]";
+    }
 
     const lancamento = await prisma.lancamentoCaixa.create({
-      data: {
-        ...dadosLancamento,
-        clienteId: clienteIdValido,
-        dataHora: dataHoraLancamento,
-        // Marcar como boleto se for o caso (boletos não entram no caixa imediatamente)
-        observacoes: isBoleto
-          ? dadosLancamento.observacoes
-            ? `${dadosLancamento.observacoes} [BOLETO - Aguardando pagamento]`
-            : "[BOLETO - Aguardando pagamento]"
-          : dadosLancamento.observacoes,
-      },
+      data: dadosLancamento,
       include: {
         descricao: true,
+        descricaoECategoria: true, // Incluir sistema unificado
         subdescricao: true,
         formaPagamento: true,
-        funcionario: { select: { id: true, nome: true, cargo: true } },
+        funcionario: {
+          select: {
+            id: true,
+            nome: true,
+            cargo: true,
+            percentualComissao: true,
+            percentualServico: true,
+          },
+        },
         setor: true,
         campanha: true,
         cliente: true,
       },
     });
 
+    console.log("[Caixa] Lançamento criado com sucesso:", lancamento.id);
     res.status(201).json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -308,10 +487,13 @@ export const updateLancamento: RequestHandler = async (req, res) => {
     const data = LancamentoCaixaSchema.partial().parse(req.body);
     console.log(`[Caixa] Dados validados:`, JSON.stringify(data, null, 2));
 
+    // Resolver IDs de entidades
+    const ids = await resolverIds(data);
+
     // Validação customizada para valorRecebido quando forma de pagamento for cartão
-    if (data.formaPagamentoId) {
+    if (ids.formaPagamentoId) {
       const formaPagamento = await prisma.formaPagamento.findUnique({
-        where: { id: data.formaPagamentoId },
+        where: { id: ids.formaPagamentoId },
       });
 
       if (
@@ -321,20 +503,53 @@ export const updateLancamento: RequestHandler = async (req, res) => {
         if (!data.valorRecebido || data.valorRecebido <= 0) {
           return res.status(400).json({
             error:
-              "Valor recebido é obrigatório quando a forma de pagamento for cart��o",
+              "Valor recebido é obrigatório quando a forma de pagamento for cartão",
           });
+        }
+      }
+    }
+
+    // Recalcular comissão se necessário
+    let dadosAtualizacao: any = { ...data, ...ids };
+    if (ids.funcionarioId && data.valorLiquido && data.tipo === "receita") {
+      const funcionario = await prisma.funcionario.findUnique({
+        where: { id: ids.funcionarioId },
+        select: {
+          percentualComissao: true,
+          percentualServico: true,
+          nome: true,
+        },
+      });
+
+      if (funcionario) {
+        const percentual =
+          funcionario.percentualComissao || funcionario.percentualServico || 0;
+        if (percentual > 0) {
+          dadosAtualizacao.comissao = data.valorLiquido * (percentual / 100);
+          console.log(
+            `[Caixa] Comissão recalculada: ${funcionario.nome} - ${percentual}% = R$ ${dadosAtualizacao.comissao.toFixed(2)}`,
+          );
         }
       }
     }
 
     const lancamento = await prisma.lancamentoCaixa.update({
       where: { id },
-      data,
+      data: dadosAtualizacao,
       include: {
         descricao: true,
+        descricaoECategoria: true,
         subdescricao: true,
         formaPagamento: true,
-        funcionario: { select: { id: true, nome: true, cargo: true } },
+        funcionario: {
+          select: {
+            id: true,
+            nome: true,
+            cargo: true,
+            percentualComissao: true,
+            percentualServico: true,
+          },
+        },
         setor: true,
         campanha: true,
         cliente: true,
@@ -420,6 +635,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
       where: { ...where, tipo: "receita" },
       include: {
         formaPagamento: true,
+        funcionario: { select: { nome: true } },
       },
     });
 
@@ -447,6 +663,12 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     );
     const totalBoletos = receitasBoleto.reduce((sum, r) => sum + r.valor, 0);
 
+    // Calcular comissões (apenas receitas não-boleto)
+    const totalComissoes = receitasNaoBoleto.reduce(
+      (sum, r) => sum + (r.comissao || 0),
+      0,
+    );
+
     const despesas = await prisma.lancamentoCaixa.aggregate({
       where: { ...where, tipo: "despesa" },
       _sum: { valor: true },
@@ -456,8 +678,9 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
       receitaBruta: totalReceitaBruta, // Todas as receitas incluindo boletos
       receitaLiquida: totalReceitaLiquida, // Só receitas não-boleto (que entram no caixa)
       boletos: totalBoletos, // Total em boletos pendentes
+      comissoes: totalComissoes, // Total de comissões pagas
       despesas: despesas._sum.valor || 0,
-      saldo: totalReceitaLiquida - (despesas._sum.valor || 0), // Saldo do caixa (sem boletos)
+      saldo: totalReceitaLiquida - (despesas._sum.valor || 0) - totalComissoes, // Saldo final
       // Manter campos antigos para compatibilidade
       receitas: totalReceitaLiquida,
       receitasRecebidas: totalReceitaLiquida,
