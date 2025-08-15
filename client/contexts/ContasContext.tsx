@@ -421,6 +421,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     contas,
     filtros,
     setFiltros,
+    atualizarFiltros,
     carregando,
     isLoading: carregando,
     erro,
