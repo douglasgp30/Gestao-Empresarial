@@ -223,13 +223,28 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === CARREGAMENTO DE DADOS COM DEBOUNCE ===
   const carregarDados = useCallback(async () => {
-    // Evitar múltiplos carregamentos simultâneos
-    if (isCarregando) {
+    // Verificar se já está carregando globalmente
+    if (isContextLoading("EntidadesContext") || isCarregando) {
       console.log("[EntidadesContext] Carregamento já em andamento, ignorando...");
       return;
     }
 
+    // Verificar cache primeiro
+    const cachedData = getCachedData("entidades-data");
+    if (cachedData) {
+      console.log("[EntidadesContext] Usando dados do cache");
+      setDescricoesECategorias(cachedData.descricoesECategorias || []);
+      setFormasPagamento(cachedData.formasPagamento || []);
+      setFuncionarios(cachedData.funcionarios || []);
+      setTecnicos(cachedData.tecnicos || []);
+      setSetores(cachedData.setores || []);
+      setCidades(cachedData.cidades || []);
+      setIsLoading(false);
+      return;
+    }
+
     console.log("[EntidadesContext] Iniciando carregamento de dados...");
+    setContextLoading("EntidadesContext", true);
     setIsCarregando(true);
     setIsLoading(true);
     setError(null);
