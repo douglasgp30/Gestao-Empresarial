@@ -214,7 +214,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       carregarLancamentos(true);
-    }, 100); // Debounce para evitar muitas chamadas
+    }, 300); // Debounce aumentado para reduzir piscar
 
     return () => clearTimeout(timeoutId);
   }, [
