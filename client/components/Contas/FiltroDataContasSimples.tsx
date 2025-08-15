@@ -1,25 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useContas } from "../../contexts/ContasContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar, ChevronDown } from "lucide-react";
 import {
   format,
-  startOfDay,
-  endOfDay,
-  subDays,
   startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function FiltroDataContasSimples() {
   const { filtros, setFiltros, isLoading } = useContas();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
 
   // Verificar e corrigir datas inválidas na inicialização
   useEffect(() => {
@@ -60,26 +54,6 @@ export function FiltroDataContasSimples() {
       });
     }
   }, [filtros, setFiltros]);
-
-  // Fechar dropdown ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
 
   // Função para formatar data para input com validação
   const formatDateForInput = (date: Date | null | undefined): string => {
@@ -255,12 +229,7 @@ export function FiltroDataContasSimples() {
       __timestamp: Date.now(),
     });
 
-    setIsOpen(false);
-  };
-
-  const toggleDropdown = () => {
-    console.log("🖱️ Toggle dropdown contas, isOpen atual:", isOpen);
-    setIsOpen(!isOpen);
+    setOpen(false);
   };
 
   // Garantir que as datas existem, senão usar valores padrão
@@ -275,25 +244,25 @@ export function FiltroDataContasSimples() {
         Período de vencimento das contas
       </Label>
 
-      <div className="relative w-full max-w-sm" ref={dropdownRef}>
-        <Button
-          variant="outline"
-          onClick={toggleDropdown}
-          className="w-full justify-between h-10 px-4 text-sm font-normal"
-          disabled={isLoading}
-        >
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="truncate">{periodoAtual}</span>
-            {isLoading && (
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            )}
-          </div>
-          <ChevronDown className="h-4 w-4 opacity-50" />
-        </Button>
-
-        {isOpen && (
-          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-[9999] w-[300px] p-3">
+      <div className="relative w-full max-w-sm">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full justify-between h-10 px-4 text-sm font-normal"
+              disabled={isLoading}
+            >
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span className="truncate">{periodoAtual}</span>
+                {isLoading && (
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                )}
+              </div>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-3" align="start">
             <div className="space-y-2">
               <Button
                 variant="ghost"
@@ -346,7 +315,6 @@ export function FiltroDataContasSimples() {
                       type="date"
                       value={formatDateForInput(dataInicio)}
                       onChange={(e) => {
-                        // Usar parseFloat e depois criar data local para evitar problemas de timezone
                         const [ano, mes, dia] = e.target.value
                           .split("-")
                           .map(Number);
@@ -373,7 +341,6 @@ export function FiltroDataContasSimples() {
                       type="date"
                       value={formatDateForInput(dataFim)}
                       onChange={(e) => {
-                        // Usar parseFloat e depois criar data local para evitar problemas de timezone
                         const [ano, mes, dia] = e.target.value
                           .split("-")
                           .map(Number);
@@ -398,8 +365,8 @@ export function FiltroDataContasSimples() {
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
