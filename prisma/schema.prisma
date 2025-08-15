@@ -353,6 +353,7 @@ model ContaLancamento {
   contaOrigem           ContaLancamento? @relation("ContaRecorrente", fields: [contaOrigemId], references: [id])
   contasRecorrentes     ContaLancamento[] @relation("ContaRecorrente")
   descricaoECategoria   DescricaoECategoria? @relation("DescricaoCategoria", fields: [descricaoECategoriaId], references: [id])
+  localizacao           LocalizacaoGeografica? @relation(fields: [localizacaoId], references: [id])
 
   // Indexes for performance
   @@map("contas_lancamentos_enhanced")
