@@ -254,7 +254,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           );
 
           // Forçar recarregamento das contas
-          await carregarContas();
+          await carregarContas(filtros);
 
           return contaFormatada;
         } else {
