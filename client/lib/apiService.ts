@@ -67,17 +67,25 @@ async function apiRequest<T>(
       // Se é a última tentativa, retornar o erro
       if (attempt === retries) {
         // Verificar se é um erro de rede ou do FullStory
-        if (
-          error instanceof TypeError &&
-          (error.message.includes("Failed to fetch") ||
-            error.message.includes("NetworkError") ||
-            error.stack?.includes("fullstory.com"))
-        ) {
-          return {
-            error:
-              "Servidor não disponível. Verifique se o backend está rodando.",
-          };
+      if (
+        error instanceof TypeError &&
+        (error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError") ||
+          error.stack?.includes("fullstory.com") ||
+          error.stack?.includes("fs.js"))
+      ) {
+        // Se não é a última tentativa e é erro de FullStory, aguardar um pouco
+        if (attempt < retries && error.stack?.includes("fullstory.com")) {
+          console.log(`[ApiService] Erro do FullStory detectado, aguardando antes de tentar novamente...`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          continue;
         }
+
+        return {
+          error:
+            "Problema de conectividade detectado. Tente recarregar a página.",
+        };
+      }
 
         if (error.name === "AbortError") {
           return {
