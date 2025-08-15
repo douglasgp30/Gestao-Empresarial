@@ -21,9 +21,9 @@ async function apiRequest<T>(
         `[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`,
       );
 
-      // Adicionar timeout para evitar travamentos
+      // Adicionar timeout para evitar travamentos - aumentado para 30s durante hot reload
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout para evitar falhas durante reload
 
       const response = await fetch(`${API_BASE}${endpoint}`, {
         headers: {
