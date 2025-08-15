@@ -633,6 +633,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     isLoading,
     error,
     carregarDados,
+    recarregarDescricoesECategorias,
   ]);
 
   return (
