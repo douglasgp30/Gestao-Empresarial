@@ -78,7 +78,9 @@ export const getCidades: RequestHandler = async (req, res) => {
 
 export const createSetor: RequestHandler = async (req, res) => {
   try {
+    console.log("[Setores] Dados recebidos para criar setor:", JSON.stringify(req.body, null, 2));
     const data = SetorSchema.parse(req.body);
+    console.log("[Setores] Dados após validação:", JSON.stringify(data, null, 2));
 
     // Verificar se a cidade existe
     const cidade = await prisma.cidade.findUnique({
