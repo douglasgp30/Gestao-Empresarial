@@ -455,7 +455,7 @@ export default function ModalCidadeSetorSimples() {
               </form>
 
               <div className="space-y-2">
-                {cidades.map((cidade, index) => (
+                {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
                   <div key={`cidade-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
                     <span className="font-medium">{cidade}</span>
                     <div className="flex gap-1">
