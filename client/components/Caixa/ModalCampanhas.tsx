@@ -63,11 +63,7 @@ export default function ModalCampanhas() {
     e.preventDefault();
 
     if (!formData.nome.trim()) {
-      toast({
-        title: "Erro",
-        description: "Nome da campanha é obrigatório",
-        variant: "destructive",
-      });
+      toast.error("Nome da campanha é obrigatório");
       return;
     }
 
