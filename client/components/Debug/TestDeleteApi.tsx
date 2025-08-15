@@ -22,6 +22,10 @@ export default function TestDeleteApi() {
       console.log("Response:", response);
       console.log("Status:", response.status);
       console.log("StatusText:", response.statusText);
+      console.log("Headers:", {
+        contentType: response.headers.get('content-type'),
+        contentLength: response.headers.get('content-length'),
+      });
       
       if (response.status === 204) {
         setResult(`✅ Sucesso: HTTP ${response.status} - Item excluído`);
