@@ -178,14 +178,31 @@ export default function ModalDescricoesSimples() {
       console.log('🟡 Response status:', response.status, response.statusText);
 
       if (!response.ok) {
+        console.log('🟡 Response não OK. Content-Type:', response.headers.get('content-type'));
+
         if (response.status === 400) {
           // Erro de validação (ex: categoria com descrições vinculadas)
-          try {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `Erro de validação: código ${response.status}`);
-          } catch (parseError) {
-            // Se não conseguir fazer parse do JSON, usar mensagem genérica
-            throw new Error(`Erro de validação: não foi possível completar a operação (código ${response.status})`);
+          const contentType = response.headers.get('content-type');
+
+          if (contentType && contentType.includes('application/json')) {
+            try {
+              const errorData = await response.json();
+              console.log('🟡 Error data from server:', errorData);
+              throw new Error(errorData.error || `Erro de validação (sem mensagem específica)`);
+            } catch (parseError) {
+              console.error('🔴 Erro ao fazer parse do JSON:', parseError);
+              throw new Error(`Erro de validação: resposta inválida do servidor`);
+            }
+          } else {
+            // Resposta não é JSON, tentar ler como texto
+            try {
+              const textData = await response.text();
+              console.log('🟡 Error text from server:', textData);
+              throw new Error(`Erro de validação: ${textData || 'operação não permitida'}`);
+            } catch (textError) {
+              console.error('🔴 Erro ao ler resposta como texto:', textError);
+              throw new Error(`Erro de validação: não foi possível processar resposta do servidor`);
+            }
           }
         }
         throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
