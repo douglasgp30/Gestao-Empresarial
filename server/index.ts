@@ -44,6 +44,12 @@ import {
   deleteSetor,
   deleteCidade,
 } from "./routes/setores";
+import {
+  getCidades as getCidadesNovo,
+  createCidade,
+  updateCidade,
+  deleteCidade as deleteCidadeNovo,
+} from "./routes/cidades";
 
 import {
   getLancamentos,
