@@ -137,9 +137,6 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">;
 
-// Importar wrapper de compatibilidade
-import { toast as compatToast } from "./use-toast-compat";
-
 function toast({ ...props }: Toast) {
   // Redirecionar para Sonner via wrapper de compatibilidade
   return compatToast(props);
