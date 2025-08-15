@@ -3,6 +3,7 @@ import express, { Express } from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { runMigration, checkMigration } from "./routes/migrate";
+import { seedUnifiedData } from "./routes/seed-unified-data";
 
 // Importar rotas do banco de dados
 import {
@@ -192,6 +193,7 @@ export function createServer(): Express {
   // Migração para sistema unificado
   app.post("/api/migrate/unified-descriptions", runMigration);
   app.get("/api/migrate/check", checkMigration);
+  app.post("/api/seed/unified-data", seedUnifiedData);
 
   return app;
 }
