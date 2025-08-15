@@ -418,11 +418,21 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <SelectValue placeholder="Selecione a categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categoriasReceita.map((categoria) => (
-                    <SelectItem key={categoria} value={categoria}>
-                      {categoria}
-                    </SelectItem>
-                  ))}
+                  {carregandoCategorias ? (
+                    <div className="px-2 py-1 text-sm text-gray-500">
+                      Carregando categorias...
+                    </div>
+                  ) : categoriasReceita.length === 0 ? (
+                    <div className="px-2 py-1 text-sm text-gray-500">
+                      Nenhuma categoria de receita encontrada
+                    </div>
+                  ) : (
+                    categoriasReceita.map((categoria) => (
+                      <SelectItem key={categoria} value={categoria}>
+                        {categoria}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
