@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { Express } from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { runMigration, checkMigration } from "./routes/migrate";
 
 // Importar rotas do banco de dados
 import {
@@ -187,6 +188,10 @@ export function createServer(): Express {
   app.post("/api/clientes", createCliente);
   app.put("/api/clientes/:id", updateCliente);
   app.delete("/api/clientes/:id", deleteCliente);
+
+  // Migração para sistema unificado
+  app.post("/api/migrate/unified-descriptions", runMigration);
+  app.get("/api/migrate/check", checkMigration);
 
   return app;
 }
