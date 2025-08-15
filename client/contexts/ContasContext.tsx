@@ -29,6 +29,7 @@ interface ContasContextType {
   contas: ContaLancamento[];
   filtros: FiltrosContas;
   setFiltros: (filtros: FiltrosContas) => void;
+  atualizarFiltros: (novosFiltros: Partial<FiltrosContas>) => void;
   carregando: boolean;
   isLoading: boolean;
   erro: string | null;
