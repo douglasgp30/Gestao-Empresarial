@@ -615,6 +615,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     isLoading,
     error,
     recarregarTudo,
+    recarregarDescricoesECategorias,
   }), [
     descricoesECategorias,
     getCategorias,
