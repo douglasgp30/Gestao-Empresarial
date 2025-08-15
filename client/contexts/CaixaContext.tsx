@@ -300,41 +300,46 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      // Preparar dados para a API
+      console.log("[CaixaContext] Recebido para adicionar:", novoLancamento);
+
+      // Preparar dados para a API usando sistema unificado
       const dadosApi = {
         data: novoLancamento.data
           ? novoLancamento.data.toISOString().split("T")[0]
-          : new Date().toISOString().split("T")[0], // Enviar data do formulário ou data atual
+          : new Date().toISOString().split("T")[0],
         tipo: novoLancamento.tipo,
         valor: novoLancamento.valor,
-        valorRecebido: novoLancamento.valorQueEntrou || novoLancamento.valor, // Usar valor padrão se não tiver valorQueEntrou
+        valorRecebido: novoLancamento.valorQueEntrou || novoLancamento.valor,
         valorLiquido: novoLancamento.valorLiquido,
         comissao: novoLancamento.comissao,
         imposto: novoLancamento.imposto,
         observacoes: novoLancamento.observacoes,
         numeroNota: novoLancamento.numeroNota,
         arquivoNota: novoLancamento.arquivoNota,
-        descricaoId: parseInt(novoLancamento.descricao),
-        formaPagamentoId: parseInt(novoLancamento.formaPagamento),
-        funcionarioId: novoLancamento.tecnicoResponsavel
-          ? parseInt(novoLancamento.tecnicoResponsavel)
-          : undefined,
-        setorId: novoLancamento.setor
-          ? parseInt(novoLancamento.setor)
-          : undefined,
-        campanhaId: novoLancamento.campanha
-          ? parseInt(novoLancamento.campanha)
-          : undefined,
         clienteId: novoLancamento.clienteId
           ? parseInt(novoLancamento.clienteId)
           : undefined,
+
+        // Sistema unificado - enviar categoria e descrição diretamente
+        categoria: novoLancamento.categoria,
+        descricao: novoLancamento.descricao,
+
+        // Campos de entidades - enviar como string para a API resolver
+        formaPagamento: novoLancamento.formaPagamento,
+        tecnicoResponsavel: novoLancamento.tecnicoResponsavel,
+        setor: novoLancamento.setor,
+        campanha: novoLancamento.campanha,
       };
+
+      console.log("[CaixaContext] Enviando para API:", dadosApi);
 
       const response = await caixaApi.criarLancamento(dadosApi);
       if (response.error) {
         setError(response.error);
         throw new Error(response.error);
       }
+
+      console.log("[CaixaContext] Lançamento criado com sucesso:", response.data?.id);
 
       // Recarregar lançamentos
       await carregarLancamentos(true);
