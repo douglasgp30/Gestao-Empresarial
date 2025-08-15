@@ -9,7 +9,7 @@ import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
 import { caixaApi, campanhasApi } from "../lib/apiService";
 import { loadingManager } from "../lib/loadingManager";
-import { shouldSkipAutoLoad, getDevDelay } from "../lib/devUtils";
+import { shouldSkipLoading, getLoadingDelay } from "../lib/globalLoadingControl";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
