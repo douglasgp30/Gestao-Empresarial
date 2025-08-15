@@ -165,7 +165,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // Função para carregar todos os dados
   const carregarDados = async () => {
+    // Evitar múltiplos carregamentos simultâneos
+    if (isCarregando) {
+      console.log("Carregamento já em andamento, ignorando...");
+      return;
+    }
+
     try {
+      setIsCarregando(true);
       setIsLoading(true);
       setError(null);
 
