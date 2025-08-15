@@ -9,30 +9,24 @@ export async function parseErrorResponse(response: Response): Promise<string> {
   try {
     // Verificar o content-type para decidir como processar
     const contentType = response.headers.get('content-type') || '';
-    console.log('🔵 parseErrorResponse - Content-Type:', contentType);
 
     if (contentType.includes('application/json')) {
       // Se é JSON, tentar parse JSON
       const errorData = await response.json();
-      console.log('🔵 parseErrorResponse - Dados JSON:', JSON.stringify(errorData, null, 2));
 
       if (errorData && errorData.error) {
-        console.log('🔵 parseErrorResponse - Retornando errorData.error:', errorData.error);
         return errorData.error;
       }
 
       // Se não tem campo error, tentar outras propriedades comuns
       if (errorData && errorData.message) {
-        console.log('🔵 parseErrorResponse - Retornando errorData.message:', errorData.message);
         return errorData.message;
       }
 
-      console.log('🔵 parseErrorResponse - Sem error/message, retornando default');
       return defaultMessage;
     } else {
       // Se não é JSON, ler como texto
       const textData = await response.text();
-      console.log('🔵 parseErrorResponse - Dados texto:', textData);
 
       if (textData && textData.trim()) {
         return textData;
@@ -41,7 +35,7 @@ export async function parseErrorResponse(response: Response): Promise<string> {
       return defaultMessage;
     }
   } catch (parseError) {
-    console.log('🔴 parseErrorResponse - Erro no parse:', parseError);
+    console.log('🟡 Error parsing response body:', parseError);
     // Retornar mensagem padrão se não conseguir fazer parse
     return defaultMessage;
   }
