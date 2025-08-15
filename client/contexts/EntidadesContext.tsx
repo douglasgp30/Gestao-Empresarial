@@ -357,18 +357,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar dados na inicialização com proteção para hot reload
+  // Carregar dados na inicialização com controle global
   useEffect(() => {
-    // Durante hot reload, não carregar automaticamente para evitar sobrecarga
-    if (shouldSkipAutoLoad()) {
-      console.log('[EntidadesContext] Hot reload detectado, pulando carregamento automático');
-      return;
-    }
+    if (shouldSkipLoading('EntidadesContext')) return;
 
-    const delay = getDevDelay(2000); // Delay aleatório entre 2-4s em dev
+    const delay = getLoadingDelay(2000);
     const timeout = setTimeout(() => {
-      console.log('[EntidadesContext] Iniciando carregamento após delay de', delay, 'ms');
-      carregarDados();
+      if (!shouldSkipLoading('EntidadesContext')) {
+        console.log('[EntidadesContext] Iniciando carregamento após delay de', delay, 'ms');
+        carregarDados();
+      }
     }, delay);
 
     return () => clearTimeout(timeout);
