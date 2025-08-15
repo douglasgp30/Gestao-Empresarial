@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { useClientes } from "../../contexts/ClientesContext";
@@ -43,16 +43,19 @@ export function FiltrosCaixaCompacto() {
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
+  // Memoizar filtros para evitar re-renders desnecessários
+  const filtrosMemoizados = useMemo(() => filtros, [JSON.stringify(filtros)]);
+
   // Atualizar filtros locais quando os filtros do contexto mudarem
   useEffect(() => {
-    setFiltrosLocal(filtros);
-  }, [filtros]);
+    setFiltrosLocal(filtrosMemoizados);
+  }, [filtrosMemoizados]);
 
-  const aplicarFiltros = () => {
+  const aplicarFiltros = useCallback(() => {
     setFiltros(filtrosLocal);
-  };
+  }, [filtrosLocal, setFiltros]);
 
-  const limparFiltros = () => {
+  const limparFiltros = useCallback(() => {
     const filtrosLimpos = {
       dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
       dataFim: new Date(),
@@ -71,10 +74,10 @@ export function FiltrosCaixaCompacto() {
     setFiltros(filtrosLimpos);
     // Fechar os filtros avançados após limpar
     setFiltrosAvancadosAbertos(false);
-  };
+  }, [setFiltros]);
 
-  // Contar filtros ativos (além das datas)
-  const contarFiltrosAtivos = () => {
+  // Contar filtros ativos (além das datas) - memoizado
+  const filtrosAtivos = useMemo(() => {
     let count = 0;
     if (filtrosLocal.tipo !== "todos") count++;
     if (filtrosLocal.formaPagamento !== "todas") count++;
@@ -88,25 +91,34 @@ export function FiltrosCaixaCompacto() {
     if (filtrosLocal.numeroNota && filtrosLocal.numeroNota.trim() !== "")
       count++;
     return count;
-  };
+  }, [filtrosLocal]);
 
-  const filtrosAtivos = contarFiltrosAtivos();
-  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
+  const isLoading = useMemo(
+    () => caixaLoading || entidadesLoading || clientesLoading,
+    [caixaLoading, entidadesLoading, clientesLoading],
+  );
 
-  // Obter categorias únicas das descrições
-  const categorias = [
-    ...new Set(
-      descricoes
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
+  // Obter categorias únicas das descrições - memoizado
+  const categorias = useMemo(
+    () =>
+      [
+        ...new Set(
+          descricoes
+            .map((d) => d.categoria)
+            .filter((categoria) => categoria && categoria.trim() !== ""),
+        ),
+      ].sort(),
+    [descricoes],
+  );
 
-  // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas =
-    filtrosLocal.categoria !== "todas"
-      ? descricoes.filter((d) => d.categoria === filtrosLocal.categoria)
-      : descricoes;
+  // Filtrar descrições pela categoria selecionada - memoizado
+  const descricoesFiltradas = useMemo(
+    () =>
+      filtrosLocal.categoria !== "todas"
+        ? descricoes.filter((d) => d.categoria === filtrosLocal.categoria)
+        : descricoes,
+    [descricoes, filtrosLocal.categoria],
+  );
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
@@ -332,7 +344,10 @@ export function FiltrosCaixaCompacto() {
                                 key={setor.id}
                                 value={setor.id.toString()}
                               >
-                                {setor.nome} - {setor.cidade}
+                                {setor.nome} -{" "}
+                                {typeof setor.cidade === "object"
+                                  ? setor.cidade?.nome
+                                  : setor.cidade}
                               </SelectItem>
                             ),
                           )}

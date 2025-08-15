@@ -3,6 +3,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
 import { Cliente } from "@shared/types";
@@ -43,22 +44,37 @@ function carregarClientesReais(): Cliente[] {
 export function ClientesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCarregando, setIsCarregando] = useState(false);
 
   // Função para salvar clientes no localStorage
-  const salvarClientesNoLocalStorage = (clientes: Cliente[]) => {
+  const salvarClientesNoLocalStorage = useCallback((clientes: Cliente[]) => {
     try {
       localStorage.setItem("clientes", JSON.stringify(clientes));
     } catch (error) {
       console.warn("Erro ao salvar clientes no localStorage:", error);
     }
-  };
+  }, []);
 
   // Carregar dados reais do localStorage
   useEffect(() => {
-    const clientesReais = carregarClientesReais();
-    setClientes(clientesReais);
-    setIsLoading(false);
-  }, []);
+    if (isCarregando) return;
+
+    setIsCarregando(true);
+    // Usar timeout para evitar bloqueio
+    const timeout = setTimeout(() => {
+      try {
+        const clientesReais = carregarClientesReais();
+        setClientes(clientesReais);
+      } catch (error) {
+        console.error("Erro ao carregar clientes:", error);
+      } finally {
+        setIsLoading(false);
+        setIsCarregando(false);
+      }
+    }, 100); // Delay mínimo para não bloquear render
+
+    return () => clearTimeout(timeout);
+  }, [isCarregando]);
 
   // Salvar no localStorage sempre que clientes mudarem
   useEffect(() => {

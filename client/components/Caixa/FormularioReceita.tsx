@@ -662,7 +662,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   required: true,
                 },
               ]}
-              renderItem={(setor) => `${setor.nome} - ${setor.cidade}`}
+              renderItem={(setor) =>
+                `${setor.nome} - ${typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade}`
+              }
             />
           </div>
 

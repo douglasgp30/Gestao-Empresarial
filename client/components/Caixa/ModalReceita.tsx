@@ -97,9 +97,11 @@ export function ModalReceita() {
   // Filtrar setores pela cidade selecionada
   const setoresFiltrados = React.useMemo(() => {
     if (!formData.cidade) return [];
-    return (Array.isArray(setores) ? setores : []).filter(
-      (setor) => setor.cidade === formData.cidade,
-    );
+    return (Array.isArray(setores) ? setores : []).filter((setor) => {
+      const nomeCidadeSetor =
+        typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade;
+      return nomeCidadeSetor === formData.cidade;
+    });
   }, [formData.cidade, setores]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar

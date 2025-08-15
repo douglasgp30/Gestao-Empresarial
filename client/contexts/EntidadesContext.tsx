@@ -27,9 +27,13 @@ import {
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 import { loadingManager } from "../lib/loadingManager";
+import { apiCache } from "../lib/apiCache";
+import { contextThrottle } from "../lib/contextThrottle";
 import {
   shouldSkipLoading,
   getLoadingDelay,
+  isContextLoading,
+  setContextLoading,
 } from "../lib/globalLoadingControl";
 
 interface EntidadesContextType {
@@ -118,7 +122,7 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Função para salvar entidade no localStorage com validação
+// Funç��o para salvar entidade no localStorage com validação
 function salvarEntidadeNoStorage<T>(
   chave: string,
   dados: T[],
@@ -170,6 +174,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCarregando, setIsCarregando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
@@ -218,12 +223,22 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === CARREGAMENTO DE DADOS COM DEBOUNCE ===
   const carregarDados = useCallback(async () => {
+    // Verificar se já está carregando globalmente
+    if (isContextLoading("EntidadesContext") || isCarregando) {
+      console.log(
+        "[EntidadesContext] Carregamento já em andamento, ignorando...",
+      );
+      return;
+    }
+
     console.log("[EntidadesContext] Iniciando carregamento de dados...");
+    setContextLoading("EntidadesContext", true);
+    setIsCarregando(true);
     setIsLoading(true);
     setError(null);
 
     try {
-      // Priorizar tabela unificada
+      // Usar cache agressivo para reduzir chamadas
       const [
         descricoesECategoriasResponse,
         formasPagamentoResponse,
@@ -232,12 +247,24 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
-        descricoesECategoriasApi.listar(),
-        formasPagamentoApi.listar(),
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-        setoresApi.listar(),
-        setoresApi.listarCidades(),
+        apiCache.executeWithCache("entidades-descricoes", () =>
+          descricoesECategoriasApi.listar(),
+        ),
+        apiCache.executeWithCache("entidades-formas-pagamento", () =>
+          formasPagamentoApi.listar(),
+        ),
+        apiCache.executeWithCache("entidades-funcionarios", () =>
+          funcionariosApi.listar(),
+        ),
+        apiCache.executeWithCache("entidades-tecnicos", () =>
+          funcionariosApi.listarTecnicos(),
+        ),
+        apiCache.executeWithCache("entidades-setores", () =>
+          setoresApi.listar(),
+        ),
+        apiCache.executeWithCache("entidades-cidades", () =>
+          setoresApi.listarCidades(),
+        ),
       ]);
 
       // Atualizar estados com dados do banco
@@ -275,15 +302,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           cidadesArray = cidadesResponse.data.data;
         }
 
-        // Verificar se são objetos (nova estrutura) ou strings (estrutura antiga)
+        // Sempre converter para array de strings, independente da estrutura
         if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          if (typeof cidadesArray[0] === "string") {
-            // Estrutura antiga: array de strings
-            setCidades(cidadesArray);
-          } else {
-            // Nova estrutura: array de objetos {id, nome, ativo}
-            setCidades(cidadesArray.map((cidade: any) => cidade.nome));
-          }
+          const cidadesString = cidadesArray.map((cidade: any) => {
+            if (typeof cidade === "string") {
+              return cidade;
+            } else if (cidade && cidade.nome) {
+              return cidade.nome;
+            } else {
+              console.warn("Cidade com estrutura inválida:", cidade);
+              return String(cidade);
+            }
+          });
+          setCidades(cidadesString);
         } else {
           setCidades([]);
         }
@@ -321,8 +352,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setCidades([]);
     } finally {
       setIsLoading(false);
+      setIsCarregando(false);
+      setContextLoading("EntidadesContext", false);
     }
-  }, []);
+  }, [isCarregando]);
 
   // === RECARREGAMENTO OTIMIZADO ===
   const recarregarDescricoesECategorias = useCallback(async () => {
@@ -340,22 +373,32 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // === CARREGAMENTO INICIAL ===
+  // === CARREGAMENTO INICIAL COM THROTTLING ===
   useEffect(() => {
     if (shouldSkipLoading("EntidadesContext")) {
       console.log("[EntidadesContext] Carregamento ignorado (skip loading)");
       return;
     }
 
-    const delay = getLoadingDelay(2000); // Delay menor
+    // Usar throttling agressivo para evitar múltiplos carregamentos
+    if (contextThrottle.isThrottled("EntidadesContext-initial", 5000)) {
+      console.log("[EntidadesContext] Carregamento throttled, ignorando...");
+      return;
+    }
+
+    const delay = getLoadingDelay(3000); // Delay maior
     const timeout = setTimeout(() => {
       if (!shouldSkipLoading("EntidadesContext")) {
-        carregarDados();
+        contextThrottle.execute(
+          "EntidadesContext-initial",
+          () => carregarDados(),
+          5000, // 5 segundos de throttle
+        );
       }
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, [carregarDados]);
+  }, []); // Remover carregarDados das dependências
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
   const adicionarDescricaoECategoria = async (
@@ -566,13 +609,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           cidadesArray = cidadesResponse.data.data;
         }
 
-        // Processar cidades considerando formato
+        // Sempre converter para array de strings, independente da estrutura
         if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          if (typeof cidadesArray[0] === "string") {
-            setCidades(cidadesArray);
-          } else {
-            setCidades(cidadesArray.map((cidade: any) => cidade.nome));
-          }
+          const cidadesString = cidadesArray.map((cidade: any) => {
+            if (typeof cidade === "string") {
+              return cidade;
+            } else if (cidade && cidade.nome) {
+              return cidade.nome;
+            } else {
+              console.warn("Cidade com estrutura inválida:", cidade);
+              return String(cidade);
+            }
+          });
+          setCidades(cidadesString);
         } else {
           setCidades([]);
         }
@@ -659,11 +708,17 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         }
 
         if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          if (typeof cidadesArray[0] === "string") {
-            setCidades(cidadesArray);
-          } else {
-            setCidades(cidadesArray.map((c: any) => c.nome));
-          }
+          const cidadesString = cidadesArray.map((cidade: any) => {
+            if (typeof cidade === "string") {
+              return cidade;
+            } else if (cidade && cidade.nome) {
+              return cidade.nome;
+            } else {
+              console.warn("Cidade com estrutura inválida:", cidade);
+              return String(cidade);
+            }
+          });
+          setCidades(cidadesString);
         } else {
           setCidades([]);
         }

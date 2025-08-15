@@ -2,6 +2,9 @@
 class GlobalLoadingControl {
   private isHotReloading: boolean = false;
   private loadingBlocked: boolean = false;
+  private loadingStates: Map<string, boolean> = new Map();
+  private cache: Map<string, { data: any; timestamp: number }> = new Map();
+  private readonly CACHE_DURATION = 5000; // 5 segundos
 
   constructor() {
     // Detectar hot reload através da URL
@@ -61,15 +64,55 @@ class GlobalLoadingControl {
   }
 
   getLoadingDelay(baseDelay: number = 1000): number {
-    if (!this.isHotReloading) return Math.random() * 500; // Delay mínimo em produção
+    if (!this.isHotReloading) return Math.random() * 200; // Delay menor em produção
 
     // Em desenvolvimento, delays maiores e mais espaçados
-    return Math.random() * baseDelay + baseDelay;
+    return Math.random() * baseDelay + baseDelay * 0.5;
+  }
+
+  // Verificar se um contexto já está carregando
+  isContextLoading(contextName: string): boolean {
+    return this.loadingStates.get(contextName) || false;
+  }
+
+  // Marcar contexto como carregando
+  setContextLoading(contextName: string, isLoading: boolean) {
+    this.loadingStates.set(contextName, isLoading);
+    if (!isLoading) {
+      // Limpar cache antigo quando terminar carregamento
+      this.cleanOldCache();
+    }
+  }
+
+  // Verificar cache
+  getCachedData(key: string): any {
+    const cached = this.cache.get(key);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
+      return cached.data;
+    }
+    return null;
+  }
+
+  // Salvar no cache
+  setCachedData(key: string, data: any) {
+    this.cache.set(key, { data, timestamp: Date.now() });
+  }
+
+  // Limpar cache antigo
+  private cleanOldCache() {
+    const now = Date.now();
+    for (const [key, cached] of this.cache.entries()) {
+      if (now - cached.timestamp > this.CACHE_DURATION) {
+        this.cache.delete(key);
+      }
+    }
   }
 
   forceUnblock() {
     this.loadingBlocked = false;
     this.isHotReloading = false;
+    this.loadingStates.clear();
+    this.cache.clear();
     console.log(
       "🔓 [GlobalLoadingControl] Carregamentos forçadamente desbloqueados",
     );
@@ -78,9 +121,21 @@ class GlobalLoadingControl {
 
 export const globalLoadingControl = new GlobalLoadingControl();
 
-// Exportar função de conveniência
+// Exportar funções de conveniência
 export const shouldSkipLoading = (contextName: string = "Unknown") =>
   globalLoadingControl.shouldSkipLoading(contextName);
 
 export const getLoadingDelay = (baseDelay: number = 1000) =>
   globalLoadingControl.getLoadingDelay(baseDelay);
+
+export const isContextLoading = (contextName: string) =>
+  globalLoadingControl.isContextLoading(contextName);
+
+export const setContextLoading = (contextName: string, isLoading: boolean) =>
+  globalLoadingControl.setContextLoading(contextName, isLoading);
+
+export const getCachedData = (key: string) =>
+  globalLoadingControl.getCachedData(key);
+
+export const setCachedData = (key: string, data: any) =>
+  globalLoadingControl.setCachedData(key, data);

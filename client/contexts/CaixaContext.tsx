@@ -3,15 +3,21 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useMemo,
+  useCallback,
   ReactNode,
 } from "react";
 import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
 import { caixaApi, campanhasApi } from "../lib/apiService";
 import { loadingManager } from "../lib/loadingManager";
+import { apiCache } from "../lib/apiCache";
+import { contextThrottle } from "../lib/contextThrottle";
 import {
   shouldSkipLoading,
   getLoadingDelay,
+  isContextLoading,
+  setContextLoading,
 } from "../lib/globalLoadingControl";
 
 interface CaixaContextType {
@@ -115,9 +121,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      // Carregar campanhas usando loadingManager
-      const campanhasResponse = await loadingManager.executeWithControl(
-        "campanhas",
+      // Carregar campanhas com cache
+      const campanhasResponse = await apiCache.executeWithCache(
+        "caixa-campanhas",
         () => campanhasApi.listar(),
       );
       if (campanhasResponse.error) {
@@ -161,11 +167,21 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   // Função para carregar lançamentos com base nos filtros
-  const carregarLancamentos = React.useCallback(
+  const carregarLancamentos = useCallback(
     async (forceLoad = false) => {
       try {
         // Evitar múltiplas chamadas simultâneas, exceto quando forçado
-        if (isLoading && !forceLoad) return;
+        if (
+          (isContextLoading("CaixaContext-lancamentos") || isCarregando) &&
+          !forceLoad
+        ) {
+          console.log(
+            "[CaixaContext] Carregamento de lançamentos já em andamento, ignorando...",
+          );
+          return;
+        }
+
+        setContextLoading("CaixaContext-lancamentos", true);
 
         const filtrosApi: any = {
           dataInicio: formatarDataParaServidor(filtros.dataInicio),
@@ -198,7 +214,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           filtrosApi.categoria = filtros.categoria;
         }
 
-        const response = await caixaApi.listarLancamentos(filtrosApi);
+        // Criar chave de cache baseada nos filtros
+        const cacheKey = `caixa-lancamentos-${JSON.stringify(filtrosApi)}`;
+        const response = await apiCache.executeWithCache(
+          cacheKey,
+          () => caixaApi.listarLancamentos(filtrosApi),
+          forceLoad,
+        );
         if (response.error) {
           setError(response.error);
         } else {
@@ -240,40 +262,61 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
 
         setError("Erro ao carregar lançamentos");
+      } finally {
+        setContextLoading("CaixaContext-lancamentos", false);
       }
     },
-    [filtros, isLoading],
+    [filtros, isCarregando],
   );
 
-  // Carregar dados na inicialização com controle global
+  // Carregar dados na inicialização com controle global e throttling
   useEffect(() => {
     if (shouldSkipLoading("CaixaContext")) return;
 
-    const delay = getLoadingDelay(4000);
+    // Verificar throttling
+    if (contextThrottle.isThrottled("CaixaContext-initial", 6000)) {
+      console.log(
+        "[CaixaContext] Carregamento inicial throttled, ignorando...",
+      );
+      return;
+    }
+
+    const delay = getLoadingDelay(5000); // Delay maior
     const timeout = setTimeout(() => {
       if (!shouldSkipLoading("CaixaContext")) {
-        console.log(
-          "[CaixaContext] Iniciando carregamento após delay de",
-          delay,
-          "ms",
+        contextThrottle.execute(
+          "CaixaContext-initial",
+          () => {
+            console.log("[CaixaContext] Iniciando carregamento com throttling");
+            return carregarDados();
+          },
+          6000, // 6 segundos de throttle
         );
-        carregarDados();
       }
     }, delay);
 
     return () => clearTimeout(timeout);
   }, []);
 
-  // Recarregar lançamentos quando os filtros mudarem
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      carregarLancamentos(true);
-    }, 300); // Debounce aumentado para reduzir piscar
-
-    return () => clearTimeout(timeoutId);
+  // Memoizar string das dependências para evitar loops
+  const filtrosDependencias = useMemo(() => {
+    return JSON.stringify({
+      dataInicio: filtros.dataInicio.toISOString().split("T")[0],
+      dataFim: filtros.dataFim.toISOString().split("T")[0],
+      tipo: filtros.tipo,
+      formaPagamento: filtros.formaPagamento,
+      tecnico: filtros.tecnico,
+      campanha: filtros.campanha,
+      setor: filtros.setor,
+      categoria: filtros.categoria,
+      descricao: filtros.descricao,
+      cliente: filtros.cliente,
+      cidade: filtros.cidade,
+      numeroNota: filtros.numeroNota,
+    });
   }, [
-    filtros.dataInicio.getTime(),
-    filtros.dataFim.getTime(),
+    filtros.dataInicio,
+    filtros.dataFim,
     filtros.tipo,
     filtros.formaPagamento,
     filtros.tecnico,
@@ -285,6 +328,25 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.cidade,
     filtros.numeroNota,
   ]);
+
+  // Recarregar lançamentos quando os filtros mudarem
+  useEffect(() => {
+    // Usar throttling para evitar múltiplas chamadas
+    if (contextThrottle.isThrottled("CaixaContext-filtros", 2000)) {
+      console.log("[CaixaContext] Filtros throttled, ignorando...");
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      contextThrottle.execute(
+        "CaixaContext-filtros",
+        () => carregarLancamentos(true),
+        2000, // 2 segundos de throttle
+      );
+    }, 800); // Debounce ainda maior
+
+    return () => clearTimeout(timeoutId);
+  }, [filtrosDependencias]); // Remover carregarLancamentos das dependências
 
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
