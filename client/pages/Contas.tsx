@@ -35,21 +35,20 @@ function ContasContent() {
         </div>
       </div>
 
-      {/* Filtros e Totais */}
+      {/* Botões de configuração e Totais */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-        {/* Filtros e botões de configuração */}
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex justify-center lg:justify-start">
-            <FiltroDataContasSimples />
-          </div>
-          <div style={{ margin: "30px 0 0 10px" }}>
-            <ModalDescricoesAvancado />
-          </div>
-          <div className="flex flex-wrap gap-2 justify-center lg:justify-start"></div>
+        {/* Botões de configuração */}
+        <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+          <ModalDescricoesAvancado />
         </div>
 
         {/* Totais alinhados à direita */}
         <TotaisContas />
+      </div>
+
+      {/* Filtros */}
+      <div className="flex justify-center lg:justify-start">
+        <FiltroDataContasSimples />
       </div>
 
       {/* Lista de Contas */}
