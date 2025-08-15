@@ -261,14 +261,26 @@ export default function ModalDescricoesSimples() {
                 {(tipoAtivo === "receita" ? categoriasReceitas : categoriasDespesas).map((categoria) => (
                   <div key={categoria.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <span className="font-medium">{categoria.nome}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleConfirmDelete(categoria)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleShowDependencies(categoria)}
+                        className="text-blue-600 hover:text-blue-700"
+                        title="Ver descrições vinculadas"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleConfirmDelete(categoria)}
+                        className="text-red-600 hover:text-red-700"
+                        title="Excluir categoria"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
