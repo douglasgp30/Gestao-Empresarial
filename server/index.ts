@@ -48,6 +48,14 @@ import {
 import contasRouter from "./routes/contas";
 import { cleanFakeDataRoute } from "./routes/clean";
 import descricoesECategoriasRouter from "./routes/descricoes-e-categorias";
+import {
+  getLocalizacoesGeograficas,
+  getCidades,
+  getSetores,
+  createLocalizacaoGeografica,
+  updateLocalizacaoGeografica,
+  deleteLocalizacaoGeografica,
+} from "./routes/localizacoes-geograficas";
 
 import {
   getClientes,
