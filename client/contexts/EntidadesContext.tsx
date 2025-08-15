@@ -28,6 +28,7 @@ import {
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 import { loadingManager } from "../lib/loadingManager";
 import { apiCache } from "../lib/apiCache";
+import { contextThrottle } from "../lib/contextThrottle";
 import {
   shouldSkipLoading,
   getLoadingDelay,
