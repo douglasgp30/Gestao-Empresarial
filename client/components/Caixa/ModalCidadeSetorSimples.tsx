@@ -351,9 +351,27 @@ export default function ModalCidadeSetorSimples() {
           const nomeCidadeSetor = typeof s.cidade === 'object'
             ? s.cidade?.nome
             : s.cidade;
-          return nomeCidadeSetor === itemToDelete.nome;
+          const isMatch = nomeCidadeSetor === itemToDelete.nome;
+
+          if (isMatch) {
+            console.log("🔍 Setor vinculado encontrado:", {
+              setorNome: s.nome,
+              setorCidade: nomeCidadeSetor,
+              cidadeParaExcluir: itemToDelete.nome,
+              setorCompleto: s
+            });
+          }
+
+          return isMatch;
         },
       );
+
+      console.log("🔍 Validação de exclusão de cidade:", {
+        cidadeParaExcluir: itemToDelete.nome,
+        totalSetores: setores.length,
+        setoresVinculados: setoresVinculados.length,
+        nomesSetoresVinculados: setoresVinculados.map(s => s.nome)
+      });
 
       if (setoresVinculados.length > 0) {
         const nomesSetores = setoresVinculados.map((s) => s.nome).join(", ");
