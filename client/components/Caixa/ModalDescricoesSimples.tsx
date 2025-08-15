@@ -29,6 +29,14 @@ export default function ModalDescricoesSimples() {
     nome: string;
   } | null>(null);
 
+  // Modal de dependências
+  const [showDependencies, setShowDependencies] = useState(false);
+  const [categoriaParaDependencias, setCategoriaParaDependencias] = useState<{
+    id: number;
+    nome: string;
+    tipo: "receita" | "despesa";
+  } | null>(null);
+
   const [formDescricao, setFormDescricao] = useState({
     nome: "",
     categoria: "",
