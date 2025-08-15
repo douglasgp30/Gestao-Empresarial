@@ -36,7 +36,6 @@ import {
   deleteFuncionario,
 } from "./routes/funcionarios";
 
-
 import {
   getLancamentos,
   createLancamento,
@@ -131,7 +130,6 @@ export function createServer(): Express {
   app.post("/api/localizacoes-geograficas", createLocalizacaoGeografica);
   app.put("/api/localizacoes-geograficas/:id", updateLocalizacaoGeografica);
   app.delete("/api/localizacoes-geograficas/:id", deleteLocalizacaoGeografica);
-
 
   // Rota de migração (apenas para desenvolvimento)
   app.post("/api/migrate/separate-cities", async (req, res) => {

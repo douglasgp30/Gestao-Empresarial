@@ -69,7 +69,7 @@ export default function ModalLocalizacoesSimples({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!novaLocalizacao.nome.trim()) {
       toast.error("Nome é obrigatório");
       return;
@@ -82,7 +82,7 @@ export default function ModalLocalizacoesSimples({
 
     try {
       setLoading(true);
-      
+
       const dadosEnvio: any = {
         nome: novaLocalizacao.nome.trim(),
         tipoItem: novaLocalizacao.tipoItem,
@@ -94,21 +94,24 @@ export default function ModalLocalizacoesSimples({
       }
 
       await localizacoesGeograficasApi.criar(dadosEnvio);
-      
-      toast.success(`${novaLocalizacao.tipoItem === "cidade" ? "Cidade" : "Setor"} criado com sucesso!`);
-      
+
+      toast.success(
+        `${novaLocalizacao.tipoItem === "cidade" ? "Cidade" : "Setor"} criado com sucesso!`,
+      );
+
       // Limpar formulário
       setNovaLocalizacao({
         nome: "",
         tipoItem: "cidade",
         cidade: "",
       });
-      
+
       // Recarregar dados
       await carregarDados();
     } catch (error: any) {
       console.error("Erro ao criar localização:", error);
-      const errorMessage = error.response?.data?.error || "Erro ao criar localização";
+      const errorMessage =
+        error.response?.data?.error || "Erro ao criar localização";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -116,26 +119,33 @@ export default function ModalLocalizacoesSimples({
   };
 
   const handleExcluir = async (id: number, nome: string, tipoItem: string) => {
-    if (!confirm(`Tem certeza que deseja excluir ${tipoItem === "cidade" ? "a cidade" : "o setor"} "${nome}"?`)) {
+    if (
+      !confirm(
+        `Tem certeza que deseja excluir ${tipoItem === "cidade" ? "a cidade" : "o setor"} "${nome}"?`,
+      )
+    ) {
       return;
     }
 
     try {
       setLoading(true);
       await localizacoesGeograficasApi.excluir(id);
-      toast.success(`${tipoItem === "cidade" ? "Cidade" : "Setor"} excluído com sucesso!`);
+      toast.success(
+        `${tipoItem === "cidade" ? "Cidade" : "Setor"} excluído com sucesso!`,
+      );
       await carregarDados();
     } catch (error: any) {
       console.error("Erro ao excluir localização:", error);
-      const errorMessage = error.response?.data?.error || "Erro ao excluir localização";
+      const errorMessage =
+        error.response?.data?.error || "Erro ao excluir localização";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const cidades_locais = localizacoes.filter(l => l.tipoItem === "cidade");
-  const setores_locais = localizacoes.filter(l => l.tipoItem === "setor");
+  const cidades_locais = localizacoes.filter((l) => l.tipoItem === "cidade");
+  const setores_locais = localizacoes.filter((l) => l.tipoItem === "setor");
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -146,19 +156,24 @@ export default function ModalLocalizacoesSimples({
 
         <div className="space-y-6">
           {/* Formulário */}
-          <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg">
-            <h3 className="text-lg font-semibold">Adicionar Nova Localização</h3>
-            
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4 p-4 border rounded-lg"
+          >
+            <h3 className="text-lg font-semibold">
+              Adicionar Nova Localização
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="tipo">Tipo</Label>
                 <Select
                   value={novaLocalizacao.tipoItem}
                   onValueChange={(value: "cidade" | "setor") => {
-                    setNovaLocalizacao(prev => ({
+                    setNovaLocalizacao((prev) => ({
                       ...prev,
                       tipoItem: value,
-                      cidade: value === "cidade" ? "" : prev.cidade
+                      cidade: value === "cidade" ? "" : prev.cidade,
                     }));
                   }}
                 >
@@ -178,7 +193,10 @@ export default function ModalLocalizacoesSimples({
                   <Select
                     value={novaLocalizacao.cidade}
                     onValueChange={(value) => {
-                      setNovaLocalizacao(prev => ({ ...prev, cidade: value }));
+                      setNovaLocalizacao((prev) => ({
+                        ...prev,
+                        cidade: value,
+                      }));
                     }}
                   >
                     <SelectTrigger>
@@ -201,7 +219,10 @@ export default function ModalLocalizacoesSimples({
                   id="nome"
                   value={novaLocalizacao.nome}
                   onChange={(e) => {
-                    setNovaLocalizacao(prev => ({ ...prev, nome: e.target.value }));
+                    setNovaLocalizacao((prev) => ({
+                      ...prev,
+                      nome: e.target.value,
+                    }));
                   }}
                   placeholder={`Nome ${novaLocalizacao.tipoItem === "cidade" ? "da cidade" : "do setor"}`}
                 />
@@ -215,15 +236,22 @@ export default function ModalLocalizacoesSimples({
 
           {/* Lista de Cidades */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Cidades ({cidades_locais.length})</h3>
+            <h3 className="text-lg font-semibold">
+              Cidades ({cidades_locais.length})
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {cidades_locais.map((cidade) => (
-                <div key={cidade.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                <div
+                  key={cidade.id}
+                  className="flex items-center justify-between p-3 bg-blue-50 rounded-lg"
+                >
                   <span className="font-medium">{cidade.nome}</span>
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => handleExcluir(cidade.id, cidade.nome, "cidade")}
+                    onClick={() =>
+                      handleExcluir(cidade.id, cidade.nome, "cidade")
+                    }
                     disabled={loading}
                   >
                     Excluir
@@ -235,13 +263,20 @@ export default function ModalLocalizacoesSimples({
 
           {/* Lista de Setores */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Setores ({setores_locais.length})</h3>
+            <h3 className="text-lg font-semibold">
+              Setores ({setores_locais.length})
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {setores_locais.map((setor) => (
-                <div key={setor.id} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div
+                  key={setor.id}
+                  className="flex items-center justify-between p-3 bg-green-50 rounded-lg"
+                >
                   <div className="flex flex-col">
                     <span className="font-medium">{setor.nome}</span>
-                    <span className="text-sm text-gray-600">{setor.cidade}</span>
+                    <span className="text-sm text-gray-600">
+                      {setor.cidade}
+                    </span>
                   </div>
                   <Button
                     variant="destructive"

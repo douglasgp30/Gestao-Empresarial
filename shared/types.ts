@@ -256,7 +256,6 @@ export interface LocalizacaoGeografica {
   dataCriacao: Date;
 }
 
-
 export interface BackupConfig {
   localBackup: string;
   ultimoBackup?: Date;

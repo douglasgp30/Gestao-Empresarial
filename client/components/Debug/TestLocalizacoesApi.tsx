@@ -14,7 +14,7 @@ export default function TestLocalizacoesApi() {
     setLoading(true);
     try {
       let result;
-      
+
       switch (operation) {
         case "listar":
           result = await localizacoesGeograficasApi.listar();
@@ -34,7 +34,8 @@ export default function TestLocalizacoesApi() {
           break;
         case "criarSetor":
           // Primeiro verificar se existe alguma cidade
-          const cidadesResponse = await localizacoesGeograficasApi.listarCidades();
+          const cidadesResponse =
+            await localizacoesGeograficasApi.listarCidades();
           if (cidadesResponse.data && cidadesResponse.data.length > 0) {
             result = await localizacoesGeograficasApi.criar({
               nome: `Setor Teste ${Date.now()}`,
@@ -50,20 +51,21 @@ export default function TestLocalizacoesApi() {
           throw new Error("Operação não implementada");
       }
 
-      setResults(prev => [
+      setResults((prev) => [
         { operation, result: result.data || result, timestamp: new Date() },
-        ...prev.slice(0, 9) // Manter apenas os últimos 10 resultados
+        ...prev.slice(0, 9), // Manter apenas os últimos 10 resultados
       ]);
-      
+
       toast.success(`${operation} executado com sucesso!`);
     } catch (error: any) {
       console.error(`Erro em ${operation}:`, error);
-      const errorMessage = error.response?.data?.error || error.message || "Erro desconhecido";
+      const errorMessage =
+        error.response?.data?.error || error.message || "Erro desconhecido";
       toast.error(`Erro em ${operation}: ${errorMessage}`);
-      
-      setResults(prev => [
+
+      setResults((prev) => [
         { operation, error: errorMessage, timestamp: new Date() },
-        ...prev.slice(0, 9)
+        ...prev.slice(0, 9),
       ]);
     } finally {
       setLoading(false);
@@ -104,12 +106,14 @@ export default function TestLocalizacoesApi() {
               {results.map((result, index) => (
                 <div key={index} className="p-3 border rounded-lg bg-gray-50">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="font-medium text-blue-600">{result.operation}</span>
+                    <span className="font-medium text-blue-600">
+                      {result.operation}
+                    </span>
                     <span className="text-xs text-gray-500">
                       {result.timestamp.toLocaleTimeString()}
                     </span>
                   </div>
-                  
+
                   {result.error ? (
                     <div className="text-red-600 text-sm">{result.error}</div>
                   ) : (
@@ -123,9 +127,9 @@ export default function TestLocalizacoesApi() {
           </div>
         )}
 
-        <ModalLocalizacoesSimples 
-          open={modalOpen} 
-          onClose={() => setModalOpen(false)} 
+        <ModalLocalizacoesSimples
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
         />
       </CardContent>
     </Card>

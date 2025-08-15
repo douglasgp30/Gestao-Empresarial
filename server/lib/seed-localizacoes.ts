@@ -15,7 +15,7 @@ export async function seedLocalizacoes() {
   // Criar cidades
   const cidades = [
     "São Paulo",
-    "Rio de Janeiro", 
+    "Rio de Janeiro",
     "Belo Horizonte",
     "Brasília",
     "Curitiba",
@@ -40,16 +40,38 @@ export async function seedLocalizacoes() {
   // Criar setores para algumas cidades
   const setoresPorCidade = {
     "São Paulo": [
-      "Centro", "Vila Madalena", "Pinheiros", "Liberdade", "Brooklin",
-      "Moema", "Itaim Bibi", "Jardins", "Vila Olímpia", "Santana"
+      "Centro",
+      "Vila Madalena",
+      "Pinheiros",
+      "Liberdade",
+      "Brooklin",
+      "Moema",
+      "Itaim Bibi",
+      "Jardins",
+      "Vila Olímpia",
+      "Santana",
     ],
     "Rio de Janeiro": [
-      "Copacabana", "Ipanema", "Leblon", "Botafogo", "Tijuca",
-      "Centro", "Barra da Tijuca", "Niterói", "Flamengo", "Lagoa"
+      "Copacabana",
+      "Ipanema",
+      "Leblon",
+      "Botafogo",
+      "Tijuca",
+      "Centro",
+      "Barra da Tijuca",
+      "Niterói",
+      "Flamengo",
+      "Lagoa",
     ],
     "Belo Horizonte": [
-      "Centro", "Savassi", "Pampulha", "Lourdes", "Funcionários",
-      "Santa Efigênia", "Barreiro", "Venda Nova"
+      "Centro",
+      "Savassi",
+      "Pampulha",
+      "Lourdes",
+      "Funcionários",
+      "Santa Efigênia",
+      "Barreiro",
+      "Venda Nova",
     ],
   };
 

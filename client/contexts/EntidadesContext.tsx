@@ -90,11 +90,11 @@ interface EntidadesContextType {
   // Localização Geográfica (Cidades e Setores unificados)
   localizacoesGeograficas: LocalizacaoGeografica[];
   adicionarLocalizacaoGeografica: (
-    localizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">
+    localizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
   ) => Promise<void>;
   editarLocalizacaoGeografica: (
     id: number,
-    localizacao: Partial<LocalizacaoGeografica>
+    localizacao: Partial<LocalizacaoGeografica>,
   ) => Promise<void>;
   excluirLocalizacaoGeografica: (id: number) => Promise<void>;
 
@@ -175,7 +175,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
   const [tecnicos, setTecnicos] = useState<any[]>([]);
-  const [localizacoesGeograficas, setLocalizacoesGeograficas] = useState<LocalizacaoGeografica[]>([]);
+  const [localizacoesGeograficas, setLocalizacoesGeograficas] = useState<
+    LocalizacaoGeografica[]
+  >([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -531,7 +533,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         !("cidadeId" in novoSetor)
       ) {
         // Buscar ID da cidade pelo nome
-        const cidadesResponse = await localizacoesGeograficasApi.listarCidades();
+        const cidadesResponse =
+          await localizacoesGeograficasApi.listarCidades();
         console.log("[EntidadesContext] Resposta de cidades:", cidadesResponse);
 
         if (cidadesResponse.data) {
@@ -630,7 +633,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const editarSetor = async (id: string, dadosAtualizados: Partial<Setor>) => {
     try {
       setError(null);
-      await localizacoesGeograficasApi.atualizar(parseInt(id), dadosAtualizados);
+      await localizacoesGeograficasApi.atualizar(
+        parseInt(id),
+        dadosAtualizados,
+      );
       const response = await localizacoesGeograficasApi.listar();
       if (response.data) setLocalizacoesGeograficas(response.data);
       toast.success("Setor atualizado!");
@@ -731,7 +737,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
-      console.log("[EntidadesContext] Adicionando localização:", novaLocalizacao);
+      console.log(
+        "[EntidadesContext] Adicionando localização:",
+        novaLocalizacao,
+      );
 
       await localizacoesGeograficasApi.criar(novaLocalizacao);
 
@@ -739,16 +748,22 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       const response = await localizacoesGeograficasApi.listar();
       if (response.data) {
         setLocalizacoesGeograficas(response.data);
-        console.log(`[EntidadesContext] ${novaLocalizacao.tipoItem} criado com sucesso`);
+        console.log(
+          `[EntidadesContext] ${novaLocalizacao.tipoItem} criado com sucesso`,
+        );
       }
 
       // Invalidar cache
       apiCache.invalidate("entidades-localizacoes");
 
-      toast.success(`${novaLocalizacao.tipoItem === "cidade" ? "Cidade" : "Setor"} adicionado com sucesso!`);
+      toast.success(
+        `${novaLocalizacao.tipoItem === "cidade" ? "Cidade" : "Setor"} adicionado com sucesso!`,
+      );
     } catch (error: any) {
       console.error("Erro ao adicionar localização:", error);
-      const errorMessage = error.response?.data?.error || `Erro ao adicionar ${novaLocalizacao.tipoItem}`;
+      const errorMessage =
+        error.response?.data?.error ||
+        `Erro ao adicionar ${novaLocalizacao.tipoItem}`;
       setError(errorMessage);
       toast.error(errorMessage);
       throw error;
@@ -776,7 +791,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       toast.success("Localização atualizada com sucesso!");
     } catch (error: any) {
       console.error("Erro ao editar localização:", error);
-      const errorMessage = error.response?.data?.error || "Erro ao editar localização";
+      const errorMessage =
+        error.response?.data?.error || "Erro ao editar localização";
       setError(errorMessage);
       toast.error(errorMessage);
       throw error;
@@ -801,7 +817,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       toast.success("Localização excluída com sucesso!");
     } catch (error: any) {
       console.error("Erro ao excluir localização:", error);
-      const errorMessage = error.response?.data?.error || "Erro ao excluir localização";
+      const errorMessage =
+        error.response?.data?.error || "Erro ao excluir localização";
       setError(errorMessage);
       toast.error(errorMessage);
       throw error;

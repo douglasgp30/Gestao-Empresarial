@@ -223,7 +223,6 @@ export const funcionariosApi = {
     }),
 };
 
-
 // === LOCALIZAÇÃO GEOGRÁFICA (CIDADES E SETORES) ===
 export const localizacoesGeograficasApi = {
   // Listar todas as localizações

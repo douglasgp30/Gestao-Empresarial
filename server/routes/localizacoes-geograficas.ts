@@ -16,17 +16,17 @@ const LocalizacaoGeograficaSchema = z.object({
 export const getLocalizacoesGeograficas: RequestHandler = async (req, res) => {
   try {
     const { tipo, ativo, cidade } = req.query;
-    
+
     const where: any = {};
-    
+
     if (tipo) {
       where.tipoItem = tipo;
     }
-    
+
     if (ativo !== undefined) {
       where.ativo = ativo === "true";
     }
-    
+
     if (cidade && tipo === "setor") {
       where.cidade = cidade;
     }
@@ -35,12 +35,14 @@ export const getLocalizacoesGeograficas: RequestHandler = async (req, res) => {
       where,
       orderBy: [
         { tipoItem: "asc" }, // Cidades primeiro
-        { cidade: "asc" },   // Depois por cidade
-        { nome: "asc" }      // Depois por nome
+        { cidade: "asc" }, // Depois por cidade
+        { nome: "asc" }, // Depois por nome
       ],
     });
 
-    console.log(`[LocalizacoesGeograficas] Encontradas ${localizacoes.length} localizações`);
+    console.log(
+      `[LocalizacoesGeograficas] Encontradas ${localizacoes.length} localizações`,
+    );
     res.json(localizacoes);
   } catch (error) {
     console.error("Erro ao buscar localizações geográficas:", error);
@@ -52,14 +54,16 @@ export const getLocalizacoesGeograficas: RequestHandler = async (req, res) => {
 export const getCidades: RequestHandler = async (req, res) => {
   try {
     const cidades = await prisma.localizacaoGeografica.findMany({
-      where: { 
+      where: {
         tipoItem: "cidade",
-        ativo: true 
+        ativo: true,
       },
       orderBy: [{ nome: "asc" }],
     });
 
-    console.log(`[LocalizacoesGeograficas] Encontradas ${cidades.length} cidades`);
+    console.log(
+      `[LocalizacoesGeograficas] Encontradas ${cidades.length} cidades`,
+    );
     res.json(cidades);
   } catch (error) {
     console.error("Erro ao buscar cidades:", error);
@@ -71,12 +75,12 @@ export const getCidades: RequestHandler = async (req, res) => {
 export const getSetores: RequestHandler = async (req, res) => {
   try {
     const { cidade } = req.query;
-    
-    const where: any = { 
+
+    const where: any = {
       tipoItem: "setor",
-      ativo: true 
+      ativo: true,
     };
-    
+
     if (cidade) {
       where.cidade = cidade;
     }
@@ -86,7 +90,9 @@ export const getSetores: RequestHandler = async (req, res) => {
       orderBy: [{ cidade: "asc" }, { nome: "asc" }],
     });
 
-    console.log(`[LocalizacoesGeograficas] Encontrados ${setores.length} setores`);
+    console.log(
+      `[LocalizacoesGeograficas] Encontrados ${setores.length} setores`,
+    );
     res.json(setores);
   } catch (error) {
     console.error("Erro ao buscar setores:", error);
@@ -97,20 +103,23 @@ export const getSetores: RequestHandler = async (req, res) => {
 // Criar nova localização geográfica
 export const createLocalizacaoGeografica: RequestHandler = async (req, res) => {
   try {
-    console.log("[LocalizacoesGeograficas] Dados recebidos:", JSON.stringify(req.body, null, 2));
-    
+    console.log(
+      "[LocalizacoesGeograficas] Dados recebidos:",
+      JSON.stringify(req.body, null, 2),
+    );
+
     const data = LocalizacaoGeograficaSchema.parse(req.body);
-    
+
     // Validações específicas
     if (data.tipoItem === "setor" && !data.cidade) {
-      return res.status(400).json({ 
-        error: "Setores devem ter uma cidade associada" 
+      return res.status(400).json({
+        error: "Setores devem ter uma cidade associada",
       });
     }
-    
+
     if (data.tipoItem === "cidade" && data.cidade) {
-      return res.status(400).json({ 
-        error: "Cidades não devem ter cidade pai" 
+      return res.status(400).json({
+        error: "Cidades não devem ter cidade pai",
       });
     }
 
@@ -125,9 +134,8 @@ export const createLocalizacaoGeografica: RequestHandler = async (req, res) => {
     });
 
     if (existente) {
-      const local = data.tipoItem === "setor" 
-        ? `na cidade "${data.cidade}"` 
-        : "";
+      const local =
+        data.tipoItem === "setor" ? `na cidade "${data.cidade}"` : "";
       return res.status(400).json({
         error: `Já existe ${data.tipoItem === "cidade" ? "uma cidade" : "um setor"} "${data.nome}" ${local}`,
       });
@@ -154,7 +162,10 @@ export const createLocalizacaoGeografica: RequestHandler = async (req, res) => {
       data,
     });
 
-    console.log("[LocalizacoesGeograficas] Localização criada com sucesso:", localizacao);
+    console.log(
+      "[LocalizacoesGeograficas] Localização criada com sucesso:",
+      localizacao,
+    );
     res.status(201).json(localizacao);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -176,8 +187,11 @@ export const updateLocalizacaoGeografica: RequestHandler = async (req, res) => {
       where: { id },
       data,
     });
-    
-    console.log("[LocalizacoesGeograficas] Localização atualizada:", localizacao);
+
+    console.log(
+      "[LocalizacoesGeograficas] Localização atualizada:",
+      localizacao,
+    );
     res.json(localizacao);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -243,7 +257,9 @@ export const deleteLocalizacaoGeografica: RequestHandler = async (req, res) => {
       data: { ativo: false },
     });
 
-    console.log(`[LocalizacoesGeograficas] ${item.tipoItem} "${item.nome}" marcada como inativa`);
+    console.log(
+      `[LocalizacoesGeograficas] ${item.tipoItem} "${item.nome}" marcada como inativa`,
+    );
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao excluir localização geográfica:", error);

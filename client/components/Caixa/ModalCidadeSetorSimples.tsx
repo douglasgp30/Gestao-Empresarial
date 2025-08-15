@@ -167,7 +167,12 @@ export default function ModalCidadeSetorSimples() {
       `[ModalCidadeSetorSimples] Modal isOpen: ${isOpen}, cidades.length: ${cidades?.length || 0}, setores.length: ${setores?.length || 0}`,
     );
     if (isOpen) {
-      if (!cidades || !setores || cidades.length === 0 || setores.length === 0) {
+      if (
+        !cidades ||
+        !setores ||
+        cidades.length === 0 ||
+        setores.length === 0
+      ) {
         console.log(
           "[ModalCidadeSetorSimples] Modal aberto sem dados, carregando...",
         );
