@@ -136,6 +136,15 @@ export default function ModalDescricoesSimples() {
     setShowConfirm(true);
   };
 
+  const handleShowDependencies = (categoria: any) => {
+    setCategoriaParaDependencias({
+      id: categoria.id,
+      nome: categoria.nome,
+      tipo: tipoAtivo,
+    });
+    setShowDependencies(true);
+  };
+
   const handleDelete = async () => {
     if (!itemToDelete || isDeleting) return;
 
