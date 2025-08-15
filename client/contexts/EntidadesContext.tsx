@@ -354,11 +354,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar dados na inicialização com debounce
+  // Carregar dados na inicialização com debounce maior para reduzir sobrecarga
   useEffect(() => {
     const timeout = setTimeout(() => {
       carregarDados();
-    }, 100); // Pequeno delay para evitar chamadas múltiplas no hot reload
+    }, 1000); // Delay maior (1s) para evitar sobrecarga durante hot reload
 
     return () => clearTimeout(timeout);
   }, []);
