@@ -485,25 +485,54 @@ export function ModalReceita() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="setor">Setor/Região</Label>
+                <Label htmlFor="cidade">Cidade</Label>
                 <Select
-                  value={formData.setor}
+                  value={formData.cidade}
                   onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, setor: value }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      cidade: value,
+                      setor: "" // Limpar setor quando cidade muda
+                    }))
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione o setor" />
+                    <SelectValue placeholder="Selecione a cidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(Array.isArray(setores) ? setores : []).map((setor) => (
-                      <SelectItem key={setor.id} value={setor.id.toString()}>
-                        {setor.nome} - {setor.cidade}
+                    {(Array.isArray(cidades) ? cidades : []).map((cidade, index) => (
+                      <SelectItem key={`cidade-${index}-${cidade}`} value={cidade}>
+                        {cidade}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="setor">Setor</Label>
+              <Select
+                value={formData.setor}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, setor: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={
+                    formData.cidade
+                      ? "Selecione o setor"
+                      : "Primeiro selecione uma cidade"
+                  } />
+                </SelectTrigger>
+                <SelectContent>
+                  {setoresFiltrados.map((setor) => (
+                    <SelectItem key={setor.id} value={setor.id.toString()}>
+                      {setor.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Campanha - movido para antes de Cliente */}
