@@ -407,7 +407,7 @@ export default function ModalCidadeSetor() {
                                   className="flex items-center space-x-1 w-fit"
                                 >
                                   <Building className="h-3 w-3" />
-                                  <span>{setor.cidade}</span>
+                                  <span>{typeof setor.cidade === 'object' ? setor.cidade?.nome : setor.cidade}</span>
                                 </Badge>
                               </TableCell>
                               <TableCell>
