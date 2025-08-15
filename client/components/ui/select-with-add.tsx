@@ -171,7 +171,7 @@ export default function SelectWithAdd<T = any>({
               </div>
             ) : (
               processedItems.map((item, index) => (
-                <SelectItem key={`${item.value}-${index}`} value={item.value}>
+                <SelectItem key={`item-${index}-${item.value || item.label}`} value={item.value}>
                   {item.label}
                 </SelectItem>
               ))
