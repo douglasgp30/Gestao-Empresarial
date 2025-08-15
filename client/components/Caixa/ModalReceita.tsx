@@ -360,7 +360,7 @@ export function ModalReceita() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="descricao">Descri��ão do Serviço *</Label>
+                <Label htmlFor="descricao">Descrição do Serviço *</Label>
                 <SelectWithAdd
                   value={formData.descricao}
                   onValueChange={(value) =>
@@ -509,6 +509,28 @@ export function ModalReceita() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* Campanha - movido para antes de Cliente */}
+            <div className="space-y-2">
+              <Label htmlFor="campanha">Campanha</Label>
+              <SelectWithAdd
+                value={formData.campanha}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, campanha: value }))
+                }
+                placeholder="Selecione a campanha"
+                options={campanhas.map((campanha) => ({
+                  value: campanha.id.toString(),
+                  label: campanha.nome,
+                }))}
+                onAddNew={async (nomeCampanha) => {
+                  await adicionarCampanha({
+                    nome: nomeCampanha,
+                  });
+                }}
+                addButtonText="Nova Campanha"
+              />
             </div>
 
             {/* Cliente */}
