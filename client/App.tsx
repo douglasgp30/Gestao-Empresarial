@@ -130,8 +130,7 @@ const App = () => {
                 // Suprimir completamente erros do ResizeObserver
                 return;
               }
-              // Para outros erros, apenas log silencioso sem re-throw
-              console.debug("ResizeObserver callback error:", error);
+              // Para outros erros, silenciar sem re-throw
             }
           });
         };
