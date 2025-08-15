@@ -44,13 +44,10 @@ export const createCidade: RequestHandler = async (req, res) => {
     const data = CidadeSchema.parse(req.body);
     console.log("[Cidades] Dados após validação:", JSON.stringify(data, null, 2));
 
-    // Verificar se já existe uma cidade com esse nome
+    // Verificar se já existe uma cidade com esse nome (SQLite case insensitive by default)
     const cidadeExistente = await prisma.cidade.findFirst({
       where: {
-        nome: {
-          equals: data.nome,
-          mode: "insensitive", // Case insensitive
-        },
+        nome: data.nome,
       },
     });
 
