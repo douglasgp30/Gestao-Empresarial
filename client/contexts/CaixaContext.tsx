@@ -100,7 +100,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Função para carregar todos os dados
   const carregarDados = async () => {
+    // Evitar múltiplos carregamentos simultâneos
+    if (isCarregando) {
+      console.log("CaixaContext: Carregamento já em andamento, ignorando...");
+      return;
+    }
+
     try {
+      setIsCarregando(true);
       setIsLoading(true);
       setError(null);
 
@@ -339,7 +346,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       await carregarLancamentos(true);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
-      setError("Erro ao editar lan��amento");
+      setError("Erro ao editar lançamento");
       throw error;
     }
   };
