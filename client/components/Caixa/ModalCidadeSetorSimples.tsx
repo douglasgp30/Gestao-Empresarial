@@ -371,7 +371,7 @@ export default function ModalCidadeSetorSimples() {
           },
         );
 
-        // Não fechar o modal - usuário pode tentar novamente após ver dependências
+        // Não fechar o modal - usu��rio pode tentar novamente após ver dependências
         setIsDeleting(false);
         return;
       }
@@ -618,7 +618,7 @@ export default function ModalCidadeSetorSimples() {
                     <div>
                       <span className="font-medium">{setor.nome}</span>
                       <span className="ml-2 text-sm text-gray-500">
-                        ({setor.cidade})
+                        ({typeof setor.cidade === 'object' ? setor.cidade?.nome : setor.cidade})
                       </span>
                     </div>
                     <Button
