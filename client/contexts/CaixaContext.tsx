@@ -228,9 +228,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isLoading],
   );
 
-  // Carregar dados na inicialização
+  // Carregar dados na inicialização com debounce
   useEffect(() => {
-    carregarDados();
+    const timeout = setTimeout(() => {
+      carregarDados();
+    }, 150); // Delay um pouco maior que EntidadesContext para evitar sobrecarga
+
+    return () => clearTimeout(timeout);
   }, []);
 
   // Recarregar lançamentos quando os filtros mudarem
