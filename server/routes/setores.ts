@@ -30,14 +30,11 @@ export const getSetores: RequestHandler = async (req, res) => {
 
 export const getCidades: RequestHandler = async (req, res) => {
   try {
-    const cidades = await prisma.setor.findMany({
-      select: { cidade: true },
-      distinct: ["cidade"],
-      orderBy: { cidade: "asc" },
+    const cidades = await prisma.cidade.findMany({
+      where: { ativo: true },
+      orderBy: { nome: "asc" },
     });
-
-    const cidadesSimples = cidades.map((item) => item.cidade);
-    res.json(cidadesSimples);
+    res.json(cidades);
   } catch (error) {
     console.error("Erro ao buscar cidades:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
