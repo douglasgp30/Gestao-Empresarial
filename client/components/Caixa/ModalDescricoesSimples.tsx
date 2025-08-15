@@ -76,9 +76,11 @@ export default function ModalDescricoesSimples() {
   }, [descricoesECategorias]);
 
   const descricoesReceitas = useMemo(() => {
-    return descricoesECategorias.filter(
+    const filtered = descricoesECategorias.filter(
       (item) => item.tipoItem === "descricao" && item.ativo && item.tipo === "receita"
     );
+    console.log(`[ModalDescricoesSimples] Descrições de receita filtradas: ${filtered.length}`, filtered);
+    return filtered;
   }, [descricoesECategorias]);
 
   const descricoesDespesas = useMemo(() => {
