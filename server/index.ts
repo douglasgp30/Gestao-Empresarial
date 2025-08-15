@@ -90,47 +90,6 @@ export function createServer(): Express {
     res.json({ message: "pong", timestamp: new Date().toISOString() });
   });
 
-  // Endpoint temporário de debug
-  app.get("/api/debug/db-status", async (req, res) => {
-    try {
-      const { prisma } = await import("./lib/database");
-
-      const counts = {
-        descricoes: await prisma.descricao.count(),
-        formasPagamento: await prisma.formaPagamento.count(),
-        funcionarios: await prisma.funcionario.count(),
-        setores: await prisma.setor.count(),
-        campanhas: await prisma.campanha.count(),
-        lancamentos: await prisma.lancamentoCaixa.count(),
-      };
-
-      const samples = {
-        descricoes: await prisma.descricao.findMany({ take: 3 }),
-        formasPagamento: await prisma.formaPagamento.findMany({ take: 3 }),
-        funcionarios: await prisma.funcionario.findMany({
-          take: 3,
-          select: { id: true, nome: true, tipoAcesso: true },
-        }),
-      };
-
-      res.json({ counts, samples });
-    } catch (error) {
-      console.error("[Debug] Erro ao verificar status do banco:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Endpoint para criar dados básicos
-  app.post("/api/debug/seed-basic-data", async (req, res) => {
-    try {
-      const { seedBasicData } = await import("./lib/seed-basic-data");
-      await seedBasicData();
-      res.json({ message: "Dados básicos criados com sucesso!" });
-    } catch (error) {
-      console.error("[Debug] Erro ao criar dados básicos:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
 
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
   app.post(
