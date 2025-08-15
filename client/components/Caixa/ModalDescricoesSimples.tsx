@@ -254,24 +254,6 @@ export default function ModalDescricoesSimples() {
 
         {/* Tabs */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-          {/* Debug component - pode remover em produção quando estável */}
-
-          {/* Debug: Mostrar dados brutos */}
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
-            <h4 className="font-semibold mb-2">Debug: Dados do Contexto</h4>
-            <div className="text-sm">
-              <p><strong>Total descrições/categorias:</strong> {descricoesECategorias.length}</p>
-              <p><strong>Carregando:</strong> {isLoading ? "Sim" : "Não"}</p>
-              {descricoesECategorias.length > 0 && (
-                <details className="mt-2">
-                  <summary className="cursor-pointer font-medium">Ver dados brutos (clique para expandir)</summary>
-                  <pre className="mt-2 text-xs bg-white p-2 border rounded overflow-auto max-h-32">
-                    {JSON.stringify(descricoesECategorias, null, 2)}
-                  </pre>
-                </details>
-              )}
-            </div>
-          </div>
 
           <div className="flex mb-6 mt-6">
             <Button
