@@ -419,6 +419,12 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
   // Carregar contas quando os filtros mudarem (apenas no timestamp para evitar loops)
   useEffect(() => {
+    // Durante hot reload, não carregar automaticamente
+    if (typeof window !== 'undefined' && (window.location.href.includes('reload=') || window.location.href.includes('?t='))) {
+      console.log('[ContasContext] Hot reload detectado, pulando carregamento de contas por filtros');
+      return;
+    }
+
     console.log(
       "🔍 [CONTAS] useEffect carregarContas disparado. Timestamp:",
       filtros.__timestamp,
