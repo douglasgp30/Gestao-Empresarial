@@ -242,9 +242,13 @@ export default function ModalCidadeSetorSimples() {
 
       // Verificar se o setor já existe nesta cidade
       const setorExistente = setores.find(
-        (s) =>
-          s.nome.toLowerCase() === nomeSetor.toLowerCase() &&
-          s.cidade === nomeCidade,
+        (s) => {
+          const nomeCidadeSetor = typeof s.cidade === 'object'
+            ? s.cidade?.nome
+            : s.cidade;
+          return s.nome.toLowerCase() === nomeSetor.toLowerCase() &&
+                 nomeCidadeSetor === nomeCidade;
+        },
       );
 
       if (setorExistente) {
