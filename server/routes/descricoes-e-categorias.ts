@@ -214,7 +214,6 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
           error: errorMessage,
         };
 
-        console.log('🔴 DEBUG SERVER - Enviando erro 400:', JSON.stringify(response, null, 2));
         return res.status(400).json(response);
       }
     }
