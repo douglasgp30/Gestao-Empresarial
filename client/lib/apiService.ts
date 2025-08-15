@@ -27,13 +27,13 @@ async function apiRequest<T>(
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout para evitar falhas durante reload
 
-      // Tentar usar fetch nativo se FullStory interceptou
-      const nativeFetch = window.fetch;
-      let fetchToUse = nativeFetch;
+      // Escolher qual fetch usar baseado na interceptação
+      let fetchToUse = window.fetch;
 
-      // Verificar se fetch foi modificado (possivelmente pelo FullStory)
-      if (nativeFetch.toString().includes('fullstory') || nativeFetch.toString().includes('fs.js')) {
-        console.log(`[ApiService] Fetch interceptado detectado, tentando abordagem alternativa...`);
+      // Se fetch foi interceptado e estamos tendo problemas, usar o nativo
+      if (attempt > 0 && isFetchIntercepted()) {
+        console.log(`[ApiService] Usando fetch nativo devido a interceptação detectada (tentativa ${attempt + 1})`);
+        fetchToUse = nativeFetch;
       }
 
       const response = await fetchToUse(`${API_BASE}${endpoint}`, {
