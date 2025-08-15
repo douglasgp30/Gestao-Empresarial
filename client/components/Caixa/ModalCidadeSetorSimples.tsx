@@ -272,7 +272,31 @@ export default function ModalCidadeSetorSimples() {
     setIsDeleting(true);
 
     if (itemToDelete.tipo === "setor") {
-      // Excluir setor
+      // Excluir setor - verificar se é o último da cidade
+      console.log('🟡 Verificando exclusão de setor:', itemToDelete.nome);
+
+      const setorParaExcluir = setores.find(s => s.id === itemToDelete.id);
+      if (setorParaExcluir) {
+        const setoresDaMesmaCidade = setores.filter(s => s.cidade === setorParaExcluir.cidade);
+
+        if (setoresDaMesmaCidade.length === 1) {
+          // É o último setor da cidade
+          toast.error(
+            `⚠️ Não é possível excluir o setor "${itemToDelete.nome}" pois é o último setor da cidade "${setorParaExcluir.cidade}". Isso faria a cidade desaparecer. Para remover a cidade, use o botão de excluir cidade.`,
+            {
+              duration: 10000,
+              action: {
+                label: "Entendi",
+                onClick: () => {}
+              }
+            }
+          );
+          setIsDeleting(false);
+          return;
+        }
+      }
+
+      // Se chegou aqui, pode excluir
       try {
         console.log('🟡 Excluindo setor:', itemToDelete.nome);
         await excluirSetor(itemToDelete.id || itemToDelete.nome);
