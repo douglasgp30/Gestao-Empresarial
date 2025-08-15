@@ -306,3 +306,63 @@
     min-width: 250px;
   }
 }
+
+/* Melhorias para clicabilidade dos componentes de data */
+.rdp-day_disabled {
+  pointer-events: none !important;
+}
+
+.rdp-day_outside {
+  pointer-events: none !important;
+}
+
+.rdp-day {
+  position: relative;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+/* Melhorar touch targets para mobile */
+@media (max-width: 768px) {
+  .rdp-day {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    width: 44px;
+    height: 44px;
+  }
+
+  .rdp-cell {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Melhorar feedback visual no touch */
+  .rdp-day:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease-in-out;
+  }
+
+  /* Otimizar área clicável */
+  .rdp-day:before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    z-index: -1;
+  }
+}
+
+/* Garantir z-index adequado para popovers */
+[data-radix-popover-content] {
+  z-index: 50 !important;
+}
+
+.rdp-nav_button {
+  pointer-events: auto;
+  touch-action: manipulation;
+}

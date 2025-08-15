@@ -20,6 +20,8 @@ interface FiltrosContas {
   tipo: "receber" | "pagar" | "ambos";
   pago: "true" | "false" | "todos";
   categoria: string;
+  status?: string;
+  fornecedorCliente?: string;
   __timestamp?: number;
 }
 
@@ -27,7 +29,9 @@ interface ContasContextType {
   contas: ContaLancamento[];
   filtros: FiltrosContas;
   setFiltros: (filtros: FiltrosContas) => void;
+  atualizarFiltros: (novosFiltros: Partial<FiltrosContas>) => void;
   carregando: boolean;
+  isLoading: boolean;
   erro: string | null;
   adicionarConta: (
     conta: Omit<ContaLancamento, "codLancamentoContas" | "dataLancamento">,
@@ -87,7 +91,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
-  const carregarContas = useCallback(async () => {
+  const carregarContas = useCallback(async (filtrosAtivos: FiltrosContas) => {
     try {
       setCarregando(true);
       setErro(null);
@@ -95,28 +99,31 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       const params = new URLSearchParams();
       params.append(
         "dataInicio",
-        filtros.dataInicio.toISOString().split("T")[0],
+        filtrosAtivos.dataInicio.toISOString().split("T")[0],
       );
-      params.append("dataFim", filtros.dataFim.toISOString().split("T")[0]);
+      params.append(
+        "dataFim",
+        filtrosAtivos.dataFim.toISOString().split("T")[0],
+      );
 
-      if (filtros.tipo !== "ambos") {
-        params.append("tipo", filtros.tipo);
+      if (filtrosAtivos.tipo !== "ambos") {
+        params.append("tipo", filtrosAtivos.tipo);
       }
 
-      if (filtros.pago !== "todos") {
-        params.append("pago", filtros.pago);
+      if (filtrosAtivos.pago !== "todos") {
+        params.append("pago", filtrosAtivos.pago);
       }
 
-      if (filtros.categoria !== "todos") {
-        params.append("categoria", filtros.categoria);
+      if (filtrosAtivos.categoria !== "todos") {
+        params.append("categoria", filtrosAtivos.categoria);
       }
 
       console.log("🔍 [CONTAS] Carregando contas com filtros:", {
-        dataInicio: filtros.dataInicio.toISOString().split("T")[0],
-        dataFim: filtros.dataFim.toISOString().split("T")[0],
-        tipo: filtros.tipo,
-        pago: filtros.pago,
-        categoria: filtros.categoria,
+        dataInicio: filtrosAtivos.dataInicio.toISOString().split("T")[0],
+        dataFim: filtrosAtivos.dataFim.toISOString().split("T")[0],
+        tipo: filtrosAtivos.tipo,
+        pago: filtrosAtivos.pago,
+        categoria: filtrosAtivos.categoria,
       });
 
       const response = await apiService.get(`/contas?${params.toString()}`);
@@ -180,7 +187,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setCarregando(false);
     }
-  }, [filtros]);
+  }, []);
 
   const carregarDadosAuxiliares = useCallback(async () => {
     try {
@@ -251,7 +258,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           );
 
           // Forçar recarregamento das contas
-          await carregarContas();
+          await carregarContas(filtros);
 
           return contaFormatada;
         } else {
@@ -382,6 +389,18 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const atualizarFiltros = useCallback(
+    (novosFiltros: Partial<FiltrosContas>) => {
+      console.log("🔄 [CONTAS] Atualizando filtros:", novosFiltros);
+      setFiltros((prev) => ({
+        ...prev,
+        ...novosFiltros,
+        __timestamp: Date.now(),
+      }));
+    },
+    [],
+  );
+
   const forcarRecarregamento = useCallback(() => {
     console.log("🔄 [CONTAS] Forçando recarregamento manual");
     setFiltros((prev) => ({
@@ -390,14 +409,14 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
-  // Carregar contas quando os filtros mudarem
+  // Carregar contas quando os filtros mudarem (apenas no timestamp para evitar loops)
   useEffect(() => {
     console.log(
-      "🔍 [CONTAS] useEffect carregarContas disparado. Filtros:",
-      filtros,
+      "🔍 [CONTAS] useEffect carregarContas disparado. Timestamp:",
+      filtros.__timestamp,
     );
-    carregarContas();
-  }, [carregarContas, filtros.__timestamp]);
+    carregarContas(filtros);
+  }, [carregarContas, filtros]);
 
   // Carregar dados auxiliares na inicialização
   useEffect(() => {
@@ -408,7 +427,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     contas,
     filtros,
     setFiltros,
+    atualizarFiltros,
     carregando,
+    isLoading: carregando,
     erro,
     adicionarConta,
     atualizarConta,
