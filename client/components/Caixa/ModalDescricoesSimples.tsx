@@ -185,11 +185,19 @@ export default function ModalDescricoesSimples() {
 
         const errorMessage = await parseErrorResponse(response);
         console.log('🔴 DEBUG - Error message recebida:', JSON.stringify(errorMessage));
-        console.log('🔴 DEBUG - Tipo da mensagem:', typeof errorMessage);
+        console.log('���� DEBUG - Tipo da mensagem:', typeof errorMessage);
         console.log('🔴 DEBUG - Length da mensagem:', errorMessage?.length);
 
         // Se a mensagem está vazia ou é genérica, usar fallback mais informativo
-        if (!errorMessage || errorMessage.trim() === '' || errorMessage === 'Erro HTTP 400:' || errorMessage === `Erro HTTP ${response.status}: ${response.statusText}`) {
+        const isGenericError = !errorMessage ||
+                               errorMessage.trim() === '' ||
+                               errorMessage === 'Erro HTTP 400:' ||
+                               errorMessage === `Erro HTTP ${response.status}: ${response.statusText}` ||
+                               errorMessage === 'Erro HTTP 400: Bad Request';
+
+        console.log('🔴 DEBUG - É erro genérico?', isGenericError);
+
+        if (isGenericError) {
           console.log('🔴 DEBUG - Usando fallback');
           throw new Error('Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.');
         }
