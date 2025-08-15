@@ -169,8 +169,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     async (forceLoad = false) => {
       try {
         // Evitar múltiplas chamadas simultâneas, exceto quando forçado
-        if ((isContextLoading("CaixaContext-lancamentos") || isCarregando) && !forceLoad) {
-          console.log("[CaixaContext] Carregamento de lançamentos já em andamento, ignorando...");
+        if (
+          (isContextLoading("CaixaContext-lancamentos") || isCarregando) &&
+          !forceLoad
+        ) {
+          console.log(
+            "[CaixaContext] Carregamento de lançamentos já em andamento, ignorando...",
+          );
           return;
         }
 
@@ -276,8 +281,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Memoizar string das dependências para evitar loops
   const filtrosDependencias = useMemo(() => {
     return JSON.stringify({
-      dataInicio: filtros.dataInicio.toISOString().split('T')[0],
-      dataFim: filtros.dataFim.toISOString().split('T')[0],
+      dataInicio: filtros.dataInicio.toISOString().split("T")[0],
+      dataFim: filtros.dataFim.toISOString().split("T")[0],
       tipo: filtros.tipo,
       formaPagamento: filtros.formaPagamento,
       tecnico: filtros.tecnico,

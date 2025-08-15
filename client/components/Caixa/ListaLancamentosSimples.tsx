@@ -164,7 +164,7 @@ export function ListaLancamentosSimples() {
 
       case "setor":
         return lancamento.setor
-          ? `${lancamento.setor.nome} - ${typeof lancamento.setor.cidade === 'object' ? lancamento.setor.cidade?.nome : lancamento.setor.cidade}`
+          ? `${lancamento.setor.nome} - ${typeof lancamento.setor.cidade === "object" ? lancamento.setor.cidade?.nome : lancamento.setor.cidade}`
           : "-";
 
       case "campanha":
@@ -446,7 +446,9 @@ export function ListaLancamentosSimples() {
                             <span className="text-gray-500">Setor:</span>
                             <span className="font-medium">
                               {lancamento.setor.nome} -{" "}
-                              {typeof lancamento.setor.cidade === 'object' ? lancamento.setor.cidade?.nome : lancamento.setor.cidade}
+                              {typeof lancamento.setor.cidade === "object"
+                                ? lancamento.setor.cidade?.nome
+                                : lancamento.setor.cidade}
                             </span>
                           </div>
                         )}

@@ -25,14 +25,11 @@ function ModalDependenciasSetor({
 
   useEffect(() => {
     if (cidade && todosSetores) {
-      const vinculados = todosSetores.filter(
-        (setor) => {
-          const nomeCidadeSetor = typeof setor.cidade === 'object'
-            ? setor.cidade?.nome
-            : setor.cidade;
-          return nomeCidadeSetor === cidade.nome;
-        },
-      );
+      const vinculados = todosSetores.filter((setor) => {
+        const nomeCidadeSetor =
+          typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade;
+        return nomeCidadeSetor === cidade.nome;
+      });
       setSetoresVinculados(vinculados);
     }
   }, [cidade, todosSetores]);
@@ -241,15 +238,14 @@ export default function ModalCidadeSetorSimples() {
       const nomeCidade = formSetor.cidade;
 
       // Verificar se o setor já existe nesta cidade
-      const setorExistente = setores.find(
-        (s) => {
-          const nomeCidadeSetor = typeof s.cidade === 'object'
-            ? s.cidade?.nome
-            : s.cidade;
-          return s.nome.toLowerCase() === nomeSetor.toLowerCase() &&
-                 nomeCidadeSetor === nomeCidade;
-        },
-      );
+      const setorExistente = setores.find((s) => {
+        const nomeCidadeSetor =
+          typeof s.cidade === "object" ? s.cidade?.nome : s.cidade;
+        return (
+          s.nome.toLowerCase() === nomeSetor.toLowerCase() &&
+          nomeCidadeSetor === nomeCidade
+        );
+      });
 
       if (setorExistente) {
         toast.error(
@@ -301,20 +297,20 @@ export default function ModalCidadeSetorSimples() {
 
       const setorParaExcluir = setores.find((s) => s.id === itemToDelete.id);
       if (setorParaExcluir) {
-        const setoresDaMesmaCidade = setores.filter(
-          (s) => {
-            const nomeCidadeS = typeof s.cidade === 'object' ? s.cidade?.nome : s.cidade;
-            const nomeCidadeParaExcluir = typeof setorParaExcluir.cidade === 'object'
+        const setoresDaMesmaCidade = setores.filter((s) => {
+          const nomeCidadeS =
+            typeof s.cidade === "object" ? s.cidade?.nome : s.cidade;
+          const nomeCidadeParaExcluir =
+            typeof setorParaExcluir.cidade === "object"
               ? setorParaExcluir.cidade?.nome
               : setorParaExcluir.cidade;
-            return nomeCidadeS === nomeCidadeParaExcluir;
-          },
-        );
+          return nomeCidadeS === nomeCidadeParaExcluir;
+        });
 
         if (setoresDaMesmaCidade.length === 1) {
           // É o último setor da cidade
           toast.error(
-            `⚠️ Não é possível excluir o setor "${itemToDelete.nome}" pois é o último setor da cidade "${typeof setorParaExcluir.cidade === 'object' ? setorParaExcluir.cidade?.nome : setorParaExcluir.cidade}". Isso faria a cidade desaparecer. Para remover a cidade, use o botão de excluir cidade.`,
+            `⚠️ Não é possível excluir o setor "${itemToDelete.nome}" pois é o último setor da cidade "${typeof setorParaExcluir.cidade === "object" ? setorParaExcluir.cidade?.nome : setorParaExcluir.cidade}". Isso faria a cidade desaparecer. Para remover a cidade, use o botão de excluir cidade.`,
             {
               duration: 10000,
               action: {
@@ -346,31 +342,28 @@ export default function ModalCidadeSetorSimples() {
       // Excluir cidade - verificar dependências primeiro
       console.log("��� Excluindo cidade:", itemToDelete.nome);
 
-      const setoresVinculados = setores.filter(
-        (s) => {
-          const nomeCidadeSetor = typeof s.cidade === 'object'
-            ? s.cidade?.nome
-            : s.cidade;
-          const isMatch = nomeCidadeSetor === itemToDelete.nome;
+      const setoresVinculados = setores.filter((s) => {
+        const nomeCidadeSetor =
+          typeof s.cidade === "object" ? s.cidade?.nome : s.cidade;
+        const isMatch = nomeCidadeSetor === itemToDelete.nome;
 
-          if (isMatch) {
-            console.log("🔍 Setor vinculado encontrado:", {
-              setorNome: s.nome,
-              setorCidade: nomeCidadeSetor,
-              cidadeParaExcluir: itemToDelete.nome,
-              setorCompleto: s
-            });
-          }
+        if (isMatch) {
+          console.log("🔍 Setor vinculado encontrado:", {
+            setorNome: s.nome,
+            setorCidade: nomeCidadeSetor,
+            cidadeParaExcluir: itemToDelete.nome,
+            setorCompleto: s,
+          });
+        }
 
-          return isMatch;
-        },
-      );
+        return isMatch;
+      });
 
       console.log("🔍 Validação de exclusão de cidade:", {
         cidadeParaExcluir: itemToDelete.nome,
         totalSetores: setores.length,
         setoresVinculados: setoresVinculados.length,
-        nomesSetoresVinculados: setoresVinculados.map(s => s.nome)
+        nomesSetoresVinculados: setoresVinculados.map((s) => s.nome),
       });
 
       if (setoresVinculados.length > 0) {
@@ -440,12 +433,14 @@ export default function ModalCidadeSetorSimples() {
 
         if (!response.ok) {
           const errorMessage =
-            responseData?.error || responseData?.message || `Erro HTTP ${response.status}`;
+            responseData?.error ||
+            responseData?.message ||
+            `Erro HTTP ${response.status}`;
           console.error("❌ Erro na API de cidades:", {
             status: response.status,
             statusText: response.statusText,
             responseData,
-            errorMessage
+            errorMessage,
           });
           throw new Error(errorMessage);
         }
@@ -541,26 +536,28 @@ export default function ModalCidadeSetorSimples() {
 
               <div className="space-y-2">
                 {(Array.isArray(cidades) ? cidades : [])
-                  .filter(cidade => cidade != null && cidade !== '')
+                  .filter((cidade) => cidade != null && cidade !== "")
                   .map((cidade, index) => (
                     <div
                       key={`cidade-${index}`}
                       className="flex items-center justify-between p-3 border rounded-lg"
                     >
-                      <span className="font-medium">{
-                        typeof cidade === 'object'
-                          ? (cidade?.nome || String(cidade))
-                          : String(cidade)
-                      }</span>
+                      <span className="font-medium">
+                        {typeof cidade === "object"
+                          ? cidade?.nome || String(cidade)
+                          : String(cidade)}
+                      </span>
                       <div className="flex gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleShowDependencies(
-                            typeof cidade === 'object'
-                              ? (cidade?.nome || String(cidade))
-                              : String(cidade)
-                          )}
+                          onClick={() =>
+                            handleShowDependencies(
+                              typeof cidade === "object"
+                                ? cidade?.nome || String(cidade)
+                                : String(cidade),
+                            )
+                          }
                           className="text-blue-600 hover:text-blue-700"
                           title="Ver setores vinculados"
                         >
@@ -570,11 +567,15 @@ export default function ModalCidadeSetorSimples() {
                           variant="ghost"
                           size="sm"
                           onClick={() =>
-                            handleConfirmDelete({
-                              nome: typeof cidade === 'object'
-                                ? (cidade?.nome || String(cidade))
-                                : String(cidade)
-                            }, "cidade")
+                            handleConfirmDelete(
+                              {
+                                nome:
+                                  typeof cidade === "object"
+                                    ? cidade?.nome || String(cidade)
+                                    : String(cidade),
+                              },
+                              "cidade",
+                            )
                           }
                           className="text-red-600 hover:text-red-700"
                           title="Excluir cidade"
@@ -583,8 +584,7 @@ export default function ModalCidadeSetorSimples() {
                         </Button>
                       </div>
                     </div>
-                  ),
-                )}
+                  ))}
                 {cidades.length === 0 && (
                   <p className="text-center text-gray-500 py-4">
                     Nenhuma cidade cadastrada
@@ -616,19 +616,21 @@ export default function ModalCidadeSetorSimples() {
                 >
                   <option value="">Selecione uma cidade</option>
                   {(Array.isArray(cidades) ? cidades : [])
-                    .filter(cidade => cidade != null && cidade !== '')
+                    .filter((cidade) => cidade != null && cidade !== "")
                     .map((cidade, index) => (
-                      <option key={`option-${index}`} value={
-                        typeof cidade === 'object'
-                          ? (cidade?.nome || String(cidade))
-                          : String(cidade)
-                      }>
-                        {typeof cidade === 'object'
-                          ? (cidade?.nome || String(cidade))
+                      <option
+                        key={`option-${index}`}
+                        value={
+                          typeof cidade === "object"
+                            ? cidade?.nome || String(cidade)
+                            : String(cidade)
+                        }
+                      >
+                        {typeof cidade === "object"
+                          ? cidade?.nome || String(cidade)
                           : String(cidade)}
                       </option>
-                    ),
-                  )}
+                    ))}
                 </select>
                 <div className="flex gap-2">
                   <Input
@@ -655,7 +657,11 @@ export default function ModalCidadeSetorSimples() {
                     <div>
                       <span className="font-medium">{setor.nome}</span>
                       <span className="ml-2 text-sm text-gray-500">
-                        ({typeof setor.cidade === 'object' ? setor.cidade?.nome : setor.cidade})
+                        (
+                        {typeof setor.cidade === "object"
+                          ? setor.cidade?.nome
+                          : setor.cidade}
+                        )
                       </span>
                     </div>
                     <Button

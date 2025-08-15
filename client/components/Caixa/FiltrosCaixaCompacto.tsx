@@ -93,26 +93,31 @@ export function FiltrosCaixaCompacto() {
     return count;
   }, [filtrosLocal]);
 
-  const isLoading = useMemo(() =>
-    caixaLoading || entidadesLoading || clientesLoading,
-    [caixaLoading, entidadesLoading, clientesLoading]
+  const isLoading = useMemo(
+    () => caixaLoading || entidadesLoading || clientesLoading,
+    [caixaLoading, entidadesLoading, clientesLoading],
   );
 
   // Obter categorias únicas das descrições - memoizado
-  const categorias = useMemo(() => [
-    ...new Set(
-      descricoes
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort(), [descricoes]);
+  const categorias = useMemo(
+    () =>
+      [
+        ...new Set(
+          descricoes
+            .map((d) => d.categoria)
+            .filter((categoria) => categoria && categoria.trim() !== ""),
+        ),
+      ].sort(),
+    [descricoes],
+  );
 
   // Filtrar descrições pela categoria selecionada - memoizado
-  const descricoesFiltradas = useMemo(() =>
-    filtrosLocal.categoria !== "todas"
-      ? descricoes.filter((d) => d.categoria === filtrosLocal.categoria)
-      : descricoes,
-    [descricoes, filtrosLocal.categoria]
+  const descricoesFiltradas = useMemo(
+    () =>
+      filtrosLocal.categoria !== "todas"
+        ? descricoes.filter((d) => d.categoria === filtrosLocal.categoria)
+        : descricoes,
+    [descricoes, filtrosLocal.categoria],
   );
 
   return (
@@ -339,7 +344,10 @@ export function FiltrosCaixaCompacto() {
                                 key={setor.id}
                                 value={setor.id.toString()}
                               >
-                                {setor.nome} - {typeof setor.cidade === 'object' ? setor.cidade?.nome : setor.cidade}
+                                {setor.nome} -{" "}
+                                {typeof setor.cidade === "object"
+                                  ? setor.cidade?.nome
+                                  : setor.cidade}
                               </SelectItem>
                             ),
                           )}

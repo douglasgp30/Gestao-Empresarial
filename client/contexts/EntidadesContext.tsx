@@ -225,7 +225,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const carregarDados = useCallback(async () => {
     // Verificar se já está carregando globalmente
     if (isContextLoading("EntidadesContext") || isCarregando) {
-      console.log("[EntidadesContext] Carregamento já em andamento, ignorando...");
+      console.log(
+        "[EntidadesContext] Carregamento já em andamento, ignorando...",
+      );
       return;
     }
 
