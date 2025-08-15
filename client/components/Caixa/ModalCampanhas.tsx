@@ -127,10 +127,7 @@ export default function ModalCampanhas() {
         return;
       }
 
-      toast({
-        title: "Sucesso",
-        description: "Campanha excluída com sucesso!",
-      });
+      toast.success("Campanha excluída com sucesso!");
 
       setCampanhaParaExcluir(null);
       await carregarDados();
