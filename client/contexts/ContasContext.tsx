@@ -418,9 +418,13 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     carregarContas(filtros);
   }, [carregarContas, filtros]);
 
-  // Carregar dados auxiliares na inicialização
+  // Carregar dados auxiliares na inicialização com delay
   useEffect(() => {
-    carregarDadosAuxiliares();
+    const timeout = setTimeout(() => {
+      carregarDadosAuxiliares();
+    }, 3000); // Delay de 3s para carregar por último
+
+    return () => clearTimeout(timeout);
   }, [carregarDadosAuxiliares]);
 
   const value: ContasContextType = {
