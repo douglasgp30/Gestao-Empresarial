@@ -164,22 +164,45 @@ export const deleteSetor: RequestHandler = async (req, res) => {
 
 export const deleteCidade: RequestHandler = async (req, res) => {
   try {
-    const cidade = decodeURIComponent(req.params.cidade);
+    const nomeCidade = decodeURIComponent(req.params.cidade);
+    console.log(`[Setores] Tentando excluir cidade: ${nomeCidade}`);
 
-    // Verificar se existem setores vinculados a esta cidade
+    // Buscar a cidade pelo nome na nova tabela
+    const cidade = await prisma.cidade.findFirst({
+      where: { nome: nomeCidade },
+    });
+
+    if (!cidade) {
+      return res.status(404).json({
+        error: `Cidade "${nomeCidade}" não encontrada`,
+      });
+    }
+
+    // Verificar se existem setores vinculados a esta cidade usando a nova estrutura
     const setoresVinculados = await prisma.setor.findMany({
-      where: { cidade },
+      where: {
+        cidadeId: cidade.id,
+        ativo: true
+      },
+      include: {
+        cidade: true,
+      },
     });
 
     if (setoresVinculados.length > 0) {
       const nomesSetores = setoresVinculados.map((s) => s.nome).join(", ");
       return res.status(400).json({
-        error: `Não é possível excluir a cidade "${cidade}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
+        error: `Não é possível excluir a cidade "${nomeCidade}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
       });
     }
 
-    // Se chegou aqui, pode excluir (na verdade não há uma tabela de cidades,
-    // então não há nada para excluir fisicamente)
+    // Excluir a cidade da nova tabela (soft delete)
+    await prisma.cidade.update({
+      where: { id: cidade.id },
+      data: { ativo: false },
+    });
+
+    console.log(`[Setores] Cidade "${nomeCidade}" marcada como inativa`);
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao excluir cidade:", error);
