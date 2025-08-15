@@ -176,36 +176,39 @@ export default function ModalDescricoesSimples() {
       });
 
       console.log('🟡 Response status:', response.status, response.statusText);
+      console.log('🟡 Response headers:', {
+        contentType: response.headers.get('content-type'),
+        contentLength: response.headers.get('content-length'),
+      });
 
       if (!response.ok) {
-        console.log('🟡 Response não OK. Content-Type:', response.headers.get('content-type'));
+        // Simplificar: sempre tentar JSON primeiro, depois texto
+        let errorMessage = `Erro HTTP ${response.status}: ${response.statusText}`;
 
-        if (response.status === 400) {
-          // Erro de validação (ex: categoria com descrições vinculadas)
-          const contentType = response.headers.get('content-type');
+        try {
+          // Clonar response para poder tentar múltiplas leituras se necessário
+          const responseClone = response.clone();
+          const errorData = await responseClone.json();
+          console.log('🟡 Parsed JSON error data:', errorData);
 
-          if (contentType && contentType.includes('application/json')) {
-            try {
-              const errorData = await response.json();
-              console.log('🟡 Error data from server:', errorData);
-              throw new Error(errorData.error || `Erro de validação (sem mensagem específica)`);
-            } catch (parseError) {
-              console.error('🔴 Erro ao fazer parse do JSON:', parseError);
-              throw new Error(`Erro de validação: resposta inválida do servidor`);
+          if (errorData && errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (jsonError) {
+          console.log('🟡 JSON parse failed, trying text...', jsonError);
+
+          try {
+            const textData = await response.text();
+            console.log('🟡 Text error data:', textData);
+            if (textData) {
+              errorMessage = textData;
             }
-          } else {
-            // Resposta não é JSON, tentar ler como texto
-            try {
-              const textData = await response.text();
-              console.log('🟡 Error text from server:', textData);
-              throw new Error(`Erro de validação: ${textData || 'operação não permitida'}`);
-            } catch (textError) {
-              console.error('🔴 Erro ao ler resposta como texto:', textError);
-              throw new Error(`Erro de validação: não foi possível processar resposta do servidor`);
-            }
+          } catch (textError) {
+            console.error('🔴 Both JSON and text parsing failed:', textError);
           }
         }
-        throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+
+        throw new Error(errorMessage);
       }
 
       console.log('✅ Excluído com sucesso');
