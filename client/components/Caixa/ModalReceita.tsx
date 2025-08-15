@@ -165,8 +165,6 @@ export function ModalReceita() {
       data: new Date().toISOString().split("T")[0],
       valor: "",
       valorQueEntrou: "",
-      valorLiquido: "",
-      comissao: "",
       categoria: "",
       descricao: "",
       formaPagamento: "",
