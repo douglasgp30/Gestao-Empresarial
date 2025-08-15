@@ -124,6 +124,14 @@ export function createServer(): Express {
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
 
+  // Rotas de Localização Geográfica (Cidades e Setores unificados)
+  app.get("/api/localizacoes-geograficas", getLocalizacoesGeograficas);
+  app.get("/api/cidades", getCidades);
+  app.get("/api/setores", getSetores);
+  app.post("/api/localizacoes-geograficas", createLocalizacaoGeografica);
+  app.put("/api/localizacoes-geograficas/:id", updateLocalizacaoGeografica);
+  app.delete("/api/localizacoes-geograficas/:id", deleteLocalizacaoGeografica);
+
 
   // Rota de migração (apenas para desenvolvimento)
   app.post("/api/migrate/separate-cities", async (req, res) => {
