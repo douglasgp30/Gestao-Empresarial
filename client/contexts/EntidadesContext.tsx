@@ -222,17 +222,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Erro ao carregar entidades:", error);
 
-      // Verificar se é erro de rede
+      // Verificar se é erro de rede durante hot reload
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        setError("Erro de conexão. Verificando servidor...");
-        console.log("Tentando reconectar em 2s...");
+        console.log("📡 [EntidadesContext] Erro de rede detectado, aguardando reconexão...");
+        // Durante hot reload, não mostrar erro persistente ao usuário
+        setError(null);
 
-        // Tentar reconectar após 2 segundos
+        // Tentar reconectar após 3 segundos
         setTimeout(() => {
-          if (!isCarregando) { // Só tentar se não estiver carregando
+          if (!isCarregando) {
+            console.log("🔄 [EntidadesContext] Tentando reconectar...");
             carregarDados();
           }
-        }, 2000);
+        }, 3000);
       } else {
         setError("Erro ao carregar dados do servidor");
       }
@@ -739,7 +741,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       toast.success("Categoria excluída com sucesso!");
     } catch (error) {
-      console.error("��� [Categorias] Erro ao excluir categoria:", error);
+      console.error("����� [Categorias] Erro ao excluir categoria:", error);
       toast.error("Erro ao excluir categoria");
     }
   };
