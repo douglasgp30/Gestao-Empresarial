@@ -178,12 +178,24 @@ export default function ModalCidadeSetorSimples() {
 
     setIsSaving(true);
     try {
-      await adicionarCidade({ nome: formCidade.nome.trim() });
+      const nomeCidade = formCidade.nome.trim();
+
+      // Verificar se a cidade já existe
+      if (cidades.includes(nomeCidade)) {
+        toast.error("Esta cidade já existe");
+        return;
+      }
+
+      // Como as cidades são extraídas dos setores, vamos criar um setor "Centro" para a nova cidade
+      await adicionarSetor({
+        nome: "Centro",
+        cidade: nomeCidade,
+      });
 
       // Recarregar dados para atualizar a lista de cidades
       await recarregarTudo();
 
-      toast.success("Cidade adicionada com sucesso");
+      toast.success(`Cidade "${nomeCidade}" adicionada com sucesso (setor Centro criado automaticamente)`);
       resetFormCidade();
     } catch (error) {
       console.error("Erro ao adicionar cidade:", error);
