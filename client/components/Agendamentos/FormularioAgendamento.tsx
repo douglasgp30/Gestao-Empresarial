@@ -382,7 +382,7 @@ export default function FormularioAgendamento({
                     )
                     .map((setor) => (
                       <SelectItem key={setor.id} value={setor.id.toString()}>
-                        {setor.nome} - {setor.cidade}
+                        {setor.nome} - {typeof setor.cidade === 'object' ? setor.cidade?.nome : setor.cidade}
                       </SelectItem>
                     ))}
                 </SelectContent>
