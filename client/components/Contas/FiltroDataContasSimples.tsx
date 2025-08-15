@@ -25,7 +25,7 @@ export function FiltroDataContasSimples() {
       isNaN(filtros.dataInicio.getTime()) ||
       isNaN(filtros.dataFim.getTime())
     ) {
-      console.log("��� Corrigindo datas inválidas nos filtros de contas");
+      console.log("🔧 Corrigindo datas inválidas nos filtros de contas");
       const hoje = new Date();
       const inicioHoje = new Date(
         hoje.getFullYear(),
@@ -323,10 +323,8 @@ export function FiltroDataContasSimples() {
                           0,
                           0,
                         );
-                        setFiltros({
-                          ...filtros,
+                        atualizarFiltros({
                           dataInicio: novaData,
-                          __timestamp: Date.now(),
                         });
                       }}
                       className="h-8 text-xs"
