@@ -51,7 +51,7 @@ export function FiltroDataContasSimples() {
         dataFim: fimHoje,
       });
     }
-  }, [filtros, setFiltros]);
+  }, [filtros, atualizarFiltros]);
 
   // Função para formatar data para input com validação
   const formatDateForInput = (date: Date | null | undefined): string => {
