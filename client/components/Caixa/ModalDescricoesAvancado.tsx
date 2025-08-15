@@ -208,11 +208,13 @@ export default function ModalDescricoesAvancado() {
     try {
       setIsDeleting(true);
 
-      // Fechar o AlertDialog primeiro para evitar interferência
+      // Manter referência do item, mas NÃO fechar o dialog ainda
       const itemTemp = itemParaExcluir;
-      setItemParaExcluir(null);
 
       await excluirDescricaoECategoria(itemTemp.id.toString());
+
+      // Só fechar o AlertDialog APÓS exclusão bem-sucedida
+      setItemParaExcluir(null);
 
       // O toast do sucesso já é exibido pelo Context
     } catch (error) {
