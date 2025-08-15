@@ -313,11 +313,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      // Recarregar dados
-      const descricoesECategoriasResponse =
-        await descricoesECategoriasApi.listar();
-      if (descricoesECategoriasResponse.data)
-        setDescricoesECategorias(descricoesECategoriasResponse.data);
+      // Recarregar dados de forma otimizada
+      await recarregarDescricoesECategorias();
 
       console.log("✅ [Descrições e Categorias] Item excluído com sucesso");
       toast.success("Item excluído com sucesso!");
