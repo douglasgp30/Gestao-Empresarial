@@ -224,7 +224,10 @@ export default function ModalDescricoesSimples() {
 
         {/* Tabs */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-          <div className="flex mb-6">
+          {/* Debug component - remover em produção */}
+          <TestDeleteApi />
+
+          <div className="flex mb-6 mt-6">
             <Button
               variant={tipoAtivo === "receita" ? "default" : "ghost"}
               onClick={() => setTipoAtivo("receita")}
