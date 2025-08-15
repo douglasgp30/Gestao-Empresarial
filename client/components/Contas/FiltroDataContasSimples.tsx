@@ -46,11 +46,9 @@ export function FiltroDataContasSimples() {
         999,
       );
 
-      setFiltros({
-        ...filtros,
+      atualizarFiltros({
         dataInicio: inicioHoje,
         dataFim: fimHoje,
-        __timestamp: Date.now(),
       });
     }
   }, [filtros, setFiltros]);
