@@ -204,21 +204,6 @@ export default function ModalCampanhasSimples() {
 
         {/* Conteúdo */}
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-          {/* Debug: Mostrar dados brutos */}
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
-            <h4 className="font-semibold mb-2">Debug: Dados das Campanhas</h4>
-            <div className="text-sm">
-              <p><strong>Total campanhas:</strong> {campanhas.length}</p>
-              {campanhas.length > 0 && (
-                <details className="mt-2">
-                  <summary className="cursor-pointer font-medium">Ver dados brutos (clique para expandir)</summary>
-                  <pre className="mt-2 text-xs bg-white p-2 border rounded overflow-auto max-h-32">
-                    {JSON.stringify(campanhas, null, 2)}
-                  </pre>
-                </details>
-              )}
-            </div>
-          </div>
 
           {/* Formulário de criação */}
           <Card className="mb-6">
