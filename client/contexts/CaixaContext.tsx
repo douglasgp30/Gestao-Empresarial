@@ -9,7 +9,10 @@ import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
 import { caixaApi, campanhasApi } from "../lib/apiService";
 import { loadingManager } from "../lib/loadingManager";
-import { shouldSkipLoading, getLoadingDelay } from "../lib/globalLoadingControl";
+import {
+  shouldSkipLoading,
+  getLoadingDelay,
+} from "../lib/globalLoadingControl";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
@@ -114,7 +117,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setError(null);
 
       // Carregar campanhas usando loadingManager
-      const campanhasResponse = await loadingManager.executeWithControl("campanhas", () => campanhasApi.listar());
+      const campanhasResponse = await loadingManager.executeWithControl(
+        "campanhas",
+        () => campanhasApi.listar(),
+      );
       if (campanhasResponse.error) {
         console.error("Erro ao carregar campanhas:", campanhasResponse.error);
       } else {
@@ -128,7 +134,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Verificar se é erro de rede durante hot reload
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        console.log("📡 [CaixaContext] Erro de rede detectado, aguardando reconexão...");
+        console.log(
+          "📡 [CaixaContext] Erro de rede detectado, aguardando reconexão...",
+        );
         // Durante hot reload, não mostrar erro persistente ao usuário
         setError(null);
 
@@ -228,8 +236,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         console.error("Erro ao carregar lançamentos:", error);
 
         // Se é erro de rede durante hot reload, não mostrar erro ao usuário
-        if (error instanceof Error && error.message.includes("Failed to fetch")) {
-          console.log("📡 [CaixaContext] Erro de rede ao carregar lançamentos, ignorando...");
+        if (
+          error instanceof Error &&
+          error.message.includes("Failed to fetch")
+        ) {
+          console.log(
+            "📡 [CaixaContext] Erro de rede ao carregar lançamentos, ignorando...",
+          );
           // Não definir erro para o usuário durante hot reload
           return;
         }
@@ -242,12 +255,16 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados na inicialização com controle global
   useEffect(() => {
-    if (shouldSkipLoading('CaixaContext')) return;
+    if (shouldSkipLoading("CaixaContext")) return;
 
     const delay = getLoadingDelay(4000);
     const timeout = setTimeout(() => {
-      if (!shouldSkipLoading('CaixaContext')) {
-        console.log('[CaixaContext] Iniciando carregamento após delay de', delay, 'ms');
+      if (!shouldSkipLoading("CaixaContext")) {
+        console.log(
+          "[CaixaContext] Iniciando carregamento após delay de",
+          delay,
+          "ms",
+        );
         carregarDados();
       }
     }, delay);

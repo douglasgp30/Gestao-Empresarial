@@ -168,14 +168,24 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   // Carregar funcionários da API na inicialização com proteção para hot reload
   useEffect(() => {
     // Durante hot reload, não carregar automaticamente
-    if (typeof window !== 'undefined' && (window.location.href.includes('reload=') || window.location.href.includes('?t='))) {
-      console.log('[FuncionariosContext] Hot reload detectado, pulando carregamento automático');
+    if (
+      typeof window !== "undefined" &&
+      (window.location.href.includes("reload=") ||
+        window.location.href.includes("?t="))
+    ) {
+      console.log(
+        "[FuncionariosContext] Hot reload detectado, pulando carregamento automático",
+      );
       return;
     }
 
     const delay = Math.random() * 2000 + 6000; // Delay aleatório entre 6-8s
     const timeout = setTimeout(() => {
-      console.log('[FuncionariosContext] Iniciando carregamento após delay de', delay, 'ms');
+      console.log(
+        "[FuncionariosContext] Iniciando carregamento após delay de",
+        delay,
+        "ms",
+      );
       carregarFuncionarios();
     }, delay);
 

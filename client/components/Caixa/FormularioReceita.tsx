@@ -91,7 +91,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // Usar tabela unificada para categorias e descrições
   const categoriasReceita = React.useMemo(() => {
-    return getCategorias("receita").map((cat) => cat.nome).sort();
+    return getCategorias("receita")
+      .map((cat) => cat.nome)
+      .sort();
   }, [getCategorias]);
 
   const descricoesFiltradas = React.useMemo(() => {
@@ -101,11 +103,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
-    return formData.formaPagamento &&
+    return (
+      formData.formaPagamento &&
       formasPagamento
         .find((f) => f.id.toString() === formData.formaPagamento)
         ?.nome?.toLowerCase()
-        .includes("cartão");
+        .includes("cartão")
+    );
   }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente usando os hooks de moeda

@@ -164,7 +164,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
       // Se é erro de rede durante hot reload, não mostrar erro ao usuário
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        console.log("📡 [CONTAS] Erro de rede detectado, aguardando reconexão...");
+        console.log(
+          "📡 [CONTAS] Erro de rede detectado, aguardando reconexão...",
+        );
         // Não definir erro para o usuário durante hot reload
         return;
       }
@@ -199,8 +201,14 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
   const carregarDadosAuxiliares = useCallback(async () => {
     // Durante hot reload, não carregar dados auxiliares
-    if (typeof window !== 'undefined' && (window.location.href.includes('reload=') || window.location.href.includes('?t='))) {
-      console.log('[ContasContext] Hot reload detectado, pulando carregamento de dados auxiliares');
+    if (
+      typeof window !== "undefined" &&
+      (window.location.href.includes("reload=") ||
+        window.location.href.includes("?t="))
+    ) {
+      console.log(
+        "[ContasContext] Hot reload detectado, pulando carregamento de dados auxiliares",
+      );
       return;
     }
 
@@ -426,8 +434,14 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   // Carregar contas quando os filtros mudarem (apenas no timestamp para evitar loops)
   useEffect(() => {
     // Durante hot reload, não carregar automaticamente
-    if (typeof window !== 'undefined' && (window.location.href.includes('reload=') || window.location.href.includes('?t='))) {
-      console.log('[ContasContext] Hot reload detectado, pulando carregamento de contas por filtros');
+    if (
+      typeof window !== "undefined" &&
+      (window.location.href.includes("reload=") ||
+        window.location.href.includes("?t="))
+    ) {
+      console.log(
+        "[ContasContext] Hot reload detectado, pulando carregamento de contas por filtros",
+      );
       return;
     }
 
@@ -441,14 +455,24 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   // Carregar dados auxiliares na inicialização com proteção para hot reload
   useEffect(() => {
     // Durante hot reload, não carregar automaticamente
-    if (typeof window !== 'undefined' && (window.location.href.includes('reload=') || window.location.href.includes('?t='))) {
-      console.log('[ContasContext] Hot reload detectado, pulando carregamento automático');
+    if (
+      typeof window !== "undefined" &&
+      (window.location.href.includes("reload=") ||
+        window.location.href.includes("?t="))
+    ) {
+      console.log(
+        "[ContasContext] Hot reload detectado, pulando carregamento automático",
+      );
       return;
     }
 
     const delay = Math.random() * 2000 + 5000; // Delay aleatório entre 5-7s
     const timeout = setTimeout(() => {
-      console.log('[ContasContext] Iniciando carregamento após delay de', delay, 'ms');
+      console.log(
+        "[ContasContext] Iniciando carregamento após delay de",
+        delay,
+        "ms",
+      );
       carregarDadosAuxiliares();
     }, delay);
 

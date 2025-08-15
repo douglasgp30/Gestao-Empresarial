@@ -26,7 +26,10 @@ import {
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 import { loadingManager } from "../lib/loadingManager";
-import { shouldSkipLoading, getLoadingDelay } from "../lib/globalLoadingControl";
+import {
+  shouldSkipLoading,
+  getLoadingDelay,
+} from "../lib/globalLoadingControl";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
@@ -188,13 +191,25 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
-        loadingManager.executeWithControl("descricoes-categorias", () => descricoesECategoriasApi.listar()),
-        loadingManager.executeWithControl("descricoes", () => descricoesApi.listar()),
-        loadingManager.executeWithControl("formas-pagamento", () => formasPagamentoApi.listar()),
-        loadingManager.executeWithControl("funcionarios", () => funcionariosApi.listar()),
-        loadingManager.executeWithControl("tecnicos", () => funcionariosApi.listarTecnicos()),
+        loadingManager.executeWithControl("descricoes-categorias", () =>
+          descricoesECategoriasApi.listar(),
+        ),
+        loadingManager.executeWithControl("descricoes", () =>
+          descricoesApi.listar(),
+        ),
+        loadingManager.executeWithControl("formas-pagamento", () =>
+          formasPagamentoApi.listar(),
+        ),
+        loadingManager.executeWithControl("funcionarios", () =>
+          funcionariosApi.listar(),
+        ),
+        loadingManager.executeWithControl("tecnicos", () =>
+          funcionariosApi.listarTecnicos(),
+        ),
         loadingManager.executeWithControl("setores", () => setoresApi.listar()),
-        loadingManager.executeWithControl("cidades", () => setoresApi.listarCidades()),
+        loadingManager.executeWithControl("cidades", () =>
+          setoresApi.listarCidades(),
+        ),
       ]);
 
       // Atualizar estados com dados do banco
@@ -225,7 +240,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       // Verificar se é erro de rede durante hot reload
       if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        console.log("📡 [EntidadesContext] Erro de rede detectado, aguardando reconexão...");
+        console.log(
+          "📡 [EntidadesContext] Erro de rede detectado, aguardando reconexão...",
+        );
         // Durante hot reload, não mostrar erro persistente ao usuário
         setError(null);
 
@@ -359,12 +376,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados na inicialização com controle global
   useEffect(() => {
-    if (shouldSkipLoading('EntidadesContext')) return;
+    if (shouldSkipLoading("EntidadesContext")) return;
 
     const delay = getLoadingDelay(2000);
     const timeout = setTimeout(() => {
-      if (!shouldSkipLoading('EntidadesContext')) {
-        console.log('[EntidadesContext] Iniciando carregamento após delay de', delay, 'ms');
+      if (!shouldSkipLoading("EntidadesContext")) {
+        console.log(
+          "[EntidadesContext] Iniciando carregamento após delay de",
+          delay,
+          "ms",
+        );
         carregarDados();
       }
     }, delay);
@@ -883,7 +904,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     // Carregamento manual para quando necessário
     carregarDadosManual: () => {
-      console.log('[EntidadesContext] Carregamento manual solicitado');
+      console.log("[EntidadesContext] Carregamento manual solicitado");
       return carregarDados();
     },
   };

@@ -94,11 +94,13 @@ export function ModalReceita() {
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
-    return formData.formaPagamento &&
+    return (
+      formData.formaPagamento &&
       formasPagamento
         .find((f) => f.id.toString() === formData.formaPagamento)
         ?.nome?.toLowerCase()
-        .includes("cartão");
+        .includes("cartão")
+    );
   }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente
@@ -659,7 +661,8 @@ export function ModalReceita() {
                   <div>
                     <span className="text-gray-600">Para Empresa:</span>
                     <div className="font-medium text-green-600">
-                      R$ {(valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
+                      R${" "}
+                      {(valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
                     </div>
                   </div>
                 </div>

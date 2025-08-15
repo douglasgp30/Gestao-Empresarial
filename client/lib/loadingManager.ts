@@ -7,7 +7,7 @@ class LoadingManager {
   async executeWithControl<T>(
     key: string,
     loader: () => Promise<T>,
-    useCache: boolean = true
+    useCache: boolean = true,
   ): Promise<T> {
     // Verificar cache primeiro
     if (useCache) {
@@ -20,7 +20,9 @@ class LoadingManager {
 
     // Verificar se já existe uma requisição em andamento
     if (this.loadingPromises.has(key)) {
-      console.log(`[LoadingManager] Aguardando requisição em andamento: ${key}`);
+      console.log(
+        `[LoadingManager] Aguardando requisição em andamento: ${key}`,
+      );
       return this.loadingPromises.get(key)!;
     }
 
