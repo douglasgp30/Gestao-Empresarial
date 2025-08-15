@@ -42,18 +42,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     isLoading: caixaLoading,
   } = useCaixa();
   const {
-    descricoes,
     formasPagamento,
     getTecnicos,
     setores,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
-    // Usar tabela unificada
-    descricoesECategorias,
-    getCategorias,
-    getDescricoes,
-    adicionarDescricaoECategoria,
   } = useEntidades();
   const {
     clientes,
@@ -90,17 +84,60 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Usar tabela unificada para categorias e descrições com dependências estáveis
-  const categoriasReceita = React.useMemo(() => {
-    return getCategorias("receita")
-      .map((cat) => cat.nome)
-      .sort();
-  }, [descricoesECategorias, getCategorias]);
+  // Estados para categorias e descrições carregadas diretamente da API
+  const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
+  const [descricoesFiltradas, setDescricoesFiltradas] = useState<any[]>([]);
+  const [carregandoCategorias, setCarregandoCategorias] = useState(true);
 
-  const descricoesFiltradas = React.useMemo(() => {
-    if (!formData.categoria) return [];
-    return getDescricoes("receita", formData.categoria);
-  }, [formData.categoria, descricoesECategorias, getDescricoes]);
+  // Carregar categorias de receita diretamente da API
+  useEffect(() => {
+    const carregarCategorias = async () => {
+      try {
+        setCarregandoCategorias(true);
+        const response = await fetch("/api/descricoes-e-categorias/categorias?tipo=receita");
+        const data = await response.json();
+
+        if (data.data) {
+          const nomes = data.data.map((cat: any) => cat.nome).sort();
+          setCategoriasReceita(nomes);
+          console.log("[FormularioReceita] Categorias carregadas:", nomes);
+        }
+      } catch (error) {
+        console.error("[FormularioReceita] Erro ao carregar categorias:", error);
+      } finally {
+        setCarregandoCategorias(false);
+      }
+    };
+
+    carregarCategorias();
+  }, []);
+
+  // Carregar descrições quando categoria muda
+  useEffect(() => {
+    const carregarDescricoes = async () => {
+      if (!formData.categoria) {
+        setDescricoesFiltradas([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`
+        );
+        const data = await response.json();
+
+        if (data.data) {
+          setDescricoesFiltradas(data.data);
+          console.log("[FormularioReceita] Descrições carregadas para", formData.categoria, ":", data.data.length);
+        }
+      } catch (error) {
+        console.error("[FormularioReceita] Erro ao carregar descrições:", error);
+        setDescricoesFiltradas([]);
+      }
+    };
+
+    carregarDescricoes();
+  }, [formData.categoria]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
@@ -307,7 +344,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   };
 
   // Só mostrar loading se realmente não há dados essenciais
-  const isLoadingEssential = entidadesLoading && descricoesECategorias.length === 0;
+  const isLoadingEssential = carregandoCategorias || (entidadesLoading && formasPagamento.length === 0);
 
   if (isLoadingEssential) {
     return (
@@ -403,13 +440,33 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               items={descricoesFiltradas}
               renderItem={(item) => item.nome}
               onAddNew={async (data) => {
-                await adicionarDescricaoECategoria({
-                  nome: data.nome,
-                  tipo: "receita",
-                  categoria: formData.categoria,
-                  tipoItem: "descricao",
-                  ativo: true,
-                });
+                try {
+                  const response = await fetch("/api/descricoes-e-categorias", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      nome: data.nome,
+                      tipo: "receita",
+                      categoria: formData.categoria,
+                      tipoItem: "descricao",
+                      ativo: true,
+                    }),
+                  });
+
+                  if (!response.ok) throw new Error("Erro ao criar descrição");
+
+                  // Recarregar descrições
+                  const reloadResponse = await fetch(
+                    `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`
+                  );
+                  const reloadData = await reloadResponse.json();
+                  if (reloadData.data) {
+                    setDescricoesFiltradas(reloadData.data);
+                  }
+                } catch (error) {
+                  console.error("Erro ao adicionar descrição:", error);
+                  throw error;
+                }
               }}
               addNewTitle="Nova Descrição de Receita"
               addNewDescription="Adicione uma nova descrição de serviço para receitas."
