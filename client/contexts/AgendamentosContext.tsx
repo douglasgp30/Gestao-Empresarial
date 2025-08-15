@@ -66,10 +66,32 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // Carregar dados iniciais
+  // Carregar dados iniciais com proteção contra hot reload
   useEffect(() => {
-    carregarAgendamentos();
-    carregarLembretes();
+    // Durante hot reload, não carregar automaticamente
+    if (
+      typeof window !== "undefined" &&
+      (window.location.href.includes("reload=") ||
+        window.location.href.includes("?t="))
+    ) {
+      console.log(
+        "[AgendamentosContext] Hot reload detectado, pulando carregamento automático",
+      );
+      return;
+    }
+
+    const delay = Math.random() * 2000 + 7000; // Delay aleatório entre 7-9s
+    const timeout = setTimeout(() => {
+      console.log(
+        "[AgendamentosContext] Iniciando carregamento após delay de",
+        delay,
+        "ms",
+      );
+      carregarAgendamentos();
+      carregarLembretes();
+    }, delay);
+
+    return () => clearTimeout(timeout);
   }, [user]);
 
   // Verificar lembretes periodicamente

@@ -8,6 +8,11 @@ import React, {
 import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
 import { caixaApi, campanhasApi } from "../lib/apiService";
+import { loadingManager } from "../lib/loadingManager";
+import {
+  shouldSkipLoading,
+  getLoadingDelay,
+} from "../lib/globalLoadingControl";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
@@ -58,6 +63,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCarregando, setIsCarregando] = useState(false);
   const [filtros, setFiltros] = useState(() => {
     // Usar data atual do sistema mas normalizando para o dia correto
     const agora = new Date();
@@ -99,12 +105,22 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Função para carregar todos os dados
   const carregarDados = async () => {
+    // Evitar múltiplos carregamentos simultâneos
+    if (isCarregando) {
+      console.log("CaixaContext: Carregamento já em andamento, ignorando...");
+      return;
+    }
+
     try {
+      setIsCarregando(true);
       setIsLoading(true);
       setError(null);
 
-      // Carregar campanhas
-      const campanhasResponse = await campanhasApi.listar();
+      // Carregar campanhas usando loadingManager
+      const campanhasResponse = await loadingManager.executeWithControl(
+        "campanhas",
+        () => campanhasApi.listar(),
+      );
       if (campanhasResponse.error) {
         console.error("Erro ao carregar campanhas:", campanhasResponse.error);
       } else {
@@ -115,9 +131,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       await carregarLancamentos();
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
-      setError("Erro ao carregar dados do servidor");
+
+      // Verificar se é erro de rede durante hot reload
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        console.log(
+          "📡 [CaixaContext] Erro de rede detectado, aguardando reconexão...",
+        );
+        // Durante hot reload, não mostrar erro persistente ao usuário
+        setError(null);
+
+        // Tentar reconectar após 4 segundos
+        setTimeout(() => {
+          if (!isCarregando) {
+            console.log("🔄 [CaixaContext] Tentando reconectar...");
+            carregarDados();
+          }
+        }, 4000);
+      } else {
+        setError("Erro ao carregar dados do servidor");
+      }
     } finally {
       setIsLoading(false);
+      setIsCarregando(false);
     }
   };
 
@@ -199,22 +234,49 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         console.error("Erro ao carregar lançamentos:", error);
+
+        // Se é erro de rede durante hot reload, não mostrar erro ao usuário
+        if (
+          error instanceof Error &&
+          error.message.includes("Failed to fetch")
+        ) {
+          console.log(
+            "📡 [CaixaContext] Erro de rede ao carregar lançamentos, ignorando...",
+          );
+          // Não definir erro para o usuário durante hot reload
+          return;
+        }
+
         setError("Erro ao carregar lançamentos");
       }
     },
     [filtros, isLoading],
   );
 
-  // Carregar dados na inicialização
+  // Carregar dados na inicialização com controle global
   useEffect(() => {
-    carregarDados();
+    if (shouldSkipLoading("CaixaContext")) return;
+
+    const delay = getLoadingDelay(4000);
+    const timeout = setTimeout(() => {
+      if (!shouldSkipLoading("CaixaContext")) {
+        console.log(
+          "[CaixaContext] Iniciando carregamento após delay de",
+          delay,
+          "ms",
+        );
+        carregarDados();
+      }
+    }, delay);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   // Recarregar lançamentos quando os filtros mudarem
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       carregarLancamentos(true);
-    }, 100); // Debounce para evitar muitas chamadas
+    }, 300); // Debounce aumentado para reduzir piscar
 
     return () => clearTimeout(timeoutId);
   }, [

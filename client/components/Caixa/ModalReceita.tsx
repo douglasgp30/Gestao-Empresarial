@@ -39,11 +39,10 @@ export function ModalReceita() {
     formasPagamento,
     getTecnicos,
     setores,
-    adicionarDescricao,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
-    // Unified data source
+    // Usar apenas tabela unificada
     getCategorias,
     getDescricoes,
     adicionarDescricaoECategoria,
@@ -62,8 +61,6 @@ export function ModalReceita() {
     data: new Date().toISOString().split("T")[0],
     valor: "",
     valorQueEntrou: "",
-    valorLiquido: "",
-    comissao: "",
     categoria: "",
     descricao: "",
     formaPagamento: "",
@@ -79,29 +76,32 @@ export function ModalReceita() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Filtrar descrições de receita usando tabela unificada - usando useCallback para evitar re-renderizações
-  const categoriasReceita = useCallback(() => {
+  // Usar useMemo ao invés de useCallback para evitar re-renderizações desnecessárias
+  const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
     return categorias.map((cat) => cat.nome).sort();
   }, [getCategorias]);
 
-  const descricoesReceita = useCallback(() => {
+  const descricoesReceita = React.useMemo(() => {
     return getDescricoes("receita");
   }, [getDescricoes]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = useCallback(() => {
+  const descricoesFiltradas = React.useMemo(() => {
     if (!formData.categoria) return [];
     return getDescricoes("receita", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
-  // Verificar se forma de pagamento é cartão
-  const isFormaPagamentoCartao =
-    formData.formaPagamento &&
-    formasPagamento
-      .find((f) => f.id.toString() === formData.formaPagamento)
-      ?.nome?.toLowerCase()
-      .includes("cartão");
+  // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
+  const isFormaPagamentoCartao = React.useMemo(() => {
+    return (
+      formData.formaPagamento &&
+      formasPagamento
+        .find((f) => f.id.toString() === formData.formaPagamento)
+        ?.nome?.toLowerCase()
+        .includes("cartão")
+    );
+  }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente
   const valorCalculado = parseFloat(formData.valor) || 0;
@@ -122,41 +122,9 @@ export function ModalReceita() {
     return 0;
   })();
 
-  // Atualizar campos calculados apenas quando necessário
-  useEffect(() => {
-    const novoValorLiquido = valorLiquidoCalculado.toFixed(2);
-    const novaComissao = comissaoCalculada.toFixed(2);
+  // Remover useEffect que causa piscar da tela - valores calculados serão mostrados apenas no resumo
 
-    if (
-      formData.valorLiquido !== novoValorLiquido ||
-      formData.comissao !== novaComissao
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        valorLiquido: novoValorLiquido,
-        comissao: novaComissao,
-      }));
-    }
-  }, [
-    valorLiquidoCalculado,
-    comissaoCalculada,
-    formData.valorLiquido,
-    formData.comissao,
-  ]);
-
-  // Resetar valorQueEntrou quando mudança de Cartão para outras formas
-  useEffect(() => {
-    if (
-      !isFormaPagamentoCartao &&
-      formData.valorQueEntrou &&
-      formData.valorQueEntrou !== formData.valor
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        valorQueEntrou: "",
-      }));
-    }
-  }, [isFormaPagamentoCartao]);
+  // Remover useEffect que causa piscar ao resetar valorQueEntrou
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
@@ -187,8 +155,6 @@ export function ModalReceita() {
       data: new Date().toISOString().split("T")[0],
       valor: "",
       valorQueEntrou: "",
-      valorLiquido: "",
-      comissao: "",
       categoria: "",
       descricao: "",
       formaPagamento: "",
@@ -249,12 +215,10 @@ export function ModalReceita() {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
-        valor: parseFloat(formData.valor),
-        valorLiquido:
-          parseFloat(formData.valorLiquido) || parseFloat(formData.valor),
-        valorQueEntrou:
-          parseFloat(formData.valorQueEntrou) || parseFloat(formData.valor),
-        comissao: parseFloat(formData.comissao) || 0,
+        valor: valorCalculado,
+        valorLiquido: valorLiquidoCalculado,
+        valorQueEntrou: valorQueEntrouCalculado,
+        comissao: comissaoCalculada,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
@@ -370,7 +334,7 @@ export function ModalReceita() {
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoriasReceita().map((categoria) => (
+                    {categoriasReceita.map((categoria) => (
                       <SelectItem key={categoria} value={categoria}>
                         {categoria}
                       </SelectItem>
@@ -391,15 +355,17 @@ export function ModalReceita() {
                       ? "Selecione a descrição"
                       : "Primeiro selecione uma categoria"
                   }
-                  options={descricoesFiltradas().map((desc) => ({
+                  options={descricoesFiltradas.map((desc) => ({
                     value: desc.id.toString(),
                     label: desc.nome,
                   }))}
                   onAddNew={async (nomeDescricao) => {
-                    await adicionarDescricao({
+                    await adicionarDescricaoECategoria({
                       nome: nomeDescricao,
                       tipo: "receita",
                       categoria: formData.categoria,
+                      tipoItem: "descricao",
+                      ativo: true,
                     });
                   }}
                   addButtonText="Nova Descrição"
@@ -531,6 +497,28 @@ export function ModalReceita() {
               </div>
             </div>
 
+            {/* Campanha - movido para antes de Cliente */}
+            <div className="space-y-2">
+              <Label htmlFor="campanha">Campanha</Label>
+              <SelectWithAdd
+                value={formData.campanha}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, campanha: value }))
+                }
+                placeholder="Selecione a campanha"
+                options={campanhas.map((campanha) => ({
+                  value: campanha.id.toString(),
+                  label: campanha.nome,
+                }))}
+                onAddNew={async (nomeCampanha) => {
+                  await adicionarCampanha({
+                    nome: nomeCampanha,
+                  });
+                }}
+                addButtonText="Nova Campanha"
+              />
+            </div>
+
             {/* Cliente */}
             <div className="space-y-2">
               <Label htmlFor="cliente">Cliente</Label>
@@ -651,34 +639,13 @@ export function ModalReceita() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="campanha">Campanha</Label>
-              <SelectWithAdd
-                value={formData.campanha}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, campanha: value }))
-                }
-                placeholder="Selecione a campanha"
-                options={campanhas.map((campanha) => ({
-                  value: campanha.id.toString(),
-                  label: campanha.nome,
-                }))}
-                onAddNew={async (nomeCampanha) => {
-                  await adicionarCampanha({
-                    nome: nomeCampanha,
-                  });
-                }}
-                addButtonText="Nova Campanha"
-              />
-            </div>
-
             {/* Resumo financeiro */}
             {formData.valor && (
               <div className="p-4 bg-green-50 rounded-lg">
                 <h4 className="font-medium text-green-800 mb-2">
                   Resumo Financeiro
                 </h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
                   <div>
                     <span className="text-gray-600">Valor Total:</span>
                     <div className="font-medium">
@@ -686,25 +653,16 @@ export function ModalReceita() {
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-600">Valor Líquido:</span>
-                    <div className="font-medium">
-                      R$ {parseFloat(formData.valorLiquido || "0").toFixed(2)}
-                    </div>
-                  </div>
-                  <div>
                     <span className="text-gray-600">Comissão:</span>
                     <div className="font-medium">
-                      R$ {parseFloat(formData.comissao || "0").toFixed(2)}
+                      R$ {comissaoCalculada.toFixed(2)}
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Para Empresa:</span>
                     <div className="font-medium text-green-600">
                       R${" "}
-                      {(
-                        parseFloat(formData.valorLiquido || "0") -
-                        parseFloat(formData.comissao || "0")
-                      ).toFixed(2)}
+                      {(valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
                     </div>
                   </div>
                 </div>

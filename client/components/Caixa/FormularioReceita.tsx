@@ -46,10 +46,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     formasPagamento,
     getTecnicos,
     setores,
-    adicionarDescricao,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
+    // Usar tabela unificada
+    getCategorias,
+    getDescricoes,
+    adicionarDescricaoECategoria,
   } = useEntidades();
   const {
     clientes,
@@ -86,30 +89,28 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
 
-  // Filtrar descrições de receita
-  const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
+  // Usar tabela unificada para categorias e descrições
+  const categoriasReceita = React.useMemo(() => {
+    return getCategorias("receita")
+      .map((cat) => cat.nome)
+      .sort();
+  }, [getCategorias]);
 
-  // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = formData.categoria
-    ? descricoesReceita.filter((d) => d.categoria === formData.categoria)
-    : [];
+  const descricoesFiltradas = React.useMemo(() => {
+    if (!formData.categoria) return [];
+    return getDescricoes("receita", formData.categoria);
+  }, [formData.categoria, getDescricoes]);
 
-  // Obter categorias únicas das descrições de receita
-  const categoriasReceita = [
-    ...new Set(
-      descricoesReceita
-        .map((d) => d.categoria)
-        .filter((categoria) => categoria && categoria.trim() !== ""),
-    ),
-  ].sort();
-
-  // Verificar se forma de pagamento é cartão
-  const isFormaPagamentoCartao =
-    formData.formaPagamento &&
-    formasPagamento
-      .find((f) => f.id.toString() === formData.formaPagamento)
-      ?.nome?.toLowerCase()
-      .includes("cartão");
+  // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
+  const isFormaPagamentoCartao = React.useMemo(() => {
+    return (
+      formData.formaPagamento &&
+      formasPagamento
+        .find((f) => f.id.toString() === formData.formaPagamento)
+        ?.nome?.toLowerCase()
+        .includes("cartão")
+    );
+  }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente usando os hooks de moeda
   const valorCalculado = valorInput.numericValue;
@@ -148,12 +149,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
 
-  // Resetar valorQueEntrou quando mudança de Cartão para outras formas
-  useEffect(() => {
-    if (!isFormaPagamentoCartao && valorQueEntrouInput.numericValue > 0) {
-      valorQueEntrouInput.reset();
-    }
-  }, [isFormaPagamentoCartao, valorQueEntrouInput]);
+  // Remover useEffect que causa piscar da tela
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
@@ -389,10 +385,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               disabled={!formData.categoria}
               items={descricoesFiltradas}
               onAddNew={async (data) => {
-                await adicionarDescricao({
+                await adicionarDescricaoECategoria({
                   nome: data.nome,
                   tipo: "receita",
                   categoria: formData.categoria,
+                  tipoItem: "descricao",
+                  ativo: true,
                 });
               }}
               addNewTitle="Nova Descrição de Receita"
@@ -537,6 +535,32 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
+          {/* Campanha - movido para antes de Cliente */}
+          <SelectWithAdd
+            value={formData.campanha}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, campanha: value }))
+            }
+            placeholder="Selecione a campanha"
+            label="Campanha"
+            required={false}
+            items={campanhas}
+            onAddNew={async (data) => {
+              await adicionarCampanha({
+                nome: data.nome,
+              });
+            }}
+            addNewTitle="Nova Campanha"
+            addNewDescription="Adicione uma nova campanha de marketing."
+            addNewFields={[
+              {
+                key: "nome",
+                label: "Nome da Campanha",
+                required: true,
+              },
+            ]}
+          />
+
           {/* Cliente */}
           <div className="space-y-2">
             <Label htmlFor="cliente">Cliente</Label>
@@ -575,32 +599,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               />
             </div>
           </div>
-
-          {/* Campanha */}
-          <SelectWithAdd
-            value={formData.campanha}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, campanha: value }))
-            }
-            placeholder="Selecione a campanha"
-            label="Campanha"
-            required={false}
-            items={campanhas}
-            onAddNew={async (data) => {
-              await adicionarCampanha({
-                nome: data.nome,
-              });
-            }}
-            addNewTitle="Nova Campanha"
-            addNewDescription="Adicione uma nova campanha de marketing."
-            addNewFields={[
-              {
-                key: "nome",
-                label: "Nome da Campanha",
-                required: true,
-              },
-            ]}
-          />
 
           {/* Nota Fiscal */}
           <div className="space-y-3 p-4 bg-blue-50/70 rounded-lg border border-blue-200/70 shadow-sm">

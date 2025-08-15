@@ -3,6 +3,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
 import { toast } from "sonner";
@@ -24,6 +25,11 @@ import {
   clientesApi,
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
+import { loadingManager } from "../lib/loadingManager";
+import {
+  shouldSkipLoading,
+  getLoadingDelay,
+} from "../lib/globalLoadingControl";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
@@ -110,23 +116,7 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Entidades essenciais básicas - apenas o mínimo necessário para funcionamento
-const entidadesEssenciais = {
-  categorias: [
-    {
-      id: "1",
-      nome: "Serviços",
-      tipo: "receita" as const,
-      dataCriacao: new Date(),
-    },
-    {
-      id: "2",
-      nome: "Operacional",
-      tipo: "despesa" as const,
-      dataCriacao: new Date(),
-    },
-  ],
-};
+// Remover dados fictícios - usar apenas dados reais do banco
 
 // Funções para localStorage (para entidades que ainda não migraram)
 function carregarEntidadeDoStorage<T>(
@@ -160,6 +150,7 @@ function salvarEntidadeNoStorage<T>(key: string, data: T[]) {
 export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCarregando, setIsCarregando] = useState(false);
 
   // Estados para entidades no banco
   const [descricoesECategorias, setDescricoesECategorias] = useState<
@@ -179,11 +170,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // Função para carregar todos os dados
   const carregarDados = async () => {
+    // Evitar múltiplos carregamentos simultâneos
+    if (isCarregando) {
+      console.log("Carregamento já em andamento, ignorando...");
+      return;
+    }
+
     try {
+      setIsCarregando(true);
       setIsLoading(true);
       setError(null);
 
-      // Carregar dados do banco
+      // Carregar dados do banco usando loadingManager para evitar sobrecarga
       const [
         descricoesECategoriasResponse,
         descricoesResponse,
@@ -193,13 +191,25 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setoresResponse,
         cidadesResponse,
       ] = await Promise.all([
-        descricoesECategoriasApi.listar(),
-        descricoesApi.listar(),
-        formasPagamentoApi.listar(),
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-        setoresApi.listar(),
-        setoresApi.listarCidades(),
+        loadingManager.executeWithControl("descricoes-categorias", () =>
+          descricoesECategoriasApi.listar(),
+        ),
+        loadingManager.executeWithControl("descricoes", () =>
+          descricoesApi.listar(),
+        ),
+        loadingManager.executeWithControl("formas-pagamento", () =>
+          formasPagamentoApi.listar(),
+        ),
+        loadingManager.executeWithControl("funcionarios", () =>
+          funcionariosApi.listar(),
+        ),
+        loadingManager.executeWithControl("tecnicos", () =>
+          funcionariosApi.listarTecnicos(),
+        ),
+        loadingManager.executeWithControl("setores", () => setoresApi.listar()),
+        loadingManager.executeWithControl("cidades", () =>
+          setoresApi.listarCidades(),
+        ),
       ]);
 
       // Atualizar estados com dados do banco
@@ -213,10 +223,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       if (setoresResponse.data) setSetores(setoresResponse.data);
       if (cidadesResponse.data) setCidades(cidadesResponse.data);
 
-      // Carregar dados do localStorage
+      // Carregar dados do localStorage sem dados fictícios
       const categoriasStorage = carregarEntidadeDoStorage<Categoria>(
         "categorias",
-        entidadesEssenciais.categorias,
+        [], // Usar array vazio ao invés de dados fictícios
       );
       const clientesStorage = carregarEntidadeDoStorage<Cliente>("clientes");
       const fornecedoresStorage =
@@ -227,7 +237,25 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setFornecedores(fornecedoresStorage);
     } catch (error) {
       console.error("Erro ao carregar entidades:", error);
-      setError("Erro ao carregar dados do servidor");
+
+      // Verificar se é erro de rede durante hot reload
+      if (error instanceof Error && error.message.includes("Failed to fetch")) {
+        console.log(
+          "📡 [EntidadesContext] Erro de rede detectado, aguardando reconexão...",
+        );
+        // Durante hot reload, não mostrar erro persistente ao usuário
+        setError(null);
+
+        // Tentar reconectar após 3 segundos
+        setTimeout(() => {
+          if (!isCarregando) {
+            console.log("🔄 [EntidadesContext] Tentando reconectar...");
+            carregarDados();
+          }
+        }, 3000);
+      } else {
+        setError("Erro ao carregar dados do servidor");
+      }
 
       // Definir dados padrão em caso de erro para evitar crashes
       setDescricoesECategorias([]);
@@ -239,8 +267,21 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setCidades([]);
     } finally {
       setIsLoading(false);
+      setIsCarregando(false);
     }
   };
+
+  // Função de recarregamento otimizada com debounce para reduzir piscar
+  const recarregarDescricoesECategorias = useCallback(async () => {
+    try {
+      const response = await descricoesECategoriasApi.listar();
+      if (response.data) {
+        setDescricoesECategorias(response.data);
+      }
+    } catch (error) {
+      console.error("Erro ao recarregar descrições e categorias:", error);
+    }
+  }, []);
 
   // === FUNÇÕES PARA TABELA UNIFICADA ===
   const getCategorias = (tipo?: "receita" | "despesa") => {
@@ -273,11 +314,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      // Recarregar dados
-      const descricoesECategoriasResponse =
-        await descricoesECategoriasApi.listar();
-      if (descricoesECategoriasResponse.data)
-        setDescricoesECategorias(descricoesECategoriasResponse.data);
+      // Recarregar dados de forma otimizada
+      await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("Erro ao adicionar item:", error);
       throw error;
@@ -299,11 +337,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      // Recarregar dados
-      const descricoesECategoriasResponse =
-        await descricoesECategoriasApi.listar();
-      if (descricoesECategoriasResponse.data)
-        setDescricoesECategorias(descricoesECategoriasResponse.data);
+      // Recarregar dados de forma otimizada
+      await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("Erro ao editar item:", error);
       throw error;
@@ -322,11 +357,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      // Recarregar dados
-      const descricoesECategoriasResponse =
-        await descricoesECategoriasApi.listar();
-      if (descricoesECategoriasResponse.data)
-        setDescricoesECategorias(descricoesECategoriasResponse.data);
+      // Recarregar dados de forma otimizada
+      await recarregarDescricoesECategorias();
 
       console.log("✅ [Descrições e Categorias] Item excluído com sucesso");
       toast.success("Item excluído com sucesso!");
@@ -342,9 +374,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar dados na inicialização
+  // Carregar dados na inicialização com controle global
   useEffect(() => {
-    carregarDados();
+    if (shouldSkipLoading("EntidadesContext")) return;
+
+    const delay = getLoadingDelay(2000);
+    const timeout = setTimeout(() => {
+      if (!shouldSkipLoading("EntidadesContext")) {
+        console.log(
+          "[EntidadesContext] Iniciando carregamento após delay de",
+          delay,
+          "ms",
+        );
+        carregarDados();
+      }
+    }, delay);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   // === FUNÇÕES PARA DESCRIÇÕES (API) ===
@@ -807,7 +853,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     isLoading,
     error,
 
-    // Funções para tabela unificada
+    // Funç��es para tabela unificada
     getCategorias,
     getDescricoes,
     adicionarDescricaoECategoria,
@@ -855,6 +901,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     // Funções utilitárias
     carregarDados,
+
+    // Carregamento manual para quando necessário
+    carregarDadosManual: () => {
+      console.log("[EntidadesContext] Carregamento manual solicitado");
+      return carregarDados();
+    },
   };
 
   return (
