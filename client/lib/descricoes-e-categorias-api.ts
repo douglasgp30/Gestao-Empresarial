@@ -135,9 +135,20 @@ export const descricoesECategoriasApi = {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}`);
+        // Melhor tratamento para diferentes status
+        if (response.status === 404) {
+          throw new Error("Item não encontrado");
+        }
+
+        try {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `HTTP ${response.status}`);
+        } catch {
+          // Se não conseguir parsear JSON (status 204 por exemplo)
+          throw new Error(`Erro HTTP ${response.status}`);
+        }
       }
+
       return { data: null };
     } catch (error) {
       console.error("Erro ao excluir item:", error);
