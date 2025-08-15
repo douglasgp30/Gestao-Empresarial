@@ -247,7 +247,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         setError("Erro ao carregar lançamentos");
       }
     },
-    [filtros, isLoading],
+    [filtros, isCarregando],
   );
 
   // Carregar dados na inicialização com controle global
