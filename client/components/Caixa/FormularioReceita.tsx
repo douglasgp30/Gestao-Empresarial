@@ -395,6 +395,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               required={true}
               disabled={!formData.categoria}
               items={descricoesFiltradas}
+              renderItem={(item) => item.nome}
               onAddNew={async (data) => {
                 await adicionarDescricaoECategoria({
                   nome: data.nome,
@@ -426,6 +427,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               label="Forma de Pagamento"
               required={true}
               items={formasPagamento}
+              renderItem={(item) => item.nome}
               onAddNew={async (data) => {
                 await adicionarFormaPagamento({
                   nome: data.nome,
