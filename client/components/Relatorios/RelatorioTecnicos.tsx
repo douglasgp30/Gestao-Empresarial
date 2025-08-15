@@ -297,9 +297,9 @@ export default function RelatorioTecnicos() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {relatorio.performanceTecnicos.map((tecnico, index) => {
+              {(Array.isArray(relatorio.performanceTecnicos) ? relatorio.performanceTecnicos : []).map((tecnico, index) => {
                 const maxValor = Math.max(
-                  ...relatorio.performanceTecnicos.map((t) => t.valorTotal),
+                  ...(Array.isArray(relatorio.performanceTecnicos) ? relatorio.performanceTecnicos : []).map((t) => t.valorTotal),
                 );
                 const porcentagem =
                   maxValor > 0 ? (tecnico.valorTotal / maxValor) * 100 : 0;
