@@ -187,6 +187,18 @@ export function createServer(): Express {
   // Rota legada para compatibilidade
   app.delete("/api/setores/cidades/:cidade", deleteCidade);
 
+  // Rota de migração (apenas para desenvolvimento)
+  app.post("/api/migrate/separate-cities", async (req, res) => {
+    try {
+      const { migrateToSeparateCities } = require("./lib/migrate-to-separate-cities");
+      await migrateToSeparateCities();
+      res.json({ message: "Migração concluída com sucesso!" });
+    } catch (error) {
+      console.error("Erro na migração:", error);
+      res.status(500).json({ error: "Erro na migração" });
+    }
+  });
+
   // Rotas de Caixa
   app.get("/api/caixa/lancamentos", getLancamentos);
   app.get("/api/caixa/totais", getTotaisCaixa);
