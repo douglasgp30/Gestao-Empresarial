@@ -70,9 +70,49 @@ class GlobalLoadingControl {
     return Math.random() * baseDelay + baseDelay * 0.5;
   }
 
+  // Verificar se um contexto já está carregando
+  isContextLoading(contextName: string): boolean {
+    return this.loadingStates.get(contextName) || false;
+  }
+
+  // Marcar contexto como carregando
+  setContextLoading(contextName: string, isLoading: boolean) {
+    this.loadingStates.set(contextName, isLoading);
+    if (!isLoading) {
+      // Limpar cache antigo quando terminar carregamento
+      this.cleanOldCache();
+    }
+  }
+
+  // Verificar cache
+  getCachedData(key: string): any {
+    const cached = this.cache.get(key);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
+      return cached.data;
+    }
+    return null;
+  }
+
+  // Salvar no cache
+  setCachedData(key: string, data: any) {
+    this.cache.set(key, { data, timestamp: Date.now() });
+  }
+
+  // Limpar cache antigo
+  private cleanOldCache() {
+    const now = Date.now();
+    for (const [key, cached] of this.cache.entries()) {
+      if (now - cached.timestamp > this.CACHE_DURATION) {
+        this.cache.delete(key);
+      }
+    }
+  }
+
   forceUnblock() {
     this.loadingBlocked = false;
     this.isHotReloading = false;
+    this.loadingStates.clear();
+    this.cache.clear();
     console.log(
       "🔓 [GlobalLoadingControl] Carregamentos forçadamente desbloqueados",
     );
