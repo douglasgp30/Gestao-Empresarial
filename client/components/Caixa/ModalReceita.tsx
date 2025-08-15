@@ -39,6 +39,7 @@ export function ModalReceita() {
     formasPagamento,
     getTecnicos,
     setores,
+    cidades,
     adicionarFormaPagamento,
     adicionarSetor,
     isLoading: entidadesLoading,
