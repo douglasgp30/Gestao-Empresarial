@@ -26,6 +26,7 @@ import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
+import { TestApis } from "../Debug/TestApis";
 
 export function ModalReceita() {
   const {
