@@ -262,7 +262,23 @@ export function ModalReceita() {
     }
   };
 
-  const isLoading = caixaLoading || entidadesLoading || clientesLoading;
+  // Estado para forçar desbloqueio após timeout
+  const [loadingForced, setLoadingForced] = useState(false);
+
+  // Timeout de segurança para forçar loading=false
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!loadingForced) {
+        console.log("[ModalReceita] TIMEOUT SEGURANÇA: Forçando desbloqueio de loading");
+        setLoadingForced(true);
+      }
+    }, 3000); // 3 segundos máximo
+
+    return () => clearTimeout(timer);
+  }, [loadingForced]);
+
+  // Loading com timeout de segurança
+  const isLoading = !loadingForced && (caixaLoading || entidadesLoading || clientesLoading);
 
   // Debug logs
   React.useEffect(() => {
@@ -270,9 +286,10 @@ export function ModalReceita() {
       caixaLoading,
       entidadesLoading,
       clientesLoading,
+      loadingForced,
       isLoading
     });
-  }, [caixaLoading, entidadesLoading, clientesLoading, isLoading]);
+  }, [caixaLoading, entidadesLoading, clientesLoading, loadingForced, isLoading]);
 
   return (
     <Dialog
