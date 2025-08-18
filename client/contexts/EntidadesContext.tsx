@@ -389,22 +389,17 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // === CARREGAMENTO INICIAL ÚNICO ===
+  // === CARREGAMENTO INICIAL ÚNICO (SEM DEPENDÊNCIA CIRCULAR) ===
   useEffect(() => {
-    if (dadosCarregados) {
-      console.log("[EntidadesContext] Dados já carregados, ignorando...");
-      return;
-    }
-
     if (shouldSkipLoading("EntidadesContext")) {
       console.log("[EntidadesContext] Carregamento ignorado (skip loading)");
       return;
     }
 
-    // Carregar dados apenas uma vez
+    // Carregar dados apenas uma vez no mount
     console.log("[EntidadesContext] Iniciando carregamento único...");
     carregarDados();
-  }, [dadosCarregados]); // Dependência apenas do flag de dados carregados
+  }, []); // Array vazio - executa apenas no mount
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
   const adicionarDescricaoECategoria = async (
