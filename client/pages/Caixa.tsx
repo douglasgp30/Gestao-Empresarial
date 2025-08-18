@@ -40,7 +40,7 @@ function CaixaContent() {
         <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
           <ModalCampanhasSimples />
           <ModalDescricoesSimples />
-          <ModalCidadeSetorSimples />
+          <ModalGerenciarCidades />
         </div>
 
         {/* Totais alinhados à direita */}
