@@ -391,18 +391,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
 
     // Usar throttling agressivo para evitar múltiplos carregamentos
-    if (contextThrottle.isThrottled("EntidadesContext-initial", 5000)) {
+    if (contextThrottle.isThrottled("EntidadesContext-initial", 10000)) {
       console.log("[EntidadesContext] Carregamento throttled, ignorando...");
       return;
     }
 
-    const delay = getLoadingDelay(3000); // Delay maior
+    const delay = getLoadingDelay(1000); // Delay menor
     const timeout = setTimeout(() => {
       if (!shouldSkipLoading("EntidadesContext")) {
         contextThrottle.execute(
           "EntidadesContext-initial",
           () => carregarDados(),
-          5000, // 5 segundos de throttle
+          10000, // 10 segundos de throttle
         );
       }
     }, delay);
@@ -655,7 +655,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   const adicionarFuncionario = async () => {
-    console.warn("adicionarFuncionario: Funcionalidade n��o implementada");
+    console.warn("adicionarFuncionario: Funcionalidade não implementada");
   };
 
   const editarFuncionario = async () => {
