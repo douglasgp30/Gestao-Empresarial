@@ -625,6 +625,26 @@ export default function ModalGerenciarCidades() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Campo de pesquisa de setores */}
+                {setores.length > 0 && (
+                  <div className="mb-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Pesquisar setor ou cidade..."
+                        value={pesquisaSetor}
+                        onChange={(e) => setPesquisaSetor(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    {pesquisaSetor && (
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {setoresFiltrados.length} setor(es) encontrado(s)
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {setores.length === 0 ? (
                   <div className="text-center py-8">
                     <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
