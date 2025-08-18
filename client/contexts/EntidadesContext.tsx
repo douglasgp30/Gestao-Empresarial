@@ -286,11 +286,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     try {
       // Invalidar cache para garantir dados atualizados
-      apiCache.invalidate("entidades-descricoes");
-      apiCache.invalidate("entidades-formas-pagamento");
-      apiCache.invalidate("entidades-funcionarios");
-      apiCache.invalidate("entidades-tecnicos");
-      apiCache.invalidate("entidades-localizacoes");
+    apiCache.invalidate("entidades-descricoes");
+    apiCache.invalidate("entidades-formas-pagamento");
+    apiCache.invalidate("entidades-funcionarios");
+    apiCache.invalidate("entidades-tecnicos");
+    apiCache.invalidate("entidades-localizacoes");
+
+    console.log("[EntidadesContext] Cache invalidado - forçando recarregamento...");
 
       // Buscar dados sem cache para debug
       const [
