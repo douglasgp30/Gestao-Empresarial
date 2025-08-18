@@ -186,6 +186,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCarregando, setIsCarregando] = useState(false);
+  const [dadosCarregados, setDadosCarregados] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
