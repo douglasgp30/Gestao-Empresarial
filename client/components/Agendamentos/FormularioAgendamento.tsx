@@ -206,9 +206,11 @@ export default function FormularioAgendamento({
 
     if (novoSetor.trim()) {
       try {
-        await adicionarSetor({
+        await adicionarLocalizacaoGeografica({
           nome: novoSetor.trim(),
+          tipoItem: "setor",
           cidade: formData.cidade,
+          ativo: true,
         });
 
         // Buscar o setor recém-criado para obter o ID correto
@@ -238,7 +240,11 @@ export default function FormularioAgendamento({
   const handleAdicionarCidade = async () => {
     if (novaCidade.trim()) {
       try {
-        await adicionarCidade({ nome: novaCidade.trim() });
+        await adicionarLocalizacaoGeografica({
+          nome: novaCidade.trim(),
+          tipoItem: "cidade",
+          ativo: true,
+        });
         setFormData({ ...formData, cidade: novaCidade.trim() });
         setNovaCidade("");
         setMostrarNovaCidade(false);
