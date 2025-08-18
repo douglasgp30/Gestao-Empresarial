@@ -121,7 +121,7 @@ export function ModalReceita() {
     parseFloat(formData.valorQueEntrou) || valorCalculado;
   const valorLiquidoCalculado = valorQueEntrouCalculado;
 
-  // Calcular comissão baseada no percentual do técnico
+  // Calcular comiss��o baseada no percentual do técnico
   const comissaoCalculada = (() => {
     if (formData.tecnicoResponsavel) {
       const tecnico = tecnicos.find(
@@ -211,7 +211,7 @@ export function ModalReceita() {
       return;
     }
 
-    // Validar número da nota se nota fiscal foi marcada
+    // Validar n��mero da nota se nota fiscal foi marcada
     if (formData.temNotaFiscal && !formData.numeroNota) {
       toast({
         title: "Erro",
@@ -263,6 +263,16 @@ export function ModalReceita() {
   };
 
   const isLoading = caixaLoading || entidadesLoading || clientesLoading;
+
+  // Debug logs
+  React.useEffect(() => {
+    console.log("[ModalReceita] Estados de loading:", {
+      caixaLoading,
+      entidadesLoading,
+      clientesLoading,
+      isLoading
+    });
+  }, [caixaLoading, entidadesLoading, clientesLoading, isLoading]);
 
   return (
     <Dialog
