@@ -60,9 +60,11 @@ function CaixaContent() {
 export default function Caixa() {
   return (
     <EntidadesProvider>
-      <CaixaProvider>
-        <CaixaContent />
-      </CaixaProvider>
+      <ClientesProvider>
+        <CaixaProvider>
+          <CaixaContent />
+        </CaixaProvider>
+      </ClientesProvider>
     </EntidadesProvider>
   );
 }
