@@ -247,7 +247,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Erro ao carregar lançamentos:", error);
 
-        // Se é erro de rede durante hot reload, não mostrar erro ao usuário
+        // Se �� erro de rede durante hot reload, não mostrar erro ao usuário
         if (
           error instanceof Error &&
           error.message.includes("Failed to fetch")
@@ -269,31 +269,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados na inicialização com controle global e throttling
   useEffect(() => {
-    if (shouldSkipLoading("CaixaContext")) return;
-
-    // Verificar throttling
-    if (contextThrottle.isThrottled("CaixaContext-initial", 6000)) {
-      console.log(
-        "[CaixaContext] Carregamento inicial throttled, ignorando...",
-      );
-      return;
-    }
-
-    const delay = getLoadingDelay(5000); // Delay maior
-    const timeout = setTimeout(() => {
-      if (!shouldSkipLoading("CaixaContext")) {
-        contextThrottle.execute(
-          "CaixaContext-initial",
-          () => {
-            console.log("[CaixaContext] Iniciando carregamento com throttling");
-            return carregarDados();
-          },
-          6000, // 6 segundos de throttle
-        );
-      }
-    }, delay);
-
-    return () => clearTimeout(timeout);
+    // Carregamento inicial forçado sem throttling
+    console.log("[CaixaContext] FORÇANDO carregamento inicial...");
+    carregarDados();
   }, []);
 
   // Memoizar string das dependências para evitar loops
