@@ -39,7 +39,16 @@ export default function FormularioAgendamento({
 }: FormularioAgendamentoProps) {
   const { criarAgendamento, atualizarAgendamento, agendamentos } =
     useAgendamentos();
-  const { setores, adicionarSetor, cidades, adicionarCidade } = useEntidades();
+  const {
+    localizacoesGeograficas,
+    getCidades,
+    getSetores,
+    adicionarLocalizacaoGeografica
+  } = useEntidades();
+
+  // Derivar cidades e setores das localizações
+  const cidades = getCidades() || [];
+  const setores = getSetores() || [];
   const { funcionarios } = useFuncionarios();
 
   const [aberto, setAberto] = useState(false);
