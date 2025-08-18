@@ -317,27 +317,40 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       if (descricoesECategoriasResponse.data) {
         setDescricoesECategorias(descricoesECategoriasResponse.data);
         console.log(
-          `[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas`,
+          `[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas:`,
+          descricoesECategoriasResponse.data
         );
+      } else {
+        console.warn("[EntidadesContext] Nenhuma descrição/categoria retornada da API");
       }
 
       if (formasPagamentoResponse.data) {
         setFormasPagamento(formasPagamentoResponse.data);
+        console.log(
+          `[EntidadesContext] Carregadas ${formasPagamentoResponse.data.length} formas de pagamento:`,
+          formasPagamentoResponse.data
+        );
+      } else {
+        console.warn("[EntidadesContext] Nenhuma forma de pagamento retornada da API");
       }
 
       if (funcionariosResponse.data) {
         setFuncionarios(funcionariosResponse.data);
+        console.log(`[EntidadesContext] Carregados ${funcionariosResponse.data.length} funcionários`);
       }
 
       if (tecnicosResponse.data) {
         setTecnicos(tecnicosResponse.data);
+        console.log(`[EntidadesContext] Carregados ${tecnicosResponse.data.length} técnicos`);
       }
 
       if (localizacoesResponse.data) {
         setLocalizacoesGeograficas(localizacoesResponse.data);
         console.log(
-          `[EntidadesContext] Carregadas ${localizacoesResponse.data.length} localizações geográficas`,
+          `[EntidadesContext] Carregadas ${localizacoesResponse.data.length} localizações geográficas`
         );
+      } else {
+        console.warn("[EntidadesContext] Nenhuma localização geográfica retornada da API");
       }
 
       // Carregar dados do localStorage (compatibilidade)
