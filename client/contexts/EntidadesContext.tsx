@@ -291,7 +291,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      // Usar cache super agressivo (30 minutos) para reduzir chamadas
+      // Invalidar cache para garantir dados atualizados
+      apiCache.invalidate("entidades-descricoes");
+      apiCache.invalidate("entidades-formas-pagamento");
+      apiCache.invalidate("entidades-funcionarios");
+      apiCache.invalidate("entidades-tecnicos");
+      apiCache.invalidate("entidades-localizacoes");
+
+      // Buscar dados sem cache para debug
       const [
         descricoesECategoriasResponse,
         formasPagamentoResponse,
@@ -299,26 +306,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         tecnicosResponse,
         localizacoesResponse,
       ] = await Promise.all([
-        apiCache.executeWithCache("entidades-descricoes", () =>
-          descricoesECategoriasApi.listar(),
-          1800000 // 30 minutos
-        ),
-        apiCache.executeWithCache("entidades-formas-pagamento", () =>
-          formasPagamentoApi.listar(),
-          1800000 // 30 minutos
-        ),
-        apiCache.executeWithCache("entidades-funcionarios", () =>
-          funcionariosApi.listar(),
-          1800000 // 30 minutos
-        ),
-        apiCache.executeWithCache("entidades-tecnicos", () =>
-          funcionariosApi.listarTecnicos(),
-          1800000 // 30 minutos
-        ),
-        apiCache.executeWithCache("entidades-localizacoes", () =>
-          localizacoesGeograficasApi.listar(),
-          1800000 // 30 minutos
-        ),
+        descricoesECategoriasApi.listar(),
+        formasPagamentoApi.listar(),
+        funcionariosApi.listar(),
+        funcionariosApi.listarTecnicos(),
+        localizacoesGeograficasApi.listar(),
       ]);
 
       // Atualizar estados com dados do banco
