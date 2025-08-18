@@ -4,7 +4,6 @@ import { z } from "zod";
 
 const FormaPagamentoSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
-  ativa: z.boolean().default(true),
 });
 
 export const getFormasPagamento: RequestHandler = async (req, res) => {
