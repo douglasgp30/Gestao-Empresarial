@@ -220,6 +220,99 @@ export default function ModalGerenciarCidades() {
     }
   };
 
+  // Cadastro em massa de setores
+  const handleCadastroMassa = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formSetorMassa.cidade || !formSetorMassa.setores.trim()) {
+      toast({
+        title: "Erro",
+        description: "Selecione uma cidade e informe os setores",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Processar lista de setores (quebrar por linha e limpar)
+      const listaSetores = formSetorMassa.setores
+        .split('\n')
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      if (listaSetores.length === 0) {
+        toast({
+          title: "Erro",
+          description: "Nenhum setor válido encontrado na lista",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      let sucessos = 0;
+      let erros = 0;
+      const setoresComErro: string[] = [];
+
+      // Criar cada setor individualmente
+      for (const nomeSetor of listaSetores) {
+        try {
+          const response = await fetch(`/api/cidades-goias/${formSetorMassa.cidade}/setores`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome: nomeSetor }),
+          });
+
+          if (response.ok) {
+            sucessos++;
+          } else {
+            erros++;
+            setoresComErro.push(nomeSetor);
+          }
+        } catch {
+          erros++;
+          setoresComErro.push(nomeSetor);
+        }
+      }
+
+      // Recarregar dados
+      await carregarDados();
+
+      // Mostrar resultado
+      if (sucessos > 0 && erros === 0) {
+        toast({
+          title: "Sucesso",
+          description: `${sucessos} setores criados com sucesso!`,
+          variant: "default",
+        });
+      } else if (sucessos > 0 && erros > 0) {
+        toast({
+          title: "Parcialmente concluído",
+          description: `${sucessos} setores criados, ${erros} com erro (possivelmente duplicados)`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: `Não foi possível criar nenhum setor. Verifique se já existem.`,
+          variant: "destructive",
+        });
+      }
+
+      // Limpar formulário se houve sucesso
+      if (sucessos > 0) {
+        setFormSetorMassa({ cidade: "", setores: "" });
+        setIsCadastroMassaOpen(false);
+      }
+    } catch (error) {
+      console.error("Erro no cadastro em massa:", error);
+      toast({
+        title: "Erro",
+        description: "Erro inesperado no cadastro em massa",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Excluir setor
   const handleExcluirSetor = async (id: number) => {
     try {
