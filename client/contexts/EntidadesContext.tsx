@@ -79,7 +79,7 @@ interface EntidadesContextType {
   ) => Promise<void>;
   excluirFormaPagamento: (id: string) => Promise<void>;
 
-  // Funcionários/T��cnicos
+  // Funcionários/Técnicos
   funcionarios: any[];
   tecnicos: any[];
   adicionarFuncionario: (funcionario: any) => Promise<void>;
@@ -101,6 +101,10 @@ interface EntidadesContextType {
   // Funções de conveniência para filtrar localizações
   getCidades: () => LocalizacaoGeografica[];
   getSetores: (cidade?: string) => LocalizacaoGeografica[];
+
+  // Arrays de compatibilidade para componentes antigos
+  cidades: string[];
+  setores: LocalizacaoGeografica[];
 
   // Clientes (API)
   clientes: Cliente[];
@@ -651,7 +655,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   const adicionarFuncionario = async () => {
-    console.warn("adicionarFuncionario: Funcionalidade não implementada");
+    console.warn("adicionarFuncionario: Funcionalidade n��o implementada");
   };
 
   const editarFuncionario = async () => {
