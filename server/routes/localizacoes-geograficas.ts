@@ -218,23 +218,11 @@ export const deleteLocalizacaoGeografica: RequestHandler = async (req, res) => {
       });
     }
 
-    // Verificar dependências (similar ao padrão de categorias)
+    // Cidades de Goiás são pré-cadastradas e não devem ser excluídas
     if (item.tipoItem === "cidade") {
-      // Verificar se existem setores vinculados a esta cidade
-      const setoresVinculados = await prisma.localizacaoGeografica.findMany({
-        where: {
-          tipoItem: "setor",
-          cidade: item.nome,
-          ativo: true,
-        },
+      return res.status(400).json({
+        error: `Não é possível excluir a cidade "${item.nome}". As cidades são pré-cadastradas no sistema. Use a função ativar/desativar para controlar quais cidades aparecem nas opções.`,
       });
-
-      if (setoresVinculados.length > 0) {
-        const nomesSetores = setoresVinculados.map((s) => s.nome).join(", ");
-        return res.status(400).json({
-          error: `Não é possível excluir a cidade "${item.nome}" pois existem ${setoresVinculados.length} setor(es) vinculado(s): ${nomesSetores}. Remova ou realoque estes setores primeiro.`,
-        });
-      }
     }
 
     // Verificar se há lançamentos vinculados
