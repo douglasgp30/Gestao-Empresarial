@@ -214,7 +214,7 @@ export default function FormularioAgendamento({
         });
 
         // Buscar o setor recém-criado para obter o ID correto
-        const setorCriado = setores.find(
+        const setorCriado = setores && setores.find(
           (s) => s.nome === novoSetor.trim() && s.cidade === formData.cidade,
         );
         if (setorCriado) {
