@@ -79,7 +79,7 @@ interface EntidadesContextType {
   ) => Promise<void>;
   excluirFormaPagamento: (id: string) => Promise<void>;
 
-  // Funcionários/Técnicos
+  // Funcionários/T��cnicos
   funcionarios: any[];
   tecnicos: any[];
   adicionarFuncionario: (funcionario: any) => Promise<void>;
@@ -758,6 +758,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       tecnicos,
       getTecnicos,
       localizacoesGeograficas,
+      cidades,
+      setores,
       descricoes,
       categorias,
       clientes,
