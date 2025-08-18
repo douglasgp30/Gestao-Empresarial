@@ -96,6 +96,7 @@ export default function ModalGerenciarCidades() {
   const [cidadesAtivas, setCidadesAtivas] = useState<Cidade[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pesquisaCidade, setPesquisaCidade] = useState("");
+  const [pesquisaSetor, setPesquisaSetor] = useState("");
 
   const [formSetor, setFormSetor] = useState({
     nome: "",
@@ -364,7 +365,7 @@ export default function ModalGerenciarCidades() {
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* Botões de ação para criar setores */}
+            {/* Botões de a��ão para criar setores */}
             <div className="flex gap-2 justify-end">
               <Dialog open={isNovoSetorOpen} onOpenChange={setIsNovoSetorOpen}>
                 <DialogTrigger asChild>
