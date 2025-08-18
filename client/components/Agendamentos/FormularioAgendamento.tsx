@@ -384,7 +384,7 @@ export default function FormularioAgendamento({
                   <SelectValue placeholder="Selecione o setor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {setores
+                  {setores && setores
                     .filter((setor) => {
                       if (!formData.cidade) return true;
                       const nomeCidadeSetor =
