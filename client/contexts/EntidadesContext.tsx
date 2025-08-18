@@ -381,7 +381,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
-      setContextLoading("EntidadesContext", false);
+      setDadosCarregados(true);
+      console.log("[EntidadesContext] Carregamento finalizado - loading=false");
     }
   }, [isCarregando]);
 
