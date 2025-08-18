@@ -343,6 +343,7 @@ export function ModalReceita() {
               <strong>Debug:</strong>
               Categorias: {categoriasReceita.length} |
               Formas: {formasPagamento.length} |
+              Campanhas: {Array.isArray(campanhas) ? campanhas.length : 0} |
               Cidades: {Array.isArray(cidades) ? cidades.length : 0} |
               Setores: {Array.isArray(setores) ? setores.length : 0}
             </div>
