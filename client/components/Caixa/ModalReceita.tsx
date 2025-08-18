@@ -608,25 +608,27 @@ export function ModalReceita() {
             {/* Campanha - movido para antes de Cliente */}
             <div className="space-y-2">
               <Label htmlFor="campanha">Campanha</Label>
-              <SelectWithAdd
+              <Select
                 value={formData.campanha}
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, campanha: value }))
                 }
-                placeholder="Selecione a campanha"
-                options={(Array.isArray(campanhas) ? campanhas : []).map(
-                  (campanha) => ({
-                    value: campanha.id.toString(),
-                    label: campanha.nome,
-                  }),
-                )}
-                onAddNew={async (nomeCampanha) => {
-                  await adicionarCampanha({
-                    nome: nomeCampanha,
-                  });
-                }}
-                addButtonText="Nova Campanha"
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a campanha" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Array.isArray(campanhas) ? campanhas : []).map((campanha) => (
+                    <SelectItem key={campanha.id} value={campanha.id.toString()}>
+                      {campanha.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {/* Debug temporário */}
+              <div className="text-xs text-gray-500">
+                Debug: {Array.isArray(campanhas) ? campanhas.length : 0} campanhas carregadas
+              </div>
             </div>
 
             {/* Cliente */}
