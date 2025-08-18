@@ -536,7 +536,7 @@ export default function ModalGerenciarCidades() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Building className="h-4 w-4" />
-                  Cidades de Goiás
+                  Cidades
                 </CardTitle>
                 <CardDescription>
                   {cidades.length} cidades cadastradas • {cidadesAtivas.length} ativas
