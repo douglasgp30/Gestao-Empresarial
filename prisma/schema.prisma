@@ -58,6 +58,26 @@ model DescricaoECategoria {
   @@index([ativo])
 }
 
+// Tabela unificada para Cidades e Setores (baseada no padrão de DescricaoECategoria)
+model LocalizacaoGeografica {
+  id          Int      @id @default(autoincrement())
+  nome        String   // Nome da cidade ou setor
+  tipoItem    String   // "cidade" ou "setor"
+  cidade      String?  // Cidade pai (apenas para setores)
+  ativo       Boolean  @default(true)
+  dataCriacao DateTime @default(now())
+
+  // Relacionamentos
+  lancamentos  LancamentoCaixa[]
+  agendamentos Agendamento[]
+  contas       ContaLancamento[]
+
+  @@map("localizacoes_geograficas")
+  @@index([tipoItem])
+  @@index([ativo])
+  @@index([cidade])
+}
+
 model Subdescricao {
   id          Int      @id @default(autoincrement()) // CodigoSubdescricao
   nome        String   // Subdescricao (obrigatório)
@@ -163,37 +183,6 @@ model Funcionario {
   @@index([tipoAcesso])
 }
 
-model Cidade {
-  id          Int      @id @default(autoincrement())
-  nome        String   @unique // Nome da cidade deve ser único
-  ativo       Boolean  @default(true)
-  dataCriacao DateTime @default(now())
-
-  // Relacionamentos
-  setores      Setor[]
-  lancamentos  LancamentoCaixa[]
-  agendamentos Agendamento[]
-  contas       ContaLancamento[]
-
-  @@map("cidades")
-}
-
-model Setor {
-  id          Int      @id @default(autoincrement()) // CodigoSetor
-  cidadeId    Int      // Chave estrangeira para Cidade
-  nome        String   // Setor/bairro (obrigatório)
-  ativo       Boolean  @default(true)
-  dataCriacao DateTime @default(now())
-
-  // Relacionamentos
-  cidade       Cidade            @relation(fields: [cidadeId], references: [id])
-  lancamentos  LancamentoCaixa[]
-  agendamentos Agendamento[]
-  contas       ContaLancamento[]
-
-  @@map("setores")
-  @@unique([cidadeId, nome]) // Não permitir setores duplicados na mesma cidade
-}
 
 model LancamentoCaixa {
   id                Int      @id @default(autoincrement()) // CodLançamentoCX
@@ -216,10 +205,9 @@ model LancamentoCaixa {
   // Chaves estrangeiras opcionais
   subdescricaoId    Int?     // Puxa da tabela Subdescrição
   funcionarioId     Int?     // Puxa da tabela Técnicos
-  cidadeId          Int?     // Puxa da tabela Cidades
-  setorId           Int?     // Puxa da tabela Setores
   campanhaId        Int?     // Puxa da tabela Campanhas
   clienteId         Int?     // Puxa da tabela Clientes
+  localizacaoId     Int?     // Puxa da tabela Localizações Geográficas
 
   // Unified descriptions and categories
   descricaoECategoriaId Int? // FK to unified table
@@ -229,11 +217,10 @@ model LancamentoCaixa {
   formaPagamento FormaPagamento @relation(fields: [formaPagamentoId], references: [id])
   subdescricao   Subdescricao?  @relation(fields: [subdescricaoId], references: [id])
   funcionario    Funcionario?   @relation(fields: [funcionarioId], references: [id])
-  cidade         Cidade?        @relation(fields: [cidadeId], references: [id])
-  setor          Setor?         @relation(fields: [setorId], references: [id])
   campanha       Campanha?      @relation(fields: [campanhaId], references: [id])
   cliente        Cliente?       @relation(fields: [clienteId], references: [id])
   descricaoECategoria DescricaoECategoria? @relation(fields: [descricaoECategoriaId], references: [id])
+  localizacao    LocalizacaoGeografica? @relation(fields: [localizacaoId], references: [id])
 
   @@map("lancamentos_caixa")
   @@index([dataHora])
@@ -314,6 +301,9 @@ model ContaLancamento {
   // Unified descriptions and categories
   descricaoECategoriaId Int?     // FK to unified table
 
+  // Geographic Information
+  localizacaoId         Int?     // FK to localizacao geografica
+
   // Recurring Information
   ehRecorrente          Boolean  @default(false) // Is recurring
   tipoRecorrencia       String?  // "mensal", "trimestral", "semestral", "anual"
@@ -327,9 +317,6 @@ model ContaLancamento {
   anexos                String?  // JSON with attached files
   tags                  String?  // JSON with tags
 
-  // Geographic Information
-  cidadeId              Int?     // City ID
-  setorId               Int?     // Sector/neighborhood ID
 
   // Responsible Information
   funcionarioLancamento Int?     // Employee who created the record
@@ -363,11 +350,10 @@ model ContaLancamento {
   funcionarioLanc       Funcionario?    @relation("FuncionarioLancamento", fields: [funcionarioLancamento], references: [id])
   funcionarioPag        Funcionario?    @relation("FuncionarioPagamento", fields: [funcionarioPagamento], references: [id])
   funcionarioCob        Funcionario?    @relation("FuncionarioCobranca", fields: [funcionarioCobranca], references: [id])
-  cidade                Cidade?         @relation(fields: [cidadeId], references: [id])
-  setor                 Setor?          @relation(fields: [setorId], references: [id])
   contaOrigem           ContaLancamento? @relation("ContaRecorrente", fields: [contaOrigemId], references: [id])
   contasRecorrentes     ContaLancamento[] @relation("ContaRecorrente")
   descricaoECategoria   DescricaoECategoria? @relation("DescricaoCategoria", fields: [descricaoECategoriaId], references: [id])
+  localizacao           LocalizacaoGeografica? @relation(fields: [localizacaoId], references: [id])
 
   // Indexes for performance
   @@map("contas_lancamentos_enhanced")
@@ -473,14 +459,12 @@ model Agendamento {
   // Chaves estrangeiras
   clienteId     Int
   funcionarioId Int?
-  cidadeId      Int?
-  setorId       Int?
+  localizacaoId Int?
 
   // Relacionamentos
   cliente     Cliente      @relation(fields: [clienteId], references: [id])
   funcionario Funcionario? @relation(fields: [funcionarioId], references: [id])
-  cidade      Cidade?      @relation(fields: [cidadeId], references: [id])
-  setor       Setor?       @relation(fields: [setorId], references: [id])
+  localizacao LocalizacaoGeografica? @relation(fields: [localizacaoId], references: [id])
 
   @@map("agendamentos")
 }

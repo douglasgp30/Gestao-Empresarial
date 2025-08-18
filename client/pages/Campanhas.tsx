@@ -31,6 +31,7 @@ import {
   Megaphone,
   Eye,
 } from "lucide-react";
+import TestLocalizacoesApi from "../components/Debug/TestLocalizacoesApi";
 
 export default function Campanhas() {
   const { campanhas, lancamentos } = useCaixa();
@@ -325,6 +326,18 @@ export default function Campanhas() {
               </span>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Teste de Localização Geográfica */}
+      <Card className="bg-yellow-50 border-yellow-200">
+        <CardHeader>
+          <CardTitle className="text-yellow-800">
+            🧪 Teste de API - Localização Geográfica
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TestLocalizacoesApi />
         </CardContent>
       </Card>
     </div>

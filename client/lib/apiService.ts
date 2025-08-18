@@ -223,28 +223,57 @@ export const funcionariosApi = {
     }),
 };
 
-// === SETORES ===
-export const setoresApi = {
-  listar: (ativos?: boolean, cidade?: string) => {
+// === LOCALIZAÇÃO GEOGRÁFICA (CIDADES E SETORES) ===
+export const localizacoesGeograficasApi = {
+  // Listar todas as localizações
+  listar: (filtros?: {
+    tipo?: "cidade" | "setor";
+    ativo?: boolean;
+    cidade?: string;
+  }) => {
     const params = new URLSearchParams();
-    if (ativos !== undefined) params.append("ativos", String(ativos));
+    if (filtros) {
+      Object.entries(filtros).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, String(value));
+      });
+    }
+    const query = params.toString() ? `?${params.toString()}` : "";
+    return apiRequest<any[]>(`/localizacoes-geograficas${query}`);
+  },
+
+  // Listar apenas cidades
+  listarCidades: () => apiRequest<any[]>("/cidades"),
+
+  // Listar setores (opcionalmente filtrados por cidade)
+  listarSetores: (cidade?: string) => {
+    const params = new URLSearchParams();
     if (cidade) params.append("cidade", cidade);
     const query = params.toString() ? `?${params.toString()}` : "";
     return apiRequest<any[]>(`/setores${query}`);
   },
-  listarCidades: () => apiRequest<any[]>("/cidades"),
-  criar: (setor: any) =>
-    apiRequest<any>("/setores", {
+
+  // Criar nova localização
+  criar: (localizacao: {
+    nome: string;
+    tipoItem: "cidade" | "setor";
+    cidade?: string;
+    ativo?: boolean;
+  }) =>
+    apiRequest<any>("/localizacoes-geograficas", {
       method: "POST",
-      body: JSON.stringify(setor),
+      body: JSON.stringify(localizacao),
     }),
-  atualizar: (id: number, setor: any) =>
-    apiRequest<any>(`/setores/${id}`, {
+
+  // Atualizar localização
+  atualizar: (id: number, localizacao: any) =>
+    apiRequest<any>(`/localizacoes-geograficas/${id}`, {
       method: "PUT",
-      body: JSON.stringify(setor),
+      body: JSON.stringify(localizacao),
     }),
+
+  // Excluir localização
   excluir: (id: number) =>
-    apiRequest<void>(`/setores/${id}`, {
+    apiRequest<void>(`/localizacoes-geograficas/${id}`, {
       method: "DELETE",
     }),
 };
@@ -256,7 +285,6 @@ export const caixaApi = {
     dataFim?: string;
     tipo?: string;
     funcionarioId?: number;
-    setorId?: number;
     campanhaId?: number;
     formaPagamentoId?: number;
   }) => {

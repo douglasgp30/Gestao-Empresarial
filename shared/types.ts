@@ -246,18 +246,13 @@ export interface Fornecedor {
   dataCriacao: Date;
 }
 
-export interface Setor {
-  id: string; // CodigoSetor
-  cidade?: string; // Cidade - formato antigo (texto)
-  cidadeId?: number; // Cidade - novo formato (FK para tabela cidades)
-  nome: string; // Setor/bairro (obrigatório)
-  dataCriacao: Date;
-}
-
-export interface Cidade {
-  id: string;
+// Localização Geográfica Unificada (Cidades e Setores)
+export interface LocalizacaoGeografica {
+  id: number;
   nome: string;
-  estado?: string;
+  tipoItem: "cidade" | "setor"; // Tipo do item
+  cidade?: string; // Cidade pai (apenas para setores)
+  ativo: boolean;
   dataCriacao: Date;
 }
 

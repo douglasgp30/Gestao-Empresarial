@@ -39,7 +39,19 @@ export default function FormularioAgendamento({
 }: FormularioAgendamentoProps) {
   const { criarAgendamento, atualizarAgendamento, agendamentos } =
     useAgendamentos();
-  const { setores, adicionarSetor, cidades, adicionarCidade } = useEntidades();
+  const {
+    localizacoesGeograficas,
+    getCidades,
+    getSetores,
+    adicionarLocalizacaoGeografica,
+  } = useEntidades();
+
+  // Derivar cidades e setores das localizações
+  const cidadesObjs = getCidades() || [];
+  const setores = getSetores() || [];
+
+  // Converter cidades para array de strings (compatibilidade com código antigo)
+  const cidades = cidadesObjs.map((cidade) => cidade.nome);
   const { funcionarios } = useFuncionarios();
 
   const [aberto, setAberto] = useState(false);
@@ -197,15 +209,19 @@ export default function FormularioAgendamento({
 
     if (novoSetor.trim()) {
       try {
-        await adicionarSetor({
+        await adicionarLocalizacaoGeografica({
           nome: novoSetor.trim(),
+          tipoItem: "setor",
           cidade: formData.cidade,
+          ativo: true,
         });
 
         // Buscar o setor recém-criado para obter o ID correto
-        const setorCriado = setores.find(
-          (s) => s.nome === novoSetor.trim() && s.cidade === formData.cidade,
-        );
+        const setorCriado =
+          setores &&
+          setores.find(
+            (s) => s.nome === novoSetor.trim() && s.cidade === formData.cidade,
+          );
         if (setorCriado) {
           setFormData({ ...formData, setor: setorCriado.id.toString() });
         }
@@ -229,7 +245,11 @@ export default function FormularioAgendamento({
   const handleAdicionarCidade = async () => {
     if (novaCidade.trim()) {
       try {
-        await adicionarCidade({ nome: novaCidade.trim() });
+        await adicionarLocalizacaoGeografica({
+          nome: novaCidade.trim(),
+          tipoItem: "cidade",
+          ativo: true,
+        });
         setFormData({ ...formData, cidade: novaCidade.trim() });
         setNovaCidade("");
         setMostrarNovaCidade(false);
@@ -375,23 +395,24 @@ export default function FormularioAgendamento({
                   <SelectValue placeholder="Selecione o setor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {setores
-                    .filter((setor) => {
-                      if (!formData.cidade) return true;
-                      const nomeCidadeSetor =
-                        typeof setor.cidade === "object"
-                          ? setor.cidade?.nome
-                          : setor.cidade;
-                      return nomeCidadeSetor === formData.cidade;
-                    })
-                    .map((setor) => (
-                      <SelectItem key={setor.id} value={setor.id.toString()}>
-                        {setor.nome} -{" "}
-                        {typeof setor.cidade === "object"
-                          ? setor.cidade?.nome
-                          : setor.cidade}
-                      </SelectItem>
-                    ))}
+                  {setores &&
+                    setores
+                      .filter((setor) => {
+                        if (!formData.cidade) return true;
+                        const nomeCidadeSetor =
+                          typeof setor.cidade === "object"
+                            ? setor.cidade?.nome
+                            : setor.cidade;
+                        return nomeCidadeSetor === formData.cidade;
+                      })
+                      .map((setor) => (
+                        <SelectItem key={setor.id} value={setor.id.toString()}>
+                          {setor.nome} -{" "}
+                          {typeof setor.cidade === "object"
+                            ? setor.cidade?.nome
+                            : setor.cidade}
+                        </SelectItem>
+                      ))}
                 </SelectContent>
               </Select>
               <Button

@@ -15,8 +15,8 @@ class ApiCache {
     if (
       key.includes("entidades") ||
       key.includes("funcionarios") ||
-      key.includes("setores") ||
-      key.includes("formas-pagamento")
+      key.includes("formas-pagamento") ||
+      key.includes("localizacoes")
     ) {
       return this.cacheTimes.entidades;
     }
@@ -50,7 +50,7 @@ class ApiCache {
       expiry,
     });
     console.log(
-      `💾 [ApiCache] Cache salvo para ${key} (expira em ${expiry}ms)`,
+      `�� [ApiCache] Cache salvo para ${key} (expira em ${expiry}ms)`,
     );
   }
 

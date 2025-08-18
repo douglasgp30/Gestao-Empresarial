@@ -15,15 +15,14 @@ import {
   FormaPagamento,
   Cliente,
   Fornecedor,
-  Setor,
-  Cidade,
+  LocalizacaoGeografica,
 } from "@shared/types";
 import {
   descricoesApi,
   formasPagamentoApi,
   funcionariosApi,
-  setoresApi,
   clientesApi,
+  localizacoesGeograficasApi,
 } from "../lib/apiService";
 import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
 import { loadingManager } from "../lib/loadingManager";
@@ -88,13 +87,20 @@ interface EntidadesContextType {
   excluirFuncionario: (id: string) => Promise<void>;
   getTecnicos: () => any[];
 
-  // Setores
-  setores: Setor[];
-  cidades: string[];
-  adicionarSetor: (setor: Omit<Setor, "id" | "dataCriacao">) => Promise<void>;
-  editarSetor: (id: string, setor: Partial<Setor>) => Promise<void>;
-  excluirSetor: (id: string) => Promise<void>;
-  adicionarCidade: (cidade: { nome: string }) => Promise<void>;
+  // Localização Geográfica (Cidades e Setores unificados)
+  localizacoesGeograficas: LocalizacaoGeografica[];
+  adicionarLocalizacaoGeografica: (
+    localizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
+  ) => Promise<void>;
+  editarLocalizacaoGeografica: (
+    id: number,
+    localizacao: Partial<LocalizacaoGeografica>,
+  ) => Promise<void>;
+  excluirLocalizacaoGeografica: (id: number) => Promise<void>;
+
+  // Funções de conveniência para filtrar localizações
+  getCidades: () => LocalizacaoGeografica[];
+  getSetores: (cidade?: string) => LocalizacaoGeografica[];
 
   // Clientes (API)
   clientes: Cliente[];
@@ -169,8 +175,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [formasPagamento, setFormasPagamento] = useState<FormaPagamento[]>([]);
   const [funcionarios, setFuncionarios] = useState<any[]>([]);
   const [tecnicos, setTecnicos] = useState<any[]>([]);
-  const [setores, setSetores] = useState<Setor[]>([]);
-  const [cidades, setCidades] = useState<string[]>([]);
+  const [localizacoesGeograficas, setLocalizacoesGeograficas] = useState<
+    LocalizacaoGeografica[]
+  >([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -201,6 +208,25 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       );
     },
     [descricoesECategorias],
+  );
+
+  // === FUNÇÕES PARA LOCALIZAÇÃO GEOGRÁFICA (MEMOIZADAS) ===
+  const getCidades = useCallback(() => {
+    return localizacoesGeograficas.filter(
+      (item) => item.tipoItem === "cidade" && item.ativo,
+    );
+  }, [localizacoesGeograficas]);
+
+  const getSetores = useCallback(
+    (cidade?: string) => {
+      return localizacoesGeograficas.filter(
+        (item) =>
+          item.tipoItem === "setor" &&
+          item.ativo &&
+          (cidade ? item.cidade === cidade : true),
+      );
+    },
+    [localizacoesGeograficas],
   );
 
   const getTecnicos = useCallback(() => {
@@ -244,8 +270,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         formasPagamentoResponse,
         funcionariosResponse,
         tecnicosResponse,
-        setoresResponse,
-        cidadesResponse,
+        localizacoesResponse,
       ] = await Promise.all([
         apiCache.executeWithCache("entidades-descricoes", () =>
           descricoesECategoriasApi.listar(),
@@ -259,11 +284,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         apiCache.executeWithCache("entidades-tecnicos", () =>
           funcionariosApi.listarTecnicos(),
         ),
-        apiCache.executeWithCache("entidades-setores", () =>
-          setoresApi.listar(),
-        ),
-        apiCache.executeWithCache("entidades-cidades", () =>
-          setoresApi.listarCidades(),
+        apiCache.executeWithCache("entidades-localizacoes", () =>
+          localizacoesGeograficasApi.listar(),
         ),
       ]);
 
@@ -287,37 +309,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setTecnicos(tecnicosResponse.data);
       }
 
-      if (setoresResponse.data) {
-        setSetores(setoresResponse.data);
-      }
-
-      if (cidadesResponse.data) {
-        let cidadesArray = cidadesResponse.data;
-
-        // Se cidadesResponse.data tem propriedade data, extrair o array
-        if (
-          cidadesResponse.data.data &&
-          Array.isArray(cidadesResponse.data.data)
-        ) {
-          cidadesArray = cidadesResponse.data.data;
-        }
-
-        // Sempre converter para array de strings, independente da estrutura
-        if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          const cidadesString = cidadesArray.map((cidade: any) => {
-            if (typeof cidade === "string") {
-              return cidade;
-            } else if (cidade && cidade.nome) {
-              return cidade.nome;
-            } else {
-              console.warn("Cidade com estrutura inválida:", cidade);
-              return String(cidade);
-            }
-          });
-          setCidades(cidadesString);
-        } else {
-          setCidades([]);
-        }
+      if (localizacoesResponse.data) {
+        setLocalizacoesGeograficas(localizacoesResponse.data);
+        console.log(
+          `[EntidadesContext] Carregadas ${localizacoesResponse.data.length} localizações geográficas`,
+        );
       }
 
       // Carregar dados do localStorage (compatibilidade)
@@ -348,7 +344,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setFormasPagamento([]);
       setFuncionarios([]);
       setTecnicos([]);
-      setSetores([]);
+      setLocalizacoesGeograficas([]);
       setCidades([]);
     } finally {
       setIsLoading(false);
@@ -521,7 +517,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // === FUNÇÕES CRUD PARA SETORES ===
+  // === FUNÇÕES CRUD PARA LOCALIZAÇÃO GEOGRÁFICA ===
   const adicionarSetor = async (
     novoSetor: Omit<Setor, "id" | "dataCriacao">,
   ) => {
@@ -537,7 +533,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         !("cidadeId" in novoSetor)
       ) {
         // Buscar ID da cidade pelo nome
-        const cidadesResponse = await setoresApi.listarCidades();
+        const cidadesResponse =
+          await localizacoesGeograficasApi.listarCidades();
         console.log("[EntidadesContext] Resposta de cidades:", cidadesResponse);
 
         if (cidadesResponse.data) {
@@ -592,12 +589,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      await setoresApi.criar(setorParaEnviar);
-      const [setoresResponse, cidadesResponse] = await Promise.all([
-        setoresApi.listar(),
-        setoresApi.listarCidades(),
-      ]);
-      if (setoresResponse.data) setSetores(setoresResponse.data);
+      await localizacoesGeograficasApi.criar(setorParaEnviar);
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) setLocalizacoesGeograficas(response.data);
       if (cidadesResponse.data) {
         let cidadesArray = cidadesResponse.data;
 
@@ -639,9 +633,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const editarSetor = async (id: string, dadosAtualizados: Partial<Setor>) => {
     try {
       setError(null);
-      await setoresApi.atualizar(parseInt(id), dadosAtualizados);
-      const response = await setoresApi.listar();
-      if (response.data) setSetores(response.data);
+      await localizacoesGeograficasApi.atualizar(
+        parseInt(id),
+        dadosAtualizados,
+      );
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) setLocalizacoesGeograficas(response.data);
       toast.success("Setor atualizado!");
     } catch (error) {
       console.error("Erro ao editar setor:", error);
@@ -653,9 +650,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const excluirSetor = async (id: string) => {
     try {
       setError(null);
-      await setoresApi.excluir(parseInt(id));
-      const response = await setoresApi.listar();
-      if (response.data) setSetores(response.data);
+      await localizacoesGeograficasApi.excluir(parseInt(id));
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) setLocalizacoesGeograficas(response.data);
       toast.success("Setor excluído!");
     } catch (error) {
       console.error("Erro ao excluir setor:", error);
@@ -690,7 +687,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       // Recarregar lista de cidades
-      const cidadesResponse = await setoresApi.listarCidades();
+      const cidadesResponse = await localizacoesGeograficasApi.listarCidades();
       console.log(
         "[EntidadesContext] Resposta ao recarregar cidades:",
         cidadesResponse,
@@ -730,6 +727,100 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       const errorMessage =
         error instanceof Error ? error.message : "Erro desconhecido";
       toast.error(`Erro ao adicionar cidade: ${errorMessage}`);
+      throw error;
+    }
+  };
+
+  // === FUNÇÕES NOVAS DE LOCALIZAÇÃO GEOGRÁFICA ===
+  const adicionarLocalizacaoGeografica = async (
+    novaLocalizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
+  ) => {
+    try {
+      setError(null);
+      console.log(
+        "[EntidadesContext] Adicionando localização:",
+        novaLocalizacao,
+      );
+
+      await localizacoesGeograficasApi.criar(novaLocalizacao);
+
+      // Recarregar dados
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) {
+        setLocalizacoesGeograficas(response.data);
+        console.log(
+          `[EntidadesContext] ${novaLocalizacao.tipoItem} criado com sucesso`,
+        );
+      }
+
+      // Invalidar cache
+      apiCache.invalidate("entidades-localizacoes");
+
+      toast.success(
+        `${novaLocalizacao.tipoItem === "cidade" ? "Cidade" : "Setor"} adicionado com sucesso!`,
+      );
+    } catch (error: any) {
+      console.error("Erro ao adicionar localização:", error);
+      const errorMessage =
+        error.response?.data?.error ||
+        `Erro ao adicionar ${novaLocalizacao.tipoItem}`;
+      setError(errorMessage);
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  const editarLocalizacaoGeografica = async (
+    id: number,
+    dadosAtualizados: Partial<LocalizacaoGeografica>,
+  ) => {
+    try {
+      setError(null);
+
+      await localizacoesGeograficasApi.atualizar(id, dadosAtualizados);
+
+      // Recarregar dados
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) {
+        setLocalizacoesGeograficas(response.data);
+      }
+
+      // Invalidar cache
+      apiCache.invalidate("entidades-localizacoes");
+
+      toast.success("Localização atualizada com sucesso!");
+    } catch (error: any) {
+      console.error("Erro ao editar localização:", error);
+      const errorMessage =
+        error.response?.data?.error || "Erro ao editar localização";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  const excluirLocalizacaoGeografica = async (id: number) => {
+    try {
+      setError(null);
+
+      await localizacoesGeograficasApi.excluir(id);
+
+      // Recarregar dados
+      const response = await localizacoesGeograficasApi.listar();
+      if (response.data) {
+        setLocalizacoesGeograficas(response.data);
+      }
+
+      // Invalidar cache
+      apiCache.invalidate("entidades-localizacoes");
+
+      toast.success("Localização excluída com sucesso!");
+    } catch (error: any) {
+      console.error("Erro ao excluir localização:", error);
+      const errorMessage =
+        error.response?.data?.error || "Erro ao excluir localização";
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw error;
     }
   };
@@ -821,12 +912,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       editarFuncionario,
       excluirFuncionario,
 
-      setores,
-      cidades,
-      adicionarSetor,
-      editarSetor,
-      excluirSetor,
-      adicionarCidade,
+      localizacoesGeograficas,
+      getCidades,
+      getSetores,
+      adicionarLocalizacaoGeografica,
+      editarLocalizacaoGeografica,
+      excluirLocalizacaoGeografica,
 
       // Compatibilidade
       descricoes,
@@ -862,8 +953,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       funcionarios,
       tecnicos,
       getTecnicos,
-      setores,
-      cidades,
+      localizacoesGeograficas,
       descricoes,
       categorias,
       clientes,

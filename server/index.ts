@@ -37,21 +37,6 @@ import {
 } from "./routes/funcionarios";
 
 import {
-  getSetores,
-  getCidades,
-  createSetor,
-  updateSetor,
-  deleteSetor,
-  deleteCidade,
-} from "./routes/setores";
-import {
-  getCidades as getCidadesNovo,
-  createCidade,
-  updateCidade,
-  deleteCidade as deleteCidadeNovo,
-} from "./routes/cidades";
-
-import {
   getLancamentos,
   createLancamento,
   updateLancamento,
@@ -62,6 +47,14 @@ import {
 import contasRouter from "./routes/contas";
 import { cleanFakeDataRoute } from "./routes/clean";
 import descricoesECategoriasRouter from "./routes/descricoes-e-categorias";
+import {
+  getLocalizacoesGeograficas,
+  getCidades,
+  getSetores,
+  createLocalizacaoGeografica,
+  updateLocalizacaoGeografica,
+  deleteLocalizacaoGeografica,
+} from "./routes/localizacoes-geograficas";
 
 import {
   getClientes,
@@ -130,20 +123,13 @@ export function createServer(): Express {
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
 
-  // Rotas de Cidades (nova tabela separada)
-  app.get("/api/cidades", getCidadesNovo);
-  app.post("/api/cidades", createCidade);
-  app.put("/api/cidades/:id", updateCidade);
-  app.delete("/api/cidades/:id", deleteCidadeNovo);
-
-  // Rotas de Setores
+  // Rotas de Localização Geográfica (Cidades e Setores unificados)
+  app.get("/api/localizacoes-geograficas", getLocalizacoesGeograficas);
+  app.get("/api/cidades", getCidades);
   app.get("/api/setores", getSetores);
-  app.post("/api/setores", createSetor);
-  app.put("/api/setores/:id", updateSetor);
-  app.delete("/api/setores/:id", deleteSetor);
-
-  // Rota legada para compatibilidade
-  app.delete("/api/setores/cidades/:cidade", deleteCidade);
+  app.post("/api/localizacoes-geograficas", createLocalizacaoGeografica);
+  app.put("/api/localizacoes-geograficas/:id", updateLocalizacaoGeografica);
+  app.delete("/api/localizacoes-geograficas/:id", deleteLocalizacaoGeografica);
 
   // Rota de migração (apenas para desenvolvimento)
   app.post("/api/migrate/separate-cities", async (req, res) => {
