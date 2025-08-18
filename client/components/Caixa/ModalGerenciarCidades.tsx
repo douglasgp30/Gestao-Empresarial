@@ -667,7 +667,7 @@ export default function ModalGerenciarCidades() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {setores.map((setor) => (
+                        {setoresFiltrados.map((setor) => (
                           <TableRow key={setor.id}>
                             <TableCell>
                               <div className="flex items-center space-x-2">
