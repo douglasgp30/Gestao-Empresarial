@@ -444,23 +444,27 @@ export function ModalReceita() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
-                <SelectWithAdd
+                <Select
                   value={formData.formaPagamento}
                   onValueChange={(value) =>
                     setFormData((prev) => ({ ...prev, formaPagamento: value }))
                   }
-                  placeholder="Selecione a forma"
-                  options={formasPagamento.map((forma) => ({
-                    value: forma.id.toString(),
-                    label: forma.nome,
-                  }))}
-                  onAddNew={async (nomeForma) => {
-                    await adicionarFormaPagamento({
-                      nome: nomeForma,
-                    });
-                  }}
-                  addButtonText="Nova Forma"
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a forma" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formasPagamento.map((forma) => (
+                      <SelectItem key={forma.id} value={forma.id.toString()}>
+                        {forma.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {/* Debug temporário */}
+                <div className="text-xs text-gray-500">
+                  Debug: {formasPagamento.length} formas carregadas
+                </div>
               </div>
 
               {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
