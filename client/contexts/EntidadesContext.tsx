@@ -237,7 +237,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === FUNÇÕES PARA COMPATIBILIDADE AVEC COMPONENTES ANTIGOS ===
   const cidades = useMemo(() => {
     const cidadesAtivas = getCidades();
-    return cidadesAtivas.map(cidade => cidade.nome);
+    return cidadesAtivas.map((cidade) => cidade.nome);
   }, [getCidades]);
 
   const setores = useMemo(() => {
@@ -266,7 +266,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const timeoutSeguranca = setTimeout(() => {
       if (isLoading) {
-        console.log("[EntidadesContext] TIMEOUT SEGURANÇA: Forçando loading=false após 5 segundos");
+        console.log(
+          "[EntidadesContext] TIMEOUT SEGURANÇA: Forçando loading=false após 5 segundos",
+        );
         setIsLoading(false);
         setIsCarregando(false);
         setContextLoading("EntidadesContext", false);
@@ -286,13 +288,15 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     try {
       // Invalidar cache para garantir dados atualizados
-    apiCache.invalidate("entidades-descricoes");
-    apiCache.invalidate("entidades-formas-pagamento");
-    apiCache.invalidate("entidades-funcionarios");
-    apiCache.invalidate("entidades-tecnicos");
-    apiCache.invalidate("entidades-localizacoes");
+      apiCache.invalidate("entidades-descricoes");
+      apiCache.invalidate("entidades-formas-pagamento");
+      apiCache.invalidate("entidades-funcionarios");
+      apiCache.invalidate("entidades-tecnicos");
+      apiCache.invalidate("entidades-localizacoes");
 
-    console.log("[EntidadesContext] Cache invalidado - forçando recarregamento...");
+      console.log(
+        "[EntidadesContext] Cache invalidado - forçando recarregamento...",
+      );
 
       // Buscar dados sem cache para debug
       const [
@@ -314,41 +318,57 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setDescricoesECategorias(descricoesECategoriasResponse.data);
         console.log(
           `[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas:`,
-          descricoesECategoriasResponse.data
+          descricoesECategoriasResponse.data,
         );
       } else {
-        console.warn("[EntidadesContext] Nenhuma descrição/categoria retornada da API");
+        console.warn(
+          "[EntidadesContext] Nenhuma descrição/categoria retornada da API",
+        );
       }
 
-      console.log("[EntidadesContext] Resposta completa formas pagamento:", formasPagamentoResponse);
+      console.log(
+        "[EntidadesContext] Resposta completa formas pagamento:",
+        formasPagamentoResponse,
+      );
       if (formasPagamentoResponse.data) {
         setFormasPagamento(formasPagamentoResponse.data);
         console.log(
           `[EntidadesContext] Carregadas ${formasPagamentoResponse.data.length} formas de pagamento:`,
-          formasPagamentoResponse.data
+          formasPagamentoResponse.data,
         );
       } else {
-        console.warn("[EntidadesContext] Nenhuma forma de pagamento retornada da API");
-        console.warn("[EntidadesContext] formasPagamentoResponse:", formasPagamentoResponse);
+        console.warn(
+          "[EntidadesContext] Nenhuma forma de pagamento retornada da API",
+        );
+        console.warn(
+          "[EntidadesContext] formasPagamentoResponse:",
+          formasPagamentoResponse,
+        );
       }
 
       if (funcionariosResponse.data) {
         setFuncionarios(funcionariosResponse.data);
-        console.log(`[EntidadesContext] Carregados ${funcionariosResponse.data.length} funcionários`);
+        console.log(
+          `[EntidadesContext] Carregados ${funcionariosResponse.data.length} funcionários`,
+        );
       }
 
       if (tecnicosResponse.data) {
         setTecnicos(tecnicosResponse.data);
-        console.log(`[EntidadesContext] Carregados ${tecnicosResponse.data.length} técnicos`);
+        console.log(
+          `[EntidadesContext] Carregados ${tecnicosResponse.data.length} técnicos`,
+        );
       }
 
       if (localizacoesResponse.data) {
         setLocalizacoesGeograficas(localizacoesResponse.data);
         console.log(
-          `[EntidadesContext] Carregadas ${localizacoesResponse.data.length} localizações geográficas`
+          `[EntidadesContext] Carregadas ${localizacoesResponse.data.length} localizações geográficas`,
         );
       } else {
-        console.warn("[EntidadesContext] Nenhuma localização geográfica retornada da API");
+        console.warn(
+          "[EntidadesContext] Nenhuma localização geográfica retornada da API",
+        );
       }
 
       // Carregar dados do localStorage (compatibilidade)

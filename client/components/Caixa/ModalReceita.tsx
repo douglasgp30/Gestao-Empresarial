@@ -270,7 +270,9 @@ export function ModalReceita() {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       if (!loadingForced) {
-        console.log("[ModalReceita] TIMEOUT SEGURANÇA: Forçando desbloqueio de loading");
+        console.log(
+          "[ModalReceita] TIMEOUT SEGURANÇA: Forçando desbloqueio de loading",
+        );
         setLoadingForced(true);
       }
     }, 3000); // 3 segundos máximo
@@ -279,7 +281,8 @@ export function ModalReceita() {
   }, [loadingForced]);
 
   // Loading com timeout de segurança
-  const isLoading = !loadingForced && (caixaLoading || entidadesLoading || clientesLoading);
+  const isLoading =
+    !loadingForced && (caixaLoading || entidadesLoading || clientesLoading);
 
   // Debug logs
   React.useEffect(() => {
@@ -288,9 +291,15 @@ export function ModalReceita() {
       entidadesLoading,
       clientesLoading,
       loadingForced,
-      isLoading
+      isLoading,
     });
-  }, [caixaLoading, entidadesLoading, clientesLoading, loadingForced, isLoading]);
+  }, [
+    caixaLoading,
+    entidadesLoading,
+    clientesLoading,
+    loadingForced,
+    isLoading,
+  ]);
 
   // Debug dados
   React.useEffect(() => {
@@ -306,7 +315,14 @@ export function ModalReceita() {
     // Debug específico das formas de pagamento
     console.log("[ModalReceita] Formas de pagamento:", formasPagamento);
     console.log("[ModalReceita] Campanhas:", campanhas);
-  }, [categoriasReceita, descricoesFiltradas, formasPagamento, campanhas, cidades, setores]);
+  }, [
+    categoriasReceita,
+    descricoesFiltradas,
+    formasPagamento,
+    campanhas,
+    cidades,
+    setores,
+  ]);
 
   return (
     <Dialog
@@ -346,11 +362,11 @@ export function ModalReceita() {
             {/* Debug temporário */}
             <div className="mb-4 p-2 bg-gray-100 text-xs rounded">
               <strong>Debug Contextos:</strong>
-              Categorias: {categoriasReceita.length} |
-              Formas: {formasPagamento.length} |
-              Campanhas: {Array.isArray(campanhas) ? campanhas.length : 0} |
-              Cidades: {Array.isArray(cidades) ? cidades.length : 0} |
-              Setores: {Array.isArray(setores) ? setores.length : 0}
+              Categorias: {categoriasReceita.length} | Formas:{" "}
+              {formasPagamento.length} | Campanhas:{" "}
+              {Array.isArray(campanhas) ? campanhas.length : 0} | Cidades:{" "}
+              {Array.isArray(cidades) ? cidades.length : 0} | Setores:{" "}
+              {Array.isArray(setores) ? setores.length : 0}
             </div>
             <TestApis />
             <Button
@@ -363,456 +379,474 @@ export function ModalReceita() {
               🔄 Recarregar Dados
             </Button>
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-            {/* Campos básicos */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="data">Data *</Label>
-                <Input
-                  id="data"
-                  type="date"
-                  value={formData.data}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, data: e.target.value }))
-                  }
-                  required
-                />
+              {/* Campos básicos */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="data">Data *</Label>
+                  <Input
+                    id="data"
+                    type="date"
+                    value={formData.data}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, data: e.target.value }))
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="valor">Valor (R$) *</Label>
+                  <Input
+                    id="valor"
+                    type="number"
+                    step="0.01"
+                    placeholder="0,00"
+                    value={formData.valor}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        valor: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="categoria">Categoria *</Label>
+                  <Select
+                    value={formData.categoria}
+                    onValueChange={(value) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        categoria: value,
+                        descricao: "", // Limpar descrição quando categoria muda
+                      }));
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categoriasReceita.map((categoria) => (
+                        <SelectItem key={categoria} value={categoria}>
+                          {categoria}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="descricao">Descrição do Serviço *</Label>
+                  <Select
+                    value={formData.descricao}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, descricao: value }))
+                    }
+                    disabled={!formData.categoria}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          formData.categoria
+                            ? "Selecione a descrição"
+                            : "Primeiro selecione uma categoria"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {descricoesFiltradas.map((desc) => (
+                        <SelectItem key={desc.id} value={desc.id.toString()}>
+                          {desc.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* Debug temporário */}
+                  <div className="text-xs text-gray-500">
+                    Debug: {descricoesFiltradas.length} descrições para
+                    categoria "{formData.categoria}"
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
+                  <Select
+                    value={formData.formaPagamento}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        formaPagamento: value,
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a forma" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {formasPagamento.map((forma) => (
+                        <SelectItem key={forma.id} value={forma.id.toString()}>
+                          {forma.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {/* Debug temporário */}
+                  <div className="text-xs text-gray-500">
+                    Debug: {formasPagamento.length} formas carregadas
+                  </div>
+                </div>
+
+                {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
+                {isFormaPagamentoCartao && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="valorQueEntrou"
+                      className="text-sm font-medium text-yellow-700"
+                    >
+                      Valor Recebido *
+                    </Label>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                      <div className="relative w-full sm:w-40">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
+                          R$
+                        </span>
+                        <Input
+                          id="valorQueEntrou"
+                          type="number"
+                          step="0.01"
+                          placeholder="0,00"
+                          value={formData.valorQueEntrou}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              valorQueEntrou: e.target.value,
+                            }))
+                          }
+                          className="bg-yellow-50 border-yellow-300 pl-8"
+                          required
+                        />
+                      </div>
+                      <p className="text-xs text-yellow-600 sm:flex-1">
+                        <strong>Importante:</strong> Valor líquido após taxas da
+                        operadora.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="tecnicoResponsavel">
+                    Técnico Responsável
+                  </Label>
+                  <Select
+                    value={formData.tecnicoResponsavel}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        tecnicoResponsavel: value,
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o técnico" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tecnicos.length === 0 ? (
+                        <div className="px-2 py-1 text-sm text-gray-500">
+                          Nenhum técnico cadastrado
+                        </div>
+                      ) : (
+                        tecnicos
+                          .filter(
+                            (tecnico) =>
+                              tecnico.id != null &&
+                              tecnico.id !== "" &&
+                              tecnico.id !== 0,
+                          )
+                          .map((tecnico) => (
+                            <SelectItem
+                              key={tecnico.id}
+                              value={tecnico.id.toString()}
+                            >
+                              {tecnico.nome || tecnico.nomeCompleto}
+                            </SelectItem>
+                          ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cidade">Cidade</Label>
+                  <Select
+                    value={formData.cidade}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        cidade: value,
+                        setor: "", // Limpar setor quando cidade muda
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a cidade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Array.isArray(cidades) ? cidades : []).map(
+                        (cidade, index) => (
+                          <SelectItem
+                            key={`cidade-${index}-${cidade}`}
+                            value={cidade}
+                          >
+                            {cidade}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="valor">Valor (R$) *</Label>
-                <Input
-                  id="valor"
-                  type="number"
-                  step="0.01"
-                  placeholder="0,00"
-                  value={formData.valor}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, valor: e.target.value }))
-                  }
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="categoria">Categoria *</Label>
+                <Label htmlFor="setor">Setor</Label>
                 <Select
-                  value={formData.categoria}
-                  onValueChange={(value) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      categoria: value,
-                      descricao: "", // Limpar descrição quando categoria muda
-                    }));
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categoriasReceita.map((categoria) => (
-                      <SelectItem key={categoria} value={categoria}>
-                        {categoria}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição do Serviço *</Label>
-                <Select
-                  value={formData.descricao}
+                  value={formData.setor}
                   onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, descricao: value }))
+                    setFormData((prev) => ({ ...prev, setor: value }))
                   }
-                  disabled={!formData.categoria}
                 >
                   <SelectTrigger>
                     <SelectValue
                       placeholder={
-                        formData.categoria
-                          ? "Selecione a descrição"
-                          : "Primeiro selecione uma categoria"
+                        formData.cidade
+                          ? "Selecione o setor"
+                          : "Primeiro selecione uma cidade"
                       }
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {descricoesFiltradas.map((desc) => (
-                      <SelectItem key={desc.id} value={desc.id.toString()}>
-                        {desc.nome}
+                    {setoresFiltrados.map((setor) => (
+                      <SelectItem key={setor.id} value={setor.id.toString()}>
+                        {setor.nome}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {/* Debug temporário */}
-                <div className="text-xs text-gray-500">
-                  Debug: {descricoesFiltradas.length} descrições para categoria "{formData.categoria}"
-                </div>
               </div>
-            </div>
 
-            <div className="space-y-4">
+              {/* Campanha - movido para antes de Cliente */}
               <div className="space-y-2">
-                <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
+                <Label htmlFor="campanha">Campanha</Label>
                 <Select
-                  value={formData.formaPagamento}
+                  value={formData.campanha}
                   onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, formaPagamento: value }))
+                    setFormData((prev) => ({ ...prev, campanha: value }))
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a forma" />
+                    <SelectValue placeholder="Selecione a campanha" />
                   </SelectTrigger>
                   <SelectContent>
-                    {formasPagamento.map((forma) => (
-                      <SelectItem key={forma.id} value={forma.id.toString()}>
-                        {forma.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {/* Debug temporário */}
-                <div className="text-xs text-gray-500">
-                  Debug: {formasPagamento.length} formas carregadas
-                </div>
-              </div>
-
-              {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
-              {isFormaPagamentoCartao && (
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="valorQueEntrou"
-                    className="text-sm font-medium text-yellow-700"
-                  >
-                    Valor Recebido *
-                  </Label>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <div className="relative w-full sm:w-40">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                        R$
-                      </span>
-                      <Input
-                        id="valorQueEntrou"
-                        type="number"
-                        step="0.01"
-                        placeholder="0,00"
-                        value={formData.valorQueEntrou}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            valorQueEntrou: e.target.value,
-                          }))
-                        }
-                        className="bg-yellow-50 border-yellow-300 pl-8"
-                        required
-                      />
-                    </div>
-                    <p className="text-xs text-yellow-600 sm:flex-1">
-                      <strong>Importante:</strong> Valor líquido após taxas da
-                      operadora.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
-                <Select
-                  value={formData.tecnicoResponsavel}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      tecnicoResponsavel: value,
-                    }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o técnico" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {tecnicos.length === 0 ? (
-                      <div className="px-2 py-1 text-sm text-gray-500">
-                        Nenhum técnico cadastrado
-                      </div>
-                    ) : (
-                      tecnicos
-                        .filter(
-                          (tecnico) =>
-                            tecnico.id != null &&
-                            tecnico.id !== "" &&
-                            tecnico.id !== 0,
-                        )
-                        .map((tecnico) => (
-                          <SelectItem
-                            key={tecnico.id}
-                            value={tecnico.id.toString()}
-                          >
-                            {tecnico.nome || tecnico.nomeCompleto}
-                          </SelectItem>
-                        ))
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="cidade">Cidade</Label>
-                <Select
-                  value={formData.cidade}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      cidade: value,
-                      setor: "", // Limpar setor quando cidade muda
-                    }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a cidade" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(Array.isArray(cidades) ? cidades : []).map(
-                      (cidade, index) => (
+                    {(Array.isArray(campanhas) ? campanhas : []).map(
+                      (campanha) => (
                         <SelectItem
-                          key={`cidade-${index}-${cidade}`}
-                          value={cidade}
+                          key={campanha.id}
+                          value={campanha.id.toString()}
                         >
-                          {cidade}
+                          {campanha.nome}
                         </SelectItem>
                       ),
                     )}
                   </SelectContent>
                 </Select>
+                {/* Debug temporário */}
+                <div className="text-xs text-gray-500">
+                  Debug: {Array.isArray(campanhas) ? campanhas.length : 0}{" "}
+                  campanhas carregadas
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="setor">Setor</Label>
-              <Select
-                value={formData.setor}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, setor: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      formData.cidade
-                        ? "Selecione o setor"
-                        : "Primeiro selecione uma cidade"
+              {/* Cliente */}
+              <div className="space-y-2">
+                <Label htmlFor="cliente">Cliente</Label>
+                <div className="flex gap-2">
+                  <Select
+                    value={formData.cliente}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, cliente: value }))
                     }
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Selecione um cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clientes.map((cliente) => (
+                        <SelectItem key={cliente.id} value={cliente.id}>
+                          {cliente.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <ModalCadastroCliente
+                    trigger={
+                      <Button type="button" variant="outline" size="icon">
+                        <UserPlus className="h-4 w-4" />
+                      </Button>
+                    }
+                    onClienteAdicionado={(cliente) => {
+                      setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+                      toast({
+                        title: "Cliente Adicionado",
+                        description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+                        variant: "default",
+                      });
+                    }}
                   />
-                </SelectTrigger>
-                <SelectContent>
-                  {setoresFiltrados.map((setor) => (
-                    <SelectItem key={setor.id} value={setor.id.toString()}>
-                      {setor.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Campanha - movido para antes de Cliente */}
-            <div className="space-y-2">
-              <Label htmlFor="campanha">Campanha</Label>
-              <Select
-                value={formData.campanha}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, campanha: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a campanha" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Array.isArray(campanhas) ? campanhas : []).map((campanha) => (
-                    <SelectItem key={campanha.id} value={campanha.id.toString()}>
-                      {campanha.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {/* Debug temporário */}
-              <div className="text-xs text-gray-500">
-                Debug: {Array.isArray(campanhas) ? campanhas.length : 0} campanhas carregadas
+                </div>
               </div>
-            </div>
 
-            {/* Cliente */}
-            <div className="space-y-2">
-              <Label htmlFor="cliente">Cliente</Label>
-              <div className="flex gap-2">
-                <Select
-                  value={formData.cliente}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, cliente: value }))
-                  }
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Selecione um cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clientes.map((cliente) => (
-                      <SelectItem key={cliente.id} value={cliente.id}>
-                        {cliente.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <ModalCadastroCliente
-                  trigger={
-                    <Button type="button" variant="outline" size="icon">
-                      <UserPlus className="h-4 w-4" />
-                    </Button>
-                  }
-                  onClienteAdicionado={(cliente) => {
-                    setFormData((prev) => ({ ...prev, cliente: cliente.id }));
-                    toast({
-                      title: "Cliente Adicionado",
-                      description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
-                      variant: "default",
-                    });
-                  }}
-                />
+              {/* Nota Fiscal */}
+              <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="nota-fiscal"
+                    checked={formData.temNotaFiscal}
+                    onCheckedChange={(checked) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        temNotaFiscal: checked,
+                      }));
+                      if (!checked) {
+                        setFormData((prev) => ({ ...prev, numeroNota: "" }));
+                        setNotaFiscalEmitida(false);
+                      } else {
+                        // Abrir automaticamente quando marca
+                        emitirNotaFiscal();
+                      }
+                    }}
+                    className="data-[state=checked]:bg-blue-600"
+                  />
+                  <Label htmlFor="nota-fiscal" className="font-medium text-sm">
+                    Há nota fiscal para esta receita?
+                  </Label>
+                </div>
+
+                {formData.temNotaFiscal && (
+                  <div className="space-y-3 pl-6">
+                    <div className="text-xs text-blue-600">
+                      ℹ️ O site da nota fiscal foi aberto automaticamente. Após
+                      emitir, preencha o número abaixo.
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="numeroNotaObrigatorio"
+                        className="text-sm"
+                      >
+                        Número da Nota Fiscal *
+                      </Label>
+                      <Input
+                        id="numeroNotaObrigatorio"
+                        placeholder="Ex: 12345"
+                        value={formData.numeroNota}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            numeroNota: e.target.value,
+                          }))
+                        }
+                        required={formData.temNotaFiscal}
+                        className={
+                          formData.temNotaFiscal && !formData.numeroNota
+                            ? "border-red-500"
+                            : ""
+                        }
+                      />
+                      {formData.temNotaFiscal && !formData.numeroNota && (
+                        <p className="text-xs text-red-500">
+                          Número da nota fiscal é obrigatório
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
 
-            {/* Nota Fiscal */}
-            <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="nota-fiscal"
-                  checked={formData.temNotaFiscal}
-                  onCheckedChange={(checked) => {
+              {/* Observações - Campo no final */}
+              <div className="space-y-2">
+                <Label htmlFor="observacoes">Observações do Serviço</Label>
+                <Textarea
+                  id="observacoes"
+                  placeholder="Observações sobre o serviço prestado..."
+                  value={formData.observacoes}
+                  onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      temNotaFiscal: checked,
-                    }));
-                    if (!checked) {
-                      setFormData((prev) => ({ ...prev, numeroNota: "" }));
-                      setNotaFiscalEmitida(false);
-                    } else {
-                      // Abrir automaticamente quando marca
-                      emitirNotaFiscal();
-                    }
-                  }}
-                  className="data-[state=checked]:bg-blue-600"
+                      observacoes: e.target.value,
+                    }))
+                  }
+                  rows={3}
                 />
-                <Label htmlFor="nota-fiscal" className="font-medium text-sm">
-                  Há nota fiscal para esta receita?
-                </Label>
               </div>
 
-              {formData.temNotaFiscal && (
-                <div className="space-y-3 pl-6">
-                  <div className="text-xs text-blue-600">
-                    ℹ️ O site da nota fiscal foi aberto automaticamente. Após
-                    emitir, preencha o número abaixo.
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="numeroNotaObrigatorio" className="text-sm">
-                      Número da Nota Fiscal *
-                    </Label>
-                    <Input
-                      id="numeroNotaObrigatorio"
-                      placeholder="Ex: 12345"
-                      value={formData.numeroNota}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          numeroNota: e.target.value,
-                        }))
-                      }
-                      required={formData.temNotaFiscal}
-                      className={
-                        formData.temNotaFiscal && !formData.numeroNota
-                          ? "border-red-500"
-                          : ""
-                      }
-                    />
-                    {formData.temNotaFiscal && !formData.numeroNota && (
-                      <p className="text-xs text-red-500">
-                        Número da nota fiscal é obrigatório
-                      </p>
-                    )}
+              {/* Resumo financeiro */}
+              {formData.valor && (
+                <div className="p-4 bg-green-50 rounded-lg">
+                  <h4 className="font-medium text-green-800 mb-2">
+                    Resumo Financeiro
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+                    <div>
+                      <span className="text-gray-600">Valor Total:</span>
+                      <div className="font-medium">
+                        R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Comissão:</span>
+                      <div className="font-medium">
+                        R$ {comissaoCalculada.toFixed(2)}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Para Empresa:</span>
+                      <div className="font-medium text-green-600">
+                        R${" "}
+                        {(valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
 
-            {/* Observações - Campo no final */}
-            <div className="space-y-2">
-              <Label htmlFor="observacoes">Observações do Serviço</Label>
-              <Textarea
-                id="observacoes"
-                placeholder="Observações sobre o serviço prestado..."
-                value={formData.observacoes}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    observacoes: e.target.value,
-                  }))
-                }
-                rows={3}
-              />
-            </div>
-
-            {/* Resumo financeiro */}
-            {formData.valor && (
-              <div className="p-4 bg-green-50 rounded-lg">
-                <h4 className="font-medium text-green-800 mb-2">
-                  Resumo Financeiro
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-                  <div>
-                    <span className="text-gray-600">Valor Total:</span>
-                    <div className="font-medium">
-                      R$ {parseFloat(formData.valor || "0").toFixed(2)}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Comissão:</span>
-                    <div className="font-medium">
-                      R$ {comissaoCalculada.toFixed(2)}
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Para Empresa:</span>
-                    <div className="font-medium text-green-600">
-                      R${" "}
-                      {(valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
-                    </div>
-                  </div>
-                </div>
+              <div className="flex gap-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    resetForm();
+                    setIsOpen(false);
+                  }}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Lançando..." : "Lançar Receita"}
+                </Button>
               </div>
-            )}
-
-            <div className="flex gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  resetForm();
-                  setIsOpen(false);
-                }}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-green-600 hover:bg-green-700"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Lançando..." : "Lançar Receita"}
-              </Button>
-            </div>
             </form>
           </div>
         )}

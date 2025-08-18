@@ -112,8 +112,8 @@ export default function ModalGerenciarCidades() {
   const cidadesFiltradas = useMemo(() => {
     if (!pesquisaCidade.trim()) return cidades;
 
-    return cidades.filter(cidade =>
-      cidade.nome.toLowerCase().includes(pesquisaCidade.toLowerCase())
+    return cidades.filter((cidade) =>
+      cidade.nome.toLowerCase().includes(pesquisaCidade.toLowerCase()),
     );
   }, [cidades, pesquisaCidade]);
 
@@ -121,9 +121,10 @@ export default function ModalGerenciarCidades() {
   const setoresFiltrados = useMemo(() => {
     if (!pesquisaSetor.trim()) return setores;
 
-    return setores.filter(setor =>
-      setor.nome.toLowerCase().includes(pesquisaSetor.toLowerCase()) ||
-      setor.cidade.toLowerCase().includes(pesquisaSetor.toLowerCase())
+    return setores.filter(
+      (setor) =>
+        setor.nome.toLowerCase().includes(pesquisaSetor.toLowerCase()) ||
+        setor.cidade.toLowerCase().includes(pesquisaSetor.toLowerCase()),
     );
   }, [setores, pesquisaSetor]);
 
@@ -188,7 +189,8 @@ export default function ModalGerenciarCidades() {
       console.error("Erro ao toggle cidade:", error);
       toast({
         title: "Erro",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
         variant: "destructive",
       });
     }
@@ -201,11 +203,14 @@ export default function ModalGerenciarCidades() {
     if (!formSetor.nome.trim() || !formSetor.cidade) return;
 
     try {
-      const response = await fetch(`/api/cidades-goias/${formSetor.cidade}/setores`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome: formSetor.nome.trim() }),
-      });
+      const response = await fetch(
+        `/api/cidades-goias/${formSetor.cidade}/setores`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome: formSetor.nome.trim() }),
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -225,7 +230,8 @@ export default function ModalGerenciarCidades() {
       console.error("Erro ao criar setor:", error);
       toast({
         title: "Erro",
-        description: error instanceof Error ? error.message : "Erro ao criar setor",
+        description:
+          error instanceof Error ? error.message : "Erro ao criar setor",
         variant: "destructive",
       });
     }
@@ -247,9 +253,9 @@ export default function ModalGerenciarCidades() {
     try {
       // Processar lista de setores (quebrar por linha e limpar)
       const listaSetores = formSetorMassa.setores
-        .split('\n')
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
+        .split("\n")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
 
       if (listaSetores.length === 0) {
         toast({
@@ -267,11 +273,14 @@ export default function ModalGerenciarCidades() {
       // Criar cada setor individualmente
       for (const nomeSetor of listaSetores) {
         try {
-          const response = await fetch(`/api/cidades-goias/${formSetorMassa.cidade}/setores`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nome: nomeSetor }),
-          });
+          const response = await fetch(
+            `/api/cidades-goias/${formSetorMassa.cidade}/setores`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ nome: nomeSetor }),
+            },
+          );
 
           if (response.ok) {
             sucessos++;
@@ -348,7 +357,8 @@ export default function ModalGerenciarCidades() {
       console.error("Erro ao excluir setor:", error);
       toast({
         title: "Erro",
-        description: error instanceof Error ? error.message : "Erro ao excluir setor",
+        description:
+          error instanceof Error ? error.message : "Erro ao excluir setor",
         variant: "destructive",
       });
     }
@@ -370,7 +380,8 @@ export default function ModalGerenciarCidades() {
               Gerenciar Cidades e Setores
             </DialogTitle>
             <DialogDescription>
-              Ative as cidades que você atende e gerencie os setores de cada cidade
+              Ative as cidades que você atende e gerencie os setores de cada
+              cidade
             </DialogDescription>
           </DialogHeader>
 
@@ -454,7 +465,10 @@ export default function ModalGerenciarCidades() {
                 </DialogContent>
               </Dialog>
 
-              <Dialog open={isCadastroMassaOpen} onOpenChange={setIsCadastroMassaOpen}>
+              <Dialog
+                open={isCadastroMassaOpen}
+                onOpenChange={setIsCadastroMassaOpen}
+              >
                 <DialogTrigger asChild>
                   <Button className="gap-2">
                     <Upload className="h-4 w-4" />
@@ -465,7 +479,8 @@ export default function ModalGerenciarCidades() {
                   <DialogHeader>
                     <DialogTitle>Cadastro em Massa de Setores</DialogTitle>
                     <DialogDescription>
-                      Cole uma lista de setores separados por linha para cadastrar todos de uma vez
+                      Cole uma lista de setores separados por linha para
+                      cadastrar todos de uma vez
                     </DialogDescription>
                   </DialogHeader>
 
@@ -475,7 +490,10 @@ export default function ModalGerenciarCidades() {
                       <Select
                         value={formSetorMassa.cidade}
                         onValueChange={(value) =>
-                          setFormSetorMassa({ ...formSetorMassa, cidade: value })
+                          setFormSetorMassa({
+                            ...formSetorMassa,
+                            cidade: value,
+                          })
                         }
                         required
                       >
@@ -498,14 +516,18 @@ export default function ModalGerenciarCidades() {
                         id="listaSetores"
                         value={formSetorMassa.setores}
                         onChange={(e) =>
-                          setFormSetorMassa({ ...formSetorMassa, setores: e.target.value })
+                          setFormSetorMassa({
+                            ...formSetorMassa,
+                            setores: e.target.value,
+                          })
                         }
                         placeholder="Cole aqui os nomes dos setores, um por linha:&#10;&#10;Centro&#10;Setor Bueno&#10;Campinas&#10;Oeste&#10;..."
                         className="h-40 font-mono text-sm"
                         required
                       />
                       <p className="text-xs text-muted-foreground">
-                        Exemplo: Digite ou cole cada setor em uma linha separada. Setores duplicados serão ignorados.
+                        Exemplo: Digite ou cole cada setor em uma linha
+                        separada. Setores duplicados serão ignorados.
                       </p>
                     </div>
 
@@ -539,7 +561,8 @@ export default function ModalGerenciarCidades() {
                   Cidades
                 </CardTitle>
                 <CardDescription>
-                  {cidades.length} cidades cadastradas • {cidadesAtivas.length} ativas
+                  {cidades.length} cidades cadastradas • {cidadesAtivas.length}{" "}
+                  ativas
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -578,7 +601,9 @@ export default function ModalGerenciarCidades() {
                             <TableCell>
                               <div className="flex items-center space-x-2">
                                 <Building className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-medium">{cidade.nome}</span>
+                                <span className="font-medium">
+                                  {cidade.nome}
+                                </span>
                               </div>
                             </TableCell>
                             <TableCell>
@@ -591,7 +616,9 @@ export default function ModalGerenciarCidades() {
                                 ) : (
                                   <XCircle className="h-3 w-3" />
                                 )}
-                                <span>{cidade.ativo ? "Ativa" : "Inativa"}</span>
+                                <span>
+                                  {cidade.ativo ? "Ativa" : "Inativa"}
+                                </span>
                               </Badge>
                             </TableCell>
                             <TableCell>
@@ -652,7 +679,8 @@ export default function ModalGerenciarCidades() {
                       Nenhum setor cadastrado
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Clique em "Novo Setor" para adicionar setores às cidades ativas.
+                      Clique em "Novo Setor" para adicionar setores às cidades
+                      ativas.
                     </p>
                   </div>
                 ) : (
@@ -674,7 +702,9 @@ export default function ModalGerenciarCidades() {
                                 <div className="bg-primary/10 p-2 rounded-full">
                                   <MapPin className="h-4 w-4 text-primary" />
                                 </div>
-                                <span className="font-medium">{setor.nome}</span>
+                                <span className="font-medium">
+                                  {setor.nome}
+                                </span>
                               </div>
                             </TableCell>
                             <TableCell>
@@ -702,7 +732,9 @@ export default function ModalGerenciarCidades() {
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem
                                     className="text-red-600"
-                                    onClick={() => setSetorParaExcluir(setor.id)}
+                                    onClick={() =>
+                                      setSetorParaExcluir(setor.id)
+                                    }
                                   >
                                     <Trash2 className="h-4 w-4 mr-2" />
                                     Excluir

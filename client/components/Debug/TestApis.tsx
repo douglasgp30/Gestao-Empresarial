@@ -6,16 +6,17 @@ export function TestApis() {
 
   const testarAPIs = async () => {
     console.log("Testando APIs diretamente...");
-    
+
     try {
       // Testar cada API diretamente
-      const [formas, campanhas, descricoes, cidades, setores] = await Promise.all([
-        fetch('/api/formas-pagamento').then(r => r.json()),
-        fetch('/api/campanhas').then(r => r.json()),
-        fetch('/api/descricoes-e-categorias').then(r => r.json()),
-        fetch('/api/cidades').then(r => r.json()),
-        fetch('/api/setores').then(r => r.json()),
-      ]);
+      const [formas, campanhas, descricoes, cidades, setores] =
+        await Promise.all([
+          fetch("/api/formas-pagamento").then((r) => r.json()),
+          fetch("/api/campanhas").then((r) => r.json()),
+          fetch("/api/descricoes-e-categorias").then((r) => r.json()),
+          fetch("/api/cidades").then((r) => r.json()),
+          fetch("/api/setores").then((r) => r.json()),
+        ]);
 
       setResultados({
         formas: Array.isArray(formas) ? formas : [],
@@ -30,7 +31,7 @@ export function TestApis() {
         campanhas: campanhas.length,
         descricoes: (descricoes?.data || []).length,
         cidades: cidades.length,
-        setores: setores.length
+        setores: setores.length,
       });
     } catch (error) {
       console.error("Erro ao testar APIs:", error);
