@@ -1,6 +1,7 @@
 import React from "react";
 import { CaixaProvider } from "../contexts/CaixaContext";
 import { EntidadesProvider } from "../contexts/EntidadesContext";
+import { ClientesProvider } from "../contexts/ClientesContext";
 import { ModalReceita } from "../components/Caixa/ModalReceita";
 import { ModalDespesa } from "../components/Caixa/ModalDespesa";
 import ModalCampanhasSimples from "../components/Caixa/ModalCampanhasSimples";
