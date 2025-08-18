@@ -380,36 +380,26 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         );
       }
     } catch (error) {
-      console.error("Erro ao recarregar descri��ões e categorias:", error);
+      console.error("Erro ao recarregar descrições e categorias:", error);
     }
   }, []);
 
-  // === CARREGAMENTO INICIAL COM THROTTLING ===
+  // === CARREGAMENTO INICIAL ÚNICO ===
   useEffect(() => {
+    if (dadosCarregados) {
+      console.log("[EntidadesContext] Dados já carregados, ignorando...");
+      return;
+    }
+
     if (shouldSkipLoading("EntidadesContext")) {
       console.log("[EntidadesContext] Carregamento ignorado (skip loading)");
       return;
     }
 
-    // Usar throttling agressivo para evitar múltiplos carregamentos
-    if (contextThrottle.isThrottled("EntidadesContext-initial", 10000)) {
-      console.log("[EntidadesContext] Carregamento throttled, ignorando...");
-      return;
-    }
-
-    const delay = getLoadingDelay(1000); // Delay menor
-    const timeout = setTimeout(() => {
-      if (!shouldSkipLoading("EntidadesContext")) {
-        contextThrottle.execute(
-          "EntidadesContext-initial",
-          () => carregarDados(),
-          10000, // 10 segundos de throttle
-        );
-      }
-    }, delay);
-
-    return () => clearTimeout(timeout);
-  }, []); // Remover carregarDados das dependências
+    // Carregar dados apenas uma vez
+    console.log("[EntidadesContext] Iniciando carregamento único...");
+    carregarDados();
+  }, [dadosCarregados]); // Dependência apenas do flag de dados carregados
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
   const adicionarDescricaoECategoria = async (
@@ -593,7 +583,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       // Invalidar cache
       apiCache.invalidate("entidades-localizacoes");
 
-      toast.success("Localiza��ão atualizada com sucesso!");
+      toast.success("Localização atualizada com sucesso!");
     } catch (error: any) {
       console.error("Erro ao editar localização:", error);
       const errorMessage =
