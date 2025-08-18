@@ -279,7 +279,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      // Usar cache agressivo para reduzir chamadas
+      // Usar cache super agressivo (30 minutos) para reduzir chamadas
       const [
         descricoesECategoriasResponse,
         formasPagamentoResponse,
@@ -289,18 +289,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       ] = await Promise.all([
         apiCache.executeWithCache("entidades-descricoes", () =>
           descricoesECategoriasApi.listar(),
+          1800000 // 30 minutos
         ),
         apiCache.executeWithCache("entidades-formas-pagamento", () =>
           formasPagamentoApi.listar(),
+          1800000 // 30 minutos
         ),
         apiCache.executeWithCache("entidades-funcionarios", () =>
           funcionariosApi.listar(),
+          1800000 // 30 minutos
         ),
         apiCache.executeWithCache("entidades-tecnicos", () =>
           funcionariosApi.listarTecnicos(),
+          1800000 // 30 minutos
         ),
         apiCache.executeWithCache("entidades-localizacoes", () =>
           localizacoesGeograficasApi.listar(),
+          1800000 // 30 minutos
         ),
       ]);
 
