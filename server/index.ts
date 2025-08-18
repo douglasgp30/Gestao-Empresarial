@@ -200,6 +200,14 @@ export function createServer(): Express {
   app.put("/api/clientes/:id", updateCliente);
   app.delete("/api/clientes/:id", deleteCliente);
 
+  // Rotas de Cidades de Goiás
+  app.post("/api/cidades-goias/migrar", executarMigracaoCidades);
+  app.get("/api/cidades-goias", listarCidades);
+  app.post("/api/cidades-goias/toggle", toggleCidade);
+  app.get("/api/cidades-goias/:nomeCidade/setores", listarSetoresPorCidade);
+  app.post("/api/cidades-goias/:nomeCidade/setores", criarSetor);
+  app.delete("/api/cidades-goias/setores/:id", excluirSetor);
+
   // Migração para sistema unificado
   app.post("/api/migrate/unified-descriptions", runMigration);
   app.get("/api/migrate/check", checkMigration);
