@@ -121,11 +121,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      // Carregar campanhas com cache
-      const campanhasResponse = await apiCache.executeWithCache(
-        "caixa-campanhas",
-        () => campanhasApi.listar(),
-      );
+      // Invalidar cache e carregar campanhas
+      apiCache.invalidate("caixa-campanhas");
+      const campanhasResponse = await campanhasApi.listar();
       if (campanhasResponse.error) {
         console.error("Erro ao carregar campanhas:", campanhasResponse.error);
       } else {
