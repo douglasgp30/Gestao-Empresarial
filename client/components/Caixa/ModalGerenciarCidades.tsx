@@ -367,7 +367,7 @@ export default function ModalGerenciarCidades() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5 text-primary" />
-              Gerenciar Cidades e Setores de Goiás
+              Gerenciar Cidades e Setores
             </DialogTitle>
             <DialogDescription>
               Ative as cidades que você atende e gerencie os setores de cada cidade
