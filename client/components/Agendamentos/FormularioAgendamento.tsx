@@ -47,8 +47,11 @@ export default function FormularioAgendamento({
   } = useEntidades();
 
   // Derivar cidades e setores das localizações
-  const cidades = getCidades() || [];
+  const cidadesObjs = getCidades() || [];
   const setores = getSetores() || [];
+
+  // Converter cidades para array de strings (compatibilidade com código antigo)
+  const cidades = cidadesObjs.map(cidade => cidade.nome);
   const { funcionarios } = useFuncionarios();
 
   const [aberto, setAberto] = useState(false);
