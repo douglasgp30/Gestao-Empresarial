@@ -50,19 +50,28 @@ export const getLocalizacoesGeograficas: RequestHandler = async (req, res) => {
   }
 };
 
-// Listar apenas cidades
+// Listar apenas cidades ativas (para usar em formulários)
 export const getCidades: RequestHandler = async (req, res) => {
   try {
+    const { todas } = req.query;
+
+    const where: any = {
+      tipoItem: "cidade",
+    };
+
+    // Por padrão, retorna apenas cidades ativas (para uso em formulários)
+    // Use ?todas=true para retornar todas as cidades
+    if (todas !== "true") {
+      where.ativo = true;
+    }
+
     const cidades = await prisma.localizacaoGeografica.findMany({
-      where: {
-        tipoItem: "cidade",
-        ativo: true,
-      },
+      where,
       orderBy: [{ nome: "asc" }],
     });
 
     console.log(
-      `[LocalizacoesGeograficas] Encontradas ${cidades.length} cidades`,
+      `[LocalizacoesGeograficas] Encontradas ${cidades.length} cidades ${todas === "true" ? "(todas)" : "(ativas)"}`,
     );
     res.json(cidades);
   } catch (error) {
