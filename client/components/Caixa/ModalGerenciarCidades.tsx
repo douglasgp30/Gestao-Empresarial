@@ -107,6 +107,15 @@ export default function ModalGerenciarCidades() {
     setores: "",
   });
 
+  // Filtrar cidades baseado na pesquisa
+  const cidadesFiltradas = useMemo(() => {
+    if (!pesquisaCidade.trim()) return cidades;
+
+    return cidades.filter(cidade =>
+      cidade.nome.toLowerCase().includes(pesquisaCidade.toLowerCase())
+    );
+  }, [cidades, pesquisaCidade]);
+
   // Carregar dados
   const carregarDados = async () => {
     setIsLoading(true);
