@@ -442,6 +442,82 @@ export default function ModalGerenciarCidades() {
                   </form>
                 </DialogContent>
               </Dialog>
+
+              <Dialog open={isCadastroMassaOpen} onOpenChange={setIsCadastroMassaOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <Upload className="h-4 w-4" />
+                    Cadastro em Massa
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Cadastro em Massa de Setores</DialogTitle>
+                    <DialogDescription>
+                      Cole uma lista de setores separados por linha para cadastrar todos de uma vez
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <form onSubmit={handleCadastroMassa} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Cidade *</Label>
+                      <Select
+                        value={formSetorMassa.cidade}
+                        onValueChange={(value) =>
+                          setFormSetorMassa({ ...formSetorMassa, cidade: value })
+                        }
+                        required
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma cidade ativa" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {cidadesAtivas.map((cidade) => (
+                            <SelectItem key={cidade.id} value={cidade.nome}>
+                              {cidade.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="listaSetores">Lista de Setores *</Label>
+                      <Textarea
+                        id="listaSetores"
+                        value={formSetorMassa.setores}
+                        onChange={(e) =>
+                          setFormSetorMassa({ ...formSetorMassa, setores: e.target.value })
+                        }
+                        placeholder="Cole aqui os nomes dos setores, um por linha:&#10;&#10;Centro&#10;Setor Bueno&#10;Campinas&#10;Oeste&#10;..."
+                        className="h-40 font-mono text-sm"
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Exemplo: Digite ou cole cada setor em uma linha separada. Setores duplicados serão ignorados.
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2 pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsCadastroMassaOpen(false)}
+                        className="flex-1"
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="flex-1"
+                        disabled={cidadesAtivas.length === 0}
+                      >
+                        Cadastrar Setores
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Lista de Cidades */}
