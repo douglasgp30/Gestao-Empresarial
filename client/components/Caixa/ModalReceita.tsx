@@ -353,6 +353,15 @@ export function ModalReceita() {
               Setores: {Array.isArray(setores) ? setores.length : 0}
             </div>
             <TestApis />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.reload()}
+              className="mt-2"
+            >
+              🔄 Recarregar Dados
+            </Button>
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Campos básicos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
