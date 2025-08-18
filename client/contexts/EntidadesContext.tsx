@@ -277,15 +277,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timeoutSeguranca);
   }, [isLoading]);
 
-  // === CARREGAMENTO DE DADOS SIMPLIFICADO ===
+  // === CARREGAMENTO DE DADOS FORÇADO ===
   const carregarDados = useCallback(async () => {
-    // Verificação simples para evitar duplo carregamento
-    if (isCarregando || dadosCarregados) {
-      console.log("[EntidadesContext] Carregamento já realizado ou em andamento, ignorando...");
-      return;
-    }
-
-    console.log("[EntidadesContext] Iniciando carregamento de dados...");
+    console.log("[EntidadesContext] FORÇANDO carregamento de dados...");
     setIsCarregando(true);
     setIsLoading(true);
     setError(null);
