@@ -401,15 +401,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // === CARREGAMENTO INICIAL ÚNICO (SEM DEPENDÊNCIA CIRCULAR) ===
+  // === CARREGAMENTO INICIAL FORÇADO ===
   useEffect(() => {
-    if (shouldSkipLoading("EntidadesContext")) {
-      console.log("[EntidadesContext] Carregamento ignorado (skip loading)");
-      return;
-    }
-
-    // Carregar dados apenas uma vez no mount
-    console.log("[EntidadesContext] Iniciando carregamento único...");
+    // Carregar dados sempre no mount, sem verificações
+    console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
     carregarDados();
   }, []); // Array vazio - executa apenas no mount
 
