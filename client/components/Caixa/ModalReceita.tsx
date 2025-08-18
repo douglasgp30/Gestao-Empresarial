@@ -291,6 +291,17 @@ export function ModalReceita() {
     });
   }, [caixaLoading, entidadesLoading, clientesLoading, loadingForced, isLoading]);
 
+  // Debug dados
+  React.useEffect(() => {
+    console.log("[ModalReceita] Dados carregados:", {
+      categoriasReceita: categoriasReceita.length,
+      descricoesFiltradas: descricoesFiltradas.length,
+      formasPagamento: formasPagamento.length,
+      cidades: Array.isArray(cidades) ? cidades.length : 0,
+      setores: Array.isArray(setores) ? setores.length : 0,
+    });
+  }, [categoriasReceita, descricoesFiltradas, formasPagamento, cidades, setores]);
+
   return (
     <Dialog
       open={isOpen}
