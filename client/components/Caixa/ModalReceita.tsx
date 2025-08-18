@@ -422,31 +422,34 @@ export function ModalReceita() {
 
               <div className="space-y-2">
                 <Label htmlFor="descricao">Descrição do Serviço *</Label>
-                <SelectWithAdd
+                <Select
                   value={formData.descricao}
                   onValueChange={(value) =>
                     setFormData((prev) => ({ ...prev, descricao: value }))
                   }
-                  placeholder={
-                    formData.categoria
-                      ? "Selecione a descrição"
-                      : "Primeiro selecione uma categoria"
-                  }
-                  options={descricoesFiltradas.map((desc) => ({
-                    value: desc.id.toString(),
-                    label: desc.nome,
-                  }))}
-                  onAddNew={async (nomeDescricao) => {
-                    await adicionarDescricaoECategoria({
-                      nome: nomeDescricao,
-                      tipo: "receita",
-                      categoria: formData.categoria,
-                      tipoItem: "descricao",
-                      ativo: true,
-                    });
-                  }}
-                  addButtonText="Nova Descrição"
-                />
+                  disabled={!formData.categoria}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={
+                        formData.categoria
+                          ? "Selecione a descrição"
+                          : "Primeiro selecione uma categoria"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {descricoesFiltradas.map((desc) => (
+                      <SelectItem key={desc.id} value={desc.id.toString()}>
+                        {desc.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {/* Debug temporário */}
+                <div className="text-xs text-gray-500">
+                  Debug: {descricoesFiltradas.length} descrições para categoria "{formData.categoria}"
+                </div>
               </div>
             </div>
 
