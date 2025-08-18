@@ -302,6 +302,10 @@ export function ModalReceita() {
       cidades: Array.isArray(cidades) ? cidades.length : 0,
       setores: Array.isArray(setores) ? setores.length : 0,
     });
+
+    // Debug específico das formas de pagamento
+    console.log("[ModalReceita] Formas de pagamento:", formasPagamento);
+    console.log("[ModalReceita] Campanhas:", campanhas);
   }, [categoriasReceita, descricoesFiltradas, formasPagamento, campanhas, cidades, setores]);
 
   return (
