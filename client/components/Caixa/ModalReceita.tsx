@@ -341,13 +341,14 @@ export function ModalReceita() {
           <div>
             {/* Debug temporário */}
             <div className="mb-4 p-2 bg-gray-100 text-xs rounded">
-              <strong>Debug:</strong>
+              <strong>Debug Contextos:</strong>
               Categorias: {categoriasReceita.length} |
               Formas: {formasPagamento.length} |
               Campanhas: {Array.isArray(campanhas) ? campanhas.length : 0} |
               Cidades: {Array.isArray(cidades) ? cidades.length : 0} |
               Setores: {Array.isArray(setores) ? setores.length : 0}
             </div>
+            <TestApis />
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Campos básicos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
