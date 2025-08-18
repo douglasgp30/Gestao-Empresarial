@@ -297,10 +297,11 @@ export function ModalReceita() {
       categoriasReceita: categoriasReceita.length,
       descricoesFiltradas: descricoesFiltradas.length,
       formasPagamento: formasPagamento.length,
+      campanhas: Array.isArray(campanhas) ? campanhas.length : 0,
       cidades: Array.isArray(cidades) ? cidades.length : 0,
       setores: Array.isArray(setores) ? setores.length : 0,
     });
-  }, [categoriasReceita, descricoesFiltradas, formasPagamento, cidades, setores]);
+  }, [categoriasReceita, descricoesFiltradas, formasPagamento, campanhas, cidades, setores]);
 
   return (
     <Dialog
