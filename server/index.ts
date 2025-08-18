@@ -63,6 +63,15 @@ import {
   deleteCliente,
 } from "./routes/clientes";
 
+import {
+  executarMigracaoCidades,
+  listarCidades,
+  toggleCidade,
+  listarSetoresPorCidade,
+  criarSetor,
+  excluirSetor,
+} from "./routes/cidades-goias";
+
 export function createServer(): Express {
   const app = express();
 
