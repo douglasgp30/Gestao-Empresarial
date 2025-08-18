@@ -262,7 +262,7 @@ export function ModalReceita() {
     }
   };
 
-  const isLoading = caixaLoading || entidadesLoading; // Removido clientesLoading temporariamente
+  const isLoading = caixaLoading; // Isolando apenas caixaLoading para debug
 
   // Debug logs
   React.useEffect(() => {
