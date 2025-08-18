@@ -532,6 +532,23 @@ export default function ModalGerenciarCidades() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Campo de pesquisa */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Pesquisar cidade..."
+                      value={pesquisaCidade}
+                      onChange={(e) => setPesquisaCidade(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  {pesquisaCidade && (
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {cidadesFiltradas.length} cidade(s) encontrada(s)
+                    </p>
+                  )}
+                </div>
                 {isLoading ? (
                   <p className="text-center py-4">Carregando...</p>
                 ) : (
