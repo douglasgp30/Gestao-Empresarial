@@ -43,7 +43,7 @@ export default function FormularioAgendamento({
     localizacoesGeograficas,
     getCidades,
     getSetores,
-    adicionarLocalizacaoGeografica
+    adicionarLocalizacaoGeografica,
   } = useEntidades();
 
   // Derivar cidades e setores das localizações
@@ -51,7 +51,7 @@ export default function FormularioAgendamento({
   const setores = getSetores() || [];
 
   // Converter cidades para array de strings (compatibilidade com código antigo)
-  const cidades = cidadesObjs.map(cidade => cidade.nome);
+  const cidades = cidadesObjs.map((cidade) => cidade.nome);
   const { funcionarios } = useFuncionarios();
 
   const [aberto, setAberto] = useState(false);
@@ -217,9 +217,11 @@ export default function FormularioAgendamento({
         });
 
         // Buscar o setor recém-criado para obter o ID correto
-        const setorCriado = setores && setores.find(
-          (s) => s.nome === novoSetor.trim() && s.cidade === formData.cidade,
-        );
+        const setorCriado =
+          setores &&
+          setores.find(
+            (s) => s.nome === novoSetor.trim() && s.cidade === formData.cidade,
+          );
         if (setorCriado) {
           setFormData({ ...formData, setor: setorCriado.id.toString() });
         }
@@ -393,23 +395,24 @@ export default function FormularioAgendamento({
                   <SelectValue placeholder="Selecione o setor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {setores && setores
-                    .filter((setor) => {
-                      if (!formData.cidade) return true;
-                      const nomeCidadeSetor =
-                        typeof setor.cidade === "object"
-                          ? setor.cidade?.nome
-                          : setor.cidade;
-                      return nomeCidadeSetor === formData.cidade;
-                    })
-                    .map((setor) => (
-                      <SelectItem key={setor.id} value={setor.id.toString()}>
-                        {setor.nome} -{" "}
-                        {typeof setor.cidade === "object"
-                          ? setor.cidade?.nome
-                          : setor.cidade}
-                      </SelectItem>
-                    ))}
+                  {setores &&
+                    setores
+                      .filter((setor) => {
+                        if (!formData.cidade) return true;
+                        const nomeCidadeSetor =
+                          typeof setor.cidade === "object"
+                            ? setor.cidade?.nome
+                            : setor.cidade;
+                        return nomeCidadeSetor === formData.cidade;
+                      })
+                      .map((setor) => (
+                        <SelectItem key={setor.id} value={setor.id.toString()}>
+                          {setor.nome} -{" "}
+                          {typeof setor.cidade === "object"
+                            ? setor.cidade?.nome
+                            : setor.cidade}
+                        </SelectItem>
+                      ))}
                 </SelectContent>
               </Select>
               <Button
