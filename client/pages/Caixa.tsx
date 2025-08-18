@@ -1,11 +1,12 @@
 import React from "react";
 import { CaixaProvider } from "../contexts/CaixaContext";
 import { EntidadesProvider } from "../contexts/EntidadesContext";
+import { ClientesProvider } from "../contexts/ClientesContext";
 import { ModalReceita } from "../components/Caixa/ModalReceita";
 import { ModalDespesa } from "../components/Caixa/ModalDespesa";
 import ModalCampanhasSimples from "../components/Caixa/ModalCampanhasSimples";
 import ModalDescricoesSimples from "../components/Caixa/ModalDescricoesSimples";
-import ModalCidadeSetorSimples from "../components/Caixa/ModalCidadeSetorSimples";
+import ModalGerenciarCidades from "../components/Caixa/ModalGerenciarCidades";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
@@ -40,7 +41,7 @@ function CaixaContent() {
         <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
           <ModalCampanhasSimples />
           <ModalDescricoesSimples />
-          <ModalCidadeSetorSimples />
+          <ModalGerenciarCidades />
         </div>
 
         {/* Totais alinhados à direita */}
@@ -59,9 +60,11 @@ function CaixaContent() {
 export default function Caixa() {
   return (
     <EntidadesProvider>
-      <CaixaProvider>
-        <CaixaContent />
-      </CaixaProvider>
+      <ClientesProvider>
+        <CaixaProvider>
+          <CaixaContent />
+        </CaixaProvider>
+      </ClientesProvider>
     </EntidadesProvider>
   );
 }

@@ -102,6 +102,10 @@ interface EntidadesContextType {
   getCidades: () => LocalizacaoGeografica[];
   getSetores: (cidade?: string) => LocalizacaoGeografica[];
 
+  // Arrays de compatibilidade para componentes antigos
+  cidades: string[];
+  setores: LocalizacaoGeografica[];
+
   // Clientes (API)
   clientes: Cliente[];
   adicionarCliente: (
@@ -182,6 +186,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCarregando, setIsCarregando] = useState(false);
+  const [dadosCarregados, setDadosCarregados] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
@@ -229,6 +234,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     [localizacoesGeograficas],
   );
 
+  // === FUNÇÕES PARA COMPATIBILIDADE AVEC COMPONENTES ANTIGOS ===
+  const cidades = useMemo(() => {
+    const cidadesAtivas = getCidades();
+    return cidadesAtivas.map((cidade) => cidade.nome);
+  }, [getCidades]);
+
+  const setores = useMemo(() => {
+    return getSetores();
+  }, [getSetores]);
+
   const getTecnicos = useCallback(() => {
     // Combinar técnicos específicos + funcionários que são técnicos
     const tecnicosEspecificos = tecnicos || [];
@@ -247,24 +262,43 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
   }, [funcionarios, tecnicos]);
 
-  // === CARREGAMENTO DE DADOS COM DEBOUNCE ===
-  const carregarDados = useCallback(async () => {
-    // Verificar se já está carregando globalmente
-    if (isContextLoading("EntidadesContext") || isCarregando) {
-      console.log(
-        "[EntidadesContext] Carregamento já em andamento, ignorando...",
-      );
-      return;
-    }
+  // === TIMEOUT DE SEGURANÇA PARA FORÇAR LOADING=FALSE ===
+  useEffect(() => {
+    const timeoutSeguranca = setTimeout(() => {
+      if (isLoading) {
+        console.log(
+          "[EntidadesContext] TIMEOUT SEGURANÇA: Forçando loading=false após 5 segundos",
+        );
+        setIsLoading(false);
+        setIsCarregando(false);
+        setContextLoading("EntidadesContext", false);
+        setDadosCarregados(true);
+      }
+    }, 5000); // 5 segundos máximo
 
-    console.log("[EntidadesContext] Iniciando carregamento de dados...");
-    setContextLoading("EntidadesContext", true);
+    return () => clearTimeout(timeoutSeguranca);
+  }, [isLoading]);
+
+  // === CARREGAMENTO DE DADOS FORÇADO ===
+  const carregarDados = useCallback(async () => {
+    console.log("[EntidadesContext] FORÇANDO carregamento de dados...");
     setIsCarregando(true);
     setIsLoading(true);
     setError(null);
 
     try {
-      // Usar cache agressivo para reduzir chamadas
+      // Invalidar cache para garantir dados atualizados
+      apiCache.invalidate("entidades-descricoes");
+      apiCache.invalidate("entidades-formas-pagamento");
+      apiCache.invalidate("entidades-funcionarios");
+      apiCache.invalidate("entidades-tecnicos");
+      apiCache.invalidate("entidades-localizacoes");
+
+      console.log(
+        "[EntidadesContext] Cache invalidado - forçando recarregamento...",
+      );
+
+      // Buscar dados sem cache para debug
       const [
         descricoesECategoriasResponse,
         formasPagamentoResponse,
@@ -272,47 +306,68 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         tecnicosResponse,
         localizacoesResponse,
       ] = await Promise.all([
-        apiCache.executeWithCache("entidades-descricoes", () =>
-          descricoesECategoriasApi.listar(),
-        ),
-        apiCache.executeWithCache("entidades-formas-pagamento", () =>
-          formasPagamentoApi.listar(),
-        ),
-        apiCache.executeWithCache("entidades-funcionarios", () =>
-          funcionariosApi.listar(),
-        ),
-        apiCache.executeWithCache("entidades-tecnicos", () =>
-          funcionariosApi.listarTecnicos(),
-        ),
-        apiCache.executeWithCache("entidades-localizacoes", () =>
-          localizacoesGeograficasApi.listar(),
-        ),
+        descricoesECategoriasApi.listar(),
+        formasPagamentoApi.listar(),
+        funcionariosApi.listar(),
+        funcionariosApi.listarTecnicos(),
+        localizacoesGeograficasApi.listar(),
       ]);
 
       // Atualizar estados com dados do banco
       if (descricoesECategoriasResponse.data) {
         setDescricoesECategorias(descricoesECategoriasResponse.data);
         console.log(
-          `[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas`,
+          `[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas:`,
+          descricoesECategoriasResponse.data,
+        );
+      } else {
+        console.warn(
+          "[EntidadesContext] Nenhuma descrição/categoria retornada da API",
         );
       }
 
+      console.log(
+        "[EntidadesContext] Resposta completa formas pagamento:",
+        formasPagamentoResponse,
+      );
       if (formasPagamentoResponse.data) {
         setFormasPagamento(formasPagamentoResponse.data);
+        console.log(
+          `[EntidadesContext] Carregadas ${formasPagamentoResponse.data.length} formas de pagamento:`,
+          formasPagamentoResponse.data,
+        );
+      } else {
+        console.warn(
+          "[EntidadesContext] Nenhuma forma de pagamento retornada da API",
+        );
+        console.warn(
+          "[EntidadesContext] formasPagamentoResponse:",
+          formasPagamentoResponse,
+        );
       }
 
       if (funcionariosResponse.data) {
         setFuncionarios(funcionariosResponse.data);
+        console.log(
+          `[EntidadesContext] Carregados ${funcionariosResponse.data.length} funcionários`,
+        );
       }
 
       if (tecnicosResponse.data) {
         setTecnicos(tecnicosResponse.data);
+        console.log(
+          `[EntidadesContext] Carregados ${tecnicosResponse.data.length} técnicos`,
+        );
       }
 
       if (localizacoesResponse.data) {
         setLocalizacoesGeograficas(localizacoesResponse.data);
         console.log(
           `[EntidadesContext] Carregadas ${localizacoesResponse.data.length} localizações geográficas`,
+        );
+      } else {
+        console.warn(
+          "[EntidadesContext] Nenhuma localização geográfica retornada da API",
         );
       }
 
@@ -335,6 +390,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setFornecedores(fornecedoresStorage);
 
       console.log("[EntidadesContext] Carregamento concluído com sucesso");
+      setDadosCarregados(true);
     } catch (error) {
       console.error("Erro ao carregar entidades:", error);
       setError("Erro ao carregar dados do servidor");
@@ -345,11 +401,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setFuncionarios([]);
       setTecnicos([]);
       setLocalizacoesGeograficas([]);
-      setCidades([]);
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
-      setContextLoading("EntidadesContext", false);
+      setDadosCarregados(true);
+      console.log("[EntidadesContext] Carregamento finalizado - loading=false");
     }
   }, [isCarregando]);
 
@@ -369,32 +425,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // === CARREGAMENTO INICIAL COM THROTTLING ===
+  // === CARREGAMENTO INICIAL FORÇADO ===
   useEffect(() => {
-    if (shouldSkipLoading("EntidadesContext")) {
-      console.log("[EntidadesContext] Carregamento ignorado (skip loading)");
-      return;
-    }
+    // Carregar dados sempre no mount, sem verificações
+    console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
 
-    // Usar throttling agressivo para evitar múltiplos carregamentos
-    if (contextThrottle.isThrottled("EntidadesContext-initial", 5000)) {
-      console.log("[EntidadesContext] Carregamento throttled, ignorando...");
-      return;
-    }
+    // Invalidar cache das formas de pagamento para garantir dados atualizados
+    apiCache.invalidate("entidades-formas-pagamento");
 
-    const delay = getLoadingDelay(3000); // Delay maior
-    const timeout = setTimeout(() => {
-      if (!shouldSkipLoading("EntidadesContext")) {
-        contextThrottle.execute(
-          "EntidadesContext-initial",
-          () => carregarDados(),
-          5000, // 5 segundos de throttle
-        );
-      }
-    }, delay);
-
-    return () => clearTimeout(timeout);
-  }, []); // Remover carregarDados das dependências
+    carregarDados();
+  }, []); // Array vazio - executa apenas no mount
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
   const adicionarDescricaoECategoria = async (
@@ -518,218 +558,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   // === FUNÇÕES CRUD PARA LOCALIZAÇÃO GEOGRÁFICA ===
-  const adicionarSetor = async (
-    novoSetor: Omit<Setor, "id" | "dataCriacao">,
-  ) => {
-    try {
-      setError(null);
-
-      // Se o setor tem uma propriedade 'cidade' (nome), precisamos resolver para cidadeId
-      let setorParaEnviar = { ...novoSetor };
-
-      if (
-        "cidade" in novoSetor &&
-        novoSetor.cidade &&
-        !("cidadeId" in novoSetor)
-      ) {
-        // Buscar ID da cidade pelo nome
-        const cidadesResponse =
-          await localizacoesGeograficasApi.listarCidades();
-        console.log("[EntidadesContext] Resposta de cidades:", cidadesResponse);
-
-        if (cidadesResponse.data) {
-          let cidadeEncontrada;
-          let cidadesArray = cidadesResponse.data;
-
-          // Se cidadesResponse.data tem propriedade data, extrair o array
-          if (
-            cidadesResponse.data.data &&
-            Array.isArray(cidadesResponse.data.data)
-          ) {
-            cidadesArray = cidadesResponse.data.data;
-          }
-
-          // Verificar se é array válido
-          if (!Array.isArray(cidadesArray)) {
-            console.error(
-              "[EntidadesContext] cidadesArray não é um array:",
-              cidadesArray,
-            );
-            throw new Error("Erro ao carregar lista de cidades");
-          }
-
-          if (cidadesArray.length > 0) {
-            if (typeof cidadesArray[0] === "string") {
-              // Formato antigo - criar setor com nome da cidade
-              setorParaEnviar = novoSetor;
-            } else {
-              // Formato novo - buscar ID da cidade
-              cidadeEncontrada = cidadesArray.find(
-                (c: any) =>
-                  c.nome &&
-                  c.nome.toLowerCase() === novoSetor.cidade.toLowerCase(),
-              );
-
-              if (cidadeEncontrada) {
-                setorParaEnviar = {
-                  nome: novoSetor.nome,
-                  cidadeId: cidadeEncontrada.id,
-                };
-                // Remover propriedade 'cidade' do objeto
-                delete (setorParaEnviar as any).cidade;
-              } else {
-                throw new Error(`Cidade "${novoSetor.cidade}" não encontrada`);
-              }
-            }
-          } else {
-            throw new Error(
-              "Nenhuma cidade encontrada. Cadastre uma cidade primeiro.",
-            );
-          }
-        }
-      }
-
-      await localizacoesGeograficasApi.criar(setorParaEnviar);
-      const response = await localizacoesGeograficasApi.listar();
-      if (response.data) setLocalizacoesGeograficas(response.data);
-      if (cidadesResponse.data) {
-        let cidadesArray = cidadesResponse.data;
-
-        // Se cidadesResponse.data tem propriedade data, extrair o array
-        if (
-          cidadesResponse.data.data &&
-          Array.isArray(cidadesResponse.data.data)
-        ) {
-          cidadesArray = cidadesResponse.data.data;
-        }
-
-        // Sempre converter para array de strings, independente da estrutura
-        if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          const cidadesString = cidadesArray.map((cidade: any) => {
-            if (typeof cidade === "string") {
-              return cidade;
-            } else if (cidade && cidade.nome) {
-              return cidade.nome;
-            } else {
-              console.warn("Cidade com estrutura inválida:", cidade);
-              return String(cidade);
-            }
-          });
-          setCidades(cidadesString);
-        } else {
-          setCidades([]);
-        }
-      }
-      toast.success("Setor adicionado!");
-    } catch (error) {
-      console.error("Erro ao adicionar setor:", error);
-      toast.error(
-        `Erro ao adicionar setor: ${error.message || "Tente novamente"}`,
-      );
-      throw error;
-    }
-  };
-
-  const editarSetor = async (id: string, dadosAtualizados: Partial<Setor>) => {
-    try {
-      setError(null);
-      await localizacoesGeograficasApi.atualizar(
-        parseInt(id),
-        dadosAtualizados,
-      );
-      const response = await localizacoesGeograficasApi.listar();
-      if (response.data) setLocalizacoesGeograficas(response.data);
-      toast.success("Setor atualizado!");
-    } catch (error) {
-      console.error("Erro ao editar setor:", error);
-      toast.error("Erro ao editar setor");
-      throw error;
-    }
-  };
-
-  const excluirSetor = async (id: string) => {
-    try {
-      setError(null);
-      await localizacoesGeograficasApi.excluir(parseInt(id));
-      const response = await localizacoesGeograficasApi.listar();
-      if (response.data) setLocalizacoesGeograficas(response.data);
-      toast.success("Setor excluído!");
-    } catch (error) {
-      console.error("Erro ao excluir setor:", error);
-      toast.error("Erro ao excluir setor");
-      throw error;
-    }
-  };
-
-  const adicionarCidade = async (cidade: { nome: string }) => {
-    try {
-      setError(null);
-
-      // Usar a nova API de cidades
-      const response = await fetch("/api/cidades", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cidade),
-      });
-
-      // Ler response uma única vez
-      let responseData;
-      try {
-        responseData = await response.json();
-      } catch (parseError) {
-        responseData = null;
-      }
-
-      if (!response.ok) {
-        const errorMessage =
-          responseData?.error || `Erro HTTP ${response.status}`;
-        throw new Error(errorMessage);
-      }
-
-      // Recarregar lista de cidades
-      const cidadesResponse = await localizacoesGeograficasApi.listarCidades();
-      console.log(
-        "[EntidadesContext] Resposta ao recarregar cidades:",
-        cidadesResponse,
-      );
-
-      if (cidadesResponse.data) {
-        let cidadesArray = cidadesResponse.data;
-
-        // Se cidadesResponse.data tem propriedade data, extrair o array
-        if (
-          cidadesResponse.data.data &&
-          Array.isArray(cidadesResponse.data.data)
-        ) {
-          cidadesArray = cidadesResponse.data.data;
-        }
-
-        if (Array.isArray(cidadesArray) && cidadesArray.length > 0) {
-          const cidadesString = cidadesArray.map((cidade: any) => {
-            if (typeof cidade === "string") {
-              return cidade;
-            } else if (cidade && cidade.nome) {
-              return cidade.nome;
-            } else {
-              console.warn("Cidade com estrutura inválida:", cidade);
-              return String(cidade);
-            }
-          });
-          setCidades(cidadesString);
-        } else {
-          setCidades([]);
-        }
-      }
-
-      toast.success("Cidade adicionada!");
-    } catch (error) {
-      console.error("Erro ao adicionar cidade:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Erro desconhecido";
-      toast.error(`Erro ao adicionar cidade: ${errorMessage}`);
-      throw error;
-    }
-  };
+  // REMOVIDAS: As funções de adicionar/editar cidades foram removidas
+  // As cidades agora são pré-cadastradas e gerenciadas via ativação/desativação
 
   // === FUNÇÕES NOVAS DE LOCALIZAÇÃO GEOGRÁFICA ===
   const adicionarLocalizacaoGeografica = async (
@@ -919,6 +749,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       editarLocalizacaoGeografica,
       excluirLocalizacaoGeografica,
 
+      // Arrays de compatibilidade para componentes antigos
+      cidades,
+      setores,
+
       // Compatibilidade
       descricoes,
       categorias,
@@ -954,6 +788,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       tecnicos,
       getTecnicos,
       localizacoesGeograficas,
+      cidades,
+      setores,
       descricoes,
       categorias,
       clientes,
