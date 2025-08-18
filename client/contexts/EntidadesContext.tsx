@@ -262,6 +262,21 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
   }, [funcionarios, tecnicos]);
 
+  // === TIMEOUT DE SEGURANÇA PARA FORÇAR LOADING=FALSE ===
+  useEffect(() => {
+    const timeoutSeguranca = setTimeout(() => {
+      if (isLoading) {
+        console.log("[EntidadesContext] TIMEOUT SEGURANÇA: Forçando loading=false após 5 segundos");
+        setIsLoading(false);
+        setIsCarregando(false);
+        setContextLoading("EntidadesContext", false);
+        setDadosCarregados(true);
+      }
+    }, 5000); // 5 segundos máximo
+
+    return () => clearTimeout(timeoutSeguranca);
+  }, [isLoading]);
+
   // === CARREGAMENTO DE DADOS COM DEBOUNCE ===
   const carregarDados = useCallback(async () => {
     // Verificar se já está carregando globalmente
