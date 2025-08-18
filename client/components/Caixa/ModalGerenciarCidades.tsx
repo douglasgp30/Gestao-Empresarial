@@ -364,11 +364,11 @@ export default function ModalGerenciarCidades() {
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* Botão de ação para criar setor */}
-            <div className="flex justify-end">
+            {/* Botões de ação para criar setores */}
+            <div className="flex gap-2 justify-end">
               <Dialog open={isNovoSetorOpen} onOpenChange={setIsNovoSetorOpen}>
                 <DialogTrigger asChild>
-                  <Button className="gap-2">
+                  <Button variant="outline" className="gap-2">
                     <Plus className="h-4 w-4" />
                     Novo Setor
                   </Button>
