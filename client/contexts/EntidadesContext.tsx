@@ -350,6 +350,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setFornecedores(fornecedoresStorage);
 
       console.log("[EntidadesContext] Carregamento concluído com sucesso");
+      setDadosCarregados(true);
     } catch (error) {
       console.error("Erro ao carregar entidades:", error);
       setError("Erro ao carregar dados do servidor");
@@ -360,7 +361,6 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setFuncionarios([]);
       setTecnicos([]);
       setLocalizacoesGeograficas([]);
-      setCidades([]);
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
@@ -380,7 +380,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         );
       }
     } catch (error) {
-      console.error("Erro ao recarregar descrições e categorias:", error);
+      console.error("Erro ao recarregar descri��ões e categorias:", error);
     }
   }, []);
 
@@ -593,7 +593,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       // Invalidar cache
       apiCache.invalidate("entidades-localizacoes");
 
-      toast.success("Localização atualizada com sucesso!");
+      toast.success("Localiza��ão atualizada com sucesso!");
     } catch (error: any) {
       console.error("Erro ao editar localização:", error);
       const errorMessage =
