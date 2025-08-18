@@ -117,6 +117,16 @@ export default function ModalGerenciarCidades() {
     );
   }, [cidades, pesquisaCidade]);
 
+  // Filtrar setores baseado na pesquisa
+  const setoresFiltrados = useMemo(() => {
+    if (!pesquisaSetor.trim()) return setores;
+
+    return setores.filter(setor =>
+      setor.nome.toLowerCase().includes(pesquisaSetor.toLowerCase()) ||
+      setor.cidade.toLowerCase().includes(pesquisaSetor.toLowerCase())
+    );
+  }, [setores, pesquisaSetor]);
+
   // Carregar dados
   const carregarDados = async () => {
     setIsLoading(true);
@@ -365,7 +375,7 @@ export default function ModalGerenciarCidades() {
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* Botões de a��ão para criar setores */}
+            {/* Botões de ação para criar setores */}
             <div className="flex gap-2 justify-end">
               <Dialog open={isNovoSetorOpen} onOpenChange={setIsNovoSetorOpen}>
                 <DialogTrigger asChild>
