@@ -88,16 +88,23 @@ interface Setor {
 export default function ModalGerenciarCidades() {
   const [isMainOpen, setIsMainOpen] = useState(false);
   const [isNovoSetorOpen, setIsNovoSetorOpen] = useState(false);
+  const [isCadastroMassaOpen, setIsCadastroMassaOpen] = useState(false);
   const [setorParaExcluir, setSetorParaExcluir] = useState<number | null>(null);
 
   const [cidades, setCidades] = useState<Cidade[]>([]);
   const [setores, setSetores] = useState<Setor[]>([]);
   const [cidadesAtivas, setCidadesAtivas] = useState<Cidade[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [pesquisaCidade, setPesquisaCidade] = useState("");
 
   const [formSetor, setFormSetor] = useState({
     nome: "",
     cidade: "",
+  });
+
+  const [formSetorMassa, setFormSetorMassa] = useState({
+    cidade: "",
+    setores: "",
   });
 
   // Carregar dados
