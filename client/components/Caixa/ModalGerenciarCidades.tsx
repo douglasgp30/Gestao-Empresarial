@@ -360,7 +360,7 @@ export default function ModalGerenciarCidades() {
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="gap-1 text-xs">
             <Settings className="h-3 w-3" />
-            Gerenciar Cidades
+            Gerenciar Cidades e Setores
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
