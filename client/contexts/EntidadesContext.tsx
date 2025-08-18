@@ -318,6 +318,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         console.warn("[EntidadesContext] Nenhuma descrição/categoria retornada da API");
       }
 
+      console.log("[EntidadesContext] Resposta completa formas pagamento:", formasPagamentoResponse);
       if (formasPagamentoResponse.data) {
         setFormasPagamento(formasPagamentoResponse.data);
         console.log(
@@ -326,6 +327,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         );
       } else {
         console.warn("[EntidadesContext] Nenhuma forma de pagamento retornada da API");
+        console.warn("[EntidadesContext] formasPagamentoResponse:", formasPagamentoResponse);
       }
 
       if (funcionariosResponse.data) {
