@@ -719,6 +719,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       editarLocalizacaoGeografica,
       excluirLocalizacaoGeografica,
 
+      // Arrays de compatibilidade para componentes antigos
+      cidades,
+      setores,
+
       // Compatibilidade
       descricoes,
       categorias,
