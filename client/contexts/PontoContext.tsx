@@ -135,32 +135,46 @@ export function PontoProvider({ children }: PontoProviderProps) {
   // Função para registrar ponto
   const registrarPonto = useCallback(async (observacao?: string) => {
     if (!user?.id) return;
-    
+
     try {
       setIsRegistrandoPonto(true);
-      
-      const resultado = await pontoApi.registrarPonto({
-        funcionarioId: user.id,
-        observacao
-      });
-      
+
+      // Determinar se é um ID numérico (banco) ou string (localStorage)
+      const isNumericId = !isNaN(parseInt(user.id));
+
+      let resultado: PontoDoFuncionario;
+
+      if (isNumericId) {
+        // Usar API para funcionários do banco
+        resultado = await pontoApi.registrarPonto({
+          funcionarioId: user.id,
+          observacao
+        });
+      } else {
+        // Usar localStorage para funcionários locais
+        resultado = await pontoLocalStorage.registrarPonto(user.id, observacao);
+      }
+
       setPontoHoje(resultado);
       setProximaBatida(resultado.proximaBatida || "entrada");
       setPodeRegistrar(resultado.podeRegistrar || false);
-      
+
       // Mostrar mensagem de sucesso
-      const textoBatida = pontoApi.obterTextoBatida(resultado.batidaRegistrada || "");
+      const textoBatida = isNumericId
+        ? pontoApi.obterTextoBatida(resultado.batidaRegistrada || "")
+        : pontoLocalStorage.obterTextoBatida(resultado.batidaRegistrada || "");
+
       toast({
         title: "Ponto Registrado",
         description: `${textoBatida} registrado com sucesso!`,
         variant: "default",
       });
-      
+
     } catch (error: any) {
       console.error('Erro ao registrar ponto:', error);
       toast({
         title: "Erro ao Registrar Ponto",
-        description: error.response?.data?.error || "Não foi possível registrar o ponto.",
+        description: error.message || error.response?.data?.error || "Não foi possível registrar o ponto.",
         variant: "destructive",
       });
     } finally {
