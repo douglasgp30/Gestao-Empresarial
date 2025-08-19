@@ -101,6 +101,14 @@ export default function FormularioFuncionario({
     setSubmitting(false);
   };
 
+  // Ajustar registraPonto automaticamente baseado no tipoAcesso
+  useEffect(() => {
+    if (formData.tipoAcesso === "Administrador") {
+      // Administradores nunca registram ponto próprio
+      setFormData(prev => ({ ...prev, registraPonto: false }));
+    }
+  }, [formData.tipoAcesso]);
+
   const validarFormulario = () => {
     const newErrors: Record<string, string> = {};
 
