@@ -535,14 +535,22 @@ export function ModalReceita() {
                               tecnico.id !== "" &&
                               tecnico.id !== 0,
                           )
-                          .map((tecnico) => (
-                            <SelectItem
-                              key={tecnico.id}
-                              value={tecnico.id.toString()}
-                            >
-                              {tecnico.nome || tecnico.nomeCompleto}
-                            </SelectItem>
-                          ))
+                          .map((tecnico) => {
+                            const percentual = tecnico.percentualComissao || tecnico.percentualServico || 0;
+                            return (
+                              <SelectItem
+                                key={tecnico.id}
+                                value={tecnico.id.toString()}
+                              >
+                                {tecnico.nome || tecnico.nomeCompleto}
+                                {percentual > 0 && (
+                                  <span className="text-xs text-gray-500 ml-2">
+                                    ({percentual}% comissão)
+                                  </span>
+                                )}
+                              </SelectItem>
+                            );
+                          })
                       )}
                     </SelectContent>
                   </Select>
