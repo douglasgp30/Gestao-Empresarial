@@ -91,6 +91,7 @@ function carregarFuncionariosReais(): Funcionario[] {
         login: "admin",
         senha: "admin123",
         temAcessoSistema: true,
+        permissaoAcesso: true,
         tipoAcesso: "Administrador",
         permissoes: {
           acessarDashboard: true,
