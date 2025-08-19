@@ -231,17 +231,35 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const editarFuncionario = (
+  const editarFuncionario = async (
     id: string,
     dadosAtualizados: Partial<Funcionario>,
   ) => {
-    setFuncionarios((prev) =>
-      prev.map((funcionario) =>
-        funcionario.id === id
-          ? { ...funcionario, ...dadosAtualizados }
-          : funcionario,
-      ),
-    );
+    try {
+      setIsLoading(true);
+
+      // Fazer a requisição para o servidor
+      const response = await funcionariosApi.editar(parseInt(id), dadosAtualizados);
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      // Atualizar o estado local apenas se o servidor confirmar
+      setFuncionarios((prev) =>
+        prev.map((funcionario) =>
+          funcionario.id === id
+            ? { ...funcionario, ...dadosAtualizados }
+            : funcionario,
+        ),
+      );
+
+      console.log("✅ Funcionário editado com sucesso");
+    } catch (error) {
+      console.error("❌ Erro ao editar funcionário:", error);
+      throw error; // Relançar erro para o componente tratar
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const excluirFuncionario = async (id: string) => {
