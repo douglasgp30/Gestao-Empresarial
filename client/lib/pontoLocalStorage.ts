@@ -161,19 +161,25 @@ export class PontoLocalStorageService {
     }
 
     // Atualizar ponto com nova batida
-    switch (proximaBatida) {
-      case "entrada":
-        ponto.horaEntrada = agora;
-        break;
-      case "saida_almoco":
-        ponto.horaSaidaAlmoco = agora;
-        break;
-      case "retorno_almoco":
-        ponto.horaRetornoAlmoco = agora;
-        break;
-      case "saida":
-        ponto.horaSaida = agora;
-        break;
+    if (proximaBatida === "entrada" && vendeuAlmoco) {
+      ponto.horaEntrada = agora;
+      ponto.vendeuAlmoco = true;
+    } else {
+      switch (proximaBatida) {
+        case "entrada":
+          ponto.horaEntrada = agora;
+          ponto.vendeuAlmoco = vendeuAlmoco || false;
+          break;
+        case "saida_almoco":
+          ponto.horaSaidaAlmoco = agora;
+          break;
+        case "retorno_almoco":
+          ponto.horaRetornoAlmoco = agora;
+          break;
+        case "saida":
+          ponto.horaSaida = agora;
+          break;
+      }
     }
 
     // Se foi registrada a saída, calcular estatísticas
