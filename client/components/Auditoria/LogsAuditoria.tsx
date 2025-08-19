@@ -308,7 +308,7 @@ export default function LogsAuditoria() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
-                  {entidades.map((entidade) => (
+                  {entidades.filter(entidade => entidade && entidade.trim()).map((entidade) => (
                     <SelectItem key={entidade} value={entidade}>
                       {entidade}
                     </SelectItem>
