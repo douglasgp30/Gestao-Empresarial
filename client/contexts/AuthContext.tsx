@@ -39,6 +39,7 @@ const verificarSeExisteAdministrador = (): boolean => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [precisaConfigurarPrimeiroAcesso, setPrecisaConfigurarPrimeiroAcesso] = useState(false);
 
   useEffect(() => {
     // Check if user is already logged in (localStorage)
