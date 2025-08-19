@@ -778,7 +778,18 @@ export function ModalReceita() {
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-600">Comissão:</span>
+                      <span className="text-gray-600">
+                        Comissão:
+                        {formData.tecnicoResponsavel && comissaoCalculada > 0 && (
+                          <span className="ml-1 text-xs">
+                            ({(() => {
+                              const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
+                              const percentual = tecnico?.percentualComissao || tecnico?.percentualServico || 0;
+                              return percentual;
+                            })()}%)
+                          </span>
+                        )}
+                      </span>
                       <div className="font-medium">
                         R$ {comissaoCalculada.toFixed(2)}
                       </div>
@@ -791,6 +802,11 @@ export function ModalReceita() {
                       </div>
                     </div>
                   </div>
+                  {formData.tecnicoResponsavel && comissaoCalculada === 0 && (
+                    <div className="mt-2 text-xs text-amber-600">
+                      ⚠️ Técnico selecionado não possui percentual de comissão configurado
+                    </div>
+                  )}
                 </div>
               )}
 
