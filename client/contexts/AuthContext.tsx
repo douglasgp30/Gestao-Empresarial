@@ -42,6 +42,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [precisaConfigurarPrimeiroAcesso, setPrecisaConfigurarPrimeiroAcesso] = useState(false);
 
   useEffect(() => {
+    // Verificar se existe pelo menos um administrador
+    const existeAdmin = verificarSeExisteAdministrador();
+
+    if (!existeAdmin) {
+      setPrecisaConfigurarPrimeiroAcesso(true);
+      setIsLoading(false);
+      return;
+    }
+
     // Check if user is already logged in (localStorage)
     const savedUser = localStorage.getItem("auth_user");
     if (savedUser) {
