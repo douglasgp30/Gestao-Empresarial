@@ -151,7 +151,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       }));
 
       setFuncionarios(funcionariosFormatados);
-      console.log("[FuncionariosContext] Funcionários carregados com sucesso:", funcionariosFormatados.length);
+      console.log(`[FuncionariosContext] ${funcionariosFormatados.length} funcionários carregados`);
     } catch (error) {
       console.error("Erro ao carregar funcionários:", error);
     } finally {
