@@ -72,28 +72,27 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
 
     setIsLoading(true);
     try {
-      // Simular criação do administrador
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       const novoAdmin = {
-        id: "admin-1",
+        id: `admin-${Date.now()}`,
         nomeCompleto: formData.nomeCompleto,
         login: formData.login,
         senha: formData.senha,
         permissaoAcesso: true,
-        tipoAcesso: "Administrador",
+        tipoAcesso: "Administrador" as const,
         percentualComissao: 0,
         dataCadastro: new Date(),
         ativo: true,
         ehTecnico: false,
-        temAcessoSistema: true
+        temAcessoSistema: true,
+        telefone: "",
+        email: "",
+        cargo: "Administrador",
+        salario: 0,
+        permissoes: ""
       };
 
-      // Aqui você salvaria no backend/localStorage
-      // Por enquanto, vou simular
-      
-      toast.success('Administrador criado com sucesso!');
-      onAdminCriado(novoAdmin);
+      await onAdminCriado(novoAdmin);
+      toast.success('Administrador criado com sucesso! Bem-vindo ao sistema!');
     } catch (error) {
       toast.error('Erro ao criar administrador');
       console.error('Erro:', error);
