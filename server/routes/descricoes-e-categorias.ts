@@ -231,6 +231,7 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
           error: errorMessage,
         };
 
+        console.log("🔴 Enviando erro de dependência:", response);
         return res.status(400).json(response);
       }
     }
