@@ -67,16 +67,19 @@ function calcularHorasTrabalhadas(ponto: Ponto): number {
   return Math.max(0, totalMinutos / 60); // Retorna em horas decimais
 }
 
-function calcularAtraso(horaEntrada: Date, horaInicioExpediente: string = "08:00"): number {
+function calcularAtraso(horaEntrada: Date | string, horaInicioExpediente: string = "08:00"): number {
+  // Garantir que horaEntrada é um Date object
+  const entrada = horaEntrada instanceof Date ? horaEntrada : new Date(horaEntrada);
+
   const [hora, minuto] = horaInicioExpediente.split(':');
-  const inicioExpediente = new Date(horaEntrada);
+  const inicioExpediente = new Date(entrada);
   inicioExpediente.setHours(parseInt(hora), parseInt(minuto), 0, 0);
 
-  if (horaEntrada <= inicioExpediente) {
+  if (entrada <= inicioExpediente) {
     return 0;
   }
 
-  return Math.floor((horaEntrada.getTime() - inicioExpediente.getTime()) / (1000 * 60));
+  return Math.floor((entrada.getTime() - inicioExpediente.getTime()) / (1000 * 60));
 }
 
 function calcularHorasExtras(totalHoras: number, cargaHorariaDiaria: number = 8): number {
