@@ -330,7 +330,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      console.log("[CaixaContext] Recebido para adicionar:", novoLancamento);
 
       // Preparar dados para a API usando sistema unificado
       const dadosApi = {
