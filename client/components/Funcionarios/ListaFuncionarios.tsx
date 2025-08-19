@@ -75,6 +75,9 @@ export default function ListaFuncionarios() {
   const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState<
     string | null
   >(null);
+  const [funcionarioParaEditar, setFuncionarioParaEditar] = useState<
+    any | null
+  >(null);
 
   // Filtrar funcionários
   const funcionariosFiltrados = funcionarios
