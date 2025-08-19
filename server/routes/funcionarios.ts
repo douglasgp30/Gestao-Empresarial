@@ -213,13 +213,39 @@ export const updateFuncionario: RequestHandler = middlewareAuditoria(
   }
 );
 
-export const deleteFuncionario: RequestHandler = async (req, res) => {
-  try {
+export const deleteFuncionario: RequestHandler = middlewareAuditoria(
+  'Funcionario',
+  'delete',
+  async (req, res) => {
     const id = parseInt(req.params.id);
+
+    // Buscar dados antes de excluir
+    const funcionarioAntigo = await prisma.funcionario.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        telefone: true,
+        cargo: true,
+        salario: true,
+        temAcessoSistema: true,
+        tipoAcesso: true,
+        login: true,
+        permissoes: true,
+        dataCriacao: true,
+      },
+    });
+
     await prisma.funcionario.delete({ where: { id } });
     res.status(204).send();
-  } catch (error) {
+    return {
+      entidadeId: id.toString(),
+      dadosAntigos: funcionarioAntigo
+    };
+  },
+  (error, req, res) => {
     console.error("Erro ao excluir funcionário:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
   }
-};
+);
