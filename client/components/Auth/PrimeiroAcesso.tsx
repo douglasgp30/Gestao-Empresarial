@@ -78,7 +78,16 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
     if (!validarFormulario()) return;
 
     setIsLoading(true);
+
+    // Feedback de progresso
+    toast.loading('Validando dados...', { id: 'criacao-admin' });
+
     try {
+      // Simular validação (200ms)
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      toast.loading('Criando administrador...', { id: 'criacao-admin' });
+
       const novoAdmin = {
         id: `admin-${Date.now()}`,
         nomeCompleto: formData.nomeCompleto,
@@ -98,10 +107,21 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
         permissoes: ""
       };
 
+      // Simular criação (400ms)
+      await new Promise(resolve => setTimeout(resolve, 400));
+
+      toast.loading('Configurando sistema...', { id: 'criacao-admin' });
+
       await onAdminCriado(novoAdmin);
-      toast.success('Administrador criado com sucesso! Bem-vindo ao sistema!');
+
+      // Feedback final
+      toast.success('🎉 Administrador criado com sucesso! Bem-vindo ao sistema!', {
+        id: 'criacao-admin',
+        duration: 4000
+      });
+
     } catch (error) {
-      toast.error('Erro ao criar administrador');
+      toast.error('Erro ao criar administrador. Tente novamente.', { id: 'criacao-admin' });
       console.error('Erro:', error);
     } finally {
       setIsLoading(false);
