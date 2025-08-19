@@ -211,6 +211,12 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         console.log(
           `[FuncionariosContext] ${funcionariosCarregados.length} funcionários carregados do localStorage`,
         );
+
+        // Debug detalhado
+        console.log("[FuncionariosContext] Funcionários carregados:");
+        funcionariosCarregados.forEach((func, index) => {
+          console.log(`  ${index + 1}. ${func.nomeCompleto} (ID: ${func.id}) - Ativo: ${func.ativo}`);
+        });
       } catch (error) {
         console.error("Erro ao carregar funcionários do localStorage:", error);
       } finally {
