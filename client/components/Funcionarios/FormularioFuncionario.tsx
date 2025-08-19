@@ -169,6 +169,7 @@ export default function FormularioFuncionario({
         ehTecnico: formData.ehTecnico,
         permissaoAcesso: formData.permissaoAcesso,
         registraPonto: formData.registraPonto,
+        jornadaDiaria: formData.jornadaDiaria,
         tipoAcesso: formData.tipoAcesso,
         percentualComissao: parseFloat(formData.percentualComissao),
         ativo: formData.ativo,
