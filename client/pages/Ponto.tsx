@@ -136,6 +136,10 @@ function PontoContent() {
         {isAdmin && (
           <>
             <TabsContent value="gerenciar" className="space-y-6">
+              <InfoAdministrador />
+            </TabsContent>
+
+            <TabsContent value="pontos" className="space-y-6">
               <GerenciarPontos />
             </TabsContent>
 
