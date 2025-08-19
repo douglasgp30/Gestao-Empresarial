@@ -47,6 +47,7 @@ import {
 import contasRouter from "./routes/contas";
 import { cleanFakeDataRoute } from "./routes/clean";
 import descricoesECategoriasRouter from "./routes/descricoes-e-categorias";
+import auditoriaRouter from "./routes/auditoria";
 import {
   getLocalizacoesGeograficas,
   getCidades,
