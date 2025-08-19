@@ -67,6 +67,26 @@ model ConfiguracaoPonto {
 }
 ```
 
+## 📋 Regras de Acesso
+
+### Administradores (Gestores)
+- ❌ **NÃO registram ponto para si mesmos**
+- ✅ Consultam registros de todos os funcionários
+- ✅ Corrigem batidas de funcionários
+- ✅ Registram ponto manualmente para outro funcionário que esqueceu
+- ✅ Geram relatórios de horas, extras, atrasos
+- 🔧 Campo `registraPonto` deve estar **FALSE (0)**
+
+### Funcionários Operacionais
+- ✅ Registram e visualizam apenas o próprio ponto
+- ❌ Não podem ver pontos de outros funcionários
+- ❌ Não podem corrigir ou editar registros
+- 🔧 Campo `registraPonto` deve estar **TRUE (1)**
+
+### Interface Diferenciada
+- **Admin**: Abas "Início", "Gerenciar Pontos", "Relatórios"
+- **Funcionário**: Abas "Bater Ponto", "Meu Histórico"
+
 ## 🔄 Fluxo de Registro
 
 ### Fluxo Normal (com almoço)
