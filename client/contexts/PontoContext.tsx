@@ -34,7 +34,7 @@ interface PontoContextData {
   
   // Funções principais
   carregarPontoHoje: () => Promise<void>;
-  registrarPonto: (observacao?: string) => Promise<void>;
+  registrarPonto: (observacao?: string, vendeuAlmoco?: boolean) => Promise<void>;
   carregarHistorico: (funcionarioId?: string, pagina?: number) => Promise<void>;
   
   // Funções administrativas
