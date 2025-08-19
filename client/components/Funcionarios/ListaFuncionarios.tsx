@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useFuncionarios } from "../../contexts/FuncionariosContext";
+import FormularioFuncionario from "./FormularioFuncionario";
 import { formatDate } from "../../lib/dateUtils";
 import { useAuth } from "../../contexts/AuthContext";
 import {
