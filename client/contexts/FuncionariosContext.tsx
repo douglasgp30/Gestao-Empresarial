@@ -124,6 +124,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   // Função para carregar funcionários da API
   const carregarFuncionarios = async () => {
     try {
+      console.log("[FuncionariosContext] Iniciando carregamento de funcionários...");
       setIsLoading(true);
       const response = await funcionariosApi.listar();
       if (response.error) {
