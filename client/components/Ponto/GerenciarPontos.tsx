@@ -102,7 +102,7 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="horaRetornoAlmoco">Retorno do Almo��o</Label>
+              <Label htmlFor="horaRetornoAlmoco">Retorno do Almoço</Label>
               <Input
                 id="horaRetornoAlmoco"
                 type="datetime-local"
@@ -320,7 +320,7 @@ export function GerenciarPontos() {
 
   const aplicarFiltros = () => {
     atualizarFiltros({
-      funcionarioId: filtroFuncionario || undefined,
+      funcionarioId: filtroFuncionario === "todos" ? undefined : filtroFuncionario,
       status: filtroStatus as any,
       dataInicio: new Date(dataInicio),
       dataFim: new Date(dataFim)
