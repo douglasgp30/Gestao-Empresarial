@@ -184,7 +184,16 @@ export default function ListaFuncionarios() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {funcionariosFiltrados.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <p className="text-sm text-muted-foreground">
+                  Carregando funcionários...
+                </p>
+              </div>
+            </div>
+          ) : funcionariosFiltrados.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium text-muted-foreground mb-2">
