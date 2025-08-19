@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { AuthUser, LoginCredentials, Funcionario } from "@shared/types";
 import { BackupService } from "../lib/backupService";
+import { configurarDadosBasicosIniciais } from "../lib/dadosBasicosIniciais";
 
 interface AuthContextType {
   user: AuthUser | null;
