@@ -292,9 +292,6 @@ export function ModalReceita() {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       if (!loadingForced) {
-        console.log(
-          "[ModalReceita] TIMEOUT SEGURANÇA: Forçando desbloqueio de loading",
-        );
         setLoadingForced(true);
       }
     }, 3000); // 3 segundos máximo
