@@ -72,6 +72,7 @@ export default function ListaFuncionarios() {
     estatisticas,
     excluirFuncionario,
     alterarStatusFuncionario,
+    isLoading,
   } = useFuncionarios();
   const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState<
     string | null
