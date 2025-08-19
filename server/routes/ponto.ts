@@ -186,19 +186,26 @@ router.post('/registrar', middlewareAuditoriaSimples('PONTO_CREATE'), async (req
     // Preparar dados para update/create
     const dadosUpdate: any = { observacao };
 
-    switch (proximaBatida) {
-      case "entrada":
-        dadosUpdate.horaEntrada = agora;
-        break;
-      case "saida_almoco":
-        dadosUpdate.horaSaidaAlmoco = agora;
-        break;
-      case "retorno_almoco":
-        dadosUpdate.horaRetornoAlmoco = agora;
-        break;
-      case "saida":
-        dadosUpdate.horaSaida = agora;
-        break;
+    // Se está registrando entrada e escolheu vender almoço
+    if (proximaBatida === "entrada" && vendeuAlmoco) {
+      dadosUpdate.horaEntrada = agora;
+      dadosUpdate.vendeuAlmoco = true;
+    } else {
+      switch (proximaBatida) {
+        case "entrada":
+          dadosUpdate.horaEntrada = agora;
+          dadosUpdate.vendeuAlmoco = vendeuAlmoco || false;
+          break;
+        case "saida_almoco":
+          dadosUpdate.horaSaidaAlmoco = agora;
+          break;
+        case "retorno_almoco":
+          dadosUpdate.horaRetornoAlmoco = agora;
+          break;
+        case "saida":
+          dadosUpdate.horaSaida = agora;
+          break;
+      }
     }
 
     // Criar ou atualizar registro
