@@ -55,7 +55,10 @@ function PontoContent() {
           <div>
             <h1 className="text-3xl font-bold">Controle de Ponto</h1>
             <p className="text-muted-foreground mt-1">
-              Gerencie seus registros de entrada e saída
+              {isAdmin
+                ? "Gerencie os registros de ponto dos funcionários"
+                : "Gerencie seus registros de entrada e saída"
+              }
             </p>
           </div>
           <div className="flex items-center space-x-2">
@@ -63,9 +66,18 @@ function PontoContent() {
               <Clock className="h-3 w-3 mr-1" />
               {new Date().toLocaleDateString('pt-BR')}
             </Badge>
-            {user?.registraPonto && (
+            {isAdmin ? (
+              <Badge variant="secondary" className="text-sm">
+                <Users className="h-3 w-3 mr-1" />
+                Administrador
+              </Badge>
+            ) : podeRegistrarPonto ? (
               <Badge variant="secondary" className="text-sm">
                 Autorizado
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-sm">
+                Consulta Apenas
               </Badge>
             )}
           </div>
