@@ -375,7 +375,7 @@ export function GerenciarPontos() {
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="todos">Todos</SelectItem>
                   {funcionariosComPonto.map((funcionario) => (
                     <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
                       {funcionario.nome}
