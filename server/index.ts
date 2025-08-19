@@ -195,6 +195,9 @@ export function createServer(): Express {
   // Rotas de Descrições e Categorias Unificadas
   app.use("/api/descricoes-e-categorias", descricoesECategoriasRouter);
 
+  // Rotas de Auditoria (apenas para administradores)
+  app.use("/api/auditoria", auditoriaRouter);
+
   // Rotas de Clientes
   app.get("/api/clientes", getClientes);
   app.post("/api/clientes", createCliente);
