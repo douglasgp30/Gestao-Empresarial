@@ -57,11 +57,12 @@ export default function ModalDescricoesSimples() {
 
   // Carregar dados quando o modal é aberto
   useEffect(() => {
+    const length = Array.isArray(descricoesECategorias) ? descricoesECategorias.length : 0;
     console.log(
-      `[ModalDescricoesSimples] Modal isOpen: ${isOpen}, descricoesECategorias.length: ${descricoesECategorias.length}`,
+      `[ModalDescricoesSimples] Modal isOpen: ${isOpen}, descricoesECategorias.length: ${length}`,
     );
     if (isOpen) {
-      if (descricoesECategorias.length === 0) {
+      if (length === 0) {
         console.log(
           "[ModalDescricoesSimples] Modal aberto sem dados, carregando...",
         );
@@ -72,7 +73,7 @@ export default function ModalDescricoesSimples() {
         );
       }
     }
-  }, [isOpen, descricoesECategorias.length, recarregarDescricoesECategorias]);
+  }, [isOpen, descricoesECategorias, recarregarDescricoesECategorias]);
 
   // Filtrar dados usando o sistema unificado com memoização otimizada
   const categoriasReceitas = useMemo(() => {
@@ -146,7 +147,7 @@ export default function ModalDescricoesSimples() {
         ativo: true,
       });
 
-      toast.success("Descrição adicionada com sucesso");
+      toast.success("Descri��ão adicionada com sucesso");
       setFormDescricao({ nome: "", categoria: "" });
     } catch (error) {
       console.error("Erro ao adicionar descrição:", error);
