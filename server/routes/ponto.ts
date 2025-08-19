@@ -60,13 +60,34 @@ function determinarProximaBatida(ponto: any): string {
 router.get('/funcionario/:funcionarioId/hoje', async (req, res) => {
   try {
     const { funcionarioId } = req.params;
+
+    // Verificar se funcionarioId é um número ou string
+    const funcionarioIdNumber = parseInt(funcionarioId);
+    if (isNaN(funcionarioIdNumber)) {
+      // Se não é um número, o sistema está usando IDs baseados em localStorage
+      // Retornar dados default para funcionários de localStorage
+      console.log(`[Ponto] Funcionário ${funcionarioId} não é numérico, usando dados default`);
+
+      const proximaBatida = "entrada";
+
+      res.json({
+        success: true,
+        data: {
+          ponto: null,
+          proximaBatida,
+          podeRegistrar: proximaBatida !== "completo"
+        }
+      });
+      return;
+    }
+
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
     const ponto = await prisma.ponto.findUnique({
       where: {
         funcionarioId_data: {
-          funcionarioId: parseInt(funcionarioId),
+          funcionarioId: funcionarioIdNumber,
           data: hoje
         }
       },
