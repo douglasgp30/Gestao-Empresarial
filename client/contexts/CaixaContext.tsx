@@ -108,7 +108,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // Função para carregar todos os dados
+  // Função para carregar todos os dados do localStorage
   const carregarDados = async () => {
     // Evitar múltiplos carregamentos simultâneos
     if (isCarregando) {
@@ -121,37 +121,29 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      // Invalidar cache e carregar campanhas
-      apiCache.invalidate("caixa-campanhas");
-      const campanhasResponse = await campanhasApi.listar();
-      if (campanhasResponse.error) {
-        console.error("Erro ao carregar campanhas:", campanhasResponse.error);
-      } else {
-        setCampanhas(campanhasResponse.data || []);
-      }
+      console.log("📦 [CaixaContext] Carregando dados do localStorage...");
 
-      // Carregar lançamentos com filtros atuais
-      await carregarLancamentos();
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
-
-      // Tratar erros de conectividade durante desenvolvimento
-      if (error instanceof Error) {
-        const isNetworkError =
-          error.message.includes("Failed to fetch") ||
-          error.message.includes("NetworkError") ||
-          error.message.includes("conectividade");
-
-        if (isNetworkError) {
-          console.log("📡 [CaixaContext] Erro de conectividade durante desenvolvimento, ignorando...");
-          setError(null);
-          return;
+      // Carregar campanhas do localStorage
+      try {
+        const campanhasStorage = localStorage.getItem("campanhas");
+        if (campanhasStorage) {
+          const campanhasParsed = JSON.parse(campanhasStorage);
+          setCampanhas(campanhasParsed || []);
+        } else {
+          setCampanhas([]);
         }
+      } catch (error) {
+        console.warn("Erro ao carregar campanhas do localStorage:", error);
+        setCampanhas([]);
       }
 
-      // Para outros tipos de erro, mostrar ao usuário
-      console.error("❌ [CaixaContext] Erro persistente ao carregar dados:", error);
-      setError("Erro ao carregar dados do servidor");
+      // Carregar lançamentos do localStorage
+      await carregarLancamentosLocalStorage();
+
+      console.log("✅ [CaixaContext] Dados carregados do localStorage com sucesso");
+    } catch (error) {
+      console.error("Erro ao carregar dados do localStorage:", error);
+      setError("Erro ao carregar dados locais");
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
