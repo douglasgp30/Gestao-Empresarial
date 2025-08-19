@@ -125,7 +125,7 @@ export class PontoLocalStorageService {
   }
 
   // Registrar batida de ponto
-  async registrarPonto(funcionarioId: string, observacao?: string): Promise<PontoDoFuncionario> {
+  async registrarPonto(funcionarioId: string, observacao?: string, vendeuAlmoco?: boolean): Promise<PontoDoFuncionario> {
     const pontos = carregarPontos();
     const agora = new Date();
     const hoje = new Date();
