@@ -347,6 +347,12 @@ export interface RegistroPonto {
   observacao?: string;
 }
 
+export interface RegistrarPontoOpcoes {
+  funcionarioId: string;
+  observacao?: string;
+  vendeuAlmoco?: boolean; // Se verdadeiro, pula saída e retorno do almoço
+}
+
 export interface PontoDoFuncionario {
   funcionario: Funcionario;
   ponto?: Ponto;
