@@ -299,14 +299,14 @@ export default function LogsAuditoria() {
             <div className="space-y-2">
               <Label htmlFor="entidade">Entidade</Label>
               <Select
-                value={filtros.entidade || ''}
-                onValueChange={(value) => setFiltros({ ...filtros, entidade: value || undefined })}
+                value={filtros.entidade || 'all'}
+                onValueChange={(value) => setFiltros({ ...filtros, entidade: value === 'all' ? undefined : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   {entidades.map((entidade) => (
                     <SelectItem key={entidade} value={entidade}>
                       {entidade}
@@ -319,14 +319,14 @@ export default function LogsAuditoria() {
             <div className="space-y-2">
               <Label htmlFor="acao">Ação</Label>
               <Select
-                value={filtros.acao || ''}
-                onValueChange={(value) => setFiltros({ ...filtros, acao: value || undefined })}
+                value={filtros.acao || 'all'}
+                onValueChange={(value) => setFiltros({ ...filtros, acao: value === 'all' ? undefined : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   {acoes.map((acao) => (
                     <SelectItem key={acao} value={acao}>
                       {acao}
@@ -359,17 +359,17 @@ export default function LogsAuditoria() {
             <div className="space-y-2">
               <Label htmlFor="sucesso">Status</Label>
               <Select
-                value={filtros.sucesso !== undefined ? filtros.sucesso.toString() : ''}
-                onValueChange={(value) => setFiltros({ 
-                  ...filtros, 
-                  sucesso: value ? value === 'true' : undefined 
+                value={filtros.sucesso !== undefined ? filtros.sucesso.toString() : 'all'}
+                onValueChange={(value) => setFiltros({
+                  ...filtros,
+                  sucesso: value === 'all' ? undefined : value === 'true'
                 })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="true">Sucesso</SelectItem>
                   <SelectItem value="false">Erro</SelectItem>
                 </SelectContent>
