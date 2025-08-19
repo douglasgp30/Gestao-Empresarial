@@ -45,6 +45,7 @@ import EmpresaLogo from "../components/EmpresaLogo";
 import { useEffect } from "react";
 
 export default function Configuracoes() {
+  const { user } = useAuth();
   const {
     empresaConfig,
     backupConfig,
