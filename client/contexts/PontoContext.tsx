@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { pontoApi } from '../lib/pontoApi';
+import { pontoLocalStorage } from '../lib/pontoLocalStorage';
 import { toast } from '../hooks/use-toast';
 import type {
   Ponto,
