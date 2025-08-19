@@ -87,7 +87,10 @@ async function apiRequest<T>(
       }
 
       const data = await response.json();
-      console.log(`[ApiService] Dados recebidos:`, data);
+      // Log apenas em desenvolvimento com dados mínimos
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[ApiService] ${endpoint} - Dados recebidos (${Array.isArray(data) ? data.length : 'objeto'} items)`);
+      }
       return { data };
     } catch (error) {
       console.error(
