@@ -382,10 +382,14 @@ export function PontoProvider({ children }: PontoProviderProps) {
   // Carregar dados iniciais
   useEffect(() => {
     if (user?.id) {
-      carregarPontoHoje();
+      // Só carregar ponto próprio se o usuário pode registrar ponto
+      // Administradores não registram ponto para si mesmos
+      if (user?.registraPonto === true) {
+        carregarPontoHoje();
+      }
       carregarFuncionariosComPonto();
     }
-  }, [user?.id, carregarPontoHoje, carregarFuncionariosComPonto]);
+  }, [user?.id, user?.registraPonto, carregarPontoHoje, carregarFuncionariosComPonto]);
 
   // Carregar dados quando filtros mudarem
   useEffect(() => {
