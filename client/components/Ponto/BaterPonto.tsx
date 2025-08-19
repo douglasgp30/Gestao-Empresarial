@@ -7,6 +7,7 @@ import { Textarea } from "../ui/textarea";
 import { usePonto } from "../../contexts/PontoContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { pontoApi } from "../../lib/pontoApi";
+import { pontoLocalStorage } from "../../lib/pontoLocalStorage";
 
 interface BaterPontoProps {
   onPontoRegistrado?: () => void;
