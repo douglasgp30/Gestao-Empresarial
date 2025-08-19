@@ -45,7 +45,7 @@ function gerarId(): string {
   return Date.now().toString() + Math.random().toString(36).substr(2, 9);
 }
 
-// Funções para c��lculos de ponto
+// Funções para cálculos de ponto
 function calcularHorasTrabalhadas(ponto: Ponto): number {
   if (!ponto.horaEntrada || !ponto.horaSaida) {
     return 0;
@@ -168,7 +168,7 @@ export class PontoLocalStorageService {
     // Se foi registrada a saída, calcular estatísticas
     if (proximaBatida === "saida") {
       ponto.totalHoras = calcularHorasTrabalhadas(ponto);
-      ponto.atraso = ponto.horaEntrada ? calcularAtraso(new Date(ponto.horaEntrada)) : 0;
+      ponto.atraso = ponto.horaEntrada ? calcularAtraso(ponto.horaEntrada) : 0;
       ponto.horasExtras = calcularHorasExtras(ponto.totalHoras || 0);
     }
 
