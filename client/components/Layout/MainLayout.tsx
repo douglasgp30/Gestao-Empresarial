@@ -54,6 +54,12 @@ const sidebarItems: SidebarItem[] = [
     dataTour: "agendamentos",
   },
   {
+    title: "Controle de Ponto",
+    href: "/ponto",
+    icon: Clock,
+    dataTour: "ponto",
+  },
+  {
     title: "Clientes",
     href: "/clientes",
     icon: UserCheck,
