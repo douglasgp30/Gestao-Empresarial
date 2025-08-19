@@ -141,7 +141,7 @@ class PontoApiService {
       });
 
       const response = await apiService.get(
-        `/api/ponto/relatorio/${funcionarioId}?${params.toString()}`
+        `/ponto/relatorio/${funcionarioId}?${params.toString()}`
       );
       return response.data;
     } catch (error) {
