@@ -320,6 +320,19 @@ export default function ListaFuncionarios() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Modal de Edição */}
+      {funcionarioParaEditar && (
+        <FormularioFuncionario
+          isOpen={!!funcionarioParaEditar}
+          onClose={() => setFuncionarioParaEditar(null)}
+          funcionarioParaEditar={funcionarioParaEditar}
+          onFuncionarioAdicionado={() => {
+            setFuncionarioParaEditar(null);
+            // O contexto já atualiza a lista automaticamente
+          }}
+        />
+      )}
     </div>
   );
 }
