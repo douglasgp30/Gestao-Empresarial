@@ -212,6 +212,7 @@ export default function ListaFuncionarios() {
                     <TableHead>Login</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Comissão</TableHead>
+                    <TableHead>Ponto</TableHead>
                     <TableHead>Cadastro</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
