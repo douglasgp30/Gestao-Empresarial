@@ -13,12 +13,24 @@ import { RelatoriosPonto } from "../components/Ponto/RelatoriosPonto";
 
 function PontoContent() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("ponto");
+  const isAdmin = user?.tipoAcesso === "Administrador";
+  const podeRegistrarPonto = user?.registraPonto === true;
+
+  // Definir aba inicial baseada no perfil
+  const [activeTab, setActiveTab] = useState(() => {
+    if (isAdmin) {
+      return "gerenciar"; // Admin começa na gestão
+    } else if (podeRegistrarPonto) {
+      return "ponto"; // Funcionário começa no registro
+    } else {
+      return "historico"; // Caso especial, começa no histórico
+    }
+  });
 
   // Verificar se o usuário tem permissão para acessar o controle de ponto
-  const podeAcessarPonto = user?.tipoAcesso === "Administrador" || user?.registraPonto;
+  const podeAcessarSistema = isAdmin || podeRegistrarPonto;
 
-  if (!podeAcessarPonto) {
+  if (!podeAcessarSistema) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>
@@ -34,8 +46,6 @@ function PontoContent() {
       </div>
     );
   }
-
-  const isAdmin = user?.tipoAcesso === "Administrador";
 
   return (
     <div className="container mx-auto px-4 py-8">
