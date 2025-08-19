@@ -316,7 +316,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
     }
 
     // Calcular comissão automaticamente se há técnico responsável
-    let comissaoCalculada = data.comissao || 0;
+    let comissaoCalculada = 0;
     if (ids.funcionarioId && data.valorLiquido && data.tipo === "receita") {
       const funcionario = await prisma.funcionario.findUnique({
         where: { id: ids.funcionarioId },
@@ -333,10 +333,16 @@ export const createLancamento: RequestHandler = async (req, res) => {
         if (percentual > 0) {
           comissaoCalculada = data.valorLiquido * (percentual / 100);
           console.log(
-            `[Caixa] Comissão calculada automaticamente: ${funcionario.nome} - ${percentual}% = R$ ${comissaoCalculada.toFixed(2)}`,
+            `[Caixa] Comissão calculada: ${funcionario.nome} - ${percentual}% sobre R$ ${data.valorLiquido.toFixed(2)} = R$ ${comissaoCalculada.toFixed(2)}`,
           );
+        } else {
+          console.log(`[Caixa] Técnico ${funcionario.nome} sem percentual de comissão definido`);
         }
+      } else {
+        console.log(`[Caixa] Funcionário com ID ${ids.funcionarioId} não encontrado`);
       }
+    } else if (data.tipo === "receita" && !ids.funcionarioId) {
+      console.log(`[Caixa] Receita sem técnico responsável - comissão será R$ 0,00`);
     }
 
     // Verificar se os IDs de relacionamento existem
