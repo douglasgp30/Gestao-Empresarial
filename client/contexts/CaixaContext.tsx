@@ -204,69 +204,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
         console.log("📦 [CaixaContext] Recarregando lançamentos do localStorage...");
 
-        const filtrosApi: any = {
-          dataInicio: formatarDataParaServidor(filtros.dataInicio),
-          dataFim: formatarDataParaServidor(filtros.dataFim),
-          ...(filtros.tipo !== "todos" && { tipo: filtros.tipo }),
-          ...(filtros.cidade !== "todas" && { cidade: filtros.cidade }),
-          ...(filtros.numeroNota &&
-            filtros.numeroNota.trim() !== "" && {
-              numeroNota: filtros.numeroNota,
-            }),
-        };
-
-        // Adicionar filtros numéricos apenas se válidos
-        const funcionarioId = parseIntSafe(filtros.tecnico);
-        const setorId = parseIntSafe(filtros.setor);
-        const campanhaId = parseIntSafe(filtros.campanha);
-        const formaPagamentoId = parseIntSafe(filtros.formaPagamento);
-        const descricaoId = parseIntSafe(filtros.descricao);
-        const clienteId = parseIntSafe(filtros.cliente);
-
-        if (funcionarioId) filtrosApi.funcionarioId = funcionarioId;
-        if (setorId) filtrosApi.setorId = setorId;
-        if (campanhaId) filtrosApi.campanhaId = campanhaId;
-        if (formaPagamentoId) filtrosApi.formaPagamentoId = formaPagamentoId;
-        if (descricaoId) filtrosApi.descricaoId = descricaoId;
-        if (clienteId) filtrosApi.clienteId = clienteId;
-
-        // Filtro por categoria (nome/string)
-        if (filtros.categoria && filtros.categoria !== "todas") {
-          filtrosApi.categoria = filtros.categoria;
-        }
-
-        // Criar chave de cache baseada nos filtros
-        const cacheKey = `caixa-lancamentos-${JSON.stringify(filtrosApi)}`;
-        const response = await apiCache.executeWithCache(
-          cacheKey,
-          () => caixaApi.listarLancamentos(filtrosApi),
-          forceLoad,
-        );
-        if (response.error) {
-          setError(response.error);
-        } else {
-          // Converter datas de string para Date e manter relacionamentos
-          const lancamentosFormatados = (response.data || []).map(
-            (lancamento: any) => ({
-              ...lancamento,
-              // Converter dataHora do banco para Date para compatibilidade
-              data: new Date(lancamento.dataHora), // Criar campo data a partir de dataHora
-              dataHora: lancamento.dataHora, // Manter como string no formato brasileiro
-              dataCriacao: new Date(lancamento.dataCriacao),
-              // Garantir que os relacionamentos estejam presentes corretamente
-              descricao: lancamento.descricao || { nome: "Sem descrição" },
-              formaPagamento: lancamento.formaPagamento || {
-                nome: "Não informado",
-              },
-              funcionario: lancamento.funcionario || null,
-              setor: lancamento.setor || null,
-              campanha: lancamento.campanha || null,
-              // Campos de compatibilidade para c��digo que espera strings
-              tecnicoResponsavel: lancamento.funcionario?.nome || null,
-            }),
-          );
-          setLancamentos(lancamentosFormatados);
-        }
+        // Simplesmente recarregar do localStorage
+        await carregarLancamentosLocalStorage();
       } catch (error) {
         console.error("Erro ao carregar lançamentos:", error);
 
