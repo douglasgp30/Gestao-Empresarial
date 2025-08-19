@@ -95,27 +95,33 @@ async function apiRequest<T>(
         error,
       );
 
-      // Verificar se é um erro relacionado ao FullStory
+      // Verificar tipos de erro de rede
+      const isNetworkError =
+        error instanceof TypeError &&
+        (error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError") ||
+          error.message.includes("fetch"));
+
       const isFullStoryError =
         error instanceof TypeError &&
         (error.stack?.includes("fullstory.com") ||
-          error.stack?.includes("fs.js") ||
-          error.message.includes("Failed to fetch"));
+          error.stack?.includes("fs.js"));
 
-      // Se é erro do FullStory e não é a última tentativa, aguardar e tentar novamente
-      if (isFullStoryError && attempt < retries) {
+      // Se é erro de rede (incluindo FullStory) e não é a última tentativa
+      if ((isNetworkError || isFullStoryError) && attempt < retries) {
         console.log(
-          `[ApiService] Erro de third-party detectado, aguardando antes de tentar novamente...`,
+          `[ApiService] Erro de conectividade detectado, tentando novamente em ${1000 * (attempt + 1)}ms...`,
         );
         await new Promise((resolve) =>
-          setTimeout(resolve, 1500 * (attempt + 1)),
-        ); // Delay progressivo
+          setTimeout(resolve, 1000 * (attempt + 1)),
+        ); // Delay progressivo mais curto
         continue;
       }
 
       // Se é a última tentativa, retornar o erro
       if (attempt === retries) {
-        if (isFullStoryError) {
+        if (isNetworkError || isFullStoryError) {
+          console.warn(`[ApiService] Falha de conectividade após ${retries + 1} tentativas para ${endpoint}`);
           return {
             error:
               "Problema de conectividade. Recarregue a página se o problema persistir.",
