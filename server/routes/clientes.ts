@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
+import { middlewareAuditoria } from "../lib/auditoria";
 
 const ClienteSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
