@@ -531,9 +531,11 @@ model Ponto {
   horaSaidaAlmoco     DateTime? // Horário de saída para almoço
   horaRetornoAlmoco   DateTime? // Horário de retorno do almoço
   horaSaida           DateTime? // Horário de saída
+  vendeuAlmoco        Boolean  @default(false) // Se trabalhou sem intervalo de almoço
   observacao          String?  // Observações do registro
   totalHoras          Float?   // Total de horas trabalhadas (calculado)
   horasExtras         Float?   // Horas extras (se houver)
+  saldoHoras          Float?   // Saldo de horas (positivo = extra, negativo = faltante)
   atraso              Int?     // Minutos de atraso (se houver)
   justificativaAtraso String?  // Justificativa para atraso
   editadoPorAdmin     Boolean  @default(false) // Se foi editado por administrador
