@@ -141,7 +141,7 @@ class PontoApiService {
   async registrarPontoAdmin(dados: RegistrarPontoAdminRequest): Promise<Ponto> {
     try {
       const response = await apiService.post('/ponto/registrar-admin', dados);
-      return response.data;
+      return response.data?.data || response.data;
     } catch (error) {
       console.error('Erro ao registrar ponto administrativo:', error);
       throw error;
