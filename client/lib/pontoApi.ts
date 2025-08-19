@@ -130,7 +130,7 @@ class PontoApiService {
   async editarPonto(pontoId: string, dados: EditarPontoRequest): Promise<Ponto> {
     try {
       const response = await apiService.put(`/ponto/${pontoId}`, dados);
-      return response.data;
+      return response.data?.data || response.data;
     } catch (error) {
       console.error('Erro ao editar ponto:', error);
       throw error;
