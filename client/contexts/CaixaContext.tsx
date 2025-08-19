@@ -247,18 +247,22 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Erro ao carregar lançamentos:", error);
 
-        // Se �� erro de rede durante hot reload, não mostrar erro ao usuário
-        if (
-          error instanceof Error &&
-          error.message.includes("Failed to fetch")
-        ) {
-          console.log(
-            "📡 [CaixaContext] Erro de rede ao carregar lançamentos, ignorando...",
-          );
-          // Não definir erro para o usuário durante hot reload
-          return;
+        // Tratar erros de conectividade durante desenvolvimento
+        if (error instanceof Error) {
+          const isNetworkError =
+            error.message.includes("Failed to fetch") ||
+            error.message.includes("NetworkError") ||
+            error.message.includes("conectividade");
+
+          if (isNetworkError) {
+            console.log("📡 [CaixaContext] Erro de conectividade durante desenvolvimento, ignorando...");
+            // Durante desenvolvimento, ignorar erros de rede temporários
+            return;
+          }
         }
 
+        // Para outros tipos de erro, mostrar ao usuário
+        console.error("❌ [CaixaContext] Erro persistente ao carregar lançamentos:", error);
         setError("Erro ao carregar lançamentos");
       } finally {
         setContextLoading("CaixaContext-lancamentos", false);
