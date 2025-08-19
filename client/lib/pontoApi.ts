@@ -61,7 +61,7 @@ class PontoApiService {
   // Registrar batida de ponto
   async registrarPonto(dados: RegistrarPontoRequest): Promise<PontoDoFuncionario> {
     try {
-      const response = await apiService.post('/api/ponto/registrar', dados);
+      const response = await apiService.post('/ponto/registrar', dados);
       return response.data;
     } catch (error) {
       console.error('Erro ao registrar ponto:', error);
