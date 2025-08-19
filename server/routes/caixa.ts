@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
+import { AuditoriaService, extrairInfoRequisicao } from "../lib/auditoria";
 
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
@@ -136,16 +137,23 @@ async function resolverIds(data: any) {
     ids.funcionarioId = data.funcionarioId;
   }
 
-  // Resolver setor
-  if (data.setor && !data.setorId) {
-    const setor = await prisma.setor.findFirst({
-      where: { nome: { contains: data.setor } },
+  // Resolver setor (agora usando LocalizacaoGeografica)
+  if (data.setor && !data.localizacaoId) {
+    const setor = await prisma.localizacaoGeografica.findFirst({
+      where: {
+        id: parseInt(data.setor),
+        tipoItem: "setor",
+        ativo: true,
+      },
     });
     if (setor) {
-      ids.setorId = setor.id;
+      ids.localizacaoId = setor.id;
     }
+  } else if (data.localizacaoId) {
+    ids.localizacaoId = data.localizacaoId;
   } else if (data.setorId) {
-    ids.setorId = data.setorId;
+    // Backward compatibility
+    ids.localizacaoId = data.setorId;
   }
 
   // Resolver campanha
@@ -183,7 +191,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     // Filtros
     if (tipo) where.tipo = tipo;
     if (funcionarioId) where.funcionarioId = parseInt(funcionarioId as string);
-    if (setorId) where.setorId = parseInt(setorId as string);
+    if (setorId) where.localizacaoId = parseInt(setorId as string);
     if (campanhaId) where.campanhaId = parseInt(campanhaId as string);
     if (formaPagamentoId)
       where.formaPagamentoId = parseInt(formaPagamentoId as string);
@@ -309,7 +317,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
     }
 
     // Calcular comissão automaticamente se há técnico responsável
-    let comissaoCalculada = data.comissao || 0;
+    let comissaoCalculada = 0;
     if (ids.funcionarioId && data.valorLiquido && data.tipo === "receita") {
       const funcionario = await prisma.funcionario.findUnique({
         where: { id: ids.funcionarioId },
@@ -326,10 +334,22 @@ export const createLancamento: RequestHandler = async (req, res) => {
         if (percentual > 0) {
           comissaoCalculada = data.valorLiquido * (percentual / 100);
           console.log(
-            `[Caixa] Comissão calculada automaticamente: ${funcionario.nome} - ${percentual}% = R$ ${comissaoCalculada.toFixed(2)}`,
+            `[Caixa] Comissão calculada: ${funcionario.nome} - ${percentual}% sobre R$ ${data.valorLiquido.toFixed(2)} = R$ ${comissaoCalculada.toFixed(2)}`,
+          );
+        } else {
+          console.log(
+            `[Caixa] Técnico ${funcionario.nome} sem percentual de comissão definido`,
           );
         }
+      } else {
+        console.log(
+          `[Caixa] Funcionário com ID ${ids.funcionarioId} não encontrado`,
+        );
       }
+    } else if (data.tipo === "receita" && !ids.funcionarioId) {
+      console.log(
+        `[Caixa] Receita sem técnico responsável - comissão será R$ 0,00`,
+      );
     }
 
     // Verificar se os IDs de relacionamento existem
@@ -360,13 +380,13 @@ export const createLancamento: RequestHandler = async (req, res) => {
       );
     }
 
-    if (ids.setorId) {
-      const setor = await prisma.setor.findUnique({
-        where: { id: ids.setorId },
+    if (ids.localizacaoId) {
+      const localizacao = await prisma.localizacaoGeografica.findUnique({
+        where: { id: ids.localizacaoId },
       });
       console.log(
-        `[Caixa] Setor ID ${ids.setorId}:`,
-        setor ? "EXISTS" : "NOT FOUND",
+        `[Caixa] Localização ID ${ids.localizacaoId}:`,
+        localizacao ? "EXISTS" : "NOT FOUND",
       );
     }
 
@@ -478,6 +498,23 @@ export const createLancamento: RequestHandler = async (req, res) => {
     });
 
     console.log("[Caixa] Lançamento criado com sucesso:", lancamento.id);
+
+    // Registrar auditoria
+    if (req.user) {
+      const infoRequisicao = extrairInfoRequisicao(req);
+      await AuditoriaService.registrarLog({
+        acao: "CREATE",
+        entidade: "lancamentos_caixa",
+        entidadeId: lancamento.id,
+        dadosNovos: dadosLancamento,
+        descricao: `Criou lançamento de ${data.tipo} no valor de R$ ${data.valor}`,
+        usuarioId: req.user.id,
+        usuarioNome: req.user.nome || req.user.nomeCompleto,
+        usuarioLogin: req.user.login,
+        ...infoRequisicao,
+      });
+    }
+
     res.status(201).json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -595,6 +632,24 @@ export const updateLancamento: RequestHandler = async (req, res) => {
     });
 
     console.log(`[Caixa] Lançamento atualizado com sucesso:`, lancamento.id);
+
+    // Registrar auditoria
+    if (req.user) {
+      const infoRequisicao = extrairInfoRequisicao(req);
+      await AuditoriaService.registrarLog({
+        acao: "UPDATE",
+        entidade: "lancamentos_caixa",
+        entidadeId: id,
+        dadosAntigos: lancamentoExistente,
+        dadosNovos: dadosAtualizacao,
+        descricao: `Editou lançamento de ${lancamentoExistente.tipo} no valor de R$ ${lancamentoExistente.valor}`,
+        usuarioId: req.user.id,
+        usuarioNome: req.user.nome || req.user.nomeCompleto,
+        usuarioLogin: req.user.login,
+        ...infoRequisicao,
+      });
+    }
+
     res.json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -627,6 +682,22 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
 
     await prisma.lancamentoCaixa.delete({ where: { id } });
     console.log(`[Caixa] Lançamento ${id} excluído com sucesso`);
+
+    // Registrar auditoria
+    if (req.user) {
+      const infoRequisicao = extrairInfoRequisicao(req);
+      await AuditoriaService.registrarLog({
+        acao: "DELETE",
+        entidade: "lancamentos_caixa",
+        entidadeId: id,
+        dadosAntigos: lancamentoExistente,
+        descricao: `Excluiu lançamento de ${lancamentoExistente.tipo} no valor de R$ ${lancamentoExistente.valor}`,
+        usuarioId: req.user.id,
+        usuarioNome: req.user.nome || req.user.nomeCompleto,
+        usuarioLogin: req.user.login,
+        ...infoRequisicao,
+      });
+    }
 
     res.status(204).send();
   } catch (error) {

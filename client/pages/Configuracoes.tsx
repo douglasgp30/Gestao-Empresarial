@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useConfig } from "../contexts/ConfigContext";
 import { useDashboard } from "../contexts/DashboardContext";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Card,
   CardContent,
@@ -24,6 +25,7 @@ import { Switch } from "../components/ui/switch";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import SistemaBackup from "../components/Backup/SistemaBackup";
 import { CleanFakeData } from "../components/Debug/CleanFakeData";
+import ResetarSistema from "../components/Debug/ResetarSistema";
 import {
   Settings,
   Building2,
@@ -38,11 +40,14 @@ import {
   BarChart3,
   FolderOpen,
   AlertTriangle,
+  Shield,
 } from "lucide-react";
 import EmpresaLogo from "../components/EmpresaLogo";
+import LogsAuditoria from "../components/Auditoria/LogsAuditoria";
 import { useEffect } from "react";
 
 export default function Configuracoes() {
+  const { user } = useAuth();
   const {
     empresaConfig,
     backupConfig,
@@ -233,7 +238,7 @@ export default function Configuracoes() {
       )}
 
       <Tabs defaultValue="empresa" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="empresa">
             <Building2 className="h-4 w-4 mr-2" />
             Empresa
@@ -257,6 +262,10 @@ export default function Configuracoes() {
           <TabsTrigger value="testes">
             <AlertTriangle className="h-4 w-4 mr-2" />
             Limpeza
+          </TabsTrigger>
+          <TabsTrigger value="auditoria">
+            <Shield className="h-4 w-4 mr-2" />
+            Auditoria
           </TabsTrigger>
         </TabsList>
 
@@ -604,7 +613,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle>Configurações do Sistema</CardTitle>
               <CardDescription>
-                Par��metros gerais e configurações avançadas
+                Parâmetros gerais e configurações avançadas
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -860,6 +869,39 @@ export default function Configuracoes() {
           </Card>
 
           <CleanFakeData />
+
+          <ResetarSistema />
+        </TabsContent>
+
+        <TabsContent value="auditoria" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Logs de Auditoria
+              </CardTitle>
+              <CardDescription>
+                Visualize todas as ações executadas no sistema pelos usuários
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {user?.tipoAcesso !== "Administrador" ? (
+                <div className="text-center py-8">
+                  <Shield className="h-12 w-12 text-red-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-red-700 mb-2">
+                    Acesso Restrito
+                  </h3>
+                  <p className="text-sm text-red-600 mb-4">
+                    Apenas administradores podem visualizar os logs de
+                    auditoria.
+                  </p>
+                  <Badge variant="destructive">Acesso negado</Badge>
+                </div>
+              ) : (
+                <LogsAuditoria />
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

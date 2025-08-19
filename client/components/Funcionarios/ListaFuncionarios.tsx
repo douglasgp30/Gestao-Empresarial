@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useFuncionarios } from "../../contexts/FuncionariosContext";
+import FormularioFuncionario from "./FormularioFuncionario";
 import { formatDate } from "../../lib/dateUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -70,9 +72,13 @@ export default function ListaFuncionarios() {
     estatisticas,
     excluirFuncionario,
     alterarStatusFuncionario,
+    isLoading,
   } = useFuncionarios();
   const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState<
     string | null
+  >(null);
+  const [funcionarioParaEditar, setFuncionarioParaEditar] = useState<
+    any | null
   >(null);
 
   // Filtrar funcionários
@@ -83,7 +89,10 @@ export default function ListaFuncionarios() {
         funcionario.nomeCompleto
           .toLowerCase()
           .includes(filtros.busca.toLowerCase()) ||
-        funcionario.login.toLowerCase().includes(filtros.busca.toLowerCase());
+        (funcionario.login &&
+          funcionario.login
+            .toLowerCase()
+            .includes(filtros.busca.toLowerCase()));
       const tipoCorreto =
         filtros.tipoAcesso === "todos" ||
         funcionario.tipoAcesso === filtros.tipoAcesso;
@@ -106,13 +115,60 @@ export default function ListaFuncionarios() {
       return a.nomeCompleto.localeCompare(b.nomeCompleto);
     });
 
+  const verificarLancamentosVinculados = async (
+    funcionarioId: string,
+  ): Promise<boolean> => {
+    try {
+      // Fazer requisição para verificar se há lançamentos no caixa vinculados a este funcionário
+      const response = await fetch(
+        `/api/caixa/lancamentos?funcionarioId=${funcionarioId}`,
+      );
+      if (response.ok) {
+        const data = await response.json();
+        return data.data && data.data.length > 0;
+      }
+      return false;
+    } catch (error) {
+      console.error("Erro ao verificar lançamentos:", error);
+      return false;
+    }
+  };
+
   const handleExcluir = async (id: string) => {
     try {
+      // Verificar se há lançamentos vinculados
+      const temLancamentos = await verificarLancamentosVinculados(id);
+
+      if (temLancamentos) {
+        // Mostrar toast informativo ao invés de excluir
+        toast.error("Não é possível excluir este funcionário", {
+          description:
+            "O funcionário possui lançamentos no Caixa vinculados. Para removê-lo do sistema, desative-o ao invés de excluí-lo.",
+          duration: 8000,
+        });
+        setFuncionarioParaExcluir(null);
+        return;
+      }
+
+      // Se não há lançamentos, proceder com a exclusão
+      console.log("[ListaFuncionarios] Iniciando exclusão...");
+      setFuncionarioParaExcluir(null); // Fechar modal imediatamente
+
       await excluirFuncionario(id);
-      setFuncionarioParaExcluir(null);
+
+      console.log("[ListaFuncionarios] Exclusão concluída com sucesso");
+      toast.success("Funcionário excluído com sucesso!");
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
-      // TODO: Mostrar erro para o usuário
+      toast.error("Erro ao excluir funcionário", {
+        description:
+          "Houve um problema ao excluir o funcionário. Tente novamente.",
+        duration: 5000,
+      });
+      // Reabrir o modal se deu erro
+      if (id) {
+        setFuncionarioParaExcluir(id);
+      }
     }
   };
 
@@ -131,7 +187,16 @@ export default function ListaFuncionarios() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {funcionariosFiltrados.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <p className="text-sm text-muted-foreground">
+                  Carregando funcionários...
+                </p>
+              </div>
+            </div>
+          ) : funcionariosFiltrados.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium text-muted-foreground mb-2">
@@ -150,6 +215,7 @@ export default function ListaFuncionarios() {
                     <TableHead>Login</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Comissão</TableHead>
+                    <TableHead>Ponto</TableHead>
                     <TableHead>Cadastro</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
@@ -195,7 +261,7 @@ export default function ListaFuncionarios() {
 
                       <TableCell>
                         <code className="bg-muted px-2 py-1 rounded text-sm">
-                          {funcionario.login}
+                          {funcionario.login || "Sem login"}
                         </code>
                       </TableCell>
 
@@ -220,7 +286,34 @@ export default function ListaFuncionarios() {
                       <TableCell>
                         <div className="flex items-center space-x-1">
                           <Percent className="h-4 w-4 text-muted-foreground" />
-                          <span>{funcionario.percentualComissao}%</span>
+                          <span>{funcionario.percentualComissao || 0}%</span>
+                        </div>
+                      </TableCell>
+
+                      <TableCell>
+                        <div className="space-y-1">
+                          {funcionario.registraPonto ? (
+                            <>
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                              >
+                                Habilitado
+                              </Badge>
+                              {funcionario.jornadaDiaria && (
+                                <div className="text-xs text-muted-foreground">
+                                  {funcionario.jornadaDiaria}h/dia
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-gray-50 text-gray-500 border-gray-200"
+                            >
+                              Desabilitado
+                            </Badge>
+                          )}
                         </div>
                       </TableCell>
 
@@ -240,14 +333,21 @@ export default function ListaFuncionarios() {
                             onCheckedChange={(checked) =>
                               handleAlterarStatus(funcionario.id, checked)
                             }
-                            disabled={
-                              funcionario.id === user?.id ||
-                              funcionario.id === "1"
-                            }
+                            disabled={funcionario.id === user?.id}
+                            className="data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-gray-300"
                           />
-                          <span className="text-sm">
+                          <Badge
+                            variant={
+                              funcionario.ativo ? "default" : "secondary"
+                            }
+                            className={
+                              funcionario.ativo
+                                ? "bg-green-100 text-green-800 border-green-200"
+                                : "bg-gray-100 text-gray-600 border-gray-200"
+                            }
+                          >
                             {funcionario.ativo ? "Ativo" : "Inativo"}
-                          </span>
+                          </Badge>
                         </div>
                       </TableCell>
 
@@ -259,7 +359,11 @@ export default function ListaFuncionarios() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                setFuncionarioParaEditar(funcionario)
+                              }
+                            >
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
                             </DropdownMenuItem>
@@ -299,6 +403,11 @@ export default function ListaFuncionarios() {
               Tem certeza que deseja excluir este funcionário? Esta ação não
               pode ser desfeita e removerá todos os dados relacionados ao
               funcionário.
+              <br />
+              <br />
+              <strong>Nota:</strong> Se o funcionário possuir lançamentos no
+              Caixa, a exclusão será impedida e você deverá desativá-lo ao invés
+              de excluí-lo.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -314,6 +423,19 @@ export default function ListaFuncionarios() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Modal de Edição */}
+      {funcionarioParaEditar && (
+        <FormularioFuncionario
+          isOpen={!!funcionarioParaEditar}
+          onClose={() => setFuncionarioParaEditar(null)}
+          funcionarioParaEditar={funcionarioParaEditar}
+          onFuncionarioAdicionado={() => {
+            setFuncionarioParaEditar(null);
+            // O contexto já atualiza a lista automaticamente
+          }}
+        />
+      )}
     </div>
   );
 }

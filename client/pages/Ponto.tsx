@@ -1,0 +1,189 @@
+import React, { useState } from "react";
+import { Clock, History, Settings, Users } from "lucide-react";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Badge } from "../components/ui/badge";
+import { useAuth } from "../contexts/AuthContext";
+import { PontoProvider } from "../contexts/PontoContext";
+import { BaterPonto } from "../components/Ponto/BaterPonto";
+import { HistoricoPonto } from "../components/Ponto/HistoricoPonto";
+import { GerenciarPontos } from "../components/Ponto/GerenciarPontos";
+import { RelatoriosPonto } from "../components/Ponto/RelatoriosPonto";
+import { InfoAdministrador } from "../components/Ponto/InfoAdministrador";
+
+function PontoContent() {
+  const { user } = useAuth();
+  const isAdmin = user?.tipoAcesso === "Administrador";
+  const podeRegistrarPonto = user?.registraPonto === true;
+
+  // Definir aba inicial baseada no perfil
+  const [activeTab, setActiveTab] = useState(() => {
+    if (isAdmin) {
+      return "gerenciar"; // Admin começa na página inicial/informações
+    } else if (podeRegistrarPonto) {
+      return "ponto"; // Funcionário começa no registro
+    } else {
+      return "historico"; // Caso especial, começa no histórico
+    }
+  });
+
+  // Verificar se o usuário tem permissão para acessar o controle de ponto
+  const podeAcessarSistema = isAdmin || podeRegistrarPonto;
+
+  if (!podeAcessarSistema) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card>
+          <CardContent className="pt-6">
+            <Alert>
+              <Clock className="h-4 w-4" />
+              <AlertDescription>
+                Você não tem permissão para acessar o controle de ponto. Entre
+                em contato com o administrador do sistema para habilitar essa
+                funcionalidade.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Controle de Ponto</h1>
+            <p className="text-muted-foreground mt-1">
+              {isAdmin
+                ? "Gerencie os registros de ponto dos funcionários"
+                : "Gerencie seus registros de entrada e saída"}
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Badge variant="outline" className="text-sm">
+              <Clock className="h-3 w-3 mr-1" />
+              {new Date().toLocaleDateString("pt-BR")}
+            </Badge>
+            {isAdmin ? (
+              <Badge variant="secondary" className="text-sm">
+                <Users className="h-3 w-3 mr-1" />
+                Administrador
+              </Badge>
+            ) : podeRegistrarPonto ? (
+              <Badge variant="secondary" className="text-sm">
+                Autorizado
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-sm">
+                Consulta Apenas
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Navegação por abas */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
+        {isAdmin ? (
+          // Layout para Administradores - foco na gestão
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger
+              value="gerenciar"
+              className="flex items-center space-x-2"
+            >
+              <Clock className="h-4 w-4" />
+              <span>Início</span>
+            </TabsTrigger>
+
+            <TabsTrigger value="pontos" className="flex items-center space-x-2">
+              <Users className="h-4 w-4" />
+              <span>Gerenciar Pontos</span>
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="relatorios"
+              className="flex items-center space-x-2"
+            >
+              <Settings className="h-4 w-4" />
+              <span>Relatórios</span>
+            </TabsTrigger>
+          </TabsList>
+        ) : (
+          // Layout para Funcionários - foco no registro próprio
+          <TabsList className="grid w-full grid-cols-2">
+            {podeRegistrarPonto && (
+              <TabsTrigger
+                value="ponto"
+                className="flex items-center space-x-2"
+              >
+                <Clock className="h-4 w-4" />
+                <span>Bater Ponto</span>
+              </TabsTrigger>
+            )}
+
+            <TabsTrigger
+              value="historico"
+              className="flex items-center space-x-2"
+            >
+              <History className="h-4 w-4" />
+              <span>Meu Histórico</span>
+            </TabsTrigger>
+          </TabsList>
+        )}
+
+        {/* Conteúdo das abas */}
+        {podeRegistrarPonto && (
+          <TabsContent value="ponto" className="space-y-6">
+            <BaterPonto />
+          </TabsContent>
+        )}
+
+        <TabsContent value="historico" className="space-y-6">
+          <HistoricoPonto />
+        </TabsContent>
+
+        {isAdmin && (
+          <>
+            <TabsContent value="gerenciar" className="space-y-6">
+              <InfoAdministrador />
+            </TabsContent>
+
+            <TabsContent value="pontos" className="space-y-6">
+              <GerenciarPontos />
+            </TabsContent>
+
+            <TabsContent value="relatorios" className="space-y-6">
+              <RelatoriosPonto />
+            </TabsContent>
+          </>
+        )}
+      </Tabs>
+    </div>
+  );
+}
+
+export default function Ponto() {
+  return (
+    <PontoProvider>
+      <PontoContent />
+    </PontoProvider>
+  );
+}

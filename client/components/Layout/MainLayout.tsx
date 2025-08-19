@@ -17,6 +17,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Clock,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -25,6 +26,7 @@ interface SidebarItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   adminOnly?: boolean;
+  dataTour?: string;
 }
 
 const sidebarItems: SidebarItem[] = [
@@ -32,11 +34,13 @@ const sidebarItems: SidebarItem[] = [
     title: "Dashboard",
     href: "/",
     icon: Home,
+    dataTour: "dashboard",
   },
   {
     title: "Caixa",
     href: "/caixa",
     icon: DollarSign,
+    dataTour: "caixa",
   },
   {
     title: "Contas",
@@ -47,6 +51,13 @@ const sidebarItems: SidebarItem[] = [
     title: "Agendamentos",
     href: "/agendamentos",
     icon: Calendar,
+    dataTour: "agendamentos",
+  },
+  {
+    title: "Controle de Ponto",
+    href: "/ponto",
+    icon: Clock,
+    dataTour: "ponto",
   },
   {
     title: "Clientes",
@@ -58,6 +69,7 @@ const sidebarItems: SidebarItem[] = [
     href: "/funcionarios",
     icon: Users,
     adminOnly: true,
+    dataTour: "funcionarios",
   },
   {
     title: "Relatórios",
@@ -69,6 +81,7 @@ const sidebarItems: SidebarItem[] = [
     href: "/configuracoes",
     icon: Settings,
     adminOnly: true,
+    dataTour: "configuracoes",
   },
 ];
 
@@ -82,9 +95,19 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  const filteredItems = sidebarItems.filter(
-    (item) => !item.adminOnly || user?.tipoAcesso === "Administrador",
-  );
+  const filteredItems = sidebarItems.filter((item) => {
+    // Filtro para itens que requerem admin
+    if (item.adminOnly && user?.tipoAcesso !== "Administrador") {
+      return false;
+    }
+
+    // Filtro específico para Controle de Ponto
+    if (item.href === "/ponto") {
+      return user?.tipoAcesso === "Administrador" || user?.registraPonto;
+    }
+
+    return true;
+  });
 
   return (
     <div
@@ -123,6 +146,7 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
               <li key={item.href}>
                 <Link
                   to={item.href}
+                  data-tour={item.dataTour}
                   className={cn(
                     "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors touch-manipulation",
                     "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",

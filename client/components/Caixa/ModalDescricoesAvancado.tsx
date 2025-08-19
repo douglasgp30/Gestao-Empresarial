@@ -87,31 +87,47 @@ export default function ModalDescricoesAvancado() {
 
   // Filtrar dados usando o sistema unificado com memoização otimizada
   const categoriasReceitas = useMemo(() => {
-    return descricoesECategorias.filter(
-      (item) =>
-        item.tipoItem === "categoria" && item.ativo && item.tipo === "receita",
-    );
+    return Array.isArray(descricoesECategorias)
+      ? descricoesECategorias.filter(
+          (item) =>
+            item.tipoItem === "categoria" &&
+            item.ativo &&
+            item.tipo === "receita",
+        )
+      : [];
   }, [descricoesECategorias]);
 
   const categoriasDespesas = useMemo(() => {
-    return descricoesECategorias.filter(
-      (item) =>
-        item.tipoItem === "categoria" && item.ativo && item.tipo === "despesa",
-    );
+    return Array.isArray(descricoesECategorias)
+      ? descricoesECategorias.filter(
+          (item) =>
+            item.tipoItem === "categoria" &&
+            item.ativo &&
+            item.tipo === "despesa",
+        )
+      : [];
   }, [descricoesECategorias]);
 
   const descricoesReceitas = useMemo(() => {
-    return descricoesECategorias.filter(
-      (item) =>
-        item.tipoItem === "descricao" && item.ativo && item.tipo === "receita",
-    );
+    return Array.isArray(descricoesECategorias)
+      ? descricoesECategorias.filter(
+          (item) =>
+            item.tipoItem === "descricao" &&
+            item.ativo &&
+            item.tipo === "receita",
+        )
+      : [];
   }, [descricoesECategorias]);
 
   const descricoesDespesas = useMemo(() => {
-    return descricoesECategorias.filter(
-      (item) =>
-        item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa",
-    );
+    return Array.isArray(descricoesECategorias)
+      ? descricoesECategorias.filter(
+          (item) =>
+            item.tipoItem === "descricao" &&
+            item.ativo &&
+            item.tipo === "despesa",
+        )
+      : [];
   }, [descricoesECategorias]);
 
   const resetFormDescricao = () => {

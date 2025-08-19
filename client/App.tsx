@@ -53,6 +53,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import "./lib/clearOldFilters"; // Executar limpeza de filtros antigos
+import { executarAjusteAutomatico } from "./lib/ajustarPermissoesAdmin";
+import "./lib/testePermissoesPonto"; // Teste automático em desenvolvimento
+import "./lib/debugFuncionarios"; // Debug de funcionários em desenvolvimento
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
@@ -75,14 +78,20 @@ import Funcionarios from "./pages/Funcionarios";
 import Relatorios from "./pages/Relatorios";
 import Agendamentos from "./pages/Agendamentos";
 import Clientes from "./pages/Clientes";
+import Ponto from "./pages/Ponto";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
+import PrimeiroAcesso from "./components/Auth/PrimeiroAcesso";
+import TourGuiado, { useTourGuiado } from "./components/ui/tour-guiado";
+import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   // Configurar handler de erro global para suprimir erros benignos
   useEffect(() => {
+    // Executar ajuste automático de permissões de administradores
+    executarAjusteAutomatico();
     const handleError = (event: ErrorEvent) => {
       if (
         event.message &&
@@ -178,75 +187,110 @@ const App = () => {
         <Sonner />
         <ConfigProvider>
           <AuthProvider>
-            <EntidadesProvider>
-              <ClientesProvider>
-                <FuncionariosProvider>
-                  <AgendamentosProvider>
-                    <CaixaProvider>
-                      <ContasProvider>
-                        <RelatoriosProvider>
-                          <DashboardProvider>
-                            <BrowserRouter>
-                              <Routes>
-                                <Route path="/login" element={<Login />} />
-                                <Route
-                                  path="/"
-                                  element={
-                                    <ProtectedRoute>
-                                      <MainLayout />
-                                    </ProtectedRoute>
-                                  }
-                                >
-                                  <Route index element={<Dashboard />} />
-                                  <Route path="caixa" element={<Caixa />} />
-                                  <Route path="contas" element={<Contas />} />
-                                  <Route
-                                    path="agendamentos"
-                                    element={<Agendamentos />}
-                                  />
-                                  <Route
-                                    path="clientes"
-                                    element={<Clientes />}
-                                  />
-                                  <Route
-                                    path="funcionarios"
-                                    element={
-                                      <ProtectedRoute requireAdmin>
-                                        <Funcionarios />
-                                      </ProtectedRoute>
-                                    }
-                                  />
-                                  <Route
-                                    path="relatorios"
-                                    element={<Relatorios />}
-                                  />
-                                  <Route
-                                    path="configuracoes"
-                                    element={
-                                      <ProtectedRoute requireAdmin>
-                                        <Configuracoes />
-                                      </ProtectedRoute>
-                                    }
-                                  />
-                                  <Route path="*" element={<NotFound />} />
-                                </Route>
-                              </Routes>
-                              <GerenciadorLembretes />
-                            </BrowserRouter>
-                          </DashboardProvider>
-                        </RelatoriosProvider>
-                      </ContasProvider>
-                    </CaixaProvider>
-                  </AgendamentosProvider>
-                </FuncionariosProvider>
-              </ClientesProvider>
-            </EntidadesProvider>
+            <AppContent />
           </AuthProvider>
         </ConfigProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
 };
+
+function AppContent() {
+  const { precisaConfigurarPrimeiroAcesso, criarPrimeiroAdministrador, user } =
+    useAuth();
+  const {
+    mostrarTour,
+    iniciarTour,
+    fecharTour,
+    completarTour,
+    verificarSeDeveExibirTour,
+  } = useTourGuiado();
+
+  // Verificar se deve mostrar o tour após login
+  useEffect(() => {
+    if (user && verificarSeDeveExibirTour()) {
+      // Aguardar um pouco para garantir que a interface foi renderizada
+      setTimeout(() => {
+        iniciarTour();
+      }, 1000);
+    }
+  }, [user, verificarSeDeveExibirTour, iniciarTour]);
+
+  // Se precisa configurar o primeiro acesso, mostrar a tela de boas-vindas
+  if (precisaConfigurarPrimeiroAcesso) {
+    return <PrimeiroAcesso onAdminCriado={criarPrimeiroAdministrador} />;
+  }
+
+  // Caso contrário, mostrar o app normal
+  return (
+    <EntidadesProvider>
+      <ClientesProvider>
+        <FuncionariosProvider>
+          <AgendamentosProvider>
+            <CaixaProvider>
+              <ContasProvider>
+                <RelatoriosProvider>
+                  <DashboardProvider>
+                    <BrowserRouter>
+                      <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route
+                          path="/"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout />
+                            </ProtectedRoute>
+                          }
+                        >
+                          <Route index element={<Dashboard />} />
+                          <Route path="caixa" element={<Caixa />} />
+                          <Route path="contas" element={<Contas />} />
+                          <Route
+                            path="agendamentos"
+                            element={<Agendamentos />}
+                          />
+                          <Route path="clientes" element={<Clientes />} />
+                          <Route path="ponto" element={<Ponto />} />
+                          <Route
+                            path="funcionarios"
+                            element={
+                              <ProtectedRoute requireAdmin>
+                                <Funcionarios />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route path="relatorios" element={<Relatorios />} />
+                          <Route
+                            path="configuracoes"
+                            element={
+                              <ProtectedRoute requireAdmin>
+                                <Configuracoes />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route path="*" element={<NotFound />} />
+                        </Route>
+                      </Routes>
+                      <GerenciadorLembretes />
+                    </BrowserRouter>
+
+                    {/* Tour Guiado */}
+                    {mostrarTour && (
+                      <TourGuiado
+                        onClose={fecharTour}
+                        onComplete={completarTour}
+                      />
+                    )}
+                  </DashboardProvider>
+                </RelatoriosProvider>
+              </ContasProvider>
+            </CaixaProvider>
+          </AgendamentosProvider>
+        </FuncionariosProvider>
+      </ClientesProvider>
+    </EntidadesProvider>
+  );
+}
 
 // Evitar múltiplas inicializações do React
 const rootElement = document.getElementById("root")!;

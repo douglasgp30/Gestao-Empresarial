@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFuncionarios } from "../../contexts/FuncionariosContext";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -29,9 +29,23 @@ import {
 } from "../ui/card";
 import { UserPlus, User, Shield, Percent } from "lucide-react";
 
-export default function FormularioFuncionario() {
-  const { adicionarFuncionario, funcionarios } = useFuncionarios();
-  const [isOpen, setIsOpen] = useState(false);
+interface FormularioFuncionarioProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  funcionarioParaEditar?: any;
+  onFuncionarioAdicionado?: () => void;
+}
+
+export default function FormularioFuncionario({
+  isOpen: isOpenProp,
+  onClose: onCloseProp,
+  funcionarioParaEditar,
+  onFuncionarioAdicionado,
+}: FormularioFuncionarioProps = {}) {
+  const { adicionarFuncionario, editarFuncionario, funcionarios } =
+    useFuncionarios();
+  const [isOpen, setIsOpen] = useState(isOpenProp || false);
+  const isEditMode = !!funcionarioParaEditar;
 
   const [formData, setFormData] = useState({
     nomeCompleto: "",
@@ -39,7 +53,9 @@ export default function FormularioFuncionario() {
     senha: "",
     confirmarSenha: "",
     ehTecnico: false,
-    permissaoAcesso: true,
+    permissaoAcesso: false,
+    registraPonto: false,
+    jornadaDiaria: 8.0,
     tipoAcesso: "Operador" as "Administrador" | "Operador",
     percentualComissao: "",
     ativo: true,
@@ -48,6 +64,27 @@ export default function FormularioFuncionario() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
+  // Preencher formulário quando estiver editando
+  useEffect(() => {
+    if (funcionarioParaEditar) {
+      setFormData({
+        nomeCompleto: funcionarioParaEditar.nomeCompleto || "",
+        login: funcionarioParaEditar.login || "",
+        senha: "",
+        confirmarSenha: "",
+        ehTecnico: funcionarioParaEditar.ehTecnico || false,
+        permissaoAcesso: funcionarioParaEditar.permissaoAcesso || false,
+        registraPonto: funcionarioParaEditar.registraPonto || false,
+        jornadaDiaria: funcionarioParaEditar.jornadaDiaria || 8.0,
+        tipoAcesso: funcionarioParaEditar.tipoAcesso || "Operador",
+        percentualComissao:
+          funcionarioParaEditar.percentualComissao?.toString() || "",
+        ativo: funcionarioParaEditar.ativo !== false, // Default true se não especificado
+      });
+      setIsOpen(true);
+    }
+  }, [funcionarioParaEditar]);
+
   const resetForm = () => {
     setFormData({
       nomeCompleto: "",
@@ -55,7 +92,9 @@ export default function FormularioFuncionario() {
       senha: "",
       confirmarSenha: "",
       ehTecnico: false,
-      permissaoAcesso: true,
+      permissaoAcesso: false,
+      registraPonto: false,
+      jornadaDiaria: 8.0,
       tipoAcesso: "Operador",
       percentualComissao: "",
       ativo: true,
@@ -63,6 +102,14 @@ export default function FormularioFuncionario() {
     setErrors({});
     setSubmitting(false);
   };
+
+  // Ajustar registraPonto automaticamente baseado no tipoAcesso
+  useEffect(() => {
+    if (formData.tipoAcesso === "Administrador") {
+      // Administradores nunca registram ponto próprio
+      setFormData((prev) => ({ ...prev, registraPonto: false }));
+    }
+  }, [formData.tipoAcesso]);
 
   const validarFormulario = () => {
     const newErrors: Record<string, string> = {};
@@ -82,7 +129,8 @@ export default function FormularioFuncionario() {
         // Verificar se o login já existe (frontend validation)
         const loginExistente = funcionarios.find(
           (func) =>
-            func.login?.toLowerCase() === formData.login.trim().toLowerCase(),
+            func.login?.toLowerCase() === formData.login.trim().toLowerCase() &&
+            (!isEditMode || func.id !== funcionarioParaEditar?.id), // Ignorar o próprio funcionário na edição
         );
         if (loginExistente) {
           newErrors.login =
@@ -90,14 +138,16 @@ export default function FormularioFuncionario() {
         }
       }
 
-      if (!formData.senha) {
+      // Senha é obrigatória apenas para criação, opcional para edição
+      if (!isEditMode && !formData.senha) {
         newErrors.senha =
           "Senha é obrigatória para funcionários com acesso ao sistema";
-      } else if (formData.senha.length < 6) {
+      } else if (formData.senha && formData.senha.length < 6) {
         newErrors.senha = "Senha deve ter pelo menos 6 caracteres";
       }
 
-      if (formData.senha !== formData.confirmarSenha) {
+      // Validar confirmação apenas se senha foi preenchida
+      if (formData.senha && formData.senha !== formData.confirmarSenha) {
         newErrors.confirmarSenha = "Senhas não coincidem";
       }
     }
@@ -128,6 +178,8 @@ export default function FormularioFuncionario() {
         nomeCompleto: formData.nomeCompleto.trim(),
         ehTecnico: formData.ehTecnico,
         permissaoAcesso: formData.permissaoAcesso,
+        registraPonto: formData.registraPonto,
+        jornadaDiaria: formData.jornadaDiaria,
         tipoAcesso: formData.tipoAcesso,
         percentualComissao: parseFloat(formData.percentualComissao),
         ativo: formData.ativo,
@@ -136,13 +188,30 @@ export default function FormularioFuncionario() {
       // Only include login and senha if user has system access
       if (formData.permissaoAcesso) {
         funcionarioData.login = formData.login.trim().toLowerCase();
-        funcionarioData.senha = formData.senha;
+        // Apenas incluir senha se estiver preenchida (para edição)
+        if (formData.senha) {
+          funcionarioData.senha = formData.senha;
+        }
       }
 
-      await adicionarFuncionario(funcionarioData);
+      if (isEditMode) {
+        // Editando funcionário existente
+        await editarFuncionario(funcionarioParaEditar.id, funcionarioData);
+      } else {
+        // Criando novo funcionário
+        await adicionarFuncionario(funcionarioData);
+      }
 
       resetForm();
-      setIsOpen(false);
+      if (onCloseProp) {
+        onCloseProp();
+      } else {
+        setIsOpen(false);
+      }
+
+      if (onFuncionarioAdicionado) {
+        onFuncionarioAdicionado();
+      }
     } catch (error: any) {
       console.error("Erro ao adicionar funcionário:", error);
 
@@ -163,21 +232,34 @@ export default function FormularioFuncionario() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          Novo Funcionário
-        </Button>
-      </DialogTrigger>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (onCloseProp && !open) {
+          onCloseProp();
+        } else {
+          setIsOpen(open);
+        }
+      }}
+    >
+      {!isEditMode && (
+        <DialogTrigger asChild>
+          <Button className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Novo Funcionário
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
-            Cadastrar Novo Funcionário
+            {isEditMode ? "Editar Funcionário" : "Cadastrar Novo Funcionário"}
           </DialogTitle>
           <DialogDescription>
-            Preencha os dados do novo funcionário para dar acesso ao sistema
+            {isEditMode
+              ? "Modifique os dados do funcionário conforme necessário"
+              : "Preencha os dados do novo funcionário para dar acesso ao sistema"}
           </DialogDescription>
         </DialogHeader>
 
@@ -317,17 +399,67 @@ export default function FormularioFuncionario() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="permissaoAcesso"
-                  checked={formData.permissaoAcesso}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, permissaoAcesso: checked })
-                  }
-                />
-                <Label htmlFor="permissaoAcesso">
-                  Permissão de acesso ao sistema
-                </Label>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="permissaoAcesso"
+                    checked={formData.permissaoAcesso}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, permissaoAcesso: checked })
+                    }
+                  />
+                  <Label htmlFor="permissaoAcesso">
+                    Permissão de acesso ao sistema
+                  </Label>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="registraPonto"
+                      checked={formData.registraPonto}
+                      disabled={formData.tipoAcesso === "Administrador"}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, registraPonto: checked })
+                      }
+                    />
+                    <Label htmlFor="registraPonto">Pode registrar ponto</Label>
+                  </div>
+
+                  {formData.tipoAcesso === "Administrador" && (
+                    <div className="text-sm text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
+                      ⚠️ Administradores não registram ponto próprio - apenas
+                      gerenciam pontos de outros funcionários
+                    </div>
+                  )}
+                </div>
+
+                {formData.registraPonto && (
+                  <div className="space-y-2">
+                    <Label htmlFor="jornadaDiaria">
+                      Jornada Diária (horas) *
+                    </Label>
+                    <Input
+                      id="jornadaDiaria"
+                      type="number"
+                      min="1"
+                      max="24"
+                      step="0.5"
+                      placeholder="8.0"
+                      value={formData.jornadaDiaria || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          jornadaDiaria: parseFloat(e.target.value) || 8.0,
+                        })
+                      }
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Quantidade de horas que o funcionário deve trabalhar por
+                      dia
+                    </p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -408,7 +540,13 @@ export default function FormularioFuncionario() {
               Cancelar
             </Button>
             <Button type="submit" className="flex-1" disabled={submitting}>
-              {submitting ? "Cadastrando..." : "Cadastrar Funcionário"}
+              {submitting
+                ? isEditMode
+                  ? "Salvando..."
+                  : "Cadastrando..."
+                : isEditMode
+                  ? "Salvar Alterações"
+                  : "Cadastrar Funcionário"}
             </Button>
           </div>
         </form>

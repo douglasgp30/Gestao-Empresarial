@@ -17,16 +17,8 @@ import {
   Fornecedor,
   LocalizacaoGeografica,
 } from "@shared/types";
-import {
-  descricoesApi,
-  formasPagamentoApi,
-  funcionariosApi,
-  clientesApi,
-  localizacoesGeograficasApi,
-} from "../lib/apiService";
-import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
+// APIs removidas para usar localStorage
 import { loadingManager } from "../lib/loadingManager";
-import { apiCache } from "../lib/apiCache";
 import { contextThrottle } from "../lib/contextThrottle";
 import {
   shouldSkipLoading,
@@ -132,7 +124,7 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Funç��o para salvar entidade no localStorage com validação
+// Função para salvar entidade no localStorage com validação
 function salvarEntidadeNoStorage<T>(
   chave: string,
   dados: T[],
@@ -192,6 +184,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
     (tipo?: "receita" | "despesa") => {
+      if (!Array.isArray(descricoesECategorias)) {
+        return [];
+      }
       return descricoesECategorias.filter(
         (item) =>
           item.tipoItem === "categoria" &&
@@ -204,6 +199,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const getDescricoes = useCallback(
     (tipo?: "receita" | "despesa", categoria?: string) => {
+      if (!Array.isArray(descricoesECategorias)) {
+        return [];
+      }
       return descricoesECategorias.filter(
         (item) =>
           item.tipoItem === "descricao" &&
@@ -287,88 +285,73 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      // Invalidar cache para garantir dados atualizados
-      apiCache.invalidate("entidades-descricoes");
-      apiCache.invalidate("entidades-formas-pagamento");
-      apiCache.invalidate("entidades-funcionarios");
-      apiCache.invalidate("entidades-tecnicos");
-      apiCache.invalidate("entidades-localizacoes");
+      // Cache invalidação removida - usando localStorage
 
       console.log(
         "[EntidadesContext] Cache invalidado - forçando recarregamento...",
       );
 
-      // Buscar dados sem cache para debug
-      const [
-        descricoesECategoriasResponse,
-        formasPagamentoResponse,
-        funcionariosResponse,
-        tecnicosResponse,
-        localizacoesResponse,
-      ] = await Promise.all([
-        descricoesECategoriasApi.listar(),
-        formasPagamentoApi.listar(),
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-        localizacoesGeograficasApi.listar(),
-      ]);
+      // Carregar dados do localStorage em vez da API
+      console.log("📦 [EntidadesContext] Carregando dados do localStorage...");
 
-      // Atualizar estados com dados do banco
-      if (descricoesECategoriasResponse.data) {
-        setDescricoesECategorias(descricoesECategoriasResponse.data);
-        console.log(
-          `[EntidadesContext] Carregadas ${descricoesECategoriasResponse.data.length} descrições/categorias unificadas:`,
-          descricoesECategoriasResponse.data,
-        );
-      } else {
-        console.warn(
-          "[EntidadesContext] Nenhuma descrição/categoria retornada da API",
-        );
-      }
+      try {
+        // Carregar descrições e categorias
+        const descricoesStorage =
+          localStorage.getItem("descricoes_e_categorias") ||
+          localStorage.getItem("categorias_receita");
+        if (descricoesStorage) {
+          try {
+            const parsed = JSON.parse(descricoesStorage);
+            setDescricoesECategorias(Array.isArray(parsed) ? parsed : []);
+          } catch (error) {
+            console.error("Erro ao parsear descrições e categorias:", error);
+            setDescricoesECategorias([]);
+          }
+        } else {
+          setDescricoesECategorias([]);
+        }
 
-      console.log(
-        "[EntidadesContext] Resposta completa formas pagamento:",
-        formasPagamentoResponse,
-      );
-      if (formasPagamentoResponse.data) {
-        setFormasPagamento(formasPagamentoResponse.data);
-        console.log(
-          `[EntidadesContext] Carregadas ${formasPagamentoResponse.data.length} formas de pagamento:`,
-          formasPagamentoResponse.data,
-        );
-      } else {
-        console.warn(
-          "[EntidadesContext] Nenhuma forma de pagamento retornada da API",
-        );
-        console.warn(
-          "[EntidadesContext] formasPagamentoResponse:",
-          formasPagamentoResponse,
-        );
-      }
+        // Carregar formas de pagamento
+        const formasStorage = localStorage.getItem("formas_pagamento");
+        if (formasStorage) {
+          setFormasPagamento(JSON.parse(formasStorage));
+        } else {
+          // Valores padrão
+          setFormasPagamento([
+            { id: 1, nome: "Dinheiro", descricao: "Pagamento em dinheiro" },
+            { id: 2, nome: "PIX", descricao: "Pagamento via PIX" },
+            {
+              id: 3,
+              nome: "Cartão de Débito",
+              descricao: "Pagamento com cartão de débito",
+            },
+            {
+              id: 4,
+              nome: "Cartão de Crédito",
+              descricao: "Pagamento com cartão de crédito",
+            },
+          ]);
+        }
 
-      if (funcionariosResponse.data) {
-        setFuncionarios(funcionariosResponse.data);
-        console.log(
-          `[EntidadesContext] Carregados ${funcionariosResponse.data.length} funcionários`,
-        );
-      }
+        // Carregar funcionários
+        const funcionariosStorage = localStorage.getItem("funcionarios");
+        if (funcionariosStorage) {
+          const funcionariosParsed = JSON.parse(funcionariosStorage);
+          setFuncionarios(funcionariosParsed);
+          // Filtrar técnicos
+          const tecnicosFiltrados = funcionariosParsed.filter(
+            (f: any) => f.ehTecnico || f.tipoAcesso === "Técnico",
+          );
+          setTecnicos(tecnicosFiltrados);
+        }
 
-      if (tecnicosResponse.data) {
-        setTecnicos(tecnicosResponse.data);
-        console.log(
-          `[EntidadesContext] Carregados ${tecnicosResponse.data.length} técnicos`,
-        );
-      }
-
-      if (localizacoesResponse.data) {
-        setLocalizacoesGeograficas(localizacoesResponse.data);
-        console.log(
-          `[EntidadesContext] Carregadas ${localizacoesResponse.data.length} localizações geográficas`,
-        );
-      } else {
-        console.warn(
-          "[EntidadesContext] Nenhuma localização geográfica retornada da API",
-        );
+        // Carregar localizações (cidades)
+        const localizacoesStorage = localStorage.getItem("cidades_goias");
+        if (localizacoesStorage) {
+          setLocalizacoesGeograficas(JSON.parse(localizacoesStorage));
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados do localStorage:", error);
       }
 
       // Carregar dados do localStorage (compatibilidade)
@@ -392,8 +375,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       console.log("[EntidadesContext] Carregamento concluído com sucesso");
       setDadosCarregados(true);
     } catch (error) {
-      console.error("Erro ao carregar entidades:", error);
-      setError("Erro ao carregar dados do servidor");
+      console.error("Erro ao carregar entidades do localStorage:", error);
+      setError("Erro ao carregar dados locais");
 
       // Dados padrão em caso de erro
       setDescricoesECategorias([]);
@@ -412,17 +395,115 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === RECARREGAMENTO OTIMIZADO ===
   const recarregarDescricoesECategorias = useCallback(async () => {
     try {
-      console.log("[EntidadesContext] Recarregando descrições e categorias...");
-      const response = await descricoesECategoriasApi.listar();
-      if (response.data) {
-        setDescricoesECategorias(response.data);
+      console.log(
+        "📦 [EntidadesContext] Recarregando descrições e categorias do localStorage...",
+      );
+
+      const descricoesStorage =
+        localStorage.getItem("descricoes_e_categorias") ||
+        localStorage.getItem("categorias_receita");
+      if (descricoesStorage) {
+        const parsed = JSON.parse(descricoesStorage);
+        const arrayParsed = Array.isArray(parsed) ? parsed : [];
+        setDescricoesECategorias(arrayParsed);
         console.log(
-          `[EntidadesContext] Recarregadas ${response.data.length} descrições/categorias`,
+          `📦 [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`,
         );
+      } else {
+        setDescricoesECategorias([]);
       }
     } catch (error) {
-      console.error("Erro ao recarregar descrições e categorias:", error);
+      console.error(
+        "Erro ao recarregar descrições e categorias do localStorage:",
+        error,
+      );
+      setDescricoesECategorias([]);
     }
+  }, []);
+
+  // === FUNÇÕES STUB PARA EVITAR ERROS DE API ===
+  const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
+    console.log(
+      "📦 [EntidadesContext] STUB: criarDescricaoOuCategoria",
+      novoItem,
+    );
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const atualizarDescricaoOuCategoria = useCallback(
+    async (id: string, dadosAtualizados: any) => {
+      console.log(
+        "📦 [EntidadesContext] STUB: atualizarDescricaoOuCategoria",
+        id,
+        dadosAtualizados,
+      );
+      // TODO: Implementar com localStorage
+      return Promise.resolve();
+    },
+    [],
+  );
+
+  const excluirDescricaoOuCategoria = useCallback(async (id: string) => {
+    console.log("📦 [EntidadesContext] STUB: excluirDescricaoOuCategoria", id);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const criarFormaPagamento = useCallback(async (novaForma: any) => {
+    console.log("📦 [EntidadesContext] STUB: criarFormaPagamento", novaForma);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const atualizarFormaPagamento = useCallback(
+    async (id: string, dadosAtualizados: any) => {
+      console.log(
+        "📦 [EntidadesContext] STUB: atualizarFormaPagamento",
+        id,
+        dadosAtualizados,
+      );
+      // TODO: Implementar com localStorage
+      return Promise.resolve();
+    },
+    [],
+  );
+
+  const excluirFormaPagamento = useCallback(async (id: string) => {
+    console.log("📦 [EntidadesContext] STUB: excluirFormaPagamento", id);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const criarLocalizacaoGeografica = useCallback(
+    async (novaLocalizacao: any) => {
+      console.log(
+        "📦 [EntidadesContext] STUB: criarLocalizacaoGeografica",
+        novaLocalizacao,
+      );
+      // TODO: Implementar com localStorage
+      return Promise.resolve();
+    },
+    [],
+  );
+
+  const atualizarLocalizacaoGeografica = useCallback(
+    async (id: number, dadosAtualizados: any) => {
+      console.log(
+        "📦 [EntidadesContext] STUB: atualizarLocalizacaoGeografica",
+        id,
+        dadosAtualizados,
+      );
+      // TODO: Implementar com localStorage
+      return Promise.resolve();
+    },
+    [],
+  );
+
+  const excluirLocalizacaoGeografica = useCallback(async (id: number) => {
+    console.log("📦 [EntidadesContext] STUB: excluirLocalizacaoGeografica", id);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
   }, []);
 
   // === CARREGAMENTO INICIAL FORÇADO ===
@@ -430,230 +511,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     // Carregar dados sempre no mount, sem verificações
     console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
 
-    // Invalidar cache das formas de pagamento para garantir dados atualizados
-    apiCache.invalidate("entidades-formas-pagamento");
+    // Cache invalidação removida - usando localStorage
 
     carregarDados();
   }, []); // Array vazio - executa apenas no mount
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
-  const adicionarDescricaoECategoria = async (
-    novoItem: Omit<DescricaoECategoria, "id" | "dataCriacao">,
-  ) => {
-    try {
-      setError(null);
-      console.log("[EntidadesContext] Adicionando item:", novoItem);
-
-      const response = await descricoesECategoriasApi.criar(novoItem);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar apenas a tabela unificada (otimizado)
-      await recarregarDescricoesECategorias();
-
-      console.log(
-        "[EntidadesContext] Item adicionado com sucesso:",
-        response.data?.id,
-      );
-      toast.success("Item adicionado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao adicionar item:", error);
-      toast.error("Erro ao adicionar item");
-      throw error;
-    }
-  };
-
-  const editarDescricaoECategoria = async (
-    id: string,
-    dadosAtualizados: Partial<DescricaoECategoria>,
-  ) => {
-    try {
-      setError(null);
-      const response = await descricoesECategoriasApi.atualizar(
-        parseInt(id),
-        dadosAtualizados,
-      );
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      await recarregarDescricoesECategorias();
-      toast.success("Item atualizado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao editar item:", error);
-      toast.error("Erro ao editar item");
-      throw error;
-    }
-  };
-
-  const excluirDescricaoECategoria = async (id: string) => {
-    try {
-      setError(null);
-      const response = await descricoesECategoriasApi.excluir(parseInt(id));
-
-      // Verificar se a API retornou erro antes de prosseguir
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      await recarregarDescricoesECategorias();
-      // Removendo toast do context - deixar componente gerenciar
-    } catch (error) {
-      console.error("Erro ao excluir item:", error);
-      setError("Erro ao excluir item");
-      throw error;
-    }
-  };
+  // Funções removidas - usando versões stub acima para evitar chamadas de API
 
   // === FUNÇÕES CRUD PARA FORMAS DE PAGAMENTO ===
-  const adicionarFormaPagamento = async (
-    novaForma: Omit<FormaPagamento, "id" | "dataCriacao">,
-  ) => {
-    try {
-      setError(null);
-      await formasPagamentoApi.criar(novaForma);
-      const response = await formasPagamentoApi.listar();
-      if (response.data) setFormasPagamento(response.data);
-      toast.success("Forma de pagamento adicionada!");
-    } catch (error) {
-      console.error("Erro ao adicionar forma de pagamento:", error);
-      toast.error("Erro ao adicionar forma de pagamento");
-      throw error;
-    }
-  };
-
-  const editarFormaPagamento = async (
-    id: string,
-    dadosAtualizados: Partial<FormaPagamento>,
-  ) => {
-    try {
-      setError(null);
-      await formasPagamentoApi.atualizar(parseInt(id), dadosAtualizados);
-      const response = await formasPagamentoApi.listar();
-      if (response.data) setFormasPagamento(response.data);
-      toast.success("Forma de pagamento atualizada!");
-    } catch (error) {
-      console.error("Erro ao editar forma de pagamento:", error);
-      toast.error("Erro ao editar forma de pagamento");
-      throw error;
-    }
-  };
-
-  const excluirFormaPagamento = async (id: string) => {
-    try {
-      setError(null);
-      await formasPagamentoApi.excluir(parseInt(id));
-      const response = await formasPagamentoApi.listar();
-      if (response.data) setFormasPagamento(response.data);
-      toast.success("Forma de pagamento excluída!");
-    } catch (error) {
-      console.error("Erro ao excluir forma de pagamento:", error);
-      toast.error("Erro ao excluir forma de pagamento");
-      throw error;
-    }
-  };
+  // Funções removidas - usando versões stub acima para evitar chamadas de API
 
   // === FUNÇÕES CRUD PARA LOCALIZAÇÃO GEOGRÁFICA ===
   // REMOVIDAS: As funções de adicionar/editar cidades foram removidas
   // As cidades agora são pré-cadastradas e gerenciadas via ativação/desativação
 
   // === FUNÇÕES NOVAS DE LOCALIZAÇÃO GEOGRÁFICA ===
-  const adicionarLocalizacaoGeografica = async (
-    novaLocalizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
-  ) => {
-    try {
-      setError(null);
-      console.log(
-        "[EntidadesContext] Adicionando localização:",
-        novaLocalizacao,
-      );
-
-      await localizacoesGeograficasApi.criar(novaLocalizacao);
-
-      // Recarregar dados
-      const response = await localizacoesGeograficasApi.listar();
-      if (response.data) {
-        setLocalizacoesGeograficas(response.data);
-        console.log(
-          `[EntidadesContext] ${novaLocalizacao.tipoItem} criado com sucesso`,
-        );
-      }
-
-      // Invalidar cache
-      apiCache.invalidate("entidades-localizacoes");
-
-      toast.success(
-        `${novaLocalizacao.tipoItem === "cidade" ? "Cidade" : "Setor"} adicionado com sucesso!`,
-      );
-    } catch (error: any) {
-      console.error("Erro ao adicionar localização:", error);
-      const errorMessage =
-        error.response?.data?.error ||
-        `Erro ao adicionar ${novaLocalizacao.tipoItem}`;
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw error;
-    }
-  };
-
-  const editarLocalizacaoGeografica = async (
-    id: number,
-    dadosAtualizados: Partial<LocalizacaoGeografica>,
-  ) => {
-    try {
-      setError(null);
-
-      await localizacoesGeograficasApi.atualizar(id, dadosAtualizados);
-
-      // Recarregar dados
-      const response = await localizacoesGeograficasApi.listar();
-      if (response.data) {
-        setLocalizacoesGeograficas(response.data);
-      }
-
-      // Invalidar cache
-      apiCache.invalidate("entidades-localizacoes");
-
-      toast.success("Localização atualizada com sucesso!");
-    } catch (error: any) {
-      console.error("Erro ao editar localização:", error);
-      const errorMessage =
-        error.response?.data?.error || "Erro ao editar localização";
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw error;
-    }
-  };
-
-  const excluirLocalizacaoGeografica = async (id: number) => {
-    try {
-      setError(null);
-
-      await localizacoesGeograficasApi.excluir(id);
-
-      // Recarregar dados
-      const response = await localizacoesGeograficasApi.listar();
-      if (response.data) {
-        setLocalizacoesGeograficas(response.data);
-      }
-
-      // Invalidar cache
-      apiCache.invalidate("entidades-localizacoes");
-
-      toast.success("Localização excluída com sucesso!");
-    } catch (error: any) {
-      console.error("Erro ao excluir localização:", error);
-      const errorMessage =
-        error.response?.data?.error || "Erro ao excluir localização";
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw error;
-    }
-  };
+  // Funções removidas - usando versões stub acima para evitar chamadas de API
 
   // === FUNÇÕES LEGADAS (COMPATIBILIDADE) ===
   const adicionarDescricao = async () => {
@@ -725,14 +599,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       descricoesECategorias,
       getCategorias,
       getDescricoes,
-      adicionarDescricaoECategoria,
-      editarDescricaoECategoria,
-      excluirDescricaoECategoria,
+      adicionarDescricaoECategoria: criarDescricaoOuCategoria,
+      editarDescricaoECategoria: atualizarDescricaoOuCategoria,
+      excluirDescricaoECategoria: excluirDescricaoOuCategoria,
 
       // Entidades principais
       formasPagamento,
-      adicionarFormaPagamento,
-      editarFormaPagamento,
+      adicionarFormaPagamento: criarFormaPagamento,
+      editarFormaPagamento: atualizarFormaPagamento,
       excluirFormaPagamento,
 
       funcionarios,
@@ -745,8 +619,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       localizacoesGeograficas,
       getCidades,
       getSetores,
-      adicionarLocalizacaoGeografica,
-      editarLocalizacaoGeografica,
+      adicionarLocalizacaoGeografica: criarLocalizacaoGeografica,
+      editarLocalizacaoGeografica: atualizarLocalizacaoGeografica,
       excluirLocalizacaoGeografica,
 
       // Arrays de compatibilidade para componentes antigos

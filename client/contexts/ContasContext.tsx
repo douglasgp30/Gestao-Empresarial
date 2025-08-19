@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { apiService } from "@/lib/apiService";
+// import { apiService } from "@/lib/apiService"; // Removido para usar localStorage
 import {
   ContaLancamento,
   Cliente,
@@ -101,82 +101,77 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       setCarregando(true);
       setErro(null);
 
-      const params = new URLSearchParams();
-      params.append(
-        "dataInicio",
-        filtrosAtivos.dataInicio.toISOString().split("T")[0],
+      console.log(
+        "📦 [CONTAS] Carregando contas do localStorage com filtros:",
+        {
+          dataInicio: filtrosAtivos.dataInicio.toISOString().split("T")[0],
+          dataFim: filtrosAtivos.dataFim.toISOString().split("T")[0],
+          tipo: filtrosAtivos.tipo,
+          pago: filtrosAtivos.pago,
+          categoria: filtrosAtivos.categoria,
+        },
       );
-      params.append(
-        "dataFim",
-        filtrosAtivos.dataFim.toISOString().split("T")[0],
+
+      // Carregar contas do localStorage
+      const contasStorage = localStorage.getItem("contas_pagar");
+      const contasReceber = localStorage.getItem("contas_receber");
+
+      let todasContas: ContaLancamento[] = [];
+
+      // Carregar contas a pagar
+      if (contasStorage) {
+        try {
+          const contasPagar = JSON.parse(contasStorage).map((conta: any) => ({
+            ...conta,
+            tipo: "pagar" as const,
+            dataLancamento: new Date(
+              conta.dataCriacao || conta.dataLancamento || new Date(),
+            ),
+            dataVencimento: new Date(conta.dataVencimento),
+            dataPagamento: conta.dataPagamento
+              ? new Date(conta.dataPagamento)
+              : undefined,
+          }));
+          todasContas.push(...contasPagar);
+        } catch (error) {
+          console.warn("Erro ao parsear contas a pagar:", error);
+        }
+      }
+
+      // Carregar contas a receber
+      if (contasReceber) {
+        try {
+          const contasAReceber = JSON.parse(contasReceber).map(
+            (conta: any) => ({
+              ...conta,
+              tipo: "receber" as const,
+              dataLancamento: new Date(
+                conta.dataCriacao || conta.dataLancamento || new Date(),
+              ),
+              dataVencimento: new Date(conta.dataVencimento),
+              dataPagamento: conta.dataPagamento
+                ? new Date(conta.dataPagamento)
+                : undefined,
+            }),
+          );
+          todasContas.push(...contasAReceber);
+        } catch (error) {
+          console.warn("Erro ao parsear contas a receber:", error);
+        }
+      }
+
+      console.log(
+        "📦 [CONTAS] Total de contas carregadas do localStorage:",
+        todasContas.length,
       );
-
-      if (filtrosAtivos.tipo !== "ambos") {
-        params.append("tipo", filtrosAtivos.tipo);
-      }
-
-      if (filtrosAtivos.pago !== "todos") {
-        params.append("pago", filtrosAtivos.pago);
-      }
-
-      if (filtrosAtivos.categoria !== "todos") {
-        params.append("categoria", filtrosAtivos.categoria);
-      }
-
-      console.log("🔍 [CONTAS] Carregando contas com filtros:", {
-        dataInicio: filtrosAtivos.dataInicio.toISOString().split("T")[0],
-        dataFim: filtrosAtivos.dataFim.toISOString().split("T")[0],
-        tipo: filtrosAtivos.tipo,
-        pago: filtrosAtivos.pago,
-        categoria: filtrosAtivos.categoria,
-      });
-
-      const response = await apiService.get(`/contas?${params.toString()}`);
-
-      console.log("🔍 [CONTAS] Resposta completa da API:", response);
-
-      if (response.data && response.data.data) {
-        const contasFormatadas = response.data.data.map((conta: any) => ({
-          ...conta,
-          dataLancamento: new Date(conta.dataLancamento),
-          dataVencimento: new Date(conta.dataVencimento),
-          dataPagamento: conta.dataPagamento
-            ? new Date(conta.dataPagamento)
-            : undefined,
-        }));
-
-        console.log("🔍 [CONTAS] Dados recebidos da API:", {
-          total: response.data.data.length,
-          contasFormatadas: contasFormatadas.length,
-        });
-
-        console.log(
-          "🔍 [CONTAS] Contas formatadas:",
-          contasFormatadas.slice(0, 3),
-        );
-
-        setContas(contasFormatadas);
-
-        // Salvar no localStorage como backup
-        localStorage.setItem("contas-backup", JSON.stringify(contasFormatadas));
-        localStorage.setItem("contas-backup-timestamp", Date.now().toString());
-      } else {
-        console.warn("🔍 [CONTAS] API retornou dados vazios");
-        setContas([]);
-      }
+      setContas(todasContas);
     } catch (error) {
-      console.error("❌ [CONTAS] Erro ao carregar contas:", error);
-
-      // Se é erro de rede durante hot reload, não mostrar erro ao usuário
-      if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        console.log(
-          "📡 [CONTAS] Erro de rede detectado, aguardando reconexão...",
-        );
-        // Não definir erro para o usuário durante hot reload
-        return;
-      }
-
-      setErro("Erro ao carregar contas");
+      console.error(
+        "❌ [CONTAS] Erro ao carregar contas do localStorage:",
+        error,
+      );
+      setErro("Erro ao carregar contas locais");
+      setContas([]);
 
       // Tentar carregar do localStorage como fallback
       try {
@@ -218,48 +213,97 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Carregar clientes
-      const clientesResponse = await apiService.get("/contas/clientes");
-      if (clientesResponse.data && clientesResponse.data.data) {
-        setClientes(clientesResponse.data.data);
+      console.log("📦 [CONTAS] Carregando dados auxiliares do localStorage...");
+
+      // Carregar clientes do localStorage
+      try {
+        const clientesStorage = localStorage.getItem("clientes");
+        if (clientesStorage) {
+          const clientesParsed = JSON.parse(clientesStorage);
+          setClientes(clientesParsed || []);
+        } else {
+          setClientes([]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar clientes:", error);
+        setClientes([]);
       }
 
-      // Carregar fornecedores
-      const fornecedoresResponse = await apiService.get("/contas/fornecedores");
-      if (fornecedoresResponse.data && fornecedoresResponse.data.data) {
-        setFornecedores(fornecedoresResponse.data.data);
+      // Carregar fornecedores (assumindo que podem estar em um localStorage separado)
+      try {
+        const fornecedoresStorage = localStorage.getItem("fornecedores");
+        if (fornecedoresStorage) {
+          const fornecedoresParsed = JSON.parse(fornecedoresStorage);
+          setFornecedores(fornecedoresParsed || []);
+        } else {
+          setFornecedores([]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar fornecedores:", error);
+        setFornecedores([]);
       }
 
       // Carregar formas de pagamento
-      const formasResponse = await apiService.get("/formas-pagamento");
-      if (formasResponse.data && formasResponse.data.data) {
-        setFormasPagamento(formasResponse.data.data);
+      try {
+        const formasStorage = localStorage.getItem("formas_pagamento");
+        if (formasStorage) {
+          const formasParsed = JSON.parse(formasStorage);
+          setFormasPagamento(formasParsed || []);
+        } else {
+          // Dados padrão se não houver no localStorage
+          setFormasPagamento([
+            { id: 1, nome: "Dinheiro", descricao: "Pagamento em dinheiro" },
+            { id: 2, nome: "PIX", descricao: "Pagamento via PIX" },
+            {
+              id: 3,
+              nome: "Cartão de Débito",
+              descricao: "Pagamento com cartão de débito",
+            },
+            {
+              id: 4,
+              nome: "Cartão de Crédito",
+              descricao: "Pagamento com cartão de crédito",
+            },
+          ] as FormaPagamento[]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar formas de pagamento:", error);
+        setFormasPagamento([]);
       }
 
-      // Carregar categorias da tabela unificada
-      const categoriasResponse = await apiService.get(
-        "/descricoes-e-categorias/categorias",
-      );
-      if (categoriasResponse.data && categoriasResponse.data.data) {
-        // Convert unified format to the expected format
-        const categoriasFormatadas = categoriasResponse.data.data.map(
-          (item: any) => ({
-            id: item.id,
-            nome: item.nome,
-            tipo: item.tipo,
-            dataCriacao: new Date(item.dataCriacao),
-          }),
+      // Carregar categorias
+      try {
+        const categoriasStorage =
+          localStorage.getItem("categorias_receita") ||
+          localStorage.getItem("categorias_despesa");
+        if (categoriasStorage) {
+          const categoriasParsed = JSON.parse(categoriasStorage);
+          setCategorias(categoriasParsed || []);
+        } else {
+          setCategorias([]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar categorias:", error);
+        setCategorias([]);
+      }
+
+      // Carregar descrições
+      try {
+        const descricoesStorage = localStorage.getItem(
+          "descricoes_e_categorias",
         );
-        setCategorias(categoriasFormatadas);
+        if (descricoesStorage) {
+          const descricoesParsed = JSON.parse(descricoesStorage);
+          setDescricoes(descricoesParsed || []);
+        } else {
+          setDescricoes([]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar descrições:", error);
+        setDescricoes([]);
       }
 
-      // Carregar descrições da tabela unificada
-      const descricoesResponse = await apiService.get(
-        "/descricoes-e-categorias",
-      );
-      if (descricoesResponse.data && descricoesResponse.data.data) {
-        setDescricoes(descricoesResponse.data.data);
-      }
+      console.log("✅ [CONTAS] Dados auxiliares carregados do localStorage");
     } catch (error) {
       console.error("❌ [CONTAS] Erro ao carregar dados auxiliares:", error);
     }
@@ -273,149 +317,187 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       >,
     ) => {
       try {
-        console.log("🔍 [CONTAS] Adicionando nova conta:", novaConta);
+        console.log(
+          "📦 [CONTAS] Adicionando nova conta ao localStorage:",
+          novaConta,
+        );
 
-        const response = await apiService.post("/contas", novaConta);
+        // Criar a conta com ID único
+        const conta: ContaLancamento = {
+          ...novaConta,
+          codLancamentoContas: Date.now(), // ID único baseado em timestamp
+          dataLancamento: new Date(),
+        };
 
-        if (response.data && response.data.data) {
-          const contaFormatada = {
-            ...response.data.data,
-            dataLancamento: new Date(response.data.data.dataLancamento),
-            dataVencimento: new Date(response.data.data.dataVencimento),
-            dataPagamento: response.data.data.dataPagamento
-              ? new Date(response.data.data.dataPagamento)
-              : undefined,
-          };
+        // Determinar em qual localStorage salvar baseado no tipo
+        const storageKey =
+          conta.tipo === "pagar" ? "contas_pagar" : "contas_receber";
 
-          console.log(
-            "✅ [CONTAS] Conta adicionada com sucesso:",
-            contaFormatada,
-          );
+        // Carregar contas existentes
+        const contasExistentes = JSON.parse(
+          localStorage.getItem(storageKey) || "[]",
+        );
 
-          // Forçar recarregamento das contas
-          await carregarContas(filtros);
+        // Adicionar a nova conta
+        const novasContas = [...contasExistentes, conta];
 
-          return contaFormatada;
-        } else {
-          throw new Error("Resposta inválida da API");
-        }
+        // Salvar no localStorage
+        localStorage.setItem(storageKey, JSON.stringify(novasContas));
+
+        console.log("✅ [CONTAS] Conta adicionada com sucesso:", conta);
+
+        // Forçar recarregamento das contas
+        await carregarContas(filtros);
+
+        return conta;
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao adicionar conta:", error);
         throw error;
       }
     },
-    [carregarContas],
+    [carregarContas, filtros],
   );
 
   const atualizarConta = useCallback(
     async (id: number, contaAtualizada: Partial<ContaLancamento>) => {
       try {
-        const response = await apiService.put(`/contas/${id}`, contaAtualizada);
+        console.log(
+          "📦 [CONTAS] Atualizando conta no localStorage:",
+          id,
+          contaAtualizada,
+        );
 
-        if (response.data && response.data.data) {
-          const contaFormatada = {
-            ...response.data.data,
-            dataLancamento: new Date(response.data.data.dataLancamento),
-            dataVencimento: new Date(response.data.data.dataVencimento),
-            dataPagamento: response.data.data.dataPagamento
-              ? new Date(response.data.data.dataPagamento)
-              : undefined,
-          };
-
-          // Atualizar a lista local
-          setContas((contas) =>
-            contas.map((conta) =>
-              conta.codLancamentoContas === id ? contaFormatada : conta,
-            ),
-          );
-
-          return contaFormatada;
-        } else {
-          throw new Error("Resposta inválida da API");
+        // Encontrar a conta atual para determinar o tipo
+        const contaAtual = contas.find((c) => c.codLancamentoContas === id);
+        if (!contaAtual) {
+          throw new Error("Conta não encontrada");
         }
+
+        const storageKey =
+          contaAtual.tipo === "pagar" ? "contas_pagar" : "contas_receber";
+        const contasExistentes = JSON.parse(
+          localStorage.getItem(storageKey) || "[]",
+        );
+
+        // Atualizar a conta
+        const contasAtualizadas = contasExistentes.map((conta: any) =>
+          conta.codLancamentoContas === id
+            ? { ...conta, ...contaAtualizada }
+            : conta,
+        );
+
+        localStorage.setItem(storageKey, JSON.stringify(contasAtualizadas));
+
+        const contaFormatada = { ...contaAtual, ...contaAtualizada };
+
+        // Atualizar a lista local
+        setContas((contas) =>
+          contas.map((conta) =>
+            conta.codLancamentoContas === id ? contaFormatada : conta,
+          ),
+        );
+
+        return contaFormatada;
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao atualizar conta:", error);
         throw error;
       }
     },
-    [],
+    [contas],
   );
 
-  const excluirConta = useCallback(async (id: number) => {
-    try {
-      await apiService.delete(`/contas/${id}`);
+  const excluirConta = useCallback(
+    async (id: number) => {
+      try {
+        console.log("📦 [CONTAS] Excluindo conta do localStorage:", id);
 
-      // Remover da lista local
-      setContas((contas) =>
-        contas.filter((conta) => conta.codLancamentoContas !== id),
-      );
-    } catch (error) {
-      console.error("❌ [CONTAS] Erro ao excluir conta:", error);
-      throw error;
-    }
-  }, []);
+        // Encontrar a conta para determinar o tipo
+        const contaAtual = contas.find((c) => c.codLancamentoContas === id);
+        if (contaAtual) {
+          const storageKey =
+            contaAtual.tipo === "pagar" ? "contas_pagar" : "contas_receber";
+          const contasExistentes = JSON.parse(
+            localStorage.getItem(storageKey) || "[]",
+          );
+
+          // Filtrar para remover a conta
+          const contasAtualizadas = contasExistentes.filter(
+            (conta: any) => conta.codLancamentoContas !== id,
+          );
+
+          localStorage.setItem(storageKey, JSON.stringify(contasAtualizadas));
+        }
+
+        // Remover da lista local
+        setContas((contas) =>
+          contas.filter((conta) => conta.codLancamentoContas !== id),
+        );
+      } catch (error) {
+        console.error("❌ [CONTAS] Erro ao excluir conta:", error);
+        throw error;
+      }
+    },
+    [contas],
+  );
 
   const marcarComoPago = useCallback(
     async (id: number, formaPagamentoId: number) => {
       try {
-        const response = await apiService.patch(`/contas/${id}/pagar`, {
+        console.log(
+          "📦 [CONTAS] Marcando conta como paga no localStorage:",
+          id,
+        );
+
+        const dadosAtualizacao = {
+          dataPagamento: new Date(),
           formaPg: formaPagamentoId,
-        });
+          pago: true,
+        };
 
-        if (response.data && response.data.data) {
-          const contaFormatada = {
-            ...response.data.data,
-            dataLancamento: new Date(response.data.data.dataLancamento),
-            dataVencimento: new Date(response.data.data.dataVencimento),
-            dataPagamento: response.data.data.dataPagamento
-              ? new Date(response.data.data.dataPagamento)
-              : undefined,
-          };
-
-          // Atualizar a lista local
-          setContas((contas) =>
-            contas.map((conta) =>
-              conta.codLancamentoContas === id ? contaFormatada : conta,
-            ),
-          );
-
-          return contaFormatada;
-        } else {
-          throw new Error("Resposta inválida da API");
-        }
+        // Usar a função atualizarConta que já funciona com localStorage
+        return await atualizarConta(id, dadosAtualizacao);
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao marcar conta como paga:", error);
         throw error;
       }
     },
-    [],
+    [atualizarConta],
   );
 
   const adicionarFornecedor = useCallback(
     async (novoFornecedor: Omit<Fornecedor, "id">) => {
       try {
-        console.log("🔍 [CONTAS] Adicionando novo fornecedor:", novoFornecedor);
-
-        const response = await apiService.post(
-          "/contas/fornecedores",
+        console.log(
+          "📦 [CONTAS] Adicionando novo fornecedor ao localStorage:",
           novoFornecedor,
         );
 
-        if (response.data && response.data.data) {
-          const fornecedorAdicionado = response.data.data;
+        // Criar fornecedor com ID único
+        const fornecedor: Fornecedor = {
+          ...novoFornecedor,
+          id: Date.now(), // ID único baseado em timestamp
+        };
 
-          console.log(
-            "✅ [CONTAS] Fornecedor adicionado com sucesso:",
-            fornecedorAdicionado,
-          );
+        // Carregar fornecedores existentes
+        const fornecedoresExistentes = JSON.parse(
+          localStorage.getItem("fornecedores") || "[]",
+        );
 
-          // Atualizar a lista de fornecedores
-          setFornecedores((prev) => [...prev, fornecedorAdicionado]);
+        // Adicionar o novo fornecedor
+        const novosFornecedores = [...fornecedoresExistentes, fornecedor];
 
-          return fornecedorAdicionado;
-        } else {
-          throw new Error("Resposta inválida da API");
-        }
+        // Salvar no localStorage
+        localStorage.setItem("fornecedores", JSON.stringify(novosFornecedores));
+
+        console.log(
+          "✅ [CONTAS] Fornecedor adicionado com sucesso:",
+          fornecedor,
+        );
+
+        // Atualizar a lista de fornecedores
+        setFornecedores((prev) => [...prev, fornecedor]);
+
+        return fornecedor;
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao adicionar fornecedor:", error);
         throw error;

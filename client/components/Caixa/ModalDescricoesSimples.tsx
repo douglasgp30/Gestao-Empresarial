@@ -57,11 +57,14 @@ export default function ModalDescricoesSimples() {
 
   // Carregar dados quando o modal é aberto
   useEffect(() => {
+    const length = Array.isArray(descricoesECategorias)
+      ? descricoesECategorias.length
+      : 0;
     console.log(
-      `[ModalDescricoesSimples] Modal isOpen: ${isOpen}, descricoesECategorias.length: ${descricoesECategorias.length}`,
+      `[ModalDescricoesSimples] Modal isOpen: ${isOpen}, descricoesECategorias.length: ${length}`,
     );
     if (isOpen) {
-      if (descricoesECategorias.length === 0) {
+      if (length === 0) {
         console.log(
           "[ModalDescricoesSimples] Modal aberto sem dados, carregando...",
         );
@@ -72,10 +75,13 @@ export default function ModalDescricoesSimples() {
         );
       }
     }
-  }, [isOpen, descricoesECategorias.length, recarregarDescricoesECategorias]);
+  }, [isOpen, descricoesECategorias, recarregarDescricoesECategorias]);
 
   // Filtrar dados usando o sistema unificado com memoização otimizada
   const categoriasReceitas = useMemo(() => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return [];
+    }
     const filtered = descricoesECategorias.filter(
       (item) =>
         item.tipoItem === "categoria" && item.ativo && item.tipo === "receita",
@@ -88,6 +94,9 @@ export default function ModalDescricoesSimples() {
   }, [descricoesECategorias]);
 
   const categoriasDespesas = useMemo(() => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return [];
+    }
     return descricoesECategorias.filter(
       (item) =>
         item.tipoItem === "categoria" && item.ativo && item.tipo === "despesa",
@@ -95,6 +104,9 @@ export default function ModalDescricoesSimples() {
   }, [descricoesECategorias]);
 
   const descricoesReceitas = useMemo(() => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return [];
+    }
     const filtered = descricoesECategorias.filter(
       (item) =>
         item.tipoItem === "descricao" && item.ativo && item.tipo === "receita",
@@ -107,6 +119,9 @@ export default function ModalDescricoesSimples() {
   }, [descricoesECategorias]);
 
   const descricoesDespesas = useMemo(() => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return [];
+    }
     return descricoesECategorias.filter(
       (item) =>
         item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa",
@@ -134,7 +149,7 @@ export default function ModalDescricoesSimples() {
         ativo: true,
       });
 
-      toast.success("Descrição adicionada com sucesso");
+      toast.success("Descri��ão adicionada com sucesso");
       setFormDescricao({ nome: "", categoria: "" });
     } catch (error) {
       console.error("Erro ao adicionar descrição:", error);
@@ -202,58 +217,78 @@ export default function ModalDescricoesSimples() {
       );
 
       if (!response.ok) {
-        // Tratamento direto e simples do erro
-        try {
-          const errorData = await response.json();
+        let errorMessage = "Não foi possível excluir o item.";
 
-          if (
-            errorData &&
-            errorData.error &&
-            typeof errorData.error === "string"
-          ) {
-            throw new Error(errorData.error);
+        // Tentar extrair a mensagem de erro do servidor
+        try {
+          const contentType = response.headers.get("content-type");
+          console.log("🔍 Response status:", response.status);
+          console.log("🔍 Content-Type:", contentType);
+
+          if (contentType && contentType.includes("application/json")) {
+            const errorData = await response.json();
+            console.log("🔍 Error data from server:", errorData);
+
+            if (
+              errorData &&
+              errorData.error &&
+              typeof errorData.error === "string"
+            ) {
+              errorMessage = errorData.error;
+            }
+          } else {
+            // Resposta não é JSON, tentar ler como texto
+            const errorText = await response.text();
+            console.log("🔍 Error text from server:", errorText);
+            if (errorText) {
+              errorMessage = errorText;
+            }
           }
         } catch (jsonError) {
-          // Falha ao ler JSON
+          console.log("🔍 Erro ao processar resposta:", jsonError);
+          // Se não conseguir ler a resposta, usar mensagem padrão baseada no status
+          if (response.status === 400) {
+            errorMessage =
+              "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.";
+          } else if (response.status === 404) {
+            errorMessage = "Item não encontrado.";
+          } else {
+            errorMessage = `Erro ${response.status}: Não foi possível excluir o item.`;
+          }
         }
 
-        // Fallback
-        throw new Error(
-          "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.",
-        );
+        console.log("🔍 Final error message:", errorMessage);
+        throw new Error(errorMessage);
       }
 
       // Status 204 (No Content) indica sucesso na exclusão
-      if (response.status === 204) {
-        console.log("✅ Excluído com sucesso (status 204)");
-      } else {
-        console.log("✅ Excluído com sucesso (status " + response.status + ")");
-      }
-
+      console.log("✅ Excluído com sucesso");
       await recarregarDescricoesECategorias();
       setShowConfirm(false);
       setItemToDelete(null);
       toast.success("Item excluído com sucesso");
     } catch (error) {
       console.error("❌ Erro no handleDelete:", error);
-      console.error("❌ Tipo do erro:", typeof error);
-      console.error("❌ Stack:", error instanceof Error ? error.stack : "N/A");
+      console.error("❌ Error type:", typeof error);
+      console.error(
+        "❌ Error details:",
+        JSON.stringify(
+          {
+            name: error instanceof Error ? error.name : "unknown",
+            message: error instanceof Error ? error.message : "unknown",
+            stack:
+              error instanceof Error
+                ? error.stack?.substring(0, 200)
+                : "unknown",
+          },
+          null,
+          2,
+        ),
+      );
 
       const errorMessage =
         error instanceof Error ? error.message : "Erro ao excluir item";
-
-      // Se a mensagem está vazia ou só tem "Erro HTTP 400:", mostrar mensagem mais clara
-      if (
-        !errorMessage ||
-        errorMessage.trim() === "" ||
-        errorMessage === "Erro HTTP 400:"
-      ) {
-        toast.error(
-          "Não foi possível excluir o item. Verifique se não há dependências vinculadas.",
-        );
-      } else {
-        toast.error(errorMessage);
-      }
+      toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
     }

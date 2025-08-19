@@ -25,6 +25,13 @@ export interface FuncionarioPermissoes {
   criarAgendamento: boolean;
   editarAgendamento: boolean;
   excluirAgendamento: boolean;
+  // Controle de Ponto
+  acessarControlePonto: boolean;
+  registrarPonto: boolean;
+  verPontoTodosFuncionarios: boolean;
+  editarPontoFuncionarios: boolean;
+  registrarPontoOutrosFuncionarios: boolean;
+  gerarRelatoriosPonto: boolean;
 }
 
 export interface Funcionario {
@@ -39,6 +46,8 @@ export interface Funcionario {
   permissaoAcesso?: boolean;
   tipoAcesso?: "Administrador" | "Operador" | "Técnico";
   permissoes?: FuncionarioPermissoes;
+  registraPonto?: boolean; // Define se o funcionário pode usar o controle de ponto
+  jornadaDiaria?: number; // Horas que o funcionário deve trabalhar por dia
   dataCadastro: Date;
   ativo: boolean;
 }
@@ -302,4 +311,94 @@ export interface LembreteAgendamento {
   dataHoraLembrete: Date;
   lido: boolean;
   adiado?: boolean;
+}
+
+// ===== SISTEMA DE CONTROLE DE PONTO =====
+
+export interface Ponto {
+  id: string;
+  funcionarioId: string;
+  data: Date; // Data do ponto (apenas data, sem horário)
+  horaEntrada?: Date; // Horário de entrada completo
+  horaSaidaAlmoco?: Date; // Horário de saída para almoço
+  horaRetornoAlmoco?: Date; // Horário de retorno do almoço
+  horaSaida?: Date; // Horário de saída final
+  vendeuAlmoco?: boolean; // Se trabalhou sem intervalo de almoço
+  observacao?: string; // Observações do registro
+  totalHoras?: number; // Total de horas trabalhadas (em horas decimais)
+  horasExtras?: number; // Horas extras (se houver)
+  saldoHoras?: number; // Saldo de horas (positivo = extra, negativo = faltante)
+  atraso?: number; // Minutos de atraso (se houver)
+  justificativaAtraso?: string; // Justificativa para atraso
+  editadoPorAdmin?: boolean; // Se foi editado por administrador
+  usuarioEdicao?: string; // Usuário que fez a última edição
+  dataEdicao?: Date; // Data da última edição
+  dataCriacao: Date;
+
+  // Relacionamentos
+  funcionario?: Funcionario;
+}
+
+export interface RegistroPonto {
+  funcionarioId: string;
+  data: Date;
+  tipoBatida: "entrada" | "saida_almoco" | "retorno_almoco" | "saida";
+  horario: Date;
+  observacao?: string;
+}
+
+export interface RegistrarPontoOpcoes {
+  funcionarioId: string;
+  observacao?: string;
+  vendeuAlmoco?: boolean; // Se verdadeiro, pula saída e retorno do almoço
+}
+
+export interface PontoDoFuncionario {
+  funcionario: Funcionario;
+  ponto?: Ponto;
+  proximaBatida:
+    | "entrada"
+    | "saida_almoco"
+    | "retorno_almoco"
+    | "saida"
+    | "completo";
+  podeRegistrar: boolean;
+}
+
+export interface FiltrosPonto {
+  dataInicio: Date;
+  dataFim: Date;
+  funcionarioId?: string;
+  status?: "todos" | "completo" | "incompleto" | "com_atraso" | "com_extras";
+  __timestamp?: number;
+}
+
+export interface RelatorioPonto {
+  funcionario: Funcionario;
+  periodo: {
+    dataInicio: Date;
+    dataFim: Date;
+  };
+  pontos: Ponto[];
+  estatisticas: {
+    totalDiasTrabalhados: number;
+    totalHorasTrabalhadas: number;
+    totalHorasExtras: number;
+    totalMinutosAtraso: number;
+    diasComAtraso: number;
+    diasComHorasExtras: number;
+    mediaHorasDiarias: number;
+  };
+}
+
+export interface ConfiguracaoPonto {
+  horaInicioExpediente: string; // "08:00"
+  horaFimExpediente: string; // "18:00"
+  horaInicioAlmoco: string; // "12:00"
+  horaFimAlmoco: string; // "13:00"
+  cargaHorariaDiaria: number; // 8 horas
+  toleranciaAtraso: number; // 15 minutos
+  calcularHorasExtrasApos: number; // 8 horas
+  permitirBatidaForaHorario: boolean;
+  obrigarJustificativaAtraso: boolean;
 }

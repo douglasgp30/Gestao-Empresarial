@@ -26,7 +26,6 @@ import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
-import { TestApis } from "../Debug/TestApis";
 
 export function ModalReceita() {
   const {
@@ -128,8 +127,14 @@ export function ModalReceita() {
       const tecnico = tecnicos.find(
         (t) => t.id.toString() === formData.tecnicoResponsavel,
       );
-      if (tecnico && tecnico.percentualComissao) {
-        return valorLiquidoCalculado * (tecnico.percentualComissao / 100);
+
+      if (tecnico) {
+        // Usar percentualComissao ou percentualServico como fallback
+        const percentual =
+          tecnico.percentualComissao || tecnico.percentualServico || 0;
+        if (percentual > 0) {
+          return valorLiquidoCalculado * (percentual / 100);
+        }
       }
     }
     return 0;
@@ -183,6 +188,29 @@ export function ModalReceita() {
     setNotaFiscalEmitida(false);
   };
 
+  const recarregarDados = async () => {
+    try {
+      // Recarregar dados dos contextos sem recarregar a página
+      await Promise.all([
+        // Força recarregamento dos dados necessários
+        window.location.reload(),
+      ]);
+
+      toast({
+        title: "Dados Atualizados",
+        description: "Os dados foram recarregados com sucesso!",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Erro ao recarregar dados:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao recarregar dados. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -232,7 +260,7 @@ export function ModalReceita() {
         valor: valorCalculado,
         valorLiquido: valorLiquidoCalculado,
         valorQueEntrou: valorQueEntrouCalculado,
-        comissao: comissaoCalculada,
+        // Não enviar comissao - deixar o servidor calcular automaticamente
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
@@ -270,9 +298,6 @@ export function ModalReceita() {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       if (!loadingForced) {
-        console.log(
-          "[ModalReceita] TIMEOUT SEGURANÇA: Forçando desbloqueio de loading",
-        );
         setLoadingForced(true);
       }
     }, 3000); // 3 segundos máximo
@@ -283,46 +308,6 @@ export function ModalReceita() {
   // Loading com timeout de segurança
   const isLoading =
     !loadingForced && (caixaLoading || entidadesLoading || clientesLoading);
-
-  // Debug logs
-  React.useEffect(() => {
-    console.log("[ModalReceita] Estados de loading:", {
-      caixaLoading,
-      entidadesLoading,
-      clientesLoading,
-      loadingForced,
-      isLoading,
-    });
-  }, [
-    caixaLoading,
-    entidadesLoading,
-    clientesLoading,
-    loadingForced,
-    isLoading,
-  ]);
-
-  // Debug dados
-  React.useEffect(() => {
-    console.log("[ModalReceita] Dados carregados:", {
-      categoriasReceita: categoriasReceita.length,
-      descricoesFiltradas: descricoesFiltradas.length,
-      formasPagamento: formasPagamento.length,
-      campanhas: Array.isArray(campanhas) ? campanhas.length : 0,
-      cidades: Array.isArray(cidades) ? cidades.length : 0,
-      setores: Array.isArray(setores) ? setores.length : 0,
-    });
-
-    // Debug específico das formas de pagamento
-    console.log("[ModalReceita] Formas de pagamento:", formasPagamento);
-    console.log("[ModalReceita] Campanhas:", campanhas);
-  }, [
-    categoriasReceita,
-    descricoesFiltradas,
-    formasPagamento,
-    campanhas,
-    cidades,
-    setores,
-  ]);
 
   return (
     <Dialog
@@ -359,25 +344,6 @@ export function ModalReceita() {
           <div className="text-center py-6">Carregando dados...</div>
         ) : (
           <div>
-            {/* Debug temporário */}
-            <div className="mb-4 p-2 bg-gray-100 text-xs rounded">
-              <strong>Debug Contextos:</strong>
-              Categorias: {categoriasReceita.length} | Formas:{" "}
-              {formasPagamento.length} | Campanhas:{" "}
-              {Array.isArray(campanhas) ? campanhas.length : 0} | Cidades:{" "}
-              {Array.isArray(cidades) ? cidades.length : 0} | Setores:{" "}
-              {Array.isArray(setores) ? setores.length : 0}
-            </div>
-            <TestApis />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.reload()}
-              className="mt-2"
-            >
-              🔄 Recarregar Dados
-            </Button>
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {/* Campos básicos */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -465,11 +431,6 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {/* Debug temporário */}
-                  <div className="text-xs text-gray-500">
-                    Debug: {descricoesFiltradas.length} descrições para
-                    categoria "{formData.categoria}"
-                  </div>
                 </div>
               </div>
 
@@ -496,10 +457,6 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {/* Debug temporário */}
-                  <div className="text-xs text-gray-500">
-                    Debug: {formasPagamento.length} formas carregadas
-                  </div>
                 </div>
 
                 {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
@@ -571,14 +528,25 @@ export function ModalReceita() {
                               tecnico.id !== "" &&
                               tecnico.id !== 0,
                           )
-                          .map((tecnico) => (
-                            <SelectItem
-                              key={tecnico.id}
-                              value={tecnico.id.toString()}
-                            >
-                              {tecnico.nome || tecnico.nomeCompleto}
-                            </SelectItem>
-                          ))
+                          .map((tecnico) => {
+                            const percentual =
+                              tecnico.percentualComissao ||
+                              tecnico.percentualServico ||
+                              0;
+                            return (
+                              <SelectItem
+                                key={tecnico.id}
+                                value={tecnico.id.toString()}
+                              >
+                                {tecnico.nome || tecnico.nomeCompleto}
+                                {percentual > 0 && (
+                                  <span className="text-xs text-gray-500 ml-2">
+                                    ({percentual}% comissão)
+                                  </span>
+                                )}
+                              </SelectItem>
+                            );
+                          })
                       )}
                     </SelectContent>
                   </Select>
@@ -667,11 +635,6 @@ export function ModalReceita() {
                     )}
                   </SelectContent>
                 </Select>
-                {/* Debug temporário */}
-                <div className="text-xs text-gray-500">
-                  Debug: {Array.isArray(campanhas) ? campanhas.length : 0}{" "}
-                  campanhas carregadas
-                </div>
               </div>
 
               {/* Cliente */}
@@ -811,7 +774,28 @@ export function ModalReceita() {
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-600">Comissão:</span>
+                      <span className="text-gray-600">
+                        Comissão:
+                        {formData.tecnicoResponsavel &&
+                          comissaoCalculada > 0 && (
+                            <span className="ml-1 text-xs">
+                              (
+                              {(() => {
+                                const tecnico = tecnicos.find(
+                                  (t) =>
+                                    t.id.toString() ===
+                                    formData.tecnicoResponsavel,
+                                );
+                                const percentual =
+                                  tecnico?.percentualComissao ||
+                                  tecnico?.percentualServico ||
+                                  0;
+                                return percentual;
+                              })()}
+                              %)
+                            </span>
+                          )}
+                      </span>
                       <div className="font-medium">
                         R$ {comissaoCalculada.toFixed(2)}
                       </div>
@@ -824,6 +808,12 @@ export function ModalReceita() {
                       </div>
                     </div>
                   </div>
+                  {formData.tecnicoResponsavel && comissaoCalculada === 0 && (
+                    <div className="mt-2 text-xs text-amber-600">
+                      ⚠️ Técnico selecionado não possui percentual de comissão
+                      configurado
+                    </div>
+                  )}
                 </div>
               )}
 

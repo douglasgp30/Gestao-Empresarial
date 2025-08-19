@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
+import { middlewareAuditoria } from "../lib/auditoria";
 
 const FuncionarioSchema = z
   .object({
@@ -91,8 +92,10 @@ export const getTecnicos: RequestHandler = async (req, res) => {
   }
 };
 
-export const createFuncionario: RequestHandler = async (req, res) => {
-  try {
+export const createFuncionario: RequestHandler = middlewareAuditoria(
+  "Funcionario",
+  "create",
+  async (req, res) => {
     const data = FuncionarioSchema.parse(req.body);
     const funcionario = await prisma.funcionario.create({
       data,
@@ -113,7 +116,10 @@ export const createFuncionario: RequestHandler = async (req, res) => {
       },
     });
     res.status(201).json(funcionario);
-  } catch (error) {
+    return { entidadeId: funcionario.id.toString(), dadosNovos: funcionario };
+  },
+  // Tratamento de erros específico para funcionários
+  (error, req, res) => {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Dados inválidos", details: error.errors });
     } else if (error && typeof error === "object" && "code" in error) {
@@ -121,19 +127,15 @@ export const createFuncionario: RequestHandler = async (req, res) => {
       if (error.code === "P2002") {
         const target = (error as any).meta?.target;
         if (target && target.includes("login")) {
-          res
-            .status(400)
-            .json({
-              error: "Este login já está sendo usado por outro funcionário",
-            });
+          res.status(400).json({
+            error: "Este login já está sendo usado por outro funcionário",
+          });
           return;
         }
         if (target && target.includes("email")) {
-          res
-            .status(400)
-            .json({
-              error: "Este email já está sendo usado por outro funcionário",
-            });
+          res.status(400).json({
+            error: "Este email já está sendo usado por outro funcionário",
+          });
           return;
         }
         res.status(400).json({ error: "Dados já existem no sistema" });
@@ -145,13 +147,33 @@ export const createFuncionario: RequestHandler = async (req, res) => {
       console.error("Erro ao criar funcionário:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
     }
-  }
-};
+  },
+);
 
-export const updateFuncionario: RequestHandler = async (req, res) => {
-  try {
+export const updateFuncionario: RequestHandler = middlewareAuditoria(
+  "Funcionario",
+  "update",
+  async (req, res) => {
     const id = parseInt(req.params.id);
     const data = FuncionarioSchema.partial().parse(req.body);
+
+    // Buscar dados antigos
+    const funcionarioAntigo = await prisma.funcionario.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        telefone: true,
+        cargo: true,
+        salario: true,
+        temAcessoSistema: true,
+        tipoAcesso: true,
+        login: true,
+        permissoes: true,
+        dataCriacao: true,
+      },
+    });
 
     const funcionario = await prisma.funcionario.update({
       where: { id },
@@ -171,23 +193,55 @@ export const updateFuncionario: RequestHandler = async (req, res) => {
       },
     });
     res.json(funcionario);
-  } catch (error) {
+    return {
+      entidadeId: funcionario.id.toString(),
+      dadosAntigos: funcionarioAntigo,
+      dadosNovos: funcionario,
+    };
+  },
+  (error, req, res) => {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Dados inválidos", details: error.errors });
     } else {
       console.error("Erro ao atualizar funcionário:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
     }
-  }
-};
+  },
+);
 
-export const deleteFuncionario: RequestHandler = async (req, res) => {
-  try {
+export const deleteFuncionario: RequestHandler = middlewareAuditoria(
+  "Funcionario",
+  "delete",
+  async (req, res) => {
     const id = parseInt(req.params.id);
+
+    // Buscar dados antes de excluir
+    const funcionarioAntigo = await prisma.funcionario.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        telefone: true,
+        cargo: true,
+        salario: true,
+        temAcessoSistema: true,
+        tipoAcesso: true,
+        login: true,
+        permissoes: true,
+        dataCriacao: true,
+      },
+    });
+
     await prisma.funcionario.delete({ where: { id } });
     res.status(204).send();
-  } catch (error) {
+    return {
+      entidadeId: id.toString(),
+      dadosAntigos: funcionarioAntigo,
+    };
+  },
+  (error, req, res) => {
     console.error("Erro ao excluir funcionário:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
-  }
-};
+  },
+);

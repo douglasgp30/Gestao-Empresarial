@@ -47,6 +47,8 @@ import {
 import contasRouter from "./routes/contas";
 import { cleanFakeDataRoute } from "./routes/clean";
 import descricoesECategoriasRouter from "./routes/descricoes-e-categorias";
+import auditoriaRouter from "./routes/auditoria";
+import pontoRouter from "./routes/ponto";
 import {
   getLocalizacoesGeograficas,
   getCidades,
@@ -193,6 +195,12 @@ export function createServer(): Express {
 
   // Rotas de Descrições e Categorias Unificadas
   app.use("/api/descricoes-e-categorias", descricoesECategoriasRouter);
+
+  // Rotas de Auditoria (apenas para administradores)
+  app.use("/api/auditoria", auditoriaRouter);
+
+  // Rotas de Controle de Ponto
+  app.use("/api/ponto", pontoRouter);
 
   // Rotas de Clientes
   app.get("/api/clientes", getClientes);

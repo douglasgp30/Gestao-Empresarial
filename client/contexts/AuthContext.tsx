@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { AuthUser, LoginCredentials, Funcionario } from "@shared/types";
 import { BackupService } from "../lib/backupService";
+import { configurarDadosBasicosIniciais } from "../lib/dadosBasicosIniciais";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -14,28 +15,45 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
+  precisaConfigurarPrimeiroAcesso: boolean;
+  criarPrimeiroAdministrador: (admin: Funcionario) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Usuário admin padrão do sistema - necessário para login inicial
-const adminPadrao: Funcionario = {
-  id: "1",
-  nomeCompleto: "Administrador do Sistema",
-  login: "admin",
-  senha: "admin123",
-  permissaoAcesso: true,
-  tipoAcesso: "Administrador",
-  percentualComissao: 0,
-  dataCadastro: new Date(),
-  ativo: true,
+// Função para verificar se existe pelo menos um usuário com acesso ao sistema
+const verificarSeExisteAdministrador = (): boolean => {
+  try {
+    const funcionariosStorage = localStorage.getItem("funcionarios");
+    if (!funcionariosStorage) return false;
+
+    const funcionarios = JSON.parse(funcionariosStorage);
+    return funcionarios.some(
+      (f: Funcionario) =>
+        f.permissaoAcesso && f.ativo && f.tipoAcesso === "Administrador",
+    );
+  } catch (error) {
+    console.warn("Erro ao verificar administradores:", error);
+    return false;
+  }
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [precisaConfigurarPrimeiroAcesso, setPrecisaConfigurarPrimeiroAcesso] =
+    useState(false);
 
   useEffect(() => {
+    // Verificar se existe pelo menos um administrador
+    const existeAdmin = verificarSeExisteAdministrador();
+
+    if (!existeAdmin) {
+      setPrecisaConfigurarPrimeiroAcesso(true);
+      setIsLoading(false);
+      return;
+    }
+
     // Check if user is already logged in (localStorage)
     const savedUser = localStorage.getItem("auth_user");
     if (savedUser) {
@@ -120,13 +138,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Buscar funcionários do localStorage e incluir admin padrão
-    let funcionarios: Funcionario[] = [adminPadrao];
+    // Buscar funcionários do localStorage
+    let funcionarios: Funcionario[] = [];
     try {
       const funcionariosStorage = localStorage.getItem("funcionarios");
       if (funcionariosStorage) {
-        const funcionariosReais = JSON.parse(funcionariosStorage);
-        funcionarios = [...funcionarios, ...funcionariosReais];
+        funcionarios = JSON.parse(funcionariosStorage);
       }
     } catch (error) {
       console.warn("Erro ao carregar funcionários para login:", error);
@@ -220,12 +237,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("auth_user");
   };
 
+  const criarPrimeiroAdministrador = async (admin: Funcionario) => {
+    try {
+      // Salvar o administrador no localStorage
+      const funcionarios = [admin];
+      localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
+
+      // Configurar dados básicos iniciais do sistema
+      await configurarDadosBasicosIniciais();
+
+      // Atualizar o estado
+      setPrecisaConfigurarPrimeiroAcesso(false);
+
+      // Fazer login automático
+      const authUser: AuthUser = {
+        id: admin.id,
+        nomeCompleto: admin.nomeCompleto,
+        login: admin.login,
+        tipoAcesso: admin.tipoAcesso,
+        permissaoAcesso: admin.permissaoAcesso,
+      };
+
+      setUser(authUser);
+      localStorage.setItem("auth_user", JSON.stringify(authUser));
+
+      // Marcar que o primeiro acesso foi concluído
+      localStorage.setItem("primeiro_acesso_completo", "true");
+
+      console.log("🎉 Primeiro administrador criado e sistema configurado!");
+    } catch (error) {
+      console.error("Erro ao criar primeiro administrador:", error);
+      throw error;
+    }
+  };
+
   const value = {
     user,
     login,
     logout,
     isLoading,
     isAuthenticated: !!user,
+    precisaConfigurarPrimeiroAcesso,
+    criarPrimeiroAdministrador,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
