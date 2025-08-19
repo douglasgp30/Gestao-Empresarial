@@ -220,7 +220,7 @@ export default function ListaFuncionarios() {
                       <TableCell>
                         <div className="flex items-center space-x-1">
                           <Percent className="h-4 w-4 text-muted-foreground" />
-                          <span>{funcionario.percentualComissao}%</span>
+                          <span>{funcionario.percentualComissao || 0}%</span>
                         </div>
                       </TableCell>
 
