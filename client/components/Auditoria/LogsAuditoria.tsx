@@ -517,7 +517,7 @@ export default function LogsAuditoria() {
                     <TableHead>Entidade</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Duração</TableHead>
-                    <TableHead>A��ões</TableHead>
+                    <TableHead>Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
