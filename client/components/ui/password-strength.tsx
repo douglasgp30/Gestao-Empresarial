@@ -29,10 +29,8 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
   const porcentagem = Math.round((pontuacao / pontuacaoMaxima) * 100);
   
   const getNivelForca = () => {
-    if (porcentagem >= 80) return { nivel: 'Forte', cor: 'bg-green-500', texto: 'text-green-700' };
-    if (porcentagem >= 60) return { nivel: 'Boa', cor: 'bg-yellow-500', texto: 'text-yellow-700' };
-    if (porcentagem >= 40) return { nivel: 'Média', cor: 'bg-orange-500', texto: 'text-orange-700' };
-    return { nivel: 'Fraca', cor: 'bg-red-500', texto: 'text-red-700' };
+    if (password.length >= 6) return { nivel: 'Válida', cor: 'bg-green-500', texto: 'text-green-700' };
+    return { nivel: 'Muito curta', cor: 'bg-red-500', texto: 'text-red-700' };
   };
 
   const { nivel, cor, texto } = getNivelForca();
