@@ -154,7 +154,7 @@ export class PontoLocalStorageService {
     // Se foi registrada a saída, calcular estatísticas
     if (proximaBatida === "saida") {
       ponto.totalHoras = calcularHorasTrabalhadas(ponto);
-      ponto.atraso = ponto.horaEntrada ? calcularAtraso(ponto.horaEntrada) : 0;
+      ponto.atraso = ponto.horaEntrada ? calcularAtraso(new Date(ponto.horaEntrada)) : 0;
       ponto.horasExtras = calcularHorasExtras(ponto.totalHoras || 0);
     }
 
