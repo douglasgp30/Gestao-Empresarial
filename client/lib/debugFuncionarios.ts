@@ -1,6 +1,7 @@
-// Script para debugar funcionários no localStorage
+// Utilitário para debug de funcionários no navegador
+// Use no console: debugFuncionarios() para verificar funcionários
 
-function debugFuncionarios() {
+export function debugFuncionarios() {
   console.log('🔍 Debugando funcionários...');
   
   try {
@@ -37,18 +38,14 @@ function debugFuncionarios() {
       console.log('✅ Não há funcionários duplicados');
     }
 
-    // Verificar estrutura dos dados
-    const primeiroFuncionario = funcionarios[0];
-    console.log('\n📋 Estrutura do primeiro funcionário:');
-    console.log(Object.keys(primeiroFuncionario));
+    return funcionarios;
 
   } catch (error) {
     console.error('❌ Erro ao debugar funcionários:', error);
   }
 }
 
-// Função para limpar funcionários duplicados
-function limparDuplicados() {
+export function limparDuplicados() {
   try {
     const funcionariosStorage = localStorage.getItem('funcionarios');
     
@@ -68,44 +65,24 @@ function limparDuplicados() {
       console.log(`🧹 Removendo ${funcionarios.length - funcionariosUnicos.length} funcionários duplicados`);
       localStorage.setItem('funcionarios', JSON.stringify(funcionariosUnicos));
       console.log('✅ Duplicados removidos');
+      return true;
     } else {
       console.log('✅ Não há duplicados para remover');
+      return false;
     }
 
   } catch (error) {
     console.error('❌ Erro ao limpar duplicados:', error);
+    return false;
   }
 }
 
-// Função para forçar atualização
-function forcarAtualizacao() {
-  try {
-    console.log('🔄 Forçando atualização...');
-    
-    // Disparar evento customizado para forçar recarregamento
-    window.dispatchEvent(new CustomEvent('funcionarios-updated'));
-    
-    // Recarregar a página se necessário
-    setTimeout(() => {
-      if (confirm('Recarregar a página para aplicar mudanças?')) {
-        window.location.reload();
-      }
-    }, 1000);
-    
-  } catch (error) {
-    console.error('❌ Erro ao forçar atualização:', error);
-  }
+// Disponibilizar funções globalmente no desenvolvimento
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  (window as any).debugFuncionarios = debugFuncionarios;
+  (window as any).limparDuplicados = limparDuplicados;
+  
+  console.log('🛠️ Funções de debug disponíveis no console:');
+  console.log('- debugFuncionarios() - Mostra detalhes dos funcionários');
+  console.log('- limparDuplicados() - Remove funcionários duplicados');
 }
-
-// Executar debug
-debugFuncionarios();
-
-// Disponibilizar funções globalmente para uso no console
-(window as any).debugFuncionarios = debugFuncionarios;
-(window as any).limparDuplicados = limparDuplicados;
-(window as any).forcarAtualizacao = forcarAtualizacao;
-
-console.log('💡 Funções disponíveis:');
-console.log('- debugFuncionarios() - Mostra detalhes dos funcionários');
-console.log('- limparDuplicados() - Remove funcionários duplicados');
-console.log('- forcarAtualizacao() - Força atualização da interface');
