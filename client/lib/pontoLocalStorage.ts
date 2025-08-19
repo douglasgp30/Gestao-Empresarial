@@ -204,10 +204,14 @@ export class PontoLocalStorageService {
     
     return pontos.filter(p => {
       if (p.funcionarioId !== funcionarioId) return false;
-      
-      const dataPonto = new Date(p.data);
+
+      const dataPonto = p.data instanceof Date ? p.data : new Date(p.data);
       return dataPonto >= dataInicio && dataPonto <= dataFim;
-    }).sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+    }).sort((a, b) => {
+      const dataA = a.data instanceof Date ? a.data : new Date(a.data);
+      const dataB = b.data instanceof Date ? b.data : new Date(b.data);
+      return dataB.getTime() - dataA.getTime();
+    });
   }
 
   // Buscar funcionários que podem registrar ponto
