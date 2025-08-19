@@ -102,7 +102,7 @@ class PontoApiService {
       if (filtros.funcionarioId) params.append('funcionarioId', filtros.funcionarioId);
       if (filtros.status) params.append('status', filtros.status);
 
-      const response = await apiService.get(`/api/ponto/todos?${params.toString()}`);
+      const response = await apiService.get(`/ponto/todos?${params.toString()}`);
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar todos os pontos:', error);
