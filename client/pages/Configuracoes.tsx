@@ -869,6 +869,8 @@ export default function Configuracoes() {
           </Card>
 
           <CleanFakeData />
+
+          <ResetarSistema />
         </TabsContent>
 
         <TabsContent value="auditoria" className="space-y-6">
