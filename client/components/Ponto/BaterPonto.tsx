@@ -83,7 +83,7 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header com informações do usu��rio */}
+      {/* Header com informações do usuário */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -166,21 +166,21 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
               {ponto.totalHoras !== undefined && ponto.totalHoras > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Total trabalhado:</span>
-                  <span className="font-medium">{pontoApi.formatarDuracaoHoras(ponto.totalHoras)}</span>
+                  <span className="font-medium">{pontoLocalStorage.formatarDuracaoHoras(ponto.totalHoras)}</span>
                 </div>
               )}
-              
+
               {ponto.atraso !== undefined && ponto.atraso > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Atraso:</span>
-                  <span className="font-medium text-orange-600">{pontoApi.formatarMinutos(ponto.atraso)}</span>
+                  <span className="font-medium text-orange-600">{pontoLocalStorage.formatarMinutos(ponto.atraso)}</span>
                 </div>
               )}
-              
+
               {ponto.horasExtras !== undefined && ponto.horasExtras > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Horas extras:</span>
-                  <span className="font-medium text-green-600">{pontoApi.formatarDuracaoHoras(ponto.horasExtras)}</span>
+                  <span className="font-medium text-green-600">{pontoLocalStorage.formatarDuracaoHoras(ponto.horasExtras)}</span>
                 </div>
               )}
               
