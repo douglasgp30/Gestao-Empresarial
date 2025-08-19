@@ -106,8 +106,8 @@ export default function LogsAuditoria() {
     setIsLoading(true);
     try {
       const [logsResponse, statsResponse] = await Promise.all([
-        apiService.get('/api/auditoria/logs', { params: filtros }).catch(() => ({ data: [] })),
-        apiService.get('/api/auditoria/stats').catch(() => ({
+        apiService.get('/auditoria/logs', { params: filtros }).catch(() => ({ data: [] })),
+        apiService.get('/auditoria/stats').catch(() => ({
           data: {
             totalLogs: 0,
             logsPorAcao: [],
