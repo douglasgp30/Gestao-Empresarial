@@ -288,21 +288,30 @@ export default function ListaFuncionarios() {
                       </TableCell>
 
                       <TableCell>
-                        {funcionario.registraPonto ? (
-                          <Badge
-                            variant="outline"
-                            className="text-xs bg-blue-50 text-blue-700 border-blue-200"
-                          >
-                            Habilitado
-                          </Badge>
-                        ) : (
-                          <Badge
-                            variant="outline"
-                            className="text-xs bg-gray-50 text-gray-500 border-gray-200"
-                          >
-                            Desabilitado
-                          </Badge>
-                        )}
+                        <div className="space-y-1">
+                          {funcionario.registraPonto ? (
+                            <>
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                              >
+                                Habilitado
+                              </Badge>
+                              {funcionario.jornadaDiaria && (
+                                <div className="text-xs text-muted-foreground">
+                                  {funcionario.jornadaDiaria}h/dia
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-gray-50 text-gray-500 border-gray-200"
+                            >
+                              Desabilitado
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
 
                       <TableCell>
