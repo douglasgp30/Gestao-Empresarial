@@ -206,12 +206,28 @@ export default function ModalDescricoesSimples() {
 
         // Tentar extrair a mensagem de erro do servidor
         try {
-          const errorData = await response.json();
-          if (errorData && errorData.error && typeof errorData.error === "string") {
-            errorMessage = errorData.error;
+          const contentType = response.headers.get("content-type");
+          console.log("🔍 Response status:", response.status);
+          console.log("🔍 Content-Type:", contentType);
+
+          if (contentType && contentType.includes("application/json")) {
+            const errorData = await response.json();
+            console.log("🔍 Error data from server:", errorData);
+
+            if (errorData && errorData.error && typeof errorData.error === "string") {
+              errorMessage = errorData.error;
+            }
+          } else {
+            // Resposta não é JSON, tentar ler como texto
+            const errorText = await response.text();
+            console.log("🔍 Error text from server:", errorText);
+            if (errorText) {
+              errorMessage = errorText;
+            }
           }
         } catch (jsonError) {
-          // Se não conseguir ler o JSON, usar mensagem padrão baseada no status
+          console.log("🔍 Erro ao processar resposta:", jsonError);
+          // Se não conseguir ler a resposta, usar mensagem padrão baseada no status
           if (response.status === 400) {
             errorMessage = "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.";
           } else if (response.status === 404) {
@@ -221,6 +237,7 @@ export default function ModalDescricoesSimples() {
           }
         }
 
+        console.log("🔍 Final error message:", errorMessage);
         throw new Error(errorMessage);
       }
 
