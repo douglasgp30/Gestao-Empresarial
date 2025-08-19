@@ -137,8 +137,8 @@ const getAcoes: RequestHandler = async (req, res) => {
 };
 
 // Rotas
-router.get("/", getLogs);
-router.get("/estatisticas", getEstatisticas);
+router.get("/logs", getLogs);
+router.get("/stats", getEstatisticas);
 router.get("/entidades", getEntidades);
 router.get("/acoes", getAcoes);
 
