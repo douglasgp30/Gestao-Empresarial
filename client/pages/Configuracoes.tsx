@@ -896,31 +896,7 @@ export default function Configuracoes() {
                   </Badge>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-muted-foreground mb-2">
-                    Sistema de Auditoria
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    A funcionalidade de auditoria está sendo implementada.
-                    Em breve você poderá visualizar todos os logs de ações dos usuários.
-                  </p>
-                  <div className="space-y-2">
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                      Em desenvolvimento
-                    </Badge>
-                    <div className="text-xs text-muted-foreground mt-2">
-                      <strong>Recursos planejados:</strong>
-                      <ul className="text-left mt-1 space-y-1 max-w-md mx-auto">
-                        <li>• Visualização de todos os logs de usuários</li>
-                        <li>• Filtros por usuário, ação e data</li>
-                        <li>• Detalhes de cada operação realizada</li>
-                        <li>• Estatísticas de uso do sistema</li>
-                        <li>• Exportação de relatórios de auditoria</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+                <LogsAuditoria />
               )}
             </CardContent>
           </Card>
