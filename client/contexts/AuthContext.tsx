@@ -259,6 +259,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(authUser);
       localStorage.setItem("auth_user", JSON.stringify(authUser));
 
+      // Marcar que o primeiro acesso foi concluído
+      localStorage.setItem("primeiro_acesso_completo", "true");
+
       console.log("🎉 Primeiro administrador criado e sistema configurado!");
     } catch (error) {
       console.error("Erro ao criar primeiro administrador:", error);
