@@ -203,7 +203,7 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
               <>
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold">
-                    {pontoApi.obterTextoBatida(proximaBatida)}
+                    {pontoLocalStorage.obterTextoBatida(proximaBatida)}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     Clique no botão abaixo para registrar sua {proximaBatida.replace('_', ' ')}
