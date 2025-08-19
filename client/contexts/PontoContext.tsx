@@ -124,7 +124,7 @@ export function PontoProvider({ children }: PontoProviderProps) {
       console.error('Erro ao carregar ponto de hoje:', error);
       toast({
         title: "Erro",
-        description: "Não foi poss��vel carregar o ponto de hoje.",
+        description: "Não foi possível carregar o ponto de hoje.",
         variant: "destructive",
       });
     } finally {
@@ -148,11 +148,12 @@ export function PontoProvider({ children }: PontoProviderProps) {
         // Usar API para funcionários do banco
         resultado = await pontoApi.registrarPonto({
           funcionarioId: user.id,
-          observacao
+          observacao,
+          vendeuAlmoco
         });
       } else {
         // Usar localStorage para funcionários locais
-        resultado = await pontoLocalStorage.registrarPonto(user.id, observacao);
+        resultado = await pontoLocalStorage.registrarPonto(user.id, observacao, vendeuAlmoco);
       }
 
       setPontoHoje(resultado);
