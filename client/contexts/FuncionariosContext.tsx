@@ -200,10 +200,6 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       );
       return;
     }
-
-    // Carregar funcionários imediatamente
-    console.log("[FuncionariosContext] Iniciando carregamento imediato de funcionários");
-    carregarFuncionarios();
   }, []);
 
   const [filtros, setFiltros] = useState({
