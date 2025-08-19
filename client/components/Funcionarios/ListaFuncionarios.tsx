@@ -288,6 +288,24 @@ export default function ListaFuncionarios() {
                       </TableCell>
 
                       <TableCell>
+                        {funcionario.registraPonto ? (
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                          >
+                            Habilitado
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-gray-50 text-gray-500 border-gray-200"
+                          >
+                            Desabilitado
+                          </Badge>
+                        )}
+                      </TableCell>
+
+                      <TableCell>
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm">
