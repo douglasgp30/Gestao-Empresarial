@@ -155,16 +155,16 @@ export function middlewareAuditoria(
   return async (req: any, res: any, next: any) => {
     const inicioTempo = Date.now();
     const infoRequisicao = extrairInfoRequisicao(req);
-    
+
     // Interceptar o response para capturar dados
     const originalSend = res.send;
     res.send = function(data: any) {
       const duracaoMs = Date.now() - inicioTempo;
-      
+
       // Registrar log após a operação
       if (req.user) {
         const descricao = obterDescricao ? obterDescricao(req.body) : `${acao} em ${entidade}`;
-        
+
         AuditoriaService.registrarLog({
           acao,
           entidade,
@@ -179,10 +179,73 @@ export function middlewareAuditoria(
           duracaoMs,
         });
       }
-      
+
       return originalSend.call(this, data);
     };
-    
+
     next();
+  };
+}
+
+// Versão com handler customizado
+export function middlewareAuditoria(
+  entidade: string,
+  acao: string,
+  handler: (req: any, res: any) => Promise<any>,
+  errorHandler?: (error: any, req: any, res: any) => void
+) {
+  return async (req: any, res: any) => {
+    const inicioTempo = Date.now();
+    const infoRequisicao = extrairInfoRequisicao(req);
+
+    try {
+      const resultado = await handler(req, res);
+      const duracaoMs = Date.now() - inicioTempo;
+
+      // Registrar log de sucesso
+      if (req.user) {
+        AuditoriaService.registrarLog({
+          acao,
+          entidade,
+          entidadeId: resultado?.entidadeId,
+          dadosAntigos: resultado?.dadosAntigos,
+          dadosNovos: resultado?.dadosNovos,
+          descricao: resultado?.descricao || `${acao} em ${entidade}`,
+          usuarioId: req.user.id,
+          usuarioNome: req.user.nome || req.user.nomeCompleto,
+          usuarioLogin: req.user.login,
+          ...infoRequisicao,
+          sucesso: true,
+          duracaoMs,
+        });
+      }
+    } catch (error) {
+      const duracaoMs = Date.now() - inicioTempo;
+
+      // Registrar log de erro
+      if (req.user) {
+        AuditoriaService.registrarLog({
+          acao,
+          entidade,
+          entidadeId: req.params?.id,
+          descricao: `Falha ao ${acao.toLowerCase()} ${entidade}`,
+          usuarioId: req.user.id,
+          usuarioNome: req.user.nome || req.user.nomeCompleto,
+          usuarioLogin: req.user.login,
+          ...infoRequisicao,
+          sucesso: false,
+          mensagemErro: error instanceof Error ? error.message : String(error),
+          duracaoMs,
+        });
+      }
+
+      // Usar error handler customizado ou padrão
+      if (errorHandler) {
+        errorHandler(error, req, res);
+      } else {
+        console.error(`Erro em ${acao} ${entidade}:`, error);
+        res.status(500).json({ error: "Erro interno do servidor" });
+      }
+    }
   };
 }
