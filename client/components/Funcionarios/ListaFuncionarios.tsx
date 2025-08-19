@@ -149,7 +149,7 @@ export default function ListaFuncionarios() {
       setFuncionarioParaExcluir(null);
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
-      alert("Erro ao excluir funcionário. Tente novamente.");
+      toast.error("Erro ao excluir funcionário. Tente novamente.");
     }
   };
 
