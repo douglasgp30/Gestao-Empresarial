@@ -132,10 +132,13 @@ export default function ListaFuncionarios() {
       const temLancamentos = await verificarLancamentosVinculados(id);
 
       if (temLancamentos) {
-        // Mostrar dialog informativo ao invés de excluir
-        alert(
-          "Não é possível excluir este funcionário pois ele possui lançamentos no Caixa vinculados. " +
-          "Para removê-lo do sistema, desative-o ao invés de excluí-lo."
+        // Mostrar toast informativo ao invés de excluir
+        toast.error(
+          "Não é possível excluir este funcionário",
+          {
+            description: "O funcionário possui lançamentos no Caixa vinculados. Para removê-lo do sistema, desative-o ao invés de excluí-lo.",
+            duration: 8000
+          }
         );
         setFuncionarioParaExcluir(null);
         return;
