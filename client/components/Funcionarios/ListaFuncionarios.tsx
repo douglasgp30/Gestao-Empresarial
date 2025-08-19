@@ -154,7 +154,17 @@ export default function ListaFuncionarios() {
       toast.success("Funcionário excluído com sucesso!");
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
-      toast.error("Erro ao excluir funcionário. Tente novamente.");
+      toast.error(
+        "Erro ao excluir funcionário",
+        {
+          description: "Houve um problema ao excluir o funcionário. Tente novamente.",
+          duration: 5000
+        }
+      );
+      // Reabrir o modal se deu erro
+      if (id) {
+        setFuncionarioParaExcluir(id);
+      }
     }
   };
 
