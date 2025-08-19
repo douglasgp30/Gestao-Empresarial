@@ -137,7 +137,7 @@ async function resolverIds(data: any) {
   }
 
   // Resolver setor (agora usando LocalizacaoGeografica)
-  if (data.setor && !data.setorId) {
+  if (data.setor && !data.localizacaoId) {
     const setor = await prisma.localizacaoGeografica.findFirst({
       where: {
         id: parseInt(data.setor),
@@ -146,10 +146,13 @@ async function resolverIds(data: any) {
       },
     });
     if (setor) {
-      ids.setorId = setor.id;
+      ids.localizacaoId = setor.id;
     }
+  } else if (data.localizacaoId) {
+    ids.localizacaoId = data.localizacaoId;
   } else if (data.setorId) {
-    ids.setorId = data.setorId;
+    // Backward compatibility
+    ids.localizacaoId = data.setorId;
   }
 
   // Resolver campanha
