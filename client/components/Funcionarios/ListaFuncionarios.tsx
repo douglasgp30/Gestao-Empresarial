@@ -3,6 +3,7 @@ import { useFuncionarios } from "../../contexts/FuncionariosContext";
 import FormularioFuncionario from "./FormularioFuncionario";
 import { formatDate } from "../../lib/dateUtils";
 import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
