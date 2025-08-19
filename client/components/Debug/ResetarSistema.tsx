@@ -115,15 +115,15 @@ const ResetarSistema = () => {
                 <span>Confirmar Reset do Sistema</span>
               </AlertDialogTitle>
               <AlertDialogDescription className="space-y-2">
-                <p>
+                <div>
                   Tem certeza de que deseja resetar completamente o sistema?
-                </p>
-                <p className="font-medium text-destructive">
+                </div>
+                <div className="font-medium text-destructive">
                   Esta ação apagará TODOS os dados e não pode ser desfeita.
-                </p>
-                <p>
+                </div>
+                <div>
                   Após o reset, você voltará à tela de criação do primeiro administrador.
-                </p>
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
