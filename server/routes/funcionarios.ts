@@ -92,8 +92,10 @@ export const getTecnicos: RequestHandler = async (req, res) => {
   }
 };
 
-export const createFuncionario: RequestHandler = async (req, res) => {
-  try {
+export const createFuncionario: RequestHandler = middlewareAuditoria(
+  'Funcionario',
+  'create',
+  async (req, res) => {
     const data = FuncionarioSchema.parse(req.body);
     const funcionario = await prisma.funcionario.create({
       data,
@@ -114,7 +116,10 @@ export const createFuncionario: RequestHandler = async (req, res) => {
       },
     });
     res.status(201).json(funcionario);
-  } catch (error) {
+    return { entidadeId: funcionario.id.toString(), dadosNovos: funcionario };
+  },
+  // Tratamento de erros específico para funcionários
+  (error, req, res) => {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Dados inválidos", details: error.errors });
     } else if (error && typeof error === "object" && "code" in error) {
@@ -147,7 +152,7 @@ export const createFuncionario: RequestHandler = async (req, res) => {
       res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
-};
+);
 
 export const updateFuncionario: RequestHandler = async (req, res) => {
   try {
