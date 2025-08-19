@@ -408,7 +408,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const atualizarFormaPagamento = useCallback(async (id: string, dadosAtualizados: any) => {
-    console.log("�� [EntidadesContext] STUB: atualizarFormaPagamento", id, dadosAtualizados);
+    console.log("📦 [EntidadesContext] STUB: atualizarFormaPagamento", id, dadosAtualizados);
     // TODO: Implementar com localStorage
     return Promise.resolve();
   }, []);
