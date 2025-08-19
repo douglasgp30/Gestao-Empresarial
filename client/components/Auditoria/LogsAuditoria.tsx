@@ -117,7 +117,7 @@ export default function LogsAuditoria() {
         }))
       ]);
 
-      setLogs(logsResponse.data || []);
+      setLogs(logsResponse.data?.data || []);
       setStats(statsResponse.data || {
         totalLogs: 0,
         logsPorAcao: [],
