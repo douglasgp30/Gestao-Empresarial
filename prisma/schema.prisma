@@ -478,3 +478,42 @@ model Configuracao {
 
   @@map("configuracoes")
 }
+
+// Sistema de Auditoria - Registra todas as ações dos usuários
+model LogAuditoria {
+  id            Int      @id @default(autoincrement())
+
+  // Informações da ação
+  acao          String   // Tipo de ação: "CREATE", "UPDATE", "DELETE", "LOGIN", etc.
+  entidade      String   // Tabela/entidade afetada: "lancamentos_caixa", "funcionarios", etc.
+  entidadeId    String?  // ID do registro afetado
+
+  // Dados da ação
+  dadosAntigos  String?  // JSON com dados antes da alteração
+  dadosNovos    String?  // JSON com dados após a alteração
+  descricao     String?  // Descrição da ação em linguagem natural
+
+  // Informações do usuário
+  usuarioId     String   // ID do usuário que executou a ação
+  usuarioNome   String   // Nome do usuário (para facilitar consultas)
+  usuarioLogin  String?  // Login do usuário
+
+  // Informações técnicas
+  ip            String?  // IP de onde veio a requisição
+  userAgent     String?  // Browser/dispositivo usado
+  sessaoId      String?  // ID da sessão
+
+  // Metadados
+  sucesso       Boolean  @default(true) // Se a ação foi bem-sucedida
+  mensagemErro  String?  // Mensagem de erro, se houver
+  duracaoMs     Int?     // Tempo de execução em millisegundos
+
+  // Timestamp
+  dataHora      DateTime @default(now())
+
+  @@map("logs_auditoria")
+  @@index([usuarioId])
+  @@index([entidade])
+  @@index([acao])
+  @@index([dataHora])
+}
