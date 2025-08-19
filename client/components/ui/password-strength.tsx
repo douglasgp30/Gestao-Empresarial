@@ -87,13 +87,10 @@ export function PasswordStrength({ password, className }: PasswordStrengthProps)
 
 export function validarForcaSenha(password: string): { valida: boolean; pontuacao: number } {
   if (!password) return { valida: false, pontuacao: 0 };
-  
-  const criteriosAtendidos = criterios.filter(criterio => criterio.test(password));
-  const pontuacao = criteriosAtendidos.reduce((total, criterio) => total + criterio.weight, 0);
-  const pontuacaoMaxima = criterios.reduce((total, criterio) => total + criterio.weight, 0);
-  
-  const porcentagem = Math.round((pontuacao / pontuacaoMaxima) * 100);
-  
-  // Considera válida se atender pelo menos 60% dos critérios
-  return { valida: porcentagem >= 60, pontuacao: porcentagem };
+
+  // Validação simples: apenas 6 caracteres ou mais
+  const valida = password.length >= 6;
+  const pontuacao = valida ? 100 : 0;
+
+  return { valida, pontuacao };
 }
