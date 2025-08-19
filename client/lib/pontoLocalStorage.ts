@@ -20,7 +20,21 @@ function salvarPontos(pontos: Ponto[]): void {
 function carregarPontos(): Ponto[] {
   try {
     const pontos = localStorage.getItem(PONTOS_STORAGE_KEY);
-    return pontos ? JSON.parse(pontos) : [];
+    if (!pontos) return [];
+
+    const pontosParseados = JSON.parse(pontos);
+
+    // Converter strings de data de volta para Date objects
+    return pontosParseados.map((ponto: any) => ({
+      ...ponto,
+      data: ponto.data ? new Date(ponto.data) : ponto.data,
+      horaEntrada: ponto.horaEntrada ? new Date(ponto.horaEntrada) : ponto.horaEntrada,
+      horaSaidaAlmoco: ponto.horaSaidaAlmoco ? new Date(ponto.horaSaidaAlmoco) : ponto.horaSaidaAlmoco,
+      horaRetornoAlmoco: ponto.horaRetornoAlmoco ? new Date(ponto.horaRetornoAlmoco) : ponto.horaRetornoAlmoco,
+      horaSaida: ponto.horaSaida ? new Date(ponto.horaSaida) : ponto.horaSaida,
+      dataEdicao: ponto.dataEdicao ? new Date(ponto.dataEdicao) : ponto.dataEdicao,
+      dataCriacao: ponto.dataCriacao ? new Date(ponto.dataCriacao) : ponto.dataCriacao,
+    }));
   } catch (error) {
     console.error('Erro ao carregar pontos do localStorage:', error);
     return [];
@@ -31,7 +45,7 @@ function gerarId(): string {
   return Date.now().toString() + Math.random().toString(36).substr(2, 9);
 }
 
-// Funções para cálculos de ponto
+// Funções para c��lculos de ponto
 function calcularHorasTrabalhadas(ponto: Ponto): number {
   if (!ponto.horaEntrada || !ponto.horaSaida) {
     return 0;
