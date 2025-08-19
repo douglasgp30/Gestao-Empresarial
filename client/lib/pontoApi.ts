@@ -101,7 +101,7 @@ class PontoApiService {
       const response = await apiService.get(
         `/ponto/funcionario/${funcionarioId}?${params.toString()}`
       );
-      return response.data;
+      return response.data?.data || response.data;
     } catch (error) {
       console.error('Erro ao buscar histórico de ponto:', error);
       throw error;
