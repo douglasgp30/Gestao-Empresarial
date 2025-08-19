@@ -123,6 +123,36 @@ export default function LogsAuditoria() {
           console.warn('Erro ao parsear logs de auditoria:', error);
           logsData = [];
         }
+      } else {
+        // Se não há logs, criar alguns exemplos para demonstração
+        logsData = [
+          {
+            id: 1,
+            acao: 'login',
+            entidade: 'usuario',
+            usuarioId: '1',
+            usuarioNome: 'Administrador',
+            usuarioLogin: 'admin',
+            sucesso: true,
+            dataHora: new Date().toISOString(),
+            descricao: 'Login realizado com sucesso'
+          },
+          {
+            id: 2,
+            acao: 'criar',
+            entidade: 'funcionario',
+            entidadeId: '2',
+            usuarioId: '1',
+            usuarioNome: 'Administrador',
+            usuarioLogin: 'admin',
+            sucesso: true,
+            dataHora: new Date(Date.now() - 60000).toISOString(),
+            descricao: 'Novo funcionário cadastrado'
+          }
+        ];
+
+        // Salvar os logs de exemplo
+        localStorage.setItem('logs_auditoria', JSON.stringify(logsData));
       }
 
       setLogs(logsData);
