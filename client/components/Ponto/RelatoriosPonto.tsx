@@ -476,14 +476,18 @@ export function RelatoriosPonto() {
                   </div>
                 </div>
                 
-                <div className="flex space-x-2">
-                  <Button variant="outline" onClick={() => handleExportar('excel')}>
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" onClick={() => handleExportar('excel')} size="sm">
                     <Download className="h-4 w-4 mr-2" />
-                    Excel
+                    Excel (CSV)
                   </Button>
-                  <Button variant="outline" onClick={() => handleExportar('pdf')}>
+                  <Button variant="outline" onClick={() => handleExportar('pdf')} size="sm">
                     <Download className="h-4 w-4 mr-2" />
                     PDF
+                  </Button>
+                  <Button variant="outline" onClick={() => handleExportar('json')} size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Dados (JSON)
                   </Button>
                 </div>
               </div>
