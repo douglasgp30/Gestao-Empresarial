@@ -286,38 +286,39 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       >,
     ) => {
       try {
-        console.log("🔍 [CONTAS] Adicionando nova conta:", novaConta);
+        console.log("📦 [CONTAS] Adicionando nova conta ao localStorage:", novaConta);
 
-        const response = await apiService.post("/contas", novaConta);
+        // Criar a conta com ID único
+        const conta: ContaLancamento = {
+          ...novaConta,
+          codLancamentoContas: Date.now(), // ID único baseado em timestamp
+          dataLancamento: new Date(),
+        };
 
-        if (response.data && response.data.data) {
-          const contaFormatada = {
-            ...response.data.data,
-            dataLancamento: new Date(response.data.data.dataLancamento),
-            dataVencimento: new Date(response.data.data.dataVencimento),
-            dataPagamento: response.data.data.dataPagamento
-              ? new Date(response.data.data.dataPagamento)
-              : undefined,
-          };
+        // Determinar em qual localStorage salvar baseado no tipo
+        const storageKey = conta.tipo === "pagar" ? "contas_pagar" : "contas_receber";
 
-          console.log(
-            "✅ [CONTAS] Conta adicionada com sucesso:",
-            contaFormatada,
-          );
+        // Carregar contas existentes
+        const contasExistentes = JSON.parse(localStorage.getItem(storageKey) || "[]");
 
-          // Forçar recarregamento das contas
-          await carregarContas(filtros);
+        // Adicionar a nova conta
+        const novasContas = [...contasExistentes, conta];
 
-          return contaFormatada;
-        } else {
-          throw new Error("Resposta inválida da API");
-        }
+        // Salvar no localStorage
+        localStorage.setItem(storageKey, JSON.stringify(novasContas));
+
+        console.log("✅ [CONTAS] Conta adicionada com sucesso:", conta);
+
+        // Forçar recarregamento das contas
+        await carregarContas(filtros);
+
+        return conta;
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao adicionar conta:", error);
         throw error;
       }
     },
-    [carregarContas],
+    [carregarContas, filtros],
   );
 
   const atualizarConta = useCallback(
