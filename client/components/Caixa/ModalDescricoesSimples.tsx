@@ -76,6 +76,9 @@ export default function ModalDescricoesSimples() {
 
   // Filtrar dados usando o sistema unificado com memoização otimizada
   const categoriasReceitas = useMemo(() => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return [];
+    }
     const filtered = descricoesECategorias.filter(
       (item) =>
         item.tipoItem === "categoria" && item.ativo && item.tipo === "receita",
