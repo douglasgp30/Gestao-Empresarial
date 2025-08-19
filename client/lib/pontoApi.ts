@@ -170,9 +170,9 @@ class PontoApiService {
   async buscarFuncionariosComPonto(): Promise<Funcionario[]> {
     try {
       const response = await apiService.get('/ponto/funcionarios-com-ponto');
-      return response.data;
+      return response.data?.data || response.data;
     } catch (error) {
-      console.error('Erro ao buscar funcion��rios com ponto:', error);
+      console.error('Erro ao buscar funcionários com ponto:', error);
       throw error;
     }
   }
