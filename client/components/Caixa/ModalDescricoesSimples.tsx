@@ -249,6 +249,12 @@ export default function ModalDescricoesSimples() {
       toast.success("Item excluído com sucesso");
     } catch (error) {
       console.error("❌ Erro no handleDelete:", error);
+      console.error("❌ Error type:", typeof error);
+      console.error("❌ Error details:", {
+        name: error instanceof Error ? error.name : "unknown",
+        message: error instanceof Error ? error.message : "unknown",
+        stack: error instanceof Error ? error.stack : "unknown"
+      });
 
       const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
       toast.error(errorMessage);
