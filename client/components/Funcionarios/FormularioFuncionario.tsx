@@ -167,13 +167,30 @@ export default function FormularioFuncionario({
       // Only include login and senha if user has system access
       if (formData.permissaoAcesso) {
         funcionarioData.login = formData.login.trim().toLowerCase();
-        funcionarioData.senha = formData.senha;
+        // Apenas incluir senha se estiver preenchida (para edição)
+        if (formData.senha) {
+          funcionarioData.senha = formData.senha;
+        }
       }
 
-      await adicionarFuncionario(funcionarioData);
+      if (isEditMode) {
+        // Editando funcionário existente
+        await editarFuncionario(funcionarioParaEditar.id, funcionarioData);
+      } else {
+        // Criando novo funcionário
+        await adicionarFuncionario(funcionarioData);
+      }
 
       resetForm();
-      setIsOpen(false);
+      if (onCloseProp) {
+        onCloseProp();
+      } else {
+        setIsOpen(false);
+      }
+
+      if (onFuncionarioAdicionado) {
+        onFuncionarioAdicionado();
+      }
     } catch (error: any) {
       console.error("Erro ao adicionar funcionário:", error);
 
