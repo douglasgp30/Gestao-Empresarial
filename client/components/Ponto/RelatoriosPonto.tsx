@@ -76,6 +76,39 @@ function EstatisticasResumo({ relatorio }: EstatisticasResumoProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Jornada vs Trabalhado */}
+      <Card className="md:col-span-2">
+        <CardContent className="pt-4">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Jornada Esperada</span>
+              <span className="font-medium">
+                {pontoApi.formatarDuracaoHoras((relatorio?.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Total Trabalhado</span>
+              <span className="font-medium">
+                {pontoApi.formatarDuracaoHoras(estatisticas.totalHorasTrabalhadas)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Saldo</span>
+              <span className={`font-bold ${
+                estatisticas.totalHorasTrabalhadas >= (relatorio?.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
+                  ? 'text-green-600'
+                  : 'text-red-600'
+              }`}>
+                {estatisticas.totalHorasTrabalhadas >= (relatorio?.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados ? '+' : ''}
+                {pontoApi.formatarDuracaoHoras(
+                  estatisticas.totalHorasTrabalhadas - (relatorio?.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
+                )}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
