@@ -265,6 +265,14 @@ function AppContent() {
                       </Routes>
                       <GerenciadorLembretes />
                     </BrowserRouter>
+
+                    {/* Tour Guiado */}
+                    {mostrarTour && (
+                      <TourGuiado
+                        onClose={fecharTour}
+                        onComplete={completarTour}
+                      />
+                    )}
                   </DashboardProvider>
                 </RelatoriosProvider>
               </ContasProvider>
