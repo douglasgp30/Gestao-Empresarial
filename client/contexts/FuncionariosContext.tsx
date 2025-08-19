@@ -49,7 +49,7 @@ function carregarFuncionariosReais(): Funcionario[] {
         dataCadastro: new Date(f.dataCadastro),
       }));
     }
-    // Se n��o houver funcionarios salvos, criar apenas o admin padrão
+    // Se não houver funcionarios salvos, criar apenas o admin padrão
     return [
       {
         id: "1",
@@ -209,7 +209,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
 
     carregarFuncionariosDoLocalStorage();
 
-    // Durante hot reload, não carregar automaticamente
+    // Durante hot reload, n��o carregar automaticamente
     if (
       typeof window !== "undefined" &&
       (window.location.href.includes("reload=") ||
