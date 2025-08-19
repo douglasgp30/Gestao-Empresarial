@@ -245,7 +245,10 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
     // Status 204 não deve retornar JSON
     res.status(204).send();
   } catch (error) {
-    console.error("Erro ao desativar item:", error);
+    console.error("🔴 Erro ao desativar item:", error);
+    console.error("🔴 Error type:", typeof error);
+    console.error("🔴 Error details:", error);
+
     const response: ApiResponse<null> = {
       error: "Erro interno do servidor",
     };
