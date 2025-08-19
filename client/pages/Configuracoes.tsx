@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useConfig } from "../contexts/ConfigContext";
 import { useDashboard } from "../contexts/DashboardContext";
+import { useAuth } from "../contexts/AuthContext";
 import {
   Card,
   CardContent,
