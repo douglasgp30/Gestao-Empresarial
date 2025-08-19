@@ -157,33 +157,12 @@ export class AuditoriaService {
 }
 
 // Função helper para extrair informações da requisição
-// Função helper para extrair informações da requisição
 export function extrairInfoRequisicao(req: any) {
   return {
     ip: req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'],
     userAgent: req.headers['user-agent'],
     sessaoId: req.sessionID || req.headers['x-session-id'],
   };
-}
-
-// Função helper para traduzir ações para português
-function traduzirAcao(acao: string): string {
-  const traducoes: Record<string, string> = {
-    'criar': 'criar',
-    'create': 'criar',
-    'atualizar': 'atualizar',
-    'update': 'atualizar',
-    'excluir': 'excluir',
-    'delete': 'excluir',
-    'login': 'fazer login',
-    'logout': 'fazer logout',
-    'visualizar': 'visualizar',
-    'view': 'visualizar',
-    'exportar': 'exportar',
-    'export': 'exportar'
-  };
-
-  return traducoes[acao.toLowerCase()] || acao;
 }
 
 // Middleware para auditoria com handler customizado
@@ -209,7 +188,7 @@ export function middlewareAuditoria(
           entidadeId: resultado?.entidadeId,
           dadosAntigos: resultado?.dadosAntigos,
           dadosNovos: resultado?.dadosNovos,
-          descricao: resultado?.descricao || `${traduzirAcao(acao)} ${entidade}`,
+          descricao: resultado?.descricao || `${acao} em ${entidade}`,
           usuarioId: req.user.id,
           usuarioNome: req.user.nome || req.user.nomeCompleto,
           usuarioLogin: req.user.login,
@@ -227,7 +206,7 @@ export function middlewareAuditoria(
           acao,
           entidade,
           entidadeId: req.params?.id,
-          descricao: `Falha ao ${traduzirAcao(acao)} ${entidade}`,
+          descricao: `Falha ao ${acao.toLowerCase()} ${entidade}`,
           usuarioId: req.user.id,
           usuarioNome: req.user.nome || req.user.nomeCompleto,
           usuarioLogin: req.user.login,

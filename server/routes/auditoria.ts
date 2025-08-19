@@ -131,13 +131,13 @@ const getAcoes: RequestHandler = async (req, res) => {
     }
 
     const acoes = [
-      "criar",
-      "atualizar",
-      "excluir",
+      "create",
+      "update",
+      "delete",
       "login",
       "logout",
-      "visualizar",
-      "exportar"
+      "view",
+      "export"
     ];
 
     res.json(acoes);

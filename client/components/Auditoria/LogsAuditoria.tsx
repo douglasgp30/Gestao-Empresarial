@@ -106,7 +106,7 @@ export default function LogsAuditoria() {
     setIsLoading(true);
     try {
       const [logsResponse, statsResponse] = await Promise.all([
-        apiService.get('/auditoria/logs', { params: filtros }).catch(() => ({ data: { data: [] } })),
+        apiService.get('/auditoria/logs', { params: filtros }).catch(() => ({ data: [] })),
         apiService.get('/auditoria/stats').catch(() => ({
           data: {
             totalLogs: 0,
@@ -117,7 +117,7 @@ export default function LogsAuditoria() {
         }))
       ]);
 
-      setLogs(logsResponse.data?.data || []);
+      setLogs(logsResponse.data || []);
       setStats(statsResponse.data || {
         totalLogs: 0,
         logsPorAcao: [],
@@ -170,25 +170,6 @@ export default function LogsAuditoria() {
 
   const formatarDataHora = (dataHora: string) => {
     return format(new Date(dataHora), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR });
-  };
-
-  const traduzirAcao = (acao: string): string => {
-    const traducoes: Record<string, string> = {
-      'create': 'Criar',
-      'criar': 'Criar',
-      'update': 'Atualizar',
-      'atualizar': 'Atualizar',
-      'delete': 'Excluir',
-      'excluir': 'Excluir',
-      'login': 'Login',
-      'logout': 'Logout',
-      'view': 'Visualizar',
-      'visualizar': 'Visualizar',
-      'export': 'Exportar',
-      'exportar': 'Exportar'
-    };
-
-    return traducoes[acao] || acao;
   };
 
   const getAcaoBadgeVariant = (acao: string) => {
@@ -477,7 +458,7 @@ export default function LogsAuditoria() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={getAcaoBadgeVariant(log.acao)}>
-                          {traduzirAcao(log.acao)}
+                          {log.acao}
                         </Badge>
                       </TableCell>
                       <TableCell className="capitalize">{log.entidade}</TableCell>

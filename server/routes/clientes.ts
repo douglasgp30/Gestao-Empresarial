@@ -26,7 +26,7 @@ export const getClientes: RequestHandler = async (req, res) => {
 
 export const createCliente: RequestHandler = middlewareAuditoria(
   'Cliente',
-  'criar',
+  'create',
   async (req, res) => {
     console.log(
       "[Clientes] Dados recebidos:",
@@ -55,7 +55,7 @@ export const createCliente: RequestHandler = middlewareAuditoria(
 
 export const updateCliente: RequestHandler = middlewareAuditoria(
   'Cliente',
-  'atualizar',
+  'update',
   async (req, res) => {
     const id = parseInt(req.params.id);
     console.log(
@@ -108,7 +108,7 @@ export const updateCliente: RequestHandler = middlewareAuditoria(
 
 export const deleteCliente: RequestHandler = middlewareAuditoria(
   'Cliente',
-  'excluir',
+  'delete',
   async (req, res) => {
     const id = parseInt(req.params.id);
     console.log(`[Clientes] Excluindo cliente ID: ${id}`);

@@ -94,7 +94,7 @@ export const getTecnicos: RequestHandler = async (req, res) => {
 
 export const createFuncionario: RequestHandler = middlewareAuditoria(
   'Funcionario',
-  'criar',
+  'create',
   async (req, res) => {
     const data = FuncionarioSchema.parse(req.body);
     const funcionario = await prisma.funcionario.create({
@@ -156,7 +156,7 @@ export const createFuncionario: RequestHandler = middlewareAuditoria(
 
 export const updateFuncionario: RequestHandler = middlewareAuditoria(
   'Funcionario',
-  'atualizar',
+  'update',
   async (req, res) => {
     const id = parseInt(req.params.id);
     const data = FuncionarioSchema.partial().parse(req.body);
@@ -215,7 +215,7 @@ export const updateFuncionario: RequestHandler = middlewareAuditoria(
 
 export const deleteFuncionario: RequestHandler = middlewareAuditoria(
   'Funcionario',
-  'excluir',
+  'delete',
   async (req, res) => {
     const id = parseInt(req.params.id);
 
