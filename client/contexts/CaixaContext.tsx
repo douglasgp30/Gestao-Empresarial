@@ -135,17 +135,23 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
 
-      // Verificar se é erro de rede durante hot reload
-      if (error instanceof Error && error.message.includes("Failed to fetch")) {
-        console.log(
-          "📡 [CaixaContext] Erro de rede detectado durante hot reload, ignorando...",
-        );
-        // Durante hot reload, não mostrar erro persistente ao usuário
-        setError(null);
-        // Não tentar reconectar automaticamente para evitar loops
-      } else {
-        setError("Erro ao carregar dados do servidor");
+      // Tratar erros de conectividade durante desenvolvimento
+      if (error instanceof Error) {
+        const isNetworkError =
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError") ||
+          error.message.includes("conectividade");
+
+        if (isNetworkError) {
+          console.log("📡 [CaixaContext] Erro de conectividade durante desenvolvimento, ignorando...");
+          setError(null);
+          return;
+        }
       }
+
+      // Para outros tipos de erro, mostrar ao usuário
+      console.error("❌ [CaixaContext] Erro persistente ao carregar dados:", error);
+      setError("Erro ao carregar dados do servidor");
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
@@ -238,7 +244,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
               funcionario: lancamento.funcionario || null,
               setor: lancamento.setor || null,
               campanha: lancamento.campanha || null,
-              // Campos de compatibilidade para código que espera strings
+              // Campos de compatibilidade para c��digo que espera strings
               tecnicoResponsavel: lancamento.funcionario?.nome || null,
             }),
           );
