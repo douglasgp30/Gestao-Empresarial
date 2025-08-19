@@ -102,7 +102,7 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="horaRetornoAlmoco">Retorno do Almoço</Label>
+              <Label htmlFor="horaRetornoAlmoco">Retorno do Almo��o</Label>
               <Input
                 id="horaRetornoAlmoco"
                 type="datetime-local"
@@ -313,7 +313,7 @@ export function GerenciarPontos() {
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [modalRegistrarAberto, setModalRegistrarAberto] = useState(false);
 
-  const [filtroFuncionario, setFiltroFuncionario] = useState(filtros.funcionarioId || "");
+  const [filtroFuncionario, setFiltroFuncionario] = useState(filtros.funcionarioId || "todos");
   const [filtroStatus, setFiltroStatus] = useState(filtros.status || "todos");
   const [dataInicio, setDataInicio] = useState(filtros.dataInicio.toISOString().split('T')[0]);
   const [dataFim, setDataFim] = useState(filtros.dataFim.toISOString().split('T')[0]);
