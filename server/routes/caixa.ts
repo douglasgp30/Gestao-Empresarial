@@ -136,10 +136,14 @@ async function resolverIds(data: any) {
     ids.funcionarioId = data.funcionarioId;
   }
 
-  // Resolver setor
+  // Resolver setor (agora usando LocalizacaoGeografica)
   if (data.setor && !data.setorId) {
-    const setor = await prisma.setor.findFirst({
-      where: { nome: { contains: data.setor } },
+    const setor = await prisma.localizacaoGeografica.findFirst({
+      where: {
+        id: parseInt(data.setor),
+        tipoItem: "setor",
+        ativo: true
+      },
     });
     if (setor) {
       ids.setorId = setor.id;
