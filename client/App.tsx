@@ -242,6 +242,10 @@ function AppContent() {
                             element={<Clientes />}
                           />
                           <Route
+                            path="ponto"
+                            element={<Ponto />}
+                          />
+                          <Route
                             path="funcionarios"
                             element={
                               <ProtectedRoute requireAdmin>
