@@ -378,10 +378,13 @@ export function RelatoriosPonto() {
       pontos: relatorio.pontos.map(ponto => ({
         data: pontoApi.formatarData(ponto.data),
         entrada: pontoApi.formatarHorario(ponto.horaEntrada),
-        saidaAlmoco: pontoApi.formatarHorario(ponto.horaSaidaAlmoco),
-        retornoAlmoco: pontoApi.formatarHorario(ponto.horaRetornoAlmoco),
+        saidaAlmoco: ponto.vendeuAlmoco ? 'Vendido' : pontoApi.formatarHorario(ponto.horaSaidaAlmoco),
+        retornoAlmoco: ponto.vendeuAlmoco ? 'Vendido' : pontoApi.formatarHorario(ponto.horaRetornoAlmoco),
         saida: pontoApi.formatarHorario(ponto.horaSaida),
+        vendeuAlmoco: ponto.vendeuAlmoco ? 'Sim' : 'Não',
         totalHoras: ponto.totalHoras ? pontoApi.formatarDuracaoHoras(ponto.totalHoras) : '',
+        jornadaEsperada: relatorio.funcionario?.jornadaDiaria ? pontoApi.formatarDuracaoHoras(relatorio.funcionario.jornadaDiaria) : '8h 0min',
+        saldoHoras: ponto.saldoHoras !== undefined ? pontoApi.formatarDuracaoHoras(ponto.saldoHoras) : '',
         horasExtras: ponto.horasExtras ? pontoApi.formatarDuracaoHoras(ponto.horasExtras) : '',
         atraso: ponto.atraso ? pontoApi.formatarMinutos(ponto.atraso) : '',
         observacao: ponto.observacao || ''
