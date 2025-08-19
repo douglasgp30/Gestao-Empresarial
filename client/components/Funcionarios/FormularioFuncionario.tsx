@@ -121,14 +121,16 @@ export default function FormularioFuncionario({
         }
       }
 
-      if (!formData.senha) {
+      // Senha é obrigatória apenas para criação, opcional para edição
+      if (!isEditMode && !formData.senha) {
         newErrors.senha =
           "Senha é obrigatória para funcionários com acesso ao sistema";
-      } else if (formData.senha.length < 6) {
+      } else if (formData.senha && formData.senha.length < 6) {
         newErrors.senha = "Senha deve ter pelo menos 6 caracteres";
       }
 
-      if (formData.senha !== formData.confirmarSenha) {
+      // Validar confirmação apenas se senha foi preenchida
+      if (formData.senha && formData.senha !== formData.confirmarSenha) {
         newErrors.confirmarSenha = "Senhas não coincidem";
       }
     }
