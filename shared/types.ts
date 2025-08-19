@@ -47,6 +47,7 @@ export interface Funcionario {
   tipoAcesso?: "Administrador" | "Operador" | "Técnico";
   permissoes?: FuncionarioPermissoes;
   registraPonto?: boolean; // Define se o funcionário pode usar o controle de ponto
+  jornadaDiaria?: number; // Horas que o funcionário deve trabalhar por dia
   dataCadastro: Date;
   ativo: boolean;
 }
