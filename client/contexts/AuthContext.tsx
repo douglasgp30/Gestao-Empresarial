@@ -18,17 +18,20 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Usuário admin padrão do sistema - necessário para login inicial
-const adminPadrao: Funcionario = {
-  id: "1",
-  nomeCompleto: "Administrador do Sistema",
-  login: "admin",
-  senha: "admin123",
-  permissaoAcesso: true,
-  tipoAcesso: "Administrador",
-  percentualComissao: 0,
-  dataCadastro: new Date(),
-  ativo: true,
+// Função para verificar se existe pelo menos um usuário com acesso ao sistema
+const verificarSeExisteAdministrador = (): boolean => {
+  try {
+    const funcionariosStorage = localStorage.getItem("funcionarios");
+    if (!funcionariosStorage) return false;
+
+    const funcionarios = JSON.parse(funcionariosStorage);
+    return funcionarios.some((f: Funcionario) =>
+      f.permissaoAcesso && f.ativo && f.tipoAcesso === "Administrador"
+    );
+  } catch (error) {
+    console.warn("Erro ao verificar administradores:", error);
+    return false;
+  }
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
