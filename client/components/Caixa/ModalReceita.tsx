@@ -127,9 +127,6 @@ export function ModalReceita() {
       const tecnico = tecnicos.find(
         (t) => t.id.toString() === formData.tecnicoResponsavel,
       );
-      console.log("🔍 [ModalReceita] Técnico selecionado:", tecnico);
-      console.log("🔍 [ModalReceita] Percentual comissão:", tecnico?.percentualComissao);
-      console.log("🔍 [ModalReceita] Valor líquido:", valorLiquidoCalculado);
 
       if (tecnico) {
         // Usar percentualComissao ou percentualServico como fallback
