@@ -14,7 +14,9 @@ function PontoContent() {
   const [activeTab, setActiveTab] = useState("ponto");
 
   // Verificar se o usuário tem permissão para acessar o controle de ponto
-  if (!user?.registraPonto && user?.tipoAcesso !== "Administrador") {
+  const podeAcessarPonto = user?.tipoAcesso === "Administrador" || user?.registraPonto;
+
+  if (!podeAcessarPonto) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>
@@ -22,7 +24,7 @@ function PontoContent() {
             <Alert>
               <Clock className="h-4 w-4" />
               <AlertDescription>
-                Você não tem permissão para acessar o controle de ponto. Entre em contato com o administrador do sistema.
+                Você não tem permissão para acessar o controle de ponto. Entre em contato com o administrador do sistema para habilitar essa funcionalidade.
               </AlertDescription>
             </Alert>
           </CardContent>
