@@ -145,8 +145,13 @@ export default function ListaFuncionarios() {
       }
 
       // Se não há lançamentos, proceder com a exclusão
+      console.log("[ListaFuncionarios] Iniciando exclusão...");
+      setFuncionarioParaExcluir(null); // Fechar modal imediatamente
+
       await excluirFuncionario(id);
-      setFuncionarioParaExcluir(null);
+
+      console.log("[ListaFuncionarios] Exclusão concluída com sucesso");
+      toast.success("Funcionário excluído com sucesso!");
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
       toast.error("Erro ao excluir funcionário. Tente novamente.");
