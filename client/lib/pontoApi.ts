@@ -83,7 +83,7 @@ class PontoApiService {
       if (filtros.limit) params.append('limit', filtros.limit.toString());
 
       const response = await apiService.get(
-        `/api/ponto/funcionario/${funcionarioId}?${params.toString()}`
+        `/ponto/funcionario/${funcionarioId}?${params.toString()}`
       );
       return response.data;
     } catch (error) {
