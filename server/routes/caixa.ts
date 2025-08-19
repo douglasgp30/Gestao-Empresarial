@@ -190,7 +190,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     // Filtros
     if (tipo) where.tipo = tipo;
     if (funcionarioId) where.funcionarioId = parseInt(funcionarioId as string);
-    if (setorId) where.setorId = parseInt(setorId as string);
+    if (setorId) where.localizacaoId = parseInt(setorId as string);
     if (campanhaId) where.campanhaId = parseInt(campanhaId as string);
     if (formaPagamentoId)
       where.formaPagamentoId = parseInt(formaPagamentoId as string);
