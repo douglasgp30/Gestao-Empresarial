@@ -184,6 +184,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
     (tipo?: "receita" | "despesa") => {
+      if (!Array.isArray(descricoesECategorias)) {
+        return [];
+      }
       return descricoesECategorias.filter(
         (item) =>
           item.tipoItem === "categoria" &&
@@ -196,6 +199,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const getDescricoes = useCallback(
     (tipo?: "receita" | "despesa", categoria?: string) => {
+      if (!Array.isArray(descricoesECategorias)) {
+        return [];
+      }
       return descricoesECategorias.filter(
         (item) =>
           item.tipoItem === "descricao" &&
