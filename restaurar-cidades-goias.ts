@@ -42,14 +42,12 @@ async function executarRestauracaoCidades() {
   }
 }
 
-// Executar se chamado diretamente
-if (require.main === module) {
-  executarRestauracaoCidades().then(() => {
-    process.exit(0);
-  }).catch((error) => {
-    console.error('❌ Falha na execução:', error);
-    process.exit(1);
-  });
-}
+// Executar automaticamente
+executarRestauracaoCidades().then(() => {
+  process.exit(0);
+}).catch((error) => {
+  console.error('❌ Falha na execução:', error);
+  process.exit(1);
+});
 
 export default executarRestauracaoCidades;
