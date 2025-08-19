@@ -454,77 +454,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   }, []); // Array vazio - executa apenas no mount
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
-  const adicionarDescricaoECategoria = async (
-    novoItem: Omit<DescricaoECategoria, "id" | "dataCriacao">,
-  ) => {
-    try {
-      setError(null);
-      console.log("[EntidadesContext] Adicionando item:", novoItem);
-
-      const response = await descricoesECategoriasApi.criar(novoItem);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      // Recarregar apenas a tabela unificada (otimizado)
-      await recarregarDescricoesECategorias();
-
-      console.log(
-        "[EntidadesContext] Item adicionado com sucesso:",
-        response.data?.id,
-      );
-      toast.success("Item adicionado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao adicionar item:", error);
-      toast.error("Erro ao adicionar item");
-      throw error;
-    }
-  };
-
-  const editarDescricaoECategoria = async (
-    id: string,
-    dadosAtualizados: Partial<DescricaoECategoria>,
-  ) => {
-    try {
-      setError(null);
-      const response = await descricoesECategoriasApi.atualizar(
-        parseInt(id),
-        dadosAtualizados,
-      );
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      await recarregarDescricoesECategorias();
-      toast.success("Item atualizado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao editar item:", error);
-      toast.error("Erro ao editar item");
-      throw error;
-    }
-  };
-
-  const excluirDescricaoECategoria = async (id: string) => {
-    try {
-      setError(null);
-      const response = await descricoesECategoriasApi.excluir(parseInt(id));
-
-      // Verificar se a API retornou erro antes de prosseguir
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
-
-      await recarregarDescricoesECategorias();
-      // Removendo toast do context - deixar componente gerenciar
-    } catch (error) {
-      console.error("Erro ao excluir item:", error);
-      setError("Erro ao excluir item");
-      throw error;
-    }
-  };
+  // Funções removidas - usando versões stub acima para evitar chamadas de API
 
   // === FUNÇÕES CRUD PARA FORMAS DE PAGAMENTO ===
   // Funções removidas - usando versões stub acima para evitar chamadas de API
