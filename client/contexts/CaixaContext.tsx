@@ -277,54 +277,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-
-      // Preparar dados para a API usando sistema unificado
-      const dadosApi = {
-        data: novoLancamento.data
-          ? novoLancamento.data.toISOString().split("T")[0]
-          : new Date().toISOString().split("T")[0],
-        tipo: novoLancamento.tipo,
-        valor: novoLancamento.valor,
-        valorRecebido: novoLancamento.valorQueEntrou || novoLancamento.valor,
-        valorLiquido: novoLancamento.valorLiquido,
-        // comissao será calculada pelo servidor automaticamente
-        imposto: novoLancamento.imposto,
-        observacoes: novoLancamento.observacoes,
-        numeroNota: novoLancamento.numeroNota,
-        arquivoNota: novoLancamento.arquivoNota,
-        clienteId: novoLancamento.clienteId
-          ? (() => {
-              const parsed = parseInt(novoLancamento.clienteId);
-              return isNaN(parsed) ? undefined : parsed;
-            })()
-          : undefined,
-
-        // Sistema unificado - enviar categoria e descrição diretamente
-        categoria: novoLancamento.categoria,
-        descricao: novoLancamento.descricao,
-
-        // Campos de entidades - enviar como string para a API resolver
-        formaPagamento: novoLancamento.formaPagamento,
-        tecnicoResponsavel: novoLancamento.tecnicoResponsavel,
-        setor: novoLancamento.setor,
-        campanha: novoLancamento.campanha,
+      // Criar o lançamento com ID único
+      const lancamento: LancamentoCaixa = {
+        ...novoLancamento,
+        id: `lancamento-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        dataCriacao: new Date(),
+        data: novoLancamento.data || new Date(),
+        dataHora: novoLancamento.dataHora || new Date(),
       };
 
-      console.log("[CaixaContext] Enviando para API:", dadosApi);
+      console.log("[CaixaContext] Adicionando lançamento ao localStorage:", lancamento);
 
-      const response = await caixaApi.criarLancamento(dadosApi);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
+      // Carregar lançamentos existentes
+      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
 
-      console.log(
-        "[CaixaContext] Lançamento criado com sucesso:",
-        response.data?.id,
-      );
+      // Adicionar o novo lançamento
+      const novosLancamentos = [...lancamentosExistentes, lancamento];
+
+      // Salvar no localStorage
+      localStorage.setItem("lancamentos_caixa", JSON.stringify(novosLancamentos));
 
       // Recarregar lançamentos
-      await carregarLancamentos(true);
+      await carregarLancamentosLocalStorage();
+
+      console.log("[CaixaContext] Lançamento adicionado com sucesso:", lancamento.id);
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
       throw error;
