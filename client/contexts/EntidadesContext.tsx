@@ -181,7 +181,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [dadosCarregados, setDadosCarregados] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // === FUN��ÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
+  // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
     (tipo?: "receita" | "despesa") => {
       return descricoesECategorias.filter(
@@ -382,11 +382,15 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       const descricoesStorage = localStorage.getItem("descricoes_e_categorias") || localStorage.getItem("categorias_receita");
       if (descricoesStorage) {
         const parsed = JSON.parse(descricoesStorage);
-        setDescricoesECategorias(parsed);
-        console.log(`📦 [EntidadesContext] Recarregadas ${parsed.length} descrições/categorias`);
+        const arrayParsed = Array.isArray(parsed) ? parsed : [];
+        setDescricoesECategorias(arrayParsed);
+        console.log(`📦 [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`);
+      } else {
+        setDescricoesECategorias([]);
       }
     } catch (error) {
       console.error("Erro ao recarregar descrições e categorias do localStorage:", error);
+      setDescricoesECategorias([]);
     }
   }, []);
 
