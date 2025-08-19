@@ -14,6 +14,8 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
+  precisaConfigurarPrimeiroAcesso: boolean;
+  criarPrimeiroAdministrador: (admin: Funcionario) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
