@@ -298,20 +298,48 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         "[EntidadesContext] Cache invalidado - forçando recarregamento...",
       );
 
-      // Buscar dados sem cache para debug
-      const [
-        descricoesECategoriasResponse,
-        formasPagamentoResponse,
-        funcionariosResponse,
-        tecnicosResponse,
-        localizacoesResponse,
-      ] = await Promise.all([
-        descricoesECategoriasApi.listar(),
-        formasPagamentoApi.listar(),
-        funcionariosApi.listar(),
-        funcionariosApi.listarTecnicos(),
-        localizacoesGeograficasApi.listar(),
-      ]);
+      // Carregar dados do localStorage em vez da API
+      console.log("📦 [EntidadesContext] Carregando dados do localStorage...");
+
+      try {
+        // Carregar descrições e categorias
+        const descricoesStorage = localStorage.getItem("descricoes_e_categorias") || localStorage.getItem("categorias_receita");
+        if (descricoesStorage) {
+          setDescricoesECategorias(JSON.parse(descricoesStorage));
+        }
+
+        // Carregar formas de pagamento
+        const formasStorage = localStorage.getItem("formas_pagamento");
+        if (formasStorage) {
+          setFormasPagamento(JSON.parse(formasStorage));
+        } else {
+          // Valores padrão
+          setFormasPagamento([
+            { id: 1, nome: "Dinheiro", descricao: "Pagamento em dinheiro" },
+            { id: 2, nome: "PIX", descricao: "Pagamento via PIX" },
+            { id: 3, nome: "Cartão de Débito", descricao: "Pagamento com cartão de débito" },
+            { id: 4, nome: "Cartão de Crédito", descricao: "Pagamento com cartão de crédito" },
+          ]);
+        }
+
+        // Carregar funcionários
+        const funcionariosStorage = localStorage.getItem("funcionarios");
+        if (funcionariosStorage) {
+          const funcionariosParsed = JSON.parse(funcionariosStorage);
+          setFuncionarios(funcionariosParsed);
+          // Filtrar técnicos
+          const tecnicosFiltrados = funcionariosParsed.filter((f: any) => f.ehTecnico || f.tipoAcesso === "Técnico");
+          setTecnicos(tecnicosFiltrados);
+        }
+
+        // Carregar localizações (cidades)
+        const localizacoesStorage = localStorage.getItem("cidades_goias");
+        if (localizacoesStorage) {
+          setLocalizacoesGeograficas(JSON.parse(localizacoesStorage));
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados do localStorage:", error);
+      }
 
       // Atualizar estados com dados do banco
       if (descricoesECategoriasResponse.data) {
