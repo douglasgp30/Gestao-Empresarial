@@ -25,6 +25,7 @@ interface SidebarItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   adminOnly?: boolean;
+  dataTour?: string;
 }
 
 const sidebarItems: SidebarItem[] = [
@@ -32,11 +33,13 @@ const sidebarItems: SidebarItem[] = [
     title: "Dashboard",
     href: "/",
     icon: Home,
+    dataTour: "dashboard",
   },
   {
     title: "Caixa",
     href: "/caixa",
     icon: DollarSign,
+    dataTour: "caixa",
   },
   {
     title: "Contas",
@@ -47,6 +50,7 @@ const sidebarItems: SidebarItem[] = [
     title: "Agendamentos",
     href: "/agendamentos",
     icon: Calendar,
+    dataTour: "agendamentos",
   },
   {
     title: "Clientes",
@@ -58,6 +62,7 @@ const sidebarItems: SidebarItem[] = [
     href: "/funcionarios",
     icon: Users,
     adminOnly: true,
+    dataTour: "funcionarios",
   },
   {
     title: "Relatórios",
@@ -69,6 +74,7 @@ const sidebarItems: SidebarItem[] = [
     href: "/configuracoes",
     icon: Settings,
     adminOnly: true,
+    dataTour: "configuracoes",
   },
 ];
 
@@ -123,6 +129,7 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
               <li key={item.href}>
                 <Link
                   to={item.href}
+                  data-tour={item.dataTour}
                   className={cn(
                     "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors touch-manipulation",
                     "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
