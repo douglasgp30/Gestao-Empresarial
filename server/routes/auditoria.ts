@@ -66,7 +66,7 @@ const getEstatisticas: RequestHandler = async (req, res) => {
     }
 
     const estatisticas = await AuditoriaService.obterEstatisticas();
-    res.json({ data: estatisticas });
+    res.json(estatisticas);
   } catch (error) {
     console.error("Erro ao obter estatísticas de auditoria:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
