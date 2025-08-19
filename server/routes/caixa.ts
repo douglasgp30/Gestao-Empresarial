@@ -143,7 +143,7 @@ async function resolverIds(data: any) {
       where: {
         id: parseInt(data.setor),
         tipoItem: "setor",
-        ativo: true
+        ativo: true,
       },
     });
     if (setor) {
@@ -337,13 +337,19 @@ export const createLancamento: RequestHandler = async (req, res) => {
             `[Caixa] Comissão calculada: ${funcionario.nome} - ${percentual}% sobre R$ ${data.valorLiquido.toFixed(2)} = R$ ${comissaoCalculada.toFixed(2)}`,
           );
         } else {
-          console.log(`[Caixa] Técnico ${funcionario.nome} sem percentual de comissão definido`);
+          console.log(
+            `[Caixa] Técnico ${funcionario.nome} sem percentual de comissão definido`,
+          );
         }
       } else {
-        console.log(`[Caixa] Funcionário com ID ${ids.funcionarioId} não encontrado`);
+        console.log(
+          `[Caixa] Funcionário com ID ${ids.funcionarioId} não encontrado`,
+        );
       }
     } else if (data.tipo === "receita" && !ids.funcionarioId) {
-      console.log(`[Caixa] Receita sem técnico responsável - comissão será R$ 0,00`);
+      console.log(
+        `[Caixa] Receita sem técnico responsável - comissão será R$ 0,00`,
+      );
     }
 
     // Verificar se os IDs de relacionamento existem

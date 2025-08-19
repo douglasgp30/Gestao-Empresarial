@@ -26,8 +26,12 @@ export class AuditoriaService {
           acao: input.acao,
           entidade: input.entidade,
           entidadeId: input.entidadeId?.toString(),
-          dadosAntigos: input.dadosAntigos ? JSON.stringify(input.dadosAntigos) : null,
-          dadosNovos: input.dadosNovos ? JSON.stringify(input.dadosNovos) : null,
+          dadosAntigos: input.dadosAntigos
+            ? JSON.stringify(input.dadosAntigos)
+            : null,
+          dadosNovos: input.dadosNovos
+            ? JSON.stringify(input.dadosNovos)
+            : null,
           descricao: input.descricao,
           usuarioId: input.usuarioId.toString(),
           usuarioNome: input.usuarioNome,
@@ -56,11 +60,11 @@ export class AuditoriaService {
     pagina?: number;
   }) {
     const where: any = {};
-    
+
     if (filtros?.usuarioId) where.usuarioId = filtros.usuarioId;
     if (filtros?.entidade) where.entidade = filtros.entidade;
     if (filtros?.acao) where.acao = filtros.acao;
-    
+
     if (filtros?.dataInicio || filtros?.dataFim) {
       where.dataHora = {};
       if (filtros.dataInicio) where.dataHora.gte = filtros.dataInicio;
@@ -81,7 +85,7 @@ export class AuditoriaService {
     ]);
 
     return {
-      logs: logs.map(log => ({
+      logs: logs.map((log) => ({
         ...log,
         dadosAntigos: log.dadosAntigos ? JSON.parse(log.dadosAntigos) : null,
         dadosNovos: log.dadosNovos ? JSON.parse(log.dadosNovos) : null,
@@ -93,64 +97,60 @@ export class AuditoriaService {
   }
 
   static async obterEstatisticas() {
-    const [
-      totalLogs,
-      logsPorAcao,
-      logsPorEntidade,
-      logsPorUsuario
-    ] = await Promise.all([
-      prisma.logAuditoria.count(),
-      prisma.logAuditoria.groupBy({
-        by: ['acao'],
-        _count: {
-          acao: true
-        },
-        orderBy: {
+    const [totalLogs, logsPorAcao, logsPorEntidade, logsPorUsuario] =
+      await Promise.all([
+        prisma.logAuditoria.count(),
+        prisma.logAuditoria.groupBy({
+          by: ["acao"],
           _count: {
-            acao: 'desc'
-          }
-        },
-        take: 10,
-      }),
-      prisma.logAuditoria.groupBy({
-        by: ['entidade'],
-        _count: {
-          entidade: true
-        },
-        orderBy: {
+            acao: true,
+          },
+          orderBy: {
+            _count: {
+              acao: "desc",
+            },
+          },
+          take: 10,
+        }),
+        prisma.logAuditoria.groupBy({
+          by: ["entidade"],
           _count: {
-            entidade: 'desc'
-          }
-        },
-        take: 10,
-      }),
-      prisma.logAuditoria.groupBy({
-        by: ['usuarioNome'],
-        _count: {
-          usuarioNome: true
-        },
-        orderBy: {
+            entidade: true,
+          },
+          orderBy: {
+            _count: {
+              entidade: "desc",
+            },
+          },
+          take: 10,
+        }),
+        prisma.logAuditoria.groupBy({
+          by: ["usuarioNome"],
           _count: {
-            usuarioNome: 'desc'
-          }
-        },
-        take: 10,
-      }),
-    ]);
+            usuarioNome: true,
+          },
+          orderBy: {
+            _count: {
+              usuarioNome: "desc",
+            },
+          },
+          take: 10,
+        }),
+      ]);
 
     return {
       totalLogs,
-      logsPorAcao: logsPorAcao.map(item => ({
+      logsPorAcao: logsPorAcao.map((item) => ({
         acao: item.acao,
-        total: item._count.acao
+        total: item._count.acao,
       })),
-      logsPorEntidade: logsPorEntidade.map(item => ({
+      logsPorEntidade: logsPorEntidade.map((item) => ({
         entidade: item.entidade,
-        total: item._count.entidade
+        total: item._count.entidade,
       })),
-      logsPorUsuario: logsPorUsuario.map(item => ({
+      logsPorUsuario: logsPorUsuario.map((item) => ({
         usuarioNome: item.usuarioNome,
-        total: item._count.usuarioNome
+        total: item._count.usuarioNome,
       })),
     };
   }
@@ -159,9 +159,10 @@ export class AuditoriaService {
 // Função helper para extrair informações da requisição
 export function extrairInfoRequisicao(req: any) {
   return {
-    ip: req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'],
-    userAgent: req.headers['user-agent'],
-    sessaoId: req.sessionID || req.headers['x-session-id'],
+    ip:
+      req.ip || req.connection.remoteAddress || req.headers["x-forwarded-for"],
+    userAgent: req.headers["user-agent"],
+    sessaoId: req.sessionID || req.headers["x-session-id"],
   };
 }
 
@@ -170,7 +171,7 @@ export function middlewareAuditoria(
   entidade: string,
   acao: string,
   handler: (req: any, res: any) => Promise<any>,
-  errorHandler?: (error: any, req: any, res: any) => void
+  errorHandler?: (error: any, req: any, res: any) => void,
 ) {
   return async (req: any, res: any) => {
     const inicioTempo = Date.now();
@@ -232,7 +233,7 @@ export function middlewareAuditoria(
 export function middlewareAuditoriaSimples(
   acao: string,
   entidade: string,
-  obterDescricao?: (dados: any) => string
+  obterDescricao?: (dados: any) => string,
 ) {
   return async (req: any, res: any, next: any) => {
     const inicioTempo = Date.now();
@@ -240,12 +241,14 @@ export function middlewareAuditoriaSimples(
 
     // Interceptar o response para capturar dados
     const originalSend = res.send;
-    res.send = function(data: any) {
+    res.send = function (data: any) {
       const duracaoMs = Date.now() - inicioTempo;
 
       // Registrar log após a operação
       if (req.user) {
-        const descricao = obterDescricao ? obterDescricao(req.body) : `${acao} em ${entidade}`;
+        const descricao = obterDescricao
+          ? obterDescricao(req.body)
+          : `${acao} em ${entidade}`;
 
         AuditoriaService.registrarLog({
           acao,

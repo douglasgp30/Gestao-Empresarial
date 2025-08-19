@@ -26,12 +26,13 @@ const getLogs: RequestHandler = async (req, res) => {
     // Verificar se o usuário é administrador
     if (!req.user || req.user.tipoAcesso !== "Administrador") {
       return res.status(403).json({
-        error: "Acesso negado. Apenas administradores podem visualizar logs de auditoria."
+        error:
+          "Acesso negado. Apenas administradores podem visualizar logs de auditoria.",
       });
     }
 
     const filtros = FiltrosAuditoriaSchema.parse(req.query);
-    
+
     // Converter strings de data para Date objects
     const filtrosProcessados = {
       ...filtros,
@@ -49,12 +50,12 @@ const getLogs: RequestHandler = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: "Parâmetros inválidos",
-        details: error.errors 
+        details: error.errors,
       });
     }
-    
+
     console.error("Erro ao buscar logs de auditoria:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
   }
@@ -71,7 +72,8 @@ const getEstatisticas: RequestHandler = async (req, res) => {
     // Verificar se o usuário é administrador
     if (!req.user || req.user.tipoAcesso !== "Administrador") {
       return res.status(403).json({
-        error: "Acesso negado. Apenas administradores podem visualizar estatísticas de auditoria."
+        error:
+          "Acesso negado. Apenas administradores podem visualizar estatísticas de auditoria.",
       });
     }
 
@@ -94,7 +96,7 @@ const getEntidades: RequestHandler = async (req, res) => {
     // Verificar se o usuário é administrador
     if (!req.user || req.user.tipoAcesso !== "Administrador") {
       return res.status(403).json({
-        error: "Acesso negado."
+        error: "Acesso negado.",
       });
     }
 
@@ -105,7 +107,7 @@ const getEntidades: RequestHandler = async (req, res) => {
       "Conta",
       "Agendamento",
       "Campanha",
-      "Fornecedor"
+      "Fornecedor",
     ];
 
     res.json(entidades);
@@ -126,7 +128,7 @@ const getAcoes: RequestHandler = async (req, res) => {
     // Verificar se o usuário é administrador
     if (!req.user || req.user.tipoAcesso !== "Administrador") {
       return res.status(403).json({
-        error: "Acesso negado."
+        error: "Acesso negado.",
       });
     }
 
@@ -137,7 +139,7 @@ const getAcoes: RequestHandler = async (req, res) => {
       "login",
       "logout",
       "view",
-      "export"
+      "export",
     ];
 
     res.json(acoes);

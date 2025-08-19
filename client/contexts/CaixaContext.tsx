@@ -138,7 +138,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Carregar lançamentos do localStorage
       await carregarLancamentosLocalStorage();
 
-      console.log("✅ [CaixaContext] Dados carregados do localStorage com sucesso");
+      console.log(
+        "✅ [CaixaContext] Dados carregados do localStorage com sucesso",
+      );
     } catch (error) {
       console.error("Erro ao carregar dados do localStorage:", error);
       setError("Erro ao carregar dados locais");
@@ -151,24 +153,32 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Função para carregar lançamentos do localStorage
   const carregarLancamentosLocalStorage = async () => {
     try {
-      console.log("📦 [CaixaContext] Carregando lançamentos do localStorage...");
+      console.log(
+        "📦 [CaixaContext] Carregando lançamentos do localStorage...",
+      );
 
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
       if (lancamentosStorage) {
         const lancamentosParsed = JSON.parse(lancamentosStorage);
         // Converter strings de data de volta para objetos Date
-        const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => ({
-          ...lancamento,
-          data: new Date(lancamento.data),
-          dataHora: new Date(lancamento.dataHora),
-          dataCriacao: new Date(lancamento.dataCriacao),
-        }));
+        const lancamentosFormatados = lancamentosParsed.map(
+          (lancamento: any) => ({
+            ...lancamento,
+            data: new Date(lancamento.data),
+            dataHora: new Date(lancamento.dataHora),
+            dataCriacao: new Date(lancamento.dataCriacao),
+          }),
+        );
 
         setLancamentos(lancamentosFormatados);
-        console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
+        console.log(
+          `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`,
+        );
       } else {
         setLancamentos([]);
-        console.log("📦 [CaixaContext] Nenhum lançamento encontrado no localStorage");
+        console.log(
+          "📦 [CaixaContext] Nenhum lançamento encontrado no localStorage",
+        );
       }
     } catch (error) {
       console.error("Erro ao carregar lançamentos do localStorage:", error);
@@ -200,7 +210,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        console.log("📦 [CaixaContext] Recarregando lançamentos do localStorage...");
+        console.log(
+          "📦 [CaixaContext] Recarregando lançamentos do localStorage...",
+        );
 
         // Simplesmente recarregar do localStorage
         await carregarLancamentosLocalStorage();
@@ -284,21 +296,32 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         dataHora: novoLancamento.dataHora || new Date(),
       };
 
-      console.log("[CaixaContext] Adicionando lançamento ao localStorage:", lancamento);
+      console.log(
+        "[CaixaContext] Adicionando lançamento ao localStorage:",
+        lancamento,
+      );
 
       // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+      const lancamentosExistentes = JSON.parse(
+        localStorage.getItem("lancamentos_caixa") || "[]",
+      );
 
       // Adicionar o novo lançamento
       const novosLancamentos = [...lancamentosExistentes, lancamento];
 
       // Salvar no localStorage
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(novosLancamentos));
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(novosLancamentos),
+      );
 
       // Recarregar lançamentos
       await carregarLancamentosLocalStorage();
 
-      console.log("[CaixaContext] Lançamento adicionado com sucesso:", lancamento.id);
+      console.log(
+        "[CaixaContext] Lançamento adicionado com sucesso:",
+        lancamento.id,
+      );
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
       throw error;
@@ -315,24 +338,31 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("[CaixaContext] Editando lançamento:", id, dadosAtualizados);
 
       // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+      const lancamentosExistentes = JSON.parse(
+        localStorage.getItem("lancamentos_caixa") || "[]",
+      );
 
       // Encontrar e atualizar o lançamento
-      const lancamentosAtualizados = lancamentosExistentes.map((lancamento: any) => {
-        if (lancamento.id === id) {
-          return {
-            ...lancamento,
-            ...dadosAtualizados,
-            // Preservar campos que não devem ser sobrescritos
-            id: lancamento.id,
-            dataCriacao: lancamento.dataCriacao,
-          };
-        }
-        return lancamento;
-      });
+      const lancamentosAtualizados = lancamentosExistentes.map(
+        (lancamento: any) => {
+          if (lancamento.id === id) {
+            return {
+              ...lancamento,
+              ...dadosAtualizados,
+              // Preservar campos que não devem ser sobrescritos
+              id: lancamento.id,
+              dataCriacao: lancamento.dataCriacao,
+            };
+          }
+          return lancamento;
+        },
+      );
 
       // Salvar no localStorage
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(lancamentosAtualizados),
+      );
 
       // Recarregar lançamentos
       await carregarLancamentosLocalStorage();
@@ -352,13 +382,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("[CaixaContext] Excluindo lançamento:", id);
 
       // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+      const lancamentosExistentes = JSON.parse(
+        localStorage.getItem("lancamentos_caixa") || "[]",
+      );
 
       // Filtrar para remover o lançamento
-      const lancamentosFiltrados = lancamentosExistentes.filter((lancamento: any) => lancamento.id !== id);
+      const lancamentosFiltrados = lancamentosExistentes.filter(
+        (lancamento: any) => lancamento.id !== id,
+      );
 
       // Salvar no localStorage
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosFiltrados));
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(lancamentosFiltrados),
+      );
 
       // Recarregar lançamentos
       await carregarLancamentosLocalStorage();
@@ -381,10 +418,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         id: `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       };
 
-      console.log("[CaixaContext] Adicionando campanha ao localStorage:", campanha);
+      console.log(
+        "[CaixaContext] Adicionando campanha ao localStorage:",
+        campanha,
+      );
 
       // Carregar campanhas existentes
-      const campanhasExistentes = JSON.parse(localStorage.getItem("campanhas") || "[]");
+      const campanhasExistentes = JSON.parse(
+        localStorage.getItem("campanhas") || "[]",
+      );
 
       // Adicionar a nova campanha
       const novasCampanhas = [...campanhasExistentes, campanha];
@@ -395,7 +437,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Atualizar estado
       setCampanhas(novasCampanhas);
 
-      console.log("[CaixaContext] Campanha adicionada com sucesso:", campanha.id);
+      console.log(
+        "[CaixaContext] Campanha adicionada com sucesso:",
+        campanha.id,
+      );
     } catch (error) {
       console.error("Erro ao adicionar campanha:", error);
       throw error;

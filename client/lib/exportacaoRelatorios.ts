@@ -1,5 +1,5 @@
-import type { RelatorioPonto } from '../../shared/types';
-import { pontoApi } from './pontoApi';
+import type { RelatorioPonto } from "../../shared/types";
+import { pontoApi } from "./pontoApi";
 
 // Função para exportar em Excel (CSV compatível)
 export function exportarRelatorioExcel(relatorio: RelatorioPonto): void {
@@ -7,88 +7,110 @@ export function exportarRelatorioExcel(relatorio: RelatorioPonto): void {
 
   // Cabeçalho do relatório
   const cabecalho = [
-    ['RELATÓRIO DE PONTO'],
-    [''],
-    ['Funcionário:', funcionario.nome],
-    ['Cargo:', funcionario.cargo || 'Não informado'],
-    ['Período:', `${pontoApi.formatarData(periodo.dataInicio)} a ${pontoApi.formatarData(periodo.dataFim)}`],
-    ['Jornada Diária:', funcionario.jornadaDiaria ? `${funcionario.jornadaDiaria}h` : '8.0h'],
-    [''],
-    ['RESUMO ESTATÍSTICAS'],
-    ['Total de Dias Trabalhados:', estatisticas.totalDiasTrabalhados],
-    ['Total de Horas Trabalhadas:', pontoApi.formatarDuracaoHoras(estatisticas.totalHorasTrabalhadas)],
-    ['Total de Horas Extras:', pontoApi.formatarDuracaoHoras(estatisticas.totalHorasExtras)],
-    ['Total de Minutos de Atraso:', pontoApi.formatarMinutos(estatisticas.totalMinutosAtraso)],
-    ['Dias com Atraso:', estatisticas.diasComAtraso],
-    ['Dias com Horas Extras:', estatisticas.diasComHorasExtras],
-    ['Dias com Almoço Vendido:', pontos.filter(p => p.vendeuAlmoco).length],
-    ['Média de Horas por Dia:', pontoApi.formatarDuracaoHoras(estatisticas.mediaHorasDiarias)],
-    [''],
-    ['DETALHAMENTO POR DIA'],
-    ['']
+    ["RELATÓRIO DE PONTO"],
+    [""],
+    ["Funcionário:", funcionario.nome],
+    ["Cargo:", funcionario.cargo || "Não informado"],
+    [
+      "Período:",
+      `${pontoApi.formatarData(periodo.dataInicio)} a ${pontoApi.formatarData(periodo.dataFim)}`,
+    ],
+    [
+      "Jornada Diária:",
+      funcionario.jornadaDiaria ? `${funcionario.jornadaDiaria}h` : "8.0h",
+    ],
+    [""],
+    ["RESUMO ESTATÍSTICAS"],
+    ["Total de Dias Trabalhados:", estatisticas.totalDiasTrabalhados],
+    [
+      "Total de Horas Trabalhadas:",
+      pontoApi.formatarDuracaoHoras(estatisticas.totalHorasTrabalhadas),
+    ],
+    [
+      "Total de Horas Extras:",
+      pontoApi.formatarDuracaoHoras(estatisticas.totalHorasExtras),
+    ],
+    [
+      "Total de Minutos de Atraso:",
+      pontoApi.formatarMinutos(estatisticas.totalMinutosAtraso),
+    ],
+    ["Dias com Atraso:", estatisticas.diasComAtraso],
+    ["Dias com Horas Extras:", estatisticas.diasComHorasExtras],
+    ["Dias com Almoço Vendido:", pontos.filter((p) => p.vendeuAlmoco).length],
+    [
+      "Média de Horas por Dia:",
+      pontoApi.formatarDuracaoHoras(estatisticas.mediaHorasDiarias),
+    ],
+    [""],
+    ["DETALHAMENTO POR DIA"],
+    [""],
   ];
 
   // Cabeçalho da tabela
   const cabecalhoTabela = [
-    'Data',
-    'Dia da Semana',
-    'Entrada',
-    'Saída Almoço',
-    'Retorno Almoço',
-    'Saída',
-    'Vendeu Almoço',
-    'Total Trabalhado',
-    'Jornada Esperada',
-    'Saldo Horas',
-    'Horas Extras',
-    'Atraso (min)',
-    'Observação'
+    "Data",
+    "Dia da Semana",
+    "Entrada",
+    "Saída Almoço",
+    "Retorno Almoço",
+    "Saída",
+    "Vendeu Almoço",
+    "Total Trabalhado",
+    "Jornada Esperada",
+    "Saldo Horas",
+    "Horas Extras",
+    "Atraso (min)",
+    "Observação",
   ];
 
   // Dados da tabela
-  const dadosTabela = pontos.map(ponto => [
+  const dadosTabela = pontos.map((ponto) => [
     pontoApi.formatarData(ponto.data),
-    new Date(ponto.data).toLocaleDateString('pt-BR', { weekday: 'long' }),
+    new Date(ponto.data).toLocaleDateString("pt-BR", { weekday: "long" }),
     pontoApi.formatarHorario(ponto.horaEntrada),
-    ponto.vendeuAlmoco ? 'Vendido' : pontoApi.formatarHorario(ponto.horaSaidaAlmoco),
-    ponto.vendeuAlmoco ? 'Vendido' : pontoApi.formatarHorario(ponto.horaRetornoAlmoco),
+    ponto.vendeuAlmoco
+      ? "Vendido"
+      : pontoApi.formatarHorario(ponto.horaSaidaAlmoco),
+    ponto.vendeuAlmoco
+      ? "Vendido"
+      : pontoApi.formatarHorario(ponto.horaRetornoAlmoco),
     pontoApi.formatarHorario(ponto.horaSaida),
-    ponto.vendeuAlmoco ? 'Sim' : 'Não',
-    ponto.totalHoras ? pontoApi.formatarDuracaoHoras(ponto.totalHoras) : '',
-    funcionario.jornadaDiaria ? pontoApi.formatarDuracaoHoras(funcionario.jornadaDiaria) : '8h 0min',
-    ponto.saldoHoras !== undefined ? pontoApi.formatarDuracaoHoras(ponto.saldoHoras) : '',
-    ponto.horasExtras ? pontoApi.formatarDuracaoHoras(ponto.horasExtras) : '',
-    ponto.atraso ? pontoApi.formatarMinutos(ponto.atraso) : '',
-    ponto.observacao || ''
+    ponto.vendeuAlmoco ? "Sim" : "Não",
+    ponto.totalHoras ? pontoApi.formatarDuracaoHoras(ponto.totalHoras) : "",
+    funcionario.jornadaDiaria
+      ? pontoApi.formatarDuracaoHoras(funcionario.jornadaDiaria)
+      : "8h 0min",
+    ponto.saldoHoras !== undefined
+      ? pontoApi.formatarDuracaoHoras(ponto.saldoHoras)
+      : "",
+    ponto.horasExtras ? pontoApi.formatarDuracaoHoras(ponto.horasExtras) : "",
+    ponto.atraso ? pontoApi.formatarMinutos(ponto.atraso) : "",
+    ponto.observacao || "",
   ]);
 
   // Combinar todos os dados
-  const dadosCompletos = [
-    ...cabecalho,
-    cabecalhoTabela,
-    ...dadosTabela
-  ];
+  const dadosCompletos = [...cabecalho, cabecalhoTabela, ...dadosTabela];
 
   // Converter para CSV
   const csvContent = dadosCompletos
-    .map(row => 
-      Array.isArray(row) 
-        ? row.map(field => `"${field}"`).join(',')
-        : `"${row}"`
+    .map((row) =>
+      Array.isArray(row)
+        ? row.map((field) => `"${field}"`).join(",")
+        : `"${row}"`,
     )
-    .join('\n');
+    .join("\n");
 
   // Adicionar BOM para compatibilidade com Excel
-  const bom = '\uFEFF';
+  const bom = "\uFEFF";
   const csvWithBom = bom + csvContent;
 
   // Criar e baixar arquivo
-  const blob = new Blob([csvWithBom], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([csvWithBom], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  
-  const nomeArquivo = `relatorio-ponto-${funcionario.nome.replace(/\s+/g, '-').toLowerCase()}-${periodo.dataInicio.toISOString().split('T')[0]}-${periodo.dataFim.toISOString().split('T')[0]}.csv`;
-  
+  const link = document.createElement("a");
+
+  const nomeArquivo = `relatorio-ponto-${funcionario.nome.replace(/\s+/g, "-").toLowerCase()}-${periodo.dataInicio.toISOString().split("T")[0]}-${periodo.dataFim.toISOString().split("T")[0]}.csv`;
+
   link.href = url;
   link.download = nomeArquivo;
   document.body.appendChild(link);
@@ -100,7 +122,7 @@ export function exportarRelatorioExcel(relatorio: RelatorioPonto): void {
 // Função para exportar em PDF (HTML para impressão)
 export function exportarRelatorioPDF(relatorio: RelatorioPonto): void {
   const { funcionario, periodo, pontos, estatisticas } = relatorio;
-  
+
   // Criar HTML para o relatório
   const htmlContent = `
 <!DOCTYPE html>
@@ -210,7 +232,7 @@ export function exportarRelatorioPDF(relatorio: RelatorioPonto): void {
         <div class="info-section">
             <h3>Informações do Funcionário</h3>
             <p><strong>Nome:</strong> ${funcionario.nome}</p>
-            <p><strong>Cargo:</strong> ${funcionario.cargo || 'Não informado'}</p>
+            <p><strong>Cargo:</strong> ${funcionario.cargo || "Não informado"}</p>
             <p><strong>Jornada Diária:</strong> ${funcionario.jornadaDiaria || 8}h</p>
         </div>
         
@@ -239,7 +261,7 @@ export function exportarRelatorioPDF(relatorio: RelatorioPonto): void {
         </div>
         
         <div class="stat-card">
-            <div class="stat-value text-amber">${pontos.filter(p => p.vendeuAlmoco).length}</div>
+            <div class="stat-value text-amber">${pontos.filter((p) => p.vendeuAlmoco).length}</div>
             <div class="stat-label">Almoços Vendidos</div>
         </div>
     </div>
@@ -261,25 +283,29 @@ export function exportarRelatorioPDF(relatorio: RelatorioPonto): void {
             </tr>
         </thead>
         <tbody>
-            ${pontos.map(ponto => `
+            ${pontos
+              .map(
+                (ponto) => `
                 <tr>
                     <td>${pontoApi.formatarData(ponto.data)}</td>
-                    <td>${new Date(ponto.data).toLocaleDateString('pt-BR', { weekday: 'short' })}</td>
+                    <td>${new Date(ponto.data).toLocaleDateString("pt-BR", { weekday: "short" })}</td>
                     <td class="text-center">${pontoApi.formatarHorario(ponto.horaEntrada)}</td>
                     <td class="text-center">${ponto.vendeuAlmoco ? '<span class="badge badge-vendido">Vendido</span>' : pontoApi.formatarHorario(ponto.horaSaidaAlmoco)}</td>
                     <td class="text-center">${ponto.vendeuAlmoco ? '<span class="badge badge-vendido">Vendido</span>' : pontoApi.formatarHorario(ponto.horaRetornoAlmoco)}</td>
                     <td class="text-center">${pontoApi.formatarHorario(ponto.horaSaida)}</td>
-                    <td class="text-center">${ponto.vendeuAlmoco ? 'Sim' : 'Não'}</td>
-                    <td class="text-center">${ponto.totalHoras ? pontoApi.formatarDuracaoHoras(ponto.totalHoras) : '--'}</td>
-                    <td class="text-center ${ponto.saldoHoras !== undefined && ponto.saldoHoras >= 0 ? 'text-green' : 'text-red'}">${ponto.saldoHoras !== undefined ? (ponto.saldoHoras >= 0 ? '+' : '') + pontoApi.formatarDuracaoHoras(ponto.saldoHoras) : '--'}</td>
-                    <td class="text-center ${ponto.atraso && ponto.atraso > 0 ? 'text-orange' : ''}">${ponto.atraso ? pontoApi.formatarMinutos(ponto.atraso) : '--'}</td>
+                    <td class="text-center">${ponto.vendeuAlmoco ? "Sim" : "Não"}</td>
+                    <td class="text-center">${ponto.totalHoras ? pontoApi.formatarDuracaoHoras(ponto.totalHoras) : "--"}</td>
+                    <td class="text-center ${ponto.saldoHoras !== undefined && ponto.saldoHoras >= 0 ? "text-green" : "text-red"}">${ponto.saldoHoras !== undefined ? (ponto.saldoHoras >= 0 ? "+" : "") + pontoApi.formatarDuracaoHoras(ponto.saldoHoras) : "--"}</td>
+                    <td class="text-center ${ponto.atraso && ponto.atraso > 0 ? "text-orange" : ""}">${ponto.atraso ? pontoApi.formatarMinutos(ponto.atraso) : "--"}</td>
                 </tr>
-            `).join('')}
+            `,
+              )
+              .join("")}
         </tbody>
     </table>
 
     <div style="margin-top: 40px; text-align: center; color: #666; font-size: 0.9em;">
-        <p>Relatório gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+        <p>Relatório gerado em ${new Date().toLocaleDateString("pt-BR")} às ${new Date().toLocaleTimeString("pt-BR")}</p>
     </div>
 
     <script>
@@ -293,7 +319,7 @@ export function exportarRelatorioPDF(relatorio: RelatorioPonto): void {
   `;
 
   // Abrir nova janela para impressão
-  const printWindow = window.open('', '_blank');
+  const printWindow = window.open("", "_blank");
   if (printWindow) {
     printWindow.document.write(htmlContent);
     printWindow.document.close();
@@ -310,21 +336,26 @@ export function exportarRelatorioJSON(relatorio: RelatorioPonto): void {
         id: funcionario.id,
         nome: funcionario.nome,
         cargo: funcionario.cargo,
-        jornadaDiaria: funcionario.jornadaDiaria || 8
+        jornadaDiaria: funcionario.jornadaDiaria || 8,
       },
       periodo: {
-        dataInicio: periodo.dataInicio.toISOString().split('T')[0],
-        dataFim: periodo.dataFim.toISOString().split('T')[0]
+        dataInicio: periodo.dataInicio.toISOString().split("T")[0],
+        dataFim: periodo.dataFim.toISOString().split("T")[0],
       },
       estatisticas: {
         ...estatisticas,
-        diasComAlmocoVendido: pontos.filter(p => p.vendeuAlmoco).length,
-        jornadaEsperada: (funcionario.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados,
-        saldoGeralHoras: estatisticas.totalHorasTrabalhadas - (funcionario.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
+        diasComAlmocoVendido: pontos.filter((p) => p.vendeuAlmoco).length,
+        jornadaEsperada:
+          (funcionario.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados,
+        saldoGeralHoras:
+          estatisticas.totalHorasTrabalhadas -
+          (funcionario.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados,
       },
-      pontos: pontos.map(ponto => ({
-        data: ponto.data.toISOString().split('T')[0],
-        diaSemana: new Date(ponto.data).toLocaleDateString('pt-BR', { weekday: 'long' }),
+      pontos: pontos.map((ponto) => ({
+        data: ponto.data.toISOString().split("T")[0],
+        diaSemana: new Date(ponto.data).toLocaleDateString("pt-BR", {
+          weekday: "long",
+        }),
         horaEntrada: ponto.horaEntrada?.toISOString(),
         horaSaidaAlmoco: ponto.horaSaidaAlmoco?.toISOString(),
         horaRetornoAlmoco: ponto.horaRetornoAlmoco?.toISOString(),
@@ -334,21 +365,23 @@ export function exportarRelatorioJSON(relatorio: RelatorioPonto): void {
         saldoHoras: ponto.saldoHoras || 0,
         horasExtras: ponto.horasExtras || 0,
         atraso: ponto.atraso || 0,
-        observacao: ponto.observacao || ''
-      }))
+        observacao: ponto.observacao || "",
+      })),
     },
     metadados: {
       geradoEm: new Date().toISOString(),
-      versao: '1.0'
-    }
+      versao: "1.0",
+    },
   };
 
-  const blob = new Blob([JSON.stringify(dadosExportacao, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(dadosExportacao, null, 2)], {
+    type: "application/json",
+  });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  
-  const nomeArquivo = `relatorio-ponto-dados-${funcionario.nome.replace(/\s+/g, '-').toLowerCase()}-${periodo.dataInicio.toISOString().split('T')[0]}-${periodo.dataFim.toISOString().split('T')[0]}.json`;
-  
+  const link = document.createElement("a");
+
+  const nomeArquivo = `relatorio-ponto-dados-${funcionario.nome.replace(/\s+/g, "-").toLowerCase()}-${periodo.dataInicio.toISOString().split("T")[0]}-${periodo.dataFim.toISOString().split("T")[0]}.json`;
+
   link.href = url;
   link.download = nomeArquivo;
   document.body.appendChild(link);

@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Alert, AlertDescription } from '../ui/alert';
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Alert, AlertDescription } from "../ui/alert";
 import {
   CheckCircle,
   User,
@@ -11,22 +17,23 @@ import {
   Shield,
   ArrowRight,
   Building2,
-  Loader2
-} from 'lucide-react';
-import { z } from 'zod';
-import { toast } from 'sonner';
-import { PasswordStrength, validarForcaSenha } from '../ui/password-strength';
+  Loader2,
+} from "lucide-react";
+import { z } from "zod";
+import { toast } from "sonner";
+import { PasswordStrength, validarForcaSenha } from "../ui/password-strength";
 
-const AdminSchema = z.object({
-  nomeCompleto: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
-  login: z.string().min(3, 'Login deve ter pelo menos 3 caracteres'),
-  senha: z.string()
-    .min(6, 'Senha deve ter pelo menos 6 caracteres'),
-  confirmarSenha: z.string()
-}).refine((data) => data.senha === data.confirmarSenha, {
-  message: "Senhas não coincidem",
-  path: ["confirmarSenha"]
-});
+const AdminSchema = z
+  .object({
+    nomeCompleto: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
+    login: z.string().min(3, "Login deve ter pelo menos 3 caracteres"),
+    senha: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+    confirmarSenha: z.string(),
+  })
+  .refine((data) => data.senha === data.confirmarSenha, {
+    message: "Senhas não coincidem",
+    path: ["confirmarSenha"],
+  });
 
 interface PrimeiroAcessoProps {
   onAdminCriado: (admin: any) => void;
@@ -35,19 +42,19 @@ interface PrimeiroAcessoProps {
 export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
   const [etapa, setEtapa] = useState(1);
   const [formData, setFormData] = useState({
-    nomeCompleto: '',
-    login: '',
-    senha: '',
-    confirmarSenha: ''
+    nomeCompleto: "",
+    login: "",
+    senha: "",
+    confirmarSenha: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Limpar erro do campo quando o usuário começar a digitar
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
@@ -76,13 +83,13 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
     setIsLoading(true);
 
     // Feedback de progresso
-    toast.loading('Validando dados...', { id: 'criacao-admin' });
+    toast.loading("Validando dados...", { id: "criacao-admin" });
 
     try {
       // Simular validação (200ms)
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
-      toast.loading('Criando administrador...', { id: 'criacao-admin' });
+      toast.loading("Criando administrador...", { id: "criacao-admin" });
 
       const novoAdmin = {
         id: `admin-${Date.now()}`,
@@ -120,25 +127,29 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
           criarAgendamento: true,
           editarAgendamento: true,
           excluirAgendamento: true,
-        }
+        },
       };
 
       // Simular criação (400ms)
-      await new Promise(resolve => setTimeout(resolve, 400));
+      await new Promise((resolve) => setTimeout(resolve, 400));
 
-      toast.loading('Configurando sistema...', { id: 'criacao-admin' });
+      toast.loading("Configurando sistema...", { id: "criacao-admin" });
 
       await onAdminCriado(novoAdmin);
 
       // Feedback final
-      toast.success('🎉 Administrador criado com sucesso! Bem-vindo ao sistema!', {
-        id: 'criacao-admin',
-        duration: 4000
-      });
-
+      toast.success(
+        "🎉 Administrador criado com sucesso! Bem-vindo ao sistema!",
+        {
+          id: "criacao-admin",
+          duration: 4000,
+        },
+      );
     } catch (error) {
-      toast.error('Erro ao criar administrador. Tente novamente.', { id: 'criacao-admin' });
-      console.error('Erro:', error);
+      toast.error("Erro ao criar administrador. Tente novamente.", {
+        id: "criacao-admin",
+      });
+      console.error("Erro:", error);
     } finally {
       setIsLoading(false);
     }
@@ -152,7 +163,7 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
             <Building2 className="w-8 h-8 text-primary" />
           </div>
         </div>
-        
+
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
             Bem-vindo ao Sistema de Gestão Empresarial
@@ -165,18 +176,19 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
         <Alert className="bg-blue-50 border-blue-200">
           <Shield className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-blue-800">
-            Para começar a usar o sistema, você precisa criar o primeiro usuário administrador.
-            Este usuário terá acesso completo a todas as funcionalidades.
+            Para começar a usar o sistema, você precisa criar o primeiro usuário
+            administrador. Este usuário terá acesso completo a todas as
+            funcionalidades.
           </AlertDescription>
         </Alert>
       </div>
 
       <div className="space-y-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
-          <CheckCircle className="w-5 h-5 text-green-600" />
-          O que você poderá fazer:
+          <CheckCircle className="w-5 h-5 text-green-600" />O que você poderá
+          fazer:
         </h3>
-        
+
         <div className="grid gap-3">
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
@@ -184,37 +196,39 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
             </div>
             <div>
               <p className="font-medium">Gerenciar funcionários</p>
-              <p className="text-sm text-gray-600">Cadastre técnicos e outros usuários</p>
+              <p className="text-sm text-gray-600">
+                Cadastre técnicos e outros usuários
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
               <Building2 className="w-4 h-4 text-primary" />
             </div>
             <div>
               <p className="font-medium">Controle financeiro</p>
-              <p className="text-sm text-gray-600">Gerencie caixa, contas e relatórios</p>
+              <p className="text-sm text-gray-600">
+                Gerencie caixa, contas e relatórios
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
               <Shield className="w-4 h-4 text-primary" />
             </div>
             <div>
               <p className="font-medium">Configurações e auditoria</p>
-              <p className="text-sm text-gray-600">Configure o sistema e monitore atividades</p>
+              <p className="text-sm text-gray-600">
+                Configure o sistema e monitore atividades
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <Button 
-        onClick={() => setEtapa(2)} 
-        className="w-full"
-        size="lg"
-      >
+      <Button onClick={() => setEtapa(2)} className="w-full" size="lg">
         Começar configuração
         <ArrowRight className="ml-2 w-4 h-4" />
       </Button>
@@ -236,7 +250,7 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
           <Input
             id="nomeCompleto"
             value={formData.nomeCompleto}
-            onChange={(e) => handleInputChange('nomeCompleto', e.target.value)}
+            onChange={(e) => handleInputChange("nomeCompleto", e.target.value)}
             placeholder="Digite o nome completo"
             disabled={isLoading}
           />
@@ -250,7 +264,7 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
           <Input
             id="login"
             value={formData.login}
-            onChange={(e) => handleInputChange('login', e.target.value)}
+            onChange={(e) => handleInputChange("login", e.target.value)}
             placeholder="Digite o login"
             disabled={isLoading}
           />
@@ -265,7 +279,7 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
             id="senha"
             type="password"
             value={formData.senha}
-            onChange={(e) => handleInputChange('senha', e.target.value)}
+            onChange={(e) => handleInputChange("senha", e.target.value)}
             placeholder="Digite uma senha (mínimo 6 caracteres)"
             disabled={isLoading}
           />
@@ -281,7 +295,9 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
             id="confirmarSenha"
             type="password"
             value={formData.confirmarSenha}
-            onChange={(e) => handleInputChange('confirmarSenha', e.target.value)}
+            onChange={(e) =>
+              handleInputChange("confirmarSenha", e.target.value)
+            }
             placeholder="Digite a senha novamente"
             disabled={isLoading}
           />
@@ -292,8 +308,8 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
       </div>
 
       <div className="flex gap-3">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => setEtapa(1)}
           disabled={isLoading}
           className="flex-1"
@@ -311,7 +327,7 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
               Criando administrador...
             </>
           ) : (
-            'Criar administrador'
+            "Criar administrador"
           )}
         </Button>
       </div>
@@ -323,12 +339,14 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
       <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
           <div className="flex justify-center space-x-2 mb-4">
-            <div className={`w-3 h-3 rounded-full ${etapa >= 1 ? 'bg-primary' : 'bg-gray-300'}`} />
-            <div className={`w-3 h-3 rounded-full ${etapa >= 2 ? 'bg-primary' : 'bg-gray-300'}`} />
+            <div
+              className={`w-3 h-3 rounded-full ${etapa >= 1 ? "bg-primary" : "bg-gray-300"}`}
+            />
+            <div
+              className={`w-3 h-3 rounded-full ${etapa >= 2 ? "bg-primary" : "bg-gray-300"}`}
+            />
           </div>
-          <CardTitle className="text-lg">
-            Etapa {etapa} de 2
-          </CardTitle>
+          <CardTitle className="text-lg">Etapa {etapa} de 2</CardTitle>
         </CardHeader>
         <CardContent>
           {etapa === 1 ? renderEtapa1() : renderEtapa2()}

@@ -1,16 +1,41 @@
 import React, { useState } from "react";
-import { Calendar, FileText, Download, TrendingUp, Clock, User, AlertTriangle } from "lucide-react";
+import {
+  Calendar,
+  FileText,
+  Download,
+  TrendingUp,
+  Clock,
+  User,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 import { Separator } from "../ui/separator";
 import { usePonto } from "../../contexts/PontoContext";
 import { pontoApi } from "../../lib/pontoApi";
-import { exportarRelatorioExcel, exportarRelatorioPDF, exportarRelatorioJSON } from "../../lib/exportacaoRelatorios";
+import {
+  exportarRelatorioExcel,
+  exportarRelatorioPDF,
+  exportarRelatorioJSON,
+} from "../../lib/exportacaoRelatorios";
 import type { RelatorioPonto, Funcionario } from "../../../shared/types";
 
 interface EstatisticasResumoProps {
@@ -28,7 +53,9 @@ function EstatisticasResumo({ relatorio }: EstatisticasResumoProps) {
         <CardContent className="pt-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-2xl font-bold">{estatisticas.totalDiasTrabalhados}</p>
+              <p className="text-2xl font-bold">
+                {estatisticas.totalDiasTrabalhados}
+              </p>
               <p className="text-xs text-muted-foreground">Dias Trabalhados</p>
             </div>
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -41,7 +68,9 @@ function EstatisticasResumo({ relatorio }: EstatisticasResumoProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold">
-                {pontoApi.formatarDuracaoHoras(estatisticas.totalHorasTrabalhadas)}
+                {pontoApi.formatarDuracaoHoras(
+                  estatisticas.totalHorasTrabalhadas,
+                )}
               </p>
               <p className="text-xs text-muted-foreground">Total Trabalhado</p>
             </div>
@@ -83,27 +112,46 @@ function EstatisticasResumo({ relatorio }: EstatisticasResumoProps) {
         <CardContent className="pt-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Jornada Esperada</span>
+              <span className="text-sm text-muted-foreground">
+                Jornada Esperada
+              </span>
               <span className="font-medium">
-                {pontoApi.formatarDuracaoHoras((relatorio?.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados)}
+                {pontoApi.formatarDuracaoHoras(
+                  (relatorio?.funcionario?.jornadaDiaria || 8) *
+                    estatisticas.totalDiasTrabalhados,
+                )}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Total Trabalhado</span>
+              <span className="text-sm text-muted-foreground">
+                Total Trabalhado
+              </span>
               <span className="font-medium">
-                {pontoApi.formatarDuracaoHoras(estatisticas.totalHorasTrabalhadas)}
+                {pontoApi.formatarDuracaoHoras(
+                  estatisticas.totalHorasTrabalhadas,
+                )}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Saldo</span>
-              <span className={`font-bold ${
-                estatisticas.totalHorasTrabalhadas >= (relatorio?.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              }`}>
-                {estatisticas.totalHorasTrabalhadas >= (relatorio?.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados ? '+' : ''}
+              <span
+                className={`font-bold ${
+                  estatisticas.totalHorasTrabalhadas >=
+                  (relatorio?.funcionario?.jornadaDiaria || 8) *
+                    estatisticas.totalDiasTrabalhados
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {estatisticas.totalHorasTrabalhadas >=
+                (relatorio?.funcionario?.jornadaDiaria || 8) *
+                  estatisticas.totalDiasTrabalhados
+                  ? "+"
+                  : ""}
                 {pontoApi.formatarDuracaoHoras(
-                  estatisticas.totalHorasTrabalhadas - (relatorio?.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
+                  estatisticas.totalHorasTrabalhadas -
+                    (relatorio?.funcionario?.jornadaDiaria || 8) *
+                      estatisticas.totalDiasTrabalhados,
                 )}
               </span>
             </div>
@@ -138,68 +186,95 @@ function DetalhesRelatorio({ relatorio }: DetalhesRelatorioProps) {
                 {pontoApi.formatarDuracaoHoras(estatisticas.mediaHorasDiarias)}
               </p>
             </div>
-            
+
             <div className="space-y-1">
               <p className="text-muted-foreground">Dias com atraso</p>
               <p className="font-medium text-orange-600">
                 {estatisticas.diasComAtraso} dias
               </p>
             </div>
-            
+
             <div className="space-y-1">
               <p className="text-muted-foreground">Dias com horas extras</p>
               <p className="font-medium text-green-600">
                 {estatisticas.diasComHorasExtras} dias
               </p>
             </div>
-            
+
             <div className="space-y-1">
               <p className="text-muted-foreground">Período</p>
               <p className="font-medium">
-                {pontoApi.formatarData(relatorio.periodo.dataInicio)} a{' '}
+                {pontoApi.formatarData(relatorio.periodo.dataInicio)} a{" "}
                 {pontoApi.formatarData(relatorio.periodo.dataFim)}
               </p>
             </div>
-            
+
             <div className="space-y-1">
               <p className="text-muted-foreground">Dias no período</p>
               <p className="font-medium">
-                {Math.ceil((relatorio.periodo.dataFim.getTime() - relatorio.periodo.dataInicio.getTime()) / (1000 * 60 * 60 * 24)) + 1} dias
+                {Math.ceil(
+                  (relatorio.periodo.dataFim.getTime() -
+                    relatorio.periodo.dataInicio.getTime()) /
+                    (1000 * 60 * 60 * 24),
+                ) + 1}{" "}
+                dias
               </p>
             </div>
-            
+
             <div className="space-y-1">
               <p className="text-muted-foreground">Taxa de presença</p>
               <p className="font-medium">
-                {((estatisticas.totalDiasTrabalhados /
-                  (Math.ceil((relatorio.periodo.dataFim.getTime() - relatorio.periodo.dataInicio.getTime()) / (1000 * 60 * 60 * 24)) + 1)) * 100).toFixed(1)}%
+                {(
+                  (estatisticas.totalDiasTrabalhados /
+                    (Math.ceil(
+                      (relatorio.periodo.dataFim.getTime() -
+                        relatorio.periodo.dataInicio.getTime()) /
+                        (1000 * 60 * 60 * 24),
+                    ) +
+                      1)) *
+                  100
+                ).toFixed(1)}
+                %
               </p>
             </div>
 
             <div className="space-y-1">
               <p className="text-muted-foreground">Dias com almoço vendido</p>
               <p className="font-medium text-amber-600">
-                {pontos.filter(p => p.vendeuAlmoco).length} dias
+                {pontos.filter((p) => p.vendeuAlmoco).length} dias
               </p>
             </div>
 
             <div className="space-y-1">
               <p className="text-muted-foreground">Jornada esperada</p>
               <p className="font-medium">
-                {pontoApi.formatarDuracaoHoras((relatorio.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados)}
+                {pontoApi.formatarDuracaoHoras(
+                  (relatorio.funcionario?.jornadaDiaria || 8) *
+                    estatisticas.totalDiasTrabalhados,
+                )}
               </p>
             </div>
 
             <div className="space-y-1">
               <p className="text-muted-foreground">Saldo geral</p>
-              <p className={`font-medium ${
-                estatisticas.totalHorasTrabalhadas >= (relatorio.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              }`}>
-                {estatisticas.totalHorasTrabalhadas >= (relatorio.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados ? '+' : ''}
+              <p
+                className={`font-medium ${
+                  estatisticas.totalHorasTrabalhadas >=
+                  (relatorio.funcionario?.jornadaDiaria || 8) *
+                    estatisticas.totalDiasTrabalhados
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {estatisticas.totalHorasTrabalhadas >=
+                (relatorio.funcionario?.jornadaDiaria || 8) *
+                  estatisticas.totalDiasTrabalhados
+                  ? "+"
+                  : ""}
                 {pontoApi.formatarDuracaoHoras(
-                  estatisticas.totalHorasTrabalhadas - (relatorio.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
+                  estatisticas.totalHorasTrabalhadas -
+                    (relatorio.funcionario?.jornadaDiaria || 8) *
+                      estatisticas.totalDiasTrabalhados,
                 )}
               </p>
             </div>
@@ -240,17 +315,21 @@ function DetalhesRelatorio({ relatorio }: DetalhesRelatorioProps) {
                     <TableRow key={ponto.id}>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{pontoApi.formatarData(ponto.data)}</p>
+                          <p className="font-medium">
+                            {pontoApi.formatarData(ponto.data)}
+                          </p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(ponto.data).toLocaleDateString('pt-BR', { weekday: 'long' })}
+                            {new Date(ponto.data).toLocaleDateString("pt-BR", {
+                              weekday: "long",
+                            })}
                           </p>
                         </div>
                       </TableCell>
-                      
+
                       <TableCell className="font-mono text-sm">
                         {pontoApi.formatarHorario(ponto.horaEntrada)}
                       </TableCell>
-                      
+
                       <TableCell className="font-mono text-sm">
                         {ponto.vendeuAlmoco ? (
                           <Badge variant="secondary" className="text-xs">
@@ -288,25 +367,34 @@ function DetalhesRelatorio({ relatorio }: DetalhesRelatorioProps) {
                       </TableCell>
 
                       <TableCell className="font-medium">
-                        {ponto.totalHoras ? pontoApi.formatarDuracaoHoras(ponto.totalHoras) : '--'}
+                        {ponto.totalHoras
+                          ? pontoApi.formatarDuracaoHoras(ponto.totalHoras)
+                          : "--"}
                       </TableCell>
 
                       <TableCell className="text-xs text-muted-foreground">
-                        {relatorio?.funcionario?.jornadaDiaria ?
-                          pontoApi.formatarDuracaoHoras(relatorio.funcionario.jornadaDiaria) :
-                          '8h 0min'
-                        }
+                        {relatorio?.funcionario?.jornadaDiaria
+                          ? pontoApi.formatarDuracaoHoras(
+                              relatorio.funcionario.jornadaDiaria,
+                            )
+                          : "8h 0min"}
                       </TableCell>
 
                       <TableCell>
                         {ponto.saldoHoras !== undefined ? (
-                          <span className={`font-medium ${
-                            ponto.saldoHoras >= 0 ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {ponto.saldoHoras >= 0 ? '+' : ''}
+                          <span
+                            className={`font-medium ${
+                              ponto.saldoHoras >= 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {ponto.saldoHoras >= 0 ? "+" : ""}
                             {pontoApi.formatarDuracaoHoras(ponto.saldoHoras)}
                           </span>
-                        ) : '--'}
+                        ) : (
+                          "--"
+                        )}
                       </TableCell>
 
                       <TableCell>
@@ -314,12 +402,20 @@ function DetalhesRelatorio({ relatorio }: DetalhesRelatorioProps) {
                           <span className="text-orange-600 font-medium">
                             {pontoApi.formatarMinutos(ponto.atraso!)}
                           </span>
-                        ) : '--'}
+                        ) : (
+                          "--"
+                        )}
                       </TableCell>
-                      
+
                       <TableCell>
-                        <Badge className={isCompleto ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
-                          {isCompleto ? 'Completo' : 'Incompleto'}
+                        <Badge
+                          className={
+                            isCompleto
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }
+                        >
+                          {isCompleto ? "Completo" : "Incompleto"}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -339,12 +435,14 @@ export function RelatoriosPonto() {
 
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState("");
   const [dataInicio, setDataInicio] = useState(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      .toISOString()
+      .split("T")[0],
   );
   const [dataFim, setDataFim] = useState(
-    new Date().toISOString().split('T')[0]
+    new Date().toISOString().split("T")[0],
   );
-  
+
   const [relatorio, setRelatorio] = useState<RelatorioPonto | null>(null);
   const [isGerando, setIsGerando] = useState(false);
 
@@ -353,7 +451,11 @@ export function RelatoriosPonto() {
 
     setIsGerando(true);
     try {
-      const relatorioGerado = await gerarRelatorio(funcionarioSelecionado, dataInicio, dataFim);
+      const relatorioGerado = await gerarRelatorio(
+        funcionarioSelecionado,
+        dataInicio,
+        dataFim,
+      );
       setRelatorio(relatorioGerado);
     } catch (error) {
       // Erro já tratado no context
@@ -362,25 +464,25 @@ export function RelatoriosPonto() {
     }
   };
 
-  const handleExportar = (formato: 'excel' | 'pdf' | 'json') => {
+  const handleExportar = (formato: "excel" | "pdf" | "json") => {
     if (!relatorio) return;
 
     try {
       switch (formato) {
-        case 'excel':
+        case "excel":
           exportarRelatorioExcel(relatorio);
           break;
-        case 'pdf':
+        case "pdf":
           exportarRelatorioPDF(relatorio);
           break;
-        case 'json':
+        case "json":
           exportarRelatorioJSON(relatorio);
           break;
         default:
-          console.error('Formato de exportação não suportado:', formato);
+          console.error("Formato de exportação não suportado:", formato);
       }
     } catch (error) {
-      console.error('Erro ao exportar relatório:', error);
+      console.error("Erro ao exportar relatório:", error);
       // Aqui você pode adicionar um toast de erro se desejar
     }
   };
@@ -399,13 +501,19 @@ export function RelatoriosPonto() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label htmlFor="funcionario">Funcionário</Label>
-              <Select value={funcionarioSelecionado} onValueChange={setFuncionarioSelecionado}>
+              <Select
+                value={funcionarioSelecionado}
+                onValueChange={setFuncionarioSelecionado}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um funcionário" />
                 </SelectTrigger>
                 <SelectContent>
                   {funcionariosComPonto.map((funcionario) => (
-                    <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
+                    <SelectItem
+                      key={funcionario.id}
+                      value={funcionario.id.toString()}
+                    >
                       {funcionario.nome}
                     </SelectItem>
                   ))}
@@ -434,8 +542,8 @@ export function RelatoriosPonto() {
             </div>
 
             <div className="flex items-end">
-              <Button 
-                onClick={handleGerarRelatorio} 
+              <Button
+                onClick={handleGerarRelatorio}
                 disabled={!funcionarioSelecionado || isGerando}
                 className="w-full"
               >
@@ -470,22 +578,35 @@ export function RelatoriosPonto() {
                   <div>
                     <CardTitle>{relatorio.funcionario.nome}</CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      Relatório de {pontoApi.formatarData(relatorio.periodo.dataInicio)} a{' '}
+                      Relatório de{" "}
+                      {pontoApi.formatarData(relatorio.periodo.dataInicio)} a{" "}
                       {pontoApi.formatarData(relatorio.periodo.dataFim)}
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" onClick={() => handleExportar('excel')} size="sm">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleExportar("excel")}
+                    size="sm"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Excel (CSV)
                   </Button>
-                  <Button variant="outline" onClick={() => handleExportar('pdf')} size="sm">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleExportar("pdf")}
+                    size="sm"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     PDF
                   </Button>
-                  <Button variant="outline" onClick={() => handleExportar('json')} size="sm">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleExportar("json")}
+                    size="sm"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Dados (JSON)
                   </Button>
@@ -508,9 +629,12 @@ export function RelatoriosPonto() {
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Selecione um funcionário</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Selecione um funcionário
+              </h3>
               <p className="text-muted-foreground">
-                Escolha um funcionário e período para gerar o relatório de ponto.
+                Escolha um funcionário e período para gerar o relatório de
+                ponto.
               </p>
             </div>
           </CardContent>

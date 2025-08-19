@@ -296,7 +296,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       try {
         // Carregar descrições e categorias
-        const descricoesStorage = localStorage.getItem("descricoes_e_categorias") || localStorage.getItem("categorias_receita");
+        const descricoesStorage =
+          localStorage.getItem("descricoes_e_categorias") ||
+          localStorage.getItem("categorias_receita");
         if (descricoesStorage) {
           try {
             const parsed = JSON.parse(descricoesStorage);
@@ -318,8 +320,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           setFormasPagamento([
             { id: 1, nome: "Dinheiro", descricao: "Pagamento em dinheiro" },
             { id: 2, nome: "PIX", descricao: "Pagamento via PIX" },
-            { id: 3, nome: "Cartão de Débito", descricao: "Pagamento com cartão de débito" },
-            { id: 4, nome: "Cartão de Crédito", descricao: "Pagamento com cartão de crédito" },
+            {
+              id: 3,
+              nome: "Cartão de Débito",
+              descricao: "Pagamento com cartão de débito",
+            },
+            {
+              id: 4,
+              nome: "Cartão de Crédito",
+              descricao: "Pagamento com cartão de crédito",
+            },
           ]);
         }
 
@@ -329,7 +339,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           const funcionariosParsed = JSON.parse(funcionariosStorage);
           setFuncionarios(funcionariosParsed);
           // Filtrar técnicos
-          const tecnicosFiltrados = funcionariosParsed.filter((f: any) => f.ehTecnico || f.tipoAcesso === "Técnico");
+          const tecnicosFiltrados = funcionariosParsed.filter(
+            (f: any) => f.ehTecnico || f.tipoAcesso === "Técnico",
+          );
           setTecnicos(tecnicosFiltrados);
         }
 
@@ -383,35 +395,54 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === RECARREGAMENTO OTIMIZADO ===
   const recarregarDescricoesECategorias = useCallback(async () => {
     try {
-      console.log("📦 [EntidadesContext] Recarregando descrições e categorias do localStorage...");
+      console.log(
+        "📦 [EntidadesContext] Recarregando descrições e categorias do localStorage...",
+      );
 
-      const descricoesStorage = localStorage.getItem("descricoes_e_categorias") || localStorage.getItem("categorias_receita");
+      const descricoesStorage =
+        localStorage.getItem("descricoes_e_categorias") ||
+        localStorage.getItem("categorias_receita");
       if (descricoesStorage) {
         const parsed = JSON.parse(descricoesStorage);
         const arrayParsed = Array.isArray(parsed) ? parsed : [];
         setDescricoesECategorias(arrayParsed);
-        console.log(`📦 [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`);
+        console.log(
+          `📦 [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`,
+        );
       } else {
         setDescricoesECategorias([]);
       }
     } catch (error) {
-      console.error("Erro ao recarregar descrições e categorias do localStorage:", error);
+      console.error(
+        "Erro ao recarregar descrições e categorias do localStorage:",
+        error,
+      );
       setDescricoesECategorias([]);
     }
   }, []);
 
   // === FUNÇÕES STUB PARA EVITAR ERROS DE API ===
   const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
-    console.log("📦 [EntidadesContext] STUB: criarDescricaoOuCategoria", novoItem);
+    console.log(
+      "📦 [EntidadesContext] STUB: criarDescricaoOuCategoria",
+      novoItem,
+    );
     // TODO: Implementar com localStorage
     return Promise.resolve();
   }, []);
 
-  const atualizarDescricaoOuCategoria = useCallback(async (id: string, dadosAtualizados: any) => {
-    console.log("📦 [EntidadesContext] STUB: atualizarDescricaoOuCategoria", id, dadosAtualizados);
-    // TODO: Implementar com localStorage
-    return Promise.resolve();
-  }, []);
+  const atualizarDescricaoOuCategoria = useCallback(
+    async (id: string, dadosAtualizados: any) => {
+      console.log(
+        "📦 [EntidadesContext] STUB: atualizarDescricaoOuCategoria",
+        id,
+        dadosAtualizados,
+      );
+      // TODO: Implementar com localStorage
+      return Promise.resolve();
+    },
+    [],
+  );
 
   const excluirDescricaoOuCategoria = useCallback(async (id: string) => {
     console.log("📦 [EntidadesContext] STUB: excluirDescricaoOuCategoria", id);
@@ -425,11 +456,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     return Promise.resolve();
   }, []);
 
-  const atualizarFormaPagamento = useCallback(async (id: string, dadosAtualizados: any) => {
-    console.log("📦 [EntidadesContext] STUB: atualizarFormaPagamento", id, dadosAtualizados);
-    // TODO: Implementar com localStorage
-    return Promise.resolve();
-  }, []);
+  const atualizarFormaPagamento = useCallback(
+    async (id: string, dadosAtualizados: any) => {
+      console.log(
+        "📦 [EntidadesContext] STUB: atualizarFormaPagamento",
+        id,
+        dadosAtualizados,
+      );
+      // TODO: Implementar com localStorage
+      return Promise.resolve();
+    },
+    [],
+  );
 
   const excluirFormaPagamento = useCallback(async (id: string) => {
     console.log("📦 [EntidadesContext] STUB: excluirFormaPagamento", id);
@@ -437,17 +475,30 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     return Promise.resolve();
   }, []);
 
-  const criarLocalizacaoGeografica = useCallback(async (novaLocalizacao: any) => {
-    console.log("📦 [EntidadesContext] STUB: criarLocalizacaoGeografica", novaLocalizacao);
-    // TODO: Implementar com localStorage
-    return Promise.resolve();
-  }, []);
+  const criarLocalizacaoGeografica = useCallback(
+    async (novaLocalizacao: any) => {
+      console.log(
+        "📦 [EntidadesContext] STUB: criarLocalizacaoGeografica",
+        novaLocalizacao,
+      );
+      // TODO: Implementar com localStorage
+      return Promise.resolve();
+    },
+    [],
+  );
 
-  const atualizarLocalizacaoGeografica = useCallback(async (id: number, dadosAtualizados: any) => {
-    console.log("📦 [EntidadesContext] STUB: atualizarLocalizacaoGeografica", id, dadosAtualizados);
-    // TODO: Implementar com localStorage
-    return Promise.resolve();
-  }, []);
+  const atualizarLocalizacaoGeografica = useCallback(
+    async (id: number, dadosAtualizados: any) => {
+      console.log(
+        "📦 [EntidadesContext] STUB: atualizarLocalizacaoGeografica",
+        id,
+        dadosAtualizados,
+      );
+      // TODO: Implementar com localStorage
+      return Promise.resolve();
+    },
+    [],
+  );
 
   const excluirLocalizacaoGeografica = useCallback(async (id: number) => {
     console.log("📦 [EntidadesContext] STUB: excluirLocalizacaoGeografica", id);

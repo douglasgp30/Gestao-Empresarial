@@ -356,7 +356,12 @@ export interface RegistrarPontoOpcoes {
 export interface PontoDoFuncionario {
   funcionario: Funcionario;
   ponto?: Ponto;
-  proximaBatida: "entrada" | "saida_almoco" | "retorno_almoco" | "saida" | "completo";
+  proximaBatida:
+    | "entrada"
+    | "saida_almoco"
+    | "retorno_almoco"
+    | "saida"
+    | "completo";
   podeRegistrar: boolean;
 }
 

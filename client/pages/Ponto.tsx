@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import { Clock, History, Settings, Users } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Badge } from "../components/ui/badge";
 import { useAuth } from "../contexts/AuthContext";
@@ -39,7 +49,9 @@ function PontoContent() {
             <Alert>
               <Clock className="h-4 w-4" />
               <AlertDescription>
-                Você não tem permissão para acessar o controle de ponto. Entre em contato com o administrador do sistema para habilitar essa funcionalidade.
+                Você não tem permissão para acessar o controle de ponto. Entre
+                em contato com o administrador do sistema para habilitar essa
+                funcionalidade.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -58,14 +70,13 @@ function PontoContent() {
             <p className="text-muted-foreground mt-1">
               {isAdmin
                 ? "Gerencie os registros de ponto dos funcionários"
-                : "Gerencie seus registros de entrada e saída"
-              }
+                : "Gerencie seus registros de entrada e saída"}
             </p>
           </div>
           <div className="flex items-center space-x-2">
             <Badge variant="outline" className="text-sm">
               <Clock className="h-3 w-3 mr-1" />
-              {new Date().toLocaleDateString('pt-BR')}
+              {new Date().toLocaleDateString("pt-BR")}
             </Badge>
             {isAdmin ? (
               <Badge variant="secondary" className="text-sm">
@@ -86,11 +97,18 @@ function PontoContent() {
       </div>
 
       {/* Navegação por abas */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         {isAdmin ? (
           // Layout para Administradores - foco na gestão
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="gerenciar" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="gerenciar"
+              className="flex items-center space-x-2"
+            >
               <Clock className="h-4 w-4" />
               <span>Início</span>
             </TabsTrigger>
@@ -100,7 +118,10 @@ function PontoContent() {
               <span>Gerenciar Pontos</span>
             </TabsTrigger>
 
-            <TabsTrigger value="relatorios" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="relatorios"
+              className="flex items-center space-x-2"
+            >
               <Settings className="h-4 w-4" />
               <span>Relatórios</span>
             </TabsTrigger>
@@ -109,13 +130,19 @@ function PontoContent() {
           // Layout para Funcionários - foco no registro próprio
           <TabsList className="grid w-full grid-cols-2">
             {podeRegistrarPonto && (
-              <TabsTrigger value="ponto" className="flex items-center space-x-2">
+              <TabsTrigger
+                value="ponto"
+                className="flex items-center space-x-2"
+              >
                 <Clock className="h-4 w-4" />
                 <span>Bater Ponto</span>
               </TabsTrigger>
             )}
 
-            <TabsTrigger value="historico" className="flex items-center space-x-2">
+            <TabsTrigger
+              value="historico"
+              className="flex items-center space-x-2"
+            >
               <History className="h-4 w-4" />
               <span>Meu Histórico</span>
             </TabsTrigger>

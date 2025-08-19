@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import React, { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
   Table,
   TableBody,
@@ -8,25 +8,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table';
+} from "../ui/table";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../ui/card';
+} from "../ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
+} from "../ui/select";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -34,21 +34,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
-import { 
-  Search, 
-  Eye, 
-  Download, 
-  RefreshCw, 
+} from "../ui/dialog";
+import {
+  Search,
+  Eye,
+  Download,
+  RefreshCw,
   Calendar,
   User,
   Activity,
   AlertCircle,
   CheckCircle,
   Clock,
-  Filter
-} from 'lucide-react';
-import { toast } from 'sonner';
+  Filter,
+} from "lucide-react";
+import { toast } from "sonner";
 // import { apiService } from '../../lib/apiService'; // Removido para usar localStorage
 
 interface LogAuditoria {
@@ -106,10 +106,12 @@ export default function LogsAuditoria() {
     setIsLoading(true);
     try {
       // Como não temos API funcionando, vamos usar dados mock do localStorage
-      console.log('📦 [LogsAuditoria] Carregando logs de auditoria do localStorage...');
+      console.log(
+        "📦 [LogsAuditoria] Carregando logs de auditoria do localStorage...",
+      );
 
       // Verificar se existe dados de auditoria no localStorage
-      const auditoriaStorage = localStorage.getItem('logs_auditoria');
+      const auditoriaStorage = localStorage.getItem("logs_auditoria");
       let logsData: LogAuditoria[] = [];
 
       if (auditoriaStorage) {
@@ -120,7 +122,7 @@ export default function LogsAuditoria() {
             logsData = [];
           }
         } catch (error) {
-          console.warn('Erro ao parsear logs de auditoria:', error);
+          console.warn("Erro ao parsear logs de auditoria:", error);
           logsData = [];
         }
       } else {
@@ -128,31 +130,31 @@ export default function LogsAuditoria() {
         logsData = [
           {
             id: 1,
-            acao: 'login',
-            entidade: 'usuario',
-            usuarioId: '1',
-            usuarioNome: 'Administrador',
-            usuarioLogin: 'admin',
+            acao: "login",
+            entidade: "usuario",
+            usuarioId: "1",
+            usuarioNome: "Administrador",
+            usuarioLogin: "admin",
             sucesso: true,
             dataHora: new Date().toISOString(),
-            descricao: 'Login realizado com sucesso'
+            descricao: "Login realizado com sucesso",
           },
           {
             id: 2,
-            acao: 'criar',
-            entidade: 'funcionario',
-            entidadeId: '2',
-            usuarioId: '1',
-            usuarioNome: 'Administrador',
-            usuarioLogin: 'admin',
+            acao: "criar",
+            entidade: "funcionario",
+            entidadeId: "2",
+            usuarioId: "1",
+            usuarioNome: "Administrador",
+            usuarioLogin: "admin",
             sucesso: true,
             dataHora: new Date(Date.now() - 60000).toISOString(),
-            descricao: 'Novo funcionário cadastrado'
-          }
+            descricao: "Novo funcionário cadastrado",
+          },
         ];
 
         // Salvar os logs de exemplo
-        localStorage.setItem('logs_auditoria', JSON.stringify(logsData));
+        localStorage.setItem("logs_auditoria", JSON.stringify(logsData));
       }
 
       setLogs(logsData);
@@ -162,7 +164,7 @@ export default function LogsAuditoria() {
         totalLogs: logsData.length,
         logsPorAcao: [],
         logsPorEntidade: [],
-        logsPorUsuario: []
+        logsPorUsuario: [],
       };
 
       // Contar ações
@@ -170,29 +172,38 @@ export default function LogsAuditoria() {
       const entidadesCounts: Record<string, number> = {};
       const usuariosCounts: Record<string, number> = {};
 
-      logsData.forEach(log => {
+      logsData.forEach((log) => {
         acoesCounts[log.acao] = (acoesCounts[log.acao] || 0) + 1;
-        entidadesCounts[log.entidade] = (entidadesCounts[log.entidade] || 0) + 1;
-        usuariosCounts[log.usuarioNome] = (usuariosCounts[log.usuarioNome] || 0) + 1;
+        entidadesCounts[log.entidade] =
+          (entidadesCounts[log.entidade] || 0) + 1;
+        usuariosCounts[log.usuarioNome] =
+          (usuariosCounts[log.usuarioNome] || 0) + 1;
       });
 
-      stats.logsPorAcao = Object.entries(acoesCounts).map(([acao, total]) => ({ acao, total }));
-      stats.logsPorEntidade = Object.entries(entidadesCounts).map(([entidade, total]) => ({ entidade, total }));
-      stats.logsPorUsuario = Object.entries(usuariosCounts).map(([usuarioNome, total]) => ({ usuarioNome, total }));
+      stats.logsPorAcao = Object.entries(acoesCounts).map(([acao, total]) => ({
+        acao,
+        total,
+      }));
+      stats.logsPorEntidade = Object.entries(entidadesCounts).map(
+        ([entidade, total]) => ({ entidade, total }),
+      );
+      stats.logsPorUsuario = Object.entries(usuariosCounts).map(
+        ([usuarioNome, total]) => ({ usuarioNome, total }),
+      );
 
       setStats(stats);
 
       console.log(`📦 [LogsAuditoria] ${logsData.length} logs carregados`);
     } catch (error) {
-      console.error('Erro ao carregar logs:', error);
+      console.error("Erro ao carregar logs:", error);
       setLogs([]);
       setStats({
         totalLogs: 0,
         logsPorAcao: [],
         logsPorEntidade: [],
-        logsPorUsuario: []
+        logsPorUsuario: [],
       });
-      toast.error('Erro ao carregar logs de auditoria.');
+      toast.error("Erro ao carregar logs de auditoria.");
     } finally {
       setIsLoading(false);
     }
@@ -200,10 +211,10 @@ export default function LogsAuditoria() {
 
   const carregarFiltrosDisponiveis = async () => {
     try {
-      console.log('📦 [LogsAuditoria] Carregando filtros disponíveis...');
+      console.log("📦 [LogsAuditoria] Carregando filtros disponíveis...");
 
       // Carregar logs para extrair entidades e ações únicas
-      const auditoriaStorage = localStorage.getItem('logs_auditoria');
+      const auditoriaStorage = localStorage.getItem("logs_auditoria");
       let logsData: LogAuditoria[] = [];
 
       if (auditoriaStorage) {
@@ -213,23 +224,29 @@ export default function LogsAuditoria() {
             logsData = [];
           }
         } catch (error) {
-          console.warn('Erro ao parsear logs para filtros:', error);
+          console.warn("Erro ao parsear logs para filtros:", error);
           logsData = [];
         }
       }
 
       // Extrair entidades únicas
-      const entidadesUnicas = [...new Set(logsData.map(log => log.entidade).filter(Boolean))];
+      const entidadesUnicas = [
+        ...new Set(logsData.map((log) => log.entidade).filter(Boolean)),
+      ];
 
       // Extrair ações únicas
-      const acoesUnicas = [...new Set(logsData.map(log => log.acao).filter(Boolean))];
+      const acoesUnicas = [
+        ...new Set(logsData.map((log) => log.acao).filter(Boolean)),
+      ];
 
       setEntidades(entidadesUnicas);
       setAcoes(acoesUnicas);
 
-      console.log(`📦 [LogsAuditoria] Filtros carregados: ${entidadesUnicas.length} entidades, ${acoesUnicas.length} ações`);
+      console.log(
+        `📦 [LogsAuditoria] Filtros carregados: ${entidadesUnicas.length} entidades, ${acoesUnicas.length} ações`,
+      );
     } catch (error) {
-      console.error('Erro ao carregar filtros:', error);
+      console.error("Erro ao carregar filtros:", error);
       setEntidades([]);
       setAcoes([]);
     }
@@ -245,30 +262,30 @@ export default function LogsAuditoria() {
   };
 
   const exportarLogs = async () => {
-    toast.info('Função de exportação será implementada em breve');
+    toast.info("Função de exportação será implementada em breve");
   };
 
   const formatarDataHora = (dataHora: string) => {
-    return format(new Date(dataHora), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR });
+    return format(new Date(dataHora), "dd/MM/yyyy HH:mm:ss", { locale: ptBR });
   };
 
   const getAcaoBadgeVariant = (acao: string) => {
     switch (acao.toLowerCase()) {
-      case 'create':
-      case 'criar':
-        return 'default';
-      case 'update':
-      case 'atualizar':
-      case 'editar':
-        return 'secondary';
-      case 'delete':
-      case 'deletar':
-      case 'excluir':
-        return 'destructive';
-      case 'login':
-        return 'outline';
+      case "create":
+      case "criar":
+        return "default";
+      case "update":
+      case "atualizar":
+      case "editar":
+        return "secondary";
+      case "delete":
+      case "deletar":
+      case "excluir":
+        return "destructive";
+      case "login":
+        return "outline";
       default:
-        return 'outline';
+        return "outline";
     }
   };
 
@@ -293,17 +310,21 @@ export default function LogsAuditoria() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Logs</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total de Logs
+              </CardTitle>
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalLogs}</div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ações Mais Comuns</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Ações Mais Comuns
+              </CardTitle>
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -337,7 +358,9 @@ export default function LogsAuditoria() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Usuários Ativos</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Usuários Ativos
+              </CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -372,27 +395,36 @@ export default function LogsAuditoria() {
               <Input
                 id="busca"
                 placeholder="Buscar em logs..."
-                value={filtros.busca || ''}
-                onChange={(e) => setFiltros({ ...filtros, busca: e.target.value })}
+                value={filtros.busca || ""}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, busca: e.target.value })
+                }
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="entidade">Entidade</Label>
               <Select
-                value={filtros.entidade || 'all'}
-                onValueChange={(value) => setFiltros({ ...filtros, entidade: value === 'all' ? undefined : value })}
+                value={filtros.entidade || "all"}
+                onValueChange={(value) =>
+                  setFiltros({
+                    ...filtros,
+                    entidade: value === "all" ? undefined : value,
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
-                  {entidades.filter(entidade => entidade && entidade.trim()).map((entidade) => (
-                    <SelectItem key={entidade} value={entidade}>
-                      {entidade}
-                    </SelectItem>
-                  ))}
+                  {entidades
+                    .filter((entidade) => entidade && entidade.trim())
+                    .map((entidade) => (
+                      <SelectItem key={entidade} value={entidade}>
+                        {entidade}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -400,19 +432,26 @@ export default function LogsAuditoria() {
             <div className="space-y-2">
               <Label htmlFor="acao">Ação</Label>
               <Select
-                value={filtros.acao || 'all'}
-                onValueChange={(value) => setFiltros({ ...filtros, acao: value === 'all' ? undefined : value })}
+                value={filtros.acao || "all"}
+                onValueChange={(value) =>
+                  setFiltros({
+                    ...filtros,
+                    acao: value === "all" ? undefined : value,
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
-                  {acoes.filter(acao => acao && acao.trim()).map((acao) => (
-                    <SelectItem key={acao} value={acao}>
-                      {acao}
-                    </SelectItem>
-                  ))}
+                  {acoes
+                    .filter((acao) => acao && acao.trim())
+                    .map((acao) => (
+                      <SelectItem key={acao} value={acao}>
+                        {acao}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -422,8 +461,10 @@ export default function LogsAuditoria() {
               <Input
                 id="dataInicio"
                 type="date"
-                value={filtros.dataInicio || ''}
-                onChange={(e) => setFiltros({ ...filtros, dataInicio: e.target.value })}
+                value={filtros.dataInicio || ""}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, dataInicio: e.target.value })
+                }
               />
             </div>
 
@@ -432,19 +473,27 @@ export default function LogsAuditoria() {
               <Input
                 id="dataFim"
                 type="date"
-                value={filtros.dataFim || ''}
-                onChange={(e) => setFiltros({ ...filtros, dataFim: e.target.value })}
+                value={filtros.dataFim || ""}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, dataFim: e.target.value })
+                }
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="sucesso">Status</Label>
               <Select
-                value={filtros.sucesso !== undefined ? filtros.sucesso.toString() : 'all'}
-                onValueChange={(value) => setFiltros({
-                  ...filtros,
-                  sucesso: value === 'all' ? undefined : value === 'true'
-                })}
+                value={
+                  filtros.sucesso !== undefined
+                    ? filtros.sucesso.toString()
+                    : "all"
+                }
+                onValueChange={(value) =>
+                  setFiltros({
+                    ...filtros,
+                    sucesso: value === "all" ? undefined : value === "true",
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
@@ -459,18 +508,29 @@ export default function LogsAuditoria() {
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Button onClick={aplicarFiltros} className="flex items-center gap-2">
+            <Button
+              onClick={aplicarFiltros}
+              className="flex items-center gap-2"
+            >
               <Search className="h-4 w-4" />
               Aplicar Filtros
             </Button>
             <Button variant="outline" onClick={limparFiltros}>
               Limpar
             </Button>
-            <Button variant="outline" onClick={carregarDados} className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={carregarDados}
+              className="flex items-center gap-2"
+            >
               <RefreshCw className="h-4 w-4" />
               Atualizar
             </Button>
-            <Button variant="outline" onClick={exportarLogs} className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={exportarLogs}
+              className="flex items-center gap-2"
+            >
               <Download className="h-4 w-4" />
               Exportar
             </Button>
@@ -541,12 +601,12 @@ export default function LogsAuditoria() {
                           {log.acao}
                         </Badge>
                       </TableCell>
-                      <TableCell className="capitalize">{log.entidade}</TableCell>
-                      <TableCell>
-                        {getSucessoBadge(log.sucesso)}
+                      <TableCell className="capitalize">
+                        {log.entidade}
                       </TableCell>
+                      <TableCell>{getSucessoBadge(log.sucesso)}</TableCell>
                       <TableCell>
-                        {log.duracaoMs ? `${log.duracaoMs}ms` : '-'}
+                        {log.duracaoMs ? `${log.duracaoMs}ms` : "-"}
                       </TableCell>
                       <TableCell>
                         <Dialog>
@@ -561,7 +621,9 @@ export default function LogsAuditoria() {
                           </DialogTrigger>
                           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                             <DialogHeader>
-                              <DialogTitle>Detalhes do Log #{log.id}</DialogTitle>
+                              <DialogTitle>
+                                Detalhes do Log #{log.id}
+                              </DialogTitle>
                               <DialogDescription>
                                 Informações completas sobre a ação realizada
                               </DialogDescription>
@@ -569,74 +631,118 @@ export default function LogsAuditoria() {
                             <div className="space-y-4">
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                  <Label className="text-sm font-medium">Data/Hora</Label>
+                                  <Label className="text-sm font-medium">
+                                    Data/Hora
+                                  </Label>
                                   <p className="text-sm text-muted-foreground">
                                     {formatarDataHora(log.dataHora)}
                                   </p>
                                 </div>
                                 <div>
-                                  <Label className="text-sm font-medium">Usuário</Label>
+                                  <Label className="text-sm font-medium">
+                                    Usuário
+                                  </Label>
                                   <p className="text-sm text-muted-foreground">
-                                    {log.usuarioNome} {log.usuarioLogin && `(@${log.usuarioLogin})`}
+                                    {log.usuarioNome}{" "}
+                                    {log.usuarioLogin &&
+                                      `(@${log.usuarioLogin})`}
                                   </p>
                                 </div>
                                 <div>
-                                  <Label className="text-sm font-medium">Ação</Label>
-                                  <p className="text-sm text-muted-foreground">{log.acao}</p>
+                                  <Label className="text-sm font-medium">
+                                    Ação
+                                  </Label>
+                                  <p className="text-sm text-muted-foreground">
+                                    {log.acao}
+                                  </p>
                                 </div>
                                 <div>
-                                  <Label className="text-sm font-medium">Entidade</Label>
-                                  <p className="text-sm text-muted-foreground">{log.entidade}</p>
+                                  <Label className="text-sm font-medium">
+                                    Entidade
+                                  </Label>
+                                  <p className="text-sm text-muted-foreground">
+                                    {log.entidade}
+                                  </p>
                                 </div>
                                 {log.entidadeId && (
                                   <div>
-                                    <Label className="text-sm font-medium">ID da Entidade</Label>
-                                    <p className="text-sm text-muted-foreground">{log.entidadeId}</p>
+                                    <Label className="text-sm font-medium">
+                                      ID da Entidade
+                                    </Label>
+                                    <p className="text-sm text-muted-foreground">
+                                      {log.entidadeId}
+                                    </p>
                                   </div>
                                 )}
                                 {log.ip && (
                                   <div>
-                                    <Label className="text-sm font-medium">IP</Label>
-                                    <p className="text-sm text-muted-foreground">{log.ip}</p>
+                                    <Label className="text-sm font-medium">
+                                      IP
+                                    </Label>
+                                    <p className="text-sm text-muted-foreground">
+                                      {log.ip}
+                                    </p>
                                   </div>
                                 )}
                               </div>
 
                               {log.descricao && (
                                 <div>
-                                  <Label className="text-sm font-medium">Descrição</Label>
-                                  <p className="text-sm text-muted-foreground">{log.descricao}</p>
+                                  <Label className="text-sm font-medium">
+                                    Descrição
+                                  </Label>
+                                  <p className="text-sm text-muted-foreground">
+                                    {log.descricao}
+                                  </p>
                                 </div>
                               )}
 
                               {!log.sucesso && log.mensagemErro && (
                                 <div>
-                                  <Label className="text-sm font-medium">Erro</Label>
-                                  <p className="text-sm text-red-600">{log.mensagemErro}</p>
+                                  <Label className="text-sm font-medium">
+                                    Erro
+                                  </Label>
+                                  <p className="text-sm text-red-600">
+                                    {log.mensagemErro}
+                                  </p>
                                 </div>
                               )}
 
                               {log.dadosAntigos && (
                                 <div>
-                                  <Label className="text-sm font-medium">Dados Anteriores</Label>
+                                  <Label className="text-sm font-medium">
+                                    Dados Anteriores
+                                  </Label>
                                   <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
-                                    {JSON.stringify(JSON.parse(log.dadosAntigos), null, 2)}
+                                    {JSON.stringify(
+                                      JSON.parse(log.dadosAntigos),
+                                      null,
+                                      2,
+                                    )}
                                   </pre>
                                 </div>
                               )}
 
                               {log.dadosNovos && (
                                 <div>
-                                  <Label className="text-sm font-medium">Dados Novos</Label>
+                                  <Label className="text-sm font-medium">
+                                    Dados Novos
+                                  </Label>
                                   <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
-                                    {JSON.stringify(JSON.parse(log.dadosNovos), null, 2)}
+                                    {JSON.stringify(
+                                      JSON.parse(log.dadosNovos),
+                                      null,
+                                      2,
+                                    )}
                                   </pre>
                                 </div>
                               )}
 
                               {log.userAgent && (
                                 <div>
-                                  <Label className="text-sm font-medium">User Agent</Label>
+                                  <Label className="text-sm font-medium">
+                                    User Agent
+                                  </Label>
                                   <p className="text-xs text-muted-foreground break-all">
                                     {log.userAgent}
                                   </p>

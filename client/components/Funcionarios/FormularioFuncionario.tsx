@@ -42,7 +42,8 @@ export default function FormularioFuncionario({
   funcionarioParaEditar,
   onFuncionarioAdicionado,
 }: FormularioFuncionarioProps = {}) {
-  const { adicionarFuncionario, editarFuncionario, funcionarios } = useFuncionarios();
+  const { adicionarFuncionario, editarFuncionario, funcionarios } =
+    useFuncionarios();
   const [isOpen, setIsOpen] = useState(isOpenProp || false);
   const isEditMode = !!funcionarioParaEditar;
 
@@ -76,7 +77,8 @@ export default function FormularioFuncionario({
         registraPonto: funcionarioParaEditar.registraPonto || false,
         jornadaDiaria: funcionarioParaEditar.jornadaDiaria || 8.0,
         tipoAcesso: funcionarioParaEditar.tipoAcesso || "Operador",
-        percentualComissao: funcionarioParaEditar.percentualComissao?.toString() || "",
+        percentualComissao:
+          funcionarioParaEditar.percentualComissao?.toString() || "",
         ativo: funcionarioParaEditar.ativo !== false, // Default true se não especificado
       });
       setIsOpen(true);
@@ -105,7 +107,7 @@ export default function FormularioFuncionario({
   useEffect(() => {
     if (formData.tipoAcesso === "Administrador") {
       // Administradores nunca registram ponto próprio
-      setFormData(prev => ({ ...prev, registraPonto: false }));
+      setFormData((prev) => ({ ...prev, registraPonto: false }));
     }
   }, [formData.tipoAcesso]);
 
@@ -230,13 +232,16 @@ export default function FormularioFuncionario({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (onCloseProp && !open) {
-        onCloseProp();
-      } else {
-        setIsOpen(open);
-      }
-    }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (onCloseProp && !open) {
+          onCloseProp();
+        } else {
+          setIsOpen(open);
+        }
+      }}
+    >
       {!isEditMode && (
         <DialogTrigger asChild>
           <Button className="gap-2">
@@ -254,8 +259,7 @@ export default function FormularioFuncionario({
           <DialogDescription>
             {isEditMode
               ? "Modifique os dados do funcionário conforme necessário"
-              : "Preencha os dados do novo funcionário para dar acesso ao sistema"
-            }
+              : "Preencha os dados do novo funcionário para dar acesso ao sistema"}
           </DialogDescription>
         </DialogHeader>
 
@@ -419,14 +423,13 @@ export default function FormularioFuncionario({
                         setFormData({ ...formData, registraPonto: checked })
                       }
                     />
-                    <Label htmlFor="registraPonto">
-                      Pode registrar ponto
-                    </Label>
+                    <Label htmlFor="registraPonto">Pode registrar ponto</Label>
                   </div>
 
                   {formData.tipoAcesso === "Administrador" && (
                     <div className="text-sm text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
-                      ⚠️ Administradores não registram ponto próprio - apenas gerenciam pontos de outros funcionários
+                      ⚠️ Administradores não registram ponto próprio - apenas
+                      gerenciam pontos de outros funcionários
                     </div>
                   )}
                 </div>
@@ -452,7 +455,8 @@ export default function FormularioFuncionario({
                       }
                     />
                     <p className="text-sm text-muted-foreground">
-                      Quantidade de horas que o funcionário deve trabalhar por dia
+                      Quantidade de horas que o funcionário deve trabalhar por
+                      dia
                     </p>
                   </div>
                 )}
@@ -537,9 +541,12 @@ export default function FormularioFuncionario({
             </Button>
             <Button type="submit" className="flex-1" disabled={submitting}>
               {submitting
-                ? (isEditMode ? "Salvando..." : "Cadastrando...")
-                : (isEditMode ? "Salvar Alterações" : "Cadastrar Funcionário")
-              }
+                ? isEditMode
+                  ? "Salvando..."
+                  : "Cadastrando..."
+                : isEditMode
+                  ? "Salvar Alterações"
+                  : "Cadastrar Funcionário"}
             </Button>
           </div>
         </form>

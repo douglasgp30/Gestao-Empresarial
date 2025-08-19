@@ -130,7 +130,8 @@ export function ModalReceita() {
 
       if (tecnico) {
         // Usar percentualComissao ou percentualServico como fallback
-        const percentual = tecnico.percentualComissao || tecnico.percentualServico || 0;
+        const percentual =
+          tecnico.percentualComissao || tecnico.percentualServico || 0;
         if (percentual > 0) {
           return valorLiquidoCalculado * (percentual / 100);
         }
@@ -192,7 +193,7 @@ export function ModalReceita() {
       // Recarregar dados dos contextos sem recarregar a página
       await Promise.all([
         // Força recarregamento dos dados necessários
-        window.location.reload()
+        window.location.reload(),
       ]);
 
       toast({
@@ -307,7 +308,6 @@ export function ModalReceita() {
   // Loading com timeout de segurança
   const isLoading =
     !loadingForced && (caixaLoading || entidadesLoading || clientesLoading);
-
 
   return (
     <Dialog
@@ -529,7 +529,10 @@ export function ModalReceita() {
                               tecnico.id !== 0,
                           )
                           .map((tecnico) => {
-                            const percentual = tecnico.percentualComissao || tecnico.percentualServico || 0;
+                            const percentual =
+                              tecnico.percentualComissao ||
+                              tecnico.percentualServico ||
+                              0;
                             return (
                               <SelectItem
                                 key={tecnico.id}
@@ -773,15 +776,25 @@ export function ModalReceita() {
                     <div>
                       <span className="text-gray-600">
                         Comissão:
-                        {formData.tecnicoResponsavel && comissaoCalculada > 0 && (
-                          <span className="ml-1 text-xs">
-                            ({(() => {
-                              const tecnico = tecnicos.find(t => t.id.toString() === formData.tecnicoResponsavel);
-                              const percentual = tecnico?.percentualComissao || tecnico?.percentualServico || 0;
-                              return percentual;
-                            })()}%)
-                          </span>
-                        )}
+                        {formData.tecnicoResponsavel &&
+                          comissaoCalculada > 0 && (
+                            <span className="ml-1 text-xs">
+                              (
+                              {(() => {
+                                const tecnico = tecnicos.find(
+                                  (t) =>
+                                    t.id.toString() ===
+                                    formData.tecnicoResponsavel,
+                                );
+                                const percentual =
+                                  tecnico?.percentualComissao ||
+                                  tecnico?.percentualServico ||
+                                  0;
+                                return percentual;
+                              })()}
+                              %)
+                            </span>
+                          )}
                       </span>
                       <div className="font-medium">
                         R$ {comissaoCalculada.toFixed(2)}
@@ -797,7 +810,8 @@ export function ModalReceita() {
                   </div>
                   {formData.tecnicoResponsavel && comissaoCalculada === 0 && (
                     <div className="mt-2 text-xs text-amber-600">
-                      ⚠️ Técnico selecionado não possui percentual de comissão configurado
+                      ⚠️ Técnico selecionado não possui percentual de comissão
+                      configurado
                     </div>
                   )}
                 </div>

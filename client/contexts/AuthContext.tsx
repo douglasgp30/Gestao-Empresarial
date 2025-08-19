@@ -28,8 +28,9 @@ const verificarSeExisteAdministrador = (): boolean => {
     if (!funcionariosStorage) return false;
 
     const funcionarios = JSON.parse(funcionariosStorage);
-    return funcionarios.some((f: Funcionario) =>
-      f.permissaoAcesso && f.ativo && f.tipoAcesso === "Administrador"
+    return funcionarios.some(
+      (f: Funcionario) =>
+        f.permissaoAcesso && f.ativo && f.tipoAcesso === "Administrador",
     );
   } catch (error) {
     console.warn("Erro ao verificar administradores:", error);
@@ -40,7 +41,8 @@ const verificarSeExisteAdministrador = (): boolean => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [precisaConfigurarPrimeiroAcesso, setPrecisaConfigurarPrimeiroAcesso] = useState(false);
+  const [precisaConfigurarPrimeiroAcesso, setPrecisaConfigurarPrimeiroAcesso] =
+    useState(false);
 
   useEffect(() => {
     // Verificar se existe pelo menos um administrador

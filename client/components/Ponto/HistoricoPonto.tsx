@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Clock, User, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  User,
+  FileText,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -15,22 +22,25 @@ interface HistoricoPontoProps {
   mostrarFiltros?: boolean;
 }
 
-export function HistoricoPonto({ funcionarioId, mostrarFiltros = true }: HistoricoPontoProps) {
+export function HistoricoPonto({
+  funcionarioId,
+  mostrarFiltros = true,
+}: HistoricoPontoProps) {
   const { user } = useAuth();
-  const { 
-    historicoPontos, 
+  const {
+    historicoPontos,
     paginacaoHistorico,
-    filtros, 
-    isLoading, 
+    filtros,
+    isLoading,
     carregarHistorico,
-    atualizarFiltros 
+    atualizarFiltros,
   } = usePonto();
 
   const [dataInicio, setDataInicio] = useState(
-    filtros.dataInicio.toISOString().split('T')[0]
+    filtros.dataInicio.toISOString().split("T")[0],
   );
   const [dataFim, setDataFim] = useState(
-    filtros.dataFim.toISOString().split('T')[0]
+    filtros.dataFim.toISOString().split("T")[0],
   );
 
   const idFuncionario = funcionarioId || user?.id;
@@ -39,7 +49,7 @@ export function HistoricoPonto({ funcionarioId, mostrarFiltros = true }: Histori
   const aplicarFiltros = () => {
     atualizarFiltros({
       dataInicio: new Date(dataInicio),
-      dataFim: new Date(dataFim)
+      dataFim: new Date(dataFim),
     });
   };
 
@@ -132,7 +142,9 @@ export function HistoricoPonto({ funcionarioId, mostrarFiltros = true }: Histori
           ) : historicoPontos.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Nenhum registro encontrado</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Nenhum registro encontrado
+              </h3>
               <p className="text-muted-foreground">
                 Não há registros de ponto para o período selecionado.
               </p>
@@ -141,7 +153,7 @@ export function HistoricoPonto({ funcionarioId, mostrarFiltros = true }: Histori
             <div className="space-y-4">
               {historicoPontos.map((ponto) => {
                 const { status, cor } = getStatusPonto(ponto);
-                
+
                 return (
                   <div
                     key={ponto.id}
@@ -154,38 +166,54 @@ export function HistoricoPonto({ funcionarioId, mostrarFiltros = true }: Histori
                             {pontoApi.formatarData(ponto.data)}
                           </h4>
                           <p className="text-sm text-muted-foreground">
-                            {new Date(ponto.data).toLocaleDateString('pt-BR', { weekday: 'long' })}
+                            {new Date(ponto.data).toLocaleDateString("pt-BR", {
+                              weekday: "long",
+                            })}
                           </p>
                         </div>
                       </div>
-                      <Badge className={cor}>
-                        {status}
-                      </Badge>
+                      <Badge className={cor}>{status}</Badge>
                     </div>
 
                     {/* Horários */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
                       <div className="text-center">
-                        <div className="text-xs text-muted-foreground mb-1">Entrada</div>
-                        <div className={`text-sm font-mono ${ponto.horaEntrada ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Entrada
+                        </div>
+                        <div
+                          className={`text-sm font-mono ${ponto.horaEntrada ? "text-foreground" : "text-muted-foreground"}`}
+                        >
                           {pontoApi.formatarHorario(ponto.horaEntrada)}
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-xs text-muted-foreground mb-1">Saída Almoço</div>
-                        <div className={`text-sm font-mono ${ponto.horaSaidaAlmoco ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Saída Almoço
+                        </div>
+                        <div
+                          className={`text-sm font-mono ${ponto.horaSaidaAlmoco ? "text-foreground" : "text-muted-foreground"}`}
+                        >
                           {pontoApi.formatarHorario(ponto.horaSaidaAlmoco)}
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-xs text-muted-foreground mb-1">Retorno</div>
-                        <div className={`text-sm font-mono ${ponto.horaRetornoAlmoco ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Retorno
+                        </div>
+                        <div
+                          className={`text-sm font-mono ${ponto.horaRetornoAlmoco ? "text-foreground" : "text-muted-foreground"}`}
+                        >
                           {pontoApi.formatarHorario(ponto.horaRetornoAlmoco)}
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-xs text-muted-foreground mb-1">Saída</div>
-                        <div className={`text-sm font-mono ${ponto.horaSaida ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Saída
+                        </div>
+                        <div
+                          className={`text-sm font-mono ${ponto.horaSaida ? "text-foreground" : "text-muted-foreground"}`}
+                        >
                           {pontoApi.formatarHorario(ponto.horaSaida)}
                         </div>
                       </div>
@@ -193,31 +221,47 @@ export function HistoricoPonto({ funcionarioId, mostrarFiltros = true }: Histori
 
                     {/* Informações extras */}
                     <div className="flex flex-wrap gap-4 text-sm">
-                      {ponto.totalHoras !== undefined && ponto.totalHoras > 0 && (
-                        <div className="flex items-center space-x-1">
-                          <span className="text-muted-foreground">Total:</span>
-                          <span className="font-medium">{pontoApi.formatarDuracaoHoras(ponto.totalHoras)}</span>
-                        </div>
-                      )}
-                      
+                      {ponto.totalHoras !== undefined &&
+                        ponto.totalHoras > 0 && (
+                          <div className="flex items-center space-x-1">
+                            <span className="text-muted-foreground">
+                              Total:
+                            </span>
+                            <span className="font-medium">
+                              {pontoApi.formatarDuracaoHoras(ponto.totalHoras)}
+                            </span>
+                          </div>
+                        )}
+
                       {ponto.atraso !== undefined && ponto.atraso > 0 && (
                         <div className="flex items-center space-x-1">
                           <span className="text-muted-foreground">Atraso:</span>
-                          <span className="font-medium text-orange-600">{pontoApi.formatarMinutos(ponto.atraso)}</span>
-                        </div>
-                      )}
-                      
-                      {ponto.horasExtras !== undefined && ponto.horasExtras > 0 && (
-                        <div className="flex items-center space-x-1">
-                          <span className="text-muted-foreground">Extras:</span>
-                          <span className="font-medium text-green-600">{pontoApi.formatarDuracaoHoras(ponto.horasExtras)}</span>
+                          <span className="font-medium text-orange-600">
+                            {pontoApi.formatarMinutos(ponto.atraso)}
+                          </span>
                         </div>
                       )}
 
+                      {ponto.horasExtras !== undefined &&
+                        ponto.horasExtras > 0 && (
+                          <div className="flex items-center space-x-1">
+                            <span className="text-muted-foreground">
+                              Extras:
+                            </span>
+                            <span className="font-medium text-green-600">
+                              {pontoApi.formatarDuracaoHoras(ponto.horasExtras)}
+                            </span>
+                          </div>
+                        )}
+
                       {ponto.editadoPorAdmin && (
                         <div className="flex items-center space-x-1">
-                          <span className="text-muted-foreground">Editado por:</span>
-                          <span className="font-medium text-blue-600">{ponto.usuarioEdicao || 'Admin'}</span>
+                          <span className="text-muted-foreground">
+                            Editado por:
+                          </span>
+                          <span className="font-medium text-blue-600">
+                            {ponto.usuarioEdicao || "Admin"}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -227,14 +271,20 @@ export function HistoricoPonto({ funcionarioId, mostrarFiltros = true }: Histori
                       <div className="mt-3 pt-3 border-t space-y-2">
                         {ponto.observacao && (
                           <div>
-                            <span className="text-xs text-muted-foreground">Observação:</span>
+                            <span className="text-xs text-muted-foreground">
+                              Observação:
+                            </span>
                             <p className="text-sm mt-1">{ponto.observacao}</p>
                           </div>
                         )}
                         {ponto.justificativaAtraso && (
                           <div>
-                            <span className="text-xs text-muted-foreground">Justificativa de atraso:</span>
-                            <p className="text-sm mt-1">{ponto.justificativaAtraso}</p>
+                            <span className="text-xs text-muted-foreground">
+                              Justificativa de atraso:
+                            </span>
+                            <p className="text-sm mt-1">
+                              {ponto.justificativaAtraso}
+                            </p>
                           </div>
                         )}
                       </div>

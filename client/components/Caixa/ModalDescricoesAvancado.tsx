@@ -90,7 +90,9 @@ export default function ModalDescricoesAvancado() {
     return Array.isArray(descricoesECategorias)
       ? descricoesECategorias.filter(
           (item) =>
-            item.tipoItem === "categoria" && item.ativo && item.tipo === "receita",
+            item.tipoItem === "categoria" &&
+            item.ativo &&
+            item.tipo === "receita",
         )
       : [];
   }, [descricoesECategorias]);
@@ -99,7 +101,9 @@ export default function ModalDescricoesAvancado() {
     return Array.isArray(descricoesECategorias)
       ? descricoesECategorias.filter(
           (item) =>
-            item.tipoItem === "categoria" && item.ativo && item.tipo === "despesa",
+            item.tipoItem === "categoria" &&
+            item.ativo &&
+            item.tipo === "despesa",
         )
       : [];
   }, [descricoesECategorias]);
@@ -108,7 +112,9 @@ export default function ModalDescricoesAvancado() {
     return Array.isArray(descricoesECategorias)
       ? descricoesECategorias.filter(
           (item) =>
-            item.tipoItem === "descricao" && item.ativo && item.tipo === "receita",
+            item.tipoItem === "descricao" &&
+            item.ativo &&
+            item.tipo === "receita",
         )
       : [];
   }, [descricoesECategorias]);
@@ -117,7 +123,9 @@ export default function ModalDescricoesAvancado() {
     return Array.isArray(descricoesECategorias)
       ? descricoesECategorias.filter(
           (item) =>
-            item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa",
+            item.tipoItem === "descricao" &&
+            item.ativo &&
+            item.tipo === "despesa",
         )
       : [];
   }, [descricoesECategorias]);

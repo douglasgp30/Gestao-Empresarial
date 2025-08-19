@@ -1,12 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Clock, Edit, Plus, Search, Filter, FileText } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Edit,
+  Plus,
+  Search,
+  Filter,
+  FileText,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Textarea } from "../ui/textarea";
 import { usePonto } from "../../contexts/PontoContext";
@@ -20,14 +41,19 @@ interface EditarPontoModalProps {
   onSave: (pontoId: string, dados: any) => Promise<void>;
 }
 
-function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalProps) {
+function EditarPontoModal({
+  ponto,
+  isOpen,
+  onClose,
+  onSave,
+}: EditarPontoModalProps) {
   const [formData, setFormData] = useState({
     horaEntrada: "",
     horaSaidaAlmoco: "",
     horaRetornoAlmoco: "",
     horaSaida: "",
     observacao: "",
-    justificativaAtraso: ""
+    justificativaAtraso: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,12 +61,20 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
   useEffect(() => {
     if (ponto) {
       setFormData({
-        horaEntrada: ponto.horaEntrada ? new Date(ponto.horaEntrada).toISOString().slice(0, 16) : "",
-        horaSaidaAlmoco: ponto.horaSaidaAlmoco ? new Date(ponto.horaSaidaAlmoco).toISOString().slice(0, 16) : "",
-        horaRetornoAlmoco: ponto.horaRetornoAlmoco ? new Date(ponto.horaRetornoAlmoco).toISOString().slice(0, 16) : "",
-        horaSaida: ponto.horaSaida ? new Date(ponto.horaSaida).toISOString().slice(0, 16) : "",
+        horaEntrada: ponto.horaEntrada
+          ? new Date(ponto.horaEntrada).toISOString().slice(0, 16)
+          : "",
+        horaSaidaAlmoco: ponto.horaSaidaAlmoco
+          ? new Date(ponto.horaSaidaAlmoco).toISOString().slice(0, 16)
+          : "",
+        horaRetornoAlmoco: ponto.horaRetornoAlmoco
+          ? new Date(ponto.horaRetornoAlmoco).toISOString().slice(0, 16)
+          : "",
+        horaSaida: ponto.horaSaida
+          ? new Date(ponto.horaSaida).toISOString().slice(0, 16)
+          : "",
         observacao: ponto.observacao || "",
-        justificativaAtraso: ponto.justificativaAtraso || ""
+        justificativaAtraso: ponto.justificativaAtraso || "",
       });
     }
   }, [ponto]);
@@ -57,7 +91,7 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
         horaRetornoAlmoco: formData.horaRetornoAlmoco || undefined,
         horaSaida: formData.horaSaida || undefined,
         observacao: formData.observacao || undefined,
-        justificativaAtraso: formData.justificativaAtraso || undefined
+        justificativaAtraso: formData.justificativaAtraso || undefined,
       };
 
       await onSave(ponto.id, dados);
@@ -87,7 +121,9 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
                 id="horaEntrada"
                 type="datetime-local"
                 value={formData.horaEntrada}
-                onChange={(e) => setFormData({ ...formData, horaEntrada: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, horaEntrada: e.target.value })
+                }
               />
             </div>
 
@@ -97,7 +133,9 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
                 id="horaSaidaAlmoco"
                 type="datetime-local"
                 value={formData.horaSaidaAlmoco}
-                onChange={(e) => setFormData({ ...formData, horaSaidaAlmoco: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, horaSaidaAlmoco: e.target.value })
+                }
               />
             </div>
 
@@ -107,7 +145,12 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
                 id="horaRetornoAlmoco"
                 type="datetime-local"
                 value={formData.horaRetornoAlmoco}
-                onChange={(e) => setFormData({ ...formData, horaRetornoAlmoco: e.target.value })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    horaRetornoAlmoco: e.target.value,
+                  })
+                }
               />
             </div>
 
@@ -117,7 +160,9 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
                 id="horaSaida"
                 type="datetime-local"
                 value={formData.horaSaida}
-                onChange={(e) => setFormData({ ...formData, horaSaida: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, horaSaida: e.target.value })
+                }
               />
             </div>
           </div>
@@ -127,7 +172,9 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
             <Textarea
               id="observacao"
               value={formData.observacao}
-              onChange={(e) => setFormData({ ...formData, observacao: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, observacao: e.target.value })
+              }
               rows={2}
             />
           </div>
@@ -137,7 +184,12 @@ function EditarPontoModal({ ponto, isOpen, onClose, onSave }: EditarPontoModalPr
             <Textarea
               id="justificativaAtraso"
               value={formData.justificativaAtraso}
-              onChange={(e) => setFormData({ ...formData, justificativaAtraso: e.target.value })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  justificativaAtraso: e.target.value,
+                })
+              }
               rows={2}
             />
           </div>
@@ -163,13 +215,22 @@ interface RegistrarPontoModalProps {
   funcionarios: Funcionario[];
 }
 
-function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: RegistrarPontoModalProps) {
+function RegistrarPontoModal({
+  isOpen,
+  onClose,
+  onSave,
+  funcionarios,
+}: RegistrarPontoModalProps) {
   const [formData, setFormData] = useState({
     funcionarioId: "",
-    data: new Date().toISOString().split('T')[0],
-    tipoBatida: "entrada" as "entrada" | "saida_almoco" | "retorno_almoco" | "saida",
+    data: new Date().toISOString().split("T")[0],
+    tipoBatida: "entrada" as
+      | "entrada"
+      | "saida_almoco"
+      | "retorno_almoco"
+      | "saida",
     horario: new Date().toISOString().slice(0, 16),
-    observacao: ""
+    observacao: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -185,18 +246,18 @@ function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: Registra
         data: formData.data,
         tipoBatida: formData.tipoBatida,
         horario: formData.horario,
-        observacao: formData.observacao || undefined
+        observacao: formData.observacao || undefined,
       });
-      
+
       // Reset form
       setFormData({
         funcionarioId: "",
-        data: new Date().toISOString().split('T')[0],
+        data: new Date().toISOString().split("T")[0],
         tipoBatida: "entrada",
         horario: new Date().toISOString().slice(0, 16),
-        observacao: ""
+        observacao: "",
       });
-      
+
       onClose();
     } catch (error) {
       // Erro já tratado no context
@@ -220,14 +281,19 @@ function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: Registra
             <Label htmlFor="funcionarioId">Funcionário</Label>
             <Select
               value={formData.funcionarioId}
-              onValueChange={(value) => setFormData({ ...formData, funcionarioId: value })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, funcionarioId: value })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um funcionário" />
               </SelectTrigger>
               <SelectContent>
                 {funcionarios.map((funcionario) => (
-                  <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
+                  <SelectItem
+                    key={funcionario.id}
+                    value={funcionario.id.toString()}
+                  >
                     {funcionario.nome}
                   </SelectItem>
                 ))}
@@ -241,7 +307,9 @@ function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: Registra
               id="data"
               type="date"
               value={formData.data}
-              onChange={(e) => setFormData({ ...formData, data: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, data: e.target.value })
+              }
             />
           </div>
 
@@ -249,7 +317,9 @@ function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: Registra
             <Label htmlFor="tipoBatida">Tipo de Batida</Label>
             <Select
               value={formData.tipoBatida}
-              onValueChange={(value: any) => setFormData({ ...formData, tipoBatida: value })}
+              onValueChange={(value: any) =>
+                setFormData({ ...formData, tipoBatida: value })
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -257,7 +327,9 @@ function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: Registra
               <SelectContent>
                 <SelectItem value="entrada">Entrada</SelectItem>
                 <SelectItem value="saida_almoco">Saída para Almoço</SelectItem>
-                <SelectItem value="retorno_almoco">Retorno do Almoço</SelectItem>
+                <SelectItem value="retorno_almoco">
+                  Retorno do Almoço
+                </SelectItem>
                 <SelectItem value="saida">Saída</SelectItem>
               </SelectContent>
             </Select>
@@ -269,7 +341,9 @@ function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: Registra
               id="horario"
               type="datetime-local"
               value={formData.horario}
-              onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, horario: e.target.value })
+              }
             />
           </div>
 
@@ -278,7 +352,9 @@ function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: Registra
             <Textarea
               id="observacao"
               value={formData.observacao}
-              onChange={(e) => setFormData({ ...formData, observacao: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, observacao: e.target.value })
+              }
               rows={2}
             />
           </div>
@@ -287,7 +363,10 @@ function RegistrarPontoModal({ isOpen, onClose, onSave, funcionarios }: Registra
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting || !formData.funcionarioId}>
+            <Button
+              type="submit"
+              disabled={isSubmitting || !formData.funcionarioId}
+            >
               {isSubmitting ? "Registrando..." : "Registrar"}
             </Button>
           </div>
@@ -306,24 +385,31 @@ export function GerenciarPontos() {
     atualizarFiltros,
     carregarTodosPontos,
     editarPonto,
-    registrarPontoAdmin
+    registrarPontoAdmin,
   } = usePonto();
 
   const [pontoParaEditar, setPontoParaEditar] = useState<Ponto | null>(null);
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [modalRegistrarAberto, setModalRegistrarAberto] = useState(false);
 
-  const [filtroFuncionario, setFiltroFuncionario] = useState(filtros.funcionarioId || "todos");
+  const [filtroFuncionario, setFiltroFuncionario] = useState(
+    filtros.funcionarioId || "todos",
+  );
   const [filtroStatus, setFiltroStatus] = useState(filtros.status || "todos");
-  const [dataInicio, setDataInicio] = useState(filtros.dataInicio.toISOString().split('T')[0]);
-  const [dataFim, setDataFim] = useState(filtros.dataFim.toISOString().split('T')[0]);
+  const [dataInicio, setDataInicio] = useState(
+    filtros.dataInicio.toISOString().split("T")[0],
+  );
+  const [dataFim, setDataFim] = useState(
+    filtros.dataFim.toISOString().split("T")[0],
+  );
 
   const aplicarFiltros = () => {
     atualizarFiltros({
-      funcionarioId: filtroFuncionario === "todos" ? undefined : filtroFuncionario,
+      funcionarioId:
+        filtroFuncionario === "todos" ? undefined : filtroFuncionario,
       status: filtroStatus as any,
       dataInicio: new Date(dataInicio),
-      dataFim: new Date(dataFim)
+      dataFim: new Date(dataFim),
     });
   };
 
@@ -370,14 +456,20 @@ export function GerenciarPontos() {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="space-y-2">
               <Label htmlFor="funcionario">Funcionário</Label>
-              <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
+              <Select
+                value={filtroFuncionario}
+                onValueChange={setFiltroFuncionario}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos</SelectItem>
                   {funcionariosComPonto.map((funcionario) => (
-                    <SelectItem key={funcionario.id} value={funcionario.id.toString()}>
+                    <SelectItem
+                      key={funcionario.id}
+                      value={funcionario.id.toString()}
+                    >
                       {funcionario.nome}
                     </SelectItem>
                   ))}
@@ -455,7 +547,9 @@ export function GerenciarPontos() {
           ) : todosPontos.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Nenhum registro encontrado</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Nenhum registro encontrado
+              </h3>
               <p className="text-muted-foreground">
                 Não há registros de ponto para os filtros selecionados.
               </p>
@@ -479,12 +573,14 @@ export function GerenciarPontos() {
                 <TableBody>
                   {todosPontos.map((ponto) => {
                     const { status, cor } = getStatusPonto(ponto);
-                    
+
                     return (
                       <TableRow key={ponto.id}>
                         <TableCell>
                           <div>
-                            <p className="font-medium">{ponto.funcionario?.nome}</p>
+                            <p className="font-medium">
+                              {ponto.funcionario?.nome}
+                            </p>
                             {ponto.editadoPorAdmin && (
                               <p className="text-xs text-blue-600">
                                 Editado por {ponto.usuarioEdicao}
@@ -492,58 +588,68 @@ export function GerenciarPontos() {
                             )}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div>
-                            <p className="font-mono text-sm">{pontoApi.formatarData(ponto.data)}</p>
+                            <p className="font-mono text-sm">
+                              {pontoApi.formatarData(ponto.data)}
+                            </p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(ponto.data).toLocaleDateString('pt-BR', { weekday: 'short' })}
+                              {new Date(ponto.data).toLocaleDateString(
+                                "pt-BR",
+                                { weekday: "short" },
+                              )}
                             </p>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell className="font-mono text-sm">
                           {pontoApi.formatarHorario(ponto.horaEntrada)}
                         </TableCell>
-                        
+
                         <TableCell className="font-mono text-sm">
                           {pontoApi.formatarHorario(ponto.horaSaidaAlmoco)}
                         </TableCell>
-                        
+
                         <TableCell className="font-mono text-sm">
                           {pontoApi.formatarHorario(ponto.horaRetornoAlmoco)}
                         </TableCell>
-                        
+
                         <TableCell className="font-mono text-sm">
                           {pontoApi.formatarHorario(ponto.horaSaida)}
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="space-y-1">
-                            {ponto.totalHoras !== undefined && ponto.totalHoras > 0 && (
-                              <p className="text-sm font-medium">
-                                {pontoApi.formatarDuracaoHoras(ponto.totalHoras)}
-                              </p>
-                            )}
+                            {ponto.totalHoras !== undefined &&
+                              ponto.totalHoras > 0 && (
+                                <p className="text-sm font-medium">
+                                  {pontoApi.formatarDuracaoHoras(
+                                    ponto.totalHoras,
+                                  )}
+                                </p>
+                              )}
                             {ponto.atraso !== undefined && ponto.atraso > 0 && (
                               <p className="text-xs text-orange-600">
                                 Atraso: {pontoApi.formatarMinutos(ponto.atraso)}
                               </p>
                             )}
-                            {ponto.horasExtras !== undefined && ponto.horasExtras > 0 && (
-                              <p className="text-xs text-green-600">
-                                Extra: {pontoApi.formatarDuracaoHoras(ponto.horasExtras)}
-                              </p>
-                            )}
+                            {ponto.horasExtras !== undefined &&
+                              ponto.horasExtras > 0 && (
+                                <p className="text-xs text-green-600">
+                                  Extra:{" "}
+                                  {pontoApi.formatarDuracaoHoras(
+                                    ponto.horasExtras,
+                                  )}
+                                </p>
+                              )}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
-                          <Badge className={cor}>
-                            {status}
-                          </Badge>
+                          <Badge className={cor}>{status}</Badge>
                         </TableCell>
-                        
+
                         <TableCell>
                           <Button
                             variant="ghost"

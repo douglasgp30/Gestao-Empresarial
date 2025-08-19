@@ -25,8 +25,8 @@ export const getClientes: RequestHandler = async (req, res) => {
 };
 
 export const createCliente: RequestHandler = middlewareAuditoria(
-  'Cliente',
-  'create',
+  "Cliente",
+  "create",
   async (req, res) => {
     console.log(
       "[Clientes] Dados recebidos:",
@@ -50,12 +50,12 @@ export const createCliente: RequestHandler = middlewareAuditoria(
       console.error("Erro ao criar cliente:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
     }
-  }
+  },
 );
 
 export const updateCliente: RequestHandler = middlewareAuditoria(
-  'Cliente',
-  'update',
+  "Cliente",
+  "update",
   async (req, res) => {
     const id = parseInt(req.params.id);
     console.log(
@@ -88,7 +88,7 @@ export const updateCliente: RequestHandler = middlewareAuditoria(
     return {
       entidadeId: cliente.id.toString(),
       dadosAntigos: clienteExistente,
-      dadosNovos: cliente
+      dadosNovos: cliente,
     };
   },
   (error, req, res) => {
@@ -103,12 +103,12 @@ export const updateCliente: RequestHandler = middlewareAuditoria(
       console.error("Erro ao atualizar cliente:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
     }
-  }
+  },
 );
 
 export const deleteCliente: RequestHandler = middlewareAuditoria(
-  'Cliente',
-  'delete',
+  "Cliente",
+  "delete",
   async (req, res) => {
     const id = parseInt(req.params.id);
     console.log(`[Clientes] Excluindo cliente ID: ${id}`);
@@ -132,7 +132,7 @@ export const deleteCliente: RequestHandler = middlewareAuditoria(
     res.status(204).send();
     return {
       entidadeId: id.toString(),
-      dadosAntigos: clienteExistente
+      dadosAntigos: clienteExistente,
     };
   },
   (error, req, res) => {
@@ -144,5 +144,5 @@ export const deleteCliente: RequestHandler = middlewareAuditoria(
       console.error("Erro ao excluir cliente:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
     }
-  }
+  },
 );

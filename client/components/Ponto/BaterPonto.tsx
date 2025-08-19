@@ -17,14 +17,14 @@ interface BaterPontoProps {
 
 export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
   const { user } = useAuth();
-  const { 
-    pontoHoje, 
-    proximaBatida, 
-    podeRegistrar, 
-    isRegistrandoPonto, 
-    registrarPonto 
+  const {
+    pontoHoje,
+    proximaBatida,
+    podeRegistrar,
+    isRegistrandoPonto,
+    registrarPonto,
   } = usePonto();
-  
+
   const [observacao, setObservacao] = useState("");
   const [mostrarObservacao, setMostrarObservacao] = useState(false);
   const [vendeuAlmoco, setVendeuAlmoco] = useState(false);
@@ -122,7 +122,9 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
             {/* Entrada */}
             <div className="text-center">
               <div className="text-xs text-muted-foreground mb-1">Entrada</div>
-              <div className={`text-lg font-mono ${ponto?.horaEntrada ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <div
+                className={`text-lg font-mono ${ponto?.horaEntrada ? "text-foreground" : "text-muted-foreground"}`}
+              >
                 {formatarHorario(ponto?.horaEntrada)}
               </div>
               {ponto?.horaEntrada && (
@@ -132,8 +134,12 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
 
             {/* Saída Almoço */}
             <div className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">Saída Almoço</div>
-              <div className={`text-lg font-mono ${ponto?.horaSaidaAlmoco ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <div className="text-xs text-muted-foreground mb-1">
+                Saída Almoço
+              </div>
+              <div
+                className={`text-lg font-mono ${ponto?.horaSaidaAlmoco ? "text-foreground" : "text-muted-foreground"}`}
+              >
                 {ponto?.vendeuAlmoco ? (
                   <span className="text-amber-600 text-sm font-medium">
                     <Coffee className="h-3 w-3 inline mr-1" />
@@ -150,8 +156,12 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
 
             {/* Retorno Almoço */}
             <div className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">Retorno Almoço</div>
-              <div className={`text-lg font-mono ${ponto?.horaRetornoAlmoco ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <div className="text-xs text-muted-foreground mb-1">
+                Retorno Almoço
+              </div>
+              <div
+                className={`text-lg font-mono ${ponto?.horaRetornoAlmoco ? "text-foreground" : "text-muted-foreground"}`}
+              >
                 {ponto?.vendeuAlmoco ? (
                   <span className="text-amber-600 text-sm font-medium">
                     <Coffee className="h-3 w-3 inline mr-1" />
@@ -169,7 +179,9 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
             {/* Saída */}
             <div className="text-center">
               <div className="text-xs text-muted-foreground mb-1">Saída</div>
-              <div className={`text-lg font-mono ${ponto?.horaSaida ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <div
+                className={`text-lg font-mono ${ponto?.horaSaida ? "text-foreground" : "text-muted-foreground"}`}
+              >
                 {formatarHorario(ponto?.horaSaida)}
               </div>
               {ponto?.horaSaida && (
@@ -183,29 +195,41 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
             <div className="mt-4 pt-4 border-t space-y-2">
               {ponto.totalHoras !== undefined && ponto.totalHoras > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Total trabalhado:</span>
-                  <span className="font-medium">{pontoLocalStorage.formatarDuracaoHoras(ponto.totalHoras)}</span>
+                  <span className="text-muted-foreground">
+                    Total trabalhado:
+                  </span>
+                  <span className="font-medium">
+                    {pontoLocalStorage.formatarDuracaoHoras(ponto.totalHoras)}
+                  </span>
                 </div>
               )}
 
               {ponto.atraso !== undefined && ponto.atraso > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Atraso:</span>
-                  <span className="font-medium text-orange-600">{pontoLocalStorage.formatarMinutos(ponto.atraso)}</span>
+                  <span className="font-medium text-orange-600">
+                    {pontoLocalStorage.formatarMinutos(ponto.atraso)}
+                  </span>
                 </div>
               )}
 
               {ponto.horasExtras !== undefined && ponto.horasExtras > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Horas extras:</span>
-                  <span className="font-medium text-green-600">{pontoLocalStorage.formatarDuracaoHoras(ponto.horasExtras)}</span>
+                  <span className="font-medium text-green-600">
+                    {pontoLocalStorage.formatarDuracaoHoras(ponto.horasExtras)}
+                  </span>
                 </div>
               )}
 
               {ponto.saldoHoras !== undefined && ponto.saldoHoras < 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Saldo negativo:</span>
-                  <span className="font-medium text-red-600">{pontoLocalStorage.formatarDuracaoHoras(Math.abs(ponto.saldoHoras))}</span>
+                  <span className="font-medium text-red-600">
+                    {pontoLocalStorage.formatarDuracaoHoras(
+                      Math.abs(ponto.saldoHoras),
+                    )}
+                  </span>
                 </div>
               )}
 
@@ -241,7 +265,8 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
                     {pontoLocalStorage.obterTextoBatida(proximaBatida)}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Clique no botão abaixo para registrar sua {proximaBatida.replace('_', ' ')}
+                    Clique no botão abaixo para registrar sua{" "}
+                    {proximaBatida.replace("_", " ")}
                   </p>
                 </div>
 
@@ -250,11 +275,15 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
                   <div className="flex items-center space-x-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
                     <Coffee className="h-4 w-4 text-amber-600" />
                     <div className="flex-1">
-                      <Label htmlFor="vender-almoco" className="text-sm font-medium text-amber-800">
+                      <Label
+                        htmlFor="vender-almoco"
+                        className="text-sm font-medium text-amber-800"
+                      >
                         Vender hora de almoço
                       </Label>
                       <p className="text-xs text-amber-700">
-                        Trabalhar sem intervalo de almoço (direto da entrada para saída)
+                        Trabalhar sem intervalo de almoço (direto da entrada
+                        para saída)
                       </p>
                     </div>
                     <Switch
@@ -341,19 +370,19 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
         <CardContent className="pt-6">
           <div className="text-center">
             <div className="text-3xl font-mono font-bold">
-              {new Date().toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
+              {new Date().toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
               })}
             </div>
             <div className="text-sm text-muted-foreground mt-1">
               <Calendar className="h-4 w-4 inline mr-1" />
-              {new Date().toLocaleDateString('pt-BR', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+              {new Date().toLocaleDateString("pt-BR", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
               })}
             </div>
           </div>

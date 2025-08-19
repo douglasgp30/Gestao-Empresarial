@@ -7,12 +7,14 @@ O módulo de **Controle de Ponto** foi totalmente implementado no sistema seguin
 ## 🏗️ Arquitetura Implementada
 
 ### **Backend (Node.js + Prisma)**
+
 - ✅ **Modelo `Ponto`** criado no schema do Prisma
 - ✅ **Campo `registraPonto`** adicionado ao modelo `Funcionario`
 - ✅ **API completa** em `/server/routes/ponto.ts` com todas as funcionalidades
 - ✅ **Middleware de auditoria** integrado para rastrear alterações
 
 ### **Frontend (React + TypeScript)**
+
 - ✅ **Context Provider** (`PontoContext`) para gerenciamento de estado
 - ✅ **Serviços API** (`pontoApi.ts`) para comunicação com backend
 - ✅ **Componentes principais**:
@@ -25,11 +27,13 @@ O módulo de **Controle de Ponto** foi totalmente implementado no sistema seguin
 ## 🔐 Sistema de Permissões
 
 ### **Para Funcionários Comuns**
+
 - Precisam ter `registraPonto = true` no cadastro
 - Acesso apenas ao próprio ponto
 - Podem registrar: Entrada, Saída Almoço, Retorno Almoço, Saída
 
 ### **Para Administradores**
+
 - Acesso total independente do campo `registraPonto`
 - Podem visualizar pontos de todos os funcionários
 - Podem editar registros e fazer lançamentos manuais
@@ -38,6 +42,7 @@ O módulo de **Controle de Ponto** foi totalmente implementado no sistema seguin
 ## 🎯 Funcionalidades Implementadas
 
 ### **1. Registro de Ponto (Funcionários)**
+
 - Interface intuitiva com status atual do ponto
 - Botão dinâmico que mostra próxima ação
 - Campo opcional para observações
@@ -45,26 +50,31 @@ O módulo de **Controle de Ponto** foi totalmente implementado no sistema seguin
 - Relógio em tempo real
 
 ### **2. Fluxo Inteligente de Batidas**
+
 ```
 1. Entrada → 2. Saída Almoço → 3. Retorno Almoço → 4. Saída Final
 ```
+
 - Sistema identifica automaticamente qual batida registrar
 - Prevenção de registros duplicados
 - Mensagem "Ponto Completo" quando finalizado
 
 ### **3. Histórico Pessoal**
+
 - Visualização de todos os registros do funcionário
 - Filtros por data
 - Informações de horas trabalhadas, extras e atrasos
 - Paginação para grandes volumes
 
 ### **4. Gerenciamento Administrativo**
+
 - Consulta de pontos de todos os funcionários
 - Filtros avançados (funcionário, status, período)
 - Edição de registros com auditoria
 - Registro manual de pontos para funcionários
 
 ### **5. Sistema de Relatórios**
+
 - Relatórios individuais por funcionário
 - Estatísticas detalhadas:
   - Total de horas trabalhadas
@@ -75,6 +85,7 @@ O módulo de **Controle de Ponto** foi totalmente implementado no sistema seguin
 - Exportação (base implementada)
 
 ### **6. Cálculos Automáticos**
+
 - **Horas trabalhadas**: Entrada até saída, descontando almoço
 - **Atraso**: Baseado em horário padrão (08:00)
 - **Horas extras**: Acima de 8 horas diárias
@@ -83,29 +94,34 @@ O módulo de **Controle de Ponto** foi totalmente implementado no sistema seguin
 ## 🚀 Como Usar
 
 ### **1. Habilitar Funcionário para Controle de Ponto**
+
 1. Vá em **Funcionários** (menu lateral)
 2. Edite o funcionário desejado
 3. Marque a opção **"Pode registrar ponto"**
 4. Salve as alterações
 
 ### **2. Acessar o Controle de Ponto**
+
 - O menu **"Controle de Ponto"** aparecerá automaticamente para:
   - Funcionários com `registraPonto = true`
   - Administradores (sempre têm acesso)
 
 ### **3. Registrar Ponto (Funcionário)**
+
 1. Acesse **Controle de Ponto → Bater Ponto**
-2. Clique em **"Bater Ponto"** 
+2. Clique em **"Bater Ponto"**
 3. O sistema registra automaticamente a próxima batida
 4. Adicione observação se necessário
 
 ### **4. Gerenciar Pontos (Admin)**
+
 1. Acesse **Controle de Ponto → Gerenciar**
 2. Use filtros para encontrar registros
 3. Clique no ícone de edição para alterar horários
 4. Use **"Registrar Ponto"** para lançamentos manuais
 
 ### **5. Gerar Relatórios (Admin)**
+
 1. Acesse **Controle de Ponto → Relatórios**
 2. Selecione funcionário e período
 3. Clique **"Gerar"**
@@ -114,6 +130,7 @@ O módulo de **Controle de Ponto** foi totalmente implementado no sistema seguin
 ## 📊 Dados de Exemplo
 
 O sistema calcula automaticamente:
+
 - **Total diário**: Entrada 08:00, Saída 18:00 = 9h (descontando 1h almoço = 8h)
 - **Horas extras**: Se trabalhou mais de 8h
 - **Atraso**: Se chegou após 08:00
@@ -122,6 +139,7 @@ O sistema calcula automaticamente:
 ## 🔧 Configurações Futuras
 
 O sistema está preparado para configurações avançadas:
+
 - Horários personalizados por funcionário
 - Jornadas diferentes (6h, 8h, etc.)
 - Tolerância de atraso configurável

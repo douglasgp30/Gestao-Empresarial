@@ -1,7 +1,23 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 import { RotateCcw, Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -10,60 +26,59 @@ const ResetarSistema = () => {
 
   const resetarSistemaCompleto = async () => {
     setIsLoading(true);
-    
+
     try {
       // Listar todas as chaves do localStorage que queremos limpar
       const chavesParaLimpar = [
         // Dados principais
-        'funcionarios',
-        'auth_user',
-        'clientes',
-        'lancamentos_caixa',
-        'contas_pagar',
-        'contas_receber',
-        'agendamentos',
-        'campanhas',
-        
+        "funcionarios",
+        "auth_user",
+        "clientes",
+        "lancamentos_caixa",
+        "contas_pagar",
+        "contas_receber",
+        "agendamentos",
+        "campanhas",
+
         // Configurações
-        'config_sistema',
-        'categorias_receita',
-        'categorias_despesa',
-        'formas_pagamento',
-        
+        "config_sistema",
+        "categorias_receita",
+        "categorias_despesa",
+        "formas_pagamento",
+
         // Estados de primeiro acesso e tour
-        'primeiro_acesso_completo',
-        'tour_visualizado',
-        'tour_completo',
-        
+        "primeiro_acesso_completo",
+        "tour_visualizado",
+        "tour_completo",
+
         // Configurações de backup
-        'ultimo_backup',
-        'ultimo_login_backup',
-        
+        "ultimo_backup",
+        "ultimo_login_backup",
+
         // Outros dados temporários
-        'filtros_caixa',
-        'filtros_contas',
-        'filtros_agendamentos',
-        'filtros_funcionarios',
-        'filtros_clientes'
+        "filtros_caixa",
+        "filtros_contas",
+        "filtros_agendamentos",
+        "filtros_funcionarios",
+        "filtros_clientes",
       ];
 
       // Remover todas as chaves
-      chavesParaLimpar.forEach(chave => {
+      chavesParaLimpar.forEach((chave) => {
         localStorage.removeItem(chave);
       });
 
       // Aguardar um pouco para garantir que a limpeza foi feita
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       toast.success("Sistema resetado com sucesso! Recarregando...", {
-        duration: 2000
+        duration: 2000,
       });
 
       // Recarregar a página após 2 segundos
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-
     } catch (error) {
       console.error("Erro ao resetar sistema:", error);
       toast.error("Erro ao resetar o sistema. Tente novamente.");
@@ -99,8 +114,8 @@ const ResetarSistema = () => {
 
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               className="w-full"
               disabled={isLoading}
             >
@@ -122,13 +137,14 @@ const ResetarSistema = () => {
                   Esta ação apagará TODOS os dados e não pode ser desfeita.
                 </div>
                 <div>
-                  Após o reset, você voltará à tela de criação do primeiro administrador.
+                  Após o reset, você voltará à tela de criação do primeiro
+                  administrador.
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction 
+              <AlertDialogAction
                 onClick={resetarSistemaCompleto}
                 className="bg-destructive hover:bg-destructive/90"
               >

@@ -101,13 +101,16 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       setCarregando(true);
       setErro(null);
 
-      console.log("📦 [CONTAS] Carregando contas do localStorage com filtros:", {
-        dataInicio: filtrosAtivos.dataInicio.toISOString().split("T")[0],
-        dataFim: filtrosAtivos.dataFim.toISOString().split("T")[0],
-        tipo: filtrosAtivos.tipo,
-        pago: filtrosAtivos.pago,
-        categoria: filtrosAtivos.categoria,
-      });
+      console.log(
+        "📦 [CONTAS] Carregando contas do localStorage com filtros:",
+        {
+          dataInicio: filtrosAtivos.dataInicio.toISOString().split("T")[0],
+          dataFim: filtrosAtivos.dataFim.toISOString().split("T")[0],
+          tipo: filtrosAtivos.tipo,
+          pago: filtrosAtivos.pago,
+          categoria: filtrosAtivos.categoria,
+        },
+      );
 
       // Carregar contas do localStorage
       const contasStorage = localStorage.getItem("contas_pagar");
@@ -121,9 +124,13 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           const contasPagar = JSON.parse(contasStorage).map((conta: any) => ({
             ...conta,
             tipo: "pagar" as const,
-            dataLancamento: new Date(conta.dataCriacao || conta.dataLancamento || new Date()),
+            dataLancamento: new Date(
+              conta.dataCriacao || conta.dataLancamento || new Date(),
+            ),
             dataVencimento: new Date(conta.dataVencimento),
-            dataPagamento: conta.dataPagamento ? new Date(conta.dataPagamento) : undefined,
+            dataPagamento: conta.dataPagamento
+              ? new Date(conta.dataPagamento)
+              : undefined,
           }));
           todasContas.push(...contasPagar);
         } catch (error) {
@@ -134,23 +141,35 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       // Carregar contas a receber
       if (contasReceber) {
         try {
-          const contasAReceber = JSON.parse(contasReceber).map((conta: any) => ({
-            ...conta,
-            tipo: "receber" as const,
-            dataLancamento: new Date(conta.dataCriacao || conta.dataLancamento || new Date()),
-            dataVencimento: new Date(conta.dataVencimento),
-            dataPagamento: conta.dataPagamento ? new Date(conta.dataPagamento) : undefined,
-          }));
+          const contasAReceber = JSON.parse(contasReceber).map(
+            (conta: any) => ({
+              ...conta,
+              tipo: "receber" as const,
+              dataLancamento: new Date(
+                conta.dataCriacao || conta.dataLancamento || new Date(),
+              ),
+              dataVencimento: new Date(conta.dataVencimento),
+              dataPagamento: conta.dataPagamento
+                ? new Date(conta.dataPagamento)
+                : undefined,
+            }),
+          );
           todasContas.push(...contasAReceber);
         } catch (error) {
           console.warn("Erro ao parsear contas a receber:", error);
         }
       }
 
-      console.log("📦 [CONTAS] Total de contas carregadas do localStorage:", todasContas.length);
+      console.log(
+        "📦 [CONTAS] Total de contas carregadas do localStorage:",
+        todasContas.length,
+      );
       setContas(todasContas);
     } catch (error) {
-      console.error("❌ [CONTAS] Erro ao carregar contas do localStorage:", error);
+      console.error(
+        "❌ [CONTAS] Erro ao carregar contas do localStorage:",
+        error,
+      );
       setErro("Erro ao carregar contas locais");
       setContas([]);
 
@@ -235,8 +254,16 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           setFormasPagamento([
             { id: 1, nome: "Dinheiro", descricao: "Pagamento em dinheiro" },
             { id: 2, nome: "PIX", descricao: "Pagamento via PIX" },
-            { id: 3, nome: "Cartão de Débito", descricao: "Pagamento com cartão de débito" },
-            { id: 4, nome: "Cartão de Crédito", descricao: "Pagamento com cartão de crédito" },
+            {
+              id: 3,
+              nome: "Cartão de Débito",
+              descricao: "Pagamento com cartão de débito",
+            },
+            {
+              id: 4,
+              nome: "Cartão de Crédito",
+              descricao: "Pagamento com cartão de crédito",
+            },
           ] as FormaPagamento[]);
         }
       } catch (error) {
@@ -246,7 +273,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
       // Carregar categorias
       try {
-        const categoriasStorage = localStorage.getItem("categorias_receita") || localStorage.getItem("categorias_despesa");
+        const categoriasStorage =
+          localStorage.getItem("categorias_receita") ||
+          localStorage.getItem("categorias_despesa");
         if (categoriasStorage) {
           const categoriasParsed = JSON.parse(categoriasStorage);
           setCategorias(categoriasParsed || []);
@@ -260,7 +289,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
       // Carregar descrições
       try {
-        const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
+        const descricoesStorage = localStorage.getItem(
+          "descricoes_e_categorias",
+        );
         if (descricoesStorage) {
           const descricoesParsed = JSON.parse(descricoesStorage);
           setDescricoes(descricoesParsed || []);
@@ -286,7 +317,10 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       >,
     ) => {
       try {
-        console.log("📦 [CONTAS] Adicionando nova conta ao localStorage:", novaConta);
+        console.log(
+          "📦 [CONTAS] Adicionando nova conta ao localStorage:",
+          novaConta,
+        );
 
         // Criar a conta com ID único
         const conta: ContaLancamento = {
@@ -296,10 +330,13 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         };
 
         // Determinar em qual localStorage salvar baseado no tipo
-        const storageKey = conta.tipo === "pagar" ? "contas_pagar" : "contas_receber";
+        const storageKey =
+          conta.tipo === "pagar" ? "contas_pagar" : "contas_receber";
 
         // Carregar contas existentes
-        const contasExistentes = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        const contasExistentes = JSON.parse(
+          localStorage.getItem(storageKey) || "[]",
+        );
 
         // Adicionar a nova conta
         const novasContas = [...contasExistentes, conta];
@@ -324,22 +361,29 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   const atualizarConta = useCallback(
     async (id: number, contaAtualizada: Partial<ContaLancamento>) => {
       try {
-        console.log("📦 [CONTAS] Atualizando conta no localStorage:", id, contaAtualizada);
+        console.log(
+          "📦 [CONTAS] Atualizando conta no localStorage:",
+          id,
+          contaAtualizada,
+        );
 
         // Encontrar a conta atual para determinar o tipo
-        const contaAtual = contas.find(c => c.codLancamentoContas === id);
+        const contaAtual = contas.find((c) => c.codLancamentoContas === id);
         if (!contaAtual) {
           throw new Error("Conta não encontrada");
         }
 
-        const storageKey = contaAtual.tipo === "pagar" ? "contas_pagar" : "contas_receber";
-        const contasExistentes = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        const storageKey =
+          contaAtual.tipo === "pagar" ? "contas_pagar" : "contas_receber";
+        const contasExistentes = JSON.parse(
+          localStorage.getItem(storageKey) || "[]",
+        );
 
         // Atualizar a conta
         const contasAtualizadas = contasExistentes.map((conta: any) =>
           conta.codLancamentoContas === id
             ? { ...conta, ...contaAtualizada }
-            : conta
+            : conta,
         );
 
         localStorage.setItem(storageKey, JSON.stringify(contasAtualizadas));
@@ -362,38 +406,47 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     [contas],
   );
 
-  const excluirConta = useCallback(async (id: number) => {
-    try {
-      console.log("📦 [CONTAS] Excluindo conta do localStorage:", id);
+  const excluirConta = useCallback(
+    async (id: number) => {
+      try {
+        console.log("📦 [CONTAS] Excluindo conta do localStorage:", id);
 
-      // Encontrar a conta para determinar o tipo
-      const contaAtual = contas.find(c => c.codLancamentoContas === id);
-      if (contaAtual) {
-        const storageKey = contaAtual.tipo === "pagar" ? "contas_pagar" : "contas_receber";
-        const contasExistentes = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        // Encontrar a conta para determinar o tipo
+        const contaAtual = contas.find((c) => c.codLancamentoContas === id);
+        if (contaAtual) {
+          const storageKey =
+            contaAtual.tipo === "pagar" ? "contas_pagar" : "contas_receber";
+          const contasExistentes = JSON.parse(
+            localStorage.getItem(storageKey) || "[]",
+          );
 
-        // Filtrar para remover a conta
-        const contasAtualizadas = contasExistentes.filter((conta: any) =>
-          conta.codLancamentoContas !== id
+          // Filtrar para remover a conta
+          const contasAtualizadas = contasExistentes.filter(
+            (conta: any) => conta.codLancamentoContas !== id,
+          );
+
+          localStorage.setItem(storageKey, JSON.stringify(contasAtualizadas));
+        }
+
+        // Remover da lista local
+        setContas((contas) =>
+          contas.filter((conta) => conta.codLancamentoContas !== id),
         );
-
-        localStorage.setItem(storageKey, JSON.stringify(contasAtualizadas));
+      } catch (error) {
+        console.error("❌ [CONTAS] Erro ao excluir conta:", error);
+        throw error;
       }
-
-      // Remover da lista local
-      setContas((contas) =>
-        contas.filter((conta) => conta.codLancamentoContas !== id),
-      );
-    } catch (error) {
-      console.error("❌ [CONTAS] Erro ao excluir conta:", error);
-      throw error;
-    }
-  }, [contas]);
+    },
+    [contas],
+  );
 
   const marcarComoPago = useCallback(
     async (id: number, formaPagamentoId: number) => {
       try {
-        console.log("📦 [CONTAS] Marcando conta como paga no localStorage:", id);
+        console.log(
+          "📦 [CONTAS] Marcando conta como paga no localStorage:",
+          id,
+        );
 
         const dadosAtualizacao = {
           dataPagamento: new Date(),
@@ -414,7 +467,10 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   const adicionarFornecedor = useCallback(
     async (novoFornecedor: Omit<Fornecedor, "id">) => {
       try {
-        console.log("📦 [CONTAS] Adicionando novo fornecedor ao localStorage:", novoFornecedor);
+        console.log(
+          "📦 [CONTAS] Adicionando novo fornecedor ao localStorage:",
+          novoFornecedor,
+        );
 
         // Criar fornecedor com ID único
         const fornecedor: Fornecedor = {
@@ -423,7 +479,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         };
 
         // Carregar fornecedores existentes
-        const fornecedoresExistentes = JSON.parse(localStorage.getItem("fornecedores") || "[]");
+        const fornecedoresExistentes = JSON.parse(
+          localStorage.getItem("fornecedores") || "[]",
+        );
 
         // Adicionar o novo fornecedor
         const novosFornecedores = [...fornecedoresExistentes, fornecedor];
@@ -431,7 +489,10 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         // Salvar no localStorage
         localStorage.setItem("fornecedores", JSON.stringify(novosFornecedores));
 
-        console.log("✅ [CONTAS] Fornecedor adicionado com sucesso:", fornecedor);
+        console.log(
+          "✅ [CONTAS] Fornecedor adicionado com sucesso:",
+          fornecedor,
+        );
 
         // Atualizar a lista de fornecedores
         setFornecedores((prev) => [...prev, fornecedor]);

@@ -57,7 +57,9 @@ export default function ModalDescricoesSimples() {
 
   // Carregar dados quando o modal é aberto
   useEffect(() => {
-    const length = Array.isArray(descricoesECategorias) ? descricoesECategorias.length : 0;
+    const length = Array.isArray(descricoesECategorias)
+      ? descricoesECategorias.length
+      : 0;
     console.log(
       `[ModalDescricoesSimples] Modal isOpen: ${isOpen}, descricoesECategorias.length: ${length}`,
     );
@@ -227,7 +229,11 @@ export default function ModalDescricoesSimples() {
             const errorData = await response.json();
             console.log("🔍 Error data from server:", errorData);
 
-            if (errorData && errorData.error && typeof errorData.error === "string") {
+            if (
+              errorData &&
+              errorData.error &&
+              typeof errorData.error === "string"
+            ) {
               errorMessage = errorData.error;
             }
           } else {
@@ -242,7 +248,8 @@ export default function ModalDescricoesSimples() {
           console.log("🔍 Erro ao processar resposta:", jsonError);
           // Se não conseguir ler a resposta, usar mensagem padrão baseada no status
           if (response.status === 400) {
-            errorMessage = "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.";
+            errorMessage =
+              "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.";
           } else if (response.status === 404) {
             errorMessage = "Item não encontrado.";
           } else {
@@ -263,13 +270,24 @@ export default function ModalDescricoesSimples() {
     } catch (error) {
       console.error("❌ Erro no handleDelete:", error);
       console.error("❌ Error type:", typeof error);
-      console.error("❌ Error details:", JSON.stringify({
-        name: error instanceof Error ? error.name : "unknown",
-        message: error instanceof Error ? error.message : "unknown",
-        stack: error instanceof Error ? error.stack?.substring(0, 200) : "unknown"
-      }, null, 2));
+      console.error(
+        "❌ Error details:",
+        JSON.stringify(
+          {
+            name: error instanceof Error ? error.name : "unknown",
+            message: error instanceof Error ? error.message : "unknown",
+            stack:
+              error instanceof Error
+                ? error.stack?.substring(0, 200)
+                : "unknown",
+          },
+          null,
+          2,
+        ),
+      );
 
-      const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao excluir item";
       toast.error(errorMessage);
     } finally {
       setIsDeleting(false);

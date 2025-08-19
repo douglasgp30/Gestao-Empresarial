@@ -26,7 +26,10 @@ interface FuncionariosContextType {
   adicionarFuncionario: (
     funcionario: Omit<Funcionario, "id" | "dataCadastro">,
   ) => Promise<void>;
-  editarFuncionario: (id: string, funcionario: Partial<Funcionario>) => Promise<void>;
+  editarFuncionario: (
+    id: string,
+    funcionario: Partial<Funcionario>,
+  ) => Promise<void>;
   excluirFuncionario: (id: string) => Promise<void>;
   alterarStatusFuncionario: (id: string, ativo: boolean) => void;
   setFiltros: (filtros: any) => void;
@@ -144,7 +147,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   // Função para carregar funcionários da API
   const carregarFuncionarios = async () => {
     try {
-      console.log("[FuncionariosContext] Iniciando carregamento de funcionários...");
+      console.log(
+        "[FuncionariosContext] Iniciando carregamento de funcionários...",
+      );
       setIsLoading(true);
       const response = await funcionariosApi.listar();
       if (response.error) {
@@ -171,7 +176,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       }));
 
       setFuncionarios(funcionariosFormatados);
-      console.log(`[FuncionariosContext] ${funcionariosFormatados.length} funcionários carregados`);
+      console.log(
+        `[FuncionariosContext] ${funcionariosFormatados.length} funcionários carregados`,
+      );
     } catch (error) {
       console.error("Erro ao carregar funcionários:", error);
     } finally {
@@ -193,13 +200,17 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const carregarFuncionariosDoLocalStorage = () => {
       try {
-        console.log("[FuncionariosContext] Carregando funcionários do localStorage...");
+        console.log(
+          "[FuncionariosContext] Carregando funcionários do localStorage...",
+        );
         setIsLoading(true);
 
         const funcionariosCarregados = carregarFuncionariosReais();
         setFuncionarios(funcionariosCarregados);
 
-        console.log(`[FuncionariosContext] ${funcionariosCarregados.length} funcionários carregados do localStorage`);
+        console.log(
+          `[FuncionariosContext] ${funcionariosCarregados.length} funcionários carregados do localStorage`,
+        );
       } catch (error) {
         console.error("Erro ao carregar funcionários do localStorage:", error);
       } finally {
@@ -239,9 +250,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         telefone: novoFuncionario.telefone,
         cargo: novoFuncionario.cargo,
         salario: novoFuncionario.salario,
-        percentualComissao: typeof novoFuncionario.percentualComissao === 'string'
-          ? parseFloat(novoFuncionario.percentualComissao) || 0
-          : novoFuncionario.percentualComissao || 0,
+        percentualComissao:
+          typeof novoFuncionario.percentualComissao === "string"
+            ? parseFloat(novoFuncionario.percentualComissao) || 0
+            : novoFuncionario.percentualComissao || 0,
         temAcessoSistema: novoFuncionario.permissaoAcesso || false,
         tipoAcesso: novoFuncionario.tipoAcesso,
         login: novoFuncionario.login,
@@ -272,7 +284,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
 
       // Fazer a requisição para o servidor
-      const response = await funcionariosApi.editar(parseInt(id), dadosAtualizados);
+      const response = await funcionariosApi.editar(
+        parseInt(id),
+        dadosAtualizados,
+      );
       if (response.error) {
         throw new Error(response.error);
       }
@@ -303,25 +318,29 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      console.log("[FuncionariosContext] Iniciando exclusão do funcionário:", id);
+      console.log(
+        "[FuncionariosContext] Iniciando exclusão do funcionário:",
+        id,
+      );
 
       const response = await funcionariosApi.excluir(parseInt(id));
       if (response.error) {
         throw new Error(response.error);
       }
 
-      console.log("[FuncionariosContext] Funcionário excluído com sucesso, atualizando lista...");
+      console.log(
+        "[FuncionariosContext] Funcionário excluído com sucesso, atualizando lista...",
+      );
 
       // Atualizar a lista localmente primeiro (otimistic update)
-      setFuncionarios(prev => prev.filter(func => func.id !== id));
+      setFuncionarios((prev) => prev.filter((func) => func.id !== id));
 
       // Em seguida, recarregar do servidor para garantir consistência
       setTimeout(() => {
-        carregarFuncionarios().catch(error => {
+        carregarFuncionarios().catch((error) => {
           console.error("Erro ao recarregar após exclusão:", error);
         });
       }, 100);
-
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
       throw error;
@@ -346,7 +365,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         funcionario.nomeCompleto
           .toLowerCase()
           .includes(filtros.busca.toLowerCase()) ||
-        (funcionario.login && funcionario.login.toLowerCase().includes(filtros.busca.toLowerCase()));
+        (funcionario.login &&
+          funcionario.login
+            .toLowerCase()
+            .includes(filtros.busca.toLowerCase()));
       const tipoCorreto =
         filtros.tipoAcesso === "todos" ||
         funcionario.tipoAcesso === filtros.tipoAcesso;

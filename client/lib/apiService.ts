@@ -88,8 +88,10 @@ async function apiRequest<T>(
 
       const data = await response.json();
       // Log apenas em desenvolvimento com dados mínimos
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`[ApiService] ${endpoint} - Dados recebidos (${Array.isArray(data) ? data.length : 'objeto'} items)`);
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          `[ApiService] ${endpoint} - Dados recebidos (${Array.isArray(data) ? data.length : "objeto"} items)`,
+        );
       }
       return { data };
     } catch (error) {
@@ -124,7 +126,9 @@ async function apiRequest<T>(
       // Se é a última tentativa, retornar o erro
       if (attempt === retries) {
         if (isNetworkError || isFullStoryError) {
-          console.warn(`[ApiService] Falha de conectividade após ${retries + 1} tentativas para ${endpoint}`);
+          console.warn(
+            `[ApiService] Falha de conectividade após ${retries + 1} tentativas para ${endpoint}`,
+          );
           return {
             error:
               "Problema de conectividade. Recarregue a página se o problema persistir.",

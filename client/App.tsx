@@ -53,8 +53,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 import "./lib/clearOldFilters"; // Executar limpeza de filtros antigos
-import { executarAjusteAutomatico } from './lib/ajustarPermissoesAdmin';
-import './lib/testePermissoesPonto'; // Teste automático em desenvolvimento
+import { executarAjusteAutomatico } from "./lib/ajustarPermissoesAdmin";
+import "./lib/testePermissoesPonto"; // Teste automático em desenvolvimento
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
@@ -192,11 +192,18 @@ const App = () => {
       </TooltipProvider>
     </QueryClientProvider>
   );
-}
+};
 
 function AppContent() {
-  const { precisaConfigurarPrimeiroAcesso, criarPrimeiroAdministrador, user } = useAuth();
-  const { mostrarTour, iniciarTour, fecharTour, completarTour, verificarSeDeveExibirTour } = useTourGuiado();
+  const { precisaConfigurarPrimeiroAcesso, criarPrimeiroAdministrador, user } =
+    useAuth();
+  const {
+    mostrarTour,
+    iniciarTour,
+    fecharTour,
+    completarTour,
+    verificarSeDeveExibirTour,
+  } = useTourGuiado();
 
   // Verificar se deve mostrar o tour após login
   useEffect(() => {
@@ -241,14 +248,8 @@ function AppContent() {
                             path="agendamentos"
                             element={<Agendamentos />}
                           />
-                          <Route
-                            path="clientes"
-                            element={<Clientes />}
-                          />
-                          <Route
-                            path="ponto"
-                            element={<Ponto />}
-                          />
+                          <Route path="clientes" element={<Clientes />} />
+                          <Route path="ponto" element={<Ponto />} />
                           <Route
                             path="funcionarios"
                             element={
@@ -257,10 +258,7 @@ function AppContent() {
                               </ProtectedRoute>
                             }
                           />
-                          <Route
-                            path="relatorios"
-                            element={<Relatorios />}
-                          />
+                          <Route path="relatorios" element={<Relatorios />} />
                           <Route
                             path="configuracoes"
                             element={
@@ -291,7 +289,7 @@ function AppContent() {
       </ClientesProvider>
     </EntidadesProvider>
   );
-};
+}
 
 // Evitar múltiplas inicializações do React
 const rootElement = document.getElementById("root")!;

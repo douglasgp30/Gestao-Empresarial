@@ -166,7 +166,7 @@ export async function migrateCidadesGoias() {
   try {
     // 1. Fazer limpeza completa da tabela de localizações geográficas
     console.log("[Migração] Fazendo limpeza completa dos dados existentes...");
-    
+
     // Remover todos os registros existentes
     await prisma.lancamentoCaixa.updateMany({
       where: {
@@ -207,7 +207,7 @@ export async function migrateCidadesGoias() {
 
     // 2. Inserir todas as cidades de Goiás como inativas
     console.log("[Migração] Inserindo cidades de Goiás...");
-    
+
     const cidadesParaInserir = cidadesGoias.map((nomeCidade) => ({
       nome: nomeCidade,
       tipoItem: "cidade",
@@ -219,9 +219,15 @@ export async function migrateCidadesGoias() {
       data: cidadesParaInserir,
     });
 
-    console.log(`[Migração] ${cidadesGoias.length} cidades de Goiás inseridas com sucesso!`);
-    console.log("[Migração] Todas as cidades foram cadastradas como INATIVAS por padrão");
-    console.log("[Migração] Para usar uma cidade, você deve marcá-la como ATIVA no sistema");
+    console.log(
+      `[Migração] ${cidadesGoias.length} cidades de Goiás inseridas com sucesso!`,
+    );
+    console.log(
+      "[Migração] Todas as cidades foram cadastradas como INATIVAS por padrão",
+    );
+    console.log(
+      "[Migração] Para usar uma cidade, você deve marcá-la como ATIVA no sistema",
+    );
 
     // 3. Verificar resultado
     const cidadesInseridas = await prisma.localizacaoGeografica.findMany({
@@ -229,15 +235,21 @@ export async function migrateCidadesGoias() {
       orderBy: { nome: "asc" },
     });
 
-    console.log(`[Migração] Verificação: ${cidadesInseridas.length} cidades no banco`);
-    console.log(`[Migração] Primeiras 5 cidades: ${cidadesInseridas.slice(0, 5).map(c => c.nome).join(", ")}`);
+    console.log(
+      `[Migração] Verificação: ${cidadesInseridas.length} cidades no banco`,
+    );
+    console.log(
+      `[Migração] Primeiras 5 cidades: ${cidadesInseridas
+        .slice(0, 5)
+        .map((c) => c.nome)
+        .join(", ")}`,
+    );
 
     return {
       success: true,
       cidadesInseridas: cidadesInseridas.length,
-      primeirasCidades: cidadesInseridas.slice(0, 5).map(c => c.nome),
+      primeirasCidades: cidadesInseridas.slice(0, 5).map((c) => c.nome),
     };
-
   } catch (error) {
     console.error("[Migração] Erro na migração:", error);
     throw error;
@@ -246,7 +258,7 @@ export async function migrateCidadesGoias() {
 
 export async function ativarCidade(nomeCidade: string) {
   console.log(`[Migra��ão] Ativando cidade: ${nomeCidade}`);
-  
+
   try {
     const resultado = await prisma.localizacaoGeografica.updateMany({
       where: {

@@ -17,7 +17,9 @@ export function InfoAdministrador() {
               <Shield className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <CardTitle className="text-blue-900">Bem-vindo, {user?.nomeCompleto || user?.nome}</CardTitle>
+              <CardTitle className="text-blue-900">
+                Bem-vindo, {user?.nomeCompleto || user?.nome}
+              </CardTitle>
               <p className="text-blue-700 text-sm">
                 Você é um administrador do sistema de controle de ponto
               </p>
@@ -33,8 +35,9 @@ export function InfoAdministrador() {
                   Administradores não registram ponto próprio
                 </h4>
                 <p className="text-blue-700 text-sm">
-                  Como gestor, você não precisa registrar ponto para si mesmo. 
-                  Sua função é gerenciar os pontos dos funcionários operacionais.
+                  Como gestor, você não precisa registrar ponto para si mesmo.
+                  Sua função é gerenciar os pontos dos funcionários
+                  operacionais.
                 </p>
               </div>
             </div>
@@ -57,9 +60,12 @@ export function InfoAdministrador() {
                 <Users className="h-4 w-4 text-green-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-gray-900">Consultar Todos os Registros</h4>
+                <h4 className="font-medium text-gray-900">
+                  Consultar Todos os Registros
+                </h4>
                 <p className="text-sm text-gray-600">
-                  Visualize os pontos de todos os funcionários com filtros por data, período e status.
+                  Visualize os pontos de todos os funcionários com filtros por
+                  data, período e status.
                 </p>
                 <Badge variant="outline" className="mt-2 text-xs">
                   Gerenciar Pontos
@@ -72,9 +78,12 @@ export function InfoAdministrador() {
                 <Edit className="h-4 w-4 text-blue-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-gray-900">Corrigir e Incluir Registros</h4>
+                <h4 className="font-medium text-gray-900">
+                  Corrigir e Incluir Registros
+                </h4>
                 <p className="text-sm text-gray-600">
-                  Edite horários incorretos ou registre ponto para funcionários que esqueceram de bater.
+                  Edite horários incorretos ou registre ponto para funcionários
+                  que esqueceram de bater.
                 </p>
                 <Badge variant="outline" className="mt-2 text-xs">
                   Edição Manual
@@ -87,9 +96,12 @@ export function InfoAdministrador() {
                 <FileText className="h-4 w-4 text-purple-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-gray-900">Gerar Relatórios Completos</h4>
+                <h4 className="font-medium text-gray-900">
+                  Gerar Relatórios Completos
+                </h4>
                 <p className="text-sm text-gray-600">
-                  Crie relatórios detalhados de horas trabalhadas, extras, atrasos e exporte em Excel/PDF.
+                  Crie relatórios detalhados de horas trabalhadas, extras,
+                  atrasos e exporte em Excel/PDF.
                 </p>
                 <Badge variant="outline" className="mt-2 text-xs">
                   Relatórios
@@ -109,9 +121,12 @@ export function InfoAdministrador() {
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div>
-                <h4 className="font-medium">1. Gerenciar Pontos dos Funcionários</h4>
+                <h4 className="font-medium">
+                  1. Gerenciar Pontos dos Funcionários
+                </h4>
                 <p className="text-sm text-gray-600">
-                  Veja todos os registros, edite se necessário e acompanhe a presença.
+                  Veja todos os registros, edite se necessário e acompanhe a
+                  presença.
                 </p>
               </div>
               <Badge variant="secondary">Aba "Gerenciar"</Badge>
@@ -121,7 +136,8 @@ export function InfoAdministrador() {
               <div>
                 <h4 className="font-medium">2. Gerar Relatórios Mensais</h4>
                 <p className="text-sm text-gray-600">
-                  Crie relatórios de horas extras, atrasos e produtividade da equipe.
+                  Crie relatórios de horas extras, atrasos e produtividade da
+                  equipe.
                 </p>
               </div>
               <Badge variant="secondary">Aba "Relatórios"</Badge>

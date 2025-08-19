@@ -89,7 +89,10 @@ export default function ListaFuncionarios() {
         funcionario.nomeCompleto
           .toLowerCase()
           .includes(filtros.busca.toLowerCase()) ||
-        (funcionario.login && funcionario.login.toLowerCase().includes(filtros.busca.toLowerCase()));
+        (funcionario.login &&
+          funcionario.login
+            .toLowerCase()
+            .includes(filtros.busca.toLowerCase()));
       const tipoCorreto =
         filtros.tipoAcesso === "todos" ||
         funcionario.tipoAcesso === filtros.tipoAcesso;
@@ -112,10 +115,14 @@ export default function ListaFuncionarios() {
       return a.nomeCompleto.localeCompare(b.nomeCompleto);
     });
 
-  const verificarLancamentosVinculados = async (funcionarioId: string): Promise<boolean> => {
+  const verificarLancamentosVinculados = async (
+    funcionarioId: string,
+  ): Promise<boolean> => {
     try {
       // Fazer requisição para verificar se há lançamentos no caixa vinculados a este funcionário
-      const response = await fetch(`/api/caixa/lancamentos?funcionarioId=${funcionarioId}`);
+      const response = await fetch(
+        `/api/caixa/lancamentos?funcionarioId=${funcionarioId}`,
+      );
       if (response.ok) {
         const data = await response.json();
         return data.data && data.data.length > 0;
@@ -134,13 +141,11 @@ export default function ListaFuncionarios() {
 
       if (temLancamentos) {
         // Mostrar toast informativo ao invés de excluir
-        toast.error(
-          "Não é possível excluir este funcionário",
-          {
-            description: "O funcionário possui lançamentos no Caixa vinculados. Para removê-lo do sistema, desative-o ao invés de excluí-lo.",
-            duration: 8000
-          }
-        );
+        toast.error("Não é possível excluir este funcionário", {
+          description:
+            "O funcionário possui lançamentos no Caixa vinculados. Para removê-lo do sistema, desative-o ao invés de excluí-lo.",
+          duration: 8000,
+        });
         setFuncionarioParaExcluir(null);
         return;
       }
@@ -155,13 +160,11 @@ export default function ListaFuncionarios() {
       toast.success("Funcionário excluído com sucesso!");
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
-      toast.error(
-        "Erro ao excluir funcionário",
-        {
-          description: "Houve um problema ao excluir o funcionário. Tente novamente.",
-          duration: 5000
-        }
-      );
+      toast.error("Erro ao excluir funcionário", {
+        description:
+          "Houve um problema ao excluir o funcionário. Tente novamente.",
+        duration: 5000,
+      });
       // Reabrir o modal se deu erro
       if (id) {
         setFuncionarioParaExcluir(id);
@@ -330,16 +333,17 @@ export default function ListaFuncionarios() {
                             onCheckedChange={(checked) =>
                               handleAlterarStatus(funcionario.id, checked)
                             }
-                            disabled={
-                              funcionario.id === user?.id
-                            }
+                            disabled={funcionario.id === user?.id}
                             className="data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-gray-300"
                           />
                           <Badge
-                            variant={funcionario.ativo ? "default" : "secondary"}
-                            className={funcionario.ativo
-                              ? "bg-green-100 text-green-800 border-green-200"
-                              : "bg-gray-100 text-gray-600 border-gray-200"
+                            variant={
+                              funcionario.ativo ? "default" : "secondary"
+                            }
+                            className={
+                              funcionario.ativo
+                                ? "bg-green-100 text-green-800 border-green-200"
+                                : "bg-gray-100 text-gray-600 border-gray-200"
                             }
                           >
                             {funcionario.ativo ? "Ativo" : "Inativo"}
@@ -356,7 +360,9 @@ export default function ListaFuncionarios() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() => setFuncionarioParaEditar(funcionario)}
+                              onClick={() =>
+                                setFuncionarioParaEditar(funcionario)
+                              }
                             >
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
@@ -397,9 +403,11 @@ export default function ListaFuncionarios() {
               Tem certeza que deseja excluir este funcionário? Esta ação não
               pode ser desfeita e removerá todos os dados relacionados ao
               funcionário.
-              <br /><br />
-              <strong>Nota:</strong> Se o funcionário possuir lançamentos no Caixa,
-              a exclusão será impedida e você deverá desativá-lo ao invés de excluí-lo.
+              <br />
+              <br />
+              <strong>Nota:</strong> Se o funcionário possuir lançamentos no
+              Caixa, a exclusão será impedida e você deverá desativá-lo ao invés
+              de excluí-lo.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

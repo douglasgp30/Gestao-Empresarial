@@ -43,7 +43,7 @@ import {
   Shield,
 } from "lucide-react";
 import EmpresaLogo from "../components/EmpresaLogo";
-import LogsAuditoria from '../components/Auditoria/LogsAuditoria';
+import LogsAuditoria from "../components/Auditoria/LogsAuditoria";
 import { useEffect } from "react";
 
 export default function Configuracoes() {
@@ -892,11 +892,10 @@ export default function Configuracoes() {
                     Acesso Restrito
                   </h3>
                   <p className="text-sm text-red-600 mb-4">
-                    Apenas administradores podem visualizar os logs de auditoria.
+                    Apenas administradores podem visualizar os logs de
+                    auditoria.
                   </p>
-                  <Badge variant="destructive">
-                    Acesso negado
-                  </Badge>
+                  <Badge variant="destructive">Acesso negado</Badge>
                 </div>
               ) : (
                 <LogsAuditoria />
