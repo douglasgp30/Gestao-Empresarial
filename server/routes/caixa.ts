@@ -492,6 +492,23 @@ export const createLancamento: RequestHandler = async (req, res) => {
     });
 
     console.log("[Caixa] Lançamento criado com sucesso:", lancamento.id);
+
+    // Registrar auditoria
+    if (req.user) {
+      const infoRequisicao = extrairInfoRequisicao(req);
+      await AuditoriaService.registrarLog({
+        acao: "CREATE",
+        entidade: "lancamentos_caixa",
+        entidadeId: lancamento.id,
+        dadosNovos: dadosLancamento,
+        descricao: `Criou lançamento de ${data.tipo} no valor de R$ ${data.valor}`,
+        usuarioId: req.user.id,
+        usuarioNome: req.user.nome || req.user.nomeCompleto,
+        usuarioLogin: req.user.login,
+        ...infoRequisicao,
+      });
+    }
+
     res.status(201).json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
