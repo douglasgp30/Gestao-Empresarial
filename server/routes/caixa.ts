@@ -626,6 +626,24 @@ export const updateLancamento: RequestHandler = async (req, res) => {
     });
 
     console.log(`[Caixa] Lançamento atualizado com sucesso:`, lancamento.id);
+
+    // Registrar auditoria
+    if (req.user) {
+      const infoRequisicao = extrairInfoRequisicao(req);
+      await AuditoriaService.registrarLog({
+        acao: "UPDATE",
+        entidade: "lancamentos_caixa",
+        entidadeId: id,
+        dadosAntigos: lancamentoExistente,
+        dadosNovos: dadosAtualizacao,
+        descricao: `Editou lançamento de ${lancamentoExistente.tipo} no valor de R$ ${lancamentoExistente.valor}`,
+        usuarioId: req.user.id,
+        usuarioNome: req.user.nome || req.user.nomeCompleto,
+        usuarioLogin: req.user.login,
+        ...infoRequisicao,
+      });
+    }
+
     res.json(lancamento);
   } catch (error) {
     if (error instanceof z.ZodError) {
