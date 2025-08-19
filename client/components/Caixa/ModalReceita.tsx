@@ -127,8 +127,14 @@ export function ModalReceita() {
       const tecnico = tecnicos.find(
         (t) => t.id.toString() === formData.tecnicoResponsavel,
       );
+      console.log("🔍 [ModalReceita] Técnico selecionado:", tecnico);
+      console.log("🔍 [ModalReceita] Percentual comissão:", tecnico?.percentualComissao);
+      console.log("🔍 [ModalReceita] Valor líquido:", valorLiquidoCalculado);
+
       if (tecnico && tecnico.percentualComissao) {
-        return valorLiquidoCalculado * (tecnico.percentualComissao / 100);
+        const comissao = valorLiquidoCalculado * (tecnico.percentualComissao / 100);
+        console.log("🔍 [ModalReceita] Comissão calculada:", comissao);
+        return comissao;
       }
     }
     return 0;
