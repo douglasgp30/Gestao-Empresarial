@@ -262,8 +262,20 @@ export function PontoProvider({ children }: PontoProviderProps) {
   // Função para carregar funcionários com ponto
   const carregarFuncionariosComPonto = useCallback(async () => {
     try {
-      const resultado = await pontoApi.buscarFuncionariosComPonto();
-      setFuncionariosComPonto(resultado);
+      // Sempre carregar funcionários do localStorage primeiro
+      const funcionariosLocalStorage = await pontoLocalStorage.buscarFuncionariosComPonto();
+
+      // Tentar carregar funcionários do banco também
+      let funcionariosBanco: Funcionario[] = [];
+      try {
+        funcionariosBanco = await pontoApi.buscarFuncionariosComPonto();
+      } catch (error) {
+        console.log('Banco de funcionários não disponível, usando apenas localStorage');
+      }
+
+      // Combinar ambas as fontes
+      const todosFuncionarios = [...funcionariosLocalStorage, ...funcionariosBanco];
+      setFuncionariosComPonto(todosFuncionarios);
     } catch (error) {
       console.error('Erro ao carregar funcionários com ponto:', error);
     }
