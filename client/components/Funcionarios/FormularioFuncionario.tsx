@@ -233,7 +233,7 @@ export default function FormularioFuncionario({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
-            {isEditMode ? "Editar Funcionário" : "Cadastrar Novo Funcion��rio"}
+            {isEditMode ? "Editar Funcionário" : "Cadastrar Novo Funcionário"}
           </DialogTitle>
           <DialogDescription>
             {isEditMode
