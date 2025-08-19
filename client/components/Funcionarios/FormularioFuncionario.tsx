@@ -42,7 +42,7 @@ export default function FormularioFuncionario({
   funcionarioParaEditar,
   onFuncionarioAdicionado,
 }: FormularioFuncionarioProps = {}) {
-  const { adicionarFuncionario, funcionarios } = useFuncionarios();
+  const { adicionarFuncionario, editarFuncionario, funcionarios } = useFuncionarios();
   const [isOpen, setIsOpen] = useState(false);
 
   const [formData, setFormData] = useState({
