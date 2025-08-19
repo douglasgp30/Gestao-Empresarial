@@ -77,6 +77,7 @@ import Agendamentos from "./pages/Agendamentos";
 import Clientes from "./pages/Clientes";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
+import PrimeiroAcesso from "./components/Auth/PrimeiroAcesso";
 
 const queryClient = new QueryClient();
 
