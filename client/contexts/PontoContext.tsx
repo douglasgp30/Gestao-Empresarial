@@ -395,7 +395,8 @@ export function PontoProvider({ children }: PontoProviderProps) {
   useEffect(() => {
     if (user?.tipoAcesso === "Administrador") {
       carregarTodosPontos();
-    } else if (user?.id) {
+    } else if (user?.id && user?.registraPonto === true) {
+      // Só carregar histórico se o usuário pode registrar ponto
       carregarHistorico();
     }
   }, [filtros, user, carregarTodosPontos, carregarHistorico]);
