@@ -108,7 +108,7 @@ export const updateCliente: RequestHandler = middlewareAuditoria(
 
 export const deleteCliente: RequestHandler = middlewareAuditoria(
   'Cliente',
-  'delete',
+  'excluir',
   async (req, res) => {
     const id = parseInt(req.params.id);
     console.log(`[Clientes] Excluindo cliente ID: ${id}`);
