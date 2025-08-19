@@ -110,13 +110,42 @@ export default function ListaFuncionarios() {
       return a.nomeCompleto.localeCompare(b.nomeCompleto);
     });
 
+  const verificarLancamentosVinculados = async (funcionarioId: string): Promise<boolean> => {
+    try {
+      // Fazer requisição para verificar se há lançamentos no caixa vinculados a este funcionário
+      const response = await fetch(`/api/caixa/lancamentos?funcionarioId=${funcionarioId}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.data && data.data.length > 0;
+      }
+      return false;
+    } catch (error) {
+      console.error("Erro ao verificar lançamentos:", error);
+      return false;
+    }
+  };
+
   const handleExcluir = async (id: string) => {
     try {
+      // Verificar se há lançamentos vinculados
+      const temLancamentos = await verificarLancamentosVinculados(id);
+
+      if (temLancamentos) {
+        // Mostrar dialog informativo ao invés de excluir
+        alert(
+          "Não é possível excluir este funcionário pois ele possui lançamentos no Caixa vinculados. " +
+          "Para removê-lo do sistema, desative-o ao invés de excluí-lo."
+        );
+        setFuncionarioParaExcluir(null);
+        return;
+      }
+
+      // Se não há lançamentos, proceder com a exclusão
       await excluirFuncionario(id);
       setFuncionarioParaExcluir(null);
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
-      // TODO: Mostrar erro para o usuário
+      alert("Erro ao excluir funcionário. Tente novamente.");
     }
   };
 
