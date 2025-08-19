@@ -215,7 +215,7 @@ export const updateFuncionario: RequestHandler = middlewareAuditoria(
 
 export const deleteFuncionario: RequestHandler = middlewareAuditoria(
   'Funcionario',
-  'delete',
+  'excluir',
   async (req, res) => {
     const id = parseInt(req.params.id);
 
