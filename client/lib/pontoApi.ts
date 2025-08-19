@@ -50,7 +50,7 @@ class PontoApiService {
   // Buscar ponto do funcionário para hoje
   async buscarPontoHoje(funcionarioId: string): Promise<PontoDoFuncionario> {
     try {
-      const response = await apiService.get(`/api/ponto/funcionario/${funcionarioId}/hoje`);
+      const response = await apiService.get(`/ponto/funcionario/${funcionarioId}/hoje`);
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar ponto de hoje:', error);
