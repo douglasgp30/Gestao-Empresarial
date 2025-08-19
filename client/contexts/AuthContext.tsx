@@ -241,6 +241,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const funcionarios = [admin];
       localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
 
+      // Configurar dados básicos iniciais do sistema
+      await configurarDadosBasicosIniciais();
+
       // Atualizar o estado
       setPrecisaConfigurarPrimeiroAcesso(false);
 
@@ -255,6 +258,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(authUser);
       localStorage.setItem("auth_user", JSON.stringify(authUser));
+
+      console.log("🎉 Primeiro administrador criado e sistema configurado!");
     } catch (error) {
       console.error("Erro ao criar primeiro administrador:", error);
       throw error;
