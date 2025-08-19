@@ -4,13 +4,14 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Alert, AlertDescription } from '../ui/alert';
-import { 
-  CheckCircle, 
-  User, 
-  Key, 
-  Shield, 
+import {
+  CheckCircle,
+  User,
+  Key,
+  Shield,
   ArrowRight,
-  Building2
+  Building2,
+  Loader2
 } from 'lucide-react';
 import { z } from 'zod';
 import { toast } from 'sonner';
