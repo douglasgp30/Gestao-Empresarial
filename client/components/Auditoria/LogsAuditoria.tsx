@@ -477,7 +477,7 @@ export default function LogsAuditoria() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={getAcaoBadgeVariant(log.acao)}>
-                          {log.acao}
+                          {traduzirAcao(log.acao)}
                         </Badge>
                       </TableCell>
                       <TableCell className="capitalize">{log.entidade}</TableCell>
