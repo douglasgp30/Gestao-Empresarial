@@ -26,7 +26,7 @@ export const getClientes: RequestHandler = async (req, res) => {
 
 export const createCliente: RequestHandler = middlewareAuditoria(
   'Cliente',
-  'create',
+  'criar',
   async (req, res) => {
     console.log(
       "[Clientes] Dados recebidos:",
