@@ -374,16 +374,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === RECARREGAMENTO OTIMIZADO ===
   const recarregarDescricoesECategorias = useCallback(async () => {
     try {
-      console.log("[EntidadesContext] Recarregando descrições e categorias...");
-      const response = await descricoesECategoriasApi.listar();
-      if (response.data) {
-        setDescricoesECategorias(response.data);
-        console.log(
-          `[EntidadesContext] Recarregadas ${response.data.length} descrições/categorias`,
-        );
+      console.log("📦 [EntidadesContext] Recarregando descrições e categorias do localStorage...");
+
+      const descricoesStorage = localStorage.getItem("descricoes_e_categorias") || localStorage.getItem("categorias_receita");
+      if (descricoesStorage) {
+        const parsed = JSON.parse(descricoesStorage);
+        setDescricoesECategorias(parsed);
+        console.log(`📦 [EntidadesContext] Recarregadas ${parsed.length} descrições/categorias`);
       }
     } catch (error) {
-      console.error("Erro ao recarregar descrições e categorias:", error);
+      console.error("Erro ao recarregar descrições e categorias do localStorage:", error);
     }
   }, []);
 
