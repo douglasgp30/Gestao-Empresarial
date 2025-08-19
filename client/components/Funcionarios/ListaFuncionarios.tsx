@@ -232,7 +232,7 @@ export default function ListaFuncionarios() {
 
                       <TableCell>
                         <code className="bg-muted px-2 py-1 rounded text-sm">
-                          {funcionario.login}
+                          {funcionario.login || "Sem login"}
                         </code>
                       </TableCell>
 
