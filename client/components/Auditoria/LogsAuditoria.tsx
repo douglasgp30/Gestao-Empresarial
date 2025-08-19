@@ -172,6 +172,25 @@ export default function LogsAuditoria() {
     return format(new Date(dataHora), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR });
   };
 
+  const traduzirAcao = (acao: string): string => {
+    const traducoes: Record<string, string> = {
+      'create': 'Criar',
+      'criar': 'Criar',
+      'update': 'Atualizar',
+      'atualizar': 'Atualizar',
+      'delete': 'Excluir',
+      'excluir': 'Excluir',
+      'login': 'Login',
+      'logout': 'Logout',
+      'view': 'Visualizar',
+      'visualizar': 'Visualizar',
+      'export': 'Exportar',
+      'exportar': 'Exportar'
+    };
+
+    return traducoes[acao] || acao;
+  };
+
   const getAcaoBadgeVariant = (acao: string) => {
     switch (acao.toLowerCase()) {
       case 'create':
