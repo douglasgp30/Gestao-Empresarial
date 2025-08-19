@@ -124,7 +124,7 @@ export function PontoProvider({ children }: PontoProviderProps) {
       console.error('Erro ao carregar ponto de hoje:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível carregar o ponto de hoje.",
+        description: "Não foi poss��vel carregar o ponto de hoje.",
         variant: "destructive",
       });
     } finally {
@@ -133,7 +133,7 @@ export function PontoProvider({ children }: PontoProviderProps) {
   }, [user?.id]);
 
   // Função para registrar ponto
-  const registrarPonto = useCallback(async (observacao?: string) => {
+  const registrarPonto = useCallback(async (observacao?: string, vendeuAlmoco?: boolean) => {
     if (!user?.id) return;
 
     try {
