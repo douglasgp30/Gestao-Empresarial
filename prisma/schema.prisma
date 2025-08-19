@@ -525,7 +525,7 @@ model LogAuditoria {
 model Ponto {
   id                  Int      @id @default(autoincrement())
   funcionarioId       Int      // FK para Funcionario
-  data                DateTime @db.date // Data do ponto (sem horário)
+  data                DateTime // Data do ponto (sem horário)
   horaEntrada         DateTime? // Horário de entrada
   horaSaidaAlmoco     DateTime? // Horário de saída para almoço
   horaRetornoAlmoco   DateTime? // Horário de retorno do almoço
