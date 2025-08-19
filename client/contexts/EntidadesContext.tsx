@@ -362,8 +362,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       console.log("[EntidadesContext] Carregamento concluído com sucesso");
       setDadosCarregados(true);
     } catch (error) {
-      console.error("Erro ao carregar entidades:", error);
-      setError("Erro ao carregar dados do servidor");
+      console.error("Erro ao carregar entidades do localStorage:", error);
+      setError("Erro ao carregar dados locais");
 
       // Dados padrão em caso de erro
       setDescricoesECategorias([]);
