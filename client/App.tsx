@@ -75,6 +75,7 @@ import Funcionarios from "./pages/Funcionarios";
 import Relatorios from "./pages/Relatorios";
 import Agendamentos from "./pages/Agendamentos";
 import Clientes from "./pages/Clientes";
+import Ponto from "./pages/Ponto";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 import PrimeiroAcesso from "./components/Auth/PrimeiroAcesso";
