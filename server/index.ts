@@ -199,6 +199,9 @@ export function createServer(): Express {
   // Rotas de Auditoria (apenas para administradores)
   app.use("/api/auditoria", auditoriaRouter);
 
+  // Rotas de Controle de Ponto
+  app.use("/api/ponto", pontoRouter);
+
   // Rotas de Clientes
   app.get("/api/clientes", getClientes);
   app.post("/api/clientes", createCliente);
