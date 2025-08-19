@@ -259,6 +259,10 @@ export default function Configuracoes() {
             <AlertTriangle className="h-4 w-4 mr-2" />
             Limpeza
           </TabsTrigger>
+          <TabsTrigger value="auditoria">
+            <Shield className="h-4 w-4 mr-2" />
+            Auditoria
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="empresa" className="space-y-6">
