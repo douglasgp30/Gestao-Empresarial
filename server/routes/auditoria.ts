@@ -84,20 +84,16 @@ const getEntidades: RequestHandler = async (req, res) => {
     }
 
     const entidades = [
-      { valor: "lancamentos_caixa", label: "Lançamentos do Caixa" },
-      { valor: "funcionarios", label: "Funcionários" },
-      { valor: "clientes", label: "Clientes" },
-      { valor: "fornecedores", label: "Fornecedores" },
-      { valor: "contas", label: "Contas a Pagar/Receber" },
-      { valor: "agendamentos", label: "Agendamentos" },
-      { valor: "campanhas", label: "Campanhas" },
-      { valor: "descricoes_e_categorias", label: "Descrições e Categorias" },
-      { valor: "formas_pagamento", label: "Formas de Pagamento" },
-      { valor: "auth", label: "Autenticação" },
-      { valor: "configuracoes", label: "Configurações" },
+      "Funcionario",
+      "Cliente",
+      "LancamentoCaixa",
+      "Conta",
+      "Agendamento",
+      "Campanha",
+      "Fornecedor"
     ];
 
-    res.json({ data: entidades });
+    res.json(entidades);
   } catch (error) {
     console.error("Erro ao obter entidades:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
@@ -115,19 +111,16 @@ const getAcoes: RequestHandler = async (req, res) => {
     }
 
     const acoes = [
-      { valor: "CREATE", label: "Criação" },
-      { valor: "UPDATE", label: "Edição" },
-      { valor: "DELETE", label: "Exclusão" },
-      { valor: "LOGIN", label: "Login" },
-      { valor: "LOGOUT", label: "Logout" },
-      { valor: "VIEW", label: "Visualização" },
-      { valor: "EXPORT", label: "Exportação" },
-      { valor: "IMPORT", label: "Importação" },
-      { valor: "APPROVE", label: "Aprovação" },
-      { valor: "REJECT", label: "Rejeição" },
+      "create",
+      "update",
+      "delete",
+      "login",
+      "logout",
+      "view",
+      "export"
     ];
 
-    res.json({ data: acoes });
+    res.json(acoes);
   } catch (error) {
     console.error("Erro ao obter ações:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
