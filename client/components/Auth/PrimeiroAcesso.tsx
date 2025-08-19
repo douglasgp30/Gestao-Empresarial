@@ -174,7 +174,7 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <CheckCircle className="w-5 h-5 text-green-600" />
-          O que você poder�� fazer:
+          O que você poderá fazer:
         </h3>
         
         <div className="grid gap-3">
