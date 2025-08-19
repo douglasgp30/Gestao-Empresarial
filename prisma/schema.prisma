@@ -168,6 +168,7 @@ model Funcionario {
   login             String?  @unique
   senha             String?
   permissoes        String? // JSON das permissões
+  registraPonto     Boolean  @default(false) // Define se o funcionário pode usar o controle de ponto
   dataCriacao       DateTime @default(now())
 
   // Relacionamentos
@@ -176,11 +177,13 @@ model Funcionario {
   contasLancamento      ContaLancamento[] @relation("FuncionarioLancamento")
   contasPagamento       ContaLancamento[] @relation("FuncionarioPagamento")
   contasCobranca        ContaLancamento[] @relation("FuncionarioCobranca")
+  pontos                Ponto[] // Relacionamento com registros de ponto
 
   @@map("funcionarios")
   @@index([email])
   @@index([temAcessoSistema])
   @@index([tipoAcesso])
+  @@index([registraPonto])
 }
 
 
