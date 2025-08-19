@@ -190,22 +190,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     return data.toISOString().split("T")[0];
   };
 
-  // Função para carregar lançamentos com base nos filtros
+  // Função para carregar lançamentos com base nos filtros (localStorage)
   const carregarLancamentos = useCallback(
     async (forceLoad = false) => {
       try {
         // Evitar múltiplas chamadas simultâneas, exceto quando forçado
-        if (
-          (isContextLoading("CaixaContext-lancamentos") || isCarregando) &&
-          !forceLoad
-        ) {
+        if (isCarregando && !forceLoad) {
           console.log(
             "[CaixaContext] Carregamento de lançamentos já em andamento, ignorando...",
           );
           return;
         }
 
-        setContextLoading("CaixaContext-lancamentos", true);
+        console.log("📦 [CaixaContext] Recarregando lançamentos do localStorage...");
 
         const filtrosApi: any = {
           dataInicio: formatarDataParaServidor(filtros.dataInicio),
