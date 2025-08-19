@@ -214,18 +214,26 @@ export default function FormularioFuncionario({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          Novo Funcionário
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (onCloseProp && !open) {
+        onCloseProp();
+      } else {
+        setIsOpen(open);
+      }
+    }}>
+      {!isEditMode && (
+        <DialogTrigger asChild>
+          <Button className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Novo Funcionário
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
-            {isEditMode ? "Editar Funcionário" : "Cadastrar Novo Funcionário"}
+            {isEditMode ? "Editar Funcionário" : "Cadastrar Novo Funcion��rio"}
           </DialogTitle>
           <DialogDescription>
             {isEditMode
