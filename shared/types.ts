@@ -304,3 +304,80 @@ export interface LembreteAgendamento {
   lido: boolean;
   adiado?: boolean;
 }
+
+// ===== SISTEMA DE CONTROLE DE PONTO =====
+
+export interface Ponto {
+  id: string;
+  funcionarioId: string;
+  data: Date; // Data do ponto (apenas data, sem horário)
+  horaEntrada?: Date; // Horário de entrada completo
+  horaSaidaAlmoco?: Date; // Horário de saída para almoço
+  horaRetornoAlmoco?: Date; // Horário de retorno do almoço
+  horaSaida?: Date; // Horário de saída final
+  observacao?: string; // Observações do registro
+  totalHoras?: number; // Total de horas trabalhadas (em horas decimais)
+  horasExtras?: number; // Horas extras (se houver)
+  atraso?: number; // Minutos de atraso (se houver)
+  justificativaAtraso?: string; // Justificativa para atraso
+  editadoPorAdmin?: boolean; // Se foi editado por administrador
+  usuarioEdicao?: string; // Usuário que fez a última edição
+  dataEdicao?: Date; // Data da última edição
+  dataCriacao: Date;
+
+  // Relacionamentos
+  funcionario?: Funcionario;
+}
+
+export interface RegistroPonto {
+  funcionarioId: string;
+  data: Date;
+  tipoBatida: "entrada" | "saida_almoco" | "retorno_almoco" | "saida";
+  horario: Date;
+  observacao?: string;
+}
+
+export interface PontoDoFuncionario {
+  funcionario: Funcionario;
+  ponto?: Ponto;
+  proximaBatida: "entrada" | "saida_almoco" | "retorno_almoco" | "saida" | "completo";
+  podeRegistrar: boolean;
+}
+
+export interface FiltrosPonto {
+  dataInicio: Date;
+  dataFim: Date;
+  funcionarioId?: string;
+  status?: "todos" | "completo" | "incompleto" | "com_atraso" | "com_extras";
+  __timestamp?: number;
+}
+
+export interface RelatorioPonto {
+  funcionario: Funcionario;
+  periodo: {
+    dataInicio: Date;
+    dataFim: Date;
+  };
+  pontos: Ponto[];
+  estatisticas: {
+    totalDiasTrabalhados: number;
+    totalHorasTrabalhadas: number;
+    totalHorasExtras: number;
+    totalMinutosAtraso: number;
+    diasComAtraso: number;
+    diasComHorasExtras: number;
+    mediaHorasDiarias: number;
+  };
+}
+
+export interface ConfiguracaoPonto {
+  horaInicioExpediente: string; // "08:00"
+  horaFimExpediente: string; // "18:00"
+  horaInicioAlmoco: string; // "12:00"
+  horaFimAlmoco: string; // "13:00"
+  cargaHorariaDiaria: number; // 8 horas
+  toleranciaAtraso: number; // 15 minutos
+  calcularHorasExtrasApos: number; // 8 horas
+  permitirBatidaForaHorario: boolean;
+  obrigarJustificativaAtraso: boolean;
+}
