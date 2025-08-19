@@ -250,11 +250,11 @@ export default function ModalDescricoesSimples() {
     } catch (error) {
       console.error("❌ Erro no handleDelete:", error);
       console.error("❌ Error type:", typeof error);
-      console.error("❌ Error details:", {
+      console.error("❌ Error details:", JSON.stringify({
         name: error instanceof Error ? error.name : "unknown",
         message: error instanceof Error ? error.message : "unknown",
-        stack: error instanceof Error ? error.stack : "unknown"
-      });
+        stack: error instanceof Error ? error.stack?.substring(0, 200) : "unknown"
+      }, null, 2));
 
       const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
       toast.error(errorMessage);
