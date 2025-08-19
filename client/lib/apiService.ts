@@ -19,14 +19,17 @@ async function apiRequest<T>(
 ): Promise<ApiResponse<T>> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      console.log(
-        `[ApiService] Fazendo requisição para: ${API_BASE}${endpoint} (tentativa ${attempt + 1})`,
-        `Fetch interceptado: ${isFetchIntercepted()}`,
-      );
+      // Log mais silencioso durante desenvolvimento
+      if (attempt === 0) {
+        console.log(`[ApiService] ${endpoint} (tentativa ${attempt + 1})`);
+      } else {
+        console.log(`[ApiService] Retry ${attempt + 1} para ${endpoint}`);
+      }
 
-      // Adicionar timeout para evitar travamentos - aumentado para 30s durante hot reload
+      // Timeout mais curto para primeira tentativa, mais longo para retries
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout para evitar falhas durante reload
+      const timeout = attempt === 0 ? 10000 : 30000; // 10s primeira tentativa, 30s retries
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       // Escolher qual fetch usar baseado na interceptação
       let fetchToUse = window.fetch;
