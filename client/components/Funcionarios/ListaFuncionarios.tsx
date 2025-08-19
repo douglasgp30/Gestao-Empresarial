@@ -303,8 +303,7 @@ export default function ListaFuncionarios() {
                               handleAlterarStatus(funcionario.id, checked)
                             }
                             disabled={
-                              funcionario.id === user?.id ||
-                              funcionario.id === "1"
+                              funcionario.id === user?.id
                             }
                             className="data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-gray-300"
                           />
