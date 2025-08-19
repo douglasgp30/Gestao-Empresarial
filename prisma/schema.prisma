@@ -169,6 +169,7 @@ model Funcionario {
   senha             String?
   permissoes        String? // JSON das permissões
   registraPonto     Boolean  @default(false) // Define se o funcionário pode usar o controle de ponto
+  jornadaDiaria     Float?   @default(8.0) // Horas que o funcionário deve trabalhar por dia
   dataCriacao       DateTime @default(now())
 
   // Relacionamentos
