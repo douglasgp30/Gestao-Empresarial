@@ -42,6 +42,7 @@ import {
   Shield,
 } from "lucide-react";
 import EmpresaLogo from "../components/EmpresaLogo";
+import LogsAuditoria from '../components/Auditoria/LogsAuditoria';
 import { useEffect } from "react";
 
 export default function Configuracoes() {
