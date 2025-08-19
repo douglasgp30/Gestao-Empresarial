@@ -108,11 +108,6 @@ export default function Login() {
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t text-center text-sm text-muted-foreground">
-            <p>Contas de teste:</p>
-            <p><strong>Admin:</strong> admin / admin123</p>
-            <p><strong>Operador:</strong> joao / 123456</p>
-          </div>
         </CardContent>
       </Card>
     </div>
