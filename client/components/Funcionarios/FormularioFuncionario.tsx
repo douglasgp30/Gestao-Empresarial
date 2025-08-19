@@ -401,17 +401,26 @@ export default function FormularioFuncionario({
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="registraPonto"
-                    checked={formData.registraPonto}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, registraPonto: checked })
-                    }
-                  />
-                  <Label htmlFor="registraPonto">
-                    Pode registrar ponto
-                  </Label>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="registraPonto"
+                      checked={formData.registraPonto}
+                      disabled={formData.tipoAcesso === "Administrador"}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, registraPonto: checked })
+                      }
+                    />
+                    <Label htmlFor="registraPonto">
+                      Pode registrar ponto
+                    </Label>
+                  </div>
+
+                  {formData.tipoAcesso === "Administrador" && (
+                    <div className="text-sm text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
+                      ⚠️ Administradores não registram ponto próprio - apenas gerenciam pontos de outros funcionários
+                    </div>
+                  )}
                 </div>
 
                 {formData.registraPonto && (
