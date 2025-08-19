@@ -207,27 +207,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         // Simplesmente recarregar do localStorage
         await carregarLancamentosLocalStorage();
       } catch (error) {
-        console.error("Erro ao carregar lançamentos:", error);
-
-        // Tratar erros de conectividade durante desenvolvimento
-        if (error instanceof Error) {
-          const isNetworkError =
-            error.message.includes("Failed to fetch") ||
-            error.message.includes("NetworkError") ||
-            error.message.includes("conectividade");
-
-          if (isNetworkError) {
-            console.log("📡 [CaixaContext] Erro de conectividade durante desenvolvimento, ignorando...");
-            // Durante desenvolvimento, ignorar erros de rede temporários
-            return;
-          }
-        }
-
-        // Para outros tipos de erro, mostrar ao usuário
-        console.error("❌ [CaixaContext] Erro persistente ao carregar lançamentos:", error);
-        setError("Erro ao carregar lançamentos");
-      } finally {
-        setContextLoading("CaixaContext-lancamentos", false);
+        console.error("Erro ao carregar lançamentos do localStorage:", error);
+        setError("Erro ao carregar lançamentos locais");
       }
     },
     [filtros, isCarregando],
