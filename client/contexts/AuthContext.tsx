@@ -234,12 +234,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("auth_user");
   };
 
+  const criarPrimeiroAdministrador = async (admin: Funcionario) => {
+    try {
+      // Salvar o administrador no localStorage
+      const funcionarios = [admin];
+      localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
+
+      // Atualizar o estado
+      setPrecisaConfigurarPrimeiroAcesso(false);
+
+      // Fazer login automático
+      const authUser: AuthUser = {
+        id: admin.id,
+        nomeCompleto: admin.nomeCompleto,
+        login: admin.login,
+        tipoAcesso: admin.tipoAcesso,
+        permissaoAcesso: admin.permissaoAcesso,
+      };
+
+      setUser(authUser);
+      localStorage.setItem("auth_user", JSON.stringify(authUser));
+    } catch (error) {
+      console.error("Erro ao criar primeiro administrador:", error);
+      throw error;
+    }
+  };
+
   const value = {
     user,
     login,
     logout,
     isLoading,
     isAuthenticated: !!user,
+    precisaConfigurarPrimeiroAcesso,
+    criarPrimeiroAdministrador,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
