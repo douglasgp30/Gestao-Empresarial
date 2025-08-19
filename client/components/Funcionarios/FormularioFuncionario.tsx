@@ -462,7 +462,10 @@ export default function FormularioFuncionario({
               Cancelar
             </Button>
             <Button type="submit" className="flex-1" disabled={submitting}>
-              {submitting ? "Cadastrando..." : "Cadastrar Funcionário"}
+              {submitting
+                ? (isEditMode ? "Salvando..." : "Cadastrando...")
+                : (isEditMode ? "Salvar Alterações" : "Cadastrar Funcionário")
+              }
             </Button>
           </div>
         </form>
