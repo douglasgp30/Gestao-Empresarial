@@ -552,3 +552,20 @@ model Ponto {
   @@index([dataCriacao])
   @@unique([funcionarioId, data]) // Um registro por funcionário por dia
 }
+
+// Configurações do Sistema de Ponto
+model ConfiguracaoPonto {
+  id                      Int      @id @default(autoincrement())
+  horaInicioExpediente    String   @default("08:00") // Horário padrão de início do expediente
+  horaFimExpediente       String   @default("18:00") // Horário padrão de fim do expediente
+  jornadaDiariaPadrao     Float    @default(8.0) // Jornada diária padrão em horas
+  intervaloAlmocoMinutos  Int      @default(60) // Tempo padrão de almoço em minutos
+  toleranciaAtrasoMinutos Int      @default(10) // Tolerância para atraso em minutos
+  permitirHorasExtras     Boolean  @default(true) // Se permite horas extras
+  exigirJustificativaAtraso Boolean @default(true) // Se exige justificativa para atraso > tolerância
+  ativo                   Boolean  @default(true)
+  dataCriacao             DateTime @default(now())
+  dataAlteracao           DateTime @updatedAt
+
+  @@map("configuracoes_ponto")
+}
