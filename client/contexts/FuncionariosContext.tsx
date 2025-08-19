@@ -260,34 +260,59 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     novoFuncionario: Omit<Funcionario, "id" | "dataCadastro">,
   ) => {
     try {
-      // Preparar dados para a API
-      const dadosApi = {
-        nome: novoFuncionario.nomeCompleto,
-        ehTecnico: novoFuncionario.ehTecnico || false,
-        email: novoFuncionario.email,
-        telefone: novoFuncionario.telefone,
-        cargo: novoFuncionario.cargo,
-        salario: novoFuncionario.salario,
-        percentualComissao:
-          typeof novoFuncionario.percentualComissao === "string"
-            ? parseFloat(novoFuncionario.percentualComissao) || 0
-            : novoFuncionario.percentualComissao || 0,
-        temAcessoSistema: novoFuncionario.permissaoAcesso || false,
-        tipoAcesso: novoFuncionario.tipoAcesso,
-        login: novoFuncionario.login,
-        senha: novoFuncionario.senha,
-        permissoes: novoFuncionario.permissoes
-          ? JSON.stringify(novoFuncionario.permissoes)
-          : undefined,
+      console.log("[FuncionariosContext] Adicionando novo funcionário:", novoFuncionario.nomeCompleto);
+
+      // Gerar ID único para o localStorage
+      const novoId = Date.now().toString();
+
+      const funcionarioCompleto: Funcionario = {
+        ...novoFuncionario,
+        id: novoId,
+        dataCadastro: new Date(),
+        ativo: true,
       };
 
-      const response = await funcionariosApi.criar(dadosApi);
-      if (response.error) {
-        throw new Error(response.error);
+      // Adicionar ao localStorage
+      const funcionariosAtuais = carregarFuncionariosReais();
+      const novosFuncionarios = [...funcionariosAtuais, funcionarioCompleto];
+
+      salvarFuncionariosNoLocalStorage(novosFuncionarios);
+      setFuncionarios(novosFuncionarios);
+
+      console.log("[FuncionariosContext] Funcionário adicionado com sucesso ao localStorage");
+
+      // Tentar salvar na API também (se disponível)
+      try {
+        const dadosApi = {
+          nome: novoFuncionario.nomeCompleto,
+          ehTecnico: novoFuncionario.ehTecnico || false,
+          email: novoFuncionario.email,
+          telefone: novoFuncionario.telefone,
+          cargo: novoFuncionario.cargo,
+          salario: novoFuncionario.salario,
+          percentualComissao:
+            typeof novoFuncionario.percentualComissao === "string"
+              ? parseFloat(novoFuncionario.percentualComissao) || 0
+              : novoFuncionario.percentualComissao || 0,
+          temAcessoSistema: novoFuncionario.permissaoAcesso || false,
+          tipoAcesso: novoFuncionario.tipoAcesso,
+          login: novoFuncionario.login,
+          senha: novoFuncionario.senha,
+          permissoes: novoFuncionario.permissoes
+            ? JSON.stringify(novoFuncionario.permissoes)
+            : undefined,
+        };
+
+        const response = await funcionariosApi.criar(dadosApi);
+        if (response.error) {
+          console.warn("Erro ao salvar na API, mas funcionário foi salvo localmente:", response.error);
+        } else {
+          console.log("[FuncionariosContext] Funcionário também salvo na API");
+        }
+      } catch (apiError) {
+        console.warn("API não disponível, funcionário salvo apenas localmente:", apiError);
       }
 
-      // Recarregar lista de funcionários
-      await carregarFuncionarios();
     } catch (error) {
       console.error("Erro ao adicionar funcionário:", error);
       throw error;
