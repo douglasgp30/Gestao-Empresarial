@@ -49,7 +49,7 @@ import {
   Filter
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { apiService } from '../../lib/apiService';
+// import { apiService } from '../../lib/apiService'; // Removido para usar localStorage
 
 interface LogAuditoria {
   id: number;
