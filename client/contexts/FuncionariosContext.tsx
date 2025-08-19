@@ -208,12 +208,16 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         let funcionariosCarregados = carregarFuncionariosReais();
 
         // Limpar duplicados se houver
-        const funcionariosUnicos = funcionariosCarregados.filter((func, index, arr) => {
-          return arr.findIndex(f => f.id === func.id) === index;
-        });
+        const funcionariosUnicos = funcionariosCarregados.filter(
+          (func, index, arr) => {
+            return arr.findIndex((f) => f.id === func.id) === index;
+          },
+        );
 
         if (funcionariosCarregados.length !== funcionariosUnicos.length) {
-          console.log(`[FuncionariosContext] Removendo ${funcionariosCarregados.length - funcionariosUnicos.length} duplicados`);
+          console.log(
+            `[FuncionariosContext] Removendo ${funcionariosCarregados.length - funcionariosUnicos.length} duplicados`,
+          );
           funcionariosCarregados = funcionariosUnicos;
           salvarFuncionariosNoLocalStorage(funcionariosUnicos);
         }
@@ -227,7 +231,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         // Debug detalhado
         console.log("[FuncionariosContext] Funcionários carregados:");
         funcionariosCarregados.forEach((func, index) => {
-          console.log(`  ${index + 1}. ${func.nomeCompleto} (ID: ${func.id}) - Ativo: ${func.ativo}`);
+          console.log(
+            `  ${index + 1}. ${func.nomeCompleto} (ID: ${func.id}) - Ativo: ${func.ativo}`,
+          );
         });
       } catch (error) {
         console.error("Erro ao carregar funcionários do localStorage:", error);
@@ -260,7 +266,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     novoFuncionario: Omit<Funcionario, "id" | "dataCadastro">,
   ) => {
     try {
-      console.log("[FuncionariosContext] Adicionando novo funcionário:", novoFuncionario.nomeCompleto);
+      console.log(
+        "[FuncionariosContext] Adicionando novo funcionário:",
+        novoFuncionario.nomeCompleto,
+      );
 
       // Gerar ID único para o localStorage
       const novoId = Date.now().toString();
@@ -279,7 +288,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       salvarFuncionariosNoLocalStorage(novosFuncionarios);
       setFuncionarios(novosFuncionarios);
 
-      console.log("[FuncionariosContext] Funcionário adicionado com sucesso ao localStorage");
+      console.log(
+        "[FuncionariosContext] Funcionário adicionado com sucesso ao localStorage",
+      );
 
       // Tentar salvar na API também (se disponível)
       try {
@@ -305,14 +316,19 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
 
         const response = await funcionariosApi.criar(dadosApi);
         if (response.error) {
-          console.warn("Erro ao salvar na API, mas funcionário foi salvo localmente:", response.error);
+          console.warn(
+            "Erro ao salvar na API, mas funcionário foi salvo localmente:",
+            response.error,
+          );
         } else {
           console.log("[FuncionariosContext] Funcionário também salvo na API");
         }
       } catch (apiError) {
-        console.warn("API não disponível, funcionário salvo apenas localmente:", apiError);
+        console.warn(
+          "API não disponível, funcionário salvo apenas localmente:",
+          apiError,
+        );
       }
-
     } catch (error) {
       console.error("Erro ao adicionar funcionário:", error);
       throw error;
