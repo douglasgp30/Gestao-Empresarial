@@ -285,14 +285,18 @@ export class PontoLocalStorageService {
       
       // Filtrar por período se especificado
       if (dataInicio && dataFim) {
-        const dataPonto = new Date(p.data);
+        const dataPonto = p.data instanceof Date ? p.data : new Date(p.data);
         if (dataPonto < dataInicio || dataPonto > dataFim) {
           return false;
         }
       }
-      
+
       return true;
-    }).sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+    }).sort((a, b) => {
+      const dataA = a.data instanceof Date ? a.data : new Date(a.data);
+      const dataB = b.data instanceof Date ? b.data : new Date(b.data);
+      return dataB.getTime() - dataA.getTime();
+    });
   }
 
   // Editar ponto (admin)
