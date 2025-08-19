@@ -113,7 +113,8 @@ export default function FormularioFuncionario({
         // Verificar se o login já existe (frontend validation)
         const loginExistente = funcionarios.find(
           (func) =>
-            func.login?.toLowerCase() === formData.login.trim().toLowerCase(),
+            func.login?.toLowerCase() === formData.login.trim().toLowerCase() &&
+            (!isEditMode || func.id !== funcionarioParaEditar?.id), // Ignorar o próprio funcionário na edição
         );
         if (loginExistente) {
           newErrors.login =
