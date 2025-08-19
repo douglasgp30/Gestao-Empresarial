@@ -27,6 +27,7 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
   
   const [observacao, setObservacao] = useState("");
   const [mostrarObservacao, setMostrarObservacao] = useState(false);
+  const [vendeuAlmoco, setVendeuAlmoco] = useState(false);
 
   const handleRegistrarPonto = async () => {
     try {
