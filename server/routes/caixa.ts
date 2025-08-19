@@ -367,13 +367,13 @@ export const createLancamento: RequestHandler = async (req, res) => {
       );
     }
 
-    if (ids.setorId) {
-      const setor = await prisma.localizacaoGeografica.findUnique({
-        where: { id: ids.setorId },
+    if (ids.localizacaoId) {
+      const localizacao = await prisma.localizacaoGeografica.findUnique({
+        where: { id: ids.localizacaoId },
       });
       console.log(
-        `[Caixa] Setor ID ${ids.setorId}:`,
-        setor ? "EXISTS" : "NOT FOUND",
+        `[Caixa] Localização ID ${ids.localizacaoId}:`,
+        localizacao ? "EXISTS" : "NOT FOUND",
       );
     }
 
