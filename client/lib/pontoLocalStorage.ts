@@ -91,6 +91,10 @@ function calcularHorasExtras(totalHoras: number, cargaHorariaDiaria: number = 8)
   return Math.max(0, totalHoras - cargaHorariaDiaria);
 }
 
+function calcularSaldoHoras(totalHoras: number, cargaHorariaDiaria: number = 8): number {
+  return totalHoras - cargaHorariaDiaria;
+}
+
 function determinarProximaBatida(ponto?: Ponto): string {
   if (!ponto) return "entrada";
   if (!ponto.horaEntrada) return "entrada";
