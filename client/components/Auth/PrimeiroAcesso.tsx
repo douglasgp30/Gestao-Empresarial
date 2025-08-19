@@ -266,7 +266,7 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
             type="password"
             value={formData.senha}
             onChange={(e) => handleInputChange('senha', e.target.value)}
-            placeholder="Digite uma senha segura (mínimo 8 caracteres)"
+            placeholder="Digite uma senha (mínimo 6 caracteres)"
             disabled={isLoading}
           />
           {errors.senha && (
