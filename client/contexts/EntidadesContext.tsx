@@ -530,14 +530,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       descricoesECategorias,
       getCategorias,
       getDescricoes,
-      adicionarDescricaoECategoria,
-      editarDescricaoECategoria,
-      excluirDescricaoECategoria,
+      adicionarDescricaoECategoria: criarDescricaoOuCategoria,
+      editarDescricaoECategoria: atualizarDescricaoOuCategoria,
+      excluirDescricaoECategoria: excluirDescricaoOuCategoria,
 
       // Entidades principais
       formasPagamento,
-      adicionarFormaPagamento,
-      editarFormaPagamento,
+      adicionarFormaPagamento: criarFormaPagamento,
+      editarFormaPagamento: atualizarFormaPagamento,
       excluirFormaPagamento,
 
       funcionarios,
@@ -550,8 +550,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       localizacoesGeograficas,
       getCidades,
       getSetores,
-      adicionarLocalizacaoGeografica,
-      editarLocalizacaoGeografica,
+      adicionarLocalizacaoGeografica: criarLocalizacaoGeografica,
+      editarLocalizacaoGeografica: atualizarLocalizacaoGeografica,
       excluirLocalizacaoGeografica,
 
       // Arrays de compatibilidade para componentes antigos
