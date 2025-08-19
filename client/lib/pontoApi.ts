@@ -11,6 +11,7 @@ import type {
 export interface RegistrarPontoRequest {
   funcionarioId: string;
   observacao?: string;
+  vendeuAlmoco?: boolean;
 }
 
 export interface RegistrarPontoAdminRequest {
