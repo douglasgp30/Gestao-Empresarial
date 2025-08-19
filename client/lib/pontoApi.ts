@@ -51,10 +51,26 @@ class PontoApiService {
   async buscarPontoHoje(funcionarioId: string): Promise<PontoDoFuncionario> {
     try {
       const response = await apiService.get(`/ponto/funcionario/${funcionarioId}/hoje`);
+
+      // Verificar se a resposta é válida
+      if (!response || !response.data) {
+        console.warn('Resposta da API de ponto é inválida:', response);
+        return {
+          ponto: undefined,
+          proximaBatida: "entrada",
+          podeRegistrar: true
+        };
+      }
+
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar ponto de hoje:', error);
-      throw error;
+      // Retornar um objeto padrão em caso de erro
+      return {
+        ponto: undefined,
+        proximaBatida: "entrada",
+        podeRegistrar: true
+      };
     }
   }
 
