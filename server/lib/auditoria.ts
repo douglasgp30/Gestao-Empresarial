@@ -146,48 +146,7 @@ export function extrairInfoRequisicao(req: any) {
   };
 }
 
-// Middleware para auditoria automática
-export function middlewareAuditoria(
-  acao: string,
-  entidade: string,
-  obterDescricao?: (dados: any) => string
-) {
-  return async (req: any, res: any, next: any) => {
-    const inicioTempo = Date.now();
-    const infoRequisicao = extrairInfoRequisicao(req);
-
-    // Interceptar o response para capturar dados
-    const originalSend = res.send;
-    res.send = function(data: any) {
-      const duracaoMs = Date.now() - inicioTempo;
-
-      // Registrar log após a operação
-      if (req.user) {
-        const descricao = obterDescricao ? obterDescricao(req.body) : `${acao} em ${entidade}`;
-
-        AuditoriaService.registrarLog({
-          acao,
-          entidade,
-          entidadeId: req.params.id,
-          dadosNovos: req.body,
-          descricao,
-          usuarioId: req.user.id,
-          usuarioNome: req.user.nome || req.user.nomeCompleto,
-          usuarioLogin: req.user.login,
-          ...infoRequisicao,
-          sucesso: res.statusCode < 400,
-          duracaoMs,
-        });
-      }
-
-      return originalSend.call(this, data);
-    };
-
-    next();
-  };
-}
-
-// Versão com handler customizado
+// Middleware para auditoria com handler customizado
 export function middlewareAuditoria(
   entidade: string,
   acao: string,
@@ -247,5 +206,46 @@ export function middlewareAuditoria(
         res.status(500).json({ error: "Erro interno do servidor" });
       }
     }
+  };
+}
+
+// Middleware simples para auditoria automática (compatibilidade)
+export function middlewareAuditoriaSimples(
+  acao: string,
+  entidade: string,
+  obterDescricao?: (dados: any) => string
+) {
+  return async (req: any, res: any, next: any) => {
+    const inicioTempo = Date.now();
+    const infoRequisicao = extrairInfoRequisicao(req);
+
+    // Interceptar o response para capturar dados
+    const originalSend = res.send;
+    res.send = function(data: any) {
+      const duracaoMs = Date.now() - inicioTempo;
+
+      // Registrar log após a operação
+      if (req.user) {
+        const descricao = obterDescricao ? obterDescricao(req.body) : `${acao} em ${entidade}`;
+
+        AuditoriaService.registrarLog({
+          acao,
+          entidade,
+          entidadeId: req.params.id,
+          dadosNovos: req.body,
+          descricao,
+          usuarioId: req.user.id,
+          usuarioNome: req.user.nome || req.user.nomeCompleto,
+          usuarioLogin: req.user.login,
+          ...infoRequisicao,
+          sucesso: res.statusCode < 400,
+          duracaoMs,
+        });
+      }
+
+      return originalSend.call(this, data);
+    };
+
+    next();
   };
 }
