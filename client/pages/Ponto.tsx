@@ -86,36 +86,42 @@ function PontoContent() {
 
       {/* Navegação por abas */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-          <TabsTrigger value="ponto" className="flex items-center space-x-2">
-            <Clock className="h-4 w-4" />
-            <span>Bater Ponto</span>
-          </TabsTrigger>
-          
-          <TabsTrigger value="historico" className="flex items-center space-x-2">
-            <History className="h-4 w-4" />
-            <span>Meu Histórico</span>
-          </TabsTrigger>
+        {isAdmin ? (
+          // Layout para Administradores - foco na gestão
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="gerenciar" className="flex items-center space-x-2">
+              <Users className="h-4 w-4" />
+              <span>Gerenciar Pontos</span>
+            </TabsTrigger>
 
-          {isAdmin && (
-            <>
-              <TabsTrigger value="gerenciar" className="flex items-center space-x-2">
-                <Users className="h-4 w-4" />
-                <span>Gerenciar</span>
+            <TabsTrigger value="relatorios" className="flex items-center space-x-2">
+              <Settings className="h-4 w-4" />
+              <span>Relatórios</span>
+            </TabsTrigger>
+          </TabsList>
+        ) : (
+          // Layout para Funcionários - foco no registro próprio
+          <TabsList className="grid w-full grid-cols-2">
+            {podeRegistrarPonto && (
+              <TabsTrigger value="ponto" className="flex items-center space-x-2">
+                <Clock className="h-4 w-4" />
+                <span>Bater Ponto</span>
               </TabsTrigger>
+            )}
 
-              <TabsTrigger value="relatorios" className="flex items-center space-x-2">
-                <Settings className="h-4 w-4" />
-                <span>Relatórios</span>
-              </TabsTrigger>
-            </>
-          )}
-        </TabsList>
+            <TabsTrigger value="historico" className="flex items-center space-x-2">
+              <History className="h-4 w-4" />
+              <span>Meu Histórico</span>
+            </TabsTrigger>
+          </TabsList>
+        )}
 
         {/* Conteúdo das abas */}
-        <TabsContent value="ponto" className="space-y-6">
-          <BaterPonto />
-        </TabsContent>
+        {podeRegistrarPonto && (
+          <TabsContent value="ponto" className="space-y-6">
+            <BaterPonto />
+          </TabsContent>
+        )}
 
         <TabsContent value="historico" className="space-y-6">
           <HistoricoPonto />
