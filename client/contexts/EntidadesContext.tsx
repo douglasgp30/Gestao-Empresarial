@@ -124,7 +124,7 @@ const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Funç��o para salvar entidade no localStorage com validação
+// Função para salvar entidade no localStorage com validação
 function salvarEntidadeNoStorage<T>(
   chave: string,
   dados: T[],
