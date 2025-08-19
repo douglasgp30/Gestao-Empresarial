@@ -181,7 +181,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [dadosCarregados, setDadosCarregados] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
+  // === FUN��ÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
     (tipo?: "receita" | "despesa") => {
       return descricoesECategorias.filter(
@@ -292,7 +292,15 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         // Carregar descrições e categorias
         const descricoesStorage = localStorage.getItem("descricoes_e_categorias") || localStorage.getItem("categorias_receita");
         if (descricoesStorage) {
-          setDescricoesECategorias(JSON.parse(descricoesStorage));
+          try {
+            const parsed = JSON.parse(descricoesStorage);
+            setDescricoesECategorias(Array.isArray(parsed) ? parsed : []);
+          } catch (error) {
+            console.error("Erro ao parsear descrições e categorias:", error);
+            setDescricoesECategorias([]);
+          }
+        } else {
+          setDescricoesECategorias([]);
         }
 
         // Carregar formas de pagamento
