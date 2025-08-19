@@ -387,6 +387,61 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // === FUNÇÕES STUB PARA EVITAR ERROS DE API ===
+  const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
+    console.log("📦 [EntidadesContext] STUB: criarDescricaoOuCategoria", novoItem);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const atualizarDescricaoOuCategoria = useCallback(async (id: string, dadosAtualizados: any) => {
+    console.log("📦 [EntidadesContext] STUB: atualizarDescricaoOuCategoria", id, dadosAtualizados);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const excluirDescricaoOuCategoria = useCallback(async (id: string) => {
+    console.log("📦 [EntidadesContext] STUB: excluirDescricaoOuCategoria", id);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const criarFormaPagamento = useCallback(async (novaForma: any) => {
+    console.log("📦 [EntidadesContext] STUB: criarFormaPagamento", novaForma);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const atualizarFormaPagamento = useCallback(async (id: string, dadosAtualizados: any) => {
+    console.log("📦 [EntidadesContext] STUB: atualizarFormaPagamento", id, dadosAtualizados);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const excluirFormaPagamento = useCallback(async (id: string) => {
+    console.log("📦 [EntidadesContext] STUB: excluirFormaPagamento", id);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const criarLocalizacaoGeografica = useCallback(async (novaLocalizacao: any) => {
+    console.log("📦 [EntidadesContext] STUB: criarLocalizacaoGeografica", novaLocalizacao);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const atualizarLocalizacaoGeografica = useCallback(async (id: number, dadosAtualizados: any) => {
+    console.log("📦 [EntidadesContext] STUB: atualizarLocalizacaoGeografica", id, dadosAtualizados);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
+  const excluirLocalizacaoGeografica = useCallback(async (id: number) => {
+    console.log("📦 [EntidadesContext] STUB: excluirLocalizacaoGeografica", id);
+    // TODO: Implementar com localStorage
+    return Promise.resolve();
+  }, []);
+
   // === CARREGAMENTO INICIAL FORÇADO ===
   useEffect(() => {
     // Carregar dados sempre no mount, sem verificações
