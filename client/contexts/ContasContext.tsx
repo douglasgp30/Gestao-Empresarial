@@ -150,24 +150,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       console.log("📦 [CONTAS] Total de contas carregadas do localStorage:", todasContas.length);
       setContas(todasContas);
     } catch (error) {
-      console.error("❌ [CONTAS] Erro ao carregar contas:", error);
-
-      // Tratar erros de conectividade durante desenvolvimento
-      if (error instanceof Error) {
-        const isNetworkError =
-          error.message.includes("Failed to fetch") ||
-          error.message.includes("NetworkError") ||
-          error.message.includes("conectividade");
-
-        if (isNetworkError) {
-          console.log("📡 [CONTAS] Erro de conectividade durante desenvolvimento, ignorando...");
-          return;
-        }
-      }
-
-      // Para outros tipos de erro, mostrar ao usuário
-      console.error("❌ [CONTAS] Erro persistente ao carregar contas:", error);
-      setErro("Erro ao carregar contas");
+      console.error("❌ [CONTAS] Erro ao carregar contas do localStorage:", error);
+      setErro("Erro ao carregar contas locais");
+      setContas([]);
 
       // Tentar carregar do localStorage como fallback
       try {
