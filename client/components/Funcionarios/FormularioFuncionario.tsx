@@ -43,7 +43,8 @@ export default function FormularioFuncionario({
   onFuncionarioAdicionado,
 }: FormularioFuncionarioProps = {}) {
   const { adicionarFuncionario, editarFuncionario, funcionarios } = useFuncionarios();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(isOpenProp || false);
+  const isEditMode = !!funcionarioParaEditar;
 
   const [formData, setFormData] = useState({
     nomeCompleto: "",
