@@ -345,6 +345,9 @@ export default function ListaFuncionarios() {
               Tem certeza que deseja excluir este funcionário? Esta ação não
               pode ser desfeita e removerá todos os dados relacionados ao
               funcionário.
+              <br /><br />
+              <strong>Nota:</strong> Se o funcionário possuir lançamentos no Caixa,
+              a exclusão será impedida e você deverá desativá-lo ao invés de excluí-lo.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
