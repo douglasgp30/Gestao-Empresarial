@@ -20,7 +20,7 @@ function PontoContent() {
   // Definir aba inicial baseada no perfil
   const [activeTab, setActiveTab] = useState(() => {
     if (isAdmin) {
-      return "gerenciar"; // Admin começa na gestão
+      return "gerenciar"; // Admin começa na página inicial/informações
     } else if (podeRegistrarPonto) {
       return "ponto"; // Funcionário começa no registro
     } else {
