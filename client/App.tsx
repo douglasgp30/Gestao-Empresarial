@@ -180,73 +180,87 @@ const App = () => {
         <Sonner />
         <ConfigProvider>
           <AuthProvider>
-            <EntidadesProvider>
-              <ClientesProvider>
-                <FuncionariosProvider>
-                  <AgendamentosProvider>
-                    <CaixaProvider>
-                      <ContasProvider>
-                        <RelatoriosProvider>
-                          <DashboardProvider>
-                            <BrowserRouter>
-                              <Routes>
-                                <Route path="/login" element={<Login />} />
-                                <Route
-                                  path="/"
-                                  element={
-                                    <ProtectedRoute>
-                                      <MainLayout />
-                                    </ProtectedRoute>
-                                  }
-                                >
-                                  <Route index element={<Dashboard />} />
-                                  <Route path="caixa" element={<Caixa />} />
-                                  <Route path="contas" element={<Contas />} />
-                                  <Route
-                                    path="agendamentos"
-                                    element={<Agendamentos />}
-                                  />
-                                  <Route
-                                    path="clientes"
-                                    element={<Clientes />}
-                                  />
-                                  <Route
-                                    path="funcionarios"
-                                    element={
-                                      <ProtectedRoute requireAdmin>
-                                        <Funcionarios />
-                                      </ProtectedRoute>
-                                    }
-                                  />
-                                  <Route
-                                    path="relatorios"
-                                    element={<Relatorios />}
-                                  />
-                                  <Route
-                                    path="configuracoes"
-                                    element={
-                                      <ProtectedRoute requireAdmin>
-                                        <Configuracoes />
-                                      </ProtectedRoute>
-                                    }
-                                  />
-                                  <Route path="*" element={<NotFound />} />
-                                </Route>
-                              </Routes>
-                              <GerenciadorLembretes />
-                            </BrowserRouter>
-                          </DashboardProvider>
-                        </RelatoriosProvider>
-                      </ContasProvider>
-                    </CaixaProvider>
-                  </AgendamentosProvider>
-                </FuncionariosProvider>
-              </ClientesProvider>
-            </EntidadesProvider>
+            <AppContent />
           </AuthProvider>
         </ConfigProvider>
       </TooltipProvider>
     </QueryClientProvider>
+  );
+}
+
+function AppContent() {
+  const { precisaConfigurarPrimeiroAcesso, criarPrimeiroAdministrador } = useAuth();
+
+  // Se precisa configurar o primeiro acesso, mostrar a tela de boas-vindas
+  if (precisaConfigurarPrimeiroAcesso) {
+    return <PrimeiroAcesso onAdminCriado={criarPrimeiroAdministrador} />;
+  }
+
+  // Caso contrário, mostrar o app normal
+  return (
+    <EntidadesProvider>
+      <ClientesProvider>
+        <FuncionariosProvider>
+          <AgendamentosProvider>
+            <CaixaProvider>
+              <ContasProvider>
+                <RelatoriosProvider>
+                  <DashboardProvider>
+                    <BrowserRouter>
+                      <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route
+                          path="/"
+                          element={
+                            <ProtectedRoute>
+                              <MainLayout />
+                            </ProtectedRoute>
+                          }
+                        >
+                          <Route index element={<Dashboard />} />
+                          <Route path="caixa" element={<Caixa />} />
+                          <Route path="contas" element={<Contas />} />
+                          <Route
+                            path="agendamentos"
+                            element={<Agendamentos />}
+                          />
+                          <Route
+                            path="clientes"
+                            element={<Clientes />}
+                          />
+                          <Route
+                            path="funcionarios"
+                            element={
+                              <ProtectedRoute requireAdmin>
+                                <Funcionarios />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="relatorios"
+                            element={<Relatorios />}
+                          />
+                          <Route
+                            path="configuracoes"
+                            element={
+                              <ProtectedRoute requireAdmin>
+                                <Configuracoes />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route path="*" element={<NotFound />} />
+                        </Route>
+                      </Routes>
+                      <GerenciadorLembretes />
+                    </BrowserRouter>
+                  </DashboardProvider>
+                </RelatoriosProvider>
+              </ContasProvider>
+            </CaixaProvider>
+          </AgendamentosProvider>
+        </FuncionariosProvider>
+      </ClientesProvider>
+    </EntidadesProvider>
   );
 };
 
