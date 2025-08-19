@@ -677,6 +677,22 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
     await prisma.lancamentoCaixa.delete({ where: { id } });
     console.log(`[Caixa] Lançamento ${id} excluído com sucesso`);
 
+    // Registrar auditoria
+    if (req.user) {
+      const infoRequisicao = extrairInfoRequisicao(req);
+      await AuditoriaService.registrarLog({
+        acao: "DELETE",
+        entidade: "lancamentos_caixa",
+        entidadeId: id,
+        dadosAntigos: lancamentoExistente,
+        descricao: `Excluiu lançamento de ${lancamentoExistente.tipo} no valor de R$ ${lancamentoExistente.valor}`,
+        usuarioId: req.user.id,
+        usuarioNome: req.user.nome || req.user.nomeCompleto,
+        usuarioLogin: req.user.login,
+        ...infoRequisicao,
+      });
+    }
+
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao excluir lançamento:", error);
