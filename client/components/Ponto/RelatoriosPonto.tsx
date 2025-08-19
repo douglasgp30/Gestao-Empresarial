@@ -362,46 +362,27 @@ export function RelatoriosPonto() {
     }
   };
 
-  const handleExportar = (formato: 'excel' | 'pdf') => {
+  const handleExportar = (formato: 'excel' | 'pdf' | 'json') => {
     if (!relatorio) return;
 
-    // Implementar exportação
-    console.log('Exportar relatório em', formato, relatorio);
-    
-    // Por enquanto, mostrar dados estruturados no console
-    const dadosExportacao = {
-      funcionario: relatorio.funcionario.nome,
-      periodo: {
-        inicio: pontoApi.formatarData(relatorio.periodo.dataInicio),
-        fim: pontoApi.formatarData(relatorio.periodo.dataFim)
-      },
-      estatisticas: relatorio.estatisticas,
-      pontos: relatorio.pontos.map(ponto => ({
-        data: pontoApi.formatarData(ponto.data),
-        entrada: pontoApi.formatarHorario(ponto.horaEntrada),
-        saidaAlmoco: ponto.vendeuAlmoco ? 'Vendido' : pontoApi.formatarHorario(ponto.horaSaidaAlmoco),
-        retornoAlmoco: ponto.vendeuAlmoco ? 'Vendido' : pontoApi.formatarHorario(ponto.horaRetornoAlmoco),
-        saida: pontoApi.formatarHorario(ponto.horaSaida),
-        vendeuAlmoco: ponto.vendeuAlmoco ? 'Sim' : 'Não',
-        totalHoras: ponto.totalHoras ? pontoApi.formatarDuracaoHoras(ponto.totalHoras) : '',
-        jornadaEsperada: relatorio.funcionario?.jornadaDiaria ? pontoApi.formatarDuracaoHoras(relatorio.funcionario.jornadaDiaria) : '8h 0min',
-        saldoHoras: ponto.saldoHoras !== undefined ? pontoApi.formatarDuracaoHoras(ponto.saldoHoras) : '',
-        horasExtras: ponto.horasExtras ? pontoApi.formatarDuracaoHoras(ponto.horasExtras) : '',
-        atraso: ponto.atraso ? pontoApi.formatarMinutos(ponto.atraso) : '',
-        observacao: ponto.observacao || ''
-      }))
-    };
-
-    // Criar e fazer download de um arquivo JSON com os dados (temporário)
-    const blob = new Blob([JSON.stringify(dadosExportacao, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `relatorio-ponto-${relatorio.funcionario.nome}-${dataInicio}-${dataFim}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      switch (formato) {
+        case 'excel':
+          exportarRelatorioExcel(relatorio);
+          break;
+        case 'pdf':
+          exportarRelatorioPDF(relatorio);
+          break;
+        case 'json':
+          exportarRelatorioJSON(relatorio);
+          break;
+        default:
+          console.error('Formato de exportação não suportado:', formato);
+      }
+    } catch (error) {
+      console.error('Erro ao exportar relatório:', error);
+      // Aqui você pode adicionar um toast de erro se desejar
+    }
   };
 
   return (
