@@ -130,7 +130,7 @@ function DetalhesRelatorio({ relatorio }: DetalhesRelatorioProps) {
           <CardTitle>Estatísticas Detalhadas</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div className="space-y-1">
               <p className="text-muted-foreground">Média de horas por dia</p>
               <p className="font-medium">
