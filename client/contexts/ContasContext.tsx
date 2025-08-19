@@ -194,48 +194,85 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Carregar clientes
-      const clientesResponse = await apiService.get("/contas/clientes");
-      if (clientesResponse.data && clientesResponse.data.data) {
-        setClientes(clientesResponse.data.data);
+      console.log("📦 [CONTAS] Carregando dados auxiliares do localStorage...");
+
+      // Carregar clientes do localStorage
+      try {
+        const clientesStorage = localStorage.getItem("clientes");
+        if (clientesStorage) {
+          const clientesParsed = JSON.parse(clientesStorage);
+          setClientes(clientesParsed || []);
+        } else {
+          setClientes([]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar clientes:", error);
+        setClientes([]);
       }
 
-      // Carregar fornecedores
-      const fornecedoresResponse = await apiService.get("/contas/fornecedores");
-      if (fornecedoresResponse.data && fornecedoresResponse.data.data) {
-        setFornecedores(fornecedoresResponse.data.data);
+      // Carregar fornecedores (assumindo que podem estar em um localStorage separado)
+      try {
+        const fornecedoresStorage = localStorage.getItem("fornecedores");
+        if (fornecedoresStorage) {
+          const fornecedoresParsed = JSON.parse(fornecedoresStorage);
+          setFornecedores(fornecedoresParsed || []);
+        } else {
+          setFornecedores([]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar fornecedores:", error);
+        setFornecedores([]);
       }
 
       // Carregar formas de pagamento
-      const formasResponse = await apiService.get("/formas-pagamento");
-      if (formasResponse.data && formasResponse.data.data) {
-        setFormasPagamento(formasResponse.data.data);
+      try {
+        const formasStorage = localStorage.getItem("formas_pagamento");
+        if (formasStorage) {
+          const formasParsed = JSON.parse(formasStorage);
+          setFormasPagamento(formasParsed || []);
+        } else {
+          // Dados padrão se não houver no localStorage
+          setFormasPagamento([
+            { id: 1, nome: "Dinheiro", descricao: "Pagamento em dinheiro" },
+            { id: 2, nome: "PIX", descricao: "Pagamento via PIX" },
+            { id: 3, nome: "Cartão de Débito", descricao: "Pagamento com cartão de débito" },
+            { id: 4, nome: "Cartão de Crédito", descricao: "Pagamento com cartão de crédito" },
+          ] as FormaPagamento[]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar formas de pagamento:", error);
+        setFormasPagamento([]);
       }
 
-      // Carregar categorias da tabela unificada
-      const categoriasResponse = await apiService.get(
-        "/descricoes-e-categorias/categorias",
-      );
-      if (categoriasResponse.data && categoriasResponse.data.data) {
-        // Convert unified format to the expected format
-        const categoriasFormatadas = categoriasResponse.data.data.map(
-          (item: any) => ({
-            id: item.id,
-            nome: item.nome,
-            tipo: item.tipo,
-            dataCriacao: new Date(item.dataCriacao),
-          }),
-        );
-        setCategorias(categoriasFormatadas);
+      // Carregar categorias
+      try {
+        const categoriasStorage = localStorage.getItem("categorias_receita") || localStorage.getItem("categorias_despesa");
+        if (categoriasStorage) {
+          const categoriasParsed = JSON.parse(categoriasStorage);
+          setCategorias(categoriasParsed || []);
+        } else {
+          setCategorias([]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar categorias:", error);
+        setCategorias([]);
       }
 
-      // Carregar descrições da tabela unificada
-      const descricoesResponse = await apiService.get(
-        "/descricoes-e-categorias",
-      );
-      if (descricoesResponse.data && descricoesResponse.data.data) {
-        setDescricoes(descricoesResponse.data.data);
+      // Carregar descrições
+      try {
+        const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
+        if (descricoesStorage) {
+          const descricoesParsed = JSON.parse(descricoesStorage);
+          setDescricoes(descricoesParsed || []);
+        } else {
+          setDescricoes([]);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar descrições:", error);
+        setDescricoes([]);
       }
+
+      console.log("✅ [CONTAS] Dados auxiliares carregados do localStorage");
     } catch (error) {
       console.error("❌ [CONTAS] Erro ao carregar dados auxiliares:", error);
     }
