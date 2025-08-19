@@ -227,7 +227,7 @@ export function middlewareAuditoria(
           acao,
           entidade,
           entidadeId: req.params?.id,
-          descricao: `Falha ao ${acao.toLowerCase()} ${entidade}`,
+          descricao: `Falha ao ${traduzirAcao(acao)} ${entidade}`,
           usuarioId: req.user.id,
           usuarioNome: req.user.nome || req.user.nomeCompleto,
           usuarioLogin: req.user.login,
