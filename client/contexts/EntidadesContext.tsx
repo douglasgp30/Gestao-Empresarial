@@ -17,16 +17,8 @@ import {
   Fornecedor,
   LocalizacaoGeografica,
 } from "@shared/types";
-import {
-  descricoesApi,
-  formasPagamentoApi,
-  funcionariosApi,
-  clientesApi,
-  localizacoesGeograficasApi,
-} from "../lib/apiService";
-import { descricoesECategoriasApi } from "../lib/descricoes-e-categorias-api";
+// APIs removidas para usar localStorage
 import { loadingManager } from "../lib/loadingManager";
-import { apiCache } from "../lib/apiCache";
 import { contextThrottle } from "../lib/contextThrottle";
 import {
   shouldSkipLoading,
