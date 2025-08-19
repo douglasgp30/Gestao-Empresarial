@@ -497,7 +497,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
     if (req.user) {
       const infoRequisicao = extrairInfoRequisicao(req);
       await AuditoriaService.registrarLog({
-        acao: "CREATE",
+        acao: "criar",
         entidade: "lancamentos_caixa",
         entidadeId: lancamento.id,
         dadosNovos: dadosLancamento,
@@ -631,7 +631,7 @@ export const updateLancamento: RequestHandler = async (req, res) => {
     if (req.user) {
       const infoRequisicao = extrairInfoRequisicao(req);
       await AuditoriaService.registrarLog({
-        acao: "UPDATE",
+        acao: "atualizar",
         entidade: "lancamentos_caixa",
         entidadeId: id,
         dadosAntigos: lancamentoExistente,
@@ -681,7 +681,7 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
     if (req.user) {
       const infoRequisicao = extrairInfoRequisicao(req);
       await AuditoriaService.registrarLog({
-        acao: "DELETE",
+        acao: "excluir",
         entidade: "lancamentos_caixa",
         entidadeId: id,
         dadosAntigos: lancamentoExistente,
