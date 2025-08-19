@@ -35,14 +35,12 @@ const getLogs: RequestHandler = async (req, res) => {
     };
 
     const resultado = await AuditoriaService.buscarLogs(filtrosProcessados);
-    
+
     res.json({
       data: resultado.logs,
-      meta: {
-        total: resultado.total,
-        pagina: resultado.pagina,
-        totalPaginas: resultado.totalPaginas,
-      },
+      total: resultado.total,
+      pagina: resultado.pagina,
+      totalPaginas: resultado.totalPaginas,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
