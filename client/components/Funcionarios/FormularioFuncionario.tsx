@@ -413,6 +413,32 @@ export default function FormularioFuncionario({
                     Pode registrar ponto
                   </Label>
                 </div>
+
+                {formData.registraPonto && (
+                  <div className="space-y-2">
+                    <Label htmlFor="jornadaDiaria">
+                      Jornada Diária (horas) *
+                    </Label>
+                    <Input
+                      id="jornadaDiaria"
+                      type="number"
+                      min="1"
+                      max="24"
+                      step="0.5"
+                      placeholder="8.0"
+                      value={formData.jornadaDiaria || ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          jornadaDiaria: parseFloat(e.target.value) || 8.0,
+                        })
+                      }
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Quantidade de horas que o funcionário deve trabalhar por dia
+                    </p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
