@@ -414,28 +414,29 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   const adicionarFornecedor = useCallback(
     async (novoFornecedor: Omit<Fornecedor, "id">) => {
       try {
-        console.log("🔍 [CONTAS] Adicionando novo fornecedor:", novoFornecedor);
+        console.log("📦 [CONTAS] Adicionando novo fornecedor ao localStorage:", novoFornecedor);
 
-        const response = await apiService.post(
-          "/contas/fornecedores",
-          novoFornecedor,
-        );
+        // Criar fornecedor com ID único
+        const fornecedor: Fornecedor = {
+          ...novoFornecedor,
+          id: Date.now(), // ID único baseado em timestamp
+        };
 
-        if (response.data && response.data.data) {
-          const fornecedorAdicionado = response.data.data;
+        // Carregar fornecedores existentes
+        const fornecedoresExistentes = JSON.parse(localStorage.getItem("fornecedores") || "[]");
 
-          console.log(
-            "✅ [CONTAS] Fornecedor adicionado com sucesso:",
-            fornecedorAdicionado,
-          );
+        // Adicionar o novo fornecedor
+        const novosFornecedores = [...fornecedoresExistentes, fornecedor];
 
-          // Atualizar a lista de fornecedores
-          setFornecedores((prev) => [...prev, fornecedorAdicionado]);
+        // Salvar no localStorage
+        localStorage.setItem("fornecedores", JSON.stringify(novosFornecedores));
 
-          return fornecedorAdicionado;
-        } else {
-          throw new Error("Resposta inválida da API");
-        }
+        console.log("✅ [CONTAS] Fornecedor adicionado com sucesso:", fornecedor);
+
+        // Atualizar a lista de fornecedores
+        setFornecedores((prev) => [...prev, fornecedor]);
+
+        return fornecedor;
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao adicionar fornecedor:", error);
         throw error;
