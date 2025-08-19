@@ -527,40 +527,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   };
 
   // === FUNÇÕES CRUD PARA FORMAS DE PAGAMENTO ===
-  const adicionarFormaPagamento = async (
-    novaForma: Omit<FormaPagamento, "id" | "dataCriacao">,
-  ) => {
-    try {
-      setError(null);
-      await formasPagamentoApi.criar(novaForma);
-      const response = await formasPagamentoApi.listar();
-      if (response.data) setFormasPagamento(response.data);
-      toast.success("Forma de pagamento adicionada!");
-    } catch (error) {
-      console.error("Erro ao adicionar forma de pagamento:", error);
-      toast.error("Erro ao adicionar forma de pagamento");
-      throw error;
-    }
-  };
-
-  const editarFormaPagamento = async (
-    id: string,
-    dadosAtualizados: Partial<FormaPagamento>,
-  ) => {
-    try {
-      setError(null);
-      await formasPagamentoApi.atualizar(parseInt(id), dadosAtualizados);
-      const response = await formasPagamentoApi.listar();
-      if (response.data) setFormasPagamento(response.data);
-      toast.success("Forma de pagamento atualizada!");
-    } catch (error) {
-      console.error("Erro ao editar forma de pagamento:", error);
-      toast.error("Erro ao editar forma de pagamento");
-      throw error;
-    }
-  };
-
-  // Função excluirFormaPagamento removida - usando versão stub acima
+  // Funções removidas - usando versões stub acima para evitar chamadas de API
 
   // === FUNÇÕES CRUD PARA LOCALIZAÇÃO GEOGRÁFICA ===
   // REMOVIDAS: As funções de adicionar/editar cidades foram removidas
