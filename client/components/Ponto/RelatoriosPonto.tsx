@@ -223,29 +223,63 @@ function DetalhesRelatorio({ relatorio }: DetalhesRelatorioProps) {
                       </TableCell>
                       
                       <TableCell className="font-mono text-sm">
-                        {pontoApi.formatarHorario(ponto.horaSaidaAlmoco)}
+                        {ponto.vendeuAlmoco ? (
+                          <Badge variant="secondary" className="text-xs">
+                            Vendido
+                          </Badge>
+                        ) : (
+                          pontoApi.formatarHorario(ponto.horaSaidaAlmoco)
+                        )}
                       </TableCell>
-                      
+
                       <TableCell className="font-mono text-sm">
-                        {pontoApi.formatarHorario(ponto.horaRetornoAlmoco)}
+                        {ponto.vendeuAlmoco ? (
+                          <Badge variant="secondary" className="text-xs">
+                            Vendido
+                          </Badge>
+                        ) : (
+                          pontoApi.formatarHorario(ponto.horaRetornoAlmoco)
+                        )}
                       </TableCell>
-                      
+
                       <TableCell className="font-mono text-sm">
                         {pontoApi.formatarHorario(ponto.horaSaida)}
                       </TableCell>
-                      
+
+                      <TableCell>
+                        {ponto.vendeuAlmoco ? (
+                          <Badge className="bg-amber-100 text-amber-800 text-xs">
+                            Vendido
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">
+                            Normal
+                          </Badge>
+                        )}
+                      </TableCell>
+
                       <TableCell className="font-medium">
                         {ponto.totalHoras ? pontoApi.formatarDuracaoHoras(ponto.totalHoras) : '--'}
                       </TableCell>
-                      
+
+                      <TableCell className="text-xs text-muted-foreground">
+                        {relatorio?.funcionario?.jornadaDiaria ?
+                          pontoApi.formatarDuracaoHoras(relatorio.funcionario.jornadaDiaria) :
+                          '8h 0min'
+                        }
+                      </TableCell>
+
                       <TableCell>
-                        {temExtras ? (
-                          <span className="text-green-600 font-medium">
-                            {pontoApi.formatarDuracaoHoras(ponto.horasExtras!)}
+                        {ponto.saldoHoras !== undefined ? (
+                          <span className={`font-medium ${
+                            ponto.saldoHoras >= 0 ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {ponto.saldoHoras >= 0 ? '+' : ''}
+                            {pontoApi.formatarDuracaoHoras(ponto.saldoHoras)}
                           </span>
                         ) : '--'}
                       </TableCell>
-                      
+
                       <TableCell>
                         {temAtraso ? (
                           <span className="text-orange-600 font-medium">
