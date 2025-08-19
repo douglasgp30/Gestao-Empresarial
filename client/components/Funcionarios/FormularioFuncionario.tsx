@@ -382,17 +382,32 @@ export default function FormularioFuncionario({
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="permissaoAcesso"
-                  checked={formData.permissaoAcesso}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, permissaoAcesso: checked })
-                  }
-                />
-                <Label htmlFor="permissaoAcesso">
-                  Permissão de acesso ao sistema
-                </Label>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="permissaoAcesso"
+                    checked={formData.permissaoAcesso}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, permissaoAcesso: checked })
+                    }
+                  />
+                  <Label htmlFor="permissaoAcesso">
+                    Permissão de acesso ao sistema
+                  </Label>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="registraPonto"
+                    checked={formData.registraPonto}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, registraPonto: checked })
+                    }
+                  />
+                  <Label htmlFor="registraPonto">
+                    Pode registrar ponto
+                  </Label>
+                </div>
               </div>
             </CardContent>
           </Card>
