@@ -328,7 +328,7 @@ export default function LogsAuditoria() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas</SelectItem>
-                  {acoes.map((acao) => (
+                  {acoes.filter(acao => acao && acao.trim()).map((acao) => (
                     <SelectItem key={acao} value={acao}>
                       {acao}
                     </SelectItem>
