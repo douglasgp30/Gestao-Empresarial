@@ -72,6 +72,7 @@ export default function FormularioFuncionario({
         confirmarSenha: "",
         ehTecnico: funcionarioParaEditar.ehTecnico || false,
         permissaoAcesso: funcionarioParaEditar.permissaoAcesso || false,
+        registraPonto: funcionarioParaEditar.registraPonto || false,
         tipoAcesso: funcionarioParaEditar.tipoAcesso || "Operador",
         percentualComissao: funcionarioParaEditar.percentualComissao?.toString() || "",
         ativo: funcionarioParaEditar.ativo !== false, // Default true se não especificado
