@@ -89,8 +89,13 @@ function PontoContent() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         {isAdmin ? (
           // Layout para Administradores - foco na gestão
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="gerenciar" className="flex items-center space-x-2">
+              <Clock className="h-4 w-4" />
+              <span>Início</span>
+            </TabsTrigger>
+
+            <TabsTrigger value="pontos" className="flex items-center space-x-2">
               <Users className="h-4 w-4" />
               <span>Gerenciar Pontos</span>
             </TabsTrigger>
