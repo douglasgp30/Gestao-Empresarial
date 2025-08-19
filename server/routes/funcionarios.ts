@@ -156,7 +156,7 @@ export const createFuncionario: RequestHandler = middlewareAuditoria(
 
 export const updateFuncionario: RequestHandler = middlewareAuditoria(
   'Funcionario',
-  'update',
+  'atualizar',
   async (req, res) => {
     const id = parseInt(req.params.id);
     const data = FuncionarioSchema.partial().parse(req.body);
