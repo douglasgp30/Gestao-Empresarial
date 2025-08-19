@@ -29,7 +29,19 @@ import {
 } from "../ui/card";
 import { UserPlus, User, Shield, Percent } from "lucide-react";
 
-export default function FormularioFuncionario() {
+interface FormularioFuncionarioProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  funcionarioParaEditar?: any;
+  onFuncionarioAdicionado?: () => void;
+}
+
+export default function FormularioFuncionario({
+  isOpen: isOpenProp,
+  onClose: onCloseProp,
+  funcionarioParaEditar,
+  onFuncionarioAdicionado,
+}: FormularioFuncionarioProps = {}) {
   const { adicionarFuncionario, funcionarios } = useFuncionarios();
   const [isOpen, setIsOpen] = useState(false);
 
