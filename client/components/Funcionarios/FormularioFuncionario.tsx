@@ -225,10 +225,13 @@ export default function FormularioFuncionario({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
-            Cadastrar Novo Funcionário
+            {isEditMode ? "Editar Funcionário" : "Cadastrar Novo Funcionário"}
           </DialogTitle>
           <DialogDescription>
-            Preencha os dados do novo funcionário para dar acesso ao sistema
+            {isEditMode
+              ? "Modifique os dados do funcionário conforme necessário"
+              : "Preencha os dados do novo funcionário para dar acesso ao sistema"
+            }
           </DialogDescription>
         </DialogHeader>
 
