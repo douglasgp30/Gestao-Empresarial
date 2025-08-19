@@ -101,6 +101,9 @@ export default function ModalDescricoesSimples() {
   }, [descricoesECategorias]);
 
   const descricoesReceitas = useMemo(() => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return [];
+    }
     const filtered = descricoesECategorias.filter(
       (item) =>
         item.tipoItem === "descricao" && item.ativo && item.tipo === "receita",
