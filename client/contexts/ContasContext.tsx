@@ -364,7 +364,21 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
 
   const excluirConta = useCallback(async (id: number) => {
     try {
-      await apiService.delete(`/contas/${id}`);
+      console.log("📦 [CONTAS] Excluindo conta do localStorage:", id);
+
+      // Encontrar a conta para determinar o tipo
+      const contaAtual = contas.find(c => c.codLancamentoContas === id);
+      if (contaAtual) {
+        const storageKey = contaAtual.tipo === "pagar" ? "contas_pagar" : "contas_receber";
+        const contasExistentes = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+        // Filtrar para remover a conta
+        const contasAtualizadas = contasExistentes.filter((conta: any) =>
+          conta.codLancamentoContas !== id
+        );
+
+        localStorage.setItem(storageKey, JSON.stringify(contasAtualizadas));
+      }
 
       // Remover da lista local
       setContas((contas) =>
@@ -374,36 +388,21 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       console.error("❌ [CONTAS] Erro ao excluir conta:", error);
       throw error;
     }
-  }, []);
+  }, [contas]);
 
   const marcarComoPago = useCallback(
     async (id: number, formaPagamentoId: number) => {
       try {
-        const response = await apiService.patch(`/contas/${id}/pagar`, {
+        console.log("📦 [CONTAS] Marcando conta como paga no localStorage:", id);
+
+        const dadosAtualizacao = {
+          dataPagamento: new Date(),
           formaPg: formaPagamentoId,
-        });
+          pago: true,
+        };
 
-        if (response.data && response.data.data) {
-          const contaFormatada = {
-            ...response.data.data,
-            dataLancamento: new Date(response.data.data.dataLancamento),
-            dataVencimento: new Date(response.data.data.dataVencimento),
-            dataPagamento: response.data.data.dataPagamento
-              ? new Date(response.data.data.dataPagamento)
-              : undefined,
-          };
-
-          // Atualizar a lista local
-          setContas((contas) =>
-            contas.map((conta) =>
-              conta.codLancamentoContas === id ? contaFormatada : conta,
-            ),
-          );
-
-          return contaFormatada;
-        } else {
-          throw new Error("Resposta inválida da API");
-        }
+        // Usar a função atualizarConta que já funciona com localStorage
+        return await atualizarConta(id, dadosAtualizacao);
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao marcar conta como paga:", error);
         throw error;
