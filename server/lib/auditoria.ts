@@ -209,7 +209,7 @@ export function middlewareAuditoria(
           entidadeId: resultado?.entidadeId,
           dadosAntigos: resultado?.dadosAntigos,
           dadosNovos: resultado?.dadosNovos,
-          descricao: resultado?.descricao || `${acao} em ${entidade}`,
+          descricao: resultado?.descricao || `${traduzirAcao(acao)} ${entidade}`,
           usuarioId: req.user.id,
           usuarioNome: req.user.nome || req.user.nomeCompleto,
           usuarioLogin: req.user.login,
