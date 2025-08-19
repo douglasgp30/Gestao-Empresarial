@@ -413,7 +413,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const atualizarFormaPagamento = useCallback(async (id: string, dadosAtualizados: any) => {
-    console.log("📦 [EntidadesContext] STUB: atualizarFormaPagamento", id, dadosAtualizados);
+    console.log("�� [EntidadesContext] STUB: atualizarFormaPagamento", id, dadosAtualizados);
     // TODO: Implementar com localStorage
     return Promise.resolve();
   }, []);
@@ -560,19 +560,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const excluirFormaPagamento = async (id: string) => {
-    try {
-      setError(null);
-      await formasPagamentoApi.excluir(parseInt(id));
-      const response = await formasPagamentoApi.listar();
-      if (response.data) setFormasPagamento(response.data);
-      toast.success("Forma de pagamento excluída!");
-    } catch (error) {
-      console.error("Erro ao excluir forma de pagamento:", error);
-      toast.error("Erro ao excluir forma de pagamento");
-      throw error;
-    }
-  };
+  // Função excluirFormaPagamento removida - usando versão stub acima
 
   // === FUNÇÕES CRUD PARA LOCALIZAÇÃO GEOGRÁFICA ===
   // REMOVIDAS: As funções de adicionar/editar cidades foram removidas
