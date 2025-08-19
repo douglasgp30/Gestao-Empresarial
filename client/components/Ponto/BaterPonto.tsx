@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Clock, Calendar, User, CheckCircle } from "lucide-react";
+import { Clock, Calendar, User, CheckCircle, Coffee } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Textarea } from "../ui/textarea";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 import { usePonto } from "../../contexts/PontoContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { pontoApi } from "../../lib/pontoApi";
