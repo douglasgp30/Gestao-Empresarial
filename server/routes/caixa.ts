@@ -365,7 +365,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
     }
 
     if (ids.setorId) {
-      const setor = await prisma.setor.findUnique({
+      const setor = await prisma.localizacaoGeografica.findUnique({
         where: { id: ids.setorId },
       });
       console.log(
