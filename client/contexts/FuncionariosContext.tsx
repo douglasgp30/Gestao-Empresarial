@@ -205,7 +205,19 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         );
         setIsLoading(true);
 
-        const funcionariosCarregados = carregarFuncionariosReais();
+        let funcionariosCarregados = carregarFuncionariosReais();
+
+        // Limpar duplicados se houver
+        const funcionariosUnicos = funcionariosCarregados.filter((func, index, arr) => {
+          return arr.findIndex(f => f.id === func.id) === index;
+        });
+
+        if (funcionariosCarregados.length !== funcionariosUnicos.length) {
+          console.log(`[FuncionariosContext] Removendo ${funcionariosCarregados.length - funcionariosUnicos.length} duplicados`);
+          funcionariosCarregados = funcionariosUnicos;
+          salvarFuncionariosNoLocalStorage(funcionariosUnicos);
+        }
+
         setFuncionarios(funcionariosCarregados);
 
         console.log(
