@@ -119,7 +119,7 @@ class PontoApiService {
       if (filtros.status) params.append('status', filtros.status);
 
       const response = await apiService.get(`/ponto/todos?${params.toString()}`);
-      return response.data;
+      return response.data?.data || response.data;
     } catch (error) {
       console.error('Erro ao buscar todos os pontos:', error);
       throw error;
