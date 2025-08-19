@@ -201,7 +201,24 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
                   <span className="font-medium text-green-600">{pontoLocalStorage.formatarDuracaoHoras(ponto.horasExtras)}</span>
                 </div>
               )}
-              
+
+              {ponto.saldoHoras !== undefined && ponto.saldoHoras < 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Saldo negativo:</span>
+                  <span className="font-medium text-red-600">{pontoLocalStorage.formatarDuracaoHoras(Math.abs(ponto.saldoHoras))}</span>
+                </div>
+              )}
+
+              {ponto.vendeuAlmoco && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Almoço:</span>
+                  <span className="font-medium text-amber-600">
+                    <Coffee className="h-3 w-3 inline mr-1" />
+                    Vendido
+                  </span>
+                </div>
+              )}
+
               {ponto.observacao && (
                 <div className="text-sm">
                   <span className="text-muted-foreground">Observação:</span>
