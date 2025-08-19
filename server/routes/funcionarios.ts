@@ -94,7 +94,7 @@ export const getTecnicos: RequestHandler = async (req, res) => {
 
 export const createFuncionario: RequestHandler = middlewareAuditoria(
   'Funcionario',
-  'create',
+  'criar',
   async (req, res) => {
     const data = FuncionarioSchema.parse(req.body);
     const funcionario = await prisma.funcionario.create({
