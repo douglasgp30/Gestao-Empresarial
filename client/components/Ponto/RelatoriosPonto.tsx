@@ -170,8 +170,36 @@ function DetalhesRelatorio({ relatorio }: DetalhesRelatorioProps) {
             <div className="space-y-1">
               <p className="text-muted-foreground">Taxa de presença</p>
               <p className="font-medium">
-                {((estatisticas.totalDiasTrabalhados / 
+                {((estatisticas.totalDiasTrabalhados /
                   (Math.ceil((relatorio.periodo.dataFim.getTime() - relatorio.periodo.dataInicio.getTime()) / (1000 * 60 * 60 * 24)) + 1)) * 100).toFixed(1)}%
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-muted-foreground">Dias com almoço vendido</p>
+              <p className="font-medium text-amber-600">
+                {pontos.filter(p => p.vendeuAlmoco).length} dias
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-muted-foreground">Jornada esperada</p>
+              <p className="font-medium">
+                {pontoApi.formatarDuracaoHoras((relatorio.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados)}
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <p className="text-muted-foreground">Saldo geral</p>
+              <p className={`font-medium ${
+                estatisticas.totalHorasTrabalhadas >= (relatorio.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
+                  ? 'text-green-600'
+                  : 'text-red-600'
+              }`}>
+                {estatisticas.totalHorasTrabalhadas >= (relatorio.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados ? '+' : ''}
+                {pontoApi.formatarDuracaoHoras(
+                  estatisticas.totalHorasTrabalhadas - (relatorio.funcionario?.jornadaDiaria || 8) * estatisticas.totalDiasTrabalhados
+                )}
               </p>
             </div>
           </div>
