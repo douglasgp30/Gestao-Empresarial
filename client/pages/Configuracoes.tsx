@@ -866,6 +866,35 @@ export default function Configuracoes() {
 
           <CleanFakeData />
         </TabsContent>
+
+        <TabsContent value="auditoria" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Logs de Auditoria
+              </CardTitle>
+              <CardDescription>
+                Visualize todas as ações executadas no sistema pelos usuários
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">
+                  Sistema de Auditoria
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  A funcionalidade de auditoria está sendo implementada.
+                  Em breve você poderá visualizar todos os logs de ações dos usuários.
+                </p>
+                <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                  Em desenvolvimento
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
