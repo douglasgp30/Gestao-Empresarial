@@ -78,6 +78,7 @@ import Clientes from "./pages/Clientes";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 import PrimeiroAcesso from "./components/Auth/PrimeiroAcesso";
+import TourGuiado, { useTourGuiado } from "./components/ui/tour-guiado";
 import { useAuth } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
