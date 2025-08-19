@@ -26,7 +26,6 @@ import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
-import { TestApis } from "../Debug/TestApis";
 
 export function ModalReceita() {
   const {
@@ -139,7 +138,7 @@ export function ModalReceita() {
 
   // Remover useEffect que causa piscar ao resetar valorQueEntrou
 
-  // Funç��o para emitir nota fiscal
+  // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
     const urlNotaFiscal =
       "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733";
