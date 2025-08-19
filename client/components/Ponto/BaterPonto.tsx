@@ -214,6 +214,26 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
                   </p>
                 </div>
 
+                {/* Opção para vender hora de almoço (apenas na entrada) */}
+                {proximaBatida === "entrada" && (
+                  <div className="flex items-center space-x-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <Coffee className="h-4 w-4 text-amber-600" />
+                    <div className="flex-1">
+                      <Label htmlFor="vender-almoco" className="text-sm font-medium text-amber-800">
+                        Vender hora de almoço
+                      </Label>
+                      <p className="text-xs text-amber-700">
+                        Trabalhar sem intervalo de almoço (direto da entrada para saída)
+                      </p>
+                    </div>
+                    <Switch
+                      id="vender-almoco"
+                      checked={vendeuAlmoco}
+                      onCheckedChange={setVendeuAlmoco}
+                    />
+                  </div>
+                )}
+
                 {/* Botão para mostrar campo de observação */}
                 {!mostrarObservacao && (
                   <Button
