@@ -142,8 +142,8 @@ export default function LogsAuditoria() {
   const carregarFiltrosDisponiveis = async () => {
     try {
       const [entidadesResponse, acoesResponse] = await Promise.all([
-        apiService.get('/api/auditoria/entidades').catch(() => ({ data: [] })),
-        apiService.get('/api/auditoria/acoes').catch(() => ({ data: [] }))
+        apiService.get('/auditoria/entidades').catch(() => ({ data: [] })),
+        apiService.get('/auditoria/acoes').catch(() => ({ data: [] }))
       ]);
 
       setEntidades(entidadesResponse.data || []);
