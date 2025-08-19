@@ -15,29 +15,9 @@ interface PasswordCriteria {
 
 const criterios: PasswordCriteria[] = [
   {
-    label: 'Pelo menos 8 caracteres',
-    test: (password) => password.length >= 8,
-    weight: 2
-  },
-  {
-    label: 'Contém letra minúscula',
-    test: (password) => /[a-z]/.test(password),
+    label: 'Pelo menos 6 caracteres',
+    test: (password) => password.length >= 6,
     weight: 1
-  },
-  {
-    label: 'Contém letra maiúscula',
-    test: (password) => /[A-Z]/.test(password),
-    weight: 1
-  },
-  {
-    label: 'Contém número',
-    test: (password) => /\d/.test(password),
-    weight: 1
-  },
-  {
-    label: 'Contém caractere especial (!@#$%^&*)',
-    test: (password) => /[!@#$%^&*(),.?":{}|<>]/.test(password),
-    weight: 2
   }
 ];
 
