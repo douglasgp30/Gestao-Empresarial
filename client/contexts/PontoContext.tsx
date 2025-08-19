@@ -91,10 +91,22 @@ export function PontoProvider({ children }: PontoProviderProps) {
   // Função para carregar ponto de hoje
   const carregarPontoHoje = useCallback(async () => {
     if (!user?.id) return;
-    
+
     try {
       setIsLoading(true);
-      const resultado = await pontoApi.buscarPontoHoje(user.id);
+
+      // Determinar se é um ID numérico (banco) ou string (localStorage)
+      const isNumericId = !isNaN(parseInt(user.id));
+
+      let resultado: PontoDoFuncionario;
+
+      if (isNumericId) {
+        // Usar API para funcionários do banco
+        resultado = await pontoApi.buscarPontoHoje(user.id);
+      } else {
+        // Usar localStorage para funcionários locais
+        resultado = await pontoLocalStorage.buscarPontoHoje(user.id);
+      }
 
       if (resultado && typeof resultado === 'object') {
         setPontoHoje(resultado);
@@ -107,7 +119,7 @@ export function PontoProvider({ children }: PontoProviderProps) {
         setProximaBatida("entrada");
         setPodeRegistrar(false);
       }
-      
+
     } catch (error) {
       console.error('Erro ao carregar ponto de hoje:', error);
       toast({
