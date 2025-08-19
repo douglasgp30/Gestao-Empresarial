@@ -193,8 +193,10 @@ function DetalhesRelatorio({ relatorio }: DetalhesRelatorioProps) {
                   <TableHead>Saída Almoço</TableHead>
                   <TableHead>Retorno</TableHead>
                   <TableHead>Saída</TableHead>
+                  <TableHead>Almoço</TableHead>
                   <TableHead>Total</TableHead>
-                  <TableHead>Extras</TableHead>
+                  <TableHead>Jornada</TableHead>
+                  <TableHead>Saldo</TableHead>
                   <TableHead>Atraso</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
