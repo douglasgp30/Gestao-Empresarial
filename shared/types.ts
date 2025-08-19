@@ -25,6 +25,13 @@ export interface FuncionarioPermissoes {
   criarAgendamento: boolean;
   editarAgendamento: boolean;
   excluirAgendamento: boolean;
+  // Controle de Ponto
+  acessarControlePonto: boolean;
+  registrarPonto: boolean;
+  verPontoTodosFuncionarios: boolean;
+  editarPontoFuncionarios: boolean;
+  registrarPontoOutrosFuncionarios: boolean;
+  gerarRelatoriosPonto: boolean;
 }
 
 export interface Funcionario {
