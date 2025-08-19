@@ -195,7 +195,18 @@ export class PontoLocalStorageService {
     if (proximaBatida === "saida") {
       ponto.totalHoras = calcularHorasTrabalhadas(ponto);
       ponto.atraso = ponto.horaEntrada ? calcularAtraso(ponto.horaEntrada) : 0;
-      ponto.horasExtras = calcularHorasExtras(ponto.totalHoras || 0);
+
+      // Buscar jornada do funcionário (se disponível no localStorage)
+      const funcionariosStorage = localStorage.getItem('funcionarios');
+      let jornadaDiaria = 8.0; // Padrão
+      if (funcionariosStorage) {
+        const funcionarios = JSON.parse(funcionariosStorage);
+        const funcionario = funcionarios.find((f: any) => f.id === funcionarioId);
+        jornadaDiaria = funcionario?.jornadaDiaria || 8.0;
+      }
+
+      ponto.horasExtras = calcularHorasExtras(ponto.totalHoras || 0, jornadaDiaria);
+      ponto.saldoHoras = calcularSaldoHoras(ponto.totalHoras || 0, jornadaDiaria);
     }
 
     // Atualizar observação se fornecida
