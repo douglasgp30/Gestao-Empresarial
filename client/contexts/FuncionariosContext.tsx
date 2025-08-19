@@ -274,13 +274,25 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      console.log("[FuncionariosContext] Iniciando exclusão do funcionário:", id);
+
       const response = await funcionariosApi.excluir(parseInt(id));
       if (response.error) {
         throw new Error(response.error);
       }
 
-      // Recarregar lista de funcionários
-      await carregarFuncionarios();
+      console.log("[FuncionariosContext] Funcionário excluído com sucesso, atualizando lista...");
+
+      // Atualizar a lista localmente primeiro (otimistic update)
+      setFuncionarios(prev => prev.filter(func => func.id !== id));
+
+      // Em seguida, recarregar do servidor para garantir consistência
+      setTimeout(() => {
+        carregarFuncionarios().catch(error => {
+          console.error("Erro ao recarregar após exclusão:", error);
+        });
+      }, 100);
+
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
       throw error;
