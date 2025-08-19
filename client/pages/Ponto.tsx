@@ -101,23 +101,7 @@ function PontoContent() {
         {isAdmin && (
           <>
             <TabsContent value="gerenciar" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Users className="h-5 w-5" />
-                    <span>Gerenciamento de Pontos</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8">
-                    <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Em Desenvolvimento</h3>
-                    <p className="text-muted-foreground">
-                      Funcionalidades administrativas em desenvolvimento.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <GerenciarPontos />
             </TabsContent>
 
             <TabsContent value="relatorios" className="space-y-6">
