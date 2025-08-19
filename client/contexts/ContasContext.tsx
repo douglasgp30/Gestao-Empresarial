@@ -408,7 +408,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [],
+    [atualizarConta],
   );
 
   const adicionarFornecedor = useCallback(
