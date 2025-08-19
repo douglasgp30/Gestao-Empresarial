@@ -95,33 +95,43 @@ export class AuditoriaService {
   static async obterEstatisticas() {
     const [
       totalLogs,
-      logsHoje,
-      usuariosAtivos,
-      acoesFrequentes
+      logsPorAcao,
+      logsPorEntidade,
+      logsPorUsuario
     ] = await Promise.all([
       prisma.logAuditoria.count(),
-      prisma.logAuditoria.count({
-        where: {
-          dataHora: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0))
-          }
-        }
-      }),
-      prisma.logAuditoria.groupBy({
-        by: ['usuarioId', 'usuarioNome'],
-        where: {
-          dataHora: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Últimos 7 dias
-          }
-        },
-        _count: true,
-      }),
       prisma.logAuditoria.groupBy({
         by: ['acao'],
-        _count: true,
+        _count: {
+          acao: true
+        },
         orderBy: {
           _count: {
             acao: 'desc'
+          }
+        },
+        take: 10,
+      }),
+      prisma.logAuditoria.groupBy({
+        by: ['entidade'],
+        _count: {
+          entidade: true
+        },
+        orderBy: {
+          _count: {
+            entidade: 'desc'
+          }
+        },
+        take: 10,
+      }),
+      prisma.logAuditoria.groupBy({
+        by: ['usuarioNome'],
+        _count: {
+          usuarioNome: true
+        },
+        orderBy: {
+          _count: {
+            usuarioNome: 'desc'
           }
         },
         take: 10,
@@ -130,9 +140,18 @@ export class AuditoriaService {
 
     return {
       totalLogs,
-      logsHoje,
-      usuariosAtivos: usuariosAtivos.length,
-      acoesFrequentes,
+      logsPorAcao: logsPorAcao.map(item => ({
+        acao: item.acao,
+        total: item._count.acao
+      })),
+      logsPorEntidade: logsPorEntidade.map(item => ({
+        entidade: item.entidade,
+        total: item._count.entidade
+      })),
+      logsPorUsuario: logsPorUsuario.map(item => ({
+        usuarioNome: item.usuarioNome,
+        total: item._count.usuarioNome
+      })),
     };
   }
 }
