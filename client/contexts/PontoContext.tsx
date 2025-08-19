@@ -94,10 +94,18 @@ export function PontoProvider({ children }: PontoProviderProps) {
     try {
       setIsLoading(true);
       const resultado = await pontoApi.buscarPontoHoje(user.id);
-      
-      setPontoHoje(resultado);
-      setProximaBatida(resultado.proximaBatida || "entrada");
-      setPodeRegistrar(resultado.podeRegistrar || false);
+
+      if (resultado && typeof resultado === 'object') {
+        setPontoHoje(resultado);
+        setProximaBatida(resultado.proximaBatida || "entrada");
+        setPodeRegistrar(resultado.podeRegistrar || false);
+      } else {
+        // Handle caso onde resultado é undefined ou não é objeto
+        console.warn('Resultado da API de ponto é inválido:', resultado);
+        setPontoHoje(undefined);
+        setProximaBatida("entrada");
+        setPodeRegistrar(false);
+      }
       
     } catch (error) {
       console.error('Erro ao carregar ponto de hoje:', error);
