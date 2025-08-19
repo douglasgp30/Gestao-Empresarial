@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { prisma } from "../lib/database";
 import { z } from "zod";
+import { AuditoriaService, extrairInfoRequisicao } from "../lib/auditoria";
 
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
