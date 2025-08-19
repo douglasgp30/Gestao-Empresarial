@@ -38,6 +38,7 @@ import {
   BarChart3,
   FolderOpen,
   AlertTriangle,
+  Shield,
 } from "lucide-react";
 import EmpresaLogo from "../components/EmpresaLogo";
 import { useEffect } from "react";
