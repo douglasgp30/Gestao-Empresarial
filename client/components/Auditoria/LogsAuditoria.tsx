@@ -106,15 +106,34 @@ export default function LogsAuditoria() {
     setIsLoading(true);
     try {
       const [logsResponse, statsResponse] = await Promise.all([
-        apiService.get('/api/auditoria/logs', { params: filtros }),
-        apiService.get('/api/auditoria/stats')
+        apiService.get('/api/auditoria/logs', { params: filtros }).catch(() => ({ data: [] })),
+        apiService.get('/api/auditoria/stats').catch(() => ({
+          data: {
+            totalLogs: 0,
+            logsPorAcao: [],
+            logsPorEntidade: [],
+            logsPorUsuario: []
+          }
+        }))
       ]);
 
-      setLogs(logsResponse.data);
-      setStats(statsResponse.data);
+      setLogs(logsResponse.data || []);
+      setStats(statsResponse.data || {
+        totalLogs: 0,
+        logsPorAcao: [],
+        logsPorEntidade: [],
+        logsPorUsuario: []
+      });
     } catch (error) {
       console.error('Erro ao carregar logs:', error);
-      toast.error('Erro ao carregar logs de auditoria');
+      setLogs([]);
+      setStats({
+        totalLogs: 0,
+        logsPorAcao: [],
+        logsPorEntidade: [],
+        logsPorUsuario: []
+      });
+      toast.error('Sistema de auditoria não disponível. Contate o administrador.');
     } finally {
       setIsLoading(false);
     }
@@ -123,14 +142,16 @@ export default function LogsAuditoria() {
   const carregarFiltrosDisponiveis = async () => {
     try {
       const [entidadesResponse, acoesResponse] = await Promise.all([
-        apiService.get('/api/auditoria/entidades'),
-        apiService.get('/api/auditoria/acoes')
+        apiService.get('/api/auditoria/entidades').catch(() => ({ data: [] })),
+        apiService.get('/api/auditoria/acoes').catch(() => ({ data: [] }))
       ]);
 
-      setEntidades(entidadesResponse.data);
-      setAcoes(acoesResponse.data);
+      setEntidades(entidadesResponse.data || []);
+      setAcoes(acoesResponse.data || []);
     } catch (error) {
       console.error('Erro ao carregar filtros:', error);
+      setEntidades([]);
+      setAcoes([]);
     }
   };
 
@@ -436,7 +457,7 @@ export default function LogsAuditoria() {
                     <TableHead>Entidade</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Duração</TableHead>
-                    <TableHead>Ações</TableHead>
+                    <TableHead>A��ões</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
