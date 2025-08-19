@@ -613,7 +613,7 @@ export default function Configuracoes() {
             <CardHeader>
               <CardTitle>Configurações do Sistema</CardTitle>
               <CardDescription>
-                Par��metros gerais e configurações avançadas
+                Parâmetros gerais e configurações avançadas
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
