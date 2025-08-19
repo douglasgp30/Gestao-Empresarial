@@ -442,8 +442,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     // Carregar dados sempre no mount, sem verificações
     console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
 
-    // Invalidar cache das formas de pagamento para garantir dados atualizados
-    apiCache.invalidate("entidades-formas-pagamento");
+    // Cache invalidação removida - usando localStorage
 
     carregarDados();
   }, []); // Array vazio - executa apenas no mount
