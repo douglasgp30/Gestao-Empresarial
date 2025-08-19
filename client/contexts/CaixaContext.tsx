@@ -340,7 +340,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         valor: novoLancamento.valor,
         valorRecebido: novoLancamento.valorQueEntrou || novoLancamento.valor,
         valorLiquido: novoLancamento.valorLiquido,
-        comissao: novoLancamento.comissao,
+        // comissao será calculada pelo servidor automaticamente
         imposto: novoLancamento.imposto,
         observacoes: novoLancamento.observacoes,
         numeroNota: novoLancamento.numeroNota,
