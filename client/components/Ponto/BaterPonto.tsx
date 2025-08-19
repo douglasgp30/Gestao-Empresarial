@@ -31,9 +31,10 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
 
   const handleRegistrarPonto = async () => {
     try {
-      await registrarPonto(observacao.trim() || undefined);
+      await registrarPonto(observacao.trim() || undefined, vendeuAlmoco);
       setObservacao("");
       setMostrarObservacao(false);
+      setVendeuAlmoco(false);
       onPontoRegistrado?.();
     } catch (error) {
       // Erro já tratado no context
