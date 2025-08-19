@@ -528,14 +528,22 @@ router.post('/registrar-admin', middlewareAuditoriaSimples('PONTO_ADMIN_CREATE')
     // Recalcular estatísticas
     const totalHoras = calcularHorasTrabalhadas(ponto);
     const atraso = ponto.horaEntrada ? calcularAtraso(ponto.horaEntrada) : 0;
-    const horasExtras = calcularHorasExtras(totalHoras);
+
+    // Buscar jornada do funcionário
+    const funcionario = await prisma.funcionario.findUnique({
+      where: { id: parseInt(funcionarioId) }
+    });
+    const jornadaDiaria = funcionario?.jornadaDiaria || 8.0;
+
+    const { horasExtras, saldoHoras } = calcularSaldoEHorasExtras(totalHoras, jornadaDiaria);
 
     ponto = await prisma.ponto.update({
       where: { id: ponto.id },
       data: {
         totalHoras,
         atraso,
-        horasExtras
+        horasExtras,
+        saldoHoras
       }
     });
 
