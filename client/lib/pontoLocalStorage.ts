@@ -289,7 +289,7 @@ export class PontoLocalStorageService {
     // Recalcular estatísticas se necessário
     if (ponto.horaEntrada && ponto.horaSaida) {
       ponto.totalHoras = calcularHorasTrabalhadas(ponto);
-      ponto.atraso = calcularAtraso(ponto.horaEntrada);
+      ponto.atraso = calcularAtraso(new Date(ponto.horaEntrada));
       ponto.horasExtras = calcularHorasExtras(ponto.totalHoras);
     }
 
