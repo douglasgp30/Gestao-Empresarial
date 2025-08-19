@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Separator } from "../ui/separator";
 import { usePonto } from "../../contexts/PontoContext";
 import { pontoApi } from "../../lib/pontoApi";
+import { exportarRelatorioExcel, exportarRelatorioPDF, exportarRelatorioJSON } from "../../lib/exportacaoRelatorios";
 import type { RelatorioPonto, Funcionario } from "../../../shared/types";
 
 interface EstatisticasResumoProps {
