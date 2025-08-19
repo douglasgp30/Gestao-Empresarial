@@ -165,6 +165,7 @@ export default function FormularioFuncionario({
         nomeCompleto: formData.nomeCompleto.trim(),
         ehTecnico: formData.ehTecnico,
         permissaoAcesso: formData.permissaoAcesso,
+        registraPonto: formData.registraPonto,
         tipoAcesso: formData.tipoAcesso,
         percentualComissao: parseFloat(formData.percentualComissao),
         ativo: formData.ativo,
