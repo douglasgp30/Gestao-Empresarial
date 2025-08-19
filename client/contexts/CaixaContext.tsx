@@ -377,23 +377,27 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      const dadosApi = {
-        nome: novaCampanha.nome,
-        dataInicio: novaCampanha.dataInicio?.toISOString().split("T")[0],
-        dataFim: novaCampanha.dataFim?.toISOString().split("T")[0],
+      // Criar a campanha com ID único
+      const campanha: Campanha = {
+        ...novaCampanha,
+        id: `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       };
 
-      const response = await campanhasApi.criar(dadosApi);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
+      console.log("[CaixaContext] Adicionando campanha ao localStorage:", campanha);
 
-      // Recarregar campanhas
-      const campanhasResponse = await campanhasApi.listar();
-      if (campanhasResponse.data) {
-        setCampanhas(campanhasResponse.data);
-      }
+      // Carregar campanhas existentes
+      const campanhasExistentes = JSON.parse(localStorage.getItem("campanhas") || "[]");
+
+      // Adicionar a nova campanha
+      const novasCampanhas = [...campanhasExistentes, campanha];
+
+      // Salvar no localStorage
+      localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
+
+      // Atualizar estado
+      setCampanhas(novasCampanhas);
+
+      console.log("[CaixaContext] Campanha adicionada com sucesso:", campanha.id);
     } catch (error) {
       console.error("Erro ao adicionar campanha:", error);
       throw error;
