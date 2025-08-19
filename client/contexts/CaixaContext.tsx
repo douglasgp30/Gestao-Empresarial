@@ -314,58 +314,32 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      const dadosApi: any = { ...dadosAtualizados };
+      console.log("[CaixaContext] Editando lançamento:", id, dadosAtualizados);
 
-      // DataHora não pode ser editada - é gerada automaticamente no backend
-      if (dadosAtualizados.descricao) {
-        dadosApi.descricaoId = parseInt(dadosAtualizados.descricao);
-        delete dadosApi.descricao;
-      }
-      if (dadosAtualizados.formaPagamento) {
-        dadosApi.formaPagamentoId = parseInt(dadosAtualizados.formaPagamento);
-        delete dadosApi.formaPagamento;
-      }
-      if (dadosAtualizados.tecnicoResponsavel) {
-        dadosApi.funcionarioId = parseInt(dadosAtualizados.tecnicoResponsavel);
-        delete dadosApi.tecnicoResponsavel;
-      }
-      if (dadosAtualizados.setor) {
-        dadosApi.setorId = parseInt(dadosAtualizados.setor);
-        delete dadosApi.setor;
-      }
-      if (dadosAtualizados.campanha) {
-        dadosApi.campanhaId = parseInt(dadosAtualizados.campanha);
-        delete dadosApi.campanha;
-      }
-      if (dadosAtualizados.clienteId) {
-        const parsedClienteId = parseInt(dadosAtualizados.clienteId);
-        if (!isNaN(parsedClienteId)) {
-          dadosApi.clienteId = parsedClienteId;
-        }
-      }
+      // Carregar lançamentos existentes
+      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
 
-      // Limpar campos undefined para evitar problemas na API
-      Object.keys(dadosApi).forEach((key) => {
-        if (dadosApi[key] === undefined || dadosApi[key] === "") {
-          delete dadosApi[key];
+      // Encontrar e atualizar o lançamento
+      const lancamentosAtualizados = lancamentosExistentes.map((lancamento: any) => {
+        if (lancamento.id === id) {
+          return {
+            ...lancamento,
+            ...dadosAtualizados,
+            // Preservar campos que não devem ser sobrescritos
+            id: lancamento.id,
+            dataCriacao: lancamento.dataCriacao,
+          };
         }
+        return lancamento;
       });
 
-      console.log("Dados para API de edição:", dadosApi);
-
-      const parsedId = parseInt(id);
-      if (isNaN(parsedId)) {
-        throw new Error("ID inválido para atualização");
-      }
-
-      const response = await caixaApi.atualizarLancamento(parsedId, dadosApi);
-      if (response.error) {
-        setError(response.error);
-        throw new Error(response.error);
-      }
+      // Salvar no localStorage
+      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
 
       // Recarregar lançamentos
-      await carregarLancamentos(true);
+      await carregarLancamentosLocalStorage();
+
+      console.log("[CaixaContext] Lançamento editado com sucesso:", id);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
       setError("Erro ao editar lançamento");
