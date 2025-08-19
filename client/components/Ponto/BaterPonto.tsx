@@ -38,11 +38,11 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
   };
 
   const formatarHorario = (data?: Date | string) => {
-    return pontoApi.formatarHorario(data);
+    return pontoLocalStorage.formatarHorario(data);
   };
 
   const formatarData = (data?: Date | string) => {
-    return pontoApi.formatarData(data);
+    return pontoLocalStorage.formatarData(data);
   };
 
   const obterCorStatus = (status: string) => {
@@ -83,7 +83,7 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header com informações do usuário */}
+      {/* Header com informações do usu��rio */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
