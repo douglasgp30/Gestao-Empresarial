@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { apiService } from "@/lib/apiService";
+// import { apiService } from "@/lib/apiService"; // Removido para usar localStorage
 import {
   ContaLancamento,
   Cliente,
