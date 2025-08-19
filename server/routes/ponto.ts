@@ -45,9 +45,12 @@ function calcularAtraso(horaEntrada: Date, horaInicioExpediente: string = "08:00
   return Math.floor((horaEntrada.getTime() - inicioExpediente.getTime()) / (1000 * 60));
 }
 
-// Auxiliar para calcular horas extras
-function calcularHorasExtras(totalHoras: number, cargaHorariaDiaria: number = 8): number {
-  return Math.max(0, totalHoras - cargaHorariaDiaria);
+// Auxiliar para calcular horas extras e saldo
+function calcularSaldoEHorasExtras(totalHoras: number, jornadaDiaria: number = 8): { horasExtras: number; saldoHoras: number } {
+  const saldoHoras = totalHoras - jornadaDiaria;
+  const horasExtras = Math.max(0, saldoHoras);
+
+  return { horasExtras, saldoHoras };
 }
 
 // Auxiliar para determinar próxima batida
