@@ -191,18 +191,17 @@ const App = () => {
 
 function AppContent() {
   const { precisaConfigurarPrimeiroAcesso, criarPrimeiroAdministrador, user } = useAuth();
-  const { mostrarTour, fecharTour, completarTour, verificarSeDeveExibirTour } = useTourGuiado();
+  const { mostrarTour, iniciarTour, fecharTour, completarTour, verificarSeDeveExibirTour } = useTourGuiado();
 
   // Verificar se deve mostrar o tour após login
   useEffect(() => {
     if (user && verificarSeDeveExibirTour()) {
       // Aguardar um pouco para garantir que a interface foi renderizada
       setTimeout(() => {
-        const { iniciarTour } = useTourGuiado();
         iniciarTour();
       }, 1000);
     }
-  }, [user]);
+  }, [user, verificarSeDeveExibirTour, iniciarTour]);
 
   // Se precisa configurar o primeiro acesso, mostrar a tela de boas-vindas
   if (precisaConfigurarPrimeiroAcesso) {
