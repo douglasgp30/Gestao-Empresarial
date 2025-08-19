@@ -134,9 +134,16 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
             <div className="text-center">
               <div className="text-xs text-muted-foreground mb-1">Saída Almoço</div>
               <div className={`text-lg font-mono ${ponto?.horaSaidaAlmoco ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {formatarHorario(ponto?.horaSaidaAlmoco)}
+                {ponto?.vendeuAlmoco ? (
+                  <span className="text-amber-600 text-sm font-medium">
+                    <Coffee className="h-3 w-3 inline mr-1" />
+                    Vendido
+                  </span>
+                ) : (
+                  formatarHorario(ponto?.horaSaidaAlmoco)
+                )}
               </div>
-              {ponto?.horaSaidaAlmoco && (
+              {ponto?.horaSaidaAlmoco && !ponto?.vendeuAlmoco && (
                 <CheckCircle className="h-4 w-4 text-green-500 mx-auto mt-1" />
               )}
             </div>
@@ -145,9 +152,16 @@ export function BaterPonto({ onPontoRegistrado }: BaterPontoProps) {
             <div className="text-center">
               <div className="text-xs text-muted-foreground mb-1">Retorno Almoço</div>
               <div className={`text-lg font-mono ${ponto?.horaRetornoAlmoco ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {formatarHorario(ponto?.horaRetornoAlmoco)}
+                {ponto?.vendeuAlmoco ? (
+                  <span className="text-amber-600 text-sm font-medium">
+                    <Coffee className="h-3 w-3 inline mr-1" />
+                    Vendido
+                  </span>
+                ) : (
+                  formatarHorario(ponto?.horaRetornoAlmoco)
+                )}
               </div>
-              {ponto?.horaRetornoAlmoco && (
+              {ponto?.horaRetornoAlmoco && !ponto?.vendeuAlmoco && (
                 <CheckCircle className="h-4 w-4 text-green-500 mx-auto mt-1" />
               )}
             </div>
