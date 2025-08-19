@@ -322,9 +322,11 @@ export interface Ponto {
   horaSaidaAlmoco?: Date; // Horário de saída para almoço
   horaRetornoAlmoco?: Date; // Horário de retorno do almoço
   horaSaida?: Date; // Horário de saída final
+  vendeuAlmoco?: boolean; // Se trabalhou sem intervalo de almoço
   observacao?: string; // Observações do registro
   totalHoras?: number; // Total de horas trabalhadas (em horas decimais)
   horasExtras?: number; // Horas extras (se houver)
+  saldoHoras?: number; // Saldo de horas (positivo = extra, negativo = faltante)
   atraso?: number; // Minutos de atraso (se houver)
   justificativaAtraso?: string; // Justificativa para atraso
   editadoPorAdmin?: boolean; // Se foi editado por administrador
