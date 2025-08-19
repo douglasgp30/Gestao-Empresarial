@@ -466,7 +466,7 @@ export default function LogsAuditoria() {
                 </p>
               </div>
             </div>
-          ) : logs.length === 0 ? (
+          ) : !Array.isArray(logs) || logs.length === 0 ? (
             <div className="text-center py-8">
               <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium text-muted-foreground mb-2">
