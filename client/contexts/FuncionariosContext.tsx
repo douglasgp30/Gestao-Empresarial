@@ -136,6 +136,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         id: f.id.toString(),
         nomeCompleto: f.nome,
         ehTecnico: f.ehTecnico || false,
+        percentualComissao: f.percentualComissao || 0,
         email: f.email,
         telefone: f.telefone,
         cargo: f.cargo,
