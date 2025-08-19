@@ -520,3 +520,32 @@ model LogAuditoria {
   @@index([acao])
   @@index([dataHora])
 }
+
+// Sistema de Controle de Ponto
+model Ponto {
+  id                  Int      @id @default(autoincrement())
+  funcionarioId       Int      // FK para Funcionario
+  data                DateTime @db.date // Data do ponto (sem horário)
+  horaEntrada         DateTime? // Horário de entrada
+  horaSaidaAlmoco     DateTime? // Horário de saída para almoço
+  horaRetornoAlmoco   DateTime? // Horário de retorno do almoço
+  horaSaida           DateTime? // Horário de saída
+  observacao          String?  // Observações do registro
+  totalHoras          Float?   // Total de horas trabalhadas (calculado)
+  horasExtras         Float?   // Horas extras (se houver)
+  atraso              Int?     // Minutos de atraso (se houver)
+  justificativaAtraso String?  // Justificativa para atraso
+  editadoPorAdmin     Boolean  @default(false) // Se foi editado por administrador
+  usuarioEdicao       String?  // Usuário que fez a última edição
+  dataEdicao          DateTime? // Data da última edição
+  dataCriacao         DateTime @default(now())
+
+  // Relacionamentos
+  funcionario         Funcionario @relation(fields: [funcionarioId], references: [id])
+
+  @@map("pontos")
+  @@index([funcionarioId])
+  @@index([data])
+  @@index([dataCriacao])
+  @@unique([funcionarioId, data]) // Um registro por funcionário por dia
+}
