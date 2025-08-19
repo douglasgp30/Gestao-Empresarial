@@ -105,25 +105,54 @@ export default function LogsAuditoria() {
   const carregarDados = async () => {
     setIsLoading(true);
     try {
-      const [logsResponse, statsResponse] = await Promise.all([
-        apiService.get('/auditoria/logs', { params: filtros }).catch(() => ({ data: [] })),
-        apiService.get('/auditoria/stats').catch(() => ({
-          data: {
-            totalLogs: 0,
-            logsPorAcao: [],
-            logsPorEntidade: [],
-            logsPorUsuario: []
-          }
-        }))
-      ]);
+      // Como não temos API funcionando, vamos usar dados mock do localStorage
+      console.log('📦 [LogsAuditoria] Carregando logs de auditoria do localStorage...');
 
-      setLogs(logsResponse.data || []);
-      setStats(statsResponse.data || {
-        totalLogs: 0,
+      // Verificar se existe dados de auditoria no localStorage
+      const auditoriaStorage = localStorage.getItem('logs_auditoria');
+      let logsData: LogAuditoria[] = [];
+
+      if (auditoriaStorage) {
+        try {
+          logsData = JSON.parse(auditoriaStorage);
+          // Garantir que seja um array
+          if (!Array.isArray(logsData)) {
+            logsData = [];
+          }
+        } catch (error) {
+          console.warn('Erro ao parsear logs de auditoria:', error);
+          logsData = [];
+        }
+      }
+
+      setLogs(logsData);
+
+      // Calcular estatísticas simples
+      const stats: LogsStats = {
+        totalLogs: logsData.length,
         logsPorAcao: [],
         logsPorEntidade: [],
         logsPorUsuario: []
+      };
+
+      // Contar ações
+      const acoesCounts: Record<string, number> = {};
+      const entidadesCounts: Record<string, number> = {};
+      const usuariosCounts: Record<string, number> = {};
+
+      logsData.forEach(log => {
+        acoesCounts[log.acao] = (acoesCounts[log.acao] || 0) + 1;
+        entidadesCounts[log.entidade] = (entidadesCounts[log.entidade] || 0) + 1;
+        usuariosCounts[log.usuarioNome] = (usuariosCounts[log.usuarioNome] || 0) + 1;
       });
+
+      stats.logsPorAcao = Object.entries(acoesCounts).map(([acao, total]) => ({ acao, total }));
+      stats.logsPorEntidade = Object.entries(entidadesCounts).map(([entidade, total]) => ({ entidade, total }));
+      stats.logsPorUsuario = Object.entries(usuariosCounts).map(([usuarioNome, total]) => ({ usuarioNome, total }));
+
+      setStats(stats);
+
+      console.log(`📦 [LogsAuditoria] ${logsData.length} logs carregados`);
     } catch (error) {
       console.error('Erro ao carregar logs:', error);
       setLogs([]);
@@ -133,7 +162,7 @@ export default function LogsAuditoria() {
         logsPorEntidade: [],
         logsPorUsuario: []
       });
-      toast.error('Sistema de auditoria não disponível. Contate o administrador.');
+      toast.error('Erro ao carregar logs de auditoria.');
     } finally {
       setIsLoading(false);
     }
