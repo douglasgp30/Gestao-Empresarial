@@ -185,13 +185,17 @@ export default function FiltrosFuncionariosCompacto() {
               {/* Botões de Ação - 2 colunas */}
               <div className="lg:col-span-2 flex gap-1">
                 <Button
-                  onClick={() => {}} // Aplicação automática
+                  onClick={() => {
+                    // Forçar recarregamento dos funcionários
+                    window.location.reload();
+                  }}
                   size="sm"
                   className="h-8 text-xs flex-1"
                   disabled={isLoading}
+                  variant="outline"
                 >
                   <Search className="h-3 w-3 mr-1" />
-                  Aplicado
+                  Recarregar
                 </Button>
                 <Button
                   onClick={limparFiltros}
