@@ -21,11 +21,7 @@ const AdminSchema = z.object({
   nomeCompleto: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
   login: z.string().min(3, 'Login deve ter pelo menos 3 caracteres'),
   senha: z.string()
-    .min(8, 'Senha deve ter pelo menos 8 caracteres')
-    .refine((senha) => {
-      const { valida } = validarForcaSenha(senha);
-      return valida;
-    }, 'Senha não atende aos requisitos de segurança'),
+    .min(6, 'Senha deve ter pelo menos 6 caracteres'),
   confirmarSenha: z.string()
 }).refine((data) => data.senha === data.confirmarSenha, {
   message: "Senhas não coincidem",
