@@ -61,6 +61,24 @@ export default function FormularioFuncionario({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
+  // Preencher formulário quando estiver editando
+  useEffect(() => {
+    if (funcionarioParaEditar) {
+      setFormData({
+        nomeCompleto: funcionarioParaEditar.nomeCompleto || "",
+        login: funcionarioParaEditar.login || "",
+        senha: "",
+        confirmarSenha: "",
+        ehTecnico: funcionarioParaEditar.ehTecnico || false,
+        permissaoAcesso: funcionarioParaEditar.permissaoAcesso || false,
+        tipoAcesso: funcionarioParaEditar.tipoAcesso || "Operador",
+        percentualComissao: funcionarioParaEditar.percentualComissao?.toString() || "",
+        ativo: funcionarioParaEditar.ativo !== false, // Default true se não especificado
+      });
+      setIsOpen(true);
+    }
+  }, [funcionarioParaEditar]);
+
   const resetForm = () => {
     setFormData({
       nomeCompleto: "",
