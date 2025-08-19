@@ -324,35 +324,42 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   const atualizarConta = useCallback(
     async (id: number, contaAtualizada: Partial<ContaLancamento>) => {
       try {
-        const response = await apiService.put(`/contas/${id}`, contaAtualizada);
+        console.log("📦 [CONTAS] Atualizando conta no localStorage:", id, contaAtualizada);
 
-        if (response.data && response.data.data) {
-          const contaFormatada = {
-            ...response.data.data,
-            dataLancamento: new Date(response.data.data.dataLancamento),
-            dataVencimento: new Date(response.data.data.dataVencimento),
-            dataPagamento: response.data.data.dataPagamento
-              ? new Date(response.data.data.dataPagamento)
-              : undefined,
-          };
-
-          // Atualizar a lista local
-          setContas((contas) =>
-            contas.map((conta) =>
-              conta.codLancamentoContas === id ? contaFormatada : conta,
-            ),
-          );
-
-          return contaFormatada;
-        } else {
-          throw new Error("Resposta inválida da API");
+        // Encontrar a conta atual para determinar o tipo
+        const contaAtual = contas.find(c => c.codLancamentoContas === id);
+        if (!contaAtual) {
+          throw new Error("Conta não encontrada");
         }
+
+        const storageKey = contaAtual.tipo === "pagar" ? "contas_pagar" : "contas_receber";
+        const contasExistentes = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+        // Atualizar a conta
+        const contasAtualizadas = contasExistentes.map((conta: any) =>
+          conta.codLancamentoContas === id
+            ? { ...conta, ...contaAtualizada }
+            : conta
+        );
+
+        localStorage.setItem(storageKey, JSON.stringify(contasAtualizadas));
+
+        const contaFormatada = { ...contaAtual, ...contaAtualizada };
+
+        // Atualizar a lista local
+        setContas((contas) =>
+          contas.map((conta) =>
+            conta.codLancamentoContas === id ? contaFormatada : conta,
+          ),
+        );
+
+        return contaFormatada;
       } catch (error) {
         console.error("❌ [CONTAS] Erro ao atualizar conta:", error);
         throw error;
       }
     },
-    [],
+    [contas],
   );
 
   const excluirConta = useCallback(async (id: number) => {
