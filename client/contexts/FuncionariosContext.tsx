@@ -49,7 +49,7 @@ function carregarFuncionariosReais(): Funcionario[] {
         dataCadastro: new Date(f.dataCadastro),
       }));
     }
-    // Se não houver funcionarios salvos, criar apenas o admin padrão
+    // Se n��o houver funcionarios salvos, criar apenas o admin padrão
     return [
       {
         id: "1",
@@ -143,7 +143,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         salario: f.salario,
         permissaoAcesso: f.temAcessoSistema || false,
         tipoAcesso: f.tipoAcesso || "Operador",
-        login: f.login,
+        login: f.login || "",
         permissoes: f.permissoes ? JSON.parse(f.permissoes) : undefined,
         ativo: true, // Assumir ativo por padrão
         dataCadastro: new Date(f.dataCriacao),
