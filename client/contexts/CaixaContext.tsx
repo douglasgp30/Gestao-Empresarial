@@ -150,6 +150,34 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função para carregar lançamentos do localStorage
+  const carregarLancamentosLocalStorage = async () => {
+    try {
+      console.log("📦 [CaixaContext] Carregando lançamentos do localStorage...");
+
+      const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
+      if (lancamentosStorage) {
+        const lancamentosParsed = JSON.parse(lancamentosStorage);
+        // Converter strings de data de volta para objetos Date
+        const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => ({
+          ...lancamento,
+          data: new Date(lancamento.data),
+          dataHora: new Date(lancamento.dataHora),
+          dataCriacao: new Date(lancamento.dataCriacao),
+        }));
+
+        setLancamentos(lancamentosFormatados);
+        console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
+      } else {
+        setLancamentos([]);
+        console.log("📦 [CaixaContext] Nenhum lançamento encontrado no localStorage");
+      }
+    } catch (error) {
+      console.error("Erro ao carregar lançamentos do localStorage:", error);
+      setLancamentos([]);
+    }
+  };
+
   // Função utilitária para conversão segura de string para número
   const parseIntSafe = (value: string): number | undefined => {
     if (!value || value === "todos" || value === "todas") return undefined;
