@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { PasswordStrength, validarForcaSenha } from '../ui/password-strength';
 
 const AdminSchema = z.object({
   nomeCompleto: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
