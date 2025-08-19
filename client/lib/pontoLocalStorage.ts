@@ -53,10 +53,15 @@ function calcularHorasTrabalhadas(ponto: Ponto): number {
 
   const entrada = new Date(ponto.horaEntrada);
   const saida = new Date(ponto.horaSaida);
-  
+
   let totalMinutos = (saida.getTime() - entrada.getTime()) / (1000 * 60);
 
-  // Descontar tempo de almoço se houver
+  // Se vendeu almoço, não desconta tempo de almoço
+  if (ponto.vendeuAlmoco) {
+    return Math.max(0, totalMinutos / 60); // Retorna em horas decimais
+  }
+
+  // Descontar tempo de almoço se houver e não vendeu
   if (ponto.horaSaidaAlmoco && ponto.horaRetornoAlmoco) {
     const saidaAlmoco = new Date(ponto.horaSaidaAlmoco);
     const retornoAlmoco = new Date(ponto.horaRetornoAlmoco);
