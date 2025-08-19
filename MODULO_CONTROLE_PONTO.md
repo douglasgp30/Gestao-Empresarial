@@ -12,8 +12,12 @@ Sistema completo de controle de ponto eletrônico implementado com TypeScript/Re
 - **Validação**: Impede registros duplicados e verifica sequência correta
 
 ### ✅ Controle de Acesso
-- **Funcionário Comum**: Registra e visualiza apenas o próprio ponto
-- **Administrador**: Visualiza todos os pontos, corrige horários e registra ponto de outros
+- **Funcionários Operacionais**: Registram e visualizam apenas o próprio ponto (`registraPonto = true`)
+- **Administradores**: **NUNCA** registram ponto próprio (`registraPonto = false`)
+  - Visualizam todos os pontos dos funcionários
+  - Corrigem e editam horários de outros
+  - Registram ponto manualmente para quem esqueceu
+  - Geram relatórios completos
 
 ### ✅ Banco de Dados (SQLite com Prisma)
 
