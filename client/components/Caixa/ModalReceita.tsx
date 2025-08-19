@@ -131,10 +131,16 @@ export function ModalReceita() {
       console.log("🔍 [ModalReceita] Percentual comissão:", tecnico?.percentualComissao);
       console.log("🔍 [ModalReceita] Valor líquido:", valorLiquidoCalculado);
 
-      if (tecnico && tecnico.percentualComissao) {
-        const comissao = valorLiquidoCalculado * (tecnico.percentualComissao / 100);
-        console.log("🔍 [ModalReceita] Comissão calculada:", comissao);
-        return comissao;
+      if (tecnico) {
+        // Usar percentualComissao ou percentualServico como fallback
+        const percentual = tecnico.percentualComissao || tecnico.percentualServico || 0;
+        console.log("🔍 [ModalReceita] Percentual encontrado:", percentual);
+
+        if (percentual > 0) {
+          const comissao = valorLiquidoCalculado * (percentual / 100);
+          console.log("🔍 [ModalReceita] Comissão calculada:", comissao);
+          return comissao;
+        }
       }
     }
     return 0;
