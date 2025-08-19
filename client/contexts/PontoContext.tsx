@@ -186,20 +186,41 @@ export function PontoProvider({ children }: PontoProviderProps) {
   const carregarHistorico = useCallback(async (funcionarioId?: string, pagina: number = 1) => {
     const idFuncionario = funcionarioId || user?.id;
     if (!idFuncionario) return;
-    
+
     try {
       setIsLoading(true);
-      
-      const resultado = await pontoApi.buscarHistoricoPonto(idFuncionario, {
-        dataInicio: filtros.dataInicio.toISOString().split('T')[0],
-        dataFim: filtros.dataFim.toISOString().split('T')[0],
-        page: pagina,
-        limit: 50
-      });
-      
-      setHistoricoPontos(resultado.pontos);
-      setPaginacaoHistorico(resultado.pagination);
-      
+
+      // Determinar se é um ID numérico (banco) ou string (localStorage)
+      const isNumericId = !isNaN(parseInt(idFuncionario));
+
+      if (isNumericId) {
+        // Usar API para funcionários do banco
+        const resultado = await pontoApi.buscarHistoricoPonto(idFuncionario, {
+          dataInicio: filtros.dataInicio.toISOString().split('T')[0],
+          dataFim: filtros.dataFim.toISOString().split('T')[0],
+          page: pagina,
+          limit: 50
+        });
+
+        setHistoricoPontos(resultado.pontos || []);
+        setPaginacaoHistorico(resultado.pagination);
+      } else {
+        // Usar localStorage para funcionários locais
+        const pontos = await pontoLocalStorage.buscarHistoricoPonto(
+          idFuncionario,
+          filtros.dataInicio,
+          filtros.dataFim
+        );
+
+        setHistoricoPontos(pontos);
+        setPaginacaoHistorico({
+          page: 1,
+          limit: pontos.length,
+          total: pontos.length,
+          pages: 1
+        });
+      }
+
     } catch (error) {
       console.error('Erro ao carregar histórico:', error);
       toast({
