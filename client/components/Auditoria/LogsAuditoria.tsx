@@ -491,7 +491,7 @@ export default function LogsAuditoria() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {logs.map((log) => (
+                  {(Array.isArray(logs) ? logs : []).map((log) => (
                     <TableRow key={log.id}>
                       <TableCell className="font-mono text-sm">
                         {formatarDataHora(log.dataHora)}
