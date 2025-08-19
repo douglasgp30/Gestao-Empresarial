@@ -183,17 +183,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const delay = Math.random() * 2000 + 6000; // Delay aleatório entre 6-8s
-    const timeout = setTimeout(() => {
-      console.log(
-        "[FuncionariosContext] Iniciando carregamento após delay de",
-        delay,
-        "ms",
-      );
-      carregarFuncionarios();
-    }, delay);
-
-    return () => clearTimeout(timeout);
+    // Carregar funcionários imediatamente
+    console.log("[FuncionariosContext] Iniciando carregamento imediato de funcionários");
+    carregarFuncionarios();
   }, []);
 
   const [filtros, setFiltros] = useState({
