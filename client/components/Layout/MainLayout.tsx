@@ -95,9 +95,19 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  const filteredItems = sidebarItems.filter(
-    (item) => !item.adminOnly || user?.tipoAcesso === "Administrador",
-  );
+  const filteredItems = sidebarItems.filter((item) => {
+    // Filtro para itens que requerem admin
+    if (item.adminOnly && user?.tipoAcesso !== "Administrador") {
+      return false;
+    }
+
+    // Filtro específico para Controle de Ponto
+    if (item.href === "/ponto") {
+      return user?.tipoAcesso === "Administrador" || user?.registraPonto;
+    }
+
+    return true;
+  });
 
   return (
     <div
