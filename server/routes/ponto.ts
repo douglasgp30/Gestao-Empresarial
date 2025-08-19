@@ -135,7 +135,7 @@ router.get('/funcionario/:funcionarioId/hoje', async (req, res) => {
 // Registrar batida de ponto
 router.post('/registrar', middlewareAuditoriaSimples('PONTO_CREATE'), async (req, res) => {
   try {
-    const { funcionarioId, observacao } = req.body;
+    const { funcionarioId, observacao, vendeuAlmoco } = req.body;
 
     // Verificar se funcionarioId é um número
     const funcionarioIdNumber = parseInt(funcionarioId);
