@@ -55,7 +55,7 @@ export const createCliente: RequestHandler = middlewareAuditoria(
 
 export const updateCliente: RequestHandler = middlewareAuditoria(
   'Cliente',
-  'update',
+  'atualizar',
   async (req, res) => {
     const id = parseInt(req.params.id);
     console.log(
