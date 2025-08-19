@@ -89,6 +89,14 @@ function calcularHorasExtras(totalHoras: number, cargaHorariaDiaria: number = 8)
 function determinarProximaBatida(ponto?: Ponto): string {
   if (!ponto) return "entrada";
   if (!ponto.horaEntrada) return "entrada";
+
+  // Se vendeu almoço, pula direto para saída
+  if (ponto.vendeuAlmoco) {
+    if (!ponto.horaSaida) return "saida";
+    return "completo";
+  }
+
+  // Fluxo normal com almoço
   if (!ponto.horaSaidaAlmoco) return "saida_almoco";
   if (!ponto.horaRetornoAlmoco) return "retorno_almoco";
   if (!ponto.horaSaida) return "saida";
