@@ -52,8 +52,8 @@ class PontoApiService {
     try {
       const response = await apiService.get(`/ponto/funcionario/${funcionarioId}/hoje`);
 
-      // Verificar se a resposta é válida
-      if (!response || !response.data) {
+      // Verificar se a resposta é válida - a API retorna { success: true, data: {...} }
+      if (!response || !response.data || !response.data.data) {
         console.warn('Resposta da API de ponto é inválida:', response);
         return {
           ponto: undefined,
@@ -62,7 +62,7 @@ class PontoApiService {
         };
       }
 
-      return response.data;
+      return response.data.data;
     } catch (error) {
       console.error('Erro ao buscar ponto de hoje:', error);
       // Retornar um objeto padrão em caso de erro
