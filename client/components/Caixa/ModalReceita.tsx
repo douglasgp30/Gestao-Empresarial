@@ -139,7 +139,7 @@ export function ModalReceita() {
 
   // Remover useEffect que causa piscar ao resetar valorQueEntrou
 
-  // Função para emitir nota fiscal
+  // Funç��o para emitir nota fiscal
   const emitirNotaFiscal = () => {
     const urlNotaFiscal =
       "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733";
@@ -232,7 +232,7 @@ export function ModalReceita() {
         valor: valorCalculado,
         valorLiquido: valorLiquidoCalculado,
         valorQueEntrou: valorQueEntrouCalculado,
-        comissao: comissaoCalculada,
+        // Não enviar comissao - deixar o servidor calcular automaticamente
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
@@ -284,45 +284,6 @@ export function ModalReceita() {
   const isLoading =
     !loadingForced && (caixaLoading || entidadesLoading || clientesLoading);
 
-  // Debug logs
-  React.useEffect(() => {
-    console.log("[ModalReceita] Estados de loading:", {
-      caixaLoading,
-      entidadesLoading,
-      clientesLoading,
-      loadingForced,
-      isLoading,
-    });
-  }, [
-    caixaLoading,
-    entidadesLoading,
-    clientesLoading,
-    loadingForced,
-    isLoading,
-  ]);
-
-  // Debug dados
-  React.useEffect(() => {
-    console.log("[ModalReceita] Dados carregados:", {
-      categoriasReceita: categoriasReceita.length,
-      descricoesFiltradas: descricoesFiltradas.length,
-      formasPagamento: formasPagamento.length,
-      campanhas: Array.isArray(campanhas) ? campanhas.length : 0,
-      cidades: Array.isArray(cidades) ? cidades.length : 0,
-      setores: Array.isArray(setores) ? setores.length : 0,
-    });
-
-    // Debug específico das formas de pagamento
-    console.log("[ModalReceita] Formas de pagamento:", formasPagamento);
-    console.log("[ModalReceita] Campanhas:", campanhas);
-  }, [
-    categoriasReceita,
-    descricoesFiltradas,
-    formasPagamento,
-    campanhas,
-    cidades,
-    setores,
-  ]);
 
   return (
     <Dialog
@@ -359,25 +320,6 @@ export function ModalReceita() {
           <div className="text-center py-6">Carregando dados...</div>
         ) : (
           <div>
-            {/* Debug temporário */}
-            <div className="mb-4 p-2 bg-gray-100 text-xs rounded">
-              <strong>Debug Contextos:</strong>
-              Categorias: {categoriasReceita.length} | Formas:{" "}
-              {formasPagamento.length} | Campanhas:{" "}
-              {Array.isArray(campanhas) ? campanhas.length : 0} | Cidades:{" "}
-              {Array.isArray(cidades) ? cidades.length : 0} | Setores:{" "}
-              {Array.isArray(setores) ? setores.length : 0}
-            </div>
-            <TestApis />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.reload()}
-              className="mt-2"
-            >
-              🔄 Recarregar Dados
-            </Button>
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {/* Campos básicos */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -465,11 +407,6 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {/* Debug temporário */}
-                  <div className="text-xs text-gray-500">
-                    Debug: {descricoesFiltradas.length} descrições para
-                    categoria "{formData.categoria}"
-                  </div>
                 </div>
               </div>
 
@@ -496,10 +433,6 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {/* Debug temporário */}
-                  <div className="text-xs text-gray-500">
-                    Debug: {formasPagamento.length} formas carregadas
-                  </div>
                 </div>
 
                 {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
@@ -667,11 +600,6 @@ export function ModalReceita() {
                     )}
                   </SelectContent>
                 </Select>
-                {/* Debug temporário */}
-                <div className="text-xs text-gray-500">
-                  Debug: {Array.isArray(campanhas) ? campanhas.length : 0}{" "}
-                  campanhas carregadas
-                </div>
               </div>
 
               {/* Cliente */}
