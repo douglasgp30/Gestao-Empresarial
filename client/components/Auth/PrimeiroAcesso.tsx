@@ -104,7 +104,27 @@ export default function PrimeiroAcesso({ onAdminCriado }: PrimeiroAcessoProps) {
         email: "",
         cargo: "Administrador",
         salario: 0,
-        permissoes: ""
+        permissoes: {
+          acessarDashboard: true,
+          verCaixa: true,
+          lancarReceita: true,
+          lancarDespesa: true,
+          editarLancamentos: true,
+          verContas: true,
+          lancarContasPagar: true,
+          lancarContasReceber: true,
+          marcarContasPagas: true,
+          acessarConfiguracoes: true,
+          fazerBackupManual: true,
+          gerarRelatorios: true,
+          verCadastros: true,
+          gerenciarFuncionarios: true,
+          alterarPermissoes: true,
+          acessarAgendamentos: true,
+          criarAgendamento: true,
+          editarAgendamento: true,
+          excluirAgendamento: true,
+        }
       };
 
       // Simular criação (400ms)
