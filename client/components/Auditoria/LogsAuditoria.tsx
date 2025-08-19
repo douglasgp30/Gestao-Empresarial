@@ -165,27 +165,7 @@ export default function LogsAuditoria() {
   };
 
   const exportarLogs = async () => {
-    try {
-      const response = await apiService.get('/api/auditoria/export', { 
-        params: filtros,
-        responseType: 'blob'
-      });
-      
-      const blob = new Blob([response.data], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `logs-auditoria-${format(new Date(), 'yyyy-MM-dd-HHmm')}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      toast.success('Logs exportados com sucesso');
-    } catch (error) {
-      console.error('Erro ao exportar logs:', error);
-      toast.error('Erro ao exportar logs');
-    }
+    toast.info('Função de exportação será implementada em breve');
   };
 
   const formatarDataHora = (dataHora: string) => {
