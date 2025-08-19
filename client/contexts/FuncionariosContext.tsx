@@ -209,7 +209,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         telefone: novoFuncionario.telefone,
         cargo: novoFuncionario.cargo,
         salario: novoFuncionario.salario,
-        percentualComissao: novoFuncionario.percentualComissao || 0,
+        percentualComissao: typeof novoFuncionario.percentualComissao === 'string'
+          ? parseFloat(novoFuncionario.percentualComissao) || 0
+          : novoFuncionario.percentualComissao || 0,
         temAcessoSistema: novoFuncionario.permissaoAcesso || false,
         tipoAcesso: novoFuncionario.tipoAcesso,
         login: novoFuncionario.login,
