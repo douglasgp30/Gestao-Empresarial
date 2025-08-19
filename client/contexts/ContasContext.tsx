@@ -101,29 +101,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       setCarregando(true);
       setErro(null);
 
-      const params = new URLSearchParams();
-      params.append(
-        "dataInicio",
-        filtrosAtivos.dataInicio.toISOString().split("T")[0],
-      );
-      params.append(
-        "dataFim",
-        filtrosAtivos.dataFim.toISOString().split("T")[0],
-      );
-
-      if (filtrosAtivos.tipo !== "ambos") {
-        params.append("tipo", filtrosAtivos.tipo);
-      }
-
-      if (filtrosAtivos.pago !== "todos") {
-        params.append("pago", filtrosAtivos.pago);
-      }
-
-      if (filtrosAtivos.categoria !== "todos") {
-        params.append("categoria", filtrosAtivos.categoria);
-      }
-
-      console.log("🔍 [CONTAS] Carregando contas com filtros:", {
+      console.log("📦 [CONTAS] Carregando contas do localStorage com filtros:", {
         dataInicio: filtrosAtivos.dataInicio.toISOString().split("T")[0],
         dataFim: filtrosAtivos.dataFim.toISOString().split("T")[0],
         tipo: filtrosAtivos.tipo,
@@ -131,39 +109,46 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
         categoria: filtrosAtivos.categoria,
       });
 
-      const response = await apiService.get(`/contas?${params.toString()}`);
+      // Carregar contas do localStorage
+      const contasStorage = localStorage.getItem("contas_pagar");
+      const contasReceber = localStorage.getItem("contas_receber");
 
-      console.log("🔍 [CONTAS] Resposta completa da API:", response);
+      let todasContas: ContaLancamento[] = [];
 
-      if (response.data && response.data.data) {
-        const contasFormatadas = response.data.data.map((conta: any) => ({
-          ...conta,
-          dataLancamento: new Date(conta.dataLancamento),
-          dataVencimento: new Date(conta.dataVencimento),
-          dataPagamento: conta.dataPagamento
-            ? new Date(conta.dataPagamento)
-            : undefined,
-        }));
-
-        console.log("🔍 [CONTAS] Dados recebidos da API:", {
-          total: response.data.data.length,
-          contasFormatadas: contasFormatadas.length,
-        });
-
-        console.log(
-          "🔍 [CONTAS] Contas formatadas:",
-          contasFormatadas.slice(0, 3),
-        );
-
-        setContas(contasFormatadas);
-
-        // Salvar no localStorage como backup
-        localStorage.setItem("contas-backup", JSON.stringify(contasFormatadas));
-        localStorage.setItem("contas-backup-timestamp", Date.now().toString());
-      } else {
-        console.warn("🔍 [CONTAS] API retornou dados vazios");
-        setContas([]);
+      // Carregar contas a pagar
+      if (contasStorage) {
+        try {
+          const contasPagar = JSON.parse(contasStorage).map((conta: any) => ({
+            ...conta,
+            tipo: "pagar" as const,
+            dataLancamento: new Date(conta.dataCriacao || conta.dataLancamento || new Date()),
+            dataVencimento: new Date(conta.dataVencimento),
+            dataPagamento: conta.dataPagamento ? new Date(conta.dataPagamento) : undefined,
+          }));
+          todasContas.push(...contasPagar);
+        } catch (error) {
+          console.warn("Erro ao parsear contas a pagar:", error);
+        }
       }
+
+      // Carregar contas a receber
+      if (contasReceber) {
+        try {
+          const contasAReceber = JSON.parse(contasReceber).map((conta: any) => ({
+            ...conta,
+            tipo: "receber" as const,
+            dataLancamento: new Date(conta.dataCriacao || conta.dataLancamento || new Date()),
+            dataVencimento: new Date(conta.dataVencimento),
+            dataPagamento: conta.dataPagamento ? new Date(conta.dataPagamento) : undefined,
+          }));
+          todasContas.push(...contasAReceber);
+        } catch (error) {
+          console.warn("Erro ao parsear contas a receber:", error);
+        }
+      }
+
+      console.log("📦 [CONTAS] Total de contas carregadas do localStorage:", todasContas.length);
+      setContas(todasContas);
     } catch (error) {
       console.error("❌ [CONTAS] Erro ao carregar contas:", error);
 
