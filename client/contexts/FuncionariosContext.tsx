@@ -169,8 +169,26 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar funcionários da API na inicialização com proteção para hot reload
+  // Carregar funcionários do localStorage na inicialização
   useEffect(() => {
+    const carregarFuncionariosDoLocalStorage = () => {
+      try {
+        console.log("[FuncionariosContext] Carregando funcionários do localStorage...");
+        setIsLoading(true);
+
+        const funcionariosCarregados = carregarFuncionariosReais();
+        setFuncionarios(funcionariosCarregados);
+
+        console.log(`[FuncionariosContext] ${funcionariosCarregados.length} funcionários carregados do localStorage`);
+      } catch (error) {
+        console.error("Erro ao carregar funcionários do localStorage:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    carregarFuncionariosDoLocalStorage();
+
     // Durante hot reload, não carregar automaticamente
     if (
       typeof window !== "undefined" &&
