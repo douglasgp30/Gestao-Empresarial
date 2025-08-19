@@ -92,6 +92,7 @@ export default function FormularioFuncionario({
       ehTecnico: false,
       permissaoAcesso: false,
       registraPonto: false,
+      jornadaDiaria: 8.0,
       tipoAcesso: "Operador",
       percentualComissao: "",
       ativo: true,
