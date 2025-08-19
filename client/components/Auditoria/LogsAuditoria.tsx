@@ -170,13 +170,34 @@ export default function LogsAuditoria() {
 
   const carregarFiltrosDisponiveis = async () => {
     try {
-      const [entidadesResponse, acoesResponse] = await Promise.all([
-        apiService.get('/auditoria/entidades').catch(() => ({ data: [] })),
-        apiService.get('/auditoria/acoes').catch(() => ({ data: [] }))
-      ]);
+      console.log('📦 [LogsAuditoria] Carregando filtros disponíveis...');
 
-      setEntidades(entidadesResponse.data || []);
-      setAcoes(acoesResponse.data || []);
+      // Carregar logs para extrair entidades e ações únicas
+      const auditoriaStorage = localStorage.getItem('logs_auditoria');
+      let logsData: LogAuditoria[] = [];
+
+      if (auditoriaStorage) {
+        try {
+          logsData = JSON.parse(auditoriaStorage);
+          if (!Array.isArray(logsData)) {
+            logsData = [];
+          }
+        } catch (error) {
+          console.warn('Erro ao parsear logs para filtros:', error);
+          logsData = [];
+        }
+      }
+
+      // Extrair entidades únicas
+      const entidadesUnicas = [...new Set(logsData.map(log => log.entidade).filter(Boolean))];
+
+      // Extrair ações únicas
+      const acoesUnicas = [...new Set(logsData.map(log => log.acao).filter(Boolean))];
+
+      setEntidades(entidadesUnicas);
+      setAcoes(acoesUnicas);
+
+      console.log(`📦 [LogsAuditoria] Filtros carregados: ${entidadesUnicas.length} entidades, ${acoesUnicas.length} ações`);
     } catch (error) {
       console.error('Erro ao carregar filtros:', error);
       setEntidades([]);
