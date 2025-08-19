@@ -116,6 +116,9 @@ export default function ModalDescricoesSimples() {
   }, [descricoesECategorias]);
 
   const descricoesDespesas = useMemo(() => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return [];
+    }
     return descricoesECategorias.filter(
       (item) =>
         item.tipoItem === "descricao" && item.ativo && item.tipo === "despesa",
