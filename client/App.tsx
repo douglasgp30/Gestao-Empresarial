@@ -88,6 +88,8 @@ const queryClient = new QueryClient();
 const App = () => {
   // Configurar handler de erro global para suprimir erros benignos
   useEffect(() => {
+    // Executar ajuste automático de permissões de administradores
+    executarAjusteAutomatico();
     const handleError = (event: ErrorEvent) => {
       if (
         event.message &&
