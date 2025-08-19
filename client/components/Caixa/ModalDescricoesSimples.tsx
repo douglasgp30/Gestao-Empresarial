@@ -202,58 +202,39 @@ export default function ModalDescricoesSimples() {
       );
 
       if (!response.ok) {
-        // Tratamento direto e simples do erro
+        let errorMessage = "Não foi possível excluir o item.";
+
+        // Tentar extrair a mensagem de erro do servidor
         try {
           const errorData = await response.json();
-
-          if (
-            errorData &&
-            errorData.error &&
-            typeof errorData.error === "string"
-          ) {
-            throw new Error(errorData.error);
+          if (errorData && errorData.error && typeof errorData.error === "string") {
+            errorMessage = errorData.error;
           }
         } catch (jsonError) {
-          // Falha ao ler JSON
+          // Se não conseguir ler o JSON, usar mensagem padrão baseada no status
+          if (response.status === 400) {
+            errorMessage = "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.";
+          } else if (response.status === 404) {
+            errorMessage = "Item não encontrado.";
+          } else {
+            errorMessage = `Erro ${response.status}: Não foi possível excluir o item.`;
+          }
         }
 
-        // Fallback
-        throw new Error(
-          "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.",
-        );
+        throw new Error(errorMessage);
       }
 
       // Status 204 (No Content) indica sucesso na exclusão
-      if (response.status === 204) {
-        console.log("✅ Excluído com sucesso (status 204)");
-      } else {
-        console.log("✅ Excluído com sucesso (status " + response.status + ")");
-      }
-
+      console.log("✅ Excluído com sucesso");
       await recarregarDescricoesECategorias();
       setShowConfirm(false);
       setItemToDelete(null);
       toast.success("Item excluído com sucesso");
     } catch (error) {
       console.error("❌ Erro no handleDelete:", error);
-      console.error("❌ Tipo do erro:", typeof error);
-      console.error("❌ Stack:", error instanceof Error ? error.stack : "N/A");
 
-      const errorMessage =
-        error instanceof Error ? error.message : "Erro ao excluir item";
-
-      // Se a mensagem está vazia ou só tem "Erro HTTP 400:", mostrar mensagem mais clara
-      if (
-        !errorMessage ||
-        errorMessage.trim() === "" ||
-        errorMessage === "Erro HTTP 400:"
-      ) {
-        toast.error(
-          "Não foi possível excluir o item. Verifique se não há dependências vinculadas.",
-        );
-      } else {
-        toast.error(errorMessage);
-      }
+      const errorMessage = error instanceof Error ? error.message : "Erro ao excluir item";
+      toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
     }
