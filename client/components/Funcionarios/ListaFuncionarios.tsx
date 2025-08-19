@@ -277,10 +277,17 @@ export default function ListaFuncionarios() {
                               funcionario.id === user?.id ||
                               funcionario.id === "1"
                             }
+                            className="data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-gray-300"
                           />
-                          <span className="text-sm">
+                          <Badge
+                            variant={funcionario.ativo ? "default" : "secondary"}
+                            className={funcionario.ativo
+                              ? "bg-green-100 text-green-800 border-green-200"
+                              : "bg-gray-100 text-gray-600 border-gray-200"
+                            }
+                          >
                             {funcionario.ativo ? "Ativo" : "Inativo"}
-                          </span>
+                          </Badge>
                         </div>
                       </TableCell>
 
