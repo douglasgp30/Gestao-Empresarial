@@ -120,13 +120,25 @@ router.get('/funcionario/:funcionarioId/hoje', async (req, res) => {
 router.post('/registrar', middlewareAuditoriaSimples('PONTO_CREATE'), async (req, res) => {
   try {
     const { funcionarioId, observacao } = req.body;
+
+    // Verificar se funcionarioId é um número
+    const funcionarioIdNumber = parseInt(funcionarioId);
+    if (isNaN(funcionarioIdNumber)) {
+      // Sistema está usando IDs baseados em localStorage
+      console.log(`[Ponto] Tentativa de registrar ponto para funcionário não-numérico: ${funcionarioId}`);
+      return res.status(400).json({
+        success: false,
+        error: 'Sistema de ponto não suporta funcionários baseados em localStorage ainda. Entre em contato com o administrador.'
+      });
+    }
+
     const agora = new Date();
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
     // Verificar se funcionário pode registrar ponto
     const funcionario = await prisma.funcionario.findUnique({
-      where: { id: parseInt(funcionarioId) }
+      where: { id: funcionarioIdNumber }
     });
 
     if (!funcionario || !funcionario.registraPonto) {
@@ -140,7 +152,7 @@ router.post('/registrar', middlewareAuditoriaSimples('PONTO_CREATE'), async (req
     let ponto = await prisma.ponto.findUnique({
       where: {
         funcionarioId_data: {
-          funcionarioId: parseInt(funcionarioId),
+          funcionarioId: funcionarioIdNumber,
           data: hoje
         }
       }
