@@ -9,6 +9,7 @@ import { PontoProvider } from "../contexts/PontoContext";
 import { BaterPonto } from "../components/Ponto/BaterPonto";
 import { HistoricoPonto } from "../components/Ponto/HistoricoPonto";
 import { GerenciarPontos } from "../components/Ponto/GerenciarPontos";
+import { RelatoriosPonto } from "../components/Ponto/RelatoriosPonto";
 
 function PontoContent() {
   const { user } = useAuth();
