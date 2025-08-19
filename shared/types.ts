@@ -39,6 +39,7 @@ export interface Funcionario {
   permissaoAcesso?: boolean;
   tipoAcesso?: "Administrador" | "Operador" | "Técnico";
   permissoes?: FuncionarioPermissoes;
+  registraPonto?: boolean; // Define se o funcionário pode usar o controle de ponto
   dataCadastro: Date;
   ativo: boolean;
 }
