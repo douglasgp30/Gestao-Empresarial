@@ -305,7 +305,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         funcionario.nomeCompleto
           .toLowerCase()
           .includes(filtros.busca.toLowerCase()) ||
-        funcionario.login.toLowerCase().includes(filtros.busca.toLowerCase());
+        (funcionario.login && funcionario.login.toLowerCase().includes(filtros.busca.toLowerCase()));
       const tipoCorreto =
         filtros.tipoAcesso === "todos" ||
         funcionario.tipoAcesso === filtros.tipoAcesso;
