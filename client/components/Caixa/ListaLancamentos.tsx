@@ -266,6 +266,7 @@ export default function ListaLancamentos() {
                   </TableHead>
                   <TableHead>Categoria</TableHead>
                   <TableHead>Descrição</TableHead>
+                  <TableHead>Código Serviço</TableHead>
                   <TableHead>
                     <Button
                       variant="ghost"
