@@ -1,5 +1,5 @@
 import React from "react";
-import { AgendamentosProvider } from "../contexts/AgendamentosContext";
+import { AgendamentosProvider, useAgendamentos } from "../contexts/AgendamentosContext";
 import {
   Card,
   CardContent,
@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar, Plus, Bell } from "lucide-react";
 import FiltrosAgendamentosCompacto from "../components/Agendamentos/FiltrosAgendamentosCompacto";
 import ListaAgendamentos from "../components/Agendamentos/ListaAgendamentos";
 import FormularioAgendamento from "../components/Agendamentos/FormularioAgendamento";
