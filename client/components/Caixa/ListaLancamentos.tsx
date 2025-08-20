@@ -316,10 +316,13 @@ export default function ListaLancamentos() {
                         {lancamento.tipo === "receita" ? (
                           <div>
                             <p className="font-medium">
-                              Serviço - {lancamento.setor || "Geral"}
+                              {lancamento.categoria || "Serviços"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {lancamento.descricao}
                             </p>
                             {lancamento.campanha && (
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-blue-600">
                                 Campanha: {lancamento.campanha}
                               </p>
                             )}
