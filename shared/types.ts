@@ -113,12 +113,15 @@ export interface ContaLancamento {
   descricaoCategoria?: number; // SMALLINT FK categorias(id)
   pago: boolean; // BOOLEAN
   dataPagamento?: Date; // TIMESTAMP - Condicional
+  codigoServico?: string; // Código único do serviço para rastreabilidade
+  categoria?: string; // Nome da categoria
+  descricao?: string; // Descrição do serviço
 
   // Relacionamentos expandidos
   cliente?: Cliente;
   fornecedor?: Fornecedor;
   formaPagamento?: FormaPagamento;
-  categoria?: Categoria;
+  categoriaObj?: Categoria;
 }
 
 export interface Campanha {
@@ -326,7 +329,7 @@ export interface Ponto {
   horaRetornoAlmoco?: Date; // Horário de retorno do almoço
   horaSaida?: Date; // Horário de saída final
   vendeuAlmoco?: boolean; // Se trabalhou sem intervalo de almoço
-  observacao?: string; // Observaç��es do registro
+  observacao?: string; // Observações do registro
   totalHoras?: number; // Total de horas trabalhadas (em horas decimais)
   horasExtras?: number; // Horas extras (se houver)
   saldoHoras?: number; // Saldo de horas (positivo = extra, negativo = faltante)
