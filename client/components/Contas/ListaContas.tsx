@@ -380,7 +380,21 @@ export function ListaContas({}: ListaContasProps) {
                           locale: ptBR,
                         })}
                       </TableCell>
-                      <TableCell>{conta.categoria?.nome || "-"}</TableCell>
+                      <TableCell>{conta.categoria?.nome || conta.categoria || "-"}</TableCell>
+                      <TableCell>
+                        {conta.codigoServico ? (
+                          <div>
+                            <p className="text-xs font-mono text-gray-600">
+                              {conta.codigoServico}
+                            </p>
+                            <Badge variant="outline" className="text-xs mt-1">
+                              Rastreável
+                            </Badge>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         {conta.observacoes ? (
                           <div
