@@ -87,6 +87,7 @@ interface Setor {
 }
 
 export default function ModalGerenciarCidades() {
+  const { sincronizarLocalizacoes } = useEntidades();
   const [isMainOpen, setIsMainOpen] = useState(false);
   const [isNovoSetorOpen, setIsNovoSetorOpen] = useState(false);
   const [isCadastroMassaOpen, setIsCadastroMassaOpen] = useState(false);
