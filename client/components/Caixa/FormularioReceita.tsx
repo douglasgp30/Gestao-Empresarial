@@ -63,8 +63,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos usando a função que verifica localStorage
-  const tecnicos = getTecnicos();
+  // Carregar técnicos com memoização para evitar re-renderizações
+  const tecnicos = useMemo(() => getTecnicos(), [getTecnicos]);
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
