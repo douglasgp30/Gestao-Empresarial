@@ -45,6 +45,7 @@ interface ContasContextType {
   marcarComoPago: (
     id: number,
     formaPagamentoId: number,
+    dataPagamento?: string,
   ) => Promise<ContaLancamento>;
   forcarRecarregamento: () => void;
 
