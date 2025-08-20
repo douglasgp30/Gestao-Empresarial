@@ -421,7 +421,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
             <div className="space-y-2">
               <Label htmlFor="valor">Valor (R$) *</Label>
-              <Input id="valor" {...valorInput.inputProps} required />
+              <Input
+                id="valor"
+                {...valorInput.inputProps}
+                placeholder="R$ 0,00"
+                required
+              />
             </div>
           </div>
 
