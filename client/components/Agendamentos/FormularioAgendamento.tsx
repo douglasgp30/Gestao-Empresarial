@@ -54,16 +54,6 @@ export default function FormularioAgendamento({
   const cidades = cidadesObjs.map((cidade) => cidade.nome);
   const { funcionarios } = useFuncionarios();
 
-  // Debug para verificar carregamento
-  React.useEffect(() => {
-    console.log('[FORMULARIO AGENDAMENTO] Debug de dados:', {
-      cidadesObjs: cidadesObjs.length,
-      cidades: cidades.length,
-      setores: setores.length,
-      funcionarios: funcionarios.length,
-      tecnicosDisponiveis: funcionarios.filter(f => f.ativo && f.tipoAcesso === "Técnico").length
-    });
-  }, [cidadesObjs, cidades, setores, funcionarios]);
 
   const [aberto, setAberto] = useState(false);
   const [novoSetor, setNovoSetor] = useState("");
