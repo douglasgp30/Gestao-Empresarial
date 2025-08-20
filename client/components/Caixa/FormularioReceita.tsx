@@ -966,10 +966,18 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           {/* Resumo financeiro */}
           {valorInput.numericValue > 0 && (
-            <div className="p-4 bg-green-50 rounded-lg">
-              <h4 className="font-medium text-green-800 mb-3">
-                Resumo Financeiro Detalhado
+            <div className={`p-4 rounded-lg ${isFormaPagamentoBoleto ? 'bg-yellow-50 border border-yellow-200' : 'bg-green-50'}`}>
+              <h4 className={`font-medium mb-3 ${isFormaPagamentoBoleto ? 'text-yellow-800' : 'text-green-800'}`}>
+                {isFormaPagamentoBoleto ? 'Resumo Financeiro - BOLETO' : 'Resumo Financeiro Detalhado'}
               </h4>
+              {isFormaPagamentoBoleto && (
+                <div className="mb-3 p-2 bg-yellow-100 rounded border-l-4 border-yellow-400">
+                  <p className="text-sm text-yellow-800">
+                    <strong>ATENÇÃO:</strong> Como é um boleto, este valor será registrado apenas como receita bruta.
+                    O valor não entrará para a empresa até o pagamento do boleto.
+                  </p>
+                </div>
+              )}
               <div className="space-y-3">
                 {/* Primeira linha - valores base */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
