@@ -487,7 +487,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const totais = React.useMemo(() => {
     const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
 
-    // Separar boletos
+    // Separar boletos (que não têm valorParaEmpresa ainda)
     const receitasBoleto = receitasCompletas.filter(
       (l) =>
         l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
@@ -505,10 +505,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       (total, l) => total + l.valor,
       0,
     );
+
+    // Receitas líquidas (para compatibilidade com versão anterior)
     const receitaLiquida = receitasNaoBoleto.reduce(
       (total, l) => total + (l.valorLiquido || l.valor),
       0,
     );
+
+    // Receitas efetivamente para a empresa (principal mudança)
+    const receitasParaEmpresa = receitasNaoBoleto.reduce(
+      (total, l) => total + (l.valorParaEmpresa || l.valorLiquido || l.valor),
+      0,
+    );
+
     const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
 
     const despesas = lancamentos
@@ -520,12 +529,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       .reduce((total, l) => total + (l.comissao || 0), 0);
 
     return {
-      receitas: receitaLiquida, // Para compatibilidade
+      receitas: receitasParaEmpresa, // Agora usa valor para empresa
       receitaBruta,
       receitaLiquida,
+      receitasParaEmpresa, // Novo campo
       boletos,
       despesas,
-      saldo: receitaLiquida - despesas, // Saldo só com receitas líquidas (sem boletos)
+      saldo: receitasParaEmpresa - despesas, // Saldo baseado no valor para empresa
       comissoes,
     };
   }, [lancamentos]);
