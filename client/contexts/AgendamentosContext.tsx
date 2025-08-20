@@ -406,6 +406,8 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     agendamentosFiltrados,
     agendamentosHoje,
     proximosLembretes,
+    // Função de debug (desenvolvimento)
+    testarLembrete: process.env.NODE_ENV === 'development' ? testarLembrete : undefined,
   };
 
   return (
