@@ -773,16 +773,19 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           {/* Cliente */}
           <div className="space-y-2">
-            <Label htmlFor="cliente">Cliente</Label>
+            <Label htmlFor="cliente" className={isFormaPagamentoBoleto ? "text-red-600 font-semibold" : ""}>
+              Cliente {isFormaPagamentoBoleto && "*"}
+            </Label>
             <div className="flex gap-2">
               <Select
                 value={formData.cliente}
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, cliente: value }))
                 }
+                required={isFormaPagamentoBoleto}
               >
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Selecione um cliente" />
+                <SelectTrigger className={`flex-1 ${isFormaPagamentoBoleto && !formData.cliente ? 'border-red-500' : ''}`}>
+                  <SelectValue placeholder={isFormaPagamentoBoleto ? "Selecione um cliente (obrigatório para boleto)" : "Selecione um cliente"} />
                 </SelectTrigger>
                 <SelectContent>
                   {clientes.map((cliente) => (
@@ -808,7 +811,45 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }}
               />
             </div>
+            {isFormaPagamentoBoleto && !formData.cliente && (
+              <p className="text-xs text-red-500">
+                Cliente é obrigatório quando a forma de pagamento for boleto
+              </p>
+            )}
           </div>
+
+          {/* Data de Vencimento do Boleto - só aparece para boletos */}
+          {isFormaPagamentoBoleto && (
+            <div className="space-y-2 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <Label htmlFor="dataVencimentoBoleto" className="text-yellow-800 font-semibold">
+                Data de Vencimento do Boleto *
+              </Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="dataVencimentoBoleto"
+                  type="date"
+                  value={dataVencimentoBoleto ? dataVencimentoBoleto.toISOString().split('T')[0] : ''}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      setDataVencimentoBoleto(new Date(e.target.value));
+                    } else {
+                      setDataVencimentoBoleto(null);
+                    }
+                  }}
+                  className="bg-yellow-50 border-yellow-300"
+                  required
+                />
+              </div>
+              {!dataVencimentoBoleto && (
+                <p className="text-xs text-yellow-700">
+                  ⚠️ Data de vencimento é obrigatória para boletos
+                </p>
+              )}
+              <p className="text-xs text-yellow-600">
+                💡 Esta receita será registrada como receita bruta, mas não entrará no valor para empresa até o pagamento do boleto.
+              </p>
+            </div>
+          )}
 
           {/* Nota Fiscal */}
           <div className="space-y-3 p-4 bg-blue-50/70 rounded-lg border border-blue-200/70 shadow-sm">
