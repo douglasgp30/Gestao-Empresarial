@@ -126,7 +126,8 @@ export default function ModalCampanhasSimples() {
       resetForm();
       setShowEdit(false);
       setItemToEdit(null);
-      await carregarDados();
+      await carregarCampanhas(); // Recarregar campanhas do servidor
+      await carregarDados(); // Recarregar dados do contexto também
     } catch (error) {
       console.error("Erro ao editar campanha:", error);
       toast.error("Erro ao editar campanha. Tente novamente.");
