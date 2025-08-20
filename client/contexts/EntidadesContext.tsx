@@ -225,7 +225,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       return localizacoesGeograficas.filter(
         (item) =>
           item.tipoItem === "setor" &&
-          item.ativo &&
+          item.ativo === true && // Garantir que seja explicitamente true
           (cidade ? item.cidade === cidade : true),
       );
     },
