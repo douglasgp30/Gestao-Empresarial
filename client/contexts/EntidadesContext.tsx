@@ -225,7 +225,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       return localizacoesGeograficas.filter(
         (item) =>
           item.tipoItem === "setor" &&
-          item.ativo &&
+          item.ativo === true && // Garantir que seja explicitamente true
           (cidade ? item.cidade === cidade : true),
       );
     },
@@ -585,6 +585,33 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     [localizacoesGeograficas],
   );
 
+  // Função para sincronizar dados de localização com a API
+  const sincronizarLocalizacoes = useCallback(async () => {
+    try {
+      console.log("[EntidadesContext] Sincronizando localizações com a API...");
+
+      // Buscar dados atualizados da API
+      const response = await fetch("/api/localizacoes-geograficas");
+      if (response.ok) {
+        const dadosAPI = await response.json();
+        setLocalizacoesGeograficas(dadosAPI);
+
+        // Atualizar localStorage
+        localStorage.setItem(
+          "localizacoes_geograficas",
+          JSON.stringify(dadosAPI),
+        );
+
+        console.log(
+          "[EntidadesContext] Localizações sincronizadas:",
+          dadosAPI.length,
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao sincronizar localizações:", error);
+    }
+  }, []);
+
   const atualizarLocalizacaoGeografica = useCallback(
     async (id: number, dadosAtualizados: any) => {
       console.log(
@@ -612,6 +639,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     // Cache invalidação removida - usando localStorage
 
     carregarDados();
+
+    // Sincronizar localizações para garantir consistência
+    sincronizarLocalizacoes();
   }, []); // Array vazio - executa apenas no mount
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
@@ -750,6 +780,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       error,
       recarregarTudo,
       recarregarDescricoesECategorias,
+      sincronizarLocalizacoes,
     }),
     [
       descricoesECategorias,
@@ -770,6 +801,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       error,
       carregarDados,
       recarregarDescricoesECategorias,
+      sincronizarLocalizacoes,
     ],
   );
 

@@ -366,3 +366,17 @@
   pointer-events: auto;
   touch-action: manipulation;
 }
+
+/* Estilos específicos para checkbox - formato retangular arredondado */
+[role="checkbox"] {
+  border-radius: 6px !important;
+}
+
+button[role="checkbox"] {
+  border-radius: 6px !important;
+}
+
+/* Força arredondamento suave em todos os checkboxes do Radix */
+[data-radix-collection-item][role="checkbox"] {
+  border-radius: 6px !important;
+}

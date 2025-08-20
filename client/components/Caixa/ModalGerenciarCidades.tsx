@@ -69,6 +69,7 @@ import {
 } from "lucide-react";
 import { toast } from "../ui/use-toast";
 import { formatDate } from "../../lib/dateUtils";
+import { useEntidades } from "../../contexts/EntidadesContext";
 
 interface Cidade {
   id: number;
@@ -86,6 +87,7 @@ interface Setor {
 }
 
 export default function ModalGerenciarCidades() {
+  const { sincronizarLocalizacoes } = useEntidades();
   const [isMainOpen, setIsMainOpen] = useState(false);
   const [isNovoSetorOpen, setIsNovoSetorOpen] = useState(false);
   const [isCadastroMassaOpen, setIsCadastroMassaOpen] = useState(false);
@@ -132,6 +134,9 @@ export default function ModalGerenciarCidades() {
   const carregarDados = async () => {
     setIsLoading(true);
     try {
+      // Sincronizar dados primeiro
+      await sincronizarLocalizacoes();
+
       // Carregar todas as cidades
       const resCidades = await fetch("/api/cidades-goias");
       const dadosCidades = await resCidades.json();
@@ -184,6 +189,7 @@ export default function ModalGerenciarCidades() {
       });
 
       // Recarregar dados
+      await sincronizarLocalizacoes(); // Sincronizar primeiro
       await carregarDados();
     } catch (error) {
       console.error("Erro ao toggle cidade:", error);
@@ -225,6 +231,7 @@ export default function ModalGerenciarCidades() {
 
       setFormSetor({ nome: "", cidade: "" });
       setIsNovoSetorOpen(false);
+      await sincronizarLocalizacoes(); // Sincronizar primeiro
       await carregarDados();
     } catch (error) {
       console.error("Erro ao criar setor:", error);
@@ -295,6 +302,7 @@ export default function ModalGerenciarCidades() {
       }
 
       // Recarregar dados
+      await sincronizarLocalizacoes(); // Sincronizar primeiro
       await carregarDados();
 
       // Mostrar resultado
@@ -352,6 +360,7 @@ export default function ModalGerenciarCidades() {
       });
 
       setSetorParaExcluir(null);
+      await sincronizarLocalizacoes(); // Sincronizar primeiro
       await carregarDados();
     } catch (error) {
       console.error("Erro ao excluir setor:", error);
