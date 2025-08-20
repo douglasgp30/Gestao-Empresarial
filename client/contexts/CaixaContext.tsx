@@ -351,18 +351,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
                        window.location.href.includes('?t=') ||
                        document.readyState !== 'complete';
 
-    if (isHotReload) {
-      console.log("[CaixaContext] Hot reload detectado, aguardando estabilização...");
-      const timeout = setTimeout(() => {
-        console.log("[CaixaContext] Iniciando carregamento após hot reload");
-        carregarDados();
-      }, 2000); // Espera 2 segundos após hot reload
-      return () => clearTimeout(timeout);
-    }
+    // Sempre usar um debounce para evitar múltiplas execuções
+    const debounceTime = isHotReload ? 3000 : 1000; // Mais tempo durante hot reload
 
-    // Carregamento inicial normal
-    console.log("[CaixaContext] Iniciando carregamento inicial...");
-    carregarDados();
+    console.log(`[CaixaContext] Agendando carregamento em ${debounceTime}ms...`);
+    const timeout = setTimeout(() => {
+      console.log("[CaixaContext] Executando carregamento de dados");
+      carregarDados();
+    }, debounceTime);
+
+    return () => {
+      console.log("[CaixaContext] Cancelando carregamento agendado");
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Memoizar string das dependências para evitar loops
