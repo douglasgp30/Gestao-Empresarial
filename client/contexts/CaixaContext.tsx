@@ -305,8 +305,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados na inicialização com controle global e throttling
   useEffect(() => {
-    // Carregamento inicial forçado sem throttling
-    console.log("[CaixaContext] FORÇANDO carregamento inicial...");
+    // Verificar se estamos em um ambiente válido para carregamento
+    if (typeof window === 'undefined') {
+      console.log("[CaixaContext] Executando no servidor, pulando carregamento inicial");
+      return;
+    }
+
+    // Verificar se é hot reload (comum durante desenvolvimento)
+    const isHotReload = window.location.href.includes('reload=') ||
+                       window.location.href.includes('?t=') ||
+                       document.readyState !== 'complete';
+
+    if (isHotReload) {
+      console.log("[CaixaContext] Hot reload detectado, aguardando estabilização...");
+      const timeout = setTimeout(() => {
+        console.log("[CaixaContext] Iniciando carregamento após hot reload");
+        carregarDados();
+      }, 2000); // Espera 2 segundos após hot reload
+      return () => clearTimeout(timeout);
+    }
+
+    // Carregamento inicial normal
+    console.log("[CaixaContext] Iniciando carregamento inicial...");
     carregarDados();
   }, []);
 
