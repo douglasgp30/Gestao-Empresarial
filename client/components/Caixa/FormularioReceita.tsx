@@ -425,6 +425,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       valorQueEntrouInput.reset();
       impostoInput.reset();
       setNotaFiscalEmitida(false);
+      setDataVencimentoBoleto(null);
 
       onSuccess?.();
     } catch (error) {
