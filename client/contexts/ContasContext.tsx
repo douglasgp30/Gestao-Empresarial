@@ -442,15 +442,17 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
   );
 
   const marcarComoPago = useCallback(
-    async (id: number, formaPagamentoId: number) => {
+    async (id: number, formaPagamentoId: number, dataPagamento?: string) => {
       try {
         console.log(
           "📦 [CONTAS] Marcando conta como paga no localStorage:",
           id,
+          "Data de pagamento:",
+          dataPagamento,
         );
 
         const dadosAtualizacao = {
-          dataPagamento: new Date(),
+          dataPagamento: dataPagamento ? new Date(dataPagamento) : new Date(),
           formaPg: formaPagamentoId,
           pago: true,
         };
