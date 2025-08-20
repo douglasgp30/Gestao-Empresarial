@@ -227,7 +227,7 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
           )}
 
           {/* Navegação */}
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-4">
             <Button
               variant="ghost"
               onClick={etapaAnterior}
@@ -238,7 +238,7 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
               Anterior
             </Button>
 
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 mx-4">
               {etapasDoTour.map((_, index) => (
                 <div
                   key={index}
