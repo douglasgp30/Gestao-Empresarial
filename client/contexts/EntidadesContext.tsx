@@ -780,6 +780,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       error,
       recarregarTudo,
       recarregarDescricoesECategorias,
+      sincronizarLocalizacoes,
     }),
     [
       descricoesECategorias,
