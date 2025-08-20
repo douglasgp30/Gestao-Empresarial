@@ -134,6 +134,9 @@ export default function ModalGerenciarCidades() {
   const carregarDados = async () => {
     setIsLoading(true);
     try {
+      // Sincronizar dados primeiro
+      await sincronizarLocalizacoes();
+
       // Carregar todas as cidades
       const resCidades = await fetch("/api/cidades-goias");
       const dadosCidades = await resCidades.json();
