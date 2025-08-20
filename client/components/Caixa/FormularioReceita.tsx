@@ -373,6 +373,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Se for boleto, criar automaticamente conta a receber
       if (isFormaPagamentoBoleto && dataVencimentoBoleto) {
         try {
+          // Gerar código único do serviço
+          const codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
           const responseContaReceber = await fetch('/api/contas', {
             method: 'POST',
             headers: {
@@ -383,7 +386,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               valor: valorInput.numericValue,
               dataVencimento: dataVencimentoBoleto.toISOString(),
               codigoCliente: parseInt(formData.cliente),
-              observacoes: `Boleto gerado automaticamente - ${formData.descricao}${formData.observacoes ? ` - ${formData.observacoes}` : ''}`,
+              observacoes: `Boleto gerado automaticamente - ${formData.descricao}${formData.observacoes ? ` - ${formData.observacoes}` : ''} - Código: ${codigoServico}`,
+              codigoServico: codigoServico, // Adicionar código do serviço
+              categoria: formData.categoria,
+              descricao: formData.descricao,
               pago: false,
             }),
           });
