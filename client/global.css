@@ -367,16 +367,81 @@
   touch-action: manipulation;
 }
 
-/* Estilos específicos para checkbox - formato retangular arredondado */
+/* Estilos específicos para checkbox - formato arredondado e moderno */
 [role="checkbox"] {
-  border-radius: 6px !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease-in-out !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+[role="checkbox"]:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-0.5px) !important;
 }
 
 button[role="checkbox"] {
-  border-radius: 6px !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease-in-out !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+button[role="checkbox"]:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-0.5px) !important;
 }
 
 /* Força arredondamento suave em todos os checkboxes do Radix */
 [data-radix-collection-item][role="checkbox"] {
-  border-radius: 6px !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease-in-out !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-radix-collection-item][role="checkbox"]:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-0.5px) !important;
+}
+
+/* Melhorias específicas para o estado checked */
+[role="checkbox"][data-state="checked"] {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+  border-width: 1px !important;
+}
+
+/* Estilo especial para inputs checkbox nativos (caso ainda existam) */
+input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+  background: hsl(var(--background));
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+input[type="checkbox"]:hover {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-0.5px);
+}
+
+input[type="checkbox"]:checked {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: hsl(var(--primary-foreground));
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
 }
