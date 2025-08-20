@@ -639,6 +639,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     // Cache invalidação removida - usando localStorage
 
     carregarDados();
+
+    // Sincronizar localizações para garantir consistência
+    sincronizarLocalizacoes();
   }, []); // Array vazio - executa apenas no mount
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
