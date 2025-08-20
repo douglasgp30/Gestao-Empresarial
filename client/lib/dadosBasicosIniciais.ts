@@ -189,6 +189,17 @@ export async function configurarDadosBasicosIniciais(): Promise<boolean> {
       console.log("✅ Categorias básicas configuradas");
     }
 
+    // Salvar campanhas básicas no localStorage como fallback
+    const campanhasExistentes = localStorage.getItem("campanhas");
+    if (!campanhasExistentes) {
+      const campanhasBasicas = [
+        { id: "campanha-basica-1", nome: "Promoção Padrão" },
+        { id: "campanha-basica-2", nome: "Sem Campanha" },
+      ];
+      localStorage.setItem("campanhas", JSON.stringify(campanhasBasicas));
+      console.log("✅ Campanhas básicas configuradas");
+    }
+
     // Salvar configurações básicas
     const configExistente = localStorage.getItem("configuracoes_sistema");
     if (!configExistente) {
