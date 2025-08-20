@@ -121,18 +121,36 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("📦 [CaixaContext] Carregando dados do localStorage...");
 
-      // Carregar campanhas do localStorage
+      // Carregar campanhas do servidor primeiro, fallback para localStorage
       try {
-        const campanhasStorage = localStorage.getItem("campanhas");
-        if (campanhasStorage) {
-          const campanhasParsed = JSON.parse(campanhasStorage);
-          setCampanhas(campanhasParsed || []);
+        // Tentar carregar do servidor primeiro
+        const response = await fetch("/api/campanhas");
+        if (response.ok) {
+          const campanhasServidor = await response.json();
+          console.log("📊 [CaixaContext] Campanhas carregadas do servidor:", campanhasServidor.length);
+          setCampanhas(campanhasServidor || []);
+
+          // Sincronizar com localStorage para cache
+          localStorage.setItem("campanhas", JSON.stringify(campanhasServidor || []));
         } else {
-          setCampanhas([]);
+          throw new Error("Servidor não disponível");
         }
       } catch (error) {
-        console.warn("Erro ao carregar campanhas do localStorage:", error);
-        setCampanhas([]);
+        console.warn("Servidor indisponível, carregando campanhas do localStorage:", error);
+
+        // Fallback para localStorage
+        try {
+          const campanhasStorage = localStorage.getItem("campanhas");
+          if (campanhasStorage) {
+            const campanhasParsed = JSON.parse(campanhasStorage);
+            setCampanhas(campanhasParsed || []);
+          } else {
+            setCampanhas([]);
+          }
+        } catch (localError) {
+          console.warn("Erro ao carregar campanhas do localStorage:", localError);
+          setCampanhas([]);
+        }
       }
 
       // Carregar lançamentos do localStorage
