@@ -341,6 +341,7 @@ export function ListaContas({}: ListaContasProps) {
                     <TableHead>Valor</TableHead>
                     <TableHead>Vencimento</TableHead>
                     <TableHead>Categoria</TableHead>
+                    <TableHead>Código Serviço</TableHead>
                     <TableHead>Observações</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
