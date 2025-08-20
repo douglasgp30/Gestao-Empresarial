@@ -149,8 +149,10 @@ export default function ModalDescricoesSimples() {
         ativo: true,
       });
 
-      toast.success("Descri��ão adicionada com sucesso");
+      toast.success("Descrição adicionada com sucesso");
       setFormDescricao({ nome: "", categoria: "" });
+      // Forçar recarregamento para mostrar a nova descrição
+      await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("Erro ao adicionar descrição:", error);
       toast.error("Erro ao adicionar descrição. Tente novamente.");
@@ -176,6 +178,8 @@ export default function ModalDescricoesSimples() {
 
       toast.success("Categoria adicionada com sucesso");
       setFormCategoria({ nome: "" });
+      // Forçar recarregamento para mostrar a nova categoria
+      await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("Erro ao adicionar categoria:", error);
       toast.error("Erro ao adicionar categoria. Tente novamente.");

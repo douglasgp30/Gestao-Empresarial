@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { useClientes } from "../../contexts/ClientesContext";
@@ -63,8 +63,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos usando a função que verifica localStorage
-  const tecnicos = getTecnicos();
+  // Carregar técnicos com memoização para evitar re-renderizações
+  const tecnicos = useMemo(() => getTecnicos(), [getTecnicos]);
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -255,7 +255,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validação completa dos campos obrigatórios
+    // Validaç��o completa dos campos obrigatórios
     const camposObrigatorios = {
       data: formData.data,
       valor: valorInput.numericValue,

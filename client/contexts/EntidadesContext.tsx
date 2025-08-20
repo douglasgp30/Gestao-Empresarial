@@ -297,7 +297,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       );
 
       try {
-        // Carregar descrições e categorias
+        // Carregar descri��ões e categorias
         const descricoesStorage =
           localStorage.getItem("descricoes_e_categorias") ||
           localStorage.getItem("categorias_receita");
@@ -492,31 +492,118 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === FUNÇÕES STUB PARA EVITAR ERROS DE API ===
   const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
-    console.log(
-      "📦 [EntidadesContext] STUB: criarDescricaoOuCategoria",
-      novoItem,
-    );
-    // TODO: Implementar com localStorage
-    return Promise.resolve();
+    try {
+      console.log(
+        "📦 [EntidadesContext] Criando descrição ou categoria:",
+        novoItem,
+      );
+
+      // Gerar ID único
+      const novoId = Date.now().toString();
+
+      // Criar item completo
+      const itemCompleto = {
+        ...novoItem,
+        id: novoId,
+        dataCriacao: new Date().toISOString(),
+      };
+
+      // Adicionar ao estado atual
+      setDescricoesECategorias((prev) => {
+        const novaLista = [...prev, itemCompleto];
+
+        // Salvar no localStorage
+        try {
+          localStorage.setItem(
+            "descricoes_e_categorias",
+            JSON.stringify(novaLista),
+          );
+          console.log("✅ [EntidadesContext] Item salvo no localStorage");
+        } catch (error) {
+          console.error("Erro ao salvar no localStorage:", error);
+        }
+
+        return novaLista;
+      });
+
+      console.log("✅ [EntidadesContext] Item criado com sucesso");
+      return Promise.resolve();
+    } catch (error) {
+      console.error("❌ [EntidadesContext] Erro ao criar item:", error);
+      throw error;
+    }
   }, []);
 
   const atualizarDescricaoOuCategoria = useCallback(
     async (id: string, dadosAtualizados: any) => {
-      console.log(
-        "📦 [EntidadesContext] STUB: atualizarDescricaoOuCategoria",
-        id,
-        dadosAtualizados,
-      );
-      // TODO: Implementar com localStorage
-      return Promise.resolve();
+      try {
+        console.log(
+          "📦 [EntidadesContext] Atualizando descrição ou categoria:",
+          id,
+          dadosAtualizados,
+        );
+
+        setDescricoesECategorias((prev) => {
+          const novaLista = prev.map((item) =>
+            item.id === id ? { ...item, ...dadosAtualizados } : item,
+          );
+
+          // Salvar no localStorage
+          try {
+            localStorage.setItem(
+              "descricoes_e_categorias",
+              JSON.stringify(novaLista),
+            );
+            console.log(
+              "✅ [EntidadesContext] Item atualizado no localStorage",
+            );
+          } catch (error) {
+            console.error("Erro ao salvar no localStorage:", error);
+          }
+
+          return novaLista;
+        });
+
+        console.log("✅ [EntidadesContext] Item atualizado com sucesso");
+        return Promise.resolve();
+      } catch (error) {
+        console.error("❌ [EntidadesContext] Erro ao atualizar item:", error);
+        throw error;
+      }
     },
     [],
   );
 
   const excluirDescricaoOuCategoria = useCallback(async (id: string) => {
-    console.log("📦 [EntidadesContext] STUB: excluirDescricaoOuCategoria", id);
-    // TODO: Implementar com localStorage
-    return Promise.resolve();
+    try {
+      console.log(
+        "📦 [EntidadesContext] Excluindo descrição ou categoria:",
+        id,
+      );
+
+      setDescricoesECategorias((prev) => {
+        const novaLista = prev.filter((item) => item.id !== id);
+
+        // Salvar no localStorage
+        try {
+          localStorage.setItem(
+            "descricoes_e_categorias",
+            JSON.stringify(novaLista),
+          );
+          console.log("✅ [EntidadesContext] Item excluído do localStorage");
+        } catch (error) {
+          console.error("Erro ao salvar no localStorage:", error);
+        }
+
+        return novaLista;
+      });
+
+      console.log("✅ [EntidadesContext] Item excluído com sucesso");
+      return Promise.resolve();
+    } catch (error) {
+      console.error("❌ [EntidadesContext] Erro ao excluir item:", error);
+      throw error;
+    }
   }, []);
 
   const criarFormaPagamento = useCallback(async (novaForma: any) => {
@@ -585,9 +672,22 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     [localizacoesGeograficas],
   );
 
+  // Estado para controlar sincronização em andamento
+  const [sincronizacaoEmAndamento, setSincronizacaoEmAndamento] =
+    useState(false);
+
   // Função para sincronizar dados de localização com a API
   const sincronizarLocalizacoes = useCallback(async () => {
+    // Evitar múltiplas chamadas simultâneas
+    if (sincronizacaoEmAndamento) {
+      console.log(
+        "[EntidadesContext] Sincronização já em andamento, ignorando...",
+      );
+      return;
+    }
+
     try {
+      setSincronizacaoEmAndamento(true);
       console.log("[EntidadesContext] Sincronizando localizações com a API...");
 
       // Buscar dados atualizados da API
@@ -609,8 +709,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Erro ao sincronizar localizações:", error);
+    } finally {
+      setSincronizacaoEmAndamento(false);
     }
-  }, []);
+  }, [sincronizacaoEmAndamento]);
 
   const atualizarLocalizacaoGeografica = useCallback(
     async (id: number, dadosAtualizados: any) => {
@@ -633,15 +735,28 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === CARREGAMENTO INICIAL FORÇADO ===
   useEffect(() => {
-    // Carregar dados sempre no mount, sem verificações
-    console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
+    // Evitar carregamento duplo
+    let carregamentoExecutado = false;
 
-    // Cache invalidação removida - usando localStorage
+    const executarCarregamento = async () => {
+      if (carregamentoExecutado) return;
+      carregamentoExecutado = true;
 
-    carregarDados();
+      // Carregar dados sempre no mount, sem verificações
+      console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
 
-    // Sincronizar localizações para garantir consistência
-    sincronizarLocalizacoes();
+      // Cache invalidação removida - usando localStorage
+      await carregarDados();
+
+      // Sincronizar localizações para garantir consistência (com delay)
+      setTimeout(() => {
+        if (!sincronizacaoEmAndamento) {
+          sincronizarLocalizacoes();
+        }
+      }, 1000); // 1 segundo de delay
+    };
+
+    executarCarregamento();
   }, []); // Array vazio - executa apenas no mount
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===

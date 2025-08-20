@@ -73,12 +73,18 @@ export default function Dashboard() {
   } = useDashboard();
 
   const [isEditingMeta, setIsEditingMeta] = useState(false);
-  const [novaMetaValue, setNovaMetaValue] = useState(metaMes.toString());
+  const [novaMetaValue, setNovaMetaValue] = useState(() => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(metaMes);
+  });
 
   const handleSalvarMeta = () => {
-    const novaMetaNum = parseFloat(
-      novaMetaValue.replace(/[^\d,]/g, "").replace(",", "."),
-    );
+    // Extrai apenas os dígitos e converte para número
+    const numericValue = novaMetaValue.replace(/\D/g, "");
+    const novaMetaNum = parseInt(numericValue) / 100;
+
     if (!isNaN(novaMetaNum) && novaMetaNum > 0) {
       setMetaMes(novaMetaNum);
       setIsEditingMeta(false);
@@ -86,13 +92,30 @@ export default function Dashboard() {
   };
 
   const handleCancelarEdicao = () => {
-    setNovaMetaValue(metaMes.toString());
+    setNovaMetaValue(
+      new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(metaMes),
+    );
     setIsEditingMeta(false);
   };
 
   const formatCurrencyInput = (value: string) => {
-    const numValue = value.replace(/[^\d,]/g, "").replace(",", ".");
-    return numValue;
+    // Remove tudo que não é dígito
+    const numericValue = value.replace(/\D/g, "");
+
+    // Se vazio, retorna formato inicial
+    if (!numericValue) return "R$ 0,00";
+
+    // Converte para número (dividindo por 100 para considerar centavos)
+    const number = parseInt(numericValue) / 100;
+
+    // Formatar como moeda brasileira
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(number);
   };
 
   return (
@@ -146,7 +169,7 @@ export default function Dashboard() {
                             <div className="col-span-3">
                               <Input
                                 id="meta"
-                                placeholder="Ex: 15000"
+                                placeholder="Ex: R$ 15.000,00"
                                 value={novaMetaValue}
                                 onChange={(e) =>
                                   setNovaMetaValue(

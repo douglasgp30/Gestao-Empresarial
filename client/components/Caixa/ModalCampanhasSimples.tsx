@@ -9,10 +9,12 @@ import { campanhasApi } from "../../lib/apiService";
 import { parseErrorResponse } from "../../lib/responseUtils";
 
 export default function ModalCampanhasSimples() {
-  const { campanhas, carregarDados } = useCaixa();
+  const { carregarDados } = useCaixa();
+  const [campanhas, setCampanhas] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Modal de confirmação super simples
   const [showConfirm, setShowConfirm] = useState(false);
@@ -32,24 +34,42 @@ export default function ModalCampanhasSimples() {
     nome: "",
   });
 
-  // Carregar dados quando o modal é aberto
-  useEffect(() => {
-    console.log(
-      `[ModalCampanhasSimples] Modal isOpen: ${isOpen}, campanhas.length: ${campanhas.length}`,
-    );
-    if (isOpen) {
-      if (campanhas.length === 0) {
-        console.log(
-          "[ModalCampanhasSimples] Modal aberto sem dados, carregando...",
-        );
-        carregarDados();
-      } else {
-        console.log(
-          "[ModalCampanhasSimples] Modal aberto com dados já carregados",
-        );
+  // Função para carregar campanhas via API
+  const carregarCampanhas = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    try {
+      console.log("[ModalCampanhasSimples] Carregando campanhas via API...");
+      const response = await campanhasApi.listar();
+
+      if (response.error) {
+        console.error("Erro ao carregar campanhas:", response.error);
+        toast.error("Erro ao carregar campanhas");
+        return;
       }
+
+      const campanhasData = response.data || [];
+      console.log(
+        "[ModalCampanhasSimples] Campanhas carregadas:",
+        campanhasData,
+      );
+      setCampanhas(campanhasData);
+    } catch (error) {
+      console.error("Erro ao carregar campanhas:", error);
+      toast.error("Erro ao carregar campanhas");
+    } finally {
+      setIsLoading(false);
     }
-  }, [isOpen, campanhas.length, carregarDados]);
+  };
+
+  // Carregar campanhas quando o modal é aberto
+  useEffect(() => {
+    console.log(`[ModalCampanhasSimples] Modal isOpen: ${isOpen}`);
+    if (isOpen) {
+      carregarCampanhas();
+    }
+  }, [isOpen]);
 
   const resetForm = () => {
     setFormData({ nome: "" });
@@ -76,7 +96,8 @@ export default function ModalCampanhasSimples() {
 
       toast.success("Campanha criada com sucesso!");
       resetForm();
-      await carregarDados();
+      await carregarCampanhas(); // Recarregar campanhas do servidor
+      await carregarDados(); // Recarregar dados do contexto também
     } catch (error) {
       console.error("Erro ao criar campanha:", error);
       toast.error("Erro ao criar campanha. Tente novamente.");
@@ -108,7 +129,8 @@ export default function ModalCampanhasSimples() {
       resetForm();
       setShowEdit(false);
       setItemToEdit(null);
-      await carregarDados();
+      await carregarCampanhas(); // Recarregar campanhas do servidor
+      await carregarDados(); // Recarregar dados do contexto também
     } catch (error) {
       console.error("Erro ao editar campanha:", error);
       toast.error("Erro ao editar campanha. Tente novamente.");
@@ -150,7 +172,8 @@ export default function ModalCampanhasSimples() {
         console.log("✅ Excluído com sucesso (status " + response.status + ")");
       }
 
-      await carregarDados();
+      await carregarCampanhas(); // Recarregar campanhas do servidor
+      await carregarDados(); // Recarregar dados do contexto também
       setShowConfirm(false);
       setItemToDelete(null);
       toast.success("Campanha excluída com sucesso");
@@ -241,10 +264,21 @@ export default function ModalCampanhasSimples() {
           {/* Lista de campanhas */}
           <Card>
             <CardHeader>
-              <CardTitle>Campanhas Cadastradas ({campanhas.length})</CardTitle>
+              <CardTitle>
+                Campanhas Cadastradas ({campanhas.length})
+                {isLoading && (
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    (Carregando...)
+                  </span>
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {campanhas.length === 0 ? (
+              {isLoading ? (
+                <p className="text-center text-gray-500 py-4">
+                  Carregando campanhas...
+                </p>
+              ) : campanhas.length === 0 ? (
                 <p className="text-center text-gray-500 py-4">
                   Nenhuma campanha cadastrada
                 </p>

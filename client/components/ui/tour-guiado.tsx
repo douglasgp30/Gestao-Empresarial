@@ -42,56 +42,130 @@ interface EtapaTour {
 const etapasDoTour: EtapaTour[] = [
   {
     id: "boas-vindas",
-    titulo: "Bem-vindo ao seu Sistema de Gestão!",
+    titulo: "Bem-vindo ao seu Sistema de Gestão Completo!",
     descricao:
-      "Vamos fazer um tour rápido para te ajudar a conhecer as principais funcionalidades do sistema.",
+      "Vamos fazer um tour completo para te ajudar a conhecer TODAS as funcionalidades do sistema. Este tour cobrirá cada módulo em detalhes.",
     icone: <CheckCircle className="w-6 h-6 text-green-600" />,
   },
   {
     id: "dashboard",
-    titulo: "Dashboard Principal",
+    titulo: "Dashboard - Centro de Controle",
     descricao:
-      "Aqui você tem uma visão geral do seu negócio: receitas, despesas, agendamentos e muito mais.",
+      "Aqui está o coração do sistema! Visualize receitas, despesas, metas mensais, contas a vencer e saldos gerais. É sua central de monitoramento financeiro.",
     icone: <BarChart3 className="w-6 h-6 text-blue-600" />,
     seletor: '[data-tour="dashboard"]',
+    acao: "Defina sua meta mensal e acompanhe o progresso em tempo real.",
   },
   {
     id: "caixa",
-    titulo: "Controle de Caixa",
+    titulo: "Controle de Caixa - Fluxo Financeiro",
     descricao:
-      "Registre todas as receitas e despesas da sua empresa. Mantenha o controle financeiro em dia!",
+      "Registre TODAS as receitas e despesas da empresa. Crie campanhas para rastrear origem das receitas, gerencie clientes e mantenha controle total das finanças.",
     icone: <DollarSign className="w-6 h-6 text-green-600" />,
     seletor: '[data-tour="caixa"]',
+    acao: "Use os botões 'Nova Receita' e 'Nova Despesa' para registrar movimentações.",
   },
   {
-    id: "funcionarios",
-    titulo: "Gestão de Funcionários",
+    id: "contas",
+    titulo: "Contas a Pagar e Receber",
     descricao:
-      "Cadastre técnicos e funcionários, configure permissões e controle comissões.",
-    icone: <Users className="w-6 h-6 text-purple-600" />,
-    seletor: '[data-tour="funcionarios"]',
+      "Gerencie compromissos financeiros futuros. Controle contas a pagar (fornecedores) e a receber (clientes), nunca perca prazos importantes!",
+    icone: <FileText className="w-6 h-6 text-orange-600" />,
+    seletor: '[data-tour="contas"]',
+    acao: "Cadastre contas com vencimentos para manter organização financeira.",
+  },
+  {
+    id: "campanhas",
+    titulo: "Acompanhamento de Campanhas",
+    descricao:
+      "Ao registrar receitas no Caixa, você pode associá-las a campanhas para acompanhar totais e desempenho por origem de receita.",
+    icone: <BarChart3 className="w-6 h-6 text-purple-600" />,
+    seletor: '[data-tour="caixa"]',
+    acao: "No formulário de receita, selecione ou crie uma nova campanha para categorizar a origem.",
+  },
+  {
+    id: "clientes",
+    titulo: "Gestão de Clientes - CRM",
+    descricao:
+      "Cadastre e gerencie todos os seus clientes. Visualize histórico completo de serviços, gastos totais e informações de contato organizadas.",
+    icone: <Users className="w-6 h-6 text-blue-600" />,
+    seletor: '[data-tour="clientes"]',
+    acao: "Use a busca para encontrar clientes rapidamente por nome, CPF, telefone ou email.",
   },
   {
     id: "agendamentos",
-    titulo: "Agendamentos",
+    titulo: "Sistema de Agendamentos",
     descricao:
-      "Organize a agenda da sua empresa e nunca perca um compromisso importante.",
+      "Organize a agenda da empresa com sistema completo de agendamentos. Configure lembretes automáticos e nunca perca compromissos importantes!",
     icone: <Calendar className="w-6 h-6 text-orange-600" />,
     seletor: '[data-tour="agendamentos"]',
+    acao: "Filtre por período, status, setor e técnico para organizar a agenda.",
+  },
+  {
+    id: "funcionarios",
+    titulo: "Gestão de Funcionários e Técnicos",
+    descricao:
+      "Cadastre funcionários e técnicos, configure permissões de acesso, defina comissões e gerencie toda a equipe da empresa.",
+    icone: <Users className="w-6 h-6 text-purple-600" />,
+    seletor: '[data-tour="funcionarios"]',
+    acao: "Configure diferentes níveis de acesso: Admin, Técnico ou Funcionário comum.",
+  },
+  {
+    id: "ponto",
+    titulo: "Controle de Ponto Eletrônico",
+    descricao:
+      "Sistema completo de controle de ponto! Funcionários batem ponto, administradores gerenciam horários e geram relatórios de presença.",
+    icone: <Calendar className="w-6 h-6 text-indigo-600" />,
+    seletor: '[data-tour="ponto"]',
+    acao: "Funcionários usam 'Bater Ponto', administradores acessam 'Gerenciar Pontos'.",
+  },
+  {
+    id: "relatorios",
+    titulo: "Relatórios e Analytics",
+    descricao:
+      "Gere relatórios completos: financeiros, de técnicos, de contas. Analise dados com gráficos e tome decisões baseadas em informações precisas.",
+    icone: <BarChart3 className="w-6 h-6 text-green-600" />,
+    seletor: '[data-tour="relatorios"]',
+    acao: "Use os filtros de data para analisar períodos específicos nos relatórios.",
   },
   {
     id: "configuracoes",
-    titulo: "Configurações",
+    titulo: "Configurações do Sistema",
     descricao:
-      "Personalize o sistema, faça backups e acesse os logs de auditoria.",
+      "Configure a empresa, personalize aparência (tema escuro/claro), gerencie usuários, configure backups automáticos e acesse logs de auditoria.",
     icone: <Settings className="w-6 h-6 text-gray-600" />,
     seletor: '[data-tour="configuracoes"]',
+    acao: "Explore as abas: Empresa, Aparência, Usuários, Sistema, Backup e Auditoria.",
+  },
+  {
+    id: "navegacao",
+    titulo: "Navegação e Menu Principal",
+    descricao:
+      "Use o menu lateral para navegar entre os módulos. Cada seção tem filtros, listagens e formulários específicos para suas necessidades.",
+    icone: <ArrowRight className="w-6 h-6 text-blue-600" />,
+    acao: "O menu sempre estará disponível para navegação rápida entre módulos.",
+  },
+  {
+    id: "integracao",
+    titulo: "Integração Entre Módulos",
+    descricao:
+      "Os módulos trabalham juntos! Receitas do Caixa aparecem no Dashboard, clientes do Caixa são listados em Clientes, funcionários do módulo Funcionários aparecem no Ponto.",
+    icone: <CheckCircle className="w-6 h-6 text-purple-600" />,
+    acao: "Dados são compartilhados automaticamente entre os módulos para máxima eficiência.",
+  },
+  {
+    id: "dicas-uso",
+    titulo: "Dicas de Uso Eficiente",
+    descricao:
+      "Use filtros de data em cada módulo, configure metas no Dashboard, ative backups automáticos, e acompanhe os totais regularmente para máximo controle.",
+    icone: <Settings className="w-6 h-6 text-orange-600" />,
+    acao: "Estabeleça uma rotina: registre movimentações diárias e consulte relatórios semanalmente.",
   },
   {
     id: "final",
-    titulo: "Pronto para começar!",
+    titulo: "Sistema Completo Apresentado!",
     descricao:
-      "Agora você já conhece as principais funcionalidades. Explore o sistema e comece a gerenciar seu negócio!",
+      "Parabéns! Agora você conhece TODO o sistema. Comece pelo Dashboard, registre suas primeiras movimentações no Caixa e explore cada módulo conforme sua necessidade!",
     icone: <CheckCircle className="w-6 h-6 text-green-600" />,
   },
 ];
@@ -120,10 +194,35 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
         const scrollLeft =
           window.pageXOffset || document.documentElement.scrollLeft;
 
-        setPosicaoTooltip({
-          top: rect.bottom + scrollTop + 10,
-          left: rect.left + scrollLeft,
-        });
+        // Calcular posição ideal com margens de segurança
+        const cardWidth = 450; // Largura do card
+        const cardHeight = 400; // Altura estimada
+        const margin = 20; // Margem mínima das bordas
+
+        let top = rect.bottom + scrollTop + 10;
+        let left = rect.left + scrollLeft;
+
+        // Ajustar se sair da tela à direita
+        if (left + cardWidth > window.innerWidth) {
+          left = window.innerWidth - cardWidth - margin;
+        }
+
+        // Ajustar se sair da tela à esquerda
+        if (left < margin) {
+          left = margin;
+        }
+
+        // Ajustar se sair da tela embaixo
+        if (top + cardHeight > window.innerHeight + scrollTop) {
+          top = rect.top + scrollTop - cardHeight - 10;
+        }
+
+        // Ajustar se sair da tela em cima
+        if (top < scrollTop + margin) {
+          top = scrollTop + margin;
+        }
+
+        setPosicaoTooltip({ top, left });
 
         // Destacar o elemento
         elemento.classList.add("tour-highlight");
@@ -132,10 +231,12 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
         elemento.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     } else {
-      // Centralizar tooltip
+      // Centralizar tooltip com verificação de bordas
+      const cardWidth = 450;
+      const cardHeight = 400;
       setPosicaoTooltip({
-        top: window.innerHeight / 2 - 150,
-        left: window.innerWidth / 2 - 200,
+        top: Math.max(20, (window.innerHeight - cardHeight) / 2),
+        left: Math.max(20, (window.innerWidth - cardWidth) / 2),
       });
     }
 
@@ -188,12 +289,11 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
 
       {/* Tooltip do tour */}
       <Card
-        className="fixed z-50 w-96 shadow-2xl"
+        className="fixed z-50 shadow-2xl max-w-md w-full mx-4"
         style={{
           top: posicaoTooltip.top,
           left: posicaoTooltip.left,
-          right: posicaoTooltip.right,
-          bottom: posicaoTooltip.bottom,
+          maxHeight: "calc(100vh - 40px)",
         }}
       >
         <CardHeader className="pb-3">
@@ -226,40 +326,42 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
             </div>
           )}
 
+          {/* Pontos de navegação */}
+          <div className="flex justify-center space-x-2 py-3">
+            {etapasDoTour.map((_, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "w-2 h-2 rounded-full transition-colors",
+                  index === etapaAtual ? "bg-primary" : "bg-gray-300",
+                )}
+              />
+            ))}
+          </div>
+
           {/* Navegação */}
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-2 gap-4">
             <Button
               variant="ghost"
               onClick={etapaAnterior}
               disabled={isPrimeiraEtapa}
-              className={cn(isPrimeiraEtapa && "invisible")}
+              className={cn("flex-shrink-0", isPrimeiraEtapa && "invisible")}
+              size="sm"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-1" />
               Anterior
             </Button>
 
-            <div className="flex space-x-2">
-              {etapasDoTour.map((_, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-colors",
-                    index === etapaAtual ? "bg-primary" : "bg-gray-300",
-                  )}
-                />
-              ))}
-            </div>
-
-            <Button onClick={proximaEtapa}>
+            <Button onClick={proximaEtapa} className="flex-shrink-0" size="sm">
               {isUltimaEtapa ? (
                 <>
                   Finalizar
-                  <CheckCircle className="w-4 h-4 ml-2" />
+                  <CheckCircle className="w-4 h-4 ml-1" />
                 </>
               ) : (
                 <>
                   Próximo
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-1" />
                 </>
               )}
             </Button>
