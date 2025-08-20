@@ -71,6 +71,7 @@ export function ListaContas({}: ListaContasProps) {
   );
   const [formaPagamentoSelecionada, setFormaPagamentoSelecionada] =
     useState("");
+  const [dataPagamento, setDataPagamento] = useState("");
   const [processando, setProcessando] = useState(false);
 
   console.log("🔍 [LISTA CONTAS] Contas recebidas do contexto:", {
