@@ -492,12 +492,43 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === FUNÇÕES STUB PARA EVITAR ERROS DE API ===
   const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
-    console.log(
-      "📦 [EntidadesContext] STUB: criarDescricaoOuCategoria",
-      novoItem,
-    );
-    // TODO: Implementar com localStorage
-    return Promise.resolve();
+    try {
+      console.log(
+        "📦 [EntidadesContext] Criando descrição ou categoria:",
+        novoItem,
+      );
+
+      // Gerar ID único
+      const novoId = Date.now().toString();
+
+      // Criar item completo
+      const itemCompleto = {
+        ...novoItem,
+        id: novoId,
+        dataCriacao: new Date().toISOString(),
+      };
+
+      // Adicionar ao estado atual
+      setDescricoesECategorias(prev => {
+        const novaLista = [...prev, itemCompleto];
+
+        // Salvar no localStorage
+        try {
+          localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
+          console.log("✅ [EntidadesContext] Item salvo no localStorage");
+        } catch (error) {
+          console.error("Erro ao salvar no localStorage:", error);
+        }
+
+        return novaLista;
+      });
+
+      console.log("✅ [EntidadesContext] Item criado com sucesso");
+      return Promise.resolve();
+    } catch (error) {
+      console.error("❌ [EntidadesContext] Erro ao criar item:", error);
+      throw error;
+    }
   }, []);
 
   const atualizarDescricaoOuCategoria = useCallback(
