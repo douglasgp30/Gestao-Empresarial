@@ -69,6 +69,7 @@ import {
 } from "lucide-react";
 import { toast } from "../ui/use-toast";
 import { formatDate } from "../../lib/dateUtils";
+import { useEntidades } from "../../contexts/EntidadesContext";
 
 interface Cidade {
   id: number;
