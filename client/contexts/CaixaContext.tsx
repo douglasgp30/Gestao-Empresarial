@@ -541,7 +541,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Receitas efetivamente para a empresa (principal mudança)
     const receitasParaEmpresa = receitasNaoBoleto.reduce(
-      (total, l) => total + (l.valorParaEmpresa || l.valorLiquido || l.valor),
+      (total, l) => {
+        // Se tem valorParaEmpresa definido, use
+        if (l.valorParaEmpresa !== undefined) {
+          return total + l.valorParaEmpresa;
+        }
+
+        // Fallback para lançamentos antigos: calcular valor para empresa
+        const valorLiquido = l.valorLiquido || l.valor;
+        const comissao = l.comissao || 0;
+        const valorParaEmpresaCalculado = valorLiquido - comissao;
+
+        return total + valorParaEmpresaCalculado;
+      },
       0,
     );
 
