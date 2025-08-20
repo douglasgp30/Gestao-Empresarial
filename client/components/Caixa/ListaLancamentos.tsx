@@ -252,6 +252,7 @@ export default function ListaLancamentos() {
                       {getSortIcon("tipo")}
                     </Button>
                   </TableHead>
+                  <TableHead>Categoria</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead>
                     <Button
