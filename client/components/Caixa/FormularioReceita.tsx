@@ -346,19 +346,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     setIsSubmitting(true);
 
     try {
-      // Determinar o valor para empresa baseado na forma de pagamento
-      const formaPagamentoSelecionada = formasPagamento.find(
-        (f) => f.nome === formData.formaPagamento,
-      );
-      const isBoleto = formaPagamentoSelecionada?.nome
-        ?.toLowerCase()
-        .includes("boleto");
-
-      // Para boletos, não há valor para empresa ainda (não foi recebido)
+      // Para boletos, o valor não entra no caixa imediatamente (valor para empresa = 0)
       // Para outros, o valor para empresa é o valor líquido menos a comissão
-      const valorParaEmpresaCalculado = isBoleto ? undefined : valorParaEmpresa;
+      const valorParaEmpresaCalculado = isFormaPagamentoBoleto ? 0 : valorParaEmpresa;
 
-      await adicionarLancamento({
+      // Criar lançamento no caixa
+      const lancamentoCaixa = await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
         valor: valorInput.numericValue,
@@ -376,6 +369,35 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
       });
+
+      // Se for boleto, criar automaticamente conta a receber
+      if (isFormaPagamentoBoleto && dataVencimentoBoleto) {
+        try {
+          const responseContaReceber = await fetch('/api/contas', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              tipo: 'receber',
+              valor: valorInput.numericValue,
+              dataVencimento: dataVencimentoBoleto.toISOString(),
+              codigoCliente: parseInt(formData.cliente),
+              observacoes: `Boleto gerado automaticamente - ${formData.descricao}${formData.observacoes ? ` - ${formData.observacoes}` : ''}`,
+              pago: false,
+            }),
+          });
+
+          if (responseContaReceber.ok) {
+            console.log('Conta a receber criada automaticamente para boleto');
+          } else {
+            console.error('Erro ao criar conta a receber para boleto');
+          }
+        } catch (error) {
+          console.error('Erro ao criar conta a receber:', error);
+          // Não interromper o fluxo principal se houver erro na criação da conta
+        }
+      }
 
       toast({
         title: "Sucesso",
