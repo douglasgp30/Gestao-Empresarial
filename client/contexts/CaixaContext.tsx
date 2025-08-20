@@ -201,10 +201,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         await carregarCampanhasSafe();
       } catch (campanhasError) {
         console.warn(
-          "Erro ao carregar campanhas, continuando:",
+          "Erro ao carregar campanhas, usando fallback:",
           campanhasError,
         );
-        setCampanhas([]); // Fallback para array vazio
+
+        // Tentar carregar do localStorage como último recurso
+        try {
+          const campanhasStorage = localStorage.getItem("campanhas");
+          if (campanhasStorage) {
+            const campanhasParsed = JSON.parse(campanhasStorage);
+            setCampanhas(campanhasParsed || []);
+            console.log("📊 [CaixaContext] Campanhas carregadas do localStorage como fallback");
+          } else {
+            setCampanhas([]); // Fallback para array vazio se não há dados
+          }
+        } catch (localError) {
+          console.warn("Erro no fallback localStorage de campanhas:", localError);
+          setCampanhas([]); // Fallback final para array vazio
+        }
       }
 
       // Carregar lançamentos do localStorage (não deve falhar)
