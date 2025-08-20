@@ -261,10 +261,17 @@ export default function ModalCampanhasSimples() {
           {/* Lista de campanhas */}
           <Card>
             <CardHeader>
-              <CardTitle>Campanhas Cadastradas ({campanhas.length})</CardTitle>
+              <CardTitle>
+                Campanhas Cadastradas ({campanhas.length})
+                {isLoading && <span className="text-sm font-normal text-gray-500 ml-2">(Carregando...)</span>}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {campanhas.length === 0 ? (
+              {isLoading ? (
+                <p className="text-center text-gray-500 py-4">
+                  Carregando campanhas...
+                </p>
+              ) : campanhas.length === 0 ? (
                 <p className="text-center text-gray-500 py-4">
                   Nenhuma campanha cadastrada
                 </p>
