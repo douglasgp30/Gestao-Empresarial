@@ -115,9 +115,21 @@ export default function ListaLancamentos() {
     .filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
       // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-      const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+      const dataInicio = new Date(
+        filtros.dataInicio.getFullYear(),
+        filtros.dataInicio.getMonth(),
+        filtros.dataInicio.getDate(),
+      );
+      const dataFim = new Date(
+        filtros.dataFim.getFullYear(),
+        filtros.dataFim.getMonth(),
+        filtros.dataFim.getDate(),
+      );
+      const dataLancNorm = new Date(
+        dataLancamento.getFullYear(),
+        dataLancamento.getMonth(),
+        dataLancamento.getDate(),
+      );
 
       const dentroDataInicio = dataLancNorm >= dataInicio;
       const dentroDataFim = dataLancNorm <= dataFim;
@@ -252,6 +264,7 @@ export default function ListaLancamentos() {
                       {getSortIcon("tipo")}
                     </Button>
                   </TableHead>
+                  <TableHead>Categoria</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead>
                     <Button
@@ -260,7 +273,7 @@ export default function ListaLancamentos() {
                       className="h-auto p-0 font-medium"
                       onClick={() => handleSort("valor")}
                     >
-                      Valor
+                      Valores
                       {getSortIcon("valor")}
                     </Button>
                   </TableHead>
@@ -313,49 +326,84 @@ export default function ListaLancamentos() {
 
                     <TableCell>
                       <div>
-                        {lancamento.tipo === "receita" ? (
-                          <div>
-                            <p className="font-medium">
-                              Serviço - {lancamento.setor || "Geral"}
-                            </p>
-                            {lancamento.campanha && (
-                              <p className="text-xs text-muted-foreground">
-                                Campanha: {lancamento.campanha}
-                              </p>
-                            )}
-                          </div>
-                        ) : (
-                          <div>
-                            <p className="font-medium">
-                              {lancamento.categoria}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {lancamento.descricao}
-                            </p>
-                          </div>
+                        <p className="font-medium text-sm">
+                          {lancamento.categoria || "N/A"}
+                        </p>
+                        {lancamento.setor && (
+                          <p className="text-xs text-muted-foreground">
+                            {lancamento.setor}
+                          </p>
                         )}
                       </div>
                     </TableCell>
 
                     <TableCell>
                       <div>
-                        <p
-                          className={`font-bold ${
-                            lancamento.tipo === "receita"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {formatCurrency(
-                            lancamento.valorLiquido || lancamento.valor,
-                          )}
+                        <p className="font-medium text-sm">
+                          {lancamento.descricao || "N/A"}
                         </p>
-                        {lancamento.valorLiquido &&
-                          lancamento.valorLiquido !== lancamento.valor && (
-                            <p className="text-xs text-muted-foreground">
-                              Bruto: {formatCurrency(lancamento.valor)}
-                            </p>
-                          )}
+                        {lancamento.campanha && (
+                          <p className="text-xs text-blue-600">
+                            Campanha: {lancamento.campanha}
+                          </p>
+                        )}
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div>
+                        {/* Valor Integral */}
+                        <p className="text-sm font-medium text-gray-700">
+                          <span className="text-xs text-muted-foreground">
+                            Integral:
+                          </span>{" "}
+                          {formatCurrency(lancamento.valor)}
+                        </p>
+
+                        {/* Valor para Empresa */}
+                        {lancamento.tipo === "receita" && (
+                          <>
+                            {lancamento.valorParaEmpresa !== undefined ? (
+                              <p className={`font-bold text-green-600`}>
+                                <span className="text-xs text-muted-foreground">
+                                  P/ Empresa:
+                                </span>{" "}
+                                {formatCurrency(lancamento.valorParaEmpresa)}
+                              </p>
+                            ) : // Verificar se é boleto
+                            lancamento.formaPagamento
+                                ?.toLowerCase()
+                                .includes("boleto") ||
+                              lancamento.formaPagamento
+                                ?.toLowerCase()
+                                .includes("bancário") ? (
+                              <p className="text-xs text-orange-600 font-medium">
+                                Aguardando recebimento
+                              </p>
+                            ) : (
+                              <p className={`font-bold text-green-600`}>
+                                <span className="text-xs text-muted-foreground">
+                                  P/ Empresa:
+                                </span>{" "}
+                                {formatCurrency(
+                                  (lancamento.valorLiquido ||
+                                    lancamento.valor) -
+                                    (lancamento.comissao || 0),
+                                )}
+                              </p>
+                            )}
+                          </>
+                        )}
+
+                        {/* Para despesas, mostrar apenas o valor */}
+                        {lancamento.tipo === "despesa" && (
+                          <p className="font-bold text-red-600">
+                            <span className="text-xs text-muted-foreground">
+                              Despesa:
+                            </span>{" "}
+                            {formatCurrency(lancamento.valor)}
+                          </p>
+                        )}
                       </div>
                     </TableCell>
 

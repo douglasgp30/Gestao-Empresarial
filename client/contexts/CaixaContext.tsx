@@ -39,6 +39,7 @@ interface CaixaContextType {
     receitas: number;
     receitaBruta?: number;
     receitaLiquida?: number;
+    receitasParaEmpresa?: number;
     boletos?: number;
     despesas: number;
     saldo: number;
@@ -106,6 +107,59 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   });
 
+  // Função para carregar campanhas com fallback seguro
+  const carregarCampanhasSafe = async () => {
+    try {
+      // Tentar carregar do servidor primeiro
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout de 5s
+
+      const response = await fetch("/api/campanhas", {
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const campanhasServidor = await response.json();
+        console.log(
+          "📊 [CaixaContext] Campanhas carregadas do servidor:",
+          campanhasServidor.length,
+        );
+        setCampanhas(campanhasServidor || []);
+
+        // Sincronizar com localStorage para cache
+        localStorage.setItem(
+          "campanhas",
+          JSON.stringify(campanhasServidor || []),
+        );
+        return;
+      }
+    } catch (error) {
+      console.warn(
+        "Servidor indisponível, usando campanhas do localStorage:",
+        error,
+      );
+    }
+
+    // Fallback para localStorage
+    try {
+      const campanhasStorage = localStorage.getItem("campanhas");
+      if (campanhasStorage) {
+        const campanhasParsed = JSON.parse(campanhasStorage);
+        setCampanhas(campanhasParsed || []);
+      } else {
+        setCampanhas([]);
+      }
+    } catch (localError) {
+      console.warn("Erro ao carregar campanhas do localStorage:", localError);
+      setCampanhas([]);
+    }
+  };
+
   // Função para carregar todos os dados do localStorage
   const carregarDados = async () => {
     // Evitar múltiplos carregamentos simultâneos
@@ -121,29 +175,33 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("📦 [CaixaContext] Carregando dados do localStorage...");
 
-      // Carregar campanhas do localStorage
+      // Carregar campanhas com fallback seguro (não deve falhar)
       try {
-        const campanhasStorage = localStorage.getItem("campanhas");
-        if (campanhasStorage) {
-          const campanhasParsed = JSON.parse(campanhasStorage);
-          setCampanhas(campanhasParsed || []);
-        } else {
-          setCampanhas([]);
-        }
-      } catch (error) {
-        console.warn("Erro ao carregar campanhas do localStorage:", error);
-        setCampanhas([]);
+        await carregarCampanhasSafe();
+      } catch (campanhasError) {
+        console.warn(
+          "Erro ao carregar campanhas, continuando:",
+          campanhasError,
+        );
+        setCampanhas([]); // Fallback para array vazio
       }
 
-      // Carregar lançamentos do localStorage
-      await carregarLancamentosLocalStorage();
+      // Carregar lançamentos do localStorage (não deve falhar)
+      try {
+        await carregarLancamentosLocalStorage();
+      } catch (lancamentosError) {
+        console.warn(
+          "Erro ao carregar lançamentos, continuando:",
+          lancamentosError,
+        );
+        setLancamentos([]); // Fallback para array vazio
+      }
 
-      console.log(
-        "✅ [CaixaContext] Dados carregados do localStorage com sucesso",
-      );
+      console.log("✅ [CaixaContext] Dados carregados com sucesso");
     } catch (error) {
-      console.error("Erro ao carregar dados do localStorage:", error);
-      setError("Erro ao carregar dados locais");
+      console.error("Erro geral ao carregar dados:", error);
+      // Não definir erro para não quebrar a UI
+      // setError("Erro ao carregar dados locais");
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
@@ -412,35 +470,59 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      // Criar a campanha com ID único
-      const campanha: Campanha = {
-        ...novaCampanha,
-        id: `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      };
+      console.log("[CaixaContext] Adicionando campanha:", novaCampanha);
 
-      console.log(
-        "[CaixaContext] Adicionando campanha ao localStorage:",
-        campanha,
-      );
+      // Tentar criar no servidor primeiro
+      try {
+        const response = await fetch("/api/campanhas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(novaCampanha),
+        });
 
-      // Carregar campanhas existentes
-      const campanhasExistentes = JSON.parse(
-        localStorage.getItem("campanhas") || "[]",
-      );
+        if (response.ok) {
+          const campanhaServidor = await response.json();
+          console.log(
+            "✅ [CaixaContext] Campanha criada no servidor:",
+            campanhaServidor,
+          );
 
-      // Adicionar a nova campanha
-      const novasCampanhas = [...campanhasExistentes, campanha];
+          // Recarregar campanhas do servidor para sincronizar
+          await carregarDados();
+          return;
+        } else {
+          throw new Error("Erro ao salvar no servidor");
+        }
+      } catch (serverError) {
+        console.warn(
+          "Servidor indisponível, salvando campanha localmente:",
+          serverError,
+        );
 
-      // Salvar no localStorage
-      localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
+        // Fallback: salvar apenas no localStorage
+        const campanha: Campanha = {
+          ...novaCampanha,
+          id: `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        };
 
-      // Atualizar estado
-      setCampanhas(novasCampanhas);
+        // Carregar campanhas existentes
+        const campanhasExistentes = JSON.parse(
+          localStorage.getItem("campanhas") || "[]",
+        );
 
-      console.log(
-        "[CaixaContext] Campanha adicionada com sucesso:",
-        campanha.id,
-      );
+        // Adicionar a nova campanha
+        const novasCampanhas = [...campanhasExistentes, campanha];
+
+        // Salvar no localStorage
+        localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
+
+        // Atualizar estado
+        setCampanhas(novasCampanhas);
+
+        console.log("[CaixaContext] Campanha salva localmente:", campanha.id);
+      }
     } catch (error) {
       console.error("Erro ao adicionar campanha:", error);
       throw error;
@@ -451,7 +533,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const totais = React.useMemo(() => {
     const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
 
-    // Separar boletos
+    // Separar boletos (que não têm valorParaEmpresa ainda)
     const receitasBoleto = receitasCompletas.filter(
       (l) =>
         l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
@@ -469,10 +551,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       (total, l) => total + l.valor,
       0,
     );
+
+    // Receitas líquidas (para compatibilidade com versão anterior)
     const receitaLiquida = receitasNaoBoleto.reduce(
       (total, l) => total + (l.valorLiquido || l.valor),
       0,
     );
+
+    // Receitas efetivamente para a empresa (principal mudança)
+    const receitasParaEmpresa = receitasNaoBoleto.reduce((total, l) => {
+      // Se tem valorParaEmpresa definido, use
+      if (l.valorParaEmpresa !== undefined) {
+        return total + l.valorParaEmpresa;
+      }
+
+      // Fallback para lançamentos antigos: calcular valor para empresa
+      const valorLiquido = l.valorLiquido || l.valor;
+      const comissao = l.comissao || 0;
+      const valorParaEmpresaCalculado = valorLiquido - comissao;
+
+      return total + valorParaEmpresaCalculado;
+    }, 0);
+
     const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
 
     const despesas = lancamentos
@@ -484,12 +584,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       .reduce((total, l) => total + (l.comissao || 0), 0);
 
     return {
-      receitas: receitaLiquida, // Para compatibilidade
+      receitas: receitasParaEmpresa, // Agora usa valor para empresa
       receitaBruta,
       receitaLiquida,
+      receitasParaEmpresa, // Novo campo
       boletos,
       despesas,
-      saldo: receitaLiquida - despesas, // Saldo só com receitas líquidas (sem boletos)
+      saldo: receitasParaEmpresa - despesas, // Saldo baseado no valor para empresa
       comissoes,
     };
   }, [lancamentos]);

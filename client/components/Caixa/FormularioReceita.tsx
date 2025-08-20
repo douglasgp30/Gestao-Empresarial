@@ -311,11 +311,24 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     setIsSubmitting(true);
 
     try {
+      // Determinar o valor para empresa baseado na forma de pagamento
+      const formaPagamentoSelecionada = formasPagamento.find(
+        (f) => f.nome === formData.formaPagamento,
+      );
+      const isBoleto = formaPagamentoSelecionada?.nome
+        ?.toLowerCase()
+        .includes("boleto");
+
+      // Para boletos, não há valor para empresa ainda (não foi recebido)
+      // Para outros, o valor para empresa é o valor líquido menos a comissão
+      const valorParaEmpresaCalculado = isBoleto ? undefined : valorParaEmpresa;
+
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
         valor: valorInput.numericValue,
         valorLiquido: valorLiquidoCalculado,
+        valorParaEmpresa: valorParaEmpresaCalculado,
         valorQueEntrou: valorQueEntrouCalculado,
         comissao: comissaoCalculada,
         imposto: impostoInput.numericValue,
@@ -421,7 +434,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
             <div className="space-y-2">
               <Label htmlFor="valor">Valor (R$) *</Label>
-              <Input id="valor" {...valorInput.inputProps} required />
+              <Input
+                id="valor"
+                {...valorInput.inputProps}
+                placeholder="R$ 0,00"
+                required
+              />
             </div>
           </div>
 
