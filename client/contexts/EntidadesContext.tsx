@@ -801,6 +801,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       error,
       carregarDados,
       recarregarDescricoesECategorias,
+      sincronizarLocalizacoes,
     ],
   );
 
