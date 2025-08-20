@@ -367,16 +367,16 @@
   touch-action: manipulation;
 }
 
-/* Estilos específicos para checkbox - força arredondamento */
+/* Estilos específicos para checkbox - formato retangular arredondado */
 [role="checkbox"] {
-  border-radius: 8px !important;
+  border-radius: 6px !important;
 }
 
 button[role="checkbox"] {
-  border-radius: 8px !important;
+  border-radius: 6px !important;
 }
 
-/* Força arredondamento em todos os checkboxes do Radix */
+/* Força arredondamento suave em todos os checkboxes do Radix */
 [data-radix-collection-item][role="checkbox"] {
-  border-radius: 8px !important;
+  border-radius: 6px !important;
 }
