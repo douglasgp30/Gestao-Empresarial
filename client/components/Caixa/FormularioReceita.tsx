@@ -300,6 +300,27 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       return;
     }
 
+    // Validações específicas para boleto
+    if (isFormaPagamentoBoleto) {
+      if (!formData.cliente) {
+        toast({
+          title: "Campo obrigatório",
+          description: "Cliente é obrigatório quando a forma de pagamento for boleto",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!dataVencimentoBoleto) {
+        toast({
+          title: "Campo obrigatório",
+          description: "Data de vencimento é obrigatória para boletos",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     // Validar valor recebido para pagamentos com cartão
     if (isFormaPagamentoCartao && !formData.valorQueEntrou) {
       toast({
