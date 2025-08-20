@@ -178,6 +178,19 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return forma?.nome?.toLowerCase().includes("cartão") || false;
   }, [formData.formaPagamento, formasPagamento]);
 
+  // Verificar se forma de pagamento é boleto
+  const isFormaPagamentoBoleto = React.useMemo(() => {
+    if (!formData.formaPagamento || formasPagamento.length === 0) {
+      return false;
+    }
+
+    const forma = formasPagamento.find(
+      (f) => f.id.toString() === formData.formaPagamento,
+    );
+
+    return forma?.nome?.toLowerCase().includes("boleto") || forma?.nome?.toLowerCase().includes("bancário") || false;
+  }, [formData.formaPagamento, formasPagamento]);
+
   // Calcular campos automaticamente usando os hooks de moeda
   const valorCalculado = valorInput.numericValue;
   const valorQueEntrouCalculado =
