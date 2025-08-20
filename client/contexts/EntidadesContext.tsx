@@ -345,10 +345,26 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           setTecnicos(tecnicosFiltrados);
         }
 
-        // Carregar localizações (cidades)
-        const localizacoesStorage = localStorage.getItem("cidades_goias");
+        // Carregar localizações geográficas
+        const localizacoesStorage = localStorage.getItem("localizacoes_geograficas") ||
+                                   localStorage.getItem("cidades_goias");
         if (localizacoesStorage) {
-          setLocalizacoesGeograficas(JSON.parse(localizacoesStorage));
+          const localizacoes = JSON.parse(localizacoesStorage);
+          setLocalizacoesGeograficas(Array.isArray(localizacoes) ? localizacoes : []);
+          console.log('[EntidadesContext] Localizações carregadas:', localizacoes.length);
+        } else {
+          // Criar dados iniciais se não existirem
+          const dadosIniciais: LocalizacaoGeografica[] = [
+            { id: 1, nome: "Goiânia", tipoItem: "cidade", ativo: true, dataCriacao: new Date() },
+            { id: 2, nome: "Anápolis", tipoItem: "cidade", ativo: true, dataCriacao: new Date() },
+            { id: 3, nome: "Centro", tipoItem: "setor", cidade: "Goiânia", ativo: true, dataCriacao: new Date() },
+            { id: 4, nome: "Setor Oeste", tipoItem: "setor", cidade: "Goiânia", ativo: true, dataCriacao: new Date() },
+            { id: 5, nome: "Jardim Goiás", tipoItem: "setor", cidade: "Goiânia", ativo: true, dataCriacao: new Date() },
+            { id: 6, nome: "Centro", tipoItem: "setor", cidade: "Anápolis", ativo: true, dataCriacao: new Date() },
+          ];
+          setLocalizacoesGeograficas(dadosIniciais);
+          localStorage.setItem("localizacoes_geograficas", JSON.stringify(dadosIniciais));
+          console.log('[EntidadesContext] Dados iniciais de localização criados');
         }
       } catch (error) {
         console.error("Erro ao carregar dados do localStorage:", error);
