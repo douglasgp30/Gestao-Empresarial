@@ -76,12 +76,12 @@ const etapasDoTour: EtapaTour[] = [
   },
   {
     id: "campanhas",
-    titulo: "Campanhas de Marketing",
+    titulo: "Acompanhamento de Campanhas",
     descricao:
-      "Analise o desempenho das suas campanhas de marketing. Veja receitas por campanha, número de lançamentos e ROI das suas estratégias.",
+      "Ao registrar receitas no Caixa, você pode associá-las a campanhas para acompanhar totais e desempenho por origem de receita.",
     icone: <BarChart3 className="w-6 h-6 text-purple-600" />,
-    seletor: '[data-tour="campanhas"]',
-    acao: "Campanhas são criadas automaticamente quando você registra receitas no Caixa.",
+    seletor: '[data-tour="caixa"]',
+    acao: "No formulário de receita, selecione ou crie uma nova campanha para categorizar a origem.",
   },
   {
     id: "clientes",
