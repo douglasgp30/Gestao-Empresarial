@@ -352,6 +352,23 @@ export default function ListaLancamentos() {
                     </TableCell>
 
                     <TableCell>
+                      {lancamento.codigoServico ? (
+                        <div>
+                          <p className="text-xs font-mono text-gray-600">
+                            {lancamento.codigoServico}
+                          </p>
+                          {lancamento.formaPagamento?.toLowerCase().includes("boleto") && (
+                            <Badge variant="outline" className="text-xs mt-1">
+                              Boleto
+                            </Badge>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-xs">-</span>
+                      )}
+                    </TableCell>
+
+                    <TableCell>
                       <div>
                         {/* Valor Integral */}
                         <p className="text-sm font-medium text-gray-700">
