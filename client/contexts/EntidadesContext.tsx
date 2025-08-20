@@ -589,7 +589,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       console.log("✅ [EntidadesContext] Item excluído com sucesso");
       return Promise.resolve();
     } catch (error) {
-      console.error("�� [EntidadesContext] Erro ao excluir item:", error);
+      console.error("❌ [EntidadesContext] Erro ao excluir item:", error);
       throw error;
     }
   }, []);
@@ -694,8 +694,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Erro ao sincronizar localizações:", error);
+    } finally {
+      setSincronizacaoEmAndamento(false);
     }
-  }, []);
+  }, [sincronizacaoEmAndamento]);
 
   const atualizarLocalizacaoGeografica = useCallback(
     async (id: number, dadosAtualizados: any) => {
