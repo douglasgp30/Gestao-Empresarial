@@ -297,7 +297,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       );
 
       try {
-        // Carregar descrições e categorias
+        // Carregar descri��ões e categorias
         const descricoesStorage =
           localStorage.getItem("descricoes_e_categorias") ||
           localStorage.getItem("categorias_receita");
@@ -720,15 +720,28 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === CARREGAMENTO INICIAL FORÇADO ===
   useEffect(() => {
-    // Carregar dados sempre no mount, sem verificações
-    console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
+    // Evitar carregamento duplo
+    let carregamentoExecutado = false;
 
-    // Cache invalidação removida - usando localStorage
+    const executarCarregamento = async () => {
+      if (carregamentoExecutado) return;
+      carregamentoExecutado = true;
 
-    carregarDados();
+      // Carregar dados sempre no mount, sem verificações
+      console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
 
-    // Sincronizar localizações para garantir consistência
-    sincronizarLocalizacoes();
+      // Cache invalidação removida - usando localStorage
+      await carregarDados();
+
+      // Sincronizar localizações para garantir consistência (com delay)
+      setTimeout(() => {
+        if (!sincronizacaoEmAndamento) {
+          sincronizarLocalizacoes();
+        }
+      }, 1000); // 1 segundo de delay
+    };
+
+    executarCarregamento();
   }, []); // Array vazio - executa apenas no mount
 
   // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
