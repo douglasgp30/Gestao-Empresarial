@@ -55,9 +55,10 @@ export interface Funcionario {
 export interface LancamentoCaixa {
   id: string; // CodLançamentoCX
   dataHora: Date; // Data e hora do lançamento
-  valor: number; // Valor do lançamento (obrigatório)
+  valor: number; // Valor integral do lançamento (obrigatório)
   valorRecebido?: number; // Valor efetivamente recebido (obrigatório para cartão)
   valorLiquido?: number; // Valor líquido após descontos
+  valorParaEmpresa?: number; // Valor que efetivamente entrou para a empresa (após comissões)
   comissao?: number; // Comissão do técnico
   imposto?: number; // Impostos/taxas
   tipo: "receita" | "despesa"; // Receita ou Despesa (obrigatório)
