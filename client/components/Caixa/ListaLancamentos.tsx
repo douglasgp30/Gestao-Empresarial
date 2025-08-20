@@ -266,6 +266,7 @@ export default function ListaLancamentos() {
                   </TableHead>
                   <TableHead>Categoria</TableHead>
                   <TableHead>Descrição</TableHead>
+                  <TableHead>Código Serviço</TableHead>
                   <TableHead>
                     <Button
                       variant="ghost"
@@ -348,6 +349,25 @@ export default function ListaLancamentos() {
                           </p>
                         )}
                       </div>
+                    </TableCell>
+
+                    <TableCell>
+                      {lancamento.codigoServico ? (
+                        <div>
+                          <p className="text-xs font-mono text-gray-600">
+                            {lancamento.codigoServico}
+                          </p>
+                          {lancamento.formaPagamento
+                            ?.toLowerCase()
+                            .includes("boleto") && (
+                            <Badge variant="outline" className="text-xs mt-1">
+                              Boleto
+                            </Badge>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-xs">-</span>
+                      )}
                     </TableCell>
 
                     <TableCell>

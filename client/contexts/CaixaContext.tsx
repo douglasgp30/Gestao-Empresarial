@@ -34,6 +34,7 @@ interface CaixaContextType {
     cliente?: string;
     cidade?: string;
     numeroNota?: string;
+    codigoServico?: string;
   };
   totais: {
     receitas: number;
@@ -110,9 +111,44 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Função para carregar campanhas com fallback seguro
   const carregarCampanhasSafe = async () => {
     try {
-      // Tentar carregar do servidor primeiro
+      // Verificar se estamos em um ambiente onde fetch deve funcionar
+      if (typeof window === "undefined") {
+        console.log("📊 [CaixaContext] Executando no servidor, pulando fetch");
+        return;
+      }
+
+      // Primeiro, fazer um health check do servidor
+      try {
+        const healthController = new AbortController();
+        const healthTimeoutId = setTimeout(
+          () => healthController.abort(),
+          2000,
+        );
+
+        const healthResponse = await fetch("/api/health", {
+          signal: healthController.signal,
+        });
+
+        clearTimeout(healthTimeoutId);
+
+        if (!healthResponse.ok) {
+          throw new Error(`Health check falhou: ${healthResponse.status}`);
+        }
+
+        console.log(
+          "📊 [CaixaContext] Servidor disponível, carregando campanhas...",
+        );
+      } catch (healthError) {
+        console.warn(
+          "📊 [CaixaContext] Servidor não está disponível:",
+          healthError,
+        );
+        throw new Error("Servidor indisponível");
+      }
+
+      // Agora tentar carregar campanhas
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout de 5s
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout maior após health check
 
       const response = await fetch("/api/campanhas", {
         signal: controller.signal,
@@ -132,17 +168,46 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         setCampanhas(campanhasServidor || []);
 
         // Sincronizar com localStorage para cache
-        localStorage.setItem(
-          "campanhas",
-          JSON.stringify(campanhasServidor || []),
-        );
+        try {
+          localStorage.setItem(
+            "campanhas",
+            JSON.stringify(campanhasServidor || []),
+          );
+        } catch (storageError) {
+          console.warn(
+            "Erro ao salvar campanhas no localStorage:",
+            storageError,
+          );
+        }
         return;
+      } else {
+        console.warn(
+          `📊 [CaixaContext] Resposta não OK: ${response.status} ${response.statusText}`,
+        );
       }
     } catch (error) {
-      console.warn(
-        "Servidor indisponível, usando campanhas do localStorage:",
-        error,
-      );
+      // Tratar diferentes tipos de erro
+      if (error instanceof Error) {
+        if (error.name === "AbortError") {
+          console.warn(
+            "📊 [CaixaContext] Timeout ao carregar campanhas do servidor",
+          );
+        } else if (error.message.includes("Failed to fetch")) {
+          console.warn(
+            "📊 [CaixaContext] Falha na conexão com servidor, usando localStorage",
+          );
+        } else {
+          console.warn(
+            "📊 [CaixaContext] Erro ao carregar campanhas:",
+            error.message,
+          );
+        }
+      } else {
+        console.warn(
+          "�� [CaixaContext] Erro desconhecido ao carregar campanhas:",
+          error,
+        );
+      }
     }
 
     // Fallback para localStorage
@@ -180,10 +245,29 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         await carregarCampanhasSafe();
       } catch (campanhasError) {
         console.warn(
-          "Erro ao carregar campanhas, continuando:",
+          "Erro ao carregar campanhas, usando fallback:",
           campanhasError,
         );
-        setCampanhas([]); // Fallback para array vazio
+
+        // Tentar carregar do localStorage como último recurso
+        try {
+          const campanhasStorage = localStorage.getItem("campanhas");
+          if (campanhasStorage) {
+            const campanhasParsed = JSON.parse(campanhasStorage);
+            setCampanhas(campanhasParsed || []);
+            console.log(
+              "📊 [CaixaContext] Campanhas carregadas do localStorage como fallback",
+            );
+          } else {
+            setCampanhas([]); // Fallback para array vazio se não há dados
+          }
+        } catch (localError) {
+          console.warn(
+            "Erro no fallback localStorage de campanhas:",
+            localError,
+          );
+          setCampanhas([]); // Fallback final para array vazio
+        }
       }
 
       // Carregar lançamentos do localStorage (não deve falhar)
@@ -284,9 +368,35 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Carregar dados na inicialização com controle global e throttling
   useEffect(() => {
-    // Carregamento inicial forçado sem throttling
-    console.log("[CaixaContext] FORÇANDO carregamento inicial...");
-    carregarDados();
+    // Verificar se estamos em um ambiente válido para carregamento
+    if (typeof window === "undefined") {
+      console.log(
+        "[CaixaContext] Executando no servidor, pulando carregamento inicial",
+      );
+      return;
+    }
+
+    // Verificar se é hot reload (comum durante desenvolvimento)
+    const isHotReload =
+      window.location.href.includes("reload=") ||
+      window.location.href.includes("?t=") ||
+      document.readyState !== "complete";
+
+    // Sempre usar um debounce para evitar múltiplas execuções
+    const debounceTime = isHotReload ? 3000 : 1000; // Mais tempo durante hot reload
+
+    console.log(
+      `[CaixaContext] Agendando carregamento em ${debounceTime}ms...`,
+    );
+    const timeout = setTimeout(() => {
+      console.log("[CaixaContext] Executando carregamento de dados");
+      carregarDados();
+    }, debounceTime);
+
+    return () => {
+      console.log("[CaixaContext] Cancelando carregamento agendado");
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Memoizar string das dependências para evitar loops

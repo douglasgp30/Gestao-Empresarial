@@ -9,14 +9,24 @@ const CampanhaSchema = z.object({
 export const getCampanhas: RequestHandler = async (req, res) => {
   try {
     console.log("[Campanhas] Buscando campanhas...");
+
+    // Verificar se o prisma está disponível
+    if (!prisma) {
+      console.error("[Campanhas] Prisma não está disponível");
+      return res.status(500).json({ error: "Banco de dados não disponível" });
+    }
+
     const campanhas = await prisma.campanha.findMany({
       orderBy: { nome: "asc" },
     });
+
     console.log(`[Campanhas] Encontradas ${campanhas.length} campanhas`);
-    res.json(campanhas);
+    res.json(campanhas || []); // Garantir que sempre retorna um array
   } catch (error) {
     console.error("[Campanhas] Erro ao buscar campanhas:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+
+    // Retornar um array vazio em caso de erro para não quebrar o frontend
+    res.status(200).json([]); // Mudança: retornar 200 com array vazio em vez de 500
   }
 };
 

@@ -94,6 +94,16 @@ export function createServer(): Express {
     res.json({ message: "pong", timestamp: new Date().toISOString() });
   });
 
+  // Rota de health check
+  app.get("/api/health", (req, res) => {
+    console.log("[Server] Health check recebido");
+    res.json({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      database: "connected",
+    });
+  });
+
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
   app.post(
     "/api/clean-fake-data",

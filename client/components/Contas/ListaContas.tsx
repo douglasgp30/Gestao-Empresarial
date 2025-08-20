@@ -71,6 +71,7 @@ export function ListaContas({}: ListaContasProps) {
   );
   const [formaPagamentoSelecionada, setFormaPagamentoSelecionada] =
     useState("");
+  const [dataPagamento, setDataPagamento] = useState("");
   const [processando, setProcessando] = useState(false);
 
   console.log("🔍 [LISTA CONTAS] Contas recebidas do contexto:", {
@@ -166,20 +167,74 @@ export function ListaContas({}: ListaContasProps) {
   };
 
   const handleMarcarComoPago = async () => {
-    if (!contaParaPagar || !formaPagamentoSelecionada) return;
+    if (!contaParaPagar || !formaPagamentoSelecionada || !dataPagamento) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Preencha a forma de pagamento e a data de pagamento",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validar se a data de pagamento não é anterior à data de criação da conta
+    const dataLancamento = new Date(contaParaPagar.dataLancamento);
+    const dataPag = new Date(dataPagamento);
+
+    if (dataPag < dataLancamento) {
+      toast({
+        title: "Data inválida",
+        description:
+          "A data de pagamento não pode ser anterior à data de criação da conta",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setProcessando(true);
     try {
+      // Criar lançamento automático no caixa
+      const lancamentoCaixa = {
+        data: dataPagamento,
+        tipo: contaParaPagar.tipo === "receber" ? "receita" : "despesa",
+        valor: contaParaPagar.valor,
+        valorParaEmpresa:
+          contaParaPagar.tipo === "receber" ? contaParaPagar.valor : 0,
+        categoria: "Recebimento de Boleto",
+        descricao:
+          contaParaPagar.observacoes || "Recebimento de conta a receber",
+        formaPagamento: formaPagamentoSelecionada,
+        clienteId: contaParaPagar.codigoCliente?.toString() || undefined,
+        observacoes: `${contaParaPagar.tipo === "receber" ? "Recebimento" : "Pagamento"} de conta - ID: ${contaParaPagar.codLancamentoContas}`,
+        codigoServico: contaParaPagar.codLancamentoContas.toString(), // Para rastreabilidade
+      };
+
+      // Fazer requisição para criar lançamento no caixa
+      const responseCaixa = await fetch("/api/caixa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(lancamentoCaixa),
+      });
+
+      if (!responseCaixa.ok) {
+        console.error("Erro ao criar lançamento no caixa");
+      }
+
+      // Marcar conta como paga com a data informada
       await marcarComoPago(
         contaParaPagar.codLancamentoContas,
         parseInt(formaPagamentoSelecionada),
+        dataPagamento,
       );
+
       toast({
         title: "Sucesso",
-        description: "Conta marcada como paga com sucesso!",
+        description: "Conta marcada como paga e lançamento criado no caixa!",
       });
       setContaParaPagar(null);
       setFormaPagamentoSelecionada("");
+      setDataPagamento("");
     } catch (error) {
       console.error("❌ [LISTA CONTAS] Erro ao marcar conta como paga:", error);
       toast({
@@ -289,6 +344,7 @@ export function ListaContas({}: ListaContasProps) {
                     <TableHead>Valor</TableHead>
                     <TableHead>Vencimento</TableHead>
                     <TableHead>Categoria</TableHead>
+                    <TableHead>Código Serviço</TableHead>
                     <TableHead>Observações</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
@@ -327,7 +383,23 @@ export function ListaContas({}: ListaContasProps) {
                           locale: ptBR,
                         })}
                       </TableCell>
-                      <TableCell>{conta.categoria?.nome || "-"}</TableCell>
+                      <TableCell>
+                        {conta.categoria?.nome || conta.categoria || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {conta.codigoServico ? (
+                          <div>
+                            <p className="text-xs font-mono text-gray-600">
+                              {conta.codigoServico}
+                            </p>
+                            <Badge variant="outline" className="text-xs mt-1">
+                              Rastreável
+                            </Badge>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         {conta.observacoes ? (
                           <div
@@ -426,39 +498,72 @@ export function ListaContas({}: ListaContasProps) {
       {/* Dialog para marcar como pago */}
       <AlertDialog
         open={!!contaParaPagar}
-        onOpenChange={() => setContaParaPagar(null)}
+        onOpenChange={() => {
+          setContaParaPagar(null);
+          setFormaPagamentoSelecionada("");
+          setDataPagamento("");
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Marcar Como Pago</AlertDialogTitle>
             <AlertDialogDescription>
-              Selecione a forma de pagamento utilizada:
+              Preencha os dados do pagamento:
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="my-4">
-            <Select
-              value={formaPagamentoSelecionada}
-              onValueChange={setFormaPagamentoSelecionada}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a forma de pagamento" />
-              </SelectTrigger>
-              <SelectContent>
-                {formasPagamento.map((forma) => (
-                  <SelectItem key={forma.id} value={forma.id.toString()}>
-                    {forma.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="space-y-4 my-4">
+            {/* Data de Pagamento */}
+            <div className="space-y-2">
+              <label htmlFor="dataPagamento" className="text-sm font-medium">
+                Data de Pagamento *
+              </label>
+              <input
+                id="dataPagamento"
+                type="date"
+                value={dataPagamento}
+                onChange={(e) => setDataPagamento(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            {/* Forma de Pagamento */}
+            <div className="space-y-2">
+              <label htmlFor="formaPagamento" className="text-sm font-medium">
+                Forma de Pagamento *
+              </label>
+              <Select
+                value={formaPagamentoSelecionada}
+                onValueChange={setFormaPagamentoSelecionada}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a forma de pagamento" />
+                </SelectTrigger>
+                <SelectContent>
+                  {formasPagamento.map((forma) => (
+                    <SelectItem key={forma.id} value={forma.id.toString()}>
+                      {forma.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setFormaPagamentoSelecionada("")}>
+            <AlertDialogCancel
+              onClick={() => {
+                setContaParaPagar(null);
+                setFormaPagamentoSelecionada("");
+                setDataPagamento("");
+              }}
+            >
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleMarcarComoPago}
-              disabled={!formaPagamentoSelecionada || processando}
+              disabled={
+                !formaPagamentoSelecionada || !dataPagamento || processando
+              }
             >
               {processando && (
                 <RefreshCw className="mr-2 h-4 w-4 animate-spin" />

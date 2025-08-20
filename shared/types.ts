@@ -65,6 +65,7 @@ export interface LancamentoCaixa {
   observacoes?: string; // Observações do lançamento
   numeroNota?: string; // Número da nota fiscal
   arquivoNota?: string; // Arquivo da nota fiscal
+  codigoServico?: string; // Código único do serviço para rastreabilidade
 
   // Relacionamentos obrigatórios
   descricaoId: number; // FK para tabela Descrição
@@ -112,12 +113,15 @@ export interface ContaLancamento {
   descricaoCategoria?: number; // SMALLINT FK categorias(id)
   pago: boolean; // BOOLEAN
   dataPagamento?: Date; // TIMESTAMP - Condicional
+  codigoServico?: string; // Código único do serviço para rastreabilidade
+  categoria?: string; // Nome da categoria
+  descricao?: string; // Descrição do serviço
 
   // Relacionamentos expandidos
   cliente?: Cliente;
   fornecedor?: Fornecedor;
   formaPagamento?: FormaPagamento;
-  categoria?: Categoria;
+  categoriaObj?: Categoria;
 }
 
 export interface Campanha {
