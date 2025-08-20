@@ -9,10 +9,12 @@ import { campanhasApi } from "../../lib/apiService";
 import { parseErrorResponse } from "../../lib/responseUtils";
 
 export default function ModalCampanhasSimples() {
-  const { campanhas, carregarDados } = useCaixa();
+  const { carregarDados } = useCaixa();
+  const [campanhas, setCampanhas] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Modal de confirmação super simples
   const [showConfirm, setShowConfirm] = useState(false);
