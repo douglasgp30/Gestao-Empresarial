@@ -312,8 +312,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
     try {
       // Determinar o valor para empresa baseado na forma de pagamento
-      const formaPagamentoSelecionada = formasPagamento.find(f => f.nome === formData.formaPagamento);
-      const isBoleto = formaPagamentoSelecionada?.nome?.toLowerCase().includes('boleto');
+      const formaPagamentoSelecionada = formasPagamento.find(
+        (f) => f.nome === formData.formaPagamento,
+      );
+      const isBoleto = formaPagamentoSelecionada?.nome
+        ?.toLowerCase()
+        .includes("boleto");
 
       // Para boletos, não há valor para empresa ainda (não foi recebido)
       // Para outros, o valor para empresa é o valor líquido menos a comissão

@@ -57,12 +57,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         // Verificar se os dados básicos já foram configurados
-        const primeiroAcessoCompleto = localStorage.getItem("primeiro_acesso_completo");
-        const dadosBasicosExistem = localStorage.getItem("descricoes_e_categorias");
+        const primeiroAcessoCompleto = localStorage.getItem(
+          "primeiro_acesso_completo",
+        );
+        const dadosBasicosExistem = localStorage.getItem(
+          "descricoes_e_categorias",
+        );
 
         // Se existe admin mas não há dados básicos, configurar
         if (!dadosBasicosExistem || primeiroAcessoCompleto !== "true") {
-          console.log("🔧 [AuthContext] Configurando dados básicos iniciais...");
+          console.log(
+            "🔧 [AuthContext] Configurando dados básicos iniciais...",
+          );
           await configurarDadosBasicosIniciais();
           localStorage.setItem("primeiro_acesso_completo", "true");
           console.log("✅ [AuthContext] Dados básicos configurados");

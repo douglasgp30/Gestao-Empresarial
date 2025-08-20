@@ -115,9 +115,21 @@ export default function ListaLancamentos() {
     .filter((lancamento) => {
       const dataLancamento = new Date(lancamento.data);
       // Normalizar datas para comparação (apenas ano, mês, dia)
-      const dataInicio = new Date(filtros.dataInicio.getFullYear(), filtros.dataInicio.getMonth(), filtros.dataInicio.getDate());
-      const dataFim = new Date(filtros.dataFim.getFullYear(), filtros.dataFim.getMonth(), filtros.dataFim.getDate());
-      const dataLancNorm = new Date(dataLancamento.getFullYear(), dataLancamento.getMonth(), dataLancamento.getDate());
+      const dataInicio = new Date(
+        filtros.dataInicio.getFullYear(),
+        filtros.dataInicio.getMonth(),
+        filtros.dataInicio.getDate(),
+      );
+      const dataFim = new Date(
+        filtros.dataFim.getFullYear(),
+        filtros.dataFim.getMonth(),
+        filtros.dataFim.getDate(),
+      );
+      const dataLancNorm = new Date(
+        dataLancamento.getFullYear(),
+        dataLancamento.getMonth(),
+        dataLancamento.getDate(),
+      );
 
       const dentroDataInicio = dataLancNorm >= dataInicio;
       const dentroDataFim = dataLancNorm <= dataFim;
@@ -342,32 +354,43 @@ export default function ListaLancamentos() {
                       <div>
                         {/* Valor Integral */}
                         <p className="text-sm font-medium text-gray-700">
-                          <span className="text-xs text-muted-foreground">Integral:</span> {formatCurrency(lancamento.valor)}
+                          <span className="text-xs text-muted-foreground">
+                            Integral:
+                          </span>{" "}
+                          {formatCurrency(lancamento.valor)}
                         </p>
 
                         {/* Valor para Empresa */}
                         {lancamento.tipo === "receita" && (
                           <>
                             {lancamento.valorParaEmpresa !== undefined ? (
-                              <p
-                                className={`font-bold text-green-600`}
-                              >
-                                <span className="text-xs text-muted-foreground">P/ Empresa:</span> {formatCurrency(lancamento.valorParaEmpresa)}
+                              <p className={`font-bold text-green-600`}>
+                                <span className="text-xs text-muted-foreground">
+                                  P/ Empresa:
+                                </span>{" "}
+                                {formatCurrency(lancamento.valorParaEmpresa)}
+                              </p>
+                            ) : // Verificar se é boleto
+                            lancamento.formaPagamento
+                                ?.toLowerCase()
+                                .includes("boleto") ||
+                              lancamento.formaPagamento
+                                ?.toLowerCase()
+                                .includes("bancário") ? (
+                              <p className="text-xs text-orange-600 font-medium">
+                                Aguardando recebimento
                               </p>
                             ) : (
-                              // Verificar se é boleto
-                              (lancamento.formaPagamento?.toLowerCase().includes('boleto') ||
-                               lancamento.formaPagamento?.toLowerCase().includes('bancário')) ? (
-                                <p className="text-xs text-orange-600 font-medium">
-                                  Aguardando recebimento
-                                </p>
-                              ) : (
-                                <p
-                                  className={`font-bold text-green-600`}
-                                >
-                                  <span className="text-xs text-muted-foreground">P/ Empresa:</span> {formatCurrency((lancamento.valorLiquido || lancamento.valor) - (lancamento.comissao || 0))}
-                                </p>
-                              )
+                              <p className={`font-bold text-green-600`}>
+                                <span className="text-xs text-muted-foreground">
+                                  P/ Empresa:
+                                </span>{" "}
+                                {formatCurrency(
+                                  (lancamento.valorLiquido ||
+                                    lancamento.valor) -
+                                    (lancamento.comissao || 0),
+                                )}
+                              </p>
                             )}
                           </>
                         )}
@@ -375,7 +398,10 @@ export default function ListaLancamentos() {
                         {/* Para despesas, mostrar apenas o valor */}
                         {lancamento.tipo === "despesa" && (
                           <p className="font-bold text-red-600">
-                            <span className="text-xs text-muted-foreground">Despesa:</span> {formatCurrency(lancamento.valor)}
+                            <span className="text-xs text-muted-foreground">
+                              Despesa:
+                            </span>{" "}
+                            {formatCurrency(lancamento.valor)}
                           </p>
                         )}
                       </div>
