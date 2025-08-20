@@ -39,6 +39,9 @@ interface AgendamentosContextType {
   agendamentosFiltrados: Agendamento[];
   agendamentosHoje: Agendamento[];
   proximosLembretes: LembreteAgendamento[];
+
+  // Debug (apenas desenvolvimento)
+  testarLembrete?: (agendamentoId?: string) => void;
 }
 
 const AgendamentosContext = createContext<AgendamentosContextType | undefined>(
