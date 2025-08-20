@@ -194,10 +194,35 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
         const scrollLeft =
           window.pageXOffset || document.documentElement.scrollLeft;
 
-        setPosicaoTooltip({
-          top: rect.bottom + scrollTop + 10,
-          left: rect.left + scrollLeft,
-        });
+        // Calcular posição ideal com margens de segurança
+        const cardWidth = 450; // Largura do card
+        const cardHeight = 400; // Altura estimada
+        const margin = 20; // Margem mínima das bordas
+
+        let top = rect.bottom + scrollTop + 10;
+        let left = rect.left + scrollLeft;
+
+        // Ajustar se sair da tela à direita
+        if (left + cardWidth > window.innerWidth) {
+          left = window.innerWidth - cardWidth - margin;
+        }
+
+        // Ajustar se sair da tela à esquerda
+        if (left < margin) {
+          left = margin;
+        }
+
+        // Ajustar se sair da tela embaixo
+        if (top + cardHeight > window.innerHeight + scrollTop) {
+          top = rect.top + scrollTop - cardHeight - 10;
+        }
+
+        // Ajustar se sair da tela em cima
+        if (top < scrollTop + margin) {
+          top = scrollTop + margin;
+        }
+
+        setPosicaoTooltip({ top, left });
 
         // Destacar o elemento
         elemento.classList.add("tour-highlight");
@@ -206,10 +231,12 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
         elemento.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     } else {
-      // Centralizar tooltip
+      // Centralizar tooltip com verificação de bordas
+      const cardWidth = 450;
+      const cardHeight = 400;
       setPosicaoTooltip({
-        top: window.innerHeight / 2 - 150,
-        left: window.innerWidth / 2 - 200,
+        top: Math.max(20, (window.innerHeight - cardHeight) / 2),
+        left: Math.max(20, (window.innerWidth - cardWidth) / 2),
       });
     }
 
@@ -262,12 +289,11 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
 
       {/* Tooltip do tour */}
       <Card
-        className="fixed z-50 w-96 shadow-2xl"
+        className="fixed z-50 shadow-2xl max-w-md w-full mx-4"
         style={{
           top: posicaoTooltip.top,
           left: posicaoTooltip.left,
-          right: posicaoTooltip.right,
-          bottom: posicaoTooltip.bottom,
+          maxHeight: 'calc(100vh - 40px)',
         }}
       >
         <CardHeader className="pb-3">
@@ -300,40 +326,49 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
             </div>
           )}
 
+          {/* Pontos de navegação */}
+          <div className="flex justify-center space-x-2 py-3">
+            {etapasDoTour.map((_, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "w-2 h-2 rounded-full transition-colors",
+                  index === etapaAtual ? "bg-primary" : "bg-gray-300",
+                )}
+              />
+            ))}
+          </div>
+
           {/* Navegação */}
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex items-center justify-between pt-2 gap-4">
             <Button
               variant="ghost"
               onClick={etapaAnterior}
               disabled={isPrimeiraEtapa}
-              className={cn(isPrimeiraEtapa && "invisible")}
+              className={cn(
+                "flex-shrink-0",
+                isPrimeiraEtapa && "invisible"
+              )}
+              size="sm"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-1" />
               Anterior
             </Button>
 
-            <div className="flex space-x-2 ml-2 mr-6">
-              {etapasDoTour.map((_, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-colors",
-                    index === etapaAtual ? "bg-primary" : "bg-gray-300",
-                  )}
-                />
-              ))}
-            </div>
-
-            <Button onClick={proximaEtapa}>
+            <Button
+              onClick={proximaEtapa}
+              className="flex-shrink-0"
+              size="sm"
+            >
               {isUltimaEtapa ? (
                 <>
                   Finalizar
-                  <CheckCircle className="w-4 h-4 ml-2" />
+                  <CheckCircle className="w-4 h-4 ml-1" />
                 </>
               ) : (
                 <>
                   Próximo
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-1" />
                 </>
               )}
             </Button>
