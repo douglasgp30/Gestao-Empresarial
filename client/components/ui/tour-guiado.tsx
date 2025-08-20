@@ -238,7 +238,7 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
               Anterior
             </Button>
 
-            <div className="flex space-x-2 mx-4">
+            <div className="flex space-x-2 ml-2 mr-6">
               {etapasDoTour.map((_, index) => (
                 <div
                   key={index}
