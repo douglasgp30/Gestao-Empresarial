@@ -314,29 +314,26 @@ export default function ListaLancamentos() {
 
                     <TableCell>
                       <div>
-                        {lancamento.tipo === "receita" ? (
-                          <div>
-                            <p className="font-medium">
-                              {lancamento.categoria || "Serviços"}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {lancamento.descricao}
-                            </p>
-                            {lancamento.campanha && (
-                              <p className="text-xs text-blue-600">
-                                Campanha: {lancamento.campanha}
-                              </p>
-                            )}
-                          </div>
-                        ) : (
-                          <div>
-                            <p className="font-medium">
-                              {lancamento.categoria}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {lancamento.descricao}
-                            </p>
-                          </div>
+                        <p className="font-medium text-sm">
+                          {lancamento.categoria || "N/A"}
+                        </p>
+                        {lancamento.setor && (
+                          <p className="text-xs text-muted-foreground">
+                            {lancamento.setor}
+                          </p>
+                        )}
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div>
+                        <p className="font-medium text-sm">
+                          {lancamento.descricao || "N/A"}
+                        </p>
+                        {lancamento.campanha && (
+                          <p className="text-xs text-blue-600">
+                            Campanha: {lancamento.campanha}
+                          </p>
                         )}
                       </div>
                     </TableCell>
