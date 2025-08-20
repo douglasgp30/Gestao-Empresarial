@@ -585,6 +585,33 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     [localizacoesGeograficas],
   );
 
+  // Função para sincronizar dados de localização com a API
+  const sincronizarLocalizacoes = useCallback(async () => {
+    try {
+      console.log("[EntidadesContext] Sincronizando localizações com a API...");
+
+      // Buscar dados atualizados da API
+      const response = await fetch("/api/localizacoes-geograficas");
+      if (response.ok) {
+        const dadosAPI = await response.json();
+        setLocalizacoesGeograficas(dadosAPI);
+
+        // Atualizar localStorage
+        localStorage.setItem(
+          "localizacoes_geograficas",
+          JSON.stringify(dadosAPI)
+        );
+
+        console.log(
+          "[EntidadesContext] Localizações sincronizadas:",
+          dadosAPI.length
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao sincronizar localizações:", error);
+    }
+  }, []);
+
   const atualizarLocalizacaoGeografica = useCallback(
     async (id: number, dadosAtualizados: any) => {
       console.log(
