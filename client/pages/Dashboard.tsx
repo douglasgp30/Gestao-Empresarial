@@ -169,7 +169,7 @@ export default function Dashboard() {
                             <div className="col-span-3">
                               <Input
                                 id="meta"
-                                placeholder="Ex: 15000"
+                                placeholder="Ex: R$ 15.000,00"
                                 value={novaMetaValue}
                                 onChange={(e) =>
                                   setNovaMetaValue(
