@@ -93,7 +93,8 @@ export default function ModalCampanhasSimples() {
 
       toast.success("Campanha criada com sucesso!");
       resetForm();
-      await carregarDados();
+      await carregarCampanhas(); // Recarregar campanhas do servidor
+      await carregarDados(); // Recarregar dados do contexto também
     } catch (error) {
       console.error("Erro ao criar campanha:", error);
       toast.error("Erro ao criar campanha. Tente novamente.");
