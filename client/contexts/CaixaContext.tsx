@@ -430,35 +430,53 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      // Criar a campanha com ID único
-      const campanha: Campanha = {
-        ...novaCampanha,
-        id: `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      };
+      console.log("[CaixaContext] Adicionando campanha:", novaCampanha);
 
-      console.log(
-        "[CaixaContext] Adicionando campanha ao localStorage:",
-        campanha,
-      );
+      // Tentar criar no servidor primeiro
+      try {
+        const response = await fetch("/api/campanhas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(novaCampanha),
+        });
 
-      // Carregar campanhas existentes
-      const campanhasExistentes = JSON.parse(
-        localStorage.getItem("campanhas") || "[]",
-      );
+        if (response.ok) {
+          const campanhaServidor = await response.json();
+          console.log("✅ [CaixaContext] Campanha criada no servidor:", campanhaServidor);
 
-      // Adicionar a nova campanha
-      const novasCampanhas = [...campanhasExistentes, campanha];
+          // Recarregar campanhas do servidor para sincronizar
+          await carregarDados();
+          return;
+        } else {
+          throw new Error("Erro ao salvar no servidor");
+        }
+      } catch (serverError) {
+        console.warn("Servidor indisponível, salvando campanha localmente:", serverError);
 
-      // Salvar no localStorage
-      localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
+        // Fallback: salvar apenas no localStorage
+        const campanha: Campanha = {
+          ...novaCampanha,
+          id: `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        };
 
-      // Atualizar estado
-      setCampanhas(novasCampanhas);
+        // Carregar campanhas existentes
+        const campanhasExistentes = JSON.parse(
+          localStorage.getItem("campanhas") || "[]",
+        );
 
-      console.log(
-        "[CaixaContext] Campanha adicionada com sucesso:",
-        campanha.id,
-      );
+        // Adicionar a nova campanha
+        const novasCampanhas = [...campanhasExistentes, campanha];
+
+        // Salvar no localStorage
+        localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
+
+        // Atualizar estado
+        setCampanhas(novasCampanhas);
+
+        console.log("[CaixaContext] Campanha salva localmente:", campanha.id);
+      }
     } catch (error) {
       console.error("Erro ao adicionar campanha:", error);
       throw error;
