@@ -107,6 +107,50 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   });
 
+  // Função para carregar campanhas com fallback seguro
+  const carregarCampanhasSafe = async () => {
+    try {
+      // Tentar carregar do servidor primeiro
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout de 5s
+
+      const response = await fetch("/api/campanhas", {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const campanhasServidor = await response.json();
+        console.log("📊 [CaixaContext] Campanhas carregadas do servidor:", campanhasServidor.length);
+        setCampanhas(campanhasServidor || []);
+
+        // Sincronizar com localStorage para cache
+        localStorage.setItem("campanhas", JSON.stringify(campanhasServidor || []));
+        return;
+      }
+    } catch (error) {
+      console.warn("Servidor indisponível, usando campanhas do localStorage:", error);
+    }
+
+    // Fallback para localStorage
+    try {
+      const campanhasStorage = localStorage.getItem("campanhas");
+      if (campanhasStorage) {
+        const campanhasParsed = JSON.parse(campanhasStorage);
+        setCampanhas(campanhasParsed || []);
+      } else {
+        setCampanhas([]);
+      }
+    } catch (localError) {
+      console.warn("Erro ao carregar campanhas do localStorage:", localError);
+      setCampanhas([]);
+    }
+  };
+
   // Função para carregar todos os dados do localStorage
   const carregarDados = async () => {
     // Evitar múltiplos carregamentos simultâneos
