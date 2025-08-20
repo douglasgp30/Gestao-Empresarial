@@ -189,6 +189,7 @@ export default function ModalGerenciarCidades() {
       });
 
       // Recarregar dados
+      await sincronizarLocalizacoes(); // Sincronizar primeiro
       await carregarDados();
     } catch (error) {
       console.error("Erro ao toggle cidade:", error);
