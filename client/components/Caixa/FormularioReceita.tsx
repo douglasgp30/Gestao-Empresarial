@@ -350,6 +350,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Para outros, o valor para empresa é o valor líquido menos a comissão
       const valorParaEmpresaCalculado = isFormaPagamentoBoleto ? 0 : valorParaEmpresa;
 
+      // Gerar código único do serviço se for boleto
+      let codigoServico = undefined;
+      if (isFormaPagamentoBoleto) {
+        codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+
       // Criar lançamento no caixa
       const lancamentoCaixa = await adicionarLancamento({
         data: new Date(formData.data),
@@ -368,6 +374,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         clienteId: formData.cliente || undefined,
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
+        codigoServico: codigoServico, // Adicionar código do serviço
       });
 
       // Se for boleto, criar automaticamente conta a receber
