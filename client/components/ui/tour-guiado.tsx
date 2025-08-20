@@ -227,42 +227,46 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
           )}
 
           {/* Navegação */}
-          <div className="flex items-center justify-between pt-4">
-            <Button
-              variant="ghost"
-              onClick={etapaAnterior}
-              disabled={isPrimeiraEtapa}
-              className={cn(isPrimeiraEtapa && "invisible")}
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Anterior
-            </Button>
+          <div className="flex items-center pt-4">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                onClick={etapaAnterior}
+                disabled={isPrimeiraEtapa}
+                className={cn(isPrimeiraEtapa && "invisible")}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Anterior
+              </Button>
 
-            <div className="flex space-x-2 mx-4">
-              {etapasDoTour.map((_, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-colors",
-                    index === etapaAtual ? "bg-primary" : "bg-gray-300",
-                  )}
-                />
-              ))}
+              <div className="flex space-x-2">
+                {etapasDoTour.map((_, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "w-2 h-2 rounded-full transition-colors",
+                      index === etapaAtual ? "bg-primary" : "bg-gray-300",
+                    )}
+                  />
+                ))}
+              </div>
             </div>
 
-            <Button onClick={proximaEtapa}>
-              {isUltimaEtapa ? (
-                <>
-                  Finalizar
-                  <CheckCircle className="w-4 h-4 ml-2" />
-                </>
-              ) : (
-                <>
-                  Próximo
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </>
-              )}
-            </Button>
+            <div className="ml-auto">
+              <Button onClick={proximaEtapa}>
+                {isUltimaEtapa ? (
+                  <>
+                    Finalizar
+                    <CheckCircle className="w-4 h-4 ml-2" />
+                  </>
+                ) : (
+                  <>
+                    Próximo
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Opção de pular */}
