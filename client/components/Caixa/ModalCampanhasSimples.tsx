@@ -34,24 +34,39 @@ export default function ModalCampanhasSimples() {
     nome: "",
   });
 
-  // Carregar dados quando o modal é aberto
-  useEffect(() => {
-    console.log(
-      `[ModalCampanhasSimples] Modal isOpen: ${isOpen}, campanhas.length: ${campanhas.length}`,
-    );
-    if (isOpen) {
-      if (campanhas.length === 0) {
-        console.log(
-          "[ModalCampanhasSimples] Modal aberto sem dados, carregando...",
-        );
-        carregarDados();
-      } else {
-        console.log(
-          "[ModalCampanhasSimples] Modal aberto com dados já carregados",
-        );
+  // Função para carregar campanhas via API
+  const carregarCampanhas = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    try {
+      console.log("[ModalCampanhasSimples] Carregando campanhas via API...");
+      const response = await campanhasApi.listar();
+
+      if (response.error) {
+        console.error("Erro ao carregar campanhas:", response.error);
+        toast.error("Erro ao carregar campanhas");
+        return;
       }
+
+      const campanhasData = response.data || [];
+      console.log("[ModalCampanhasSimples] Campanhas carregadas:", campanhasData);
+      setCampanhas(campanhasData);
+    } catch (error) {
+      console.error("Erro ao carregar campanhas:", error);
+      toast.error("Erro ao carregar campanhas");
+    } finally {
+      setIsLoading(false);
     }
-  }, [isOpen, campanhas.length, carregarDados]);
+  };
+
+  // Carregar campanhas quando o modal é aberto
+  useEffect(() => {
+    console.log(`[ModalCampanhasSimples] Modal isOpen: ${isOpen}`);
+    if (isOpen) {
+      carregarCampanhas();
+    }
+  }, [isOpen]);
 
   const resetForm = () => {
     setFormData({ nome: "" });
