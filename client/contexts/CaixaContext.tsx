@@ -117,9 +117,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Verificar se o servidor está acessível
+      // Primeiro, fazer um health check do servidor
+      try {
+        const healthController = new AbortController();
+        const healthTimeoutId = setTimeout(() => healthController.abort(), 2000);
+
+        const healthResponse = await fetch("/api/health", {
+          signal: healthController.signal,
+        });
+
+        clearTimeout(healthTimeoutId);
+
+        if (!healthResponse.ok) {
+          throw new Error(`Health check falhou: ${healthResponse.status}`);
+        }
+
+        console.log("📊 [CaixaContext] Servidor disponível, carregando campanhas...");
+      } catch (healthError) {
+        console.warn("📊 [CaixaContext] Servidor não está disponível:", healthError);
+        throw new Error("Servidor indisponível");
+      }
+
+      // Agora tentar carregar campanhas
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // Timeout mais curto de 3s
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout maior após health check
 
       const response = await fetch("/api/campanhas", {
         signal: controller.signal,
