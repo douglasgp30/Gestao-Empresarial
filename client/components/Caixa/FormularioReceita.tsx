@@ -83,6 +83,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
+  const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(null);
 
   // Estados para categorias e descrições carregadas diretamente da API
   const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
