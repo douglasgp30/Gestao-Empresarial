@@ -54,7 +54,6 @@ export default function FormularioAgendamento({
   const cidades = cidadesObjs.map((cidade) => cidade.nome);
   const { funcionarios } = useFuncionarios();
 
-
   const [aberto, setAberto] = useState(false);
   const [novoSetor, setNovoSetor] = useState("");
   const [mostrarNovoSetor, setMostrarNovoSetor] = useState(false);
@@ -98,9 +97,8 @@ export default function FormularioAgendamento({
   const [erros, setErros] = useState<Record<string, string>>({});
 
   // Filtrar apenas funcionários que são técnicos (não administradores)
-  const tecnicos = funcionarios.filter((f) =>
-    f.ativo &&
-    f.tipoAcesso === "Técnico"
+  const tecnicos = funcionarios.filter(
+    (f) => f.ativo && f.tipoAcesso === "Técnico",
   );
 
   const opcoesLembrete = [
@@ -455,7 +453,13 @@ export default function FormularioAgendamento({
                 <SelectTrigger
                   className={`flex-1 ${erros.setor ? "border-red-500" : ""}`}
                 >
-                  <SelectValue placeholder={!formData.cidade ? "Selecione primeiro uma cidade" : "Selecione o setor"} />
+                  <SelectValue
+                    placeholder={
+                      !formData.cidade
+                        ? "Selecione primeiro uma cidade"
+                        : "Selecione o setor"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {setores &&
@@ -505,7 +509,9 @@ export default function FormularioAgendamento({
             )}
 
             {!formData.cidade && (
-              <p className="text-sm text-muted-foreground">Selecione uma cidade primeiro</p>
+              <p className="text-sm text-muted-foreground">
+                Selecione uma cidade primeiro
+              </p>
             )}
           </div>
 

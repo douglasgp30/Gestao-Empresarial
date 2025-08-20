@@ -60,8 +60,24 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
   const [filtros, setFiltros] = useState<FiltrosAgendamento>(() => {
     // Usar data atual real do sistema
     const hoje = new Date();
-    const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
-    const fimHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
+    const inicioHoje = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth(),
+      hoje.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const fimHoje = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth(),
+      hoje.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
 
     return {
       dataInicio: inicioHoje,
@@ -173,18 +189,20 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
       parseInt(hora),
       parseInt(minutos),
       0,
-      0
+      0,
     );
 
     // Calcular hora do lembrete (subtraindo minutos)
-    const dataHoraLembrete = new Date(dataHoraServico.getTime() - (dadosAgendamento.tempoLembrete * 60 * 1000));
+    const dataHoraLembrete = new Date(
+      dataHoraServico.getTime() - dadosAgendamento.tempoLembrete * 60 * 1000,
+    );
 
-    console.log('[NOVO AGENDAMENTO]', {
-      dataServico: dataServico.toLocaleString('pt-BR'),
+    console.log("[NOVO AGENDAMENTO]", {
+      dataServico: dataServico.toLocaleString("pt-BR"),
       horaServico: dadosAgendamento.horaServico,
-      dataHoraServico: dataHoraServico.toLocaleString('pt-BR'),
-      tempoLembrete: dadosAgendamento.tempoLembrete + ' minutos',
-      dataHoraLembrete: dataHoraLembrete.toLocaleString('pt-BR')
+      dataHoraServico: dataHoraServico.toLocaleString("pt-BR"),
+      tempoLembrete: dadosAgendamento.tempoLembrete + " minutos",
+      dataHoraLembrete: dataHoraLembrete.toLocaleString("pt-BR"),
     });
 
     const novoLembrete: LembreteAgendamento = {
@@ -226,11 +244,13 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
           parseInt(hora),
           parseInt(minutos),
           0,
-          0
+          0,
         );
 
         // Calcular hora do lembrete
-        const dataHoraLembrete = new Date(dataHoraServico.getTime() - (agendamento.tempoLembrete * 60 * 1000));
+        const dataHoraLembrete = new Date(
+          dataHoraServico.getTime() - agendamento.tempoLembrete * 60 * 1000,
+        );
 
         const novosLembretes = lembretes.map((l) =>
           l.agendamentoId === id
@@ -241,7 +261,7 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
 
         // Resetar flag de lembrete enviado
         const agendamentosAtualizados = novosAgendamentos.map((ag) =>
-          ag.id === id ? { ...ag, lembreteEnviado: false } : ag
+          ag.id === id ? { ...ag, lembreteEnviado: false } : ag,
         );
         salvarAgendamentos(agendamentosAtualizados);
       }
@@ -285,9 +305,9 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
 
   const verificarLembretes = () => {
     const agora = new Date();
-    console.log('[LEMBRETES] Verificando lembretes...', {
-      horaAtual: agora.toLocaleString('pt-BR'),
-      totalLembretes: lembretes.length
+    console.log("[LEMBRETES] Verificando lembretes...", {
+      horaAtual: agora.toLocaleString("pt-BR"),
+      totalLembretes: lembretes.length,
     });
 
     lembretes.forEach((lembrete) => {
@@ -296,13 +316,17 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
         (ag) => ag.id === lembrete.agendamentoId,
       );
 
-      console.log('[LEMBRETE]', {
+      console.log("[LEMBRETE]", {
         agendamentoId: lembrete.agendamentoId,
-        dataHoraLembrete: dataLembrete.toLocaleString('pt-BR'),
+        dataHoraLembrete: dataLembrete.toLocaleString("pt-BR"),
         lido: lembrete.lido,
         lembreteEnviado: agendamento?.lembreteEnviado,
         status: agendamento?.status,
-        deveDisparar: !lembrete.lido && dataLembrete <= agora && agendamento?.status === 'agendado' && !agendamento?.lembreteEnviado
+        deveDisparar:
+          !lembrete.lido &&
+          dataLembrete <= agora &&
+          agendamento?.status === "agendado" &&
+          !agendamento?.lembreteEnviado,
       });
 
       if (!lembrete.lido && dataLembrete <= agora) {
@@ -311,7 +335,10 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
           agendamento.status === "agendado" &&
           !agendamento.lembreteEnviado
         ) {
-          console.log('[LEMBRETE] Disparando notificação para:', agendamento.descricaoServico);
+          console.log(
+            "[LEMBRETE] Disparando notificação para:",
+            agendamento.descricaoServico,
+          );
           // Disparar notificação
           mostrarNotificacaoLembrete(agendamento);
 
@@ -349,14 +376,17 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
   // Função de debug para testar lembretes (apenas para desenvolvimento)
   const testarLembrete = (agendamentoId?: string) => {
     const agendamentoTeste = agendamentoId
-      ? agendamentos.find(ag => ag.id === agendamentoId)
-      : agendamentos.find(ag => ag.status === 'agendado');
+      ? agendamentos.find((ag) => ag.id === agendamentoId)
+      : agendamentos.find((ag) => ag.status === "agendado");
 
     if (agendamentoTeste) {
-      console.log('[DEBUG] Testando lembrete para:', agendamentoTeste.descricaoServico);
+      console.log(
+        "[DEBUG] Testando lembrete para:",
+        agendamentoTeste.descricaoServico,
+      );
       mostrarNotificacaoLembrete(agendamentoTeste);
     } else {
-      console.log('[DEBUG] Nenhum agendamento encontrado para teste');
+      console.log("[DEBUG] Nenhum agendamento encontrado para teste");
     }
   };
 
@@ -410,7 +440,8 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     agendamentosHoje,
     proximosLembretes,
     // Função de debug (desenvolvimento)
-    testarLembrete: process.env.NODE_ENV === 'development' ? testarLembrete : undefined,
+    testarLembrete:
+      process.env.NODE_ENV === "development" ? testarLembrete : undefined,
   };
 
   return (

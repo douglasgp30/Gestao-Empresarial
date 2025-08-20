@@ -1,5 +1,8 @@
 import React from "react";
-import { AgendamentosProvider, useAgendamentos } from "../contexts/AgendamentosContext";
+import {
+  AgendamentosProvider,
+  useAgendamentos,
+} from "../contexts/AgendamentosContext";
 import {
   Card,
   CardContent,
@@ -26,9 +29,7 @@ function AgendamentosContent() {
             <Calendar className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              Agendamentos
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight">Agendamentos</h1>
             <p className="text-muted-foreground">
               Gerencie os agendamentos de serviços da empresa
             </p>
@@ -37,10 +38,10 @@ function AgendamentosContent() {
 
         <div className="flex gap-2">
           {/* Botão de teste apenas em desenvolvimento */}
-          {process.env.NODE_ENV === 'development' && testarLembrete && (
-            <Button 
-              size="sm" 
-              variant="outline" 
+          {process.env.NODE_ENV === "development" && testarLembrete && (
+            <Button
+              size="sm"
+              variant="outline"
               className="gap-2"
               onClick={() => testarLembrete()}
             >
@@ -48,7 +49,7 @@ function AgendamentosContent() {
               <span className="hidden sm:inline">Testar Lembrete</span>
             </Button>
           )}
-          
+
           <FormularioAgendamento>
             <Button size="sm" className="gap-2">
               <Plus className="h-4 w-4" />
@@ -88,13 +89,13 @@ function AgendamentosContent() {
       {/* Informações de Rodapé */}
       <div className="text-center text-sm text-muted-foreground bg-muted/30 rounded-lg p-4">
         <p>
-          💡 Os lembretes serão exibidos automaticamente no horário
-          configurado. Certifique-se de manter o sistema aberto para receber
-          as notificações.
+          💡 Os lembretes serão exibidos automaticamente no horário configurado.
+          Certifique-se de manter o sistema aberto para receber as notificações.
         </p>
-        {process.env.NODE_ENV === 'development' && (
+        {process.env.NODE_ENV === "development" && (
           <p className="mt-2 text-xs">
-            🧪 <strong>Modo Desenvolvimento:</strong> Use o botão "Testar Lembrete" para simular notificações.
+            🧪 <strong>Modo Desenvolvimento:</strong> Use o botão "Testar
+            Lembrete" para simular notificações.
           </p>
         )}
       </div>
