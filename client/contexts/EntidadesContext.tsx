@@ -533,13 +533,37 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const atualizarDescricaoOuCategoria = useCallback(
     async (id: string, dadosAtualizados: any) => {
-      console.log(
-        "📦 [EntidadesContext] STUB: atualizarDescricaoOuCategoria",
-        id,
-        dadosAtualizados,
-      );
-      // TODO: Implementar com localStorage
-      return Promise.resolve();
+      try {
+        console.log(
+          "📦 [EntidadesContext] Atualizando descrição ou categoria:",
+          id,
+          dadosAtualizados,
+        );
+
+        setDescricoesECategorias(prev => {
+          const novaLista = prev.map(item =>
+            item.id === id
+              ? { ...item, ...dadosAtualizados }
+              : item
+          );
+
+          // Salvar no localStorage
+          try {
+            localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
+            console.log("✅ [EntidadesContext] Item atualizado no localStorage");
+          } catch (error) {
+            console.error("Erro ao salvar no localStorage:", error);
+          }
+
+          return novaLista;
+        });
+
+        console.log("✅ [EntidadesContext] Item atualizado com sucesso");
+        return Promise.resolve();
+      } catch (error) {
+        console.error("❌ [EntidadesContext] Erro ao atualizar item:", error);
+        throw error;
+      }
     },
     [],
   );
