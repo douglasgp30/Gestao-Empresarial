@@ -99,8 +99,7 @@ export default function FormularioAgendamento({
   // Filtrar apenas funcionários que são técnicos (não administradores)
   const tecnicos = funcionarios.filter((f) =>
     f.ativo &&
-    f.tipoAcesso === "Técnico" &&
-    f.temAcessoSistema !== false
+    f.tipoAcesso === "Técnico"
   );
 
   const opcoesLembrete = [
