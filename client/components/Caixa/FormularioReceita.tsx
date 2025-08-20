@@ -1033,9 +1033,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <div className="border-t pt-2">
                   <div className="text-center">
                     <span className="text-gray-600">Para Empresa:</span>
-                    <div className="font-bold text-green-600 text-lg">
-                      R$ {valorParaEmpresa.toFixed(2).replace(".", ",")}
+                    <div className={`font-bold text-lg ${isFormaPagamentoBoleto ? 'text-yellow-600' : 'text-green-600'}`}>
+                      R$ {isFormaPagamentoBoleto ? '0,00' : valorParaEmpresa.toFixed(2).replace(".", ",")}
                     </div>
+                    {isFormaPagamentoBoleto && (
+                      <p className="text-xs text-yellow-600 mt-1">
+                        (Valor será creditado após pagamento do boleto)
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
