@@ -166,18 +166,29 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("📦 [CaixaContext] Carregando dados do localStorage...");
 
-      // Carregar campanhas com fallback seguro
-      await carregarCampanhasSafe();
+      // Carregar campanhas com fallback seguro (não deve falhar)
+      try {
+        await carregarCampanhasSafe();
+      } catch (campanhasError) {
+        console.warn("Erro ao carregar campanhas, continuando:", campanhasError);
+        setCampanhas([]); // Fallback para array vazio
+      }
 
-      // Carregar lançamentos do localStorage
-      await carregarLancamentosLocalStorage();
+      // Carregar lançamentos do localStorage (não deve falhar)
+      try {
+        await carregarLancamentosLocalStorage();
+      } catch (lancamentosError) {
+        console.warn("Erro ao carregar lançamentos, continuando:", lancamentosError);
+        setLancamentos([]); // Fallback para array vazio
+      }
 
       console.log(
-        "✅ [CaixaContext] Dados carregados do localStorage com sucesso",
+        "✅ [CaixaContext] Dados carregados com sucesso",
       );
     } catch (error) {
-      console.error("Erro ao carregar dados do localStorage:", error);
-      setError("Erro ao carregar dados locais");
+      console.error("Erro geral ao carregar dados:", error);
+      // Não definir erro para não quebrar a UI
+      // setError("Erro ao carregar dados locais");
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
