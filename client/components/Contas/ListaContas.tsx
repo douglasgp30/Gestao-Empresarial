@@ -478,39 +478,68 @@ export function ListaContas({}: ListaContasProps) {
       {/* Dialog para marcar como pago */}
       <AlertDialog
         open={!!contaParaPagar}
-        onOpenChange={() => setContaParaPagar(null)}
+        onOpenChange={() => {
+          setContaParaPagar(null);
+          setFormaPagamentoSelecionada("");
+          setDataPagamento("");
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Marcar Como Pago</AlertDialogTitle>
             <AlertDialogDescription>
-              Selecione a forma de pagamento utilizada:
+              Preencha os dados do pagamento:
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div className="my-4">
-            <Select
-              value={formaPagamentoSelecionada}
-              onValueChange={setFormaPagamentoSelecionada}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione a forma de pagamento" />
-              </SelectTrigger>
-              <SelectContent>
-                {formasPagamento.map((forma) => (
-                  <SelectItem key={forma.id} value={forma.id.toString()}>
-                    {forma.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="space-y-4 my-4">
+            {/* Data de Pagamento */}
+            <div className="space-y-2">
+              <label htmlFor="dataPagamento" className="text-sm font-medium">
+                Data de Pagamento *
+              </label>
+              <input
+                id="dataPagamento"
+                type="date"
+                value={dataPagamento}
+                onChange={(e) => setDataPagamento(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            {/* Forma de Pagamento */}
+            <div className="space-y-2">
+              <label htmlFor="formaPagamento" className="text-sm font-medium">
+                Forma de Pagamento *
+              </label>
+              <Select
+                value={formaPagamentoSelecionada}
+                onValueChange={setFormaPagamentoSelecionada}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a forma de pagamento" />
+                </SelectTrigger>
+                <SelectContent>
+                  {formasPagamento.map((forma) => (
+                    <SelectItem key={forma.id} value={forma.id.toString()}>
+                      {forma.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setFormaPagamentoSelecionada("")}>
+            <AlertDialogCancel onClick={() => {
+              setContaParaPagar(null);
+              setFormaPagamentoSelecionada("");
+              setDataPagamento("");
+            }}>
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleMarcarComoPago}
-              disabled={!formaPagamentoSelecionada || processando}
+              disabled={!formaPagamentoSelecionada || !dataPagamento || processando}
             >
               {processando && (
                 <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
