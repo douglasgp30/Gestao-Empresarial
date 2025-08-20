@@ -111,9 +111,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Função para carregar campanhas com fallback seguro
   const carregarCampanhasSafe = async () => {
     try {
-      // Tentar carregar do servidor primeiro
+      // Verificar se estamos em um ambiente onde fetch deve funcionar
+      if (typeof window === 'undefined') {
+        console.log("📊 [CaixaContext] Executando no servidor, pulando fetch");
+        return;
+      }
+
+      // Verificar se o servidor está acessível
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout de 5s
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // Timeout mais curto de 3s
 
       const response = await fetch("/api/campanhas", {
         signal: controller.signal,
@@ -133,17 +139,31 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         setCampanhas(campanhasServidor || []);
 
         // Sincronizar com localStorage para cache
-        localStorage.setItem(
-          "campanhas",
-          JSON.stringify(campanhasServidor || []),
-        );
+        try {
+          localStorage.setItem(
+            "campanhas",
+            JSON.stringify(campanhasServidor || []),
+          );
+        } catch (storageError) {
+          console.warn("Erro ao salvar campanhas no localStorage:", storageError);
+        }
         return;
+      } else {
+        console.warn(`📊 [CaixaContext] Resposta não OK: ${response.status} ${response.statusText}`);
       }
     } catch (error) {
-      console.warn(
-        "Servidor indisponível, usando campanhas do localStorage:",
-        error,
-      );
+      // Tratar diferentes tipos de erro
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          console.warn("📊 [CaixaContext] Timeout ao carregar campanhas do servidor");
+        } else if (error.message.includes('Failed to fetch')) {
+          console.warn("📊 [CaixaContext] Falha na conexão com servidor, usando localStorage");
+        } else {
+          console.warn("📊 [CaixaContext] Erro ao carregar campanhas:", error.message);
+        }
+      } else {
+        console.warn("�� [CaixaContext] Erro desconhecido ao carregar campanhas:", error);
+      }
     }
 
     // Fallback para localStorage
