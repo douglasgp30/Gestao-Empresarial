@@ -359,6 +359,7 @@ export default function ModalGerenciarCidades() {
       });
 
       setSetorParaExcluir(null);
+      await sincronizarLocalizacoes(); // Sincronizar primeiro
       await carregarDados();
     } catch (error) {
       console.error("Erro ao excluir setor:", error);
