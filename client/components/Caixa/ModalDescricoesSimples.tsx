@@ -176,6 +176,8 @@ export default function ModalDescricoesSimples() {
 
       toast.success("Categoria adicionada com sucesso");
       setFormCategoria({ nome: "" });
+      // Forçar recarregamento para mostrar a nova categoria
+      await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("Erro ao adicionar categoria:", error);
       toast.error("Erro ao adicionar categoria. Tente novamente.");
