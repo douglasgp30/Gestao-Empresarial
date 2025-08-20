@@ -91,8 +91,20 @@ export default function Dashboard() {
   };
 
   const formatCurrencyInput = (value: string) => {
-    const numValue = value.replace(/[^\d,]/g, "").replace(",", ".");
-    return numValue;
+    // Remove tudo que não é dígito
+    const numericValue = value.replace(/\D/g, "");
+
+    // Se vazio, retorna formato inicial
+    if (!numericValue) return "R$ 0,00";
+
+    // Converte para número (dividindo por 100 para considerar centavos)
+    const number = parseInt(numericValue) / 100;
+
+    // Formatar como moeda brasileira
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(number);
   };
 
   return (
