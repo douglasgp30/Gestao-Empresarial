@@ -365,7 +365,7 @@ export default function ListaLancamentos() {
                                 <p
                                   className={`font-bold text-green-600`}
                                 >
-                                  <span className="text-xs text-muted-foreground">P/ Empresa:</span> {formatCurrency(lancamento.valorLiquido || lancamento.valor)}
+                                  <span className="text-xs text-muted-foreground">P/ Empresa:</span> {formatCurrency((lancamento.valorLiquido || lancamento.valor) - (lancamento.comissao || 0))}
                                 </p>
                               )
                             )}
