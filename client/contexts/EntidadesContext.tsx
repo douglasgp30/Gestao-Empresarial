@@ -292,7 +292,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       );
 
       // Carregar dados do localStorage em vez da API
-      console.log("📦 [EntidadesContext] Carregando dados do localStorage...");
+      console.log("���� [EntidadesContext] Carregando dados do localStorage...");
 
       try {
         // Carregar descrições e categorias
@@ -423,7 +423,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         const arrayParsed = Array.isArray(parsed) ? parsed : [];
         setDescricoesECategorias(arrayParsed);
         console.log(
-          `📦 [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`,
+          `���� [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`,
         );
       } else {
         setDescricoesECategorias([]);
@@ -492,15 +492,33 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const criarLocalizacaoGeografica = useCallback(
-    async (novaLocalizacao: any) => {
+    async (novaLocalizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">) => {
       console.log(
-        "📦 [EntidadesContext] STUB: criarLocalizacaoGeografica",
+        "📦 [EntidadesContext] Criando localização geográfica:",
         novaLocalizacao,
       );
-      // TODO: Implementar com localStorage
-      return Promise.resolve();
+
+      try {
+        const novoId = Math.max(...localizacoesGeograficas.map(l => l.id), 0) + 1;
+        const localizacaoCompleta: LocalizacaoGeografica = {
+          ...novaLocalizacao,
+          id: novoId,
+          dataCriacao: new Date(),
+        };
+
+        const novasLocalizacoes = [...localizacoesGeograficas, localizacaoCompleta];
+        setLocalizacoesGeograficas(novasLocalizacoes);
+
+        localStorage.setItem("localizacoes_geograficas", JSON.stringify(novasLocalizacoes));
+
+        console.log(`[EntidadesContext] ${novaLocalizacao.tipoItem} "${novaLocalizacao.nome}" criado com sucesso`);
+        return Promise.resolve();
+      } catch (error) {
+        console.error("Erro ao criar localização geográfica:", error);
+        return Promise.reject(error);
+      }
     },
-    [],
+    [localizacoesGeograficas],
   );
 
   const atualizarLocalizacaoGeografica = useCallback(
