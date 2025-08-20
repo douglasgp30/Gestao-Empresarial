@@ -432,16 +432,14 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
 
           {/* Status de Pagamento */}
           <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
+            <Checkbox
               id="pago"
               checked={formData.pago}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, pago: e.target.checked }))
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, pago: !!checked }))
               }
-              className="h-4 w-4"
             />
-            <Label htmlFor="pago">Conta já foi paga</Label>
+            <Label htmlFor="pago" className="cursor-pointer">Conta já foi paga</Label>
           </div>
 
           {/* Forma de Pagamento (só aparece se está pago) */}
