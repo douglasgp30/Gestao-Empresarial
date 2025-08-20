@@ -39,6 +39,7 @@ interface CaixaContextType {
     receitas: number;
     receitaBruta?: number;
     receitaLiquida?: number;
+    receitasParaEmpresa?: number;
     boletos?: number;
     despesas: number;
     saldo: number;
