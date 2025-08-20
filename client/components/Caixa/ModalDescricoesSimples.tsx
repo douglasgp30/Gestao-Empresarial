@@ -149,8 +149,10 @@ export default function ModalDescricoesSimples() {
         ativo: true,
       });
 
-      toast.success("Descri��ão adicionada com sucesso");
+      toast.success("Descrição adicionada com sucesso");
       setFormDescricao({ nome: "", categoria: "" });
+      // Forçar recarregamento para mostrar a nova descrição
+      await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("Erro ao adicionar descrição:", error);
       toast.error("Erro ao adicionar descrição. Tente novamente.");
