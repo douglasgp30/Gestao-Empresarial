@@ -34,6 +34,7 @@ interface CaixaContextType {
     cliente?: string;
     cidade?: string;
     numeroNota?: string;
+    codigoServico?: string;
   };
   totais: {
     receitas: number;
