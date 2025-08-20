@@ -301,6 +301,7 @@ export default function ModalGerenciarCidades() {
       }
 
       // Recarregar dados
+      await sincronizarLocalizacoes(); // Sincronizar primeiro
       await carregarDados();
 
       // Mostrar resultado
