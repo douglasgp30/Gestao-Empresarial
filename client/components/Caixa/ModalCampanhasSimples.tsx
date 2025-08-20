@@ -50,7 +50,10 @@ export default function ModalCampanhasSimples() {
       }
 
       const campanhasData = response.data || [];
-      console.log("[ModalCampanhasSimples] Campanhas carregadas:", campanhasData);
+      console.log(
+        "[ModalCampanhasSimples] Campanhas carregadas:",
+        campanhasData,
+      );
       setCampanhas(campanhasData);
     } catch (error) {
       console.error("Erro ao carregar campanhas:", error);
@@ -263,7 +266,11 @@ export default function ModalCampanhasSimples() {
             <CardHeader>
               <CardTitle>
                 Campanhas Cadastradas ({campanhas.length})
-                {isLoading && <span className="text-sm font-normal text-gray-500 ml-2">(Carregando...)</span>}
+                {isLoading && (
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    (Carregando...)
+                  </span>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>

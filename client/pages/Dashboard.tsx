@@ -96,7 +96,7 @@ export default function Dashboard() {
       new Intl.NumberFormat("pt-BR", {
         style: "currency",
         currency: "BRL",
-      }).format(metaMes)
+      }).format(metaMes),
     );
     setIsEditingMeta(false);
   };

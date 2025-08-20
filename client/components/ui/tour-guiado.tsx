@@ -293,7 +293,7 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
         style={{
           top: posicaoTooltip.top,
           left: posicaoTooltip.left,
-          maxHeight: 'calc(100vh - 40px)',
+          maxHeight: "calc(100vh - 40px)",
         }}
       >
         <CardHeader className="pb-3">
@@ -345,21 +345,14 @@ export default function TourGuiado({ onClose, onComplete }: TourGuiadoProps) {
               variant="ghost"
               onClick={etapaAnterior}
               disabled={isPrimeiraEtapa}
-              className={cn(
-                "flex-shrink-0",
-                isPrimeiraEtapa && "invisible"
-              )}
+              className={cn("flex-shrink-0", isPrimeiraEtapa && "invisible")}
               size="sm"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
               Anterior
             </Button>
 
-            <Button
-              onClick={proximaEtapa}
-              className="flex-shrink-0"
-              size="sm"
-            >
+            <Button onClick={proximaEtapa} className="flex-shrink-0" size="sm">
               {isUltimaEtapa ? (
                 <>
                   Finalizar

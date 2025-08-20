@@ -509,12 +509,15 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       };
 
       // Adicionar ao estado atual
-      setDescricoesECategorias(prev => {
+      setDescricoesECategorias((prev) => {
         const novaLista = [...prev, itemCompleto];
 
         // Salvar no localStorage
         try {
-          localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
+          localStorage.setItem(
+            "descricoes_e_categorias",
+            JSON.stringify(novaLista),
+          );
           console.log("✅ [EntidadesContext] Item salvo no localStorage");
         } catch (error) {
           console.error("Erro ao salvar no localStorage:", error);
@@ -540,17 +543,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           dadosAtualizados,
         );
 
-        setDescricoesECategorias(prev => {
-          const novaLista = prev.map(item =>
-            item.id === id
-              ? { ...item, ...dadosAtualizados }
-              : item
+        setDescricoesECategorias((prev) => {
+          const novaLista = prev.map((item) =>
+            item.id === id ? { ...item, ...dadosAtualizados } : item,
           );
 
           // Salvar no localStorage
           try {
-            localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
-            console.log("✅ [EntidadesContext] Item atualizado no localStorage");
+            localStorage.setItem(
+              "descricoes_e_categorias",
+              JSON.stringify(novaLista),
+            );
+            console.log(
+              "✅ [EntidadesContext] Item atualizado no localStorage",
+            );
           } catch (error) {
             console.error("Erro ao salvar no localStorage:", error);
           }
@@ -570,14 +576,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const excluirDescricaoOuCategoria = useCallback(async (id: string) => {
     try {
-      console.log("📦 [EntidadesContext] Excluindo descrição ou categoria:", id);
+      console.log(
+        "📦 [EntidadesContext] Excluindo descrição ou categoria:",
+        id,
+      );
 
-      setDescricoesECategorias(prev => {
-        const novaLista = prev.filter(item => item.id !== id);
+      setDescricoesECategorias((prev) => {
+        const novaLista = prev.filter((item) => item.id !== id);
 
         // Salvar no localStorage
         try {
-          localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
+          localStorage.setItem(
+            "descricoes_e_categorias",
+            JSON.stringify(novaLista),
+          );
           console.log("✅ [EntidadesContext] Item excluído do localStorage");
         } catch (error) {
           console.error("Erro ao salvar no localStorage:", error);
@@ -661,13 +673,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   );
 
   // Estado para controlar sincronização em andamento
-  const [sincronizacaoEmAndamento, setSincronizacaoEmAndamento] = useState(false);
+  const [sincronizacaoEmAndamento, setSincronizacaoEmAndamento] =
+    useState(false);
 
   // Função para sincronizar dados de localização com a API
   const sincronizarLocalizacoes = useCallback(async () => {
     // Evitar múltiplas chamadas simultâneas
     if (sincronizacaoEmAndamento) {
-      console.log("[EntidadesContext] Sincronização já em andamento, ignorando...");
+      console.log(
+        "[EntidadesContext] Sincronização já em andamento, ignorando...",
+      );
       return;
     }
 
