@@ -45,29 +45,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useState(false);
 
   useEffect(() => {
-    // Verificar se existe pelo menos um administrador
-    const existeAdmin = verificarSeExisteAdministrador();
-
-    if (!existeAdmin) {
-      setPrecisaConfigurarPrimeiroAcesso(true);
-      setIsLoading(false);
-      return;
-    }
-
-    // Check if user is already logged in (localStorage)
-    const savedUser = localStorage.getItem("auth_user");
-    if (savedUser) {
+    const inicializarSistema = async () => {
       try {
-        const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
+        // Verificar se existe pelo menos um administrador
+        const existeAdmin = verificarSeExisteAdministrador();
 
-        // Verificar backup automático para usuários já logados (refresh da página)
-        performAutomaticBackupIfNeeded();
+        if (!existeAdmin) {
+          setPrecisaConfigurarPrimeiroAcesso(true);
+          setIsLoading(false);
+          return;
+        }
+
+        // Verificar se os dados básicos já foram configurados
+        const primeiroAcessoCompleto = localStorage.getItem("primeiro_acesso_completo");
+        const dadosBasicosExistem = localStorage.getItem("descricoes_e_categorias");
+
+        // Se existe admin mas não há dados básicos, configurar
+        if (!dadosBasicosExistem || primeiroAcessoCompleto !== "true") {
+          console.log("🔧 [AuthContext] Configurando dados básicos iniciais...");
+          await configurarDadosBasicosIniciais();
+          localStorage.setItem("primeiro_acesso_completo", "true");
+          console.log("✅ [AuthContext] Dados básicos configurados");
+        }
+
+        // Check if user is already logged in (localStorage)
+        const savedUser = localStorage.getItem("auth_user");
+        if (savedUser) {
+          try {
+            const parsedUser = JSON.parse(savedUser);
+            setUser(parsedUser);
+
+            // Verificar backup automático para usuários já logados (refresh da página)
+            performAutomaticBackupIfNeeded();
+          } catch (error) {
+            localStorage.removeItem("auth_user");
+          }
+        }
       } catch (error) {
-        localStorage.removeItem("auth_user");
+        console.error("Erro na inicialização do sistema:", error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    inicializarSistema();
   }, []);
 
   // Sistema de logout automático por tempo de sessão
