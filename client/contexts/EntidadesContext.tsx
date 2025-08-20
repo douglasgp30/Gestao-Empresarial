@@ -599,12 +599,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         // Atualizar localStorage
         localStorage.setItem(
           "localizacoes_geograficas",
-          JSON.stringify(dadosAPI)
+          JSON.stringify(dadosAPI),
         );
 
         console.log(
           "[EntidadesContext] Localizações sincronizadas:",
-          dadosAPI.length
+          dadosAPI.length,
         );
       }
     } catch (error) {
