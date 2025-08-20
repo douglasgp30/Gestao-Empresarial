@@ -343,6 +343,20 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  // Função de debug para testar lembretes (apenas para desenvolvimento)
+  const testarLembrete = (agendamentoId?: string) => {
+    const agendamentoTeste = agendamentoId
+      ? agendamentos.find(ag => ag.id === agendamentoId)
+      : agendamentos.find(ag => ag.status === 'agendado');
+
+    if (agendamentoTeste) {
+      console.log('[DEBUG] Testando lembrete para:', agendamentoTeste.descricaoServico);
+      mostrarNotificacaoLembrete(agendamentoTeste);
+    } else {
+      console.log('[DEBUG] Nenhum agendamento encontrado para teste');
+    }
+  };
+
   // Computadas
   const agendamentosFiltrados = agendamentos.filter((ag) => {
     const dataServico = new Date(ag.dataServico);
