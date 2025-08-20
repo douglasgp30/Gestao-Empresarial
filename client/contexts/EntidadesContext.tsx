@@ -292,7 +292,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       );
 
       // Carregar dados do localStorage em vez da API
-      console.log("📦 [EntidadesContext] Carregando dados do localStorage...");
+      console.log(
+        "���� [EntidadesContext] Carregando dados do localStorage...",
+      );
 
       try {
         // Carregar descrições e categorias
@@ -345,10 +347,77 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           setTecnicos(tecnicosFiltrados);
         }
 
-        // Carregar localizações (cidades)
-        const localizacoesStorage = localStorage.getItem("cidades_goias");
+        // Carregar localizações geográficas
+        const localizacoesStorage =
+          localStorage.getItem("localizacoes_geograficas") ||
+          localStorage.getItem("cidades_goias");
         if (localizacoesStorage) {
-          setLocalizacoesGeograficas(JSON.parse(localizacoesStorage));
+          const localizacoes = JSON.parse(localizacoesStorage);
+          setLocalizacoesGeograficas(
+            Array.isArray(localizacoes) ? localizacoes : [],
+          );
+          console.log(
+            "[EntidadesContext] Localizações carregadas:",
+            localizacoes.length,
+          );
+        } else {
+          // Criar dados iniciais se não existirem
+          const dadosIniciais: LocalizacaoGeografica[] = [
+            {
+              id: 1,
+              nome: "Goiânia",
+              tipoItem: "cidade",
+              ativo: true,
+              dataCriacao: new Date(),
+            },
+            {
+              id: 2,
+              nome: "Anápolis",
+              tipoItem: "cidade",
+              ativo: true,
+              dataCriacao: new Date(),
+            },
+            {
+              id: 3,
+              nome: "Centro",
+              tipoItem: "setor",
+              cidade: "Goiânia",
+              ativo: true,
+              dataCriacao: new Date(),
+            },
+            {
+              id: 4,
+              nome: "Setor Oeste",
+              tipoItem: "setor",
+              cidade: "Goiânia",
+              ativo: true,
+              dataCriacao: new Date(),
+            },
+            {
+              id: 5,
+              nome: "Jardim Goiás",
+              tipoItem: "setor",
+              cidade: "Goiânia",
+              ativo: true,
+              dataCriacao: new Date(),
+            },
+            {
+              id: 6,
+              nome: "Centro",
+              tipoItem: "setor",
+              cidade: "Anápolis",
+              ativo: true,
+              dataCriacao: new Date(),
+            },
+          ];
+          setLocalizacoesGeograficas(dadosIniciais);
+          localStorage.setItem(
+            "localizacoes_geograficas",
+            JSON.stringify(dadosIniciais),
+          );
+          console.log(
+            "[EntidadesContext] Dados iniciais de localização criados",
+          );
         }
       } catch (error) {
         console.error("Erro ao carregar dados do localStorage:", error);
@@ -407,7 +476,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         const arrayParsed = Array.isArray(parsed) ? parsed : [];
         setDescricoesECategorias(arrayParsed);
         console.log(
-          `📦 [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`,
+          `���� [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`,
         );
       } else {
         setDescricoesECategorias([]);
@@ -476,15 +545,44 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const criarLocalizacaoGeografica = useCallback(
-    async (novaLocalizacao: any) => {
+    async (
+      novaLocalizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
+    ) => {
       console.log(
-        "📦 [EntidadesContext] STUB: criarLocalizacaoGeografica",
+        "📦 [EntidadesContext] Criando localização geográfica:",
         novaLocalizacao,
       );
-      // TODO: Implementar com localStorage
-      return Promise.resolve();
+
+      try {
+        const novoId =
+          Math.max(...localizacoesGeograficas.map((l) => l.id), 0) + 1;
+        const localizacaoCompleta: LocalizacaoGeografica = {
+          ...novaLocalizacao,
+          id: novoId,
+          dataCriacao: new Date(),
+        };
+
+        const novasLocalizacoes = [
+          ...localizacoesGeograficas,
+          localizacaoCompleta,
+        ];
+        setLocalizacoesGeograficas(novasLocalizacoes);
+
+        localStorage.setItem(
+          "localizacoes_geograficas",
+          JSON.stringify(novasLocalizacoes),
+        );
+
+        console.log(
+          `[EntidadesContext] ${novaLocalizacao.tipoItem} "${novaLocalizacao.nome}" criado com sucesso`,
+        );
+        return Promise.resolve();
+      } catch (error) {
+        console.error("Erro ao criar localização geográfica:", error);
+        return Promise.reject(error);
+      }
     },
-    [],
+    [localizacoesGeograficas],
   );
 
   const atualizarLocalizacaoGeografica = useCallback(

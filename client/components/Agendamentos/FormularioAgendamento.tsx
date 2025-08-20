@@ -96,7 +96,10 @@ export default function FormularioAgendamento({
 
   const [erros, setErros] = useState<Record<string, string>>({});
 
-  const tecnicos = funcionarios.filter((f) => f.ativo);
+  // Filtrar apenas funcionários que são técnicos (não administradores)
+  const tecnicos = funcionarios.filter(
+    (f) => f.ativo && f.tipoAcesso === "Técnico",
+  );
 
   const opcoesLembrete = [
     { valor: 10, label: "10 minutos antes" },
@@ -379,80 +382,15 @@ export default function FormularioAgendamento({
             )}
           </div>
 
-          {/* Setor */}
-          <div className="space-y-2">
-            <Label>Setor</Label>
-            <div className="flex gap-2">
-              <Select
-                value={formData.setor}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, setor: value })
-                }
-              >
-                <SelectTrigger
-                  className={`flex-1 ${erros.setor ? "border-red-500" : ""}`}
-                >
-                  <SelectValue placeholder="Selecione o setor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {setores &&
-                    setores
-                      .filter((setor) => {
-                        if (!formData.cidade) return true;
-                        const nomeCidadeSetor =
-                          typeof setor.cidade === "object"
-                            ? setor.cidade?.nome
-                            : setor.cidade;
-                        return nomeCidadeSetor === formData.cidade;
-                      })
-                      .map((setor) => (
-                        <SelectItem key={setor.id} value={setor.id.toString()}>
-                          {setor.nome} -{" "}
-                          {typeof setor.cidade === "object"
-                            ? setor.cidade?.nome
-                            : setor.cidade}
-                        </SelectItem>
-                      ))}
-                </SelectContent>
-              </Select>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setMostrarNovoSetor(!mostrarNovoSetor)}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {mostrarNovoSetor && (
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Nome do novo setor"
-                  value={novoSetor}
-                  onChange={(e) => setNovoSetor(e.target.value)}
-                  className="flex-1"
-                />
-                <Button type="button" size="sm" onClick={handleAdicionarSetor}>
-                  Adicionar
-                </Button>
-              </div>
-            )}
-
-            {erros.setor && (
-              <p className="text-sm text-red-500">{erros.setor}</p>
-            )}
-          </div>
-
-          {/* Cidade */}
+          {/* Cidade - Agora vem primeiro */}
           <div className="space-y-2">
             <Label>Cidade</Label>
             <div className="flex gap-2">
               <Select
                 value={formData.cidade}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, cidade: value })
-                }
+                onValueChange={(value) => {
+                  setFormData({ ...formData, cidade: value, setor: "" }); // Limpar setor ao mudar cidade
+                }}
               >
                 <SelectTrigger
                   className={`flex-1 ${erros.cidade ? "border-red-500" : ""}`}
@@ -498,6 +436,82 @@ export default function FormularioAgendamento({
 
             {erros.cidade && (
               <p className="text-sm text-red-500">{erros.cidade}</p>
+            )}
+          </div>
+
+          {/* Setor - Agora vem depois da cidade */}
+          <div className="space-y-2">
+            <Label>Setor</Label>
+            <div className="flex gap-2">
+              <Select
+                value={formData.setor}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, setor: value })
+                }
+                disabled={!formData.cidade} // Desabilitar se não houver cidade selecionada
+              >
+                <SelectTrigger
+                  className={`flex-1 ${erros.setor ? "border-red-500" : ""}`}
+                >
+                  <SelectValue
+                    placeholder={
+                      !formData.cidade
+                        ? "Selecione primeiro uma cidade"
+                        : "Selecione o setor"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {setores &&
+                    setores
+                      .filter((setor) => {
+                        if (!formData.cidade) return false; // Não mostrar setores se não há cidade
+                        const nomeCidadeSetor =
+                          typeof setor.cidade === "object"
+                            ? setor.cidade?.nome
+                            : setor.cidade;
+                        return nomeCidadeSetor === formData.cidade;
+                      })
+                      .map((setor) => (
+                        <SelectItem key={setor.id} value={setor.id.toString()}>
+                          {setor.nome}
+                        </SelectItem>
+                      ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setMostrarNovoSetor(!mostrarNovoSetor)}
+                disabled={!formData.cidade} // Desabilitar se não há cidade
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {mostrarNovoSetor && (
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Nome do novo setor"
+                  value={novoSetor}
+                  onChange={(e) => setNovoSetor(e.target.value)}
+                  className="flex-1"
+                />
+                <Button type="button" size="sm" onClick={handleAdicionarSetor}>
+                  Adicionar
+                </Button>
+              </div>
+            )}
+
+            {erros.setor && (
+              <p className="text-sm text-red-500">{erros.setor}</p>
+            )}
+
+            {!formData.cidade && (
+              <p className="text-sm text-muted-foreground">
+                Selecione uma cidade primeiro
+              </p>
             )}
           </div>
 
