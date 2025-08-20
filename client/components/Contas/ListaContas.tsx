@@ -183,7 +183,8 @@ export function ListaContas({}: ListaContasProps) {
     if (dataPag < dataLancamento) {
       toast({
         title: "Data inválida",
-        description: "A data de pagamento não pode ser anterior à data de criação da conta",
+        description:
+          "A data de pagamento não pode ser anterior à data de criação da conta",
         variant: "destructive",
       });
       return;
@@ -196,9 +197,11 @@ export function ListaContas({}: ListaContasProps) {
         data: dataPagamento,
         tipo: contaParaPagar.tipo === "receber" ? "receita" : "despesa",
         valor: contaParaPagar.valor,
-        valorParaEmpresa: contaParaPagar.tipo === "receber" ? contaParaPagar.valor : 0,
+        valorParaEmpresa:
+          contaParaPagar.tipo === "receber" ? contaParaPagar.valor : 0,
         categoria: "Recebimento de Boleto",
-        descricao: contaParaPagar.observacoes || "Recebimento de conta a receber",
+        descricao:
+          contaParaPagar.observacoes || "Recebimento de conta a receber",
         formaPagamento: formaPagamentoSelecionada,
         clienteId: contaParaPagar.codigoCliente?.toString() || undefined,
         observacoes: `${contaParaPagar.tipo === "receber" ? "Recebimento" : "Pagamento"} de conta - ID: ${contaParaPagar.codLancamentoContas}`,
@@ -206,16 +209,16 @@ export function ListaContas({}: ListaContasProps) {
       };
 
       // Fazer requisição para criar lançamento no caixa
-      const responseCaixa = await fetch('/api/caixa', {
-        method: 'POST',
+      const responseCaixa = await fetch("/api/caixa", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(lancamentoCaixa),
       });
 
       if (!responseCaixa.ok) {
-        console.error('Erro ao criar lançamento no caixa');
+        console.error("Erro ao criar lançamento no caixa");
       }
 
       // Marcar conta como paga com a data informada
@@ -380,7 +383,9 @@ export function ListaContas({}: ListaContasProps) {
                           locale: ptBR,
                         })}
                       </TableCell>
-                      <TableCell>{conta.categoria?.nome || conta.categoria || "-"}</TableCell>
+                      <TableCell>
+                        {conta.categoria?.nome || conta.categoria || "-"}
+                      </TableCell>
                       <TableCell>
                         {conta.codigoServico ? (
                           <div>
@@ -545,16 +550,20 @@ export function ListaContas({}: ListaContasProps) {
             </div>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setContaParaPagar(null);
-              setFormaPagamentoSelecionada("");
-              setDataPagamento("");
-            }}>
+            <AlertDialogCancel
+              onClick={() => {
+                setContaParaPagar(null);
+                setFormaPagamentoSelecionada("");
+                setDataPagamento("");
+              }}
+            >
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleMarcarComoPago}
-              disabled={!formaPagamentoSelecionada || !dataPagamento || processando}
+              disabled={
+                !formaPagamentoSelecionada || !dataPagamento || processando
+              }
             >
               {processando && (
                 <RefreshCw className="mr-2 h-4 w-4 animate-spin" />

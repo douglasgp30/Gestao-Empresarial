@@ -83,7 +83,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
-  const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(null);
+  const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(
+    null,
+  );
 
   // Estados para categorias e descrições carregadas diretamente da API
   const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
@@ -188,7 +190,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       (f) => f.id.toString() === formData.formaPagamento,
     );
 
-    return forma?.nome?.toLowerCase().includes("boleto") || forma?.nome?.toLowerCase().includes("bancário") || false;
+    return (
+      forma?.nome?.toLowerCase().includes("boleto") ||
+      forma?.nome?.toLowerCase().includes("bancário") ||
+      false
+    );
   }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente usando os hooks de moeda
@@ -305,7 +311,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       if (!formData.cliente) {
         toast({
           title: "Campo obrigatório",
-          description: "Cliente é obrigatório quando a forma de pagamento for boleto",
+          description:
+            "Cliente é obrigatório quando a forma de pagamento for boleto",
           variant: "destructive",
         });
         return;
@@ -348,7 +355,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     try {
       // Para boletos, o valor não entra no caixa imediatamente (valor para empresa = 0)
       // Para outros, o valor para empresa é o valor líquido menos a comissão
-      const valorParaEmpresaCalculado = isFormaPagamentoBoleto ? 0 : valorParaEmpresa;
+      const valorParaEmpresaCalculado = isFormaPagamentoBoleto
+        ? 0
+        : valorParaEmpresa;
 
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
@@ -380,17 +389,17 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Se for boleto, criar automaticamente conta a receber
       if (isFormaPagamentoBoleto && dataVencimentoBoleto && codigoServico) {
         try {
-          const responseContaReceber = await fetch('/api/contas', {
-            method: 'POST',
+          const responseContaReceber = await fetch("/api/contas", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              tipo: 'receber',
+              tipo: "receber",
               valor: valorInput.numericValue,
               dataVencimento: dataVencimentoBoleto.toISOString(),
               codigoCliente: parseInt(formData.cliente),
-              observacoes: `Boleto gerado automaticamente - ${formData.descricao}${formData.observacoes ? ` - ${formData.observacoes}` : ''} - Código: ${codigoServico}`,
+              observacoes: `Boleto gerado automaticamente - ${formData.descricao}${formData.observacoes ? ` - ${formData.observacoes}` : ""} - Código: ${codigoServico}`,
               codigoServico: codigoServico, // Usar o mesmo código do serviço
               categoria: formData.categoria,
               descricao: formData.descricao,
@@ -399,12 +408,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           });
 
           if (responseContaReceber.ok) {
-            console.log('Conta a receber criada automaticamente para boleto');
+            console.log("Conta a receber criada automaticamente para boleto");
           } else {
-            console.error('Erro ao criar conta a receber para boleto');
+            console.error("Erro ao criar conta a receber para boleto");
           }
         } catch (error) {
-          console.error('Erro ao criar conta a receber:', error);
+          console.error("Erro ao criar conta a receber:", error);
           // Não interromper o fluxo principal se houver erro na criação da conta
         }
       }
@@ -783,7 +792,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           {/* Cliente */}
           <div className="space-y-2">
-            <Label htmlFor="cliente" className={isFormaPagamentoBoleto ? "text-red-600 font-semibold" : ""}>
+            <Label
+              htmlFor="cliente"
+              className={
+                isFormaPagamentoBoleto ? "text-red-600 font-semibold" : ""
+              }
+            >
               Cliente {isFormaPagamentoBoleto && "*"}
             </Label>
             <div className="flex gap-2">
@@ -794,8 +808,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }
                 required={isFormaPagamentoBoleto}
               >
-                <SelectTrigger className={`flex-1 ${isFormaPagamentoBoleto && !formData.cliente ? 'border-red-500' : ''}`}>
-                  <SelectValue placeholder={isFormaPagamentoBoleto ? "Selecione um cliente (obrigatório para boleto)" : "Selecione um cliente"} />
+                <SelectTrigger
+                  className={`flex-1 ${isFormaPagamentoBoleto && !formData.cliente ? "border-red-500" : ""}`}
+                >
+                  <SelectValue
+                    placeholder={
+                      isFormaPagamentoBoleto
+                        ? "Selecione um cliente (obrigatório para boleto)"
+                        : "Selecione um cliente"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {clientes.map((cliente) => (
@@ -831,14 +853,21 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Data de Vencimento do Boleto - só aparece para boletos */}
           {isFormaPagamentoBoleto && (
             <div className="space-y-2 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <Label htmlFor="dataVencimentoBoleto" className="text-yellow-800 font-semibold">
+              <Label
+                htmlFor="dataVencimentoBoleto"
+                className="text-yellow-800 font-semibold"
+              >
                 Data de Vencimento do Boleto *
               </Label>
               <div className="flex items-center gap-2">
                 <Input
                   id="dataVencimentoBoleto"
                   type="date"
-                  value={dataVencimentoBoleto ? dataVencimentoBoleto.toISOString().split('T')[0] : ''}
+                  value={
+                    dataVencimentoBoleto
+                      ? dataVencimentoBoleto.toISOString().split("T")[0]
+                      : ""
+                  }
                   onChange={(e) => {
                     if (e.target.value) {
                       setDataVencimentoBoleto(new Date(e.target.value));
@@ -856,7 +885,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 </p>
               )}
               <p className="text-xs text-yellow-600">
-                💡 Esta receita será registrada como receita bruta, mas não entrará no valor para empresa até o pagamento do boleto.
+                💡 Esta receita será registrada como receita bruta, mas não
+                entrará no valor para empresa até o pagamento do boleto.
               </p>
             </div>
           )}
@@ -976,15 +1006,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           {/* Resumo financeiro */}
           {valorInput.numericValue > 0 && (
-            <div className={`p-4 rounded-lg ${isFormaPagamentoBoleto ? 'bg-yellow-50 border border-yellow-200' : 'bg-green-50'}`}>
-              <h4 className={`font-medium mb-3 ${isFormaPagamentoBoleto ? 'text-yellow-800' : 'text-green-800'}`}>
-                {isFormaPagamentoBoleto ? 'Resumo Financeiro - BOLETO' : 'Resumo Financeiro Detalhado'}
+            <div
+              className={`p-4 rounded-lg ${isFormaPagamentoBoleto ? "bg-yellow-50 border border-yellow-200" : "bg-green-50"}`}
+            >
+              <h4
+                className={`font-medium mb-3 ${isFormaPagamentoBoleto ? "text-yellow-800" : "text-green-800"}`}
+              >
+                {isFormaPagamentoBoleto
+                  ? "Resumo Financeiro - BOLETO"
+                  : "Resumo Financeiro Detalhado"}
               </h4>
               {isFormaPagamentoBoleto && (
                 <div className="mb-3 p-2 bg-yellow-100 rounded border-l-4 border-yellow-400">
                   <p className="text-sm text-yellow-800">
-                    <strong>ATENÇÃO:</strong> Como é um boleto, este valor será registrado apenas como receita bruta.
-                    O valor não entrará para a empresa até o pagamento do boleto.
+                    <strong>ATENÇÃO:</strong> Como é um boleto, este valor será
+                    registrado apenas como receita bruta. O valor não entrará
+                    para a empresa até o pagamento do boleto.
                   </p>
                 </div>
               )}
@@ -1043,8 +1080,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <div className="border-t pt-2">
                   <div className="text-center">
                     <span className="text-gray-600">Para Empresa:</span>
-                    <div className={`font-bold text-lg ${isFormaPagamentoBoleto ? 'text-yellow-600' : 'text-green-600'}`}>
-                      R$ {isFormaPagamentoBoleto ? '0,00' : valorParaEmpresa.toFixed(2).replace(".", ",")}
+                    <div
+                      className={`font-bold text-lg ${isFormaPagamentoBoleto ? "text-yellow-600" : "text-green-600"}`}
+                    >
+                      R${" "}
+                      {isFormaPagamentoBoleto
+                        ? "0,00"
+                        : valorParaEmpresa.toFixed(2).replace(".", ",")}
                     </div>
                     {isFormaPagamentoBoleto && (
                       <p className="text-xs text-yellow-600 mt-1">

@@ -382,7 +382,9 @@ export function ModalEditarConta({
                 setFormData((prev) => ({ ...prev, pago: !!checked }))
               }
             />
-            <Label htmlFor="pago" className="cursor-pointer">Conta já foi paga</Label>
+            <Label htmlFor="pago" className="cursor-pointer">
+              Conta já foi paga
+            </Label>
           </div>
 
           {/* Forma de Pagamento (só aparece se está pago) */}

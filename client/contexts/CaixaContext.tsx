@@ -112,7 +112,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const carregarCampanhasSafe = async () => {
     try {
       // Verificar se estamos em um ambiente onde fetch deve funcionar
-      if (typeof window === 'undefined') {
+      if (typeof window === "undefined") {
         console.log("📊 [CaixaContext] Executando no servidor, pulando fetch");
         return;
       }
@@ -120,7 +120,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Primeiro, fazer um health check do servidor
       try {
         const healthController = new AbortController();
-        const healthTimeoutId = setTimeout(() => healthController.abort(), 2000);
+        const healthTimeoutId = setTimeout(
+          () => healthController.abort(),
+          2000,
+        );
 
         const healthResponse = await fetch("/api/health", {
           signal: healthController.signal,
@@ -132,9 +135,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           throw new Error(`Health check falhou: ${healthResponse.status}`);
         }
 
-        console.log("📊 [CaixaContext] Servidor disponível, carregando campanhas...");
+        console.log(
+          "📊 [CaixaContext] Servidor disponível, carregando campanhas...",
+        );
       } catch (healthError) {
-        console.warn("📊 [CaixaContext] Servidor não está disponível:", healthError);
+        console.warn(
+          "📊 [CaixaContext] Servidor não está disponível:",
+          healthError,
+        );
         throw new Error("Servidor indisponível");
       }
 
@@ -166,24 +174,39 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             JSON.stringify(campanhasServidor || []),
           );
         } catch (storageError) {
-          console.warn("Erro ao salvar campanhas no localStorage:", storageError);
+          console.warn(
+            "Erro ao salvar campanhas no localStorage:",
+            storageError,
+          );
         }
         return;
       } else {
-        console.warn(`📊 [CaixaContext] Resposta não OK: ${response.status} ${response.statusText}`);
+        console.warn(
+          `📊 [CaixaContext] Resposta não OK: ${response.status} ${response.statusText}`,
+        );
       }
     } catch (error) {
       // Tratar diferentes tipos de erro
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          console.warn("📊 [CaixaContext] Timeout ao carregar campanhas do servidor");
-        } else if (error.message.includes('Failed to fetch')) {
-          console.warn("📊 [CaixaContext] Falha na conexão com servidor, usando localStorage");
+        if (error.name === "AbortError") {
+          console.warn(
+            "📊 [CaixaContext] Timeout ao carregar campanhas do servidor",
+          );
+        } else if (error.message.includes("Failed to fetch")) {
+          console.warn(
+            "📊 [CaixaContext] Falha na conexão com servidor, usando localStorage",
+          );
         } else {
-          console.warn("📊 [CaixaContext] Erro ao carregar campanhas:", error.message);
+          console.warn(
+            "📊 [CaixaContext] Erro ao carregar campanhas:",
+            error.message,
+          );
         }
       } else {
-        console.warn("�� [CaixaContext] Erro desconhecido ao carregar campanhas:", error);
+        console.warn(
+          "�� [CaixaContext] Erro desconhecido ao carregar campanhas:",
+          error,
+        );
       }
     }
 
@@ -232,12 +255,17 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           if (campanhasStorage) {
             const campanhasParsed = JSON.parse(campanhasStorage);
             setCampanhas(campanhasParsed || []);
-            console.log("📊 [CaixaContext] Campanhas carregadas do localStorage como fallback");
+            console.log(
+              "📊 [CaixaContext] Campanhas carregadas do localStorage como fallback",
+            );
           } else {
             setCampanhas([]); // Fallback para array vazio se não há dados
           }
         } catch (localError) {
-          console.warn("Erro no fallback localStorage de campanhas:", localError);
+          console.warn(
+            "Erro no fallback localStorage de campanhas:",
+            localError,
+          );
           setCampanhas([]); // Fallback final para array vazio
         }
       }
@@ -341,20 +369,25 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Carregar dados na inicialização com controle global e throttling
   useEffect(() => {
     // Verificar se estamos em um ambiente válido para carregamento
-    if (typeof window === 'undefined') {
-      console.log("[CaixaContext] Executando no servidor, pulando carregamento inicial");
+    if (typeof window === "undefined") {
+      console.log(
+        "[CaixaContext] Executando no servidor, pulando carregamento inicial",
+      );
       return;
     }
 
     // Verificar se é hot reload (comum durante desenvolvimento)
-    const isHotReload = window.location.href.includes('reload=') ||
-                       window.location.href.includes('?t=') ||
-                       document.readyState !== 'complete';
+    const isHotReload =
+      window.location.href.includes("reload=") ||
+      window.location.href.includes("?t=") ||
+      document.readyState !== "complete";
 
     // Sempre usar um debounce para evitar múltiplas execuções
     const debounceTime = isHotReload ? 3000 : 1000; // Mais tempo durante hot reload
 
-    console.log(`[CaixaContext] Agendando carregamento em ${debounceTime}ms...`);
+    console.log(
+      `[CaixaContext] Agendando carregamento em ${debounceTime}ms...`,
+    );
     const timeout = setTimeout(() => {
       console.log("[CaixaContext] Executando carregamento de dados");
       carregarDados();

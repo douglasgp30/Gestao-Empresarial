@@ -100,7 +100,7 @@ export function createServer(): Express {
     res.json({
       status: "ok",
       timestamp: new Date().toISOString(),
-      database: "connected"
+      database: "connected",
     });
   });
 
