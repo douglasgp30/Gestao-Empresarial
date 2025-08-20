@@ -589,7 +589,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       console.log("✅ [EntidadesContext] Item excluído com sucesso");
       return Promise.resolve();
     } catch (error) {
-      console.error("❌ [EntidadesContext] Erro ao excluir item:", error);
+      console.error("�� [EntidadesContext] Erro ao excluir item:", error);
       throw error;
     }
   }, []);
@@ -660,9 +660,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     [localizacoesGeograficas],
   );
 
+  // Estado para controlar sincronização em andamento
+  const [sincronizacaoEmAndamento, setSincronizacaoEmAndamento] = useState(false);
+
   // Função para sincronizar dados de localização com a API
   const sincronizarLocalizacoes = useCallback(async () => {
+    // Evitar múltiplas chamadas simultâneas
+    if (sincronizacaoEmAndamento) {
+      console.log("[EntidadesContext] Sincronização já em andamento, ignorando...");
+      return;
+    }
+
     try {
+      setSincronizacaoEmAndamento(true);
       console.log("[EntidadesContext] Sincronizando localizações com a API...");
 
       // Buscar dados atualizados da API
