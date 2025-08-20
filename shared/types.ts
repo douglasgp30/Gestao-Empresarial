@@ -65,6 +65,7 @@ export interface LancamentoCaixa {
   observacoes?: string; // Observações do lançamento
   numeroNota?: string; // Número da nota fiscal
   arquivoNota?: string; // Arquivo da nota fiscal
+  codigoServico?: string; // Código único do serviço para rastreabilidade
 
   // Relacionamentos obrigatórios
   descricaoId: number; // FK para tabela Descrição
@@ -325,7 +326,7 @@ export interface Ponto {
   horaRetornoAlmoco?: Date; // Horário de retorno do almoço
   horaSaida?: Date; // Horário de saída final
   vendeuAlmoco?: boolean; // Se trabalhou sem intervalo de almoço
-  observacao?: string; // Observações do registro
+  observacao?: string; // Observaç��es do registro
   totalHoras?: number; // Total de horas trabalhadas (em horas decimais)
   horasExtras?: number; // Horas extras (se houver)
   saldoHoras?: number; // Saldo de horas (positivo = extra, negativo = faltante)
