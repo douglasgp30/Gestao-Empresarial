@@ -569,9 +569,29 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   );
 
   const excluirDescricaoOuCategoria = useCallback(async (id: string) => {
-    console.log("📦 [EntidadesContext] STUB: excluirDescricaoOuCategoria", id);
-    // TODO: Implementar com localStorage
-    return Promise.resolve();
+    try {
+      console.log("📦 [EntidadesContext] Excluindo descrição ou categoria:", id);
+
+      setDescricoesECategorias(prev => {
+        const novaLista = prev.filter(item => item.id !== id);
+
+        // Salvar no localStorage
+        try {
+          localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
+          console.log("✅ [EntidadesContext] Item excluído do localStorage");
+        } catch (error) {
+          console.error("Erro ao salvar no localStorage:", error);
+        }
+
+        return novaLista;
+      });
+
+      console.log("✅ [EntidadesContext] Item excluído com sucesso");
+      return Promise.resolve();
+    } catch (error) {
+      console.error("❌ [EntidadesContext] Erro ao excluir item:", error);
+      throw error;
+    }
   }, []);
 
   const criarFormaPagamento = useCallback(async (novaForma: any) => {
