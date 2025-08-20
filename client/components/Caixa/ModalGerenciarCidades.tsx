@@ -230,6 +230,7 @@ export default function ModalGerenciarCidades() {
 
       setFormSetor({ nome: "", cidade: "" });
       setIsNovoSetorOpen(false);
+      await sincronizarLocalizacoes(); // Sincronizar primeiro
       await carregarDados();
     } catch (error) {
       console.error("Erro ao criar setor:", error);
