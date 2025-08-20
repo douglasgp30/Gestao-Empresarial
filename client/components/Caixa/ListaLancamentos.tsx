@@ -339,23 +339,44 @@ export default function ListaLancamentos() {
 
                     <TableCell>
                       <div>
-                        <p
-                          className={`font-bold ${
-                            lancamento.tipo === "receita"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {formatCurrency(
-                            lancamento.valorLiquido || lancamento.valor,
-                          )}
+                        {/* Valor Integral */}
+                        <p className="text-sm font-medium text-gray-700">
+                          <span className="text-xs text-muted-foreground">Integral:</span> {formatCurrency(lancamento.valor)}
                         </p>
-                        {lancamento.valorLiquido &&
-                          lancamento.valorLiquido !== lancamento.valor && (
-                            <p className="text-xs text-muted-foreground">
-                              Bruto: {formatCurrency(lancamento.valor)}
-                            </p>
-                          )}
+
+                        {/* Valor para Empresa */}
+                        {lancamento.tipo === "receita" && (
+                          <>
+                            {lancamento.valorParaEmpresa !== undefined ? (
+                              <p
+                                className={`font-bold text-green-600`}
+                              >
+                                <span className="text-xs text-muted-foreground">P/ Empresa:</span> {formatCurrency(lancamento.valorParaEmpresa)}
+                              </p>
+                            ) : (
+                              // Verificar se é boleto
+                              (lancamento.formaPagamento?.toLowerCase().includes('boleto') ||
+                               lancamento.formaPagamento?.toLowerCase().includes('bancário')) ? (
+                                <p className="text-xs text-orange-600 font-medium">
+                                  Aguardando recebimento
+                                </p>
+                              ) : (
+                                <p
+                                  className={`font-bold text-green-600`}
+                                >
+                                  <span className="text-xs text-muted-foreground">P/ Empresa:</span> {formatCurrency(lancamento.valorLiquido || lancamento.valor)}
+                                </p>
+                              )
+                            )}
+                          </>
+                        )}
+
+                        {/* Para despesas, mostrar apenas o valor */}
+                        {lancamento.tipo === "despesa" && (
+                          <p className="font-bold text-red-600">
+                            <span className="text-xs text-muted-foreground">Despesa:</span> {formatCurrency(lancamento.valor)}
+                          </p>
+                        )}
                       </div>
                     </TableCell>
 
