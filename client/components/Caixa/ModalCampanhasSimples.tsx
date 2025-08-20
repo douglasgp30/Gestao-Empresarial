@@ -169,7 +169,8 @@ export default function ModalCampanhasSimples() {
         console.log("✅ Excluído com sucesso (status " + response.status + ")");
       }
 
-      await carregarDados();
+      await carregarCampanhas(); // Recarregar campanhas do servidor
+      await carregarDados(); // Recarregar dados do contexto também
       setShowConfirm(false);
       setItemToDelete(null);
       toast.success("Campanha excluída com sucesso");
