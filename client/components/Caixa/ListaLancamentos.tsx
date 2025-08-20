@@ -260,7 +260,7 @@ export default function ListaLancamentos() {
                       className="h-auto p-0 font-medium"
                       onClick={() => handleSort("valor")}
                     >
-                      Valor
+                      Valores
                       {getSortIcon("valor")}
                     </Button>
                   </TableHead>
