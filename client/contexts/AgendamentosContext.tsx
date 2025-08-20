@@ -55,9 +55,10 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
 
   // Filtros padrão
   const [filtros, setFiltros] = useState<FiltrosAgendamento>(() => {
-    // Forçar data atual real (14/08/2025)
-    const inicioHoje = new Date(2025, 7, 14, 0, 0, 0, 0);
-    const fimHoje = new Date(2025, 7, 14, 23, 59, 59, 999);
+    // Usar data atual real do sistema
+    const hoje = new Date();
+    const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0, 0);
+    const fimHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59, 999);
 
     return {
       dataInicio: inicioHoje,
@@ -66,42 +67,26 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // Carregar dados iniciais com proteção contra hot reload
+  // Carregar dados iniciais
   useEffect(() => {
-    // Durante hot reload, não carregar automaticamente
-    if (
-      typeof window !== "undefined" &&
-      (window.location.href.includes("reload=") ||
-        window.location.href.includes("?t="))
-    ) {
-      console.log(
-        "[AgendamentosContext] Hot reload detectado, pulando carregamento automático",
-      );
-      return;
-    }
-
-    const delay = Math.random() * 2000 + 7000; // Delay aleatório entre 7-9s
-    const timeout = setTimeout(() => {
-      console.log(
-        "[AgendamentosContext] Iniciando carregamento após delay de",
-        delay,
-        "ms",
-      );
+    if (user) {
       carregarAgendamentos();
       carregarLembretes();
-    }, delay);
-
-    return () => clearTimeout(timeout);
+    }
   }, [user]);
 
-  // Verificar lembretes periodicamente
+  // Verificar lembretes periodicamente - mais frequente para testes
   useEffect(() => {
+    // Verificação inicial imediata
+    verificarLembretes();
+
+    // Verificar a cada 10 segundos (mais responsivo)
     const intervalo = setInterval(() => {
       verificarLembretes();
-    }, 30000); // Verifica a cada 30 segundos
+    }, 10000);
 
     return () => clearInterval(intervalo);
-  }, [agendamentos]);
+  }, [agendamentos, lembretes]);
 
   const carregarAgendamentos = () => {
     setIsLoading(true);
@@ -173,13 +158,31 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     const novosAgendamentos = [...agendamentos, novoAgendamento];
     salvarAgendamentos(novosAgendamentos);
 
-    // Criar lembrete
-    const dataHoraLembrete = new Date(novoAgendamento.dataServico);
-    const [hora, minutos] = novoAgendamento.horaServico.split(":");
-    dataHoraLembrete.setHours(parseInt(hora), parseInt(minutos));
-    dataHoraLembrete.setMinutes(
-      dataHoraLembrete.getMinutes() - dadosAgendamento.tempoLembrete,
+    // Criar lembrete com data/hora correta
+    const dataServico = new Date(dadosAgendamento.dataServico);
+    const [hora, minutos] = dadosAgendamento.horaServico.split(":");
+
+    // Criar data/hora exata do serviço
+    const dataHoraServico = new Date(
+      dataServico.getFullYear(),
+      dataServico.getMonth(),
+      dataServico.getDate(),
+      parseInt(hora),
+      parseInt(minutos),
+      0,
+      0
     );
+
+    // Calcular hora do lembrete (subtraindo minutos)
+    const dataHoraLembrete = new Date(dataHoraServico.getTime() - (dadosAgendamento.tempoLembrete * 60 * 1000));
+
+    console.log('[NOVO AGENDAMENTO]', {
+      dataServico: dataServico.toLocaleString('pt-BR'),
+      horaServico: dadosAgendamento.horaServico,
+      dataHoraServico: dataHoraServico.toLocaleString('pt-BR'),
+      tempoLembrete: dadosAgendamento.tempoLembrete + ' minutos',
+      dataHoraLembrete: dataHoraLembrete.toLocaleString('pt-BR')
+    });
 
     const novoLembrete: LembreteAgendamento = {
       agendamentoId: novoAgendamento.id,
@@ -209,12 +212,22 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
     ) {
       const agendamento = novosAgendamentos.find((ag) => ag.id === id);
       if (agendamento) {
-        const dataHoraLembrete = new Date(agendamento.dataServico);
+        const dataServico = new Date(agendamento.dataServico);
         const [hora, minutos] = agendamento.horaServico.split(":");
-        dataHoraLembrete.setHours(parseInt(hora), parseInt(minutos));
-        dataHoraLembrete.setMinutes(
-          dataHoraLembrete.getMinutes() - agendamento.tempoLembrete,
+
+        // Criar data/hora exata do serviço
+        const dataHoraServico = new Date(
+          dataServico.getFullYear(),
+          dataServico.getMonth(),
+          dataServico.getDate(),
+          parseInt(hora),
+          parseInt(minutos),
+          0,
+          0
         );
+
+        // Calcular hora do lembrete
+        const dataHoraLembrete = new Date(dataHoraServico.getTime() - (agendamento.tempoLembrete * 60 * 1000));
 
         const novosLembretes = lembretes.map((l) =>
           l.agendamentoId === id
@@ -222,6 +235,12 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
             : l,
         );
         salvarLembretes(novosLembretes);
+
+        // Resetar flag de lembrete enviado
+        const agendamentosAtualizados = novosAgendamentos.map((ag) =>
+          ag.id === id ? { ...ag, lembreteEnviado: false } : ag
+        );
+        salvarAgendamentos(agendamentosAtualizados);
       }
     }
   };
@@ -263,17 +282,33 @@ export function AgendamentosProvider({ children }: { children: ReactNode }) {
 
   const verificarLembretes = () => {
     const agora = new Date();
+    console.log('[LEMBRETES] Verificando lembretes...', {
+      horaAtual: agora.toLocaleString('pt-BR'),
+      totalLembretes: lembretes.length
+    });
 
     lembretes.forEach((lembrete) => {
-      if (!lembrete.lido && lembrete.dataHoraLembrete <= agora) {
-        const agendamento = agendamentos.find(
-          (ag) => ag.id === lembrete.agendamentoId,
-        );
+      const dataLembrete = new Date(lembrete.dataHoraLembrete);
+      const agendamento = agendamentos.find(
+        (ag) => ag.id === lembrete.agendamentoId,
+      );
+
+      console.log('[LEMBRETE]', {
+        agendamentoId: lembrete.agendamentoId,
+        dataHoraLembrete: dataLembrete.toLocaleString('pt-BR'),
+        lido: lembrete.lido,
+        lembreteEnviado: agendamento?.lembreteEnviado,
+        status: agendamento?.status,
+        deveDisparar: !lembrete.lido && dataLembrete <= agora && agendamento?.status === 'agendado' && !agendamento?.lembreteEnviado
+      });
+
+      if (!lembrete.lido && dataLembrete <= agora) {
         if (
           agendamento &&
           agendamento.status === "agendado" &&
           !agendamento.lembreteEnviado
         ) {
+          console.log('[LEMBRETE] Disparando notificação para:', agendamento.descricaoServico);
           // Disparar notificação
           mostrarNotificacaoLembrete(agendamento);
 
