@@ -213,39 +213,6 @@ export function createServer(): Express {
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
 
-  // Debug endpoint para ver funcionários duplicados
-  app.get("/api/debug/funcionarios", async (req, res) => {
-    try {
-      const funcionarios = await prisma.funcionario.findMany({
-        select: {
-          id: true,
-          nome: true,
-          ehTecnico: true,
-          email: true,
-          login: true,
-          dataCriacao: true,
-        },
-        orderBy: { nome: "asc" },
-      });
-      console.log("[Debug] Funcionários encontrados:", JSON.stringify(funcionarios, null, 2));
-      res.json(funcionarios);
-    } catch (error) {
-      console.error("Erro ao buscar funcionários para debug:", error);
-      res.status(500).json({ error: "Erro interno do servidor" });
-    }
-  });
-
-  // Endpoint para limpar funcionários duplicados
-  app.post("/api/debug/clean-duplicates", async (req, res) => {
-    try {
-      const { cleanDuplicateFuncionarios } = await import("./lib/clean-duplicate-funcionarios");
-      const result = await cleanDuplicateFuncionarios();
-      res.json({ success: true, ...result });
-    } catch (error) {
-      console.error("Erro ao limpar duplicatas:", error);
-      res.status(500).json({ error: "Erro interno do servidor" });
-    }
-  });
 
   // Rotas de Localização Geográfica (Cidades e Setores unificados)
   app.get("/api/localizacoes-geograficas", getLocalizacoesGeograficas);
