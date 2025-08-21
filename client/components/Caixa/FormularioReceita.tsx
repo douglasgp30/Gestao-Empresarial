@@ -675,6 +675,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
                   if (!response.ok) throw new Error("Erro ao criar descrição");
 
+                  const created = await response.json(); // Capturar o item criado
+
                   // Recarregar descrições
                   const reloadResponse = await fetch(
                     `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`,
@@ -683,6 +685,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   if (reloadData.data) {
                     setDescricoesFiltradas(reloadData.data);
                   }
+
+                  // Selecionar automaticamente o item recém-criado
+                  setFormData(prev => ({ ...prev, descricao: created.nome || data.nome.trim() }));
                 } catch (error) {
                   console.error("Erro ao adicionar descrição:", error);
                   throw error;
