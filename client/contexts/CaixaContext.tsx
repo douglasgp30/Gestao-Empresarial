@@ -118,47 +118,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Primeiro, fazer um health check do servidor
-      try {
-        const healthController = new AbortController();
-        const healthTimeoutId = setTimeout(
-          () => healthController.abort(),
-          2000,
-        );
+      console.log("📊 [CaixaContext] Carregando campanhas...");
 
-        const healthResponse = await fetch("/api/health", {
-          signal: healthController.signal,
-        });
+      // Fazer requisição com timeout simples
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout")), 10000),
+      );
 
-        clearTimeout(healthTimeoutId);
-
-        if (!healthResponse.ok) {
-          throw new Error(`Health check falhou: ${healthResponse.status}`);
-        }
-
-        console.log(
-          "📊 [CaixaContext] Servidor disponível, carregando campanhas...",
-        );
-      } catch (healthError) {
-        console.warn(
-          "📊 [CaixaContext] Servidor não está disponível:",
-          healthError,
-        );
-        throw new Error("Servidor indisponível");
-      }
-
-      // Agora tentar carregar campanhas
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout maior após health check
-
-      const response = await fetch("/api/campanhas", {
-        signal: controller.signal,
+      const fetchPromise = fetch("/api/campanhas", {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      clearTimeout(timeoutId);
+      const response = (await Promise.race([
+        fetchPromise,
+        timeoutPromise,
+      ])) as Response;
+      console.log("📊 [CaixaContext] Response status:", response.status);
 
       if (response.ok) {
         const campanhasServidor = await response.json();
@@ -376,15 +353,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         ...response.headers.entries(),
       ]);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("📦 [CaixaContext] Erro na resposta:", errorText);
-        throw new Error(
-          `Erro ao carregar lançamentos: ${response.status} - ${errorText}`,
-        );
-      }
-
-      // Verificar se o content-type é JSON
+      // Verificar se o content-type é JSON antes de tentar ler
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         const responseText = await response.text();
@@ -397,7 +366,32 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      const lancamentosDoBanco = await response.json();
+      // Tentar fazer parse da resposta JSON
+      let lancamentosDoBanco;
+      try {
+        lancamentosDoBanco = await response.json();
+      } catch (parseError) {
+        console.error(
+          "📦 [CaixaContext] Erro ao fazer parse do JSON:",
+          parseError,
+        );
+        throw new Error(`Erro ao fazer parse da resposta JSON: ${parseError}`);
+      }
+
+      // Verificar se a resposta foi bem sucedida após fazer o parse
+      if (!response.ok) {
+        console.error(
+          "📦 [CaixaContext] Erro na resposta:",
+          lancamentosDoBanco,
+        );
+        const errorMessage =
+          lancamentosDoBanco?.message ||
+          lancamentosDoBanco?.error ||
+          "Erro desconhecido";
+        throw new Error(
+          `Erro ao carregar lançamentos: ${response.status} - ${errorMessage}`,
+        );
+      }
 
       // Converter datas para objetos Date
       const lancamentosFormatados = lancamentosDoBanco.map(
@@ -457,7 +451,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Migrar dados antigos antes de carregar
       const foiMigrado = migrarDadosAntigos();
       if (foiMigrado) {
-        console.log("🔄 [CaixaContext] Dados migrados com sucesso");
+        console.log("���� [CaixaContext] Dados migrados com sucesso");
       }
 
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
@@ -818,12 +812,36 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(dadosParaAPI),
       });
 
+      // Verificar se a resposta está ok primeiro
       if (!response.ok) {
-        const erro = await response.text();
-        throw new Error(`Erro na API: ${erro}`);
+        let errorMessage = `Erro ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            // Se não conseguir ler nada, usar mensagem padrão
+          }
+        }
+        throw new Error(`Erro na API: ${errorMessage}`);
       }
 
-      const lancamentoCriado = await response.json();
+      // Se resposta ok, tentar fazer parse do JSON
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (parseError) {
+        console.error(
+          "[CaixaContext] Erro ao fazer parse do JSON:",
+          parseError,
+        );
+        throw new Error(`Erro ao processar resposta da API`);
+      }
+
+      const lancamentoCriado = responseData;
       console.log(
         "[CaixaContext] Lançamento criado com sucesso:",
         lancamentoCriado.id,

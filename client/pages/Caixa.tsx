@@ -11,15 +11,11 @@ import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
 import { AlertaMigracaoCaixa } from "../components/ui/alerta-migracao-caixa";
-import { TesteCaixaAPI } from "../components/Debug/TesteCaixaAPI";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
-      {/* Componente de teste para debug */}
-      <TesteCaixaAPI />
-
       {/* Alerta de migração */}
       <AlertaMigracaoCaixa />
 

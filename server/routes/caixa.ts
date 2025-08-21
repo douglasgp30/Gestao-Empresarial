@@ -128,7 +128,10 @@ async function resolverIds(data: any) {
       ids.formaPagamentoId = formaPagamento.id;
     }
   } else if (data.formaPagamentoId) {
-    ids.formaPagamentoId = data.formaPagamentoId;
+    ids.formaPagamentoId = parseInt(data.formaPagamentoId);
+    console.log(
+      `[Caixa] FormaPagamento ID: ${data.formaPagamentoId} -> ${ids.formaPagamentoId}`,
+    );
   }
 
   // Resolver técnico responsável
@@ -140,7 +143,10 @@ async function resolverIds(data: any) {
       ids.funcionarioId = funcionario.id;
     }
   } else if (data.funcionarioId) {
-    ids.funcionarioId = data.funcionarioId;
+    ids.funcionarioId = parseInt(data.funcionarioId);
+    console.log(
+      `[Caixa] Funcionario ID: ${data.funcionarioId} -> ${ids.funcionarioId}`,
+    );
   }
 
   // Resolver setor (agora usando LocalizacaoGeografica)

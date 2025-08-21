@@ -115,11 +115,40 @@ export function ModalReceita() {
     );
   }, [formData.formaPagamento, formasPagamento]);
 
+  // Buscar percentual de imposto das configurações
+  const getPercentualImposto = () => {
+    try {
+      const savedConfigs = localStorage.getItem("userConfigs");
+      if (savedConfigs) {
+        const configs = JSON.parse(savedConfigs);
+        return configs.percentualImposto || 6; // 6% é o padrão
+      }
+    } catch (error) {
+      console.error("Erro ao carregar percentual de imposto:", error);
+    }
+    return 6; // Valor padrão
+  };
+
   // Calcular campos automaticamente
   const valorCalculado = parseFloat(formData.valor) || 0;
   const valorQueEntrouCalculado =
     parseFloat(formData.valorQueEntrou) || valorCalculado;
-  const valorLiquidoCalculado = valorQueEntrouCalculado;
+
+  // Calcular imposto apenas se tem nota fiscal
+  const percentualImposto = getPercentualImposto();
+  const impostoCalculado = formData.temNotaFiscal
+    ? (valorCalculado * percentualImposto) / 100
+    : 0;
+
+  // Debug log para verificar cálculo
+  if (formData.temNotaFiscal && valorCalculado > 0) {
+    console.log(
+      `[ModalReceita] Calculando imposto: ${valorCalculado} * ${percentualImposto}% = R$ ${impostoCalculado.toFixed(2)}`,
+    );
+  }
+
+  // Valor líquido descontando o imposto se houver nota fiscal
+  const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
 
   // Calcular comissão baseada no percentual do técnico
   const comissaoCalculada = (() => {
@@ -260,6 +289,7 @@ export function ModalReceita() {
         valor: valorCalculado,
         valorLiquido: valorLiquidoCalculado,
         valorQueEntrou: valorQueEntrouCalculado,
+        imposto: impostoCalculado, // Incluir o imposto calculado
         // Não enviar comissao - deixar o servidor calcular automaticamente
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
@@ -766,13 +796,23 @@ export function ModalReceita() {
                   <h4 className="font-medium text-green-800 mb-2">
                     Resumo Financeiro
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2 text-sm">
                     <div>
                       <span className="text-gray-600">Valor Total:</span>
                       <div className="font-medium">
                         R$ {parseFloat(formData.valor || "0").toFixed(2)}
                       </div>
                     </div>
+                    {formData.temNotaFiscal && (
+                      <div>
+                        <span className="text-gray-600">
+                          Imposto NF ({percentualImposto}%):
+                        </span>
+                        <div className="font-medium text-red-600">
+                          - R$ {impostoCalculado.toFixed(2)}
+                        </div>
+                      </div>
+                    )}
                     <div>
                       <span className="text-gray-600">
                         Comissão:
@@ -808,6 +848,17 @@ export function ModalReceita() {
                       </div>
                     </div>
                   </div>
+                  {formData.temNotaFiscal && (
+                    <div className="mt-2 p-2 bg-blue-100 rounded text-xs text-blue-700">
+                      💡 <strong>Imposto NF:</strong> {percentualImposto}%
+                      aplicado automaticamente sobre o valor total
+                      <br />
+                      <span className="text-blue-600">
+                        Este percentual pode ser alterado em Configurações →
+                        Percentual de Imposto (NF)
+                      </span>
+                    </div>
+                  )}
                   {formData.tecnicoResponsavel && comissaoCalculada === 0 && (
                     <div className="mt-2 text-xs text-amber-600">
                       ⚠️ Técnico selecionado não possui percentual de comissão
