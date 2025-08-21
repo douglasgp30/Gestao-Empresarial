@@ -760,8 +760,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("[CaixaContext] Dados preparados para API:", dadosParaAPI);
 
-      // Enviar para a API
-      const response = await fetch("/api/caixa", {
+      // Enviar para a API usando rota alternativa para evitar conflito de body stream
+      const response = await fetch("/api/caixa/criar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
