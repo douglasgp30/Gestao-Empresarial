@@ -438,15 +438,8 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         "[FuncionariosContext] Funcionário excluído com sucesso, atualizando lista...",
       );
 
-      // Atualizar a lista localmente primeiro (otimistic update)
+      // Atualizar a lista localmente
       setFuncionarios((prev) => prev.filter((func) => func.id !== id));
-
-      // Em seguida, recarregar do servidor para garantir consistência
-      setTimeout(() => {
-        carregarFuncionarios().catch((error) => {
-          console.error("Erro ao recarregar após exclusão:", error);
-        });
-      }, 100);
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
       throw error;
