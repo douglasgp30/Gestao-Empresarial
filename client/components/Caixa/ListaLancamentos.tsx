@@ -83,7 +83,7 @@ export default function ListaLancamentos() {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-  // Funções helper robustas para mapear IDs/snapshots para nomes
+  // Funções helper para mapear IDs/snapshots para nomes - corrigidas para evitar exibir códigos
   const getFormaPagamentoNome = (fp: any) => {
     if (!fp) return "N/A";
 
@@ -97,7 +97,8 @@ export default function ListaLancamentos() {
       const forma = formasPagamento.find(
         (f) => f.id?.toString() === fp.toString(),
       );
-      return forma?.nome || fp; // Fallback para o próprio valor se não encontrar
+      // Se encontrou, retorna o nome. Se não encontrou, retorna "N/A" ao invés do código
+      return forma?.nome || "N/A";
     }
 
     return "N/A";
@@ -123,7 +124,8 @@ export default function ListaLancamentos() {
             : setorEncontrado.cidade;
         return `${setorEncontrado.nome}${cidade ? ` - ${cidade}` : ""}`;
       }
-      return setor; // Fallback para o próprio valor
+      // Se não encontrou o setor, retorna string vazia ao invés do código
+      return "";
     }
 
     return "";
@@ -146,7 +148,8 @@ export default function ListaLancamentos() {
       if (tecnicoEncontrado) {
         return tecnicoEncontrado.nome || tecnicoEncontrado.nomeCompleto || "";
       }
-      return tecnico; // Fallback para o próprio valor
+      // Se não encontrou o técnico, retorna string vazia ao invés do código
+      return "";
     }
 
     return "";
@@ -168,7 +171,8 @@ export default function ListaLancamentos() {
       if (campanhaEncontrada) {
         return campanhaEncontrada.nome;
       }
-      return campanha; // Fallback para o próprio valor
+      // Se não encontrou a campanha, retorna string vazia ao invés do código
+      return "";
     }
 
     return "";
@@ -190,7 +194,8 @@ export default function ListaLancamentos() {
       if (clienteEncontrado) {
         return clienteEncontrado.nome;
       }
-      return cliente; // Fallback para o próprio valor
+      // Se não encontrou o cliente, retorna string vazia ao invés do código
+      return "";
     }
 
     return "";
