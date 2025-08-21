@@ -216,7 +216,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      console.log("📦 [CaixaContext] Carregando dados do banco de dados...");
+      console.log("��� [CaixaContext] Carregando dados do banco de dados...");
 
       // Carregar campanhas do servidor
       try {
@@ -401,33 +401,68 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           dataHora: new Date(lancamento.dataHora),
           dataCriacao: new Date(lancamento.dataHora),
           // Mapear campos do banco para o formato esperado pelo frontend
-          id: lancamento.id.toString(),
-          tecnicoResponsavel: lancamento.funcionario
-            ? {
-                id: lancamento.funcionario.id,
-                nome: lancamento.funcionario.nome,
-              }
-            : undefined,
-          formaPagamento: lancamento.formaPagamento
-            ? {
-                id: lancamento.formaPagamento.id,
-                nome: lancamento.formaPagamento.nome,
-              }
-            : undefined,
-          cliente: lancamento.cliente
-            ? {
-                id: lancamento.cliente.id,
-                nome: lancamento.cliente.nome,
-              }
-            : undefined,
-          campanha: lancamento.campanha
-            ? {
-                id: lancamento.campanha.id,
-                nome: lancamento.campanha.nome,
-              }
-            : undefined,
-          categoria: lancamento.descricaoECategoria?.categoria || "Serviços",
-          descricao: lancamento.descricaoECategoria?.nome || "Serviço",
+        id: lancamento.id.toString(),
+
+        // Técnico/Funcionário - mapear para ambos os campos
+        funcionario: lancamento.funcionario
+          ? {
+              id: lancamento.funcionario.id?.toString(),
+              nome: lancamento.funcionario.nome,
+              percentualComissao: lancamento.funcionario.percentualComissao || lancamento.funcionario.percentualServico,
+            }
+          : undefined,
+        tecnicoResponsavel: lancamento.funcionario
+          ? {
+              id: lancamento.funcionario.id,
+              nome: lancamento.funcionario.nome,
+            }
+          : undefined,
+
+        // Forma de pagamento
+        formaPagamento: lancamento.formaPagamento
+          ? {
+              id: lancamento.formaPagamento.id,
+              nome: lancamento.formaPagamento.nome,
+            }
+          : undefined,
+
+        // Cliente
+        cliente: lancamento.cliente
+          ? {
+              id: lancamento.cliente.id,
+              nome: lancamento.cliente.nome,
+            }
+          : undefined,
+
+        // Campanha
+        campanha: lancamento.campanha
+          ? {
+              id: lancamento.campanha.id,
+              nome: lancamento.campanha.nome,
+            }
+          : undefined,
+
+        // Localização/Setor - mapear para ambos os campos
+        localizacao: lancamento.localizacao
+          ? {
+              id: lancamento.localizacao.id?.toString(),
+              nome: lancamento.localizacao.nome,
+              cidade: lancamento.localizacao.cidade,
+            }
+          : undefined,
+        setor: lancamento.localizacao
+          ? {
+              id: lancamento.localizacao.id?.toString(),
+              nome: lancamento.localizacao.nome,
+              cidade: lancamento.localizacao.cidade,
+            }
+          : undefined,
+
+        // Categoria e descrição com fallback melhorado
+        categoria: lancamento.descricaoECategoria?.categoria || lancamento.descricao?.categoria || "Serviços",
+        descricao: {
+          nome: lancamento.descricaoECategoria?.nome || lancamento.descricao?.nome || "Serviço"
+        },
         }),
       );
 
@@ -500,7 +535,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Fun��ão utilitária para conversão segura de string para número
+  // Função utilitária para conversão segura de string para número
   const parseIntSafe = (value: string): number | undefined => {
     if (!value || value === "todos" || value === "todas") return undefined;
     const parsed = parseInt(value);
