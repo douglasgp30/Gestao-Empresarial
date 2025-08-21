@@ -173,19 +173,27 @@ export function ListaLancamentosSimples() {
         return formaPagamento || "N/A";
 
       case "tecnico":
-        // Verifica múltiplos campos para compatibilidade
-        const tecnico =
-          lancamento.funcionario?.nome ||
-          (typeof lancamento.tecnicoResponsavel === "object"
-            ? lancamento.tecnicoResponsavel?.nome
-            : lancamento.tecnicoResponsavel) ||
-          "-";
-        return tecnico;
+        // Priorizar funcionario do banco de dados
+        if (lancamento.funcionario?.nome) {
+          return lancamento.funcionario.nome;
+        }
+        // Fallback para tecnicoResponsavel (dados legados)
+        if (typeof lancamento.tecnicoResponsavel === "object" && lancamento.tecnicoResponsavel?.nome) {
+          return lancamento.tecnicoResponsavel.nome;
+        }
+        if (typeof lancamento.tecnicoResponsavel === "string" && lancamento.tecnicoResponsavel !== "") {
+          return lancamento.tecnicoResponsavel;
+        }
+        return "-";
 
       case "setor":
+        // Priorizar localizacao do banco de dados
+        if (lancamento.localizacao?.nome) {
+          return lancamento.localizacao.nome;
+        }
+        // Fallback para setor (dados legados)
         if (!lancamento.setor) return "-";
 
-        // Suporta tanto string quanto objeto
         if (typeof lancamento.setor === "string") {
           return lancamento.setor;
         }
