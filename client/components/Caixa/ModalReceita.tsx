@@ -845,8 +845,9 @@ export function ModalReceita() {
                     </div>
                   </div>
                   {formData.temNotaFiscal && (
-                    <div className="mt-2 text-xs text-blue-600">
-                      💡 Imposto de {percentualImposto}% aplicado automaticamente (configurável em Configurações)
+                    <div className="mt-2 p-2 bg-blue-100 rounded text-xs text-blue-700">
+                      💡 <strong>Imposto NF:</strong> {percentualImposto}% aplicado automaticamente sobre o valor total<br/>
+                      <span className="text-blue-600">Este percentual pode ser alterado em Configurações → Percentual de Imposto (NF)</span>
                     </div>
                   )}
                   {formData.tecnicoResponsavel && comissaoCalculada === 0 && (
