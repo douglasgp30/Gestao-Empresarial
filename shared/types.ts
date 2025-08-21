@@ -54,28 +54,38 @@ export interface Funcionario {
 
 export interface LancamentoCaixa {
   id: string; // CodLançamentoCX
+  data: Date; // Data do lançamento
   dataHora: Date; // Data e hora do lançamento
   valor: number; // Valor integral do lançamento (obrigatório)
-  valorRecebido?: number; // Valor efetivamente recebido (obrigatório para cartão)
+  valorQueEntrou?: number; // Valor efetivamente recebido (obrigatório para cartão)
   valorLiquido?: number; // Valor líquido após descontos
   valorParaEmpresa?: number; // Valor que efetivamente entrou para a empresa (após comissões)
   comissao?: number; // Comissão do técnico
   imposto?: number; // Impostos/taxas
   tipo: "receita" | "despesa"; // Receita ou Despesa (obrigatório)
+
+  // Campos diretos (como estão sendo salvos atualmente)
+  categoria?: string; // Categoria do lançamento
+  descricao?: string; // Descrição do lançamento
+  formaPagamento?: string; // ID ou nome da forma de pagamento
+  tecnicoResponsavel?: string; // ID ou nome do técnico responsável
+  setor?: string; // ID ou nome do setor
+  campanha?: string; // ID ou nome da campanha
+  cliente?: string; // ID ou nome do cliente
+
   observacoes?: string; // Observações do lançamento
   numeroNota?: string; // Número da nota fiscal
   arquivoNota?: string; // Arquivo da nota fiscal
   codigoServico?: string; // Código único do serviço para rastreabilidade
 
-  // Relacionamentos obrigatórios
-  descricaoId: number; // FK para tabela Descrição
-  formaPagamentoId: number; // FK para tabela Forma de Pagamento
-
-  // Relacionamentos opcionais
+  // Relacionamentos por ID (para compatibilidade futura)
+  descricaoId?: number; // FK para tabela Descrição
+  formaPagamentoId?: number; // FK para tabela Forma de Pagamento
   subdescricaoId?: number; // FK para tabela Subdescrição
   funcionarioId?: number; // FK para tabela Técnicos
   setorId?: number; // FK para tabela Cidades e Setores
   campanhaId?: number; // FK para tabela Campanhas
+  clienteId?: string; // FK para tabela Clientes
 
   dataCriacao: Date;
 }
