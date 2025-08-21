@@ -304,9 +304,10 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
             <SelectWithAdd
               value={formData.descricao}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, descricao: value }))
-              }
+              onValueChange={(value) => {
+                const descricaoSelecionada = descricoesFiltradas.find(d => d.id?.toString() === value);
+                setFormData((prev) => ({ ...prev, descricao: descricaoSelecionada?.nome || value }));
+              }}
               placeholder={
                 formData.categoria
                   ? "Selecione a descrição"
