@@ -1140,9 +1140,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   )}
                   {isFormaPagamentoCartao && (
                     <div>
-                      <span className="text-gray-600">Taxa Cartão (3,5%):</span>
-                      <div className="font-medium text-orange-600">
-                        - R$ {taxaCartao.toFixed(2).replace(".", ",")}
+                      <span className="text-gray-600">Taxa Cartão:</span>
+                      <div className="font-medium text-green-600">
+                        Já descontada
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        (Valor recebido já é líquido)
                       </div>
                     </div>
                   )}
