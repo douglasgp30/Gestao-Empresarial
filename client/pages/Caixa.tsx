@@ -16,6 +16,9 @@ import { DollarSign } from "lucide-react";
 function CaixaContent() {
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+      {/* Alerta de migração */}
+      <AlertaMigracaoCaixa />
+
       {/* Header com botões no topo direito */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         {/* Título */}
