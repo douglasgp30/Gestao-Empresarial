@@ -104,6 +104,32 @@ export function createServer(): Express {
     });
   });
 
+  // Rota de teste para debug do caixa
+  app.get("/api/caixa/test", async (req, res) => {
+    try {
+      console.log("[Server] Teste do caixa recebido");
+      const { prisma } = await import("./lib/database");
+
+      // Testar conexão com banco
+      const count = await prisma.lancamentoCaixa.count();
+      console.log(`[Server] Total de lançamentos no banco: ${count}`);
+
+      res.json({
+        status: "ok",
+        message: "Rota de teste do caixa funcionando",
+        totalLancamentos: count,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("[Server] Erro no teste do caixa:", error);
+      res.status(500).json({
+        status: "error",
+        message: "Erro no teste do caixa",
+        error: error.message,
+      });
+    }
+  });
+
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
   app.post(
     "/api/clean-fake-data",
