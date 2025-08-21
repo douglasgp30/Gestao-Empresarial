@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
+import { useEntidades } from "../../contexts/EntidadesContext";
+import { useClientes } from "../../contexts/ClientesContext";
 import TabelaResponsivaLancamentos from "../ui/tabela-responsiva";
 import {
   Card,
