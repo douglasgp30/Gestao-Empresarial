@@ -17,6 +17,9 @@ import { DollarSign } from "lucide-react";
 function CaixaContent() {
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+      {/* Componente de teste para debug */}
+      <TesteCaixaAPI />
+
       {/* Alerta de migração */}
       <AlertaMigracaoCaixa />
 
