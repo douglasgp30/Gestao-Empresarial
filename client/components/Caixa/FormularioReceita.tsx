@@ -380,7 +380,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         setor: formData.setor || undefined,
         campanha: formData.campanha || undefined,
-        clienteId: formData.cliente || undefined,
+        cliente: formData.cliente || undefined,
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
         codigoServico: codigoServico, // Adicionar código do serviço
