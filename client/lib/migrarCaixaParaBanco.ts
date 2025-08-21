@@ -93,8 +93,8 @@ export const migrarLancamentosParaBanco = async () => {
 
         console.log(`📋 Dados preparados:`, dadosParaAPI);
 
-        // Enviar para a API
-        const response = await fetch("/api/caixa", {
+        // Enviar para a API usando rota alternativa
+        const response = await fetch("/api/caixa/criar", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
