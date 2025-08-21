@@ -282,7 +282,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
 
     // Resolver IDs de entidades
     const ids = await resolverIds(data);
-    console.log("[Caixa] IDs resolvidos:", ids);
+    console.log("[Caixa] IDs resolvidos, continuando...");
 
     // Resolver descrição e categoria usando sistema unificado
     let descricaoECategoriaId = null;
