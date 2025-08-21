@@ -378,7 +378,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw new Error(`Erro ao fazer parse da resposta JSON: ${parseError}`);
       }
 
-      // Verificar se a resposta foi bem sucedida após fazer o parse
+      // Verificar se a resposta foi bem sucedida ap��s fazer o parse
       if (!response.ok) {
         console.error(
           "📦 [CaixaContext] Erro na resposta:",
@@ -538,35 +538,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // Carregar dados na inicialização com controle global e throttling
+  // Carregar dados na inicialização - versão otimizada
   useEffect(() => {
-    // Verificar se estamos em um ambiente válido para carregamento
     if (typeof window === "undefined") {
-      console.log(
-        "[CaixaContext] Executando no servidor, pulando carregamento inicial",
-      );
+      console.log("[CaixaContext] Servidor - pulando carregamento inicial");
       return;
     }
 
-    // Verificar se é hot reload (comum durante desenvolvimento)
-    const isHotReload =
-      window.location.href.includes("reload=") ||
-      window.location.href.includes("?t=") ||
-      document.readyState !== "complete";
-
-    // Sempre usar um debounce para evitar múltiplas execuções
-    const debounceTime = isHotReload ? 3000 : 1000; // Mais tempo durante hot reload
-
-    console.log(
-      `[CaixaContext] Agendando carregamento em ${debounceTime}ms...`,
-    );
+    // Carregar apenas uma vez na inicialização
+    let mounted = true;
     const timeout = setTimeout(() => {
-      console.log("[CaixaContext] Executando carregamento de dados");
-      carregarDados();
-    }, debounceTime);
+      if (mounted) {
+        console.log("[CaixaContext] Carregamento inicial executado");
+        carregarDados();
+      }
+    }, 500); // Tempo reduzido para melhor experiência
 
     return () => {
-      console.log("[CaixaContext] Cancelando carregamento agendado");
+      mounted = false;
       clearTimeout(timeout);
     };
   }, []);
