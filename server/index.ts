@@ -194,11 +194,15 @@ export function createServer(): Express {
   });
 
   // Rotas de Caixa
-  app.get("/api/caixa/lancamentos", getLancamentos);
+  app.get("/api/caixa", getLancamentos);
+  app.get("/api/caixa/lancamentos", getLancamentos); // Manter compatibilidade
   app.get("/api/caixa/totais", getTotaisCaixa);
-  app.post("/api/caixa/lancamentos", createLancamento);
-  app.put("/api/caixa/lancamentos/:id", updateLancamento);
-  app.delete("/api/caixa/lancamentos/:id", deleteLancamento);
+  app.post("/api/caixa", createLancamento);
+  app.post("/api/caixa/lancamentos", createLancamento); // Manter compatibilidade
+  app.put("/api/caixa/:id", updateLancamento);
+  app.put("/api/caixa/lancamentos/:id", updateLancamento); // Manter compatibilidade
+  app.delete("/api/caixa/:id", deleteLancamento);
+  app.delete("/api/caixa/lancamentos/:id", deleteLancamento); // Manter compatibilidade
 
   // Rotas de Contas
   app.use("/api/contas", contasRouter);
