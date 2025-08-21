@@ -264,9 +264,14 @@ export function createServer(): Express {
   const debugCaixaMiddleware = (req: any, res: any, next: any) => {
     console.log("[Debug Caixa] Middleware executado");
     console.log("[Debug Caixa] Method:", req.method);
-    console.log("[Debug Caixa] Body readable:", req.readable);
-    console.log("[Debug Caixa] Body exists:", !!req.body);
     console.log("[Debug Caixa] Content-Type:", req.get('content-type'));
+    console.log("[Debug Caixa] Content-Length:", req.get('content-length'));
+
+    // Se for POST/PUT e não há body, pode haver um problema
+    if ((req.method === 'POST' || req.method === 'PUT') && !req.body) {
+      console.warn("[Debug Caixa] ⚠️ Body está vazio para método", req.method);
+    }
+
     next();
   };
 
