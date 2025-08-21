@@ -382,9 +382,22 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         id,
       );
 
-      const response = await funcionariosApi.excluir(parseInt(id));
-      if (response.error) {
-        throw new Error(response.error);
+      // Verificar se o ID é um timestamp (funcionário local) ou ID do banco
+      const isLocalId = id.length > 10; // Timestamps são longos, IDs do banco são pequenos
+
+      if (isLocalId) {
+        console.log("[FuncionariosContext] Excluindo funcionário local (localStorage)");
+        // Para funcionários locais, apenas remover do localStorage
+        const funcionariosAtuais = carregarFuncionariosReais();
+        const novosFuncionarios = funcionariosAtuais.filter((f) => f.id !== id);
+        salvarFuncionariosNoLocalStorage(novosFuncionarios);
+      } else {
+        console.log("[FuncionariosContext] Excluindo funcionário do servidor");
+        // Para funcionários do servidor, chamar a API
+        const response = await funcionariosApi.excluir(parseInt(id));
+        if (response.error) {
+          throw new Error(response.error);
+        }
       }
 
       console.log(
