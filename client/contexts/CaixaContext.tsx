@@ -712,51 +712,87 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      // Criar o lançamento com ID único
-      const lancamento: LancamentoCaixa = {
-        ...novoLancamento,
-        id: `lancamento-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        dataCriacao: new Date(),
-        data: novoLancamento.data || new Date(),
-        dataHora: novoLancamento.dataHora || new Date(),
+      console.log("[CaixaContext] Adicionando lançamento via API:", novoLancamento);
+
+      // Preparar dados para a API
+      const dadosParaAPI = {
+        valor: novoLancamento.valor || 0,
+        valorRecebido: novoLancamento.valorQueEntrou || novoLancamento.valorLiquido || novoLancamento.valor,
+        valorLiquido: novoLancamento.valorLiquido || novoLancamento.valor,
+        comissao: novoLancamento.comissao || 0,
+        imposto: novoLancamento.imposto || 0,
+        observacoes: novoLancamento.observacoes || "",
+        numeroNota: novoLancamento.numeroNota || "",
+        tipo: novoLancamento.tipo || "receita",
+        data: novoLancamento.data ? new Date(novoLancamento.data).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+
+        // Categoria e descrição
+        categoria: novoLancamento.categoria || "Serviços",
+        descricao: typeof novoLancamento.descricao === "object" && novoLancamento.descricao?.nome
+          ? novoLancamento.descricao.nome
+          : typeof novoLancamento.descricao === "string"
+          ? novoLancamento.descricao
+          : "Serviço",
+
+        // IDs dos relacionamentos
+        formaPagamentoId: extrairIdParaAPI(novoLancamento.formaPagamento, novoLancamento.formaPagamentoId),
+        funcionarioId: extrairIdParaAPI(novoLancamento.tecnicoResponsavel, novoLancamento.tecnicoResponsavelId),
+        setorId: extrairIdParaAPI(novoLancamento.setor, novoLancamento.setorId),
+        campanhaId: extrairIdParaAPI(novoLancamento.campanha, novoLancamento.campanhaId),
+        clienteId: extrairIdParaAPI(novoLancamento.cliente, novoLancamento.clienteId),
       };
 
-      console.log(
-        "[CaixaContext] Adicionando lançamento ao localStorage:",
-        lancamento,
-      );
+      console.log("[CaixaContext] Dados preparados para API:", dadosParaAPI);
 
-      // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(
-        localStorage.getItem("lancamentos_caixa") || "[]",
-      );
+      // Enviar para a API
+      const response = await fetch("/api/caixa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dadosParaAPI),
+      });
 
-      // Normalizar o lançamento antes de salvar
-      const lancamentoNormalizado = normalizarLancamento(lancamento);
+      if (!response.ok) {
+        const erro = await response.text();
+        throw new Error(`Erro na API: ${erro}`);
+      }
 
-      // Adicionar o novo lançamento normalizado
-      const novosLancamentos = [
-        ...lancamentosExistentes,
-        lancamentoNormalizado,
-      ];
+      const lancamentoCriado = await response.json();
+      console.log("[CaixaContext] Lançamento criado com sucesso:", lancamentoCriado.id);
 
-      // Salvar no localStorage
-      localStorage.setItem(
-        "lancamentos_caixa",
-        JSON.stringify(novosLancamentos),
-      );
+      // Recarregar dados após criação
+      await carregarDados();
 
-      // Recarregar lançamentos
-      await carregarLancamentosLocalStorage();
-
-      console.log(
-        "[CaixaContext] Lançamento adicionado com sucesso:",
-        lancamento.id,
-      );
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
       throw error;
     }
+  };
+
+  // Função auxiliar para extrair ID para API
+  const extrairIdParaAPI = (objeto: any, idFallback: any) => {
+    if (!objeto && !idFallback) return undefined;
+
+    // Se é objeto, tentar extrair o ID
+    if (typeof objeto === "object" && objeto?.id) {
+      const id = parseInt(objeto.id);
+      return isNaN(id) ? undefined : id;
+    }
+
+    // Se é string/número, tentar converter
+    if (objeto) {
+      const id = parseInt(objeto);
+      return isNaN(id) ? undefined : id;
+    }
+
+    // Fallback para o ID direto
+    if (idFallback) {
+      const id = parseInt(idFallback);
+      return isNaN(id) ? undefined : id;
+    }
+
+    return undefined;
   };
 
   const editarLancamento = async (
