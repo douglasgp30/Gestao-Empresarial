@@ -57,6 +57,7 @@ import { executarAjusteAutomatico } from "./lib/ajustarPermissoesAdmin";
 import "./lib/testePermissoesPonto"; // Teste automático em desenvolvimento
 import "./lib/debugFuncionarios"; // Debug de funcionários em desenvolvimento
 import "./lib/limparLocalStorageCaixa"; // Disponibilizar função de limpeza globalmente
+import "./lib/migrateLancamentosCaixa"; // Disponibilizar funções de migração globalmente
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
