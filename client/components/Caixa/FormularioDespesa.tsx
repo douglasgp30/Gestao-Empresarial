@@ -305,8 +305,13 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
             <SelectWithAdd
               value={formData.descricao}
               onValueChange={(value) => {
-                const descricaoSelecionada = descricoesFiltradas.find(d => d.id?.toString() === value);
-                setFormData((prev) => ({ ...prev, descricao: descricaoSelecionada?.nome || value }));
+                const descricaoSelecionada = descricoesFiltradas.find(
+                  (d) => d.id?.toString() === value,
+                );
+                setFormData((prev) => ({
+                  ...prev,
+                  descricao: descricaoSelecionada?.nome || value,
+                }));
               }}
               placeholder={
                 formData.categoria
@@ -357,7 +362,10 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                   }
 
                   // Selecionar automaticamente o item recém-criado
-                  setFormData(prev => ({ ...prev, descricao: created.nome || data.nome.trim() }));
+                  setFormData((prev) => ({
+                    ...prev,
+                    descricao: created.nome || data.nome.trim(),
+                  }));
 
                   toast({
                     title: "Sucesso!",

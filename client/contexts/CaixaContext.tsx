@@ -476,11 +476,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       );
 
       // Debug: verificar dados processados
-      console.log("🔍 [DEBUG] Lançamentos formatados:", lancamentosFormatados.map(l => ({
-        id: l.id,
-        descricao: l.descricao,
-        categoria: l.categoria
-      })));
+      console.log(
+        "🔍 [DEBUG] Lançamentos formatados:",
+        lancamentosFormatados.map((l) => ({
+          id: l.id,
+          descricao: l.descricao,
+          categoria: l.categoria,
+        })),
+      );
 
       setLancamentos(lancamentosFormatados);
       console.log(

@@ -238,8 +238,13 @@ export function ModalEditarLancamento({
               <SelectWithAdd
                 value={formData.descricao}
                 onValueChange={(value) => {
-                  const descricaoSelecionada = descricoesFiltradas.find(d => d.id?.toString() === value);
-                  setFormData((prev) => ({ ...prev, descricao: descricaoSelecionada?.nome || value }));
+                  const descricaoSelecionada = descricoesFiltradas.find(
+                    (d) => d.id?.toString() === value,
+                  );
+                  setFormData((prev) => ({
+                    ...prev,
+                    descricao: descricaoSelecionada?.nome || value,
+                  }));
                 }}
                 placeholder={
                   formData.categoria

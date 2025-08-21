@@ -8,9 +8,9 @@ async function addBoleto() {
     const boletoExists = await prisma.formaPagamento.findFirst({
       where: {
         nome: {
-          contains: "Boleto"
-        }
-      }
+          contains: "Boleto",
+        },
+      },
     });
 
     if (boletoExists) {

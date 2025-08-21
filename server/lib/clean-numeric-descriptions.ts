@@ -8,15 +8,24 @@ async function cleanNumericDescriptions() {
 
     // Buscar todas as descrições para filtrar as numéricas
     const allDescriptions = await prisma.descricao.findMany();
-    const numericDescriptions = allDescriptions.filter(desc => /^\d+$/.test(desc.nome));
+    const numericDescriptions = allDescriptions.filter((desc) =>
+      /^\d+$/.test(desc.nome),
+    );
 
-    console.log(`Encontradas ${numericDescriptions.length} descrições numéricas`);
+    console.log(
+      `Encontradas ${numericDescriptions.length} descrições numéricas`,
+    );
 
     // Buscar todas as descrições e categorias unificadas para filtrar as numéricas
-    const allDescricoesECategorias = await prisma.descricaoECategoria.findMany();
-    const numericDescricoesECategorias = allDescricoesECategorias.filter(desc => /^\d+$/.test(desc.nome));
+    const allDescricoesECategorias =
+      await prisma.descricaoECategoria.findMany();
+    const numericDescricoesECategorias = allDescricoesECategorias.filter(
+      (desc) => /^\d+$/.test(desc.nome),
+    );
 
-    console.log(`Encontradas ${numericDescricoesECategorias.length} descrições e categorias numéricas`);
+    console.log(
+      `Encontradas ${numericDescricoesECategorias.length} descrições e categorias numéricas`,
+    );
 
     // Atualizar descrições numéricas
     if (numericDescriptions.length > 0) {
@@ -24,10 +33,12 @@ async function cleanNumericDescriptions() {
         await prisma.descricao.update({
           where: { id: desc.id },
           data: {
-            nome: `Serviço (corrigido ${desc.id})`
-          }
+            nome: `Serviço (corrigido ${desc.id})`,
+          },
         });
-        console.log(`✅ Corrigida descrição ID ${desc.id}: "${desc.nome}" → "Serviço (corrigido ${desc.id})"`);
+        console.log(
+          `✅ Corrigida descrição ID ${desc.id}: "${desc.nome}" → "Serviço (corrigido ${desc.id})"`,
+        );
       }
     }
 
@@ -37,10 +48,12 @@ async function cleanNumericDescriptions() {
         await prisma.descricaoECategoria.update({
           where: { id: desc.id },
           data: {
-            nome: `Serviço (corrigido ${desc.id})`
-          }
+            nome: `Serviço (corrigido ${desc.id})`,
+          },
         });
-        console.log(`✅ Corrigida descrição e categoria ID ${desc.id}: "${desc.nome}" → "Serviço (corrigido ${desc.id})"`);
+        console.log(
+          `✅ Corrigida descrição e categoria ID ${desc.id}: "${desc.nome}" → "Serviço (corrigido ${desc.id})"`,
+        );
       }
     }
 
