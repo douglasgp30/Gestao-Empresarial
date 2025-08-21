@@ -44,7 +44,6 @@ function carregarClientesReais(): Cliente[] {
 export function ClientesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCarregando, setIsCarregando] = useState(false);
 
   // Função para salvar clientes no localStorage
   const salvarClientesNoLocalStorage = useCallback((clientes: Cliente[]) => {
@@ -55,33 +54,24 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Carregar dados reais do localStorage
+  // Carregar dados do localStorage na inicialização
   useEffect(() => {
-    if (isCarregando) return;
+    try {
+      const clientesReais = carregarClientesReais();
+      setClientes(clientesReais);
+    } catch (error) {
+      console.error("Erro ao carregar clientes:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    setIsCarregando(true);
-    // Usar timeout para evitar bloqueio
-    const timeout = setTimeout(() => {
-      try {
-        const clientesReais = carregarClientesReais();
-        setClientes(clientesReais);
-      } catch (error) {
-        console.error("Erro ao carregar clientes:", error);
-      } finally {
-        setIsLoading(false);
-        setIsCarregando(false);
-      }
-    }, 100); // Delay mínimo para não bloquear render
-
-    return () => clearTimeout(timeout);
-  }, [isCarregando]);
-
-  // Salvar no localStorage sempre que clientes mudarem
+  // Salvar no localStorage sempre que clientes mudarem (exceto no carregamento inicial)
   useEffect(() => {
     if (!isLoading) {
       salvarClientesNoLocalStorage(clientes);
     }
-  }, [clientes, isLoading]);
+  }, [clientes, isLoading, salvarClientesNoLocalStorage]);
 
   const adicionarCliente = (
     novoCliente: Omit<Cliente, "id" | "dataCriacao">,

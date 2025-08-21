@@ -131,7 +131,12 @@ export function ListaLancamentosSimples() {
         );
 
       case "descricao":
-        return lancamento.descricao?.nome || "N/A";
+        // Suporta tanto string quanto objeto com nome
+        const descricao =
+          typeof lancamento.descricao === "string"
+            ? lancamento.descricao
+            : lancamento.descricao?.nome;
+        return descricao || "N/A";
 
       case "valor":
         return (
@@ -157,18 +162,47 @@ export function ListaLancamentosSimples() {
         return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
 
       case "formaPagamento":
-        return lancamento.formaPagamento?.nome || "N/A";
+        // Suporta tanto string quanto objeto com nome
+        const formaPagamento =
+          typeof lancamento.formaPagamento === "string"
+            ? lancamento.formaPagamento
+            : lancamento.formaPagamento?.nome;
+        return formaPagamento || "N/A";
 
       case "tecnico":
-        return lancamento.funcionario?.nome || "-";
+        // Verifica múltiplos campos para compatibilidade
+        const tecnico =
+          lancamento.funcionario?.nome ||
+          (typeof lancamento.tecnicoResponsavel === "object"
+            ? lancamento.tecnicoResponsavel?.nome
+            : lancamento.tecnicoResponsavel) ||
+          "-";
+        return tecnico;
 
       case "setor":
-        return lancamento.setor
-          ? `${lancamento.setor.nome} - ${typeof lancamento.setor.cidade === "object" ? lancamento.setor.cidade?.nome : lancamento.setor.cidade}`
-          : "-";
+        if (!lancamento.setor) return "-";
+
+        // Suporta tanto string quanto objeto
+        if (typeof lancamento.setor === "string") {
+          return lancamento.setor;
+        }
+
+        // Formato objeto
+        const nomeSetor = lancamento.setor.nome || lancamento.setor;
+        const cidadeSetor =
+          typeof lancamento.setor.cidade === "object"
+            ? lancamento.setor.cidade?.nome
+            : lancamento.setor.cidade;
+
+        return cidadeSetor ? `${nomeSetor} - ${cidadeSetor}` : nomeSetor;
 
       case "campanha":
-        return lancamento.campanha?.nome || "-";
+        // Suporta tanto string quanto objeto com nome
+        const campanha =
+          typeof lancamento.campanha === "string"
+            ? lancamento.campanha
+            : lancamento.campanha?.nome;
+        return campanha || "-";
 
       case "conta":
         return lancamento.conta || "-";
@@ -191,7 +225,12 @@ export function ListaLancamentosSimples() {
         return lancamento.numeroNota || "-";
 
       case "cliente":
-        return lancamento.cliente?.nome || lancamento.cliente || "-";
+        // Suporta tanto string quanto objeto com nome
+        const cliente =
+          typeof lancamento.cliente === "string"
+            ? lancamento.cliente
+            : lancamento.cliente?.nome;
+        return cliente || "-";
 
       case "acoes":
         return (

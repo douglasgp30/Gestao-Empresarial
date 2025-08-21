@@ -292,6 +292,66 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função para migrar lançamento antigo para novo formato
+  const migrarLancamentoAntigo = (lancamento: any): any => {
+    const migrado = { ...lancamento };
+
+    // Migrar descrição: string -> objeto com nome
+    if (
+      typeof migrado.descricao === "string" &&
+      migrado.descricao.trim() !== ""
+    ) {
+      migrado.descricao = { nome: migrado.descricao };
+    }
+
+    // Migrar formaPagamento: string -> objeto com nome
+    if (typeof migrado.formaPagamento === "string") {
+      migrado.formaPagamento = {
+        id: migrado.formaPagamento,
+        nome: migrado.formaPagamento,
+      };
+    }
+
+    // Garantir campo funcionario a partir de tecnicoResponsavel
+    if (!migrado.funcionario && migrado.tecnicoResponsavel) {
+      if (typeof migrado.tecnicoResponsavel === "object") {
+        migrado.funcionario = {
+          id:
+            migrado.tecnicoResponsavel.id?.toString?.() ||
+            migrado.tecnicoResponsavelId,
+          nome:
+            migrado.tecnicoResponsavel.nome ||
+            migrado.tecnicoResponsavel.nomeCompleto,
+        };
+      } else if (typeof migrado.tecnicoResponsavel === "string") {
+        migrado.funcionario = {
+          id: migrado.tecnicoResponsavel,
+          nome: migrado.tecnicoResponsavel,
+        };
+      }
+    }
+
+    // Migrar cliente: string -> objeto
+    if (typeof migrado.cliente === "string" && migrado.cliente.trim() !== "") {
+      migrado.cliente = { id: migrado.cliente, nome: migrado.cliente };
+    }
+
+    // Migrar setor: string -> objeto
+    if (typeof migrado.setor === "string" && migrado.setor.trim() !== "") {
+      migrado.setor = { id: migrado.setor, nome: migrado.setor };
+    }
+
+    // Migrar campanha: string -> objeto
+    if (
+      typeof migrado.campanha === "string" &&
+      migrado.campanha.trim() !== ""
+    ) {
+      migrado.campanha = { id: migrado.campanha, nome: migrado.campanha };
+    }
+
+    return migrado;
+  };
+
   // Função para carregar lançamentos do localStorage
   const carregarLancamentosLocalStorage = async () => {
     try {
@@ -302,19 +362,36 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
       if (lancamentosStorage) {
         const lancamentosParsed = JSON.parse(lancamentosStorage);
-        // Converter strings de data de volta para objetos Date
+
+        // Migrar dados antigos e converter strings de data de volta para objetos Date
         const lancamentosFormatados = lancamentosParsed.map(
-          (lancamento: any) => ({
-            ...lancamento,
-            data: new Date(lancamento.data),
-            dataHora: new Date(lancamento.dataHora),
-            dataCriacao: new Date(lancamento.dataCriacao),
-          }),
+          (lancamento: any) => {
+            // Primeiro migrar formato antigo
+            const lancamentoMigrado = migrarLancamentoAntigo(lancamento);
+
+            // Depois converter datas
+            return {
+              ...lancamentoMigrado,
+              data: new Date(lancamentoMigrado.data),
+              dataHora: new Date(lancamentoMigrado.dataHora),
+              dataCriacao: new Date(lancamentoMigrado.dataCriacao),
+            };
+          },
         );
 
         setLancamentos(lancamentosFormatados);
         console.log(
-          `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`,
+          `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados e migrados do localStorage`,
+        );
+
+        // Se houve migração, salvar dados migrados de volta no localStorage
+        const dadosMigrados = lancamentosFormatados.map(normalizarLancamento);
+        localStorage.setItem(
+          "lancamentos_caixa",
+          JSON.stringify(dadosMigrados),
+        );
+        console.log(
+          "📦 [CaixaContext] Dados migrados salvos de volta no localStorage",
         );
       } else {
         setLancamentos([]);
@@ -449,6 +526,128 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timeoutId);
   }, [filtrosDependencias]); // Remover carregarLancamentos das dependências
 
+  // Função para normalizar lançamento antes de salvar
+  const normalizarLancamento = (lancamento: any): any => {
+    // Converter datas para ISO strings para serialização
+    const normalized = {
+      ...lancamento,
+      data:
+        lancamento.data instanceof Date
+          ? lancamento.data.toISOString()
+          : lancamento.data,
+      dataHora:
+        lancamento.dataHora instanceof Date
+          ? lancamento.dataHora.toISOString()
+          : lancamento.dataHora,
+      dataCriacao:
+        lancamento.dataCriacao instanceof Date
+          ? lancamento.dataCriacao.toISOString()
+          : lancamento.dataCriacao,
+    };
+
+    // NORMALIZAÇÃO DE CAMPOS PARA COMPATIBILIDADE DA UI
+
+    // 1. Descrição: garantir que seja objeto com 'nome' para a UI
+    if (
+      typeof normalized.descricao === "string" &&
+      normalized.descricao.trim() !== ""
+    ) {
+      normalized.descricao = { nome: normalized.descricao };
+    }
+
+    // 2. Forma de Pagamento: garantir objeto com nome
+    if (typeof normalized.formaPagamento === "string") {
+      normalized.formaPagamento = {
+        id: normalized.formaPagamento,
+        nome: normalized.formaPagamento,
+      };
+    }
+
+    // 3. Técnico: popular campo 'funcionario' a partir de 'tecnicoResponsavel' (compatibilidade com UI)
+    if (!normalized.funcionario && normalized.tecnicoResponsavel) {
+      if (typeof normalized.tecnicoResponsavel === "object") {
+        normalized.funcionario = {
+          id:
+            normalized.tecnicoResponsavel.id?.toString?.() ||
+            normalized.tecnicoResponsavelId,
+          nome:
+            normalized.tecnicoResponsavel.nome ||
+            normalized.tecnicoResponsavel.nomeCompleto,
+          percentualComissao: normalized.tecnicoResponsavel.percentualComissao,
+        };
+      } else if (typeof normalized.tecnicoResponsavel === "string") {
+        normalized.funcionario = {
+          id: normalized.tecnicoResponsavel,
+          nome: normalized.tecnicoResponsavel,
+        };
+      }
+    }
+
+    // 4. Cliente: garantir formato consistente
+    if (
+      typeof normalized.cliente === "string" &&
+      normalized.cliente.trim() !== ""
+    ) {
+      normalized.cliente = { id: normalized.cliente, nome: normalized.cliente };
+    }
+
+    // 5. Setor: garantir formato consistente
+    if (
+      typeof normalized.setor === "string" &&
+      normalized.setor.trim() !== ""
+    ) {
+      normalized.setor = { id: normalized.setor, nome: normalized.setor };
+    }
+
+    // 6. Campanha: garantir formato consistente
+    if (
+      typeof normalized.campanha === "string" &&
+      normalized.campanha.trim() !== ""
+    ) {
+      normalized.campanha = {
+        id: normalized.campanha,
+        nome: normalized.campanha,
+      };
+    }
+
+    // 7. Garantir IDs como strings coerentes
+    if (!normalized.formaPagamentoId && normalized.formaPagamento?.id) {
+      normalized.formaPagamentoId = normalized.formaPagamento.id?.toString();
+    }
+    if (!normalized.tecnicoResponsavelId && normalized.tecnicoResponsavel?.id) {
+      normalized.tecnicoResponsavelId =
+        normalized.tecnicoResponsavel.id?.toString();
+    }
+    if (!normalized.clienteId && normalized.cliente?.id) {
+      normalized.clienteId = normalized.cliente.id?.toString();
+    }
+    if (!normalized.setorId && normalized.setor?.id) {
+      normalized.setorId = normalized.setor.id?.toString();
+    }
+    if (!normalized.campanhaId && normalized.campanha?.id) {
+      normalized.campanhaId = normalized.campanha.id?.toString();
+    }
+
+    // Log detalhado para debug
+    console.log("[CaixaContext] Lançamento normalizado:", {
+      id: normalized.id,
+      categoria: normalized.categoria,
+      descricao: normalized.descricao,
+      formaPagamento: normalized.formaPagamento,
+      formaPagamentoId: normalized.formaPagamentoId,
+      tecnicoResponsavel: normalized.tecnicoResponsavel,
+      funcionario: normalized.funcionario,
+      setor: normalized.setor,
+      campanha: normalized.campanha,
+      cliente: normalized.cliente,
+      valor: normalized.valor,
+      valorLiquido: normalized.valorLiquido,
+      comissao: normalized.comissao,
+    });
+
+    return normalized;
+  };
+
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
@@ -474,8 +673,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         localStorage.getItem("lancamentos_caixa") || "[]",
       );
 
-      // Adicionar o novo lançamento
-      const novosLancamentos = [...lancamentosExistentes, lancamento];
+      // Normalizar o lançamento antes de salvar
+      const lancamentoNormalizado = normalizarLancamento(lancamento);
+
+      // Adicionar o novo lançamento normalizado
+      const novosLancamentos = [
+        ...lancamentosExistentes,
+        lancamentoNormalizado,
+      ];
 
       // Salvar no localStorage
       localStorage.setItem(
@@ -639,22 +844,33 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função helper para verificar se é boleto
+  const isBoleto = (lancamento: any) => {
+    // Se formaPagamento é um objeto com nome
+    if (
+      typeof lancamento.formaPagamento === "object" &&
+      lancamento.formaPagamento?.nome
+    ) {
+      const nome = lancamento.formaPagamento.nome.toLowerCase();
+      return nome.includes("boleto") || nome.includes("bancário");
+    }
+
+    // Se formaPagamento é string, assumir que é nome direto
+    if (typeof lancamento.formaPagamento === "string") {
+      const nome = lancamento.formaPagamento.toLowerCase();
+      return nome.includes("boleto") || nome.includes("bancário");
+    }
+
+    return false;
+  };
+
   // Calcular totais baseados nos lançamentos carregados
   const totais = React.useMemo(() => {
     const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
 
-    // Separar boletos (que não têm valorParaEmpresa ainda)
-    const receitasBoleto = receitasCompletas.filter(
-      (l) =>
-        l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
-        l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
-    );
-
-    const receitasNaoBoleto = receitasCompletas.filter(
-      (l) =>
-        !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
-        !l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
-    );
+    // Separar boletos usando função helper
+    const receitasBoleto = receitasCompletas.filter(isBoleto);
+    const receitasNaoBoleto = receitasCompletas.filter((l) => !isBoleto(l));
 
     // Calcular totais
     const receitaBruta = receitasCompletas.reduce(

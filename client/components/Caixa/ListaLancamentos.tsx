@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
+import { useEntidades } from "../../contexts/EntidadesContext";
+import { useClientes } from "../../contexts/ClientesContext";
 import TabelaResponsivaLancamentos from "../ui/tabela-responsiva";
 import {
   Card,
@@ -72,12 +74,127 @@ type SortField =
 type SortDirection = "asc" | "desc" | null;
 
 export default function ListaLancamentos() {
-  const { lancamentos, filtros, excluirLancamento } = useCaixa();
+  const { lancamentos, filtros, excluirLancamento, campanhas } = useCaixa();
+  const { formasPagamento, setores, getTecnicos } = useEntidades();
+  const { clientes } = useClientes();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
     string | null
   >(null);
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  // Funções helper robustas para mapear IDs/snapshots para nomes
+  const getFormaPagamentoNome = (fp: any) => {
+    if (!fp) return "N/A";
+
+    // Se é um objeto snapshot, usar o nome
+    if (typeof fp === "object" && fp.nome) {
+      return fp.nome;
+    }
+
+    // Se é string, buscar pelo ID
+    if (typeof fp === "string") {
+      const forma = formasPagamento.find(
+        (f) => f.id?.toString() === fp.toString(),
+      );
+      return forma?.nome || fp; // Fallback para o próprio valor se não encontrar
+    }
+
+    return "N/A";
+  };
+
+  const getSetorNome = (setor: any) => {
+    if (!setor) return "";
+
+    // Se é um objeto snapshot, montar nome completo
+    if (typeof setor === "object" && setor.nome) {
+      return `${setor.nome}${setor.cidade ? ` - ${setor.cidade}` : ""}`;
+    }
+
+    // Se é string, buscar pelo ID
+    if (typeof setor === "string") {
+      const setorEncontrado = setores.find(
+        (s) => s.id?.toString() === setor.toString(),
+      );
+      if (setorEncontrado) {
+        const cidade =
+          typeof setorEncontrado.cidade === "object"
+            ? setorEncontrado.cidade?.nome
+            : setorEncontrado.cidade;
+        return `${setorEncontrado.nome}${cidade ? ` - ${cidade}` : ""}`;
+      }
+      return setor; // Fallback para o próprio valor
+    }
+
+    return "";
+  };
+
+  const getTecnicoNome = (tecnico: any) => {
+    if (!tecnico) return "";
+
+    // Se é um objeto snapshot, usar o nome
+    if (typeof tecnico === "object" && tecnico.nome) {
+      return tecnico.nome;
+    }
+
+    // Se é string, buscar pelo ID
+    if (typeof tecnico === "string") {
+      const tecnicos = getTecnicos();
+      const tecnicoEncontrado = tecnicos.find(
+        (t) => t.id?.toString() === tecnico.toString(),
+      );
+      if (tecnicoEncontrado) {
+        return tecnicoEncontrado.nome || tecnicoEncontrado.nomeCompleto || "";
+      }
+      return tecnico; // Fallback para o próprio valor
+    }
+
+    return "";
+  };
+
+  const getCampanhaNome = (campanha: any) => {
+    if (!campanha) return "";
+
+    // Se é um objeto snapshot, usar o nome
+    if (typeof campanha === "object" && campanha.nome) {
+      return campanha.nome;
+    }
+
+    // Se é string, buscar pelo ID
+    if (typeof campanha === "string") {
+      const campanhaEncontrada = campanhas.find(
+        (c) => c.id?.toString() === campanha.toString(),
+      );
+      if (campanhaEncontrada) {
+        return campanhaEncontrada.nome;
+      }
+      return campanha; // Fallback para o próprio valor
+    }
+
+    return "";
+  };
+
+  const getClienteNome = (cliente: any) => {
+    if (!cliente) return "";
+
+    // Se é um objeto snapshot, usar o nome
+    if (typeof cliente === "object" && cliente.nome) {
+      return cliente.nome;
+    }
+
+    // Se é string, buscar pelo ID
+    if (typeof cliente === "string") {
+      const clienteEncontrado = clientes.find(
+        (c) => c.id?.toString() === cliente.toString(),
+      );
+      if (clienteEncontrado) {
+        return clienteEncontrado.nome;
+      }
+      return cliente; // Fallback para o próprio valor
+    }
+
+    return "";
+  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -330,9 +447,9 @@ export default function ListaLancamentos() {
                         <p className="font-medium text-sm">
                           {lancamento.categoria || "N/A"}
                         </p>
-                        {lancamento.setor && (
+                        {getSetorNome(lancamento.setor) && (
                           <p className="text-xs text-muted-foreground">
-                            {lancamento.setor}
+                            {getSetorNome(lancamento.setor)}
                           </p>
                         )}
                       </div>
@@ -343,9 +460,14 @@ export default function ListaLancamentos() {
                         <p className="font-medium text-sm">
                           {lancamento.descricao || "N/A"}
                         </p>
-                        {lancamento.campanha && (
+                        {getCampanhaNome(lancamento.campanha) && (
                           <p className="text-xs text-blue-600">
-                            Campanha: {lancamento.campanha}
+                            Campanha: {getCampanhaNome(lancamento.campanha)}
+                          </p>
+                        )}
+                        {getClienteNome(lancamento.cliente) && (
+                          <p className="text-xs text-green-600">
+                            Cliente: {getClienteNome(lancamento.cliente)}
                           </p>
                         )}
                       </div>
@@ -431,28 +553,38 @@ export default function ListaLancamentos() {
                       <div className="flex items-center space-x-1">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          {lancamento.formaPagamento}
+                          {getFormaPagamentoNome(lancamento.formaPagamento)}
                         </span>
                       </div>
                     </TableCell>
 
                     <TableCell>
                       <div className="space-y-1">
-                        {lancamento.tecnicoResponsavel && (
+                        {getTecnicoNome(lancamento.tecnicoResponsavel) && (
                           <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                             <User className="h-3 w-3" />
-                            <span>{lancamento.tecnicoResponsavel}</span>
+                            <span>
+                              {getTecnicoNome(lancamento.tecnicoResponsavel)}
+                            </span>
                           </div>
                         )}
-                        {lancamento.comissao && (
+                        {lancamento.comissao && lancamento.comissao > 0 && (
                           <div className="text-xs text-blue-600">
                             Comissão: {formatCurrency(lancamento.comissao)}
                           </div>
                         )}
-                        {lancamento.notaFiscal && (
+                        {lancamento.numeroNota && (
                           <Badge variant="outline" className="text-xs">
-                            NF
+                            NF: {lancamento.numeroNota}
                           </Badge>
+                        )}
+                        {lancamento.observacoes && (
+                          <div
+                            className="text-xs text-gray-500 truncate max-w-32"
+                            title={lancamento.observacoes}
+                          >
+                            Obs: {lancamento.observacoes}
+                          </div>
                         )}
                       </div>
                     </TableCell>

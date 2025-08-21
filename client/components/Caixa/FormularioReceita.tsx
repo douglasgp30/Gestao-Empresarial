@@ -218,7 +218,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     descontoNotaFiscal -
     taxaCartao;
 
-  // Calcular comissão baseada no percentual do técnico sobre o valor líquido
+  // Calcular comissão baseada no percentual do t��cnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
     if (formData.tecnicoResponsavel && valorLiquidoCalculado > 0) {
       const tecnico = tecnicos.find(
@@ -365,7 +365,32 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       }
 
-      // Criar lançamento no caixa
+      // Buscar objetos completos para criar snapshots
+      const formaSelecionada = formasPagamento.find(
+        (f) => f.id?.toString() === formData.formaPagamento,
+      );
+      const campanhaSelecionada = campanhas.find(
+        (c) => c.id?.toString() === formData.campanha,
+      );
+      const clienteSelecionado = clientes.find(
+        (c) => c.id === formData.cliente,
+      );
+      const setorSelecionado = setores.find(
+        (s) => s.id?.toString() === formData.setor,
+      );
+      const tecnicoSelecionado = tecnicos.find(
+        (t) => t.id?.toString() === formData.tecnicoResponsavel,
+      );
+
+      console.log("FormularioReceita - Dados selecionados:", {
+        forma: formaSelecionada,
+        campanha: campanhaSelecionada,
+        cliente: clienteSelecionado,
+        setor: setorSelecionado,
+        tecnico: tecnicoSelecionado,
+      });
+
+      // Criar lançamento no caixa com snapshots completos
       const lancamentoCaixa = await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
@@ -375,12 +400,61 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         valorQueEntrou: valorQueEntrouCalculado,
         comissao: comissaoCalculada,
         imposto: impostoInput.numericValue,
+        categoria: formData.categoria,
         descricao: formData.descricao,
-        formaPagamento: formData.formaPagamento,
-        tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
-        setor: formData.setor || undefined,
-        campanha: formData.campanha || undefined,
-        clienteId: formData.cliente || undefined,
+
+        // Salvar snapshots dos objetos para preservar dados históricos
+        formaPagamento: formaSelecionada || {
+          id: formData.formaPagamento,
+          nome: formData.formaPagamento,
+        },
+        formaPagamentoId:
+          formaSelecionada?.id?.toString() || formData.formaPagamento,
+
+        tecnicoResponsavel: tecnicoSelecionado
+          ? {
+              id: tecnicoSelecionado.id,
+              nome: tecnicoSelecionado.nome || tecnicoSelecionado.nomeCompleto,
+              percentualComissao:
+                tecnicoSelecionado.percentualComissao ||
+                tecnicoSelecionado.percentualServico,
+            }
+          : undefined,
+        tecnicoResponsavelId:
+          tecnicoSelecionado?.id?.toString() ||
+          formData.tecnicoResponsavel ||
+          undefined,
+
+        setor: setorSelecionado
+          ? {
+              id: setorSelecionado.id,
+              nome: setorSelecionado.nome,
+              cidade:
+                typeof setorSelecionado.cidade === "object"
+                  ? setorSelecionado.cidade?.nome
+                  : setorSelecionado.cidade,
+            }
+          : undefined,
+        setorId:
+          setorSelecionado?.id?.toString() || formData.setor || undefined,
+
+        campanha: campanhaSelecionada
+          ? {
+              id: campanhaSelecionada.id,
+              nome: campanhaSelecionada.nome,
+            }
+          : undefined,
+        campanhaId:
+          campanhaSelecionada?.id?.toString() || formData.campanha || undefined,
+
+        cliente: clienteSelecionado
+          ? {
+              id: clienteSelecionado.id,
+              nome: clienteSelecionado.nome,
+            }
+          : undefined,
+        clienteId: clienteSelecionado?.id || formData.cliente || undefined,
+
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
         codigoServico: codigoServico, // Adicionar código do serviço
