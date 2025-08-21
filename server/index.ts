@@ -104,6 +104,75 @@ export function createServer(): Express {
     });
   });
 
+  // Rota de teste para debug do caixa
+  app.get("/api/caixa/test", async (req, res) => {
+    try {
+      console.log("[Server] Teste do caixa recebido");
+      const { prisma } = await import("./lib/database");
+
+      // Testar conexão com banco
+      const count = await prisma.lancamentoCaixa.count();
+      console.log(`[Server] Total de lançamentos no banco: ${count}`);
+
+      res.json({
+        status: "ok",
+        message: "Rota de teste do caixa funcionando",
+        totalLancamentos: count,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("[Server] Erro no teste do caixa:", error);
+      res.status(500).json({
+        status: "error",
+        message: "Erro no teste do caixa",
+        error: error.message,
+      });
+    }
+  });
+
+  // Rota simplificada de debug para caixa
+  app.get("/api/caixa/debug", async (req, res) => {
+    try {
+      console.log("[Server DEBUG] Rota debug do caixa acessada");
+      res.setHeader("Content-Type", "application/json");
+
+      const { prisma } = await import("./lib/database");
+
+      // Busca simples sem filtros
+      const lancamentos = await prisma.lancamentoCaixa.findMany({
+        take: 5,
+        orderBy: { id: "desc" },
+        select: {
+          id: true,
+          valor: true,
+          tipo: true,
+          dataHora: true,
+        },
+      });
+
+      console.log(
+        `[Server DEBUG] Encontrados ${lancamentos.length} lançamentos`,
+      );
+
+      const resultado = {
+        success: true,
+        message: "Debug da rota caixa",
+        count: lancamentos.length,
+        data: lancamentos,
+        timestamp: new Date().toISOString(),
+      };
+
+      res.json(resultado);
+    } catch (error) {
+      console.error("[Server DEBUG] Erro:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        stack: error.stack,
+      });
+    }
+  });
+
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
   app.post(
     "/api/clean-fake-data",
@@ -193,12 +262,55 @@ export function createServer(): Express {
     }
   });
 
+  // Middleware de debug para rotas POST do caixa
+  const debugCaixaMiddleware = (req: any, res: any, next: any) => {
+    console.log("[Debug Caixa] Middleware executado");
+    console.log("[Debug Caixa] Method:", req.method);
+    console.log("[Debug Caixa] Content-Type:", req.get("content-type"));
+    console.log("[Debug Caixa] Content-Length:", req.get("content-length"));
+
+    // Se for POST/PUT e não há body, pode haver um problema
+    if ((req.method === "POST" || req.method === "PUT") && !req.body) {
+      console.warn("[Debug Caixa] ⚠️ Body está vazio para método", req.method);
+    }
+
+    next();
+  };
+
   // Rotas de Caixa
-  app.get("/api/caixa/lancamentos", getLancamentos);
+  app.get("/api/caixa", getLancamentos);
+  app.get("/api/caixa/lancamentos", getLancamentos); // Manter compatibilidade
   app.get("/api/caixa/totais", getTotaisCaixa);
-  app.post("/api/caixa/lancamentos", createLancamento);
-  app.put("/api/caixa/lancamentos/:id", updateLancamento);
-  app.delete("/api/caixa/lancamentos/:id", deleteLancamento);
+
+  // Rota alternativa para criação que contorna o problema do body stream
+  app.post("/api/caixa/criar", debugCaixaMiddleware, async (req, res) => {
+    try {
+      console.log("[Caixa Criar] Rota alternativa para criação");
+
+      // Clonar o body para evitar problemas de stream
+      const bodyData = { ...req.body };
+
+      // Criar uma nova requisição simulada para o createLancamento
+      const mockReq = {
+        ...req,
+        body: bodyData,
+      };
+
+      return await createLancamento(mockReq as any, res);
+    } catch (error) {
+      console.error("[Caixa Criar] Erro na rota alternativa:", error);
+      res
+        .status(500)
+        .json({ error: "Erro interno do servidor", details: error.message });
+    }
+  });
+
+  app.post("/api/caixa", debugCaixaMiddleware, createLancamento);
+  app.post("/api/caixa/lancamentos", debugCaixaMiddleware, createLancamento); // Manter compatibilidade
+  app.put("/api/caixa/:id", debugCaixaMiddleware, updateLancamento);
+  app.put("/api/caixa/lancamentos/:id", debugCaixaMiddleware, updateLancamento); // Manter compatibilidade
+  app.delete("/api/caixa/:id", deleteLancamento);
+  app.delete("/api/caixa/lancamentos/:id", deleteLancamento); // Manter compatibilidade
 
   // Rotas de Contas
   app.use("/api/contas", contasRouter);

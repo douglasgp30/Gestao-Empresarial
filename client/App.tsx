@@ -58,6 +58,9 @@ import "./lib/testePermissoesPonto"; // Teste automático em desenvolvimento
 import "./lib/debugFuncionarios"; // Debug de funcionários em desenvolvimento
 import "./lib/limparLocalStorageCaixa"; // Disponibilizar função de limpeza globalmente
 import "./lib/migrateLancamentosCaixa"; // Disponibilizar funções de migração globalmente
+import "./lib/debugCaixa"; // Funções de debug do caixa
+import "./lib/migrarDadosAntigos"; // Migração automática de dados antigos
+import "./lib/migrarCaixaParaBanco"; // Migração para banco de dados
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";

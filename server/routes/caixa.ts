@@ -3,6 +3,12 @@ import { prisma } from "../lib/database";
 import { z } from "zod";
 import { AuditoriaService, extrairInfoRequisicao } from "../lib/auditoria";
 
+// Testar conexão com banco na inicialização
+console.log(
+  "[Caixa Routes] Arquivo caixa.ts carregado, Prisma importado:",
+  !!prisma,
+);
+
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
   valor: z
@@ -173,6 +179,9 @@ async function resolverIds(data: any) {
 
 export const getLancamentos: RequestHandler = async (req, res) => {
   try {
+    console.log("[Caixa API] GET /api/caixa - Iniciando busca de lançamentos");
+    console.log("[Caixa API] Query params:", req.query);
+
     const {
       dataInicio,
       dataFim,
@@ -256,25 +265,29 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       orderBy: { id: "desc" },
     });
 
+    console.log(`[Caixa API] Encontrados ${lancamentos.length} lançamentos`);
+    console.log("[Caixa API] Enviando resposta JSON...");
+
     res.json(lancamentos);
   } catch (error) {
-    console.error("Erro ao buscar lançamentos:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error("[Caixa API] Erro ao buscar lançamentos:", error);
+    res
+      .status(500)
+      .json({ error: "Erro interno do servidor", details: error.message });
   }
 };
 
 export const createLancamento: RequestHandler = async (req, res) => {
   try {
-    console.log(
-      "[Caixa] Dados recebidos para criar lançamento:",
-      JSON.stringify(req.body, null, 2),
-    );
+    console.log("[Caixa] Criando lançamento...");
+    console.log("[Caixa] Body keys:", Object.keys(req.body || {}));
+
     const data = LancamentoCaixaSchema.parse(req.body);
-    console.log("[Caixa] Dados após validação:", JSON.stringify(data, null, 2));
+    console.log("[Caixa] Validação bem-sucedida, dados processados");
 
     // Resolver IDs de entidades
     const ids = await resolverIds(data);
-    console.log("[Caixa] IDs resolvidos:", ids);
+    console.log("[Caixa] IDs resolvidos, continuando...");
 
     // Resolver descrição e categoria usando sistema unificado
     let descricaoECategoriaId = null;
