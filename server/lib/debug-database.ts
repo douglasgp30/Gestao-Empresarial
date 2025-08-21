@@ -72,31 +72,28 @@ async function debugDatabase() {
 
     // Verificar descrições problemáticas
     console.log("🔍 Verificando descrições problemáticas...\n");
-    
-    const descricoesNumericas = await prisma.descricao.findMany({
-      where: {
-        nome: {
-          regex: '^[0-9]+$'
-        }
-      }
-    });
-    
+
+    const todasDescricoes = await prisma.descricao.findMany();
+    const descricoesNumericas = todasDescricoes.filter(desc => /^\d+$/.test(desc.nome));
+
     console.log(`Descrições numéricas encontradas: ${descricoesNumericas.length}`);
     descricoesNumericas.forEach(desc => {
       console.log(`- ID ${desc.id}: "${desc.nome}"`);
     });
 
-    const descricoesECategoriasNumericas = await prisma.descricaoECategoria.findMany({
-      where: {
-        nome: {
-          regex: '^[0-9]+$'
-        }
-      }
-    });
-    
+    const todasDescricoesECategorias = await prisma.descricaoECategoria.findMany();
+    const descricoesECategoriasNumericas = todasDescricoesECategorias.filter(desc => /^\d+$/.test(desc.nome));
+
     console.log(`\nDescrições e categorias numéricas: ${descricoesECategoriasNumericas.length}`);
     descricoesECategoriasNumericas.forEach(desc => {
       console.log(`- ID ${desc.id}: "${desc.nome}"`);
+    });
+
+    // Verificar formas de pagamento
+    console.log("\n💳 Formas de pagamento disponíveis:");
+    const formas = await prisma.formaPagamento.findMany();
+    formas.forEach(forma => {
+      console.log(`- ID ${forma.id}: "${forma.nome}"`);
     });
 
   } catch (error) {
