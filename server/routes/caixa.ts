@@ -128,7 +128,8 @@ async function resolverIds(data: any) {
       ids.formaPagamentoId = formaPagamento.id;
     }
   } else if (data.formaPagamentoId) {
-    ids.formaPagamentoId = data.formaPagamentoId;
+    ids.formaPagamentoId = parseInt(data.formaPagamentoId);
+    console.log(`[Caixa] FormaPagamento ID: ${data.formaPagamentoId} -> ${ids.formaPagamentoId}`);
   }
 
   // Resolver técnico responsável
