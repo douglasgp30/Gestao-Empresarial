@@ -115,7 +115,7 @@ async function resolverDescricaoECategoria(
   }
 }
 
-// Fun��ão para resolver IDs de entidades
+// Função para resolver IDs de entidades
 async function resolverIds(data: any) {
   const ids: any = {};
 
@@ -134,13 +134,32 @@ async function resolverIds(data: any) {
     );
   }
 
-  // Resolver técnico responsável
+  // Resolver técnico responsável - melhorado para aceitar ID ou nome
   if (data.tecnicoResponsavel && !data.funcionarioId) {
-    const funcionario = await prisma.funcionario.findFirst({
-      where: { id: parseInt(data.tecnicoResponsavel) },
-    });
+    let funcionario = null;
+    const possivelId = parseInt(String(data.tecnicoResponsavel));
+
+    // Tentar primeiro por ID
+    if (!Number.isNaN(possivelId)) {
+      funcionario = await prisma.funcionario.findUnique({
+        where: { id: possivelId }
+      });
+    }
+
+    // Se não encontrou por ID, tentar por nome
+    if (!funcionario) {
+      funcionario = await prisma.funcionario.findFirst({
+        where: {
+          nome: { contains: String(data.tecnicoResponsavel) }
+        },
+      });
+    }
+
     if (funcionario) {
       ids.funcionarioId = funcionario.id;
+      console.log(`[Caixa] Funcionario resolvido: ${data.tecnicoResponsavel} -> ${funcionario.nome} (${funcionario.id})`);
+    } else {
+      console.log(`[Caixa] Funcionario não encontrado: ${data.tecnicoResponsavel}`);
     }
   } else if (data.funcionarioId) {
     ids.funcionarioId = parseInt(data.funcionarioId);
