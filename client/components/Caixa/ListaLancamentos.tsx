@@ -423,9 +423,9 @@ export default function ListaLancamentos() {
                             Campanha: {getCampanhaNome(lancamento.campanha)}
                           </p>
                         )}
-                        {getClienteNome(lancamento.clienteId) && (
+                        {getClienteNome(lancamento.cliente) && (
                           <p className="text-xs text-green-600">
-                            Cliente: {getClienteNome(lancamento.clienteId)}
+                            Cliente: {getClienteNome(lancamento.cliente)}
                           </p>
                         )}
                       </div>
