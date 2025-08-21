@@ -141,7 +141,8 @@ async function resolverIds(data: any) {
       ids.funcionarioId = funcionario.id;
     }
   } else if (data.funcionarioId) {
-    ids.funcionarioId = data.funcionarioId;
+    ids.funcionarioId = parseInt(data.funcionarioId);
+    console.log(`[Caixa] Funcionario ID: ${data.funcionarioId} -> ${ids.funcionarioId}`);
   }
 
   // Resolver setor (agora usando LocalizacaoGeografica)
