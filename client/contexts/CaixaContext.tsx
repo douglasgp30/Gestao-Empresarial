@@ -376,15 +376,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         ...response.headers.entries(),
       ]);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("�� [CaixaContext] Erro na resposta:", errorText);
-        throw new Error(
-          `Erro ao carregar lançamentos: ${response.status} - ${errorText}`,
-        );
-      }
-
-      // Verificar se o content-type é JSON
+// Verificar se o content-type é JSON antes de tentar ler
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         const responseText = await response.text();
@@ -397,7 +389,23 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         );
       }
 
-      const lancamentosDoBanco = await response.json();
+      // Tentar fazer parse da resposta JSON
+      let lancamentosDoBanco;
+      try {
+        lancamentosDoBanco = await response.json();
+      } catch (parseError) {
+        console.error("📦 [CaixaContext] Erro ao fazer parse do JSON:", parseError);
+        throw new Error(`Erro ao fazer parse da resposta JSON: ${parseError}`);
+      }
+
+      // Verificar se a resposta foi bem sucedida após fazer o parse
+      if (!response.ok) {
+        console.error("📦 [CaixaContext] Erro na resposta:", lancamentosDoBanco);
+        const errorMessage = lancamentosDoBanco?.message || lancamentosDoBanco?.error || 'Erro desconhecido';
+        throw new Error(
+          `Erro ao carregar lançamentos: ${response.status} - ${errorMessage}`,
+        );
+      }
 
       // Converter datas para objetos Date
       const lancamentosFormatados = lancamentosDoBanco.map(
