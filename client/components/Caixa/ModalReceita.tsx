@@ -138,6 +138,11 @@ export function ModalReceita() {
   const percentualImposto = getPercentualImposto();
   const impostoCalculado = formData.temNotaFiscal ? (valorCalculado * percentualImposto) / 100 : 0;
 
+  // Debug log para verificar cálculo
+  if (formData.temNotaFiscal && valorCalculado > 0) {
+    console.log(`[ModalReceita] Calculando imposto: ${valorCalculado} * ${percentualImposto}% = R$ ${impostoCalculado.toFixed(2)}`);
+  }
+
   // Valor líquido descontando o imposto se houver nota fiscal
   const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
 
@@ -756,7 +761,7 @@ export function ModalReceita() {
                       />
                       {formData.temNotaFiscal && !formData.numeroNota && (
                         <p className="text-xs text-red-500">
-                          N��mero da nota fiscal é obrigatório
+                          Número da nota fiscal é obrigatório
                         </p>
                       )}
                     </div>
