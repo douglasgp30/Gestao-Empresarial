@@ -130,6 +130,9 @@ export function ListaLancamentosSimples() {
           </Badge>
         );
 
+      case "categoria":
+        return lancamento.categoria || "N/A";
+
       case "descricao":
         // Suporta tanto string quanto objeto com nome
         const descricao =
