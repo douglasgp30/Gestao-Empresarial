@@ -404,7 +404,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
         console.log(
           `[Caixa] Cliente ID ${data.clienteId} n��o encontrado. Definindo como null.`,
         );
-        clienteIdValido = undefined;
+        clienteIdValido = null;
       }
     }
 
