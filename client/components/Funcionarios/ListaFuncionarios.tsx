@@ -367,18 +367,17 @@ export default function ListaFuncionarios() {
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
                             </DropdownMenuItem>
-                            {funcionario.id !== user?.id &&
-                              funcionario.id !== "1" && (
-                                <DropdownMenuItem
-                                  className="text-red-600"
-                                  onClick={() =>
-                                    setFuncionarioParaExcluir(funcionario.id)
-                                  }
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              )}
+                            {funcionario.nomeCompleto !== user?.nome && (
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() =>
+                                  setFuncionarioParaExcluir(funcionario.id)
+                                }
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

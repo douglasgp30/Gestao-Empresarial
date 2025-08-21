@@ -90,7 +90,7 @@ export default function FiltrosFuncionariosCompacto() {
               </div>
               <div className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                 <Users className="h-3 w-3" />
-                Operadores
+                Técnicos
               </div>
             </div>
           </div>

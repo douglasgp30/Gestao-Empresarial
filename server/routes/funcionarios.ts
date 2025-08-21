@@ -215,6 +215,12 @@ export const deleteFuncionario: RequestHandler = middlewareAuditoria(
   async (req, res) => {
     const id = parseInt(req.params.id);
 
+    // Verificar se o ID é válido
+    if (isNaN(id)) {
+      res.status(400).json({ error: "ID inválido" });
+      return null;
+    }
+
     // Buscar dados antes de excluir
     const funcionarioAntigo = await prisma.funcionario.findUnique({
       where: { id },
@@ -233,6 +239,12 @@ export const deleteFuncionario: RequestHandler = middlewareAuditoria(
       },
     });
 
+    // Se o funcionário não existe
+    if (!funcionarioAntigo) {
+      res.status(404).json({ error: "Funcionário não encontrado" });
+      return null;
+    }
+
     await prisma.funcionario.delete({ where: { id } });
     res.status(204).send();
     return {
@@ -241,6 +253,13 @@ export const deleteFuncionario: RequestHandler = middlewareAuditoria(
     };
   },
   (error, req, res) => {
+    if (error && typeof error === "object" && "code" in error) {
+      // Handle specific Prisma errors
+      if (error.code === "P2025") {
+        res.status(404).json({ error: "Funcionário não encontrado" });
+        return;
+      }
+    }
     console.error("Erro ao excluir funcionário:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
   },
