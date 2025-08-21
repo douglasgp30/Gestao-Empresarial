@@ -280,6 +280,7 @@ export function ModalReceita() {
         valor: valorCalculado,
         valorLiquido: valorLiquidoCalculado,
         valorQueEntrou: valorQueEntrouCalculado,
+        imposto: impostoCalculado, // Incluir o imposto calculado
         // Não enviar comissao - deixar o servidor calcular automaticamente
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
