@@ -17,6 +17,7 @@ import {
   isContextLoading,
   setContextLoading,
 } from "../lib/globalLoadingControl";
+import { migrarDadosAntigos } from "../lib/migrarDadosAntigos";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
