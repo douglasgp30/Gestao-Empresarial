@@ -142,7 +142,7 @@ async function resolverIds(data: any) {
     // Tentar primeiro por ID
     if (!Number.isNaN(possivelId)) {
       funcionario = await prisma.funcionario.findUnique({
-        where: { id: possivelId }
+        where: { id: possivelId },
       });
     }
 
@@ -150,16 +150,20 @@ async function resolverIds(data: any) {
     if (!funcionario) {
       funcionario = await prisma.funcionario.findFirst({
         where: {
-          nome: { contains: String(data.tecnicoResponsavel) }
+          nome: { contains: String(data.tecnicoResponsavel) },
         },
       });
     }
 
     if (funcionario) {
       ids.funcionarioId = funcionario.id;
-      console.log(`[Caixa] Funcionario resolvido: ${data.tecnicoResponsavel} -> ${funcionario.nome} (${funcionario.id})`);
+      console.log(
+        `[Caixa] Funcionario resolvido: ${data.tecnicoResponsavel} -> ${funcionario.nome} (${funcionario.id})`,
+      );
     } else {
-      console.log(`[Caixa] Funcionario não encontrado: ${data.tecnicoResponsavel}`);
+      console.log(
+        `[Caixa] Funcionario não encontrado: ${data.tecnicoResponsavel}`,
+      );
     }
   } else if (data.funcionarioId) {
     ids.funcionarioId = parseInt(data.funcionarioId);
@@ -481,9 +485,13 @@ export const createLancamento: RequestHandler = async (req, res) => {
       });
       if (funcionario) {
         dadosLancamento.funcionarioId = ids.funcionarioId;
-        console.log(`[Caixa] Funcionário ID ${ids.funcionarioId} validado e adicionado`);
+        console.log(
+          `[Caixa] Funcionário ID ${ids.funcionarioId} validado e adicionado`,
+        );
       } else {
-        console.log(`[Caixa] Funcionário ID ${ids.funcionarioId} não encontrado, removendo`);
+        console.log(
+          `[Caixa] Funcionário ID ${ids.funcionarioId} não encontrado, removendo`,
+        );
       }
     }
 
@@ -494,9 +502,13 @@ export const createLancamento: RequestHandler = async (req, res) => {
       });
       if (localizacao) {
         dadosLancamento.localizacaoId = ids.localizacaoId;
-        console.log(`[Caixa] Localização ID ${ids.localizacaoId} validada e adicionada`);
+        console.log(
+          `[Caixa] Localização ID ${ids.localizacaoId} validada e adicionada`,
+        );
       } else {
-        console.log(`[Caixa] Localização ID ${ids.localizacaoId} não encontrada, removendo`);
+        console.log(
+          `[Caixa] Localização ID ${ids.localizacaoId} não encontrada, removendo`,
+        );
       }
     }
 
@@ -507,9 +519,13 @@ export const createLancamento: RequestHandler = async (req, res) => {
       });
       if (campanha) {
         dadosLancamento.campanhaId = ids.campanhaId;
-        console.log(`[Caixa] Campanha ID ${ids.campanhaId} validada e adicionada`);
+        console.log(
+          `[Caixa] Campanha ID ${ids.campanhaId} validada e adicionada`,
+        );
       } else {
-        console.log(`[Caixa] Campanha ID ${ids.campanhaId} não encontrada, removendo`);
+        console.log(
+          `[Caixa] Campanha ID ${ids.campanhaId} não encontrada, removendo`,
+        );
       }
     }
 

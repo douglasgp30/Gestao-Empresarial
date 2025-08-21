@@ -218,9 +218,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // Valor líquido = valor recebido - impostos - desconto nota fiscal
   const valorLiquidoCalculado =
-    valorQueEntrouCalculado -
-    impostoCalculado -
-    descontoNotaFiscal;
+    valorQueEntrouCalculado - impostoCalculado - descontoNotaFiscal;
 
   // Calcular comissão baseada no percentual do t��cnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {

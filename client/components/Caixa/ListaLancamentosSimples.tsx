@@ -178,10 +178,16 @@ export function ListaLancamentosSimples() {
           return lancamento.funcionario.nome;
         }
         // Fallback para tecnicoResponsavel (dados legados)
-        if (typeof lancamento.tecnicoResponsavel === "object" && lancamento.tecnicoResponsavel?.nome) {
+        if (
+          typeof lancamento.tecnicoResponsavel === "object" &&
+          lancamento.tecnicoResponsavel?.nome
+        ) {
           return lancamento.tecnicoResponsavel.nome;
         }
-        if (typeof lancamento.tecnicoResponsavel === "string" && lancamento.tecnicoResponsavel !== "") {
+        if (
+          typeof lancamento.tecnicoResponsavel === "string" &&
+          lancamento.tecnicoResponsavel !== ""
+        ) {
           return lancamento.tecnicoResponsavel;
         }
         return "-";
@@ -215,7 +221,6 @@ export function ListaLancamentosSimples() {
             : lancamento.campanha?.nome;
         return campanha || "-";
 
-
       case "observacoes":
         return lancamento.observacoes ? (
           <span
@@ -238,7 +243,10 @@ export function ListaLancamentosSimples() {
         if (lancamento.cliente?.nome) {
           return lancamento.cliente.nome;
         }
-        if (typeof lancamento.cliente === "string" && lancamento.cliente !== "") {
+        if (
+          typeof lancamento.cliente === "string" &&
+          lancamento.cliente !== ""
+        ) {
           return lancamento.cliente;
         }
         return "-";

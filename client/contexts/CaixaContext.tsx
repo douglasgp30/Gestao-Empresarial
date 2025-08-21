@@ -401,68 +401,76 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           dataHora: new Date(lancamento.dataHora),
           dataCriacao: new Date(lancamento.dataHora),
           // Mapear campos do banco para o formato esperado pelo frontend
-        id: lancamento.id.toString(),
+          id: lancamento.id.toString(),
 
-        // Técnico/Funcionário - mapear para ambos os campos
-        funcionario: lancamento.funcionario
-          ? {
-              id: lancamento.funcionario.id?.toString(),
-              nome: lancamento.funcionario.nome,
-              percentualComissao: lancamento.funcionario.percentualComissao || lancamento.funcionario.percentualServico,
-            }
-          : undefined,
-        tecnicoResponsavel: lancamento.funcionario
-          ? {
-              id: lancamento.funcionario.id,
-              nome: lancamento.funcionario.nome,
-            }
-          : undefined,
+          // Técnico/Funcionário - mapear para ambos os campos
+          funcionario: lancamento.funcionario
+            ? {
+                id: lancamento.funcionario.id?.toString(),
+                nome: lancamento.funcionario.nome,
+                percentualComissao:
+                  lancamento.funcionario.percentualComissao ||
+                  lancamento.funcionario.percentualServico,
+              }
+            : undefined,
+          tecnicoResponsavel: lancamento.funcionario
+            ? {
+                id: lancamento.funcionario.id,
+                nome: lancamento.funcionario.nome,
+              }
+            : undefined,
 
-        // Forma de pagamento
-        formaPagamento: lancamento.formaPagamento
-          ? {
-              id: lancamento.formaPagamento.id,
-              nome: lancamento.formaPagamento.nome,
-            }
-          : undefined,
+          // Forma de pagamento
+          formaPagamento: lancamento.formaPagamento
+            ? {
+                id: lancamento.formaPagamento.id,
+                nome: lancamento.formaPagamento.nome,
+              }
+            : undefined,
 
-        // Cliente
-        cliente: lancamento.cliente
-          ? {
-              id: lancamento.cliente.id,
-              nome: lancamento.cliente.nome,
-            }
-          : undefined,
+          // Cliente
+          cliente: lancamento.cliente
+            ? {
+                id: lancamento.cliente.id,
+                nome: lancamento.cliente.nome,
+              }
+            : undefined,
 
-        // Campanha
-        campanha: lancamento.campanha
-          ? {
-              id: lancamento.campanha.id,
-              nome: lancamento.campanha.nome,
-            }
-          : undefined,
+          // Campanha
+          campanha: lancamento.campanha
+            ? {
+                id: lancamento.campanha.id,
+                nome: lancamento.campanha.nome,
+              }
+            : undefined,
 
-        // Localização/Setor - mapear para ambos os campos
-        localizacao: lancamento.localizacao
-          ? {
-              id: lancamento.localizacao.id?.toString(),
-              nome: lancamento.localizacao.nome,
-              cidade: lancamento.localizacao.cidade,
-            }
-          : undefined,
-        setor: lancamento.localizacao
-          ? {
-              id: lancamento.localizacao.id?.toString(),
-              nome: lancamento.localizacao.nome,
-              cidade: lancamento.localizacao.cidade,
-            }
-          : undefined,
+          // Localização/Setor - mapear para ambos os campos
+          localizacao: lancamento.localizacao
+            ? {
+                id: lancamento.localizacao.id?.toString(),
+                nome: lancamento.localizacao.nome,
+                cidade: lancamento.localizacao.cidade,
+              }
+            : undefined,
+          setor: lancamento.localizacao
+            ? {
+                id: lancamento.localizacao.id?.toString(),
+                nome: lancamento.localizacao.nome,
+                cidade: lancamento.localizacao.cidade,
+              }
+            : undefined,
 
-        // Categoria e descrição com fallback melhorado
-        categoria: lancamento.descricaoECategoria?.categoria || lancamento.descricao?.categoria || "Serviços",
-        descricao: {
-          nome: lancamento.descricaoECategoria?.nome || lancamento.descricao?.nome || "Serviço"
-        },
+          // Categoria e descrição com fallback melhorado
+          categoria:
+            lancamento.descricaoECategoria?.categoria ||
+            lancamento.descricao?.categoria ||
+            "Serviços",
+          descricao: {
+            nome:
+              lancamento.descricaoECategoria?.nome ||
+              lancamento.descricao?.nome ||
+              "Serviço",
+          },
         }),
       );
 
@@ -639,7 +647,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       isFetchingRef.current = true;
       console.log("[CaixaContext] Recarregando por mudança de filtros");
       carregarDados()
-        .catch((err) => console.error("[CaixaContext] erro carregarDados:", err))
+        .catch((err) =>
+          console.error("[CaixaContext] erro carregarDados:", err),
+        )
         .finally(() => {
           isFetchingRef.current = false;
         });
@@ -1129,39 +1139,48 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Memoizar funções para estabilizar referências e evitar re-renders
   const carregarDadosCb = useCallback(() => carregarDados(), []);
-  const adicionarLancamentoCb = useCallback((novo) => adicionarLancamento(novo), []);
-  const editarLancamentoCb = useCallback((id, dados) => editarLancamento(id, dados), []);
+  const adicionarLancamentoCb = useCallback(
+    (novo) => adicionarLancamento(novo),
+    [],
+  );
+  const editarLancamentoCb = useCallback(
+    (id, dados) => editarLancamento(id, dados),
+    [],
+  );
   const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
   // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores
-  const value = useMemo(() => ({
-    lancamentos,
-    campanhas,
-    filtros,
-    totais,
-    adicionarLancamento: adicionarLancamentoCb,
-    editarLancamento: editarLancamentoCb,
-    excluirLancamento: excluirLancamentoCb,
-    adicionarCampanha: adicionarCampanhaCb,
-    setFiltros,
-    carregarDados: carregarDadosCb,
-    isLoading,
-    error,
-    filtrosDependencias, // Expor para componentes filhos evitarem JSON.stringify
-  }), [
-    lancamentos,
-    campanhas,
-    filtrosDependencias, // Usar string memoizada em vez do objeto filtros
-    totais,
-    adicionarLancamentoCb,
-    editarLancamentoCb,
-    excluirLancamentoCb,
-    adicionarCampanhaCb,
-    carregarDadosCb,
-    isLoading,
-    error,
-  ]);
+  const value = useMemo(
+    () => ({
+      lancamentos,
+      campanhas,
+      filtros,
+      totais,
+      adicionarLancamento: adicionarLancamentoCb,
+      editarLancamento: editarLancamentoCb,
+      excluirLancamento: excluirLancamentoCb,
+      adicionarCampanha: adicionarCampanhaCb,
+      setFiltros,
+      carregarDados: carregarDadosCb,
+      isLoading,
+      error,
+      filtrosDependencias, // Expor para componentes filhos evitarem JSON.stringify
+    }),
+    [
+      lancamentos,
+      campanhas,
+      filtrosDependencias, // Usar string memoizada em vez do objeto filtros
+      totais,
+      adicionarLancamentoCb,
+      editarLancamentoCb,
+      excluirLancamentoCb,
+      adicionarCampanhaCb,
+      carregarDadosCb,
+      isLoading,
+      error,
+    ],
+  );
 
   return (
     <CaixaContext.Provider value={value}>{children}</CaixaContext.Provider>
