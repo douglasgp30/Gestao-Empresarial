@@ -500,19 +500,22 @@ export const createLancamento: RequestHandler = async (req, res) => {
       let descricaoRegistro = await prisma.descricao.findFirst({
         where: {
           nome: { contains: data.descricao },
-          tipo: data.tipo || "receita"
+          tipo: data.tipo || "receita",
         },
       });
       if (!descricaoRegistro) {
         descricaoRegistro = await prisma.descricao.create({
           data: {
             nome: data.descricao,
-            tipo: data.tipo || "receita"
+            tipo: data.tipo || "receita",
           },
         });
         console.log("[Caixa] Criada nova Descricao id:", descricaoRegistro.id);
       } else {
-        console.log("[Caixa] Usando Descricao existente id:", descricaoRegistro.id);
+        console.log(
+          "[Caixa] Usando Descricao existente id:",
+          descricaoRegistro.id,
+        );
       }
       dadosLancamento.descricaoId = descricaoRegistro.id;
     }
@@ -523,7 +526,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       const descricaoDefault = await prisma.descricao.create({
         data: {
           nome: "Lançamento genérico",
-          tipo: data.tipo || "receita"
+          tipo: data.tipo || "receita",
         },
       });
       dadosLancamento.descricaoId = descricaoDefault.id;
@@ -532,12 +535,17 @@ export const createLancamento: RequestHandler = async (req, res) => {
 
     // Verificar se há formaPagamentoId (obrigatório)
     if (!dadosLancamento.formaPagamentoId) {
-      console.log("[Caixa] FormaPagamentoId não fornecido, criando forma padrão");
+      console.log(
+        "[Caixa] FormaPagamentoId não fornecido, criando forma padrão",
+      );
       const formaPagamentoDefault = await prisma.formaPagamento.create({
         data: { nome: "Dinheiro" },
       });
       dadosLancamento.formaPagamentoId = formaPagamentoDefault.id;
-      console.log("[Caixa] Criada forma de pagamento padrão id:", formaPagamentoDefault.id);
+      console.log(
+        "[Caixa] Criada forma de pagamento padrão id:",
+        formaPagamentoDefault.id,
+      );
     }
 
     const lancamento = await prisma.lancamentoCaixa.create({
