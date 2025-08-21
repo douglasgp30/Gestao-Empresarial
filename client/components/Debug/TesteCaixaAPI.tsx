@@ -70,6 +70,11 @@ export function TesteCaixaAPI() {
       descricao: "Teste específico da rota do caixa"
     },
     {
+      nome: "Debug Caixa",
+      url: "/api/caixa/debug",
+      descricao: "Versão simplificada para debug"
+    },
+    {
       nome: "Listar Lançamentos",
       url: "/api/caixa",
       descricao: "Buscar lançamentos (rota principal)"
