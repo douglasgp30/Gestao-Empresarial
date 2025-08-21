@@ -17,9 +17,10 @@ export function TesteCaixaAPI() {
 
   const executarTeste = async (nome: string, url: string, options?: RequestInit) => {
     setTestando(prev => ({ ...prev, [nome]: true }));
-    
+
     try {
       console.log(`🧪 [Teste] ${nome} - ${url}`);
+      console.log(`🧪 [Teste] ${nome} - Options:`, options);
       const response = await fetch(url, options);
       
       console.log(`🧪 [Teste] ${nome} - Status:`, response.status);
