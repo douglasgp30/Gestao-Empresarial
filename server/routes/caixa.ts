@@ -259,10 +259,13 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       orderBy: { id: "desc" },
     });
 
+    console.log(`[Caixa API] Encontrados ${lancamentos.length} lançamentos`);
+    console.log("[Caixa API] Enviando resposta JSON...");
+
     res.json(lancamentos);
   } catch (error) {
-    console.error("Erro ao buscar lançamentos:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error("[Caixa API] Erro ao buscar lançamentos:", error);
+    res.status(500).json({ error: "Erro interno do servidor", details: error.message });
   }
 };
 
