@@ -74,12 +74,85 @@ type SortField =
 type SortDirection = "asc" | "desc" | null;
 
 export default function ListaLancamentos() {
-  const { lancamentos, filtros, excluirLancamento } = useCaixa();
+  const { lancamentos, filtros, excluirLancamento, campanhas } = useCaixa();
+  const { formasPagamento, setores, getTecnicos } = useEntidades();
+  const { clientes } = useClientes();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
     string | null
   >(null);
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
+
+  // Funções helper para mapear IDs para nomes
+  const getFormaPagamentoNome = (formaPagamentoId: string) => {
+    if (!formaPagamentoId) return "N/A";
+
+    // Se já é um nome (string), retornar direto
+    if (isNaN(Number(formaPagamentoId))) {
+      return formaPagamentoId;
+    }
+
+    // Buscar pelo ID
+    const forma = formasPagamento.find(f => f.id.toString() === formaPagamentoId);
+    return forma?.nome || "N/A";
+  };
+
+  const getSetorNome = (setorId: string) => {
+    if (!setorId) return "";
+
+    // Se já é um nome (string), retornar direto
+    if (isNaN(Number(setorId))) {
+      return setorId;
+    }
+
+    // Buscar pelo ID nos setores
+    const setor = setores.find(s => s.id?.toString() === setorId);
+    if (setor) {
+      const cidade = typeof setor.cidade === 'object' ? setor.cidade?.nome : setor.cidade;
+      return `${setor.nome}${cidade ? ` - ${cidade}` : ''}`;
+    }
+    return "";
+  };
+
+  const getTecnicoNome = (tecnicoId: string) => {
+    if (!tecnicoId) return "";
+
+    // Se já é um nome (string), retornar direto
+    if (isNaN(Number(tecnicoId))) {
+      return tecnicoId;
+    }
+
+    // Buscar pelo ID nos técnicos
+    const tecnicos = getTecnicos();
+    const tecnico = tecnicos.find(t => t.id?.toString() === tecnicoId);
+    return tecnico?.nome || tecnico?.nomeCompleto || "";
+  };
+
+  const getCampanhaNome = (campanhaId: string) => {
+    if (!campanhaId) return "";
+
+    // Se já é um nome (string), retornar direto
+    if (isNaN(Number(campanhaId))) {
+      return campanhaId;
+    }
+
+    // Buscar pelo ID nas campanhas
+    const campanha = campanhas.find(c => c.id?.toString() === campanhaId);
+    return campanha?.nome || "";
+  };
+
+  const getClienteNome = (clienteId: string) => {
+    if (!clienteId) return "";
+
+    // Se já é um nome (string), retornar direto
+    if (isNaN(Number(clienteId))) {
+      return clienteId;
+    }
+
+    // Buscar pelo ID nos clientes
+    const cliente = clientes.find(c => c.id === clienteId);
+    return cliente?.nome || "";
+  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
