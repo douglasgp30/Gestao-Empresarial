@@ -173,6 +173,9 @@ async function resolverIds(data: any) {
 
 export const getLancamentos: RequestHandler = async (req, res) => {
   try {
+    console.log("[Caixa API] GET /api/caixa - Iniciando busca de lançamentos");
+    console.log("[Caixa API] Query params:", req.query);
+
     const {
       dataInicio,
       dataFim,
