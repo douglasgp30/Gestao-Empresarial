@@ -115,11 +115,31 @@ export function ModalReceita() {
     );
   }, [formData.formaPagamento, formasPagamento]);
 
+  // Buscar percentual de imposto das configurações
+  const getPercentualImposto = () => {
+    try {
+      const savedConfigs = localStorage.getItem("userConfigs");
+      if (savedConfigs) {
+        const configs = JSON.parse(savedConfigs);
+        return configs.percentualImposto || 6; // 6% é o padrão
+      }
+    } catch (error) {
+      console.error("Erro ao carregar percentual de imposto:", error);
+    }
+    return 6; // Valor padrão
+  };
+
   // Calcular campos automaticamente
   const valorCalculado = parseFloat(formData.valor) || 0;
   const valorQueEntrouCalculado =
     parseFloat(formData.valorQueEntrou) || valorCalculado;
-  const valorLiquidoCalculado = valorQueEntrouCalculado;
+
+  // Calcular imposto apenas se tem nota fiscal
+  const percentualImposto = getPercentualImposto();
+  const impostoCalculado = formData.temNotaFiscal ? (valorCalculado * percentualImposto) / 100 : 0;
+
+  // Valor líquido descontando o imposto se houver nota fiscal
+  const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
 
   // Calcular comissão baseada no percentual do técnico
   const comissaoCalculada = (() => {
