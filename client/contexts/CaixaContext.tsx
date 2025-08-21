@@ -378,7 +378,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw new Error(`Erro ao fazer parse da resposta JSON: ${parseError}`);
       }
 
-      // Verificar se a resposta foi bem sucedida ap��s fazer o parse
+      // Verificar se a resposta foi bem sucedida após fazer o parse
       if (!response.ok) {
         console.error(
           "📦 [CaixaContext] Erro na resposta:",
@@ -591,24 +591,21 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.numeroNota,
   ]);
 
-  // Recarregar lançamentos quando os filtros mudarem
+  // Recarregar lançamentos quando os filtros mudarem - versão otimizada
   useEffect(() => {
-    // Usar throttling para evitar múltiplas chamadas
-    if (contextThrottle.isThrottled("CaixaContext-filtros", 2000)) {
-      console.log("[CaixaContext] Filtros throttled, ignorando...");
+    // Evitar carregamento se ainda estiver carregando dados iniciais
+    if (isLoading || isCarregando) {
+      console.log("[CaixaContext] Ainda carregando, ignorando mudança de filtros");
       return;
     }
 
     const timeoutId = setTimeout(() => {
-      contextThrottle.execute(
-        "CaixaContext-filtros",
-        () => carregarLancamentos(true),
-        2000, // 2 segundos de throttle
-      );
-    }, 800); // Debounce ainda maior
+      console.log("[CaixaContext] Recarregando por mudança de filtros");
+      carregarDados(); // Usar carregarDados diretamente para ser mais eficiente
+    }, 800);
 
     return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias]); // Remover carregarLancamentos das dependências
+  }, [filtrosDependencias, isLoading, isCarregando]);
 
   // Função para normalizar lançamento antes de salvar
   const normalizarLancamento = (lancamento: any): any => {
