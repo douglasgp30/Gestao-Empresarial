@@ -544,16 +544,24 @@ export const createLancamento: RequestHandler = async (req, res) => {
     // Resolver legacy descricaoId se não fornecido mas há uma descrição
     if (!dadosLancamento.descricaoId && data.descricao) {
       console.log("[Caixa] Resolvendo descricao legacy para:", data.descricao);
+
+      // Sanitizar descrição - evitar nomes apenas numéricos
+      let nomeDescricao = data.descricao;
+      if (/^\d+$/.test(nomeDescricao)) {
+        console.log("[Caixa] Descrição numérica detectada, usando nome padrão");
+        nomeDescricao = "Serviço (importado)";
+      }
+
       let descricaoRegistro = await prisma.descricao.findFirst({
         where: {
-          nome: { contains: data.descricao },
+          nome: { contains: nomeDescricao },
           tipo: data.tipo || "receita",
         },
       });
       if (!descricaoRegistro) {
         descricaoRegistro = await prisma.descricao.create({
           data: {
-            nome: data.descricao,
+            nome: nomeDescricao,
             tipo: data.tipo || "receita",
           },
         });

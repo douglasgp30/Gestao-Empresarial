@@ -331,7 +331,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
 
     // Validar valor recebido para pagamentos com cartão
-    if (isFormaPagamentoCartao && !formData.valorQueEntrou) {
+    if (isFormaPagamentoCartao && valorQueEntrouInput.numericValue <= 0) {
       toast({
         title: "Erro",
         description:
@@ -637,9 +637,15 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
             <SelectWithAdd
               value={formData.descricao}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, descricao: value }))
-              }
+              onValueChange={(value) => {
+                const descricaoSelecionada = descricoesFiltradas.find(
+                  (d) => d.id?.toString() === value,
+                );
+                setFormData((prev) => ({
+                  ...prev,
+                  descricao: descricaoSelecionada?.nome || value,
+                }));
+              }}
               placeholder={
                 formData.categoria
                   ? "Selecione a descrição"
@@ -674,6 +680,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
                   if (!response.ok) throw new Error("Erro ao criar descrição");
 
+                  const created = await response.json(); // Capturar o item criado
+
                   // Recarregar descrições
                   const reloadResponse = await fetch(
                     `/api/descricoes-e-categorias/descricoes?tipo=receita&categoria=${encodeURIComponent(formData.categoria)}`,
@@ -682,6 +690,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   if (reloadData.data) {
                     setDescricoesFiltradas(reloadData.data);
                   }
+
+                  // Selecionar automaticamente o item recém-criado
+                  setFormData((prev) => ({
+                    ...prev,
+                    descricao: created.nome || data.nome.trim(),
+                  }));
                 } catch (error) {
                   console.error("Erro ao adicionar descrição:", error);
                   throw error;

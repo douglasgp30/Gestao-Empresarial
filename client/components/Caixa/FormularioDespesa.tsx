@@ -304,9 +304,15 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
 
             <SelectWithAdd
               value={formData.descricao}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, descricao: value }))
-              }
+              onValueChange={(value) => {
+                const descricaoSelecionada = descricoesFiltradas.find(
+                  (d) => d.id?.toString() === value,
+                );
+                setFormData((prev) => ({
+                  ...prev,
+                  descricao: descricaoSelecionada?.nome || value,
+                }));
+              }}
               placeholder={
                 formData.categoria
                   ? "Selecione a descrição"
@@ -344,6 +350,8 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                     throw new Error(`HTTP ${response.status}`);
                   }
 
+                  const created = await response.json(); // Capturar o item criado
+
                   // Recarregar descrições
                   const descricoesResponse = await fetch(
                     `/api/descricoes-e-categorias/descricoes?tipo=despesa&categoria=${encodeURIComponent(formData.categoria)}`,
@@ -352,6 +360,12 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                   if (descricoesResult.data) {
                     setDescricoes(descricoesResult.data);
                   }
+
+                  // Selecionar automaticamente o item recém-criado
+                  setFormData((prev) => ({
+                    ...prev,
+                    descricao: created.nome || data.nome.trim(),
+                  }));
 
                   toast({
                     title: "Sucesso!",

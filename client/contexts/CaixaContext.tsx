@@ -169,7 +169,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (error instanceof Error) {
         if (error.name === "AbortError") {
           console.warn(
-            "📊 [CaixaContext] Timeout ao carregar campanhas do servidor",
+            "�� [CaixaContext] Timeout ao carregar campanhas do servidor",
           );
         } else if (error.message.includes("Failed to fetch")) {
           console.warn(
@@ -473,6 +473,16 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
               "Serviço",
           },
         }),
+      );
+
+      // Debug: verificar dados processados
+      console.log(
+        "🔍 [DEBUG] Lançamentos formatados:",
+        lancamentosFormatados.map((l) => ({
+          id: l.id,
+          descricao: l.descricao,
+          categoria: l.categoria,
+        })),
       );
 
       setLancamentos(lancamentosFormatados);
