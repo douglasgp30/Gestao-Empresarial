@@ -213,6 +213,19 @@ export function createServer(): Express {
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
 
+  // Debug temporário
+  app.get("/api/debug/funcionarios-completo", async (req, res) => {
+    try {
+      const funcionarios = await prisma.funcionario.findMany({
+        orderBy: { dataCriacao: "asc" },
+      });
+      res.json(funcionarios);
+    } catch (error) {
+      console.error("Erro debug:", error);
+      res.status(500).json({ error: "Erro interno" });
+    }
+  });
+
 
   // Rotas de Localização Geográfica (Cidades e Setores unificados)
   app.get("/api/localizacoes-geograficas", getLocalizacoesGeograficas);
