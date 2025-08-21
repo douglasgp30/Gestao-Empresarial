@@ -213,63 +213,6 @@ export function createServer(): Express {
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
 
-  // Debug temporário
-  app.get("/api/debug/funcionarios-completo", async (req, res) => {
-    try {
-      const funcionarios = await prisma.funcionario.findMany({
-        orderBy: { dataCriacao: "asc" },
-      });
-      res.json(funcionarios);
-    } catch (error) {
-      console.error("Erro debug:", error);
-      res.status(500).json({ error: "Erro interno" });
-    }
-  });
-
-  // Criar administrador Douglas Gustavo no banco
-  app.post("/api/debug/criar-douglas", async (req, res) => {
-    try {
-      // Verificar se já existe
-      const existente = await prisma.funcionario.findFirst({
-        where: { nome: "Douglas Gustavo" }
-      });
-
-      if (existente) {
-        return res.json({ message: "Douglas Gustavo já existe", funcionario: existente });
-      }
-
-      const douglas = await prisma.funcionario.create({
-        data: {
-          nome: "Douglas Gustavo",
-          ehTecnico: false,
-          email: null,
-          telefone: null,
-          cargo: "Administrador",
-          salario: null,
-          percentualComissao: null,
-          temAcessoSistema: true,
-          tipoAcesso: "Administrador",
-          login: "douglas",
-          senha: "123456",
-          permissoes: JSON.stringify({
-            administrador: true,
-            podeGerenciarFuncionarios: true,
-            podeGerenciarCaixa: true,
-            podeGerenciarClientes: true,
-            podeGerenciarContas: true,
-            podeVerRelatorios: true
-          }),
-          registraPonto: false,
-          jornadaDiaria: 8
-        }
-      });
-
-      res.json({ message: "Douglas Gustavo criado com sucesso", funcionario: douglas });
-    } catch (error) {
-      console.error("Erro ao criar Douglas:", error);
-      res.status(500).json({ error: "Erro interno" });
-    }
-  });
 
 
   // Rotas de Localização Geográfica (Cidades e Setores unificados)
