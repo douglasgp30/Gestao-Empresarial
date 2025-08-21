@@ -217,28 +217,7 @@ export function ModalReceita() {
     setNotaFiscalEmitida(false);
   };
 
-  const recarregarDados = async () => {
-    try {
-      // Recarregar dados dos contextos sem recarregar a página
-      await Promise.all([
-        // Força recarregamento dos dados necessários
-        window.location.reload(),
-      ]);
-
-      toast({
-        title: "Dados Atualizados",
-        description: "Os dados foram recarregados com sucesso!",
-        variant: "default",
-      });
-    } catch (error) {
-      console.error("Erro ao recarregar dados:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao recarregar dados. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  };
+  // Função removida - o contexto já atualiza automaticamente após adicionar lançamento
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -309,6 +288,9 @@ export function ModalReceita() {
 
       resetForm();
       setIsOpen(false);
+
+      // Não recarregar a página toda, apenas aguardar contexto atualizar
+      console.log("[ModalReceita] Lançamento salvo, modal fechado");
     } catch (error) {
       console.error("Erro ao lançar receita:", error);
       toast({

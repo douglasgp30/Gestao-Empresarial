@@ -203,20 +203,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     valorQueEntrouInput.numericValue || valorCalculado;
   const impostoCalculado = impostoInput.numericValue;
 
+  // SEQUÊNCIA CORRETA DE CÁLCULOS:
+  // 1. Valor que entrou (para cartão, é o valor após taxas da operadora)
+  // 2. Aplicar descontos (nota fiscal, impostos)
+  // 3. Calcular comissão sobre o valor líquido
+
   // Calcular descontos baseados nos percentuais
   const percentualNotaFiscal = formData.temNotaFiscal ? 5 : 0; // 5% se houver nota fiscal
   const descontoNotaFiscal =
     (valorQueEntrouCalculado * percentualNotaFiscal) / 100;
 
-  // Taxa do cartão - aplicar só se for forma de pagamento de cartão
-  const taxaCartao = isFormaPagamentoCartao ? (valorCalculado * 3.5) / 100 : 0; // 3.5% para cartão
+  // Taxa do cartão já foi aplicada pela operadora (valor que entrou já é líquido)
+  // Não aplicar taxa adicional se for cartão pois valorQueEntrou já considera a taxa
 
-  // Valor líquido = valor recebido - impostos - desconto nota fiscal - taxa cartão
+  // Valor líquido = valor recebido - impostos - desconto nota fiscal
   const valorLiquidoCalculado =
-    valorQueEntrouCalculado -
-    impostoCalculado -
-    descontoNotaFiscal -
-    taxaCartao;
+    valorQueEntrouCalculado - impostoCalculado - descontoNotaFiscal;
 
   // Calcular comissão baseada no percentual do t��cnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
@@ -1136,9 +1138,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   )}
                   {isFormaPagamentoCartao && (
                     <div>
-                      <span className="text-gray-600">Taxa Cartão (3,5%):</span>
-                      <div className="font-medium text-orange-600">
-                        - R$ {taxaCartao.toFixed(2).replace(".", ",")}
+                      <span className="text-gray-600">Taxa Cartão:</span>
+                      <div className="font-medium text-green-600">
+                        Já descontada
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        (Valor recebido já é líquido)
                       </div>
                     </div>
                   )}

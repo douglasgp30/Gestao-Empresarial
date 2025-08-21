@@ -54,22 +54,22 @@ import {
 const defaultColumns: ColumnConfig[] = [
   { key: "data", label: "Data", visible: true, order: 0 },
   { key: "tipo", label: "Tipo", visible: true, order: 1 },
-  { key: "descricao", label: "Descrição", visible: true, order: 2 },
-  { key: "valor", label: "Valor", visible: true, order: 3 },
-  { key: "valorLiquido", label: "Valor Líquido", visible: false, order: 4 },
-  { key: "valorRecebido", label: "Valor Recebido", visible: false, order: 5 },
-  { key: "comissao", label: "Comissão", visible: false, order: 6 },
-  { key: "imposto", label: "Imposto/Taxa", visible: false, order: 7 },
+  { key: "categoria", label: "Categoria", visible: true, order: 2 },
+  { key: "descricao", label: "Descrição", visible: true, order: 3 },
+  { key: "valor", label: "Valor", visible: true, order: 4 },
+  { key: "valorLiquido", label: "Valor Líquido", visible: false, order: 5 },
+  { key: "valorRecebido", label: "Valor Recebido", visible: false, order: 6 },
+  { key: "comissao", label: "Comissão", visible: true, order: 7 },
+  { key: "imposto", label: "Imposto/Taxa", visible: false, order: 8 },
   {
     key: "formaPagamento",
     label: "Forma de Pagamento",
     visible: true,
-    order: 8,
+    order: 9,
   },
-  { key: "tecnico", label: "Técnico", visible: true, order: 9 },
-  { key: "setor", label: "Setor", visible: true, order: 10 },
-  { key: "campanha", label: "Campanha", visible: false, order: 11 },
-  { key: "conta", label: "Conta", visible: false, order: 12 },
+  { key: "tecnico", label: "Técnico", visible: true, order: 10 },
+  { key: "setor", label: "Setor", visible: true, order: 11 },
+  { key: "campanha", label: "Campanha", visible: false, order: 12 },
   { key: "observacoes", label: "Observações", visible: false, order: 13 },
   { key: "numeroNota", label: "Número da Nota", visible: false, order: 14 },
   { key: "cliente", label: "Cliente", visible: false, order: 15 },
@@ -130,6 +130,9 @@ export function ListaLancamentosSimples() {
           </Badge>
         );
 
+      case "categoria":
+        return lancamento.categoria || "N/A";
+
       case "descricao":
         // Suporta tanto string quanto objeto com nome
         const descricao =
@@ -170,19 +173,33 @@ export function ListaLancamentosSimples() {
         return formaPagamento || "N/A";
 
       case "tecnico":
-        // Verifica múltiplos campos para compatibilidade
-        const tecnico =
-          lancamento.funcionario?.nome ||
-          (typeof lancamento.tecnicoResponsavel === "object"
-            ? lancamento.tecnicoResponsavel?.nome
-            : lancamento.tecnicoResponsavel) ||
-          "-";
-        return tecnico;
+        // Priorizar funcionario do banco de dados
+        if (lancamento.funcionario?.nome) {
+          return lancamento.funcionario.nome;
+        }
+        // Fallback para tecnicoResponsavel (dados legados)
+        if (
+          typeof lancamento.tecnicoResponsavel === "object" &&
+          lancamento.tecnicoResponsavel?.nome
+        ) {
+          return lancamento.tecnicoResponsavel.nome;
+        }
+        if (
+          typeof lancamento.tecnicoResponsavel === "string" &&
+          lancamento.tecnicoResponsavel !== ""
+        ) {
+          return lancamento.tecnicoResponsavel;
+        }
+        return "-";
 
       case "setor":
+        // Priorizar localizacao do banco de dados
+        if (lancamento.localizacao?.nome) {
+          return lancamento.localizacao.nome;
+        }
+        // Fallback para setor (dados legados)
         if (!lancamento.setor) return "-";
 
-        // Suporta tanto string quanto objeto
         if (typeof lancamento.setor === "string") {
           return lancamento.setor;
         }
@@ -204,9 +221,6 @@ export function ListaLancamentosSimples() {
             : lancamento.campanha?.nome;
         return campanha || "-";
 
-      case "conta":
-        return lancamento.conta || "-";
-
       case "observacoes":
         return lancamento.observacoes ? (
           <span
@@ -225,12 +239,17 @@ export function ListaLancamentosSimples() {
         return lancamento.numeroNota || "-";
 
       case "cliente":
-        // Suporta tanto string quanto objeto com nome
-        const cliente =
-          typeof lancamento.cliente === "string"
-            ? lancamento.cliente
-            : lancamento.cliente?.nome;
-        return cliente || "-";
+        // Priorizar dados do banco de dados
+        if (lancamento.cliente?.nome) {
+          return lancamento.cliente.nome;
+        }
+        if (
+          typeof lancamento.cliente === "string" &&
+          lancamento.cliente !== ""
+        ) {
+          return lancamento.cliente;
+        }
+        return "-";
 
       case "acoes":
         return (

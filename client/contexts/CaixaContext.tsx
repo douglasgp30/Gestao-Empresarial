@@ -216,7 +216,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      console.log("📦 [CaixaContext] Carregando dados do banco de dados...");
+      console.log("��� [CaixaContext] Carregando dados do banco de dados...");
 
       // Carregar campanhas do servidor
       try {
@@ -402,32 +402,75 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           dataCriacao: new Date(lancamento.dataHora),
           // Mapear campos do banco para o formato esperado pelo frontend
           id: lancamento.id.toString(),
+
+          // Técnico/Funcionário - mapear para ambos os campos
+          funcionario: lancamento.funcionario
+            ? {
+                id: lancamento.funcionario.id?.toString(),
+                nome: lancamento.funcionario.nome,
+                percentualComissao:
+                  lancamento.funcionario.percentualComissao ||
+                  lancamento.funcionario.percentualServico,
+              }
+            : undefined,
           tecnicoResponsavel: lancamento.funcionario
             ? {
                 id: lancamento.funcionario.id,
                 nome: lancamento.funcionario.nome,
               }
             : undefined,
+
+          // Forma de pagamento
           formaPagamento: lancamento.formaPagamento
             ? {
                 id: lancamento.formaPagamento.id,
                 nome: lancamento.formaPagamento.nome,
               }
             : undefined,
+
+          // Cliente
           cliente: lancamento.cliente
             ? {
                 id: lancamento.cliente.id,
                 nome: lancamento.cliente.nome,
               }
             : undefined,
+
+          // Campanha
           campanha: lancamento.campanha
             ? {
                 id: lancamento.campanha.id,
                 nome: lancamento.campanha.nome,
               }
             : undefined,
-          categoria: lancamento.descricaoECategoria?.categoria || "Serviços",
-          descricao: lancamento.descricaoECategoria?.nome || "Serviço",
+
+          // Localização/Setor - mapear para ambos os campos
+          localizacao: lancamento.localizacao
+            ? {
+                id: lancamento.localizacao.id?.toString(),
+                nome: lancamento.localizacao.nome,
+                cidade: lancamento.localizacao.cidade,
+              }
+            : undefined,
+          setor: lancamento.localizacao
+            ? {
+                id: lancamento.localizacao.id?.toString(),
+                nome: lancamento.localizacao.nome,
+                cidade: lancamento.localizacao.cidade,
+              }
+            : undefined,
+
+          // Categoria e descrição com fallback melhorado
+          categoria:
+            lancamento.descricaoECategoria?.categoria ||
+            lancamento.descricao?.categoria ||
+            "Serviços",
+          descricao: {
+            nome:
+              lancamento.descricaoECategoria?.nome ||
+              lancamento.descricao?.nome ||
+              "Serviço",
+          },
         }),
       );
 
@@ -538,35 +581,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // Carregar dados na inicialização com controle global e throttling
+  // Carregar dados na inicialização - versão otimizada
   useEffect(() => {
-    // Verificar se estamos em um ambiente válido para carregamento
     if (typeof window === "undefined") {
-      console.log(
-        "[CaixaContext] Executando no servidor, pulando carregamento inicial",
-      );
+      console.log("[CaixaContext] Servidor - pulando carregamento inicial");
       return;
     }
 
-    // Verificar se é hot reload (comum durante desenvolvimento)
-    const isHotReload =
-      window.location.href.includes("reload=") ||
-      window.location.href.includes("?t=") ||
-      document.readyState !== "complete";
-
-    // Sempre usar um debounce para evitar múltiplas execuções
-    const debounceTime = isHotReload ? 3000 : 1000; // Mais tempo durante hot reload
-
-    console.log(
-      `[CaixaContext] Agendando carregamento em ${debounceTime}ms...`,
-    );
+    // Carregar apenas uma vez na inicialização
+    let mounted = true;
     const timeout = setTimeout(() => {
-      console.log("[CaixaContext] Executando carregamento de dados");
-      carregarDados();
-    }, debounceTime);
+      if (mounted) {
+        console.log("[CaixaContext] Carregamento inicial executado");
+        carregarDados();
+      }
+    }, 500); // Tempo reduzido para melhor experiência
 
     return () => {
-      console.log("[CaixaContext] Cancelando carregamento agendado");
+      mounted = false;
       clearTimeout(timeout);
     };
   }, []);
@@ -602,24 +634,29 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.numeroNota,
   ]);
 
-  // Recarregar lançamentos quando os filtros mudarem
-  useEffect(() => {
-    // Usar throttling para evitar múltiplas chamadas
-    if (contextThrottle.isThrottled("CaixaContext-filtros", 2000)) {
-      console.log("[CaixaContext] Filtros throttled, ignorando...");
-      return;
-    }
+  // Recarregar lançamentos quando os filtros mudarem - corrigido para evitar loop
+  const isFetchingRef = useRef(false);
 
+  useEffect(() => {
+    // Debounce para evitar múltiplos lançamentos rápidos
     const timeoutId = setTimeout(() => {
-      contextThrottle.execute(
-        "CaixaContext-filtros",
-        () => carregarLancamentos(true),
-        2000, // 2 segundos de throttle
-      );
-    }, 800); // Debounce ainda maior
+      if (isFetchingRef.current) {
+        console.log("[CaixaContext] fetch já em andamento, ignorando");
+        return;
+      }
+      isFetchingRef.current = true;
+      console.log("[CaixaContext] Recarregando por mudança de filtros");
+      carregarDados()
+        .catch((err) =>
+          console.error("[CaixaContext] erro carregarDados:", err),
+        )
+        .finally(() => {
+          isFetchingRef.current = false;
+        });
+    }, 800);
 
     return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias]); // Remover carregarLancamentos das dependências
+  }, [filtrosDependencias]); // REMOVIDO isLoading e isCarregando das dependências
 
   // Função para normalizar lançamento antes de salvar
   const normalizarLancamento = (lancamento: any): any => {
@@ -1100,20 +1137,50 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, [lancamentos]);
 
-  const value = {
-    lancamentos,
-    campanhas,
-    filtros,
-    totais,
-    adicionarLancamento,
-    editarLancamento,
-    excluirLancamento,
-    adicionarCampanha,
-    setFiltros,
-    carregarDados,
-    isLoading,
-    error,
-  };
+  // Memoizar funções para estabilizar referências e evitar re-renders
+  const carregarDadosCb = useCallback(() => carregarDados(), []);
+  const adicionarLancamentoCb = useCallback(
+    (novo) => adicionarLancamento(novo),
+    [],
+  );
+  const editarLancamentoCb = useCallback(
+    (id, dados) => editarLancamento(id, dados),
+    [],
+  );
+  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
+  const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
+
+  // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores
+  const value = useMemo(
+    () => ({
+      lancamentos,
+      campanhas,
+      filtros,
+      totais,
+      adicionarLancamento: adicionarLancamentoCb,
+      editarLancamento: editarLancamentoCb,
+      excluirLancamento: excluirLancamentoCb,
+      adicionarCampanha: adicionarCampanhaCb,
+      setFiltros,
+      carregarDados: carregarDadosCb,
+      isLoading,
+      error,
+      filtrosDependencias, // Expor para componentes filhos evitarem JSON.stringify
+    }),
+    [
+      lancamentos,
+      campanhas,
+      filtrosDependencias, // Usar string memoizada em vez do objeto filtros
+      totais,
+      adicionarLancamentoCb,
+      editarLancamentoCb,
+      excluirLancamentoCb,
+      adicionarCampanhaCb,
+      carregarDadosCb,
+      isLoading,
+      error,
+    ],
+  );
 
   return (
     <CaixaContext.Provider value={value}>{children}</CaixaContext.Provider>

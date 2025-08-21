@@ -134,13 +134,36 @@ async function resolverIds(data: any) {
     );
   }
 
-  // Resolver técnico responsável
+  // Resolver técnico responsável - melhorado para aceitar ID ou nome
   if (data.tecnicoResponsavel && !data.funcionarioId) {
-    const funcionario = await prisma.funcionario.findFirst({
-      where: { id: parseInt(data.tecnicoResponsavel) },
-    });
+    let funcionario = null;
+    const possivelId = parseInt(String(data.tecnicoResponsavel));
+
+    // Tentar primeiro por ID
+    if (!Number.isNaN(possivelId)) {
+      funcionario = await prisma.funcionario.findUnique({
+        where: { id: possivelId },
+      });
+    }
+
+    // Se não encontrou por ID, tentar por nome
+    if (!funcionario) {
+      funcionario = await prisma.funcionario.findFirst({
+        where: {
+          nome: { contains: String(data.tecnicoResponsavel) },
+        },
+      });
+    }
+
     if (funcionario) {
       ids.funcionarioId = funcionario.id;
+      console.log(
+        `[Caixa] Funcionario resolvido: ${data.tecnicoResponsavel} -> ${funcionario.nome} (${funcionario.id})`,
+      );
+    } else {
+      console.log(
+        `[Caixa] Funcionario não encontrado: ${data.tecnicoResponsavel}`,
+      );
     }
   } else if (data.funcionarioId) {
     ids.funcionarioId = parseInt(data.funcionarioId);
@@ -264,7 +287,7 @@ export const getLancamentos: RequestHandler = async (req, res) => {
             percentualServico: true,
           },
         },
-
+        localizacao: true, // INCLUIR para resolver campos de setor vazios
         campanha: true,
         cliente: true,
       },
@@ -371,9 +394,8 @@ export const createLancamento: RequestHandler = async (req, res) => {
       );
     }
 
-    // Verificar se os IDs de relacionamento existem
-    console.log("[Caixa] Verificando se os IDs de relacionamento existem...");
-
+    // Validar forma de pagamento (obrigatório)
+    console.log("[Caixa] Validando forma de pagamento...");
     if (ids.formaPagamentoId) {
       const formaPagamento = await prisma.formaPagamento.findUnique({
         where: { id: ids.formaPagamentoId },
@@ -387,36 +409,6 @@ export const createLancamento: RequestHandler = async (req, res) => {
           .status(400)
           .json({ error: "Forma de pagamento não encontrada" });
       }
-    }
-
-    if (ids.funcionarioId) {
-      const funcionario = await prisma.funcionario.findUnique({
-        where: { id: ids.funcionarioId },
-      });
-      console.log(
-        `[Caixa] Funcionário ID ${ids.funcionarioId}:`,
-        funcionario ? "EXISTS" : "NOT FOUND",
-      );
-    }
-
-    if (ids.localizacaoId) {
-      const localizacao = await prisma.localizacaoGeografica.findUnique({
-        where: { id: ids.localizacaoId },
-      });
-      console.log(
-        `[Caixa] Localização ID ${ids.localizacaoId}:`,
-        localizacao ? "EXISTS" : "NOT FOUND",
-      );
-    }
-
-    if (ids.campanhaId) {
-      const campanha = await prisma.campanha.findUnique({
-        where: { id: ids.campanhaId },
-      });
-      console.log(
-        `[Caixa] Campanha ID ${ids.campanhaId}:`,
-        campanha ? "EXISTS" : "NOT FOUND",
-      );
     }
 
     // Verificar se o cliente existe (se especificado)
@@ -435,7 +427,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
         console.log(
           `[Caixa] Cliente ID ${data.clienteId} n��o encontrado. Definindo como null.`,
         );
-        clienteIdValido = undefined;
+        clienteIdValido = null;
       }
     }
 
@@ -466,7 +458,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       console.log("[Caixa] Usando data atual:", dataHoraLancamento);
     }
 
-    // Preparar dados para criação
+    // Preparar dados para criação usando apenas IDs validados
     const dadosLancamento: any = {
       valor: data.valor,
       valorRecebido: data.valorRecebido,
@@ -479,8 +471,63 @@ export const createLancamento: RequestHandler = async (req, res) => {
       tipo: data.tipo,
       dataHora: dataHoraLancamento,
       clienteId: clienteIdValido,
-      ...ids, // Adicionar IDs resolvidos
     };
+
+    // Adicionar apenas IDs que foram validados e existem
+    if (ids.formaPagamentoId) {
+      dadosLancamento.formaPagamentoId = ids.formaPagamentoId;
+    }
+
+    // Revalidar funcionário antes de adicionar
+    if (ids.funcionarioId) {
+      const funcionario = await prisma.funcionario.findUnique({
+        where: { id: ids.funcionarioId },
+      });
+      if (funcionario) {
+        dadosLancamento.funcionarioId = ids.funcionarioId;
+        console.log(
+          `[Caixa] Funcionário ID ${ids.funcionarioId} validado e adicionado`,
+        );
+      } else {
+        console.log(
+          `[Caixa] Funcionário ID ${ids.funcionarioId} não encontrado, removendo`,
+        );
+      }
+    }
+
+    // Revalidar localização antes de adicionar
+    if (ids.localizacaoId) {
+      const localizacao = await prisma.localizacaoGeografica.findUnique({
+        where: { id: ids.localizacaoId },
+      });
+      if (localizacao) {
+        dadosLancamento.localizacaoId = ids.localizacaoId;
+        console.log(
+          `[Caixa] Localização ID ${ids.localizacaoId} validada e adicionada`,
+        );
+      } else {
+        console.log(
+          `[Caixa] Localização ID ${ids.localizacaoId} não encontrada, removendo`,
+        );
+      }
+    }
+
+    // Revalidar campanha antes de adicionar
+    if (ids.campanhaId) {
+      const campanha = await prisma.campanha.findUnique({
+        where: { id: ids.campanhaId },
+      });
+      if (campanha) {
+        dadosLancamento.campanhaId = ids.campanhaId;
+        console.log(
+          `[Caixa] Campanha ID ${ids.campanhaId} validada e adicionada`,
+        );
+      } else {
+        console.log(
+          `[Caixa] Campanha ID ${ids.campanhaId} não encontrada, removendo`,
+        );
+      }
+    }
 
     // Adicionar sistema unificado se disponível
     if (descricaoECategoriaId) {
@@ -564,7 +611,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
             percentualServico: true,
           },
         },
-
+        localizacao: true, // INCLUIR para resolver campos de setor vazios
         campanha: true,
         cliente: true,
       },
@@ -698,7 +745,7 @@ export const updateLancamento: RequestHandler = async (req, res) => {
             percentualServico: true,
           },
         },
-
+        localizacao: true, // INCLUIR para resolver campos de setor vazios
         campanha: true,
         cliente: true,
       },
