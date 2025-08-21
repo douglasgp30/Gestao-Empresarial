@@ -67,11 +67,11 @@ export interface LancamentoCaixa {
   // Campos diretos (como estão sendo salvos atualmente)
   categoria?: string; // Categoria do lançamento
   descricao?: string; // Descrição do lançamento
-  formaPagamento?: string; // ID ou nome da forma de pagamento
-  tecnicoResponsavel?: string; // ID ou nome do técnico responsável
-  setor?: string; // ID ou nome do setor
-  campanha?: string; // ID ou nome da campanha
-  cliente?: string; // ID ou nome do cliente
+  formaPagamento?: any; // Snapshot do objeto FormaPagamento ou ID string
+  tecnicoResponsavel?: any; // Snapshot do objeto Tecnico ou ID string
+  setor?: any; // Snapshot do objeto Setor ou ID string
+  campanha?: any; // Snapshot do objeto Campanha ou ID string
+  cliente?: any; // Snapshot do objeto Cliente ou ID string
 
   observacoes?: string; // Observações do lançamento
   numeroNota?: string; // Número da nota fiscal
@@ -123,7 +123,7 @@ export interface ContaLancamento {
   descricaoCategoria?: number; // SMALLINT FK categorias(id)
   pago: boolean; // BOOLEAN
   dataPagamento?: Date; // TIMESTAMP - Condicional
-  codigoServico?: string; // Código único do serviço para rastreabilidade
+  codigoServico?: string; // C��digo único do serviço para rastreabilidade
   categoria?: string; // Nome da categoria
   descricao?: string; // Descrição do serviço
 
