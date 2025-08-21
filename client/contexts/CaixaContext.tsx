@@ -826,16 +826,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(dadosParaAPI),
       });
 
+      // Verificar se a resposta está ok primeiro
+      if (!response.ok) {
+        let errorMessage = `Erro ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            // Se não conseguir ler nada, usar mensagem padrão
+          }
+        }
+        throw new Error(`Erro na API: ${errorMessage}`);
+      }
+
+      // Se resposta ok, tentar fazer parse do JSON
       let responseData;
       try {
         responseData = await response.json();
       } catch (parseError) {
-        const errorText = await response.text();
-        throw new Error(`Erro na API: ${errorText}`);
-      }
-
-      if (!response.ok) {
-        throw new Error(`Erro na API: ${responseData.message || 'Erro desconhecido'}`);
+        console.error("[CaixaContext] Erro ao fazer parse do JSON:", parseError);
+        throw new Error(`Erro ao processar resposta da API`);
       }
 
       const lancamentoCriado = responseData;
