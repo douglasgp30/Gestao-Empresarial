@@ -231,7 +231,7 @@ export const migrarUmLancamento = async (indice: number = 0) => {
 
     console.log("📋 Dados que serão enviados:", dadosParaAPI);
 
-    const response = await fetch("/api/caixa", {
+    const response = await fetch("/api/caixa/criar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
