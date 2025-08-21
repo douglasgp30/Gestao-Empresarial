@@ -404,10 +404,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   };
 
   const excluirFuncionario = async (id: string) => {
-    // Não permitir excluir o próprio usuário ou o admin principal (Pitagoras)
+    // Não permitir excluir o próprio usuário logado
     const funcionarioParaExcluir = funcionarios.find(f => f.id === id);
-    if (funcionarioParaExcluir?.nomeCompleto === user?.nome || id === "1") {
-      alert("Não é possível excluir este usuário.");
+    if (funcionarioParaExcluir?.nomeCompleto === user?.nome) {
+      alert("Não é possível excluir seu próprio usuário.");
       return;
     }
 
