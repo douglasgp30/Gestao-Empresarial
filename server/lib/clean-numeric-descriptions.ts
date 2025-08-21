@@ -6,25 +6,15 @@ async function cleanNumericDescriptions() {
   try {
     console.log("🧹 Iniciando limpeza de descrições numéricas...");
 
-    // Buscar descrições com nomes apenas numéricos
-    const numericDescriptions = await prisma.descricao.findMany({
-      where: {
-        nome: {
-          regex: "^[0-9]+$"
-        }
-      }
-    });
+    // Buscar todas as descrições para filtrar as numéricas
+    const allDescriptions = await prisma.descricao.findMany();
+    const numericDescriptions = allDescriptions.filter(desc => /^\d+$/.test(desc.nome));
 
     console.log(`Encontradas ${numericDescriptions.length} descrições numéricas`);
 
-    // Buscar descrições e categorias unificadas com nomes apenas numéricos
-    const numericDescricoesECategorias = await prisma.descricaoECategoria.findMany({
-      where: {
-        nome: {
-          regex: "^[0-9]+$"
-        }
-      }
-    });
+    // Buscar todas as descrições e categorias unificadas para filtrar as numéricas
+    const allDescricoesECategorias = await prisma.descricaoECategoria.findMany();
+    const numericDescricoesECategorias = allDescricoesECategorias.filter(desc => /^\d+$/.test(desc.nome));
 
     console.log(`Encontradas ${numericDescricoesECategorias.length} descrições e categorias numéricas`);
 
