@@ -367,8 +367,7 @@ export default function ListaFuncionarios() {
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
                             </DropdownMenuItem>
-                            {funcionario.nomeCompleto !== user?.nome &&
-                              funcionario.id !== "1" && (
+                            {funcionario.nomeCompleto !== user?.nome && (
                                 <DropdownMenuItem
                                   className="text-red-600"
                                   onClick={() =>
