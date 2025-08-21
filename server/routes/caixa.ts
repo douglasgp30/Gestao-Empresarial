@@ -115,7 +115,7 @@ async function resolverDescricaoECategoria(
   }
 }
 
-// Função para resolver IDs de entidades
+// Fun��ão para resolver IDs de entidades
 async function resolverIds(data: any) {
   const ids: any = {};
 
@@ -710,7 +710,7 @@ export const updateLancamento: RequestHandler = async (req, res) => {
             percentualServico: true,
           },
         },
-
+        localizacao: true, // INCLUIR para resolver campos de setor vazios
         campanha: true,
         cliente: true,
       },
