@@ -136,11 +136,15 @@ export function ModalReceita() {
 
   // Calcular imposto apenas se tem nota fiscal
   const percentualImposto = getPercentualImposto();
-  const impostoCalculado = formData.temNotaFiscal ? (valorCalculado * percentualImposto) / 100 : 0;
+  const impostoCalculado = formData.temNotaFiscal
+    ? (valorCalculado * percentualImposto) / 100
+    : 0;
 
   // Debug log para verificar cálculo
   if (formData.temNotaFiscal && valorCalculado > 0) {
-    console.log(`[ModalReceita] Calculando imposto: ${valorCalculado} * ${percentualImposto}% = R$ ${impostoCalculado.toFixed(2)}`);
+    console.log(
+      `[ModalReceita] Calculando imposto: ${valorCalculado} * ${percentualImposto}% = R$ ${impostoCalculado.toFixed(2)}`,
+    );
   }
 
   // Valor líquido descontando o imposto se houver nota fiscal
@@ -846,8 +850,13 @@ export function ModalReceita() {
                   </div>
                   {formData.temNotaFiscal && (
                     <div className="mt-2 p-2 bg-blue-100 rounded text-xs text-blue-700">
-                      💡 <strong>Imposto NF:</strong> {percentualImposto}% aplicado automaticamente sobre o valor total<br/>
-                      <span className="text-blue-600">Este percentual pode ser alterado em Configurações → Percentual de Imposto (NF)</span>
+                      💡 <strong>Imposto NF:</strong> {percentualImposto}%
+                      aplicado automaticamente sobre o valor total
+                      <br />
+                      <span className="text-blue-600">
+                        Este percentual pode ser alterado em Configurações →
+                        Percentual de Imposto (NF)
+                      </span>
                     </div>
                   )}
                   {formData.tecnicoResponsavel && comissaoCalculada === 0 && (

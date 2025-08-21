@@ -122,7 +122,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Fazer requisição com timeout simples
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 10000)
+        setTimeout(() => reject(new Error("Timeout")), 10000),
       );
 
       const fetchPromise = fetch("/api/campanhas", {
@@ -131,7 +131,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
+      const response = (await Promise.race([
+        fetchPromise,
+        timeoutPromise,
+      ])) as Response;
       console.log("📊 [CaixaContext] Response status:", response.status);
 
       if (response.ok) {
@@ -350,7 +353,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         ...response.headers.entries(),
       ]);
 
-// Verificar se o content-type é JSON antes de tentar ler
+      // Verificar se o content-type é JSON antes de tentar ler
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         const responseText = await response.text();
@@ -368,14 +371,23 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       try {
         lancamentosDoBanco = await response.json();
       } catch (parseError) {
-        console.error("📦 [CaixaContext] Erro ao fazer parse do JSON:", parseError);
+        console.error(
+          "📦 [CaixaContext] Erro ao fazer parse do JSON:",
+          parseError,
+        );
         throw new Error(`Erro ao fazer parse da resposta JSON: ${parseError}`);
       }
 
       // Verificar se a resposta foi bem sucedida após fazer o parse
       if (!response.ok) {
-        console.error("📦 [CaixaContext] Erro na resposta:", lancamentosDoBanco);
-        const errorMessage = lancamentosDoBanco?.message || lancamentosDoBanco?.error || 'Erro desconhecido';
+        console.error(
+          "📦 [CaixaContext] Erro na resposta:",
+          lancamentosDoBanco,
+        );
+        const errorMessage =
+          lancamentosDoBanco?.message ||
+          lancamentosDoBanco?.error ||
+          "Erro desconhecido";
         throw new Error(
           `Erro ao carregar lançamentos: ${response.status} - ${errorMessage}`,
         );
@@ -822,7 +834,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       try {
         responseData = await response.json();
       } catch (parseError) {
-        console.error("[CaixaContext] Erro ao fazer parse do JSON:", parseError);
+        console.error(
+          "[CaixaContext] Erro ao fazer parse do JSON:",
+          parseError,
+        );
         throw new Error(`Erro ao processar resposta da API`);
       }
 
