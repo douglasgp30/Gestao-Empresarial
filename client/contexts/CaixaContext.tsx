@@ -500,7 +500,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Função utilitária para conversão segura de string para número
+  // Fun��ão utilitária para conversão segura de string para número
   const parseIntSafe = (value: string): number | undefined => {
     if (!value || value === "todos" || value === "todas") return undefined;
     const parsed = parseInt(value);
@@ -1092,20 +1092,41 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, [lancamentos]);
 
-  const value = {
+  // Memoizar funções para estabilizar referências e evitar re-renders
+  const carregarDadosCb = useCallback(() => carregarDados(), []);
+  const adicionarLancamentoCb = useCallback((novo) => adicionarLancamento(novo), []);
+  const editarLancamentoCb = useCallback((id, dados) => editarLancamento(id, dados), []);
+  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
+  const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
+
+  // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores
+  const value = useMemo(() => ({
     lancamentos,
     campanhas,
     filtros,
     totais,
-    adicionarLancamento,
-    editarLancamento,
-    excluirLancamento,
-    adicionarCampanha,
+    adicionarLancamento: adicionarLancamentoCb,
+    editarLancamento: editarLancamentoCb,
+    excluirLancamento: excluirLancamentoCb,
+    adicionarCampanha: adicionarCampanhaCb,
     setFiltros,
-    carregarDados,
+    carregarDados: carregarDadosCb,
     isLoading,
     error,
-  };
+    filtrosDependencias, // Expor para componentes filhos evitarem JSON.stringify
+  }), [
+    lancamentos,
+    campanhas,
+    filtrosDependencias, // Usar string memoizada em vez do objeto filtros
+    totais,
+    adicionarLancamentoCb,
+    editarLancamentoCb,
+    excluirLancamentoCb,
+    adicionarCampanhaCb,
+    carregarDadosCb,
+    isLoading,
+    error,
+  ]);
 
   return (
     <CaixaContext.Provider value={value}>{children}</CaixaContext.Provider>
