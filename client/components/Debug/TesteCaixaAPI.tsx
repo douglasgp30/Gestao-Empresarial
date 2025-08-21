@@ -88,6 +88,19 @@ export function TesteCaixaAPI() {
       nome: "Totais do Caixa",
       url: "/api/caixa/totais",
       descricao: "Buscar totais do caixa"
+    },
+    {
+      nome: "Criar Lançamento (Teste)",
+      url: "/api/caixa/criar",
+      descricao: "Testar criação de lançamento (rota alternativa)",
+      metodo: "POST",
+      body: {
+        valor: 100,
+        tipo: "receita",
+        categoria: "Serviços",
+        descricao: "Teste",
+        data: new Date().toISOString().split('T')[0]
+      }
     }
   ];
 
