@@ -331,7 +331,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
 
     // Validar valor recebido para pagamentos com cartão
-    if (isFormaPagamentoCartao && !formData.valorQueEntrou) {
+    if (isFormaPagamentoCartao && valorQueEntrouInput.numericValue <= 0) {
       toast({
         title: "Erro",
         description:
