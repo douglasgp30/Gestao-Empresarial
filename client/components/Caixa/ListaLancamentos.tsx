@@ -405,9 +405,9 @@ export default function ListaLancamentos() {
                         <p className="font-medium text-sm">
                           {lancamento.categoria || "N/A"}
                         </p>
-                        {lancamento.setor && (
+                        {getSetorNome(lancamento.setor) && (
                           <p className="text-xs text-muted-foreground">
-                            {lancamento.setor}
+                            {getSetorNome(lancamento.setor)}
                           </p>
                         )}
                       </div>
@@ -418,9 +418,14 @@ export default function ListaLancamentos() {
                         <p className="font-medium text-sm">
                           {lancamento.descricao || "N/A"}
                         </p>
-                        {lancamento.campanha && (
+                        {getCampanhaNome(lancamento.campanha) && (
                           <p className="text-xs text-blue-600">
-                            Campanha: {lancamento.campanha}
+                            Campanha: {getCampanhaNome(lancamento.campanha)}
+                          </p>
+                        )}
+                        {getClienteNome(lancamento.clienteId) && (
+                          <p className="text-xs text-green-600">
+                            Cliente: {getClienteNome(lancamento.clienteId)}
                           </p>
                         )}
                       </div>
