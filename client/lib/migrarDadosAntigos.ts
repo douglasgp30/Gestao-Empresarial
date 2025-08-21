@@ -3,7 +3,7 @@
 export const migrarDadosAntigos = () => {
   try {
     console.log("🔄 Iniciando migração de dados antigos...");
-    
+
     // Verificar se há dados para migrar
     const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
     if (!lancamentosStorage) {
@@ -17,14 +17,16 @@ export const migrarDadosAntigos = () => {
     // Migrar cada lançamento
     const lancamentosMigrados = lancamentos.map((lancamento: any) => {
       let lancamentoMigrado = { ...lancamento };
-      
+
       // 1. Migrar descrição: se for string com código, tentar transformar em objeto
       if (typeof lancamento.descricao === "string") {
         // Se parece com código (só números), transformar em objeto genérico
         if (/^\d+$/.test(lancamento.descricao)) {
           lancamentoMigrado.descricao = { nome: "Serviço" };
           migracaoNecessaria = true;
-          console.log(`🔧 Migrou descrição de código ${lancamento.descricao} para "Serviço"`);
+          console.log(
+            `🔧 Migrou descrição de código ${lancamento.descricao} para "Serviço"`,
+          );
         } else {
           // Se é string normal, manter mas em formato de objeto
           lancamentoMigrado.descricao = { nome: lancamento.descricao };
@@ -36,61 +38,75 @@ export const migrarDadosAntigos = () => {
       if (typeof lancamento.formaPagamento === "string") {
         const mapFormaPagamento: { [key: string]: string } = {
           "1": "Dinheiro",
-          "2": "PIX", 
+          "2": "PIX",
           "3": "Cartão de Débito",
           "4": "Cartão de Crédito",
-          "5": "Boleto Bancário"
+          "5": "Boleto Bancário",
         };
-        
+
         if (mapFormaPagamento[lancamento.formaPagamento]) {
           lancamentoMigrado.formaPagamento = {
             id: lancamento.formaPagamento,
-            nome: mapFormaPagamento[lancamento.formaPagamento]
+            nome: mapFormaPagamento[lancamento.formaPagamento],
           };
           migracaoNecessaria = true;
-          console.log(`🔧 Migrou forma de pagamento de código ${lancamento.formaPagamento} para ${mapFormaPagamento[lancamento.formaPagamento]}`);
+          console.log(
+            `🔧 Migrou forma de pagamento de código ${lancamento.formaPagamento} para ${mapFormaPagamento[lancamento.formaPagamento]}`,
+          );
         } else if (/^\d+$/.test(lancamento.formaPagamento)) {
           // Código não reconhecido
           lancamentoMigrado.formaPagamento = {
             id: lancamento.formaPagamento,
-            nome: "Forma não identificada"
+            nome: "Forma não identificada",
           };
           migracaoNecessaria = true;
         }
       }
 
       // 3. Migrar técnico: se for código, tentar mapear
-      if (typeof lancamento.tecnicoResponsavel === "string" && /^\d+$/.test(lancamento.tecnicoResponsavel)) {
+      if (
+        typeof lancamento.tecnicoResponsavel === "string" &&
+        /^\d+$/.test(lancamento.tecnicoResponsavel)
+      ) {
         lancamentoMigrado.tecnicoResponsavel = {
           id: lancamento.tecnicoResponsavel,
-          nome: "Técnico não identificado"
+          nome: "Técnico não identificado",
         };
         migracaoNecessaria = true;
       }
 
       // 4. Migrar cliente: se for código, tentar mapear
-      if (typeof lancamento.cliente === "string" && /^\d+$/.test(lancamento.cliente)) {
+      if (
+        typeof lancamento.cliente === "string" &&
+        /^\d+$/.test(lancamento.cliente)
+      ) {
         lancamentoMigrado.cliente = {
           id: lancamento.cliente,
-          nome: "Cliente não identificado"
+          nome: "Cliente não identificado",
         };
         migracaoNecessaria = true;
       }
 
       // 5. Migrar setor: se for código, tentar mapear
-      if (typeof lancamento.setor === "string" && /^\d+$/.test(lancamento.setor)) {
+      if (
+        typeof lancamento.setor === "string" &&
+        /^\d+$/.test(lancamento.setor)
+      ) {
         lancamentoMigrado.setor = {
           id: lancamento.setor,
-          nome: "Setor não identificado"
+          nome: "Setor não identificado",
         };
         migracaoNecessaria = true;
       }
 
       // 6. Migrar campanha: se for código, tentar mapear
-      if (typeof lancamento.campanha === "string" && /^\d+$/.test(lancamento.campanha)) {
+      if (
+        typeof lancamento.campanha === "string" &&
+        /^\d+$/.test(lancamento.campanha)
+      ) {
         lancamentoMigrado.campanha = {
           id: lancamento.campanha,
-          nome: "Campanha não identificada"
+          nome: "Campanha não identificada",
         };
         migracaoNecessaria = true;
       }
@@ -100,18 +116,26 @@ export const migrarDadosAntigos = () => {
 
     // Salvar dados migrados se houve migração
     if (migracaoNecessaria) {
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosMigrados));
-      console.log(`✅ Migração concluída! ${lancamentosMigrados.length} lançamentos migrados`);
-      
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(lancamentosMigrados),
+      );
+      console.log(
+        `✅ Migração concluída! ${lancamentosMigrados.length} lançamentos migrados`,
+      );
+
       // Criar backup dos dados antigos
       localStorage.setItem("lancamentos_caixa_backup", lancamentosStorage);
-      console.log("💾 Backup dos dados antigos criado em 'lancamentos_caixa_backup'");
+      console.log(
+        "💾 Backup dos dados antigos criado em 'lancamentos_caixa_backup'",
+      );
     } else {
-      console.log("✅ Nenhuma migração necessária, dados já estão no formato correto");
+      console.log(
+        "✅ Nenhuma migração necessária, dados já estão no formato correto",
+      );
     }
 
     return migracaoNecessaria;
-
   } catch (error) {
     console.error("❌ Erro durante migração de dados:", error);
     return false;
@@ -122,25 +146,26 @@ export const migrarDadosAntigos = () => {
 export const limparDadosAntigos = () => {
   try {
     console.log("🧹 Limpando todos os dados antigos...");
-    
+
     // Criar backup antes de limpar
     const backup = {
       lancamentos: localStorage.getItem("lancamentos_caixa"),
       campanhas: localStorage.getItem("campanhas"),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
+
     localStorage.setItem("backup_antes_limpeza", JSON.stringify(backup));
-    
+
     // Limpar dados do caixa
     localStorage.removeItem("lancamentos_caixa");
     localStorage.removeItem("campanhas");
-    
-    console.log("✅ Dados limpos com sucesso! Backup salvo em 'backup_antes_limpeza'");
-    
+
+    console.log(
+      "✅ Dados limpos com sucesso! Backup salvo em 'backup_antes_limpeza'",
+    );
+
     // Recarregar a página para resetar o estado
     window.location.reload();
-    
   } catch (error) {
     console.error("❌ Erro ao limpar dados:", error);
   }

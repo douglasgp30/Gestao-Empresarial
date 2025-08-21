@@ -4,7 +4,10 @@ import { z } from "zod";
 import { AuditoriaService, extrairInfoRequisicao } from "../lib/auditoria";
 
 // Testar conexão com banco na inicialização
-console.log("[Caixa Routes] Arquivo caixa.ts carregado, Prisma importado:", !!prisma);
+console.log(
+  "[Caixa Routes] Arquivo caixa.ts carregado, Prisma importado:",
+  !!prisma,
+);
 
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
@@ -268,7 +271,9 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     res.json(lancamentos);
   } catch (error) {
     console.error("[Caixa API] Erro ao buscar lançamentos:", error);
-    res.status(500).json({ error: "Erro interno do servidor", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Erro interno do servidor", details: error.message });
   }
 };
 

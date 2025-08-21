@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { Badge } from "../ui/badge";
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 
@@ -12,50 +18,57 @@ interface TesteResult {
 }
 
 export function TesteCaixaAPI() {
-  const [resultados, setResultados] = useState<{ [key: string]: TesteResult }>({});
+  const [resultados, setResultados] = useState<{ [key: string]: TesteResult }>(
+    {},
+  );
   const [testando, setTestando] = useState<{ [key: string]: boolean }>({});
 
-  const executarTeste = async (nome: string, url: string, options?: RequestInit) => {
-    setTestando(prev => ({ ...prev, [nome]: true }));
+  const executarTeste = async (
+    nome: string,
+    url: string,
+    options?: RequestInit,
+  ) => {
+    setTestando((prev) => ({ ...prev, [nome]: true }));
 
     try {
       console.log(`🧪 [Teste] ${nome} - ${url}`);
       console.log(`🧪 [Teste] ${nome} - Options:`, options);
       const response = await fetch(url, options);
-      
+
       console.log(`🧪 [Teste] ${nome} - Status:`, response.status);
-      console.log(`🧪 [Teste] ${nome} - Headers:`, [...response.headers.entries()]);
-      
-      const contentType = response.headers.get('content-type');
+      console.log(`🧪 [Teste] ${nome} - Headers:`, [
+        ...response.headers.entries(),
+      ]);
+
+      const contentType = response.headers.get("content-type");
       let responseData;
-      
-      if (contentType?.includes('application/json')) {
+
+      if (contentType?.includes("application/json")) {
         responseData = await response.json();
       } else {
         responseData = await response.text();
       }
-      
-      setResultados(prev => ({
+
+      setResultados((prev) => ({
         ...prev,
         [nome]: {
           success: response.ok,
           message: response.ok ? "Sucesso" : `Erro ${response.status}`,
-          data: responseData
-        }
+          data: responseData,
+        },
       }));
-      
     } catch (error) {
       console.error(`🧪 [Teste] ${nome} - Erro:`, error);
-      setResultados(prev => ({
+      setResultados((prev) => ({
         ...prev,
         [nome]: {
           success: false,
           message: `Erro: ${error.message}`,
-          error: error
-        }
+          error: error,
+        },
       }));
     } finally {
-      setTestando(prev => ({ ...prev, [nome]: false }));
+      setTestando((prev) => ({ ...prev, [nome]: false }));
     }
   };
 
@@ -63,32 +76,32 @@ export function TesteCaixaAPI() {
     {
       nome: "Health Check",
       url: "/api/health",
-      descricao: "Teste básico de conectividade"
+      descricao: "Teste básico de conectividade",
     },
     {
       nome: "Teste Caixa",
       url: "/api/caixa/test",
-      descricao: "Teste específico da rota do caixa"
+      descricao: "Teste específico da rota do caixa",
     },
     {
       nome: "Debug Caixa",
       url: "/api/caixa/debug",
-      descricao: "Versão simplificada para debug"
+      descricao: "Versão simplificada para debug",
     },
     {
       nome: "Listar Lançamentos",
       url: "/api/caixa",
-      descricao: "Buscar lançamentos (rota principal)"
+      descricao: "Buscar lançamentos (rota principal)",
     },
     {
       nome: "Listar Lançamentos (alternativa)",
       url: "/api/caixa/lancamentos",
-      descricao: "Buscar lançamentos (rota alternativa)"
+      descricao: "Buscar lançamentos (rota alternativa)",
     },
     {
       nome: "Totais do Caixa",
       url: "/api/caixa/totais",
-      descricao: "Buscar totais do caixa"
+      descricao: "Buscar totais do caixa",
     },
     {
       nome: "Criar Lançamento (Teste)",
@@ -100,16 +113,16 @@ export function TesteCaixaAPI() {
         tipo: "receita",
         categoria: "Serviços",
         descricao: "Teste",
-        data: new Date().toISOString().split('T')[0]
-      }
-    }
+        data: new Date().toISOString().split("T")[0],
+      },
+    },
   ];
 
   const executarTodosTestes = async () => {
     for (const teste of testes) {
       await executarTeste(teste.nome, teste.url);
       // Pequena pausa entre testes
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
   };
 
@@ -128,11 +141,7 @@ export function TesteCaixaAPI() {
           <Button onClick={executarTodosTestes} variant="outline">
             Executar Todos os Testes
           </Button>
-          <Button 
-            onClick={() => setResultados({})} 
-            variant="ghost"
-            size="sm"
-          >
+          <Button onClick={() => setResultados({})} variant="ghost" size="sm">
             Limpar Resultados
           </Button>
         </div>
@@ -143,12 +152,22 @@ export function TesteCaixaAPI() {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <h4 className="font-medium">{teste.nome}</h4>
-                  <p className="text-sm text-muted-foreground">{teste.descricao}</p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded">{teste.url}</code>
+                  <p className="text-sm text-muted-foreground">
+                    {teste.descricao}
+                  </p>
+                  <code className="text-xs bg-muted px-2 py-1 rounded">
+                    {teste.url}
+                  </code>
                 </div>
                 <div className="flex items-center gap-2">
                   {resultados[teste.nome] && (
-                    <Badge variant={resultados[teste.nome].success ? "default" : "destructive"}>
+                    <Badge
+                      variant={
+                        resultados[teste.nome].success
+                          ? "default"
+                          : "destructive"
+                      }
+                    >
                       {resultados[teste.nome].success ? (
                         <CheckCircle className="h-3 w-3 mr-1" />
                       ) : (
@@ -184,14 +203,33 @@ export function TesteCaixaAPI() {
         </div>
 
         <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h4 className="font-medium mb-2">💡 Como interpretar os resultados:</h4>
+          <h4 className="font-medium mb-2">
+            💡 Como interpretar os resultados:
+          </h4>
           <ul className="text-sm space-y-1">
-            <li><strong>Health Check:</strong> Deve retornar status "ok" - testa conectividade básica</li>
-            <li><strong>Teste Caixa:</strong> Deve retornar contagem de lançamentos - testa conexão com banco</li>
-            <li><strong>Listar Lançamentos:</strong> Deve retornar array JSON - testa rota principal</li>
-            <li><strong>Erro "Unexpected token '&lt;'":</strong> Servidor retornando HTML ao invés de JSON</li>
-            <li><strong>Erro 404:</strong> Rota não encontrada no servidor</li>
-            <li><strong>Erro 500:</strong> Erro interno no servidor (ver logs do console)</li>
+            <li>
+              <strong>Health Check:</strong> Deve retornar status "ok" - testa
+              conectividade básica
+            </li>
+            <li>
+              <strong>Teste Caixa:</strong> Deve retornar contagem de
+              lançamentos - testa conexão com banco
+            </li>
+            <li>
+              <strong>Listar Lançamentos:</strong> Deve retornar array JSON -
+              testa rota principal
+            </li>
+            <li>
+              <strong>Erro "Unexpected token '&lt;'":</strong> Servidor
+              retornando HTML ao invés de JSON
+            </li>
+            <li>
+              <strong>Erro 404:</strong> Rota não encontrada no servidor
+            </li>
+            <li>
+              <strong>Erro 500:</strong> Erro interno no servidor (ver logs do
+              console)
+            </li>
           </ul>
         </div>
       </CardContent>

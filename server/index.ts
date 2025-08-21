@@ -134,7 +134,7 @@ export function createServer(): Express {
   app.get("/api/caixa/debug", async (req, res) => {
     try {
       console.log("[Server DEBUG] Rota debug do caixa acessada");
-      res.setHeader('Content-Type', 'application/json');
+      res.setHeader("Content-Type", "application/json");
 
       const { prisma } = await import("./lib/database");
 
@@ -147,10 +147,12 @@ export function createServer(): Express {
           valor: true,
           tipo: true,
           dataHora: true,
-        }
+        },
       });
 
-      console.log(`[Server DEBUG] Encontrados ${lancamentos.length} lançamentos`);
+      console.log(
+        `[Server DEBUG] Encontrados ${lancamentos.length} lançamentos`,
+      );
 
       const resultado = {
         success: true,
@@ -264,11 +266,11 @@ export function createServer(): Express {
   const debugCaixaMiddleware = (req: any, res: any, next: any) => {
     console.log("[Debug Caixa] Middleware executado");
     console.log("[Debug Caixa] Method:", req.method);
-    console.log("[Debug Caixa] Content-Type:", req.get('content-type'));
-    console.log("[Debug Caixa] Content-Length:", req.get('content-length'));
+    console.log("[Debug Caixa] Content-Type:", req.get("content-type"));
+    console.log("[Debug Caixa] Content-Length:", req.get("content-length"));
 
     // Se for POST/PUT e não há body, pode haver um problema
-    if ((req.method === 'POST' || req.method === 'PUT') && !req.body) {
+    if ((req.method === "POST" || req.method === "PUT") && !req.body) {
       console.warn("[Debug Caixa] ⚠️ Body está vazio para método", req.method);
     }
 
@@ -291,13 +293,15 @@ export function createServer(): Express {
       // Criar uma nova requisição simulada para o createLancamento
       const mockReq = {
         ...req,
-        body: bodyData
+        body: bodyData,
       };
 
       return await createLancamento(mockReq as any, res);
     } catch (error) {
       console.error("[Caixa Criar] Erro na rota alternativa:", error);
-      res.status(500).json({ error: "Erro interno do servidor", details: error.message });
+      res
+        .status(500)
+        .json({ error: "Erro interno do servidor", details: error.message });
     }
   });
 
