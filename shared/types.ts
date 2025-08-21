@@ -80,12 +80,13 @@ export interface LancamentoCaixa {
 
   // Relacionamentos por ID (para compatibilidade futura)
   descricaoId?: number; // FK para tabela Descrição
-  formaPagamentoId?: number; // FK para tabela Forma de Pagamento
+  formaPagamentoId?: string; // ID da forma de pagamento
+  tecnicoResponsavelId?: string; // ID do técnico responsável
   subdescricaoId?: number; // FK para tabela Subdescrição
   funcionarioId?: number; // FK para tabela Técnicos
-  setorId?: number; // FK para tabela Cidades e Setores
-  campanhaId?: number; // FK para tabela Campanhas
-  clienteId?: string; // FK para tabela Clientes
+  setorId?: string; // ID do setor
+  campanhaId?: string; // ID da campanha
+  clienteId?: string; // ID do cliente
 
   dataCriacao: Date;
 }
@@ -123,7 +124,7 @@ export interface ContaLancamento {
   descricaoCategoria?: number; // SMALLINT FK categorias(id)
   pago: boolean; // BOOLEAN
   dataPagamento?: Date; // TIMESTAMP - Condicional
-  codigoServico?: string; // C��digo único do serviço para rastreabilidade
+  codigoServico?: string; // Código único do serviço para rastreabilidade
   categoria?: string; // Nome da categoria
   descricao?: string; // Descrição do serviço
 
