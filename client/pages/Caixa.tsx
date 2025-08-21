@@ -10,6 +10,7 @@ import ModalGerenciarCidades from "../components/Caixa/ModalGerenciarCidades";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
+import { AlertaMigracaoCaixa } from "../components/ui/alerta-migracao-caixa";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
