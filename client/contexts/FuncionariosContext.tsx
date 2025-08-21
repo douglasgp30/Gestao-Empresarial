@@ -343,7 +343,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
 
       // Fazer a requisição para o servidor
-      const response = await funcionariosApi.editar(
+      const response = await funcionariosApi.atualizar(
         parseInt(id),
         dadosAtualizados,
       );
