@@ -309,6 +309,9 @@ export function ModalReceita() {
 
       resetForm();
       setIsOpen(false);
+
+      // Não recarregar a página toda, apenas aguardar contexto atualizar
+      console.log("[ModalReceita] Lançamento salvo, modal fechado");
     } catch (error) {
       console.error("Erro ao lançar receita:", error);
       toast({
@@ -330,7 +333,7 @@ export function ModalReceita() {
       if (!loadingForced) {
         setLoadingForced(true);
       }
-    }, 3000); // 3 segundos máximo
+    }, 3000); // 3 segundos m��ximo
 
     return () => clearTimeout(timer);
   }, [loadingForced]);
