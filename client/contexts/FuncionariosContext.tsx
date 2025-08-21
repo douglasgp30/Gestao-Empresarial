@@ -199,18 +199,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   // Carregar funcionários priorizando API sobre localStorage
   useEffect(() => {
     const inicializarFuncionarios = async () => {
-      // Durante hot reload, não carregar automaticamente
-      if (
-        typeof window !== "undefined" &&
-        (window.location.href.includes("reload=") ||
-          window.location.href.includes("?t="))
-      ) {
-        console.log(
-          "[FuncionariosContext] Hot reload detectado, pulando carregamento automático",
-        );
-        return;
-      }
-      try {
+        try {
         console.log(
           "[FuncionariosContext] Iniciando carregamento de funcionários...",
         );
