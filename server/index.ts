@@ -130,6 +130,47 @@ export function createServer(): Express {
     }
   });
 
+  // Rota simplificada de debug para caixa
+  app.get("/api/caixa/debug", async (req, res) => {
+    try {
+      console.log("[Server DEBUG] Rota debug do caixa acessada");
+      res.setHeader('Content-Type', 'application/json');
+
+      const { prisma } = await import("./lib/database");
+
+      // Busca simples sem filtros
+      const lancamentos = await prisma.lancamentoCaixa.findMany({
+        take: 5,
+        orderBy: { id: "desc" },
+        select: {
+          id: true,
+          valor: true,
+          tipo: true,
+          dataHora: true,
+        }
+      });
+
+      console.log(`[Server DEBUG] Encontrados ${lancamentos.length} lançamentos`);
+
+      const resultado = {
+        success: true,
+        message: "Debug da rota caixa",
+        count: lancamentos.length,
+        data: lancamentos,
+        timestamp: new Date().toISOString(),
+      };
+
+      res.json(resultado);
+    } catch (error) {
+      console.error("[Server DEBUG] Erro:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        stack: error.stack,
+      });
+    }
+  });
+
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
   app.post(
     "/api/clean-fake-data",
