@@ -196,13 +196,58 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar funcionários do localStorage na inicialização
+  // Carregar funcionários priorizando API sobre localStorage
   useEffect(() => {
-    const carregarFuncionariosDoLocalStorage = () => {
+    const inicializarFuncionarios = async () => {
+      // Durante hot reload, não carregar automaticamente
+      if (
+        typeof window !== "undefined" &&
+        (window.location.href.includes("reload=") ||
+          window.location.href.includes("?t="))
+      ) {
+        console.log(
+          "[FuncionariosContext] Hot reload detectado, pulando carregamento automático",
+        );
+        return;
+      }
       try {
         console.log(
-          "[FuncionariosContext] Carregando funcionários do localStorage...",
+          "[FuncionariosContext] Iniciando carregamento de funcionários...",
         );
+        setIsLoading(true);
+
+        // 1. Primeiro tentar carregar da API (banco de dados)
+        console.log("[FuncionariosContext] Tentando carregar da API...");
+        const response = await funcionariosApi.listar();
+
+        if (!response.error && response.data && response.data.length > 0) {
+          console.log(`[FuncionariosContext] ${response.data.length} funcionários encontrados na API`);
+
+          // Converter dados da API para o formato do contexto
+          const funcionariosFormatados = response.data.map((f: any) => ({
+            id: f.id.toString(),
+            nomeCompleto: f.nome,
+            ehTecnico: f.ehTecnico || false,
+            percentualComissao: f.percentualComissao || 0,
+            email: f.email,
+            telefone: f.telefone,
+            cargo: f.cargo,
+            salario: f.salario,
+            permissaoAcesso: f.temAcessoSistema || false,
+            tipoAcesso: f.tipoAcesso || "Operador",
+            login: f.login || "",
+            permissoes: f.permissoes ? JSON.parse(f.permissoes) : undefined,
+            ativo: true,
+            dataCadastro: new Date(f.dataCriacao),
+          }));
+
+          setFuncionarios(funcionariosFormatados);
+          console.log("[FuncionariosContext] ✅ Funcionários carregados da API com sucesso");
+          return;
+        }
+
+        // 2. Se não há dados na API, tentar localStorage como fallback
+        console.log("[FuncionariosContext] API vazia, tentando localStorage...");
         setIsLoading(true);
 
         let funcionariosCarregados = carregarFuncionariosReais();
