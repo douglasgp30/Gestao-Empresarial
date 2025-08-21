@@ -576,7 +576,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
             percentualServico: true,
           },
         },
-
+        localizacao: true, // INCLUIR para resolver campos de setor vazios
         campanha: true,
         cliente: true,
       },
