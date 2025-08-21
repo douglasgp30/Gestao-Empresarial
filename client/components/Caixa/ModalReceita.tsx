@@ -756,7 +756,7 @@ export function ModalReceita() {
                       />
                       {formData.temNotaFiscal && !formData.numeroNota && (
                         <p className="text-xs text-red-500">
-                          Número da nota fiscal é obrigatório
+                          N��mero da nota fiscal é obrigatório
                         </p>
                       )}
                     </div>
@@ -787,13 +787,23 @@ export function ModalReceita() {
                   <h4 className="font-medium text-green-800 mb-2">
                     Resumo Financeiro
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2 text-sm">
                     <div>
                       <span className="text-gray-600">Valor Total:</span>
                       <div className="font-medium">
                         R$ {parseFloat(formData.valor || "0").toFixed(2)}
                       </div>
                     </div>
+                    {formData.temNotaFiscal && (
+                      <div>
+                        <span className="text-gray-600">
+                          Imposto NF ({percentualImposto}%):
+                        </span>
+                        <div className="font-medium text-red-600">
+                          - R$ {impostoCalculado.toFixed(2)}
+                        </div>
+                      </div>
+                    )}
                     <div>
                       <span className="text-gray-600">
                         Comissão:
@@ -829,6 +839,11 @@ export function ModalReceita() {
                       </div>
                     </div>
                   </div>
+                  {formData.temNotaFiscal && (
+                    <div className="mt-2 text-xs text-blue-600">
+                      💡 Imposto de {percentualImposto}% aplicado automaticamente (configurável em Configurações)
+                    </div>
+                  )}
                   {formData.tecnicoResponsavel && comissaoCalculada === 0 && (
                     <div className="mt-2 text-xs text-amber-600">
                       ⚠️ Técnico selecionado não possui percentual de comissão
