@@ -459,15 +459,81 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       dataCriacao: lancamento.dataCriacao instanceof Date ? lancamento.dataCriacao.toISOString() : lancamento.dataCriacao,
     };
 
-    // Log para debug
+    // NORMALIZAÇÃO DE CAMPOS PARA COMPATIBILIDADE DA UI
+
+    // 1. Descrição: garantir que seja objeto com 'nome' para a UI
+    if (typeof normalized.descricao === "string" && normalized.descricao.trim() !== "") {
+      normalized.descricao = { nome: normalized.descricao };
+    }
+
+    // 2. Forma de Pagamento: garantir objeto com nome
+    if (typeof normalized.formaPagamento === "string") {
+      normalized.formaPagamento = { id: normalized.formaPagamento, nome: normalized.formaPagamento };
+    }
+
+    // 3. Técnico: popular campo 'funcionario' a partir de 'tecnicoResponsavel' (compatibilidade com UI)
+    if (!normalized.funcionario && normalized.tecnicoResponsavel) {
+      if (typeof normalized.tecnicoResponsavel === 'object') {
+        normalized.funcionario = {
+          id: normalized.tecnicoResponsavel.id?.toString?.() || normalized.tecnicoResponsavelId,
+          nome: normalized.tecnicoResponsavel.nome || normalized.tecnicoResponsavel.nomeCompleto,
+          percentualComissao: normalized.tecnicoResponsavel.percentualComissao
+        };
+      } else if (typeof normalized.tecnicoResponsavel === 'string') {
+        normalized.funcionario = {
+          id: normalized.tecnicoResponsavel,
+          nome: normalized.tecnicoResponsavel
+        };
+      }
+    }
+
+    // 4. Cliente: garantir formato consistente
+    if (typeof normalized.cliente === "string" && normalized.cliente.trim() !== "") {
+      normalized.cliente = { id: normalized.cliente, nome: normalized.cliente };
+    }
+
+    // 5. Setor: garantir formato consistente
+    if (typeof normalized.setor === "string" && normalized.setor.trim() !== "") {
+      normalized.setor = { id: normalized.setor, nome: normalized.setor };
+    }
+
+    // 6. Campanha: garantir formato consistente
+    if (typeof normalized.campanha === "string" && normalized.campanha.trim() !== "") {
+      normalized.campanha = { id: normalized.campanha, nome: normalized.campanha };
+    }
+
+    // 7. Garantir IDs como strings coerentes
+    if (!normalized.formaPagamentoId && normalized.formaPagamento?.id) {
+      normalized.formaPagamentoId = normalized.formaPagamento.id?.toString();
+    }
+    if (!normalized.tecnicoResponsavelId && normalized.tecnicoResponsavel?.id) {
+      normalized.tecnicoResponsavelId = normalized.tecnicoResponsavel.id?.toString();
+    }
+    if (!normalized.clienteId && normalized.cliente?.id) {
+      normalized.clienteId = normalized.cliente.id?.toString();
+    }
+    if (!normalized.setorId && normalized.setor?.id) {
+      normalized.setorId = normalized.setor.id?.toString();
+    }
+    if (!normalized.campanhaId && normalized.campanha?.id) {
+      normalized.campanhaId = normalized.campanha.id?.toString();
+    }
+
+    // Log detalhado para debug
     console.log("[CaixaContext] Lançamento normalizado:", {
       id: normalized.id,
+      categoria: normalized.categoria,
+      descricao: normalized.descricao,
       formaPagamento: normalized.formaPagamento,
       formaPagamentoId: normalized.formaPagamentoId,
       tecnicoResponsavel: normalized.tecnicoResponsavel,
+      funcionario: normalized.funcionario,
       setor: normalized.setor,
       campanha: normalized.campanha,
       cliente: normalized.cliente,
+      valor: normalized.valor,
+      valorLiquido: normalized.valorLiquido,
+      comissao: normalized.comissao
     });
 
     return normalized;
