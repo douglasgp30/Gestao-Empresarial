@@ -511,7 +511,7 @@ export default function ListaLancamentos() {
                       <div className="flex items-center space-x-1">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          {lancamento.formaPagamento}
+                          {getFormaPagamentoNome(lancamento.formaPagamento)}
                         </span>
                       </div>
                     </TableCell>
