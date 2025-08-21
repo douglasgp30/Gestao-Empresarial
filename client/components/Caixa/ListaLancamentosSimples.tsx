@@ -236,12 +236,14 @@ export function ListaLancamentosSimples() {
         return lancamento.numeroNota || "-";
 
       case "cliente":
-        // Suporta tanto string quanto objeto com nome
-        const cliente =
-          typeof lancamento.cliente === "string"
-            ? lancamento.cliente
-            : lancamento.cliente?.nome;
-        return cliente || "-";
+        // Priorizar dados do banco de dados
+        if (lancamento.cliente?.nome) {
+          return lancamento.cliente.nome;
+        }
+        if (typeof lancamento.cliente === "string" && lancamento.cliente !== "") {
+          return lancamento.cliente;
+        }
+        return "-";
 
       case "acoes":
         return (
