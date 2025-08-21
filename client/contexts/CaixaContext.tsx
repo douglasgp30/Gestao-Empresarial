@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useMemo,
   useCallback,
+  useRef,
   ReactNode,
 } from "react";
 import { LancamentoCaixa, Campanha } from "@shared/types";
@@ -140,7 +141,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const campanhasServidor = await response.json();
         console.log(
-          "📊 [CaixaContext] Campanhas carregadas do servidor:",
+          "���� [CaixaContext] Campanhas carregadas do servidor:",
           campanhasServidor.length,
         );
         setCampanhas(campanhasServidor || []);
