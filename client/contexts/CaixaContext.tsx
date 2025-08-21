@@ -591,21 +591,27 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.numeroNota,
   ]);
 
-  // Recarregar lançamentos quando os filtros mudarem - versão otimizada
-  useEffect(() => {
-    // Evitar carregamento se ainda estiver carregando dados iniciais
-    if (isLoading || isCarregando) {
-      console.log("[CaixaContext] Ainda carregando, ignorando mudança de filtros");
-      return;
-    }
+  // Recarregar lançamentos quando os filtros mudarem - corrigido para evitar loop
+  const isFetchingRef = useRef(false);
 
+  useEffect(() => {
+    // Debounce para evitar múltiplos lançamentos rápidos
     const timeoutId = setTimeout(() => {
+      if (isFetchingRef.current) {
+        console.log("[CaixaContext] fetch já em andamento, ignorando");
+        return;
+      }
+      isFetchingRef.current = true;
       console.log("[CaixaContext] Recarregando por mudança de filtros");
-      carregarDados(); // Usar carregarDados diretamente para ser mais eficiente
+      carregarDados()
+        .catch((err) => console.error("[CaixaContext] erro carregarDados:", err))
+        .finally(() => {
+          isFetchingRef.current = false;
+        });
     }, 800);
 
     return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias, isLoading, isCarregando]);
+  }, [filtrosDependencias]); // REMOVIDO isLoading e isCarregando das dependências
 
   // Função para normalizar lançamento antes de salvar
   const normalizarLancamento = (lancamento: any): any => {
