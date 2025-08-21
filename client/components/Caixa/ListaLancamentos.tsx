@@ -463,7 +463,12 @@ export default function ListaLancamentos() {
                     <TableCell>
                       <div>
                         <p className="font-medium text-sm">
-                          {lancamento.descricao || "N/A"}
+                          {/* Corrigir exibição da descrição - se for objeto, usar o nome */}
+                          {typeof lancamento.descricao === "object" && lancamento.descricao?.nome
+                            ? lancamento.descricao.nome
+                            : typeof lancamento.descricao === "string" && lancamento.descricao
+                            ? lancamento.descricao
+                            : "N/A"}
                         </p>
                         {getCampanhaNome(lancamento.campanha) && (
                           <p className="text-xs text-blue-600">
