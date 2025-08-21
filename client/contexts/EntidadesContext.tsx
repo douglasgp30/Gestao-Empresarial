@@ -320,25 +320,35 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         } else {
           // Valores padrão com IDs como string
           setFormasPagamento([
-            { id: "1", nome: "Dinheiro", descricao: "Pagamento em dinheiro", dataCriacao: new Date() },
-            { id: "2", nome: "PIX", descricao: "Pagamento via PIX", dataCriacao: new Date() },
+            {
+              id: "1",
+              nome: "Dinheiro",
+              descricao: "Pagamento em dinheiro",
+              dataCriacao: new Date(),
+            },
+            {
+              id: "2",
+              nome: "PIX",
+              descricao: "Pagamento via PIX",
+              dataCriacao: new Date(),
+            },
             {
               id: "3",
               nome: "Cartão de Débito",
               descricao: "Pagamento com cartão de débito",
-              dataCriacao: new Date()
+              dataCriacao: new Date(),
             },
             {
               id: "4",
               nome: "Cartão de Crédito",
               descricao: "Pagamento com cartão de crédito",
-              dataCriacao: new Date()
+              dataCriacao: new Date(),
             },
             {
               id: "5",
               nome: "Boleto Bancário",
               descricao: "Pagamento via boleto bancário",
-              dataCriacao: new Date()
+              dataCriacao: new Date(),
             },
           ]);
         }

@@ -88,13 +88,15 @@ export default function ListaLancamentos() {
     if (!fp) return "N/A";
 
     // Se é um objeto snapshot, usar o nome
-    if (typeof fp === 'object' && fp.nome) {
+    if (typeof fp === "object" && fp.nome) {
       return fp.nome;
     }
 
     // Se é string, buscar pelo ID
-    if (typeof fp === 'string') {
-      const forma = formasPagamento.find(f => f.id?.toString() === fp.toString());
+    if (typeof fp === "string") {
+      const forma = formasPagamento.find(
+        (f) => f.id?.toString() === fp.toString(),
+      );
       return forma?.nome || fp; // Fallback para o próprio valor se não encontrar
     }
 
@@ -105,16 +107,21 @@ export default function ListaLancamentos() {
     if (!setor) return "";
 
     // Se é um objeto snapshot, montar nome completo
-    if (typeof setor === 'object' && setor.nome) {
-      return `${setor.nome}${setor.cidade ? ` - ${setor.cidade}` : ''}`;
+    if (typeof setor === "object" && setor.nome) {
+      return `${setor.nome}${setor.cidade ? ` - ${setor.cidade}` : ""}`;
     }
 
     // Se é string, buscar pelo ID
-    if (typeof setor === 'string') {
-      const setorEncontrado = setores.find(s => s.id?.toString() === setor.toString());
+    if (typeof setor === "string") {
+      const setorEncontrado = setores.find(
+        (s) => s.id?.toString() === setor.toString(),
+      );
       if (setorEncontrado) {
-        const cidade = typeof setorEncontrado.cidade === 'object' ? setorEncontrado.cidade?.nome : setorEncontrado.cidade;
-        return `${setorEncontrado.nome}${cidade ? ` - ${cidade}` : ''}`;
+        const cidade =
+          typeof setorEncontrado.cidade === "object"
+            ? setorEncontrado.cidade?.nome
+            : setorEncontrado.cidade;
+        return `${setorEncontrado.nome}${cidade ? ` - ${cidade}` : ""}`;
       }
       return setor; // Fallback para o próprio valor
     }
@@ -126,14 +133,16 @@ export default function ListaLancamentos() {
     if (!tecnico) return "";
 
     // Se é um objeto snapshot, usar o nome
-    if (typeof tecnico === 'object' && tecnico.nome) {
+    if (typeof tecnico === "object" && tecnico.nome) {
       return tecnico.nome;
     }
 
     // Se é string, buscar pelo ID
-    if (typeof tecnico === 'string') {
+    if (typeof tecnico === "string") {
       const tecnicos = getTecnicos();
-      const tecnicoEncontrado = tecnicos.find(t => t.id?.toString() === tecnico.toString());
+      const tecnicoEncontrado = tecnicos.find(
+        (t) => t.id?.toString() === tecnico.toString(),
+      );
       if (tecnicoEncontrado) {
         return tecnicoEncontrado.nome || tecnicoEncontrado.nomeCompleto || "";
       }
@@ -147,13 +156,15 @@ export default function ListaLancamentos() {
     if (!campanha) return "";
 
     // Se é um objeto snapshot, usar o nome
-    if (typeof campanha === 'object' && campanha.nome) {
+    if (typeof campanha === "object" && campanha.nome) {
       return campanha.nome;
     }
 
     // Se é string, buscar pelo ID
-    if (typeof campanha === 'string') {
-      const campanhaEncontrada = campanhas.find(c => c.id?.toString() === campanha.toString());
+    if (typeof campanha === "string") {
+      const campanhaEncontrada = campanhas.find(
+        (c) => c.id?.toString() === campanha.toString(),
+      );
       if (campanhaEncontrada) {
         return campanhaEncontrada.nome;
       }
@@ -167,13 +178,15 @@ export default function ListaLancamentos() {
     if (!cliente) return "";
 
     // Se é um objeto snapshot, usar o nome
-    if (typeof cliente === 'object' && cliente.nome) {
+    if (typeof cliente === "object" && cliente.nome) {
       return cliente.nome;
     }
 
     // Se é string, buscar pelo ID
-    if (typeof cliente === 'string') {
-      const clienteEncontrado = clientes.find(c => c.id?.toString() === cliente.toString());
+    if (typeof cliente === "string") {
+      const clienteEncontrado = clientes.find(
+        (c) => c.id?.toString() === cliente.toString(),
+      );
       if (clienteEncontrado) {
         return clienteEncontrado.nome;
       }
@@ -550,7 +563,9 @@ export default function ListaLancamentos() {
                         {getTecnicoNome(lancamento.tecnicoResponsavel) && (
                           <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                             <User className="h-3 w-3" />
-                            <span>{getTecnicoNome(lancamento.tecnicoResponsavel)}</span>
+                            <span>
+                              {getTecnicoNome(lancamento.tecnicoResponsavel)}
+                            </span>
                           </div>
                         )}
                         {lancamento.comissao && lancamento.comissao > 0 && (
@@ -564,7 +579,10 @@ export default function ListaLancamentos() {
                           </Badge>
                         )}
                         {lancamento.observacoes && (
-                          <div className="text-xs text-gray-500 truncate max-w-32" title={lancamento.observacoes}>
+                          <div
+                            className="text-xs text-gray-500 truncate max-w-32"
+                            title={lancamento.observacoes}
+                          >
                             Obs: {lancamento.observacoes}
                           </div>
                         )}

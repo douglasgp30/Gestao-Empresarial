@@ -366,18 +366,28 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       }
 
       // Buscar objetos completos para criar snapshots
-      const formaSelecionada = formasPagamento.find(f => f.id?.toString() === formData.formaPagamento);
-      const campanhaSelecionada = campanhas.find(c => c.id?.toString() === formData.campanha);
-      const clienteSelecionado = clientes.find(c => c.id === formData.cliente);
-      const setorSelecionado = setores.find(s => s.id?.toString() === formData.setor);
-      const tecnicoSelecionado = tecnicos.find(t => t.id?.toString() === formData.tecnicoResponsavel);
+      const formaSelecionada = formasPagamento.find(
+        (f) => f.id?.toString() === formData.formaPagamento,
+      );
+      const campanhaSelecionada = campanhas.find(
+        (c) => c.id?.toString() === formData.campanha,
+      );
+      const clienteSelecionado = clientes.find(
+        (c) => c.id === formData.cliente,
+      );
+      const setorSelecionado = setores.find(
+        (s) => s.id?.toString() === formData.setor,
+      );
+      const tecnicoSelecionado = tecnicos.find(
+        (t) => t.id?.toString() === formData.tecnicoResponsavel,
+      );
 
       console.log("FormularioReceita - Dados selecionados:", {
         forma: formaSelecionada,
         campanha: campanhaSelecionada,
         cliente: clienteSelecionado,
         setor: setorSelecionado,
-        tecnico: tecnicoSelecionado
+        tecnico: tecnicoSelecionado,
       });
 
       // Criar lançamento no caixa com snapshots completos
@@ -394,33 +404,55 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         descricao: formData.descricao,
 
         // Salvar snapshots dos objetos para preservar dados históricos
-        formaPagamento: formaSelecionada || { id: formData.formaPagamento, nome: formData.formaPagamento },
-        formaPagamentoId: formaSelecionada?.id?.toString() || formData.formaPagamento,
+        formaPagamento: formaSelecionada || {
+          id: formData.formaPagamento,
+          nome: formData.formaPagamento,
+        },
+        formaPagamentoId:
+          formaSelecionada?.id?.toString() || formData.formaPagamento,
 
-        tecnicoResponsavel: tecnicoSelecionado ? {
-          id: tecnicoSelecionado.id,
-          nome: tecnicoSelecionado.nome || tecnicoSelecionado.nomeCompleto,
-          percentualComissao: tecnicoSelecionado.percentualComissao || tecnicoSelecionado.percentualServico
-        } : undefined,
-        tecnicoResponsavelId: tecnicoSelecionado?.id?.toString() || formData.tecnicoResponsavel || undefined,
+        tecnicoResponsavel: tecnicoSelecionado
+          ? {
+              id: tecnicoSelecionado.id,
+              nome: tecnicoSelecionado.nome || tecnicoSelecionado.nomeCompleto,
+              percentualComissao:
+                tecnicoSelecionado.percentualComissao ||
+                tecnicoSelecionado.percentualServico,
+            }
+          : undefined,
+        tecnicoResponsavelId:
+          tecnicoSelecionado?.id?.toString() ||
+          formData.tecnicoResponsavel ||
+          undefined,
 
-        setor: setorSelecionado ? {
-          id: setorSelecionado.id,
-          nome: setorSelecionado.nome,
-          cidade: typeof setorSelecionado.cidade === 'object' ? setorSelecionado.cidade?.nome : setorSelecionado.cidade
-        } : undefined,
-        setorId: setorSelecionado?.id?.toString() || formData.setor || undefined,
+        setor: setorSelecionado
+          ? {
+              id: setorSelecionado.id,
+              nome: setorSelecionado.nome,
+              cidade:
+                typeof setorSelecionado.cidade === "object"
+                  ? setorSelecionado.cidade?.nome
+                  : setorSelecionado.cidade,
+            }
+          : undefined,
+        setorId:
+          setorSelecionado?.id?.toString() || formData.setor || undefined,
 
-        campanha: campanhaSelecionada ? {
-          id: campanhaSelecionada.id,
-          nome: campanhaSelecionada.nome
-        } : undefined,
-        campanhaId: campanhaSelecionada?.id?.toString() || formData.campanha || undefined,
+        campanha: campanhaSelecionada
+          ? {
+              id: campanhaSelecionada.id,
+              nome: campanhaSelecionada.nome,
+            }
+          : undefined,
+        campanhaId:
+          campanhaSelecionada?.id?.toString() || formData.campanha || undefined,
 
-        cliente: clienteSelecionado ? {
-          id: clienteSelecionado.id,
-          nome: clienteSelecionado.nome
-        } : undefined,
+        cliente: clienteSelecionado
+          ? {
+              id: clienteSelecionado.id,
+              nome: clienteSelecionado.nome,
+            }
+          : undefined,
         clienteId: clienteSelecionado?.id || formData.cliente || undefined,
 
         observacoes: formData.observacoes || undefined,

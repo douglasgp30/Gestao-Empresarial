@@ -297,26 +297,36 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     const migrado = { ...lancamento };
 
     // Migrar descrição: string -> objeto com nome
-    if (typeof migrado.descricao === "string" && migrado.descricao.trim() !== "") {
+    if (
+      typeof migrado.descricao === "string" &&
+      migrado.descricao.trim() !== ""
+    ) {
       migrado.descricao = { nome: migrado.descricao };
     }
 
     // Migrar formaPagamento: string -> objeto com nome
     if (typeof migrado.formaPagamento === "string") {
-      migrado.formaPagamento = { id: migrado.formaPagamento, nome: migrado.formaPagamento };
+      migrado.formaPagamento = {
+        id: migrado.formaPagamento,
+        nome: migrado.formaPagamento,
+      };
     }
 
     // Garantir campo funcionario a partir de tecnicoResponsavel
     if (!migrado.funcionario && migrado.tecnicoResponsavel) {
-      if (typeof migrado.tecnicoResponsavel === 'object') {
+      if (typeof migrado.tecnicoResponsavel === "object") {
         migrado.funcionario = {
-          id: migrado.tecnicoResponsavel.id?.toString?.() || migrado.tecnicoResponsavelId,
-          nome: migrado.tecnicoResponsavel.nome || migrado.tecnicoResponsavel.nomeCompleto
+          id:
+            migrado.tecnicoResponsavel.id?.toString?.() ||
+            migrado.tecnicoResponsavelId,
+          nome:
+            migrado.tecnicoResponsavel.nome ||
+            migrado.tecnicoResponsavel.nomeCompleto,
         };
-      } else if (typeof migrado.tecnicoResponsavel === 'string') {
+      } else if (typeof migrado.tecnicoResponsavel === "string") {
         migrado.funcionario = {
           id: migrado.tecnicoResponsavel,
-          nome: migrado.tecnicoResponsavel
+          nome: migrado.tecnicoResponsavel,
         };
       }
     }
@@ -332,7 +342,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
 
     // Migrar campanha: string -> objeto
-    if (typeof migrado.campanha === "string" && migrado.campanha.trim() !== "") {
+    if (
+      typeof migrado.campanha === "string" &&
+      migrado.campanha.trim() !== ""
+    ) {
       migrado.campanha = { id: migrado.campanha, nome: migrado.campanha };
     }
 
@@ -363,7 +376,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
               dataHora: new Date(lancamentoMigrado.dataHora),
               dataCriacao: new Date(lancamentoMigrado.dataCriacao),
             };
-          }
+          },
         );
 
         setLancamentos(lancamentosFormatados);
@@ -373,8 +386,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
         // Se houve migração, salvar dados migrados de volta no localStorage
         const dadosMigrados = lancamentosFormatados.map(normalizarLancamento);
-        localStorage.setItem("lancamentos_caixa", JSON.stringify(dadosMigrados));
-        console.log("📦 [CaixaContext] Dados migrados salvos de volta no localStorage");
+        localStorage.setItem(
+          "lancamentos_caixa",
+          JSON.stringify(dadosMigrados),
+        );
+        console.log(
+          "📦 [CaixaContext] Dados migrados salvos de volta no localStorage",
+        );
       } else {
         setLancamentos([]);
         console.log(
@@ -513,52 +531,83 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     // Converter datas para ISO strings para serialização
     const normalized = {
       ...lancamento,
-      data: lancamento.data instanceof Date ? lancamento.data.toISOString() : lancamento.data,
-      dataHora: lancamento.dataHora instanceof Date ? lancamento.dataHora.toISOString() : lancamento.dataHora,
-      dataCriacao: lancamento.dataCriacao instanceof Date ? lancamento.dataCriacao.toISOString() : lancamento.dataCriacao,
+      data:
+        lancamento.data instanceof Date
+          ? lancamento.data.toISOString()
+          : lancamento.data,
+      dataHora:
+        lancamento.dataHora instanceof Date
+          ? lancamento.dataHora.toISOString()
+          : lancamento.dataHora,
+      dataCriacao:
+        lancamento.dataCriacao instanceof Date
+          ? lancamento.dataCriacao.toISOString()
+          : lancamento.dataCriacao,
     };
 
     // NORMALIZAÇÃO DE CAMPOS PARA COMPATIBILIDADE DA UI
 
     // 1. Descrição: garantir que seja objeto com 'nome' para a UI
-    if (typeof normalized.descricao === "string" && normalized.descricao.trim() !== "") {
+    if (
+      typeof normalized.descricao === "string" &&
+      normalized.descricao.trim() !== ""
+    ) {
       normalized.descricao = { nome: normalized.descricao };
     }
 
     // 2. Forma de Pagamento: garantir objeto com nome
     if (typeof normalized.formaPagamento === "string") {
-      normalized.formaPagamento = { id: normalized.formaPagamento, nome: normalized.formaPagamento };
+      normalized.formaPagamento = {
+        id: normalized.formaPagamento,
+        nome: normalized.formaPagamento,
+      };
     }
 
     // 3. Técnico: popular campo 'funcionario' a partir de 'tecnicoResponsavel' (compatibilidade com UI)
     if (!normalized.funcionario && normalized.tecnicoResponsavel) {
-      if (typeof normalized.tecnicoResponsavel === 'object') {
+      if (typeof normalized.tecnicoResponsavel === "object") {
         normalized.funcionario = {
-          id: normalized.tecnicoResponsavel.id?.toString?.() || normalized.tecnicoResponsavelId,
-          nome: normalized.tecnicoResponsavel.nome || normalized.tecnicoResponsavel.nomeCompleto,
-          percentualComissao: normalized.tecnicoResponsavel.percentualComissao
+          id:
+            normalized.tecnicoResponsavel.id?.toString?.() ||
+            normalized.tecnicoResponsavelId,
+          nome:
+            normalized.tecnicoResponsavel.nome ||
+            normalized.tecnicoResponsavel.nomeCompleto,
+          percentualComissao: normalized.tecnicoResponsavel.percentualComissao,
         };
-      } else if (typeof normalized.tecnicoResponsavel === 'string') {
+      } else if (typeof normalized.tecnicoResponsavel === "string") {
         normalized.funcionario = {
           id: normalized.tecnicoResponsavel,
-          nome: normalized.tecnicoResponsavel
+          nome: normalized.tecnicoResponsavel,
         };
       }
     }
 
     // 4. Cliente: garantir formato consistente
-    if (typeof normalized.cliente === "string" && normalized.cliente.trim() !== "") {
+    if (
+      typeof normalized.cliente === "string" &&
+      normalized.cliente.trim() !== ""
+    ) {
       normalized.cliente = { id: normalized.cliente, nome: normalized.cliente };
     }
 
     // 5. Setor: garantir formato consistente
-    if (typeof normalized.setor === "string" && normalized.setor.trim() !== "") {
+    if (
+      typeof normalized.setor === "string" &&
+      normalized.setor.trim() !== ""
+    ) {
       normalized.setor = { id: normalized.setor, nome: normalized.setor };
     }
 
     // 6. Campanha: garantir formato consistente
-    if (typeof normalized.campanha === "string" && normalized.campanha.trim() !== "") {
-      normalized.campanha = { id: normalized.campanha, nome: normalized.campanha };
+    if (
+      typeof normalized.campanha === "string" &&
+      normalized.campanha.trim() !== ""
+    ) {
+      normalized.campanha = {
+        id: normalized.campanha,
+        nome: normalized.campanha,
+      };
     }
 
     // 7. Garantir IDs como strings coerentes
@@ -566,7 +615,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       normalized.formaPagamentoId = normalized.formaPagamento.id?.toString();
     }
     if (!normalized.tecnicoResponsavelId && normalized.tecnicoResponsavel?.id) {
-      normalized.tecnicoResponsavelId = normalized.tecnicoResponsavel.id?.toString();
+      normalized.tecnicoResponsavelId =
+        normalized.tecnicoResponsavel.id?.toString();
     }
     if (!normalized.clienteId && normalized.cliente?.id) {
       normalized.clienteId = normalized.cliente.id?.toString();
@@ -592,7 +642,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       cliente: normalized.cliente,
       valor: normalized.valor,
       valorLiquido: normalized.valorLiquido,
-      comissao: normalized.comissao
+      comissao: normalized.comissao,
     });
 
     return normalized;
@@ -627,7 +677,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const lancamentoNormalizado = normalizarLancamento(lancamento);
 
       // Adicionar o novo lançamento normalizado
-      const novosLancamentos = [...lancamentosExistentes, lancamentoNormalizado];
+      const novosLancamentos = [
+        ...lancamentosExistentes,
+        lancamentoNormalizado,
+      ];
 
       // Salvar no localStorage
       localStorage.setItem(
@@ -794,15 +847,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Função helper para verificar se é boleto
   const isBoleto = (lancamento: any) => {
     // Se formaPagamento é um objeto com nome
-    if (typeof lancamento.formaPagamento === 'object' && lancamento.formaPagamento?.nome) {
+    if (
+      typeof lancamento.formaPagamento === "object" &&
+      lancamento.formaPagamento?.nome
+    ) {
       const nome = lancamento.formaPagamento.nome.toLowerCase();
-      return nome.includes('boleto') || nome.includes('bancário');
+      return nome.includes("boleto") || nome.includes("bancário");
     }
 
     // Se formaPagamento é string, assumir que é nome direto
-    if (typeof lancamento.formaPagamento === 'string') {
+    if (typeof lancamento.formaPagamento === "string") {
       const nome = lancamento.formaPagamento.toLowerCase();
-      return nome.includes('boleto') || nome.includes('bancário');
+      return nome.includes("boleto") || nome.includes("bancário");
     }
 
     return false;
