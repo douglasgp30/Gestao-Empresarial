@@ -433,7 +433,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       // Se o cliente não existir, definir como null para não quebrar o foreign key
       if (!cliente) {
         console.log(
-          `[Caixa] Cliente ID ${data.clienteId} não encontrado. Definindo como null.`,
+          `[Caixa] Cliente ID ${data.clienteId} n��o encontrado. Definindo como null.`,
         );
         clienteIdValido = undefined;
       }
@@ -492,6 +492,60 @@ export const createLancamento: RequestHandler = async (req, res) => {
       dadosLancamento.observacoes = dadosLancamento.observacoes
         ? `${dadosLancamento.observacoes} [BOLETO - Aguardando pagamento]`
         : "[BOLETO - Aguardando pagamento]";
+    }
+
+    // Resolver legacy descricaoId se não fornecido mas há uma descrição
+    if (!dadosLancamento.descricaoId && data.descricao) {
+      console.log("[Caixa] Resolvendo descricao legacy para:", data.descricao);
+      let descricaoRegistro = await prisma.descricao.findFirst({
+        where: {
+          nome: { contains: data.descricao },
+          tipo: data.tipo || "receita",
+        },
+      });
+      if (!descricaoRegistro) {
+        descricaoRegistro = await prisma.descricao.create({
+          data: {
+            nome: data.descricao,
+            tipo: data.tipo || "receita",
+          },
+        });
+        console.log("[Caixa] Criada nova Descricao id:", descricaoRegistro.id);
+      } else {
+        console.log(
+          "[Caixa] Usando Descricao existente id:",
+          descricaoRegistro.id,
+        );
+      }
+      dadosLancamento.descricaoId = descricaoRegistro.id;
+    }
+
+    // Se ainda não há descricaoId, criar uma descrição padrão
+    if (!dadosLancamento.descricaoId) {
+      console.log("[Caixa] Criando descrição padrão para lançamento");
+      const descricaoDefault = await prisma.descricao.create({
+        data: {
+          nome: "Lançamento genérico",
+          tipo: data.tipo || "receita",
+        },
+      });
+      dadosLancamento.descricaoId = descricaoDefault.id;
+      console.log("[Caixa] Criada descrição padrão id:", descricaoDefault.id);
+    }
+
+    // Verificar se há formaPagamentoId (obrigatório)
+    if (!dadosLancamento.formaPagamentoId) {
+      console.log(
+        "[Caixa] FormaPagamentoId não fornecido, criando forma padrão",
+      );
+      const formaPagamentoDefault = await prisma.formaPagamento.create({
+        data: { nome: "Dinheiro" },
+      });
+      dadosLancamento.formaPagamentoId = formaPagamentoDefault.id;
+      console.log(
+        "[Caixa] Criada forma de pagamento padrão id:",
+        formaPagamentoDefault.id,
+      );
     }
 
     const lancamento = await prisma.lancamentoCaixa.create({
