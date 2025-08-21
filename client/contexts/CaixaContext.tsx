@@ -360,6 +360,12 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         "📦 [CaixaContext] Carregando lançamentos do localStorage...",
       );
 
+      // Migrar dados antigos antes de carregar
+      const foiMigrado = migrarDadosAntigos();
+      if (foiMigrado) {
+        console.log("🔄 [CaixaContext] Dados migrados com sucesso");
+      }
+
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
       if (lancamentosStorage) {
         const lancamentosParsed = JSON.parse(lancamentosStorage);
