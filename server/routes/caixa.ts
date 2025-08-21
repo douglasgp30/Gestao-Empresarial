@@ -466,7 +466,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       console.log("[Caixa] Usando data atual:", dataHoraLancamento);
     }
 
-    // Preparar dados para criação
+    // Preparar dados para criação usando apenas IDs validados
     const dadosLancamento: any = {
       valor: data.valor,
       valorRecebido: data.valorRecebido,
@@ -479,8 +479,51 @@ export const createLancamento: RequestHandler = async (req, res) => {
       tipo: data.tipo,
       dataHora: dataHoraLancamento,
       clienteId: clienteIdValido,
-      ...ids, // Adicionar IDs resolvidos
     };
+
+    // Adicionar apenas IDs que foram validados e existem
+    if (ids.formaPagamentoId) {
+      dadosLancamento.formaPagamentoId = ids.formaPagamentoId;
+    }
+
+    // Revalidar funcionário antes de adicionar
+    if (ids.funcionarioId) {
+      const funcionario = await prisma.funcionario.findUnique({
+        where: { id: ids.funcionarioId },
+      });
+      if (funcionario) {
+        dadosLancamento.funcionarioId = ids.funcionarioId;
+        console.log(`[Caixa] Funcionário ID ${ids.funcionarioId} validado e adicionado`);
+      } else {
+        console.log(`[Caixa] Funcionário ID ${ids.funcionarioId} não encontrado, removendo`);
+      }
+    }
+
+    // Revalidar localização antes de adicionar
+    if (ids.localizacaoId) {
+      const localizacao = await prisma.localizacaoGeografica.findUnique({
+        where: { id: ids.localizacaoId },
+      });
+      if (localizacao) {
+        dadosLancamento.localizacaoId = ids.localizacaoId;
+        console.log(`[Caixa] Localização ID ${ids.localizacaoId} validada e adicionada`);
+      } else {
+        console.log(`[Caixa] Localização ID ${ids.localizacaoId} não encontrada, removendo`);
+      }
+    }
+
+    // Revalidar campanha antes de adicionar
+    if (ids.campanhaId) {
+      const campanha = await prisma.campanha.findUnique({
+        where: { id: ids.campanhaId },
+      });
+      if (campanha) {
+        dadosLancamento.campanhaId = ids.campanhaId;
+        console.log(`[Caixa] Campanha ID ${ids.campanhaId} validada e adicionada`);
+      } else {
+        console.log(`[Caixa] Campanha ID ${ids.campanhaId} não encontrada, removendo`);
+      }
+    }
 
     // Adicionar sistema unificado se disponível
     if (descricaoECategoriaId) {
