@@ -359,10 +359,26 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         params.append('tipo', filtros.tipo);
       }
 
-      const response = await fetch(`/api/caixa?${params.toString()}`);
+      const url = `/api/caixa?${params.toString()}`;
+      console.log("📦 [CaixaContext] URL da requisição:", url);
+
+      const response = await fetch(url);
+
+      console.log("📦 [CaixaContext] Status da resposta:", response.status);
+      console.log("📦 [CaixaContext] Headers da resposta:", [...response.headers.entries()]);
 
       if (!response.ok) {
-        throw new Error(`Erro ao carregar lançamentos: ${response.status}`);
+        const errorText = await response.text();
+        console.error("📦 [CaixaContext] Erro na resposta:", errorText);
+        throw new Error(`Erro ao carregar lançamentos: ${response.status} - ${errorText}`);
+      }
+
+      // Verificar se o content-type é JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const responseText = await response.text();
+        console.error("📦 [CaixaContext] Resposta não é JSON:", responseText.substring(0, 200));
+        throw new Error(`Resposta não é JSON. Content-Type: ${contentType}. Resposta: ${responseText.substring(0, 100)}...`);
       }
 
       const lancamentosDoBanco = await response.json();
