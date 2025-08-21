@@ -120,13 +120,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("📊 [CaixaContext] Carregando campanhas...");
 
-      // Fazer requisição simples sem AbortController para debug
-      const response = await fetch("/api/campanhas", {
+      // Fazer requisição com timeout simples
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), 10000)
+      );
+
+      const fetchPromise = fetch("/api/campanhas", {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
+      const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
       console.log("📊 [CaixaContext] Response status:", response.status);
 
       if (response.ok) {
