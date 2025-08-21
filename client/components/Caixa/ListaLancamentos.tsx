@@ -518,21 +518,26 @@ export default function ListaLancamentos() {
 
                     <TableCell>
                       <div className="space-y-1">
-                        {lancamento.tecnicoResponsavel && (
+                        {getTecnicoNome(lancamento.tecnicoResponsavel) && (
                           <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                             <User className="h-3 w-3" />
-                            <span>{lancamento.tecnicoResponsavel}</span>
+                            <span>{getTecnicoNome(lancamento.tecnicoResponsavel)}</span>
                           </div>
                         )}
-                        {lancamento.comissao && (
+                        {lancamento.comissao && lancamento.comissao > 0 && (
                           <div className="text-xs text-blue-600">
                             Comissão: {formatCurrency(lancamento.comissao)}
                           </div>
                         )}
-                        {lancamento.notaFiscal && (
+                        {lancamento.numeroNota && (
                           <Badge variant="outline" className="text-xs">
-                            NF
+                            NF: {lancamento.numeroNota}
                           </Badge>
+                        )}
+                        {lancamento.observacoes && (
+                          <div className="text-xs text-gray-500 truncate max-w-32" title={lancamento.observacoes}>
+                            Obs: {lancamento.observacoes}
+                          </div>
                         )}
                       </div>
                     </TableCell>
