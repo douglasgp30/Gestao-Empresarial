@@ -226,7 +226,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Função para carregar todos os dados do localStorage
+  // Função para carregar dados do banco de dados
   const carregarDados = async () => {
     // Evitar múltiplos carregamentos simultâneos
     if (isCarregando) {
@@ -239,9 +239,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      console.log("📦 [CaixaContext] Carregando dados do localStorage...");
+      console.log("📦 [CaixaContext] Carregando dados do banco de dados...");
 
-      // Carregar campanhas com fallback seguro (não deve falhar)
+      // Carregar campanhas do servidor
       try {
         await carregarCampanhasSafe();
       } catch (campanhasError) {
@@ -249,44 +249,32 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           "Erro ao carregar campanhas, usando fallback:",
           campanhasError,
         );
-
-        // Tentar carregar do localStorage como último recurso
-        try {
-          const campanhasStorage = localStorage.getItem("campanhas");
-          if (campanhasStorage) {
-            const campanhasParsed = JSON.parse(campanhasStorage);
-            setCampanhas(campanhasParsed || []);
-            console.log(
-              "📊 [CaixaContext] Campanhas carregadas do localStorage como fallback",
-            );
-          } else {
-            setCampanhas([]); // Fallback para array vazio se não há dados
-          }
-        } catch (localError) {
-          console.warn(
-            "Erro no fallback localStorage de campanhas:",
-            localError,
-          );
-          setCampanhas([]); // Fallback final para array vazio
-        }
+        setCampanhas([]);
       }
 
-      // Carregar lançamentos do localStorage (não deve falhar)
+      // Carregar lançamentos do banco de dados
       try {
-        await carregarLancamentosLocalStorage();
+        await carregarLancamentosDoBanco();
       } catch (lancamentosError) {
         console.warn(
-          "Erro ao carregar lançamentos, continuando:",
+          "Erro ao carregar lançamentos do banco, tentando localStorage:",
           lancamentosError,
         );
-        setLancamentos([]); // Fallback para array vazio
+
+        // Fallback para localStorage (temporário durante migração)
+        try {
+          await carregarLancamentosLocalStorage();
+          console.log("⚠️ [CaixaContext] Dados carregados do localStorage (migração pendente)");
+        } catch (localError) {
+          console.warn("Erro no fallback localStorage:", localError);
+          setLancamentos([]);
+        }
       }
 
       console.log("✅ [CaixaContext] Dados carregados com sucesso");
     } catch (error) {
       console.error("Erro geral ao carregar dados:", error);
-      // Não definir erro para não quebrar a UI
-      // setError("Erro ao carregar dados locais");
+      setError("Erro ao carregar dados");
     } finally {
       setIsLoading(false);
       setIsCarregando(false);
