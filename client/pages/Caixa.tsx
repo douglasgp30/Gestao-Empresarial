@@ -11,6 +11,7 @@ import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
 import { AlertaMigracaoCaixa } from "../components/ui/alerta-migracao-caixa";
+import { TesteCaixaAPI } from "../components/Debug/TesteCaixaAPI";
 import { DollarSign } from "lucide-react";
 
 function CaixaContent() {
