@@ -287,7 +287,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    carregarFuncionariosDoLocalStorage();
+    inicializarFuncionarios();
 
     // Durante hot reload, n��o carregar automaticamente
     if (
