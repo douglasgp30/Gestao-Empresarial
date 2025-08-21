@@ -449,6 +449,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timeoutId);
   }, [filtrosDependencias]); // Remover carregarLancamentos das dependências
 
+  // Função para normalizar lançamento antes de salvar
+  const normalizarLancamento = (lancamento: any): any => {
+    // Converter datas para ISO strings para serialização
+    const normalized = {
+      ...lancamento,
+      data: lancamento.data instanceof Date ? lancamento.data.toISOString() : lancamento.data,
+      dataHora: lancamento.dataHora instanceof Date ? lancamento.dataHora.toISOString() : lancamento.dataHora,
+      dataCriacao: lancamento.dataCriacao instanceof Date ? lancamento.dataCriacao.toISOString() : lancamento.dataCriacao,
+    };
+
+    // Log para debug
+    console.log("[CaixaContext] Lançamento normalizado:", {
+      id: normalized.id,
+      formaPagamento: normalized.formaPagamento,
+      formaPagamentoId: normalized.formaPagamentoId,
+      tecnicoResponsavel: normalized.tecnicoResponsavel,
+      setor: normalized.setor,
+      campanha: normalized.campanha,
+      cliente: normalized.cliente,
+    });
+
+    return normalized;
+  };
+
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
@@ -474,8 +498,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         localStorage.getItem("lancamentos_caixa") || "[]",
       );
 
-      // Adicionar o novo lançamento
-      const novosLancamentos = [...lancamentosExistentes, lancamento];
+      // Normalizar o lançamento antes de salvar
+      const lancamentoNormalizado = normalizarLancamento(lancamento);
+
+      // Adicionar o novo lançamento normalizado
+      const novosLancamentos = [...lancamentosExistentes, lancamentoNormalizado];
 
       // Salvar no localStorage
       localStorage.setItem(
