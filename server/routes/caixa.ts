@@ -274,12 +274,11 @@ export const getLancamentos: RequestHandler = async (req, res) => {
 
 export const createLancamento: RequestHandler = async (req, res) => {
   try {
-    console.log(
-      "[Caixa] Dados recebidos para criar lançamento:",
-      JSON.stringify(req.body, null, 2),
-    );
+    console.log("[Caixa] Criando lançamento...");
+    console.log("[Caixa] Body keys:", Object.keys(req.body || {}));
+
     const data = LancamentoCaixaSchema.parse(req.body);
-    console.log("[Caixa] Dados após validação:", JSON.stringify(data, null, 2));
+    console.log("[Caixa] Validação bem-sucedida, dados processados");
 
     // Resolver IDs de entidades
     const ids = await resolverIds(data);
