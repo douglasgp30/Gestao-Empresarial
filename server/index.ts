@@ -260,14 +260,24 @@ export function createServer(): Express {
     }
   });
 
+  // Middleware de debug para rotas POST do caixa
+  const debugCaixaMiddleware = (req: any, res: any, next: any) => {
+    console.log("[Debug Caixa] Middleware executado");
+    console.log("[Debug Caixa] Method:", req.method);
+    console.log("[Debug Caixa] Body readable:", req.readable);
+    console.log("[Debug Caixa] Body exists:", !!req.body);
+    console.log("[Debug Caixa] Content-Type:", req.get('content-type'));
+    next();
+  };
+
   // Rotas de Caixa
   app.get("/api/caixa", getLancamentos);
   app.get("/api/caixa/lancamentos", getLancamentos); // Manter compatibilidade
   app.get("/api/caixa/totais", getTotaisCaixa);
-  app.post("/api/caixa", createLancamento);
-  app.post("/api/caixa/lancamentos", createLancamento); // Manter compatibilidade
-  app.put("/api/caixa/:id", updateLancamento);
-  app.put("/api/caixa/lancamentos/:id", updateLancamento); // Manter compatibilidade
+  app.post("/api/caixa", debugCaixaMiddleware, createLancamento);
+  app.post("/api/caixa/lancamentos", debugCaixaMiddleware, createLancamento); // Manter compatibilidade
+  app.put("/api/caixa/:id", debugCaixaMiddleware, updateLancamento);
+  app.put("/api/caixa/lancamentos/:id", debugCaixaMiddleware, updateLancamento); // Manter compatibilidade
   app.delete("/api/caixa/:id", deleteLancamento);
   app.delete("/api/caixa/lancamentos/:id", deleteLancamento); // Manter compatibilidade
 
