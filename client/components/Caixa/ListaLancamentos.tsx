@@ -83,75 +83,104 @@ export default function ListaLancamentos() {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-  // Funções helper para mapear IDs para nomes
-  const getFormaPagamentoNome = (formaPagamentoId: string) => {
-    if (!formaPagamentoId) return "N/A";
+  // Funções helper robustas para mapear IDs/snapshots para nomes
+  const getFormaPagamentoNome = (fp: any) => {
+    if (!fp) return "N/A";
 
-    // Se já é um nome (string), retornar direto
-    if (isNaN(Number(formaPagamentoId))) {
-      return formaPagamentoId;
+    // Se é um objeto snapshot, usar o nome
+    if (typeof fp === 'object' && fp.nome) {
+      return fp.nome;
     }
 
-    // Buscar pelo ID
-    const forma = formasPagamento.find(f => f.id.toString() === formaPagamentoId);
-    return forma?.nome || "N/A";
+    // Se é string, buscar pelo ID
+    if (typeof fp === 'string') {
+      const forma = formasPagamento.find(f => f.id?.toString() === fp.toString());
+      return forma?.nome || fp; // Fallback para o próprio valor se não encontrar
+    }
+
+    return "N/A";
   };
 
-  const getSetorNome = (setorId: string) => {
-    if (!setorId) return "";
+  const getSetorNome = (setor: any) => {
+    if (!setor) return "";
 
-    // Se já é um nome (string), retornar direto
-    if (isNaN(Number(setorId))) {
-      return setorId;
+    // Se é um objeto snapshot, montar nome completo
+    if (typeof setor === 'object' && setor.nome) {
+      return `${setor.nome}${setor.cidade ? ` - ${setor.cidade}` : ''}`;
     }
 
-    // Buscar pelo ID nos setores
-    const setor = setores.find(s => s.id?.toString() === setorId);
-    if (setor) {
-      const cidade = typeof setor.cidade === 'object' ? setor.cidade?.nome : setor.cidade;
-      return `${setor.nome}${cidade ? ` - ${cidade}` : ''}`;
+    // Se é string, buscar pelo ID
+    if (typeof setor === 'string') {
+      const setorEncontrado = setores.find(s => s.id?.toString() === setor.toString());
+      if (setorEncontrado) {
+        const cidade = typeof setorEncontrado.cidade === 'object' ? setorEncontrado.cidade?.nome : setorEncontrado.cidade;
+        return `${setorEncontrado.nome}${cidade ? ` - ${cidade}` : ''}`;
+      }
+      return setor; // Fallback para o próprio valor
     }
+
     return "";
   };
 
-  const getTecnicoNome = (tecnicoId: string) => {
-    if (!tecnicoId) return "";
+  const getTecnicoNome = (tecnico: any) => {
+    if (!tecnico) return "";
 
-    // Se já é um nome (string), retornar direto
-    if (isNaN(Number(tecnicoId))) {
-      return tecnicoId;
+    // Se é um objeto snapshot, usar o nome
+    if (typeof tecnico === 'object' && tecnico.nome) {
+      return tecnico.nome;
     }
 
-    // Buscar pelo ID nos técnicos
-    const tecnicos = getTecnicos();
-    const tecnico = tecnicos.find(t => t.id?.toString() === tecnicoId);
-    return tecnico?.nome || tecnico?.nomeCompleto || "";
+    // Se é string, buscar pelo ID
+    if (typeof tecnico === 'string') {
+      const tecnicos = getTecnicos();
+      const tecnicoEncontrado = tecnicos.find(t => t.id?.toString() === tecnico.toString());
+      if (tecnicoEncontrado) {
+        return tecnicoEncontrado.nome || tecnicoEncontrado.nomeCompleto || "";
+      }
+      return tecnico; // Fallback para o próprio valor
+    }
+
+    return "";
   };
 
-  const getCampanhaNome = (campanhaId: string) => {
-    if (!campanhaId) return "";
+  const getCampanhaNome = (campanha: any) => {
+    if (!campanha) return "";
 
-    // Se já é um nome (string), retornar direto
-    if (isNaN(Number(campanhaId))) {
-      return campanhaId;
+    // Se é um objeto snapshot, usar o nome
+    if (typeof campanha === 'object' && campanha.nome) {
+      return campanha.nome;
     }
 
-    // Buscar pelo ID nas campanhas
-    const campanha = campanhas.find(c => c.id?.toString() === campanhaId);
-    return campanha?.nome || "";
+    // Se é string, buscar pelo ID
+    if (typeof campanha === 'string') {
+      const campanhaEncontrada = campanhas.find(c => c.id?.toString() === campanha.toString());
+      if (campanhaEncontrada) {
+        return campanhaEncontrada.nome;
+      }
+      return campanha; // Fallback para o próprio valor
+    }
+
+    return "";
   };
 
-  const getClienteNome = (clienteId: string) => {
-    if (!clienteId) return "";
+  const getClienteNome = (cliente: any) => {
+    if (!cliente) return "";
 
-    // Se já é um nome (string), retornar direto
-    if (isNaN(Number(clienteId))) {
-      return clienteId;
+    // Se é um objeto snapshot, usar o nome
+    if (typeof cliente === 'object' && cliente.nome) {
+      return cliente.nome;
     }
 
-    // Buscar pelo ID nos clientes
-    const cliente = clientes.find(c => c.id === clienteId);
-    return cliente?.nome || "";
+    // Se é string, buscar pelo ID
+    if (typeof cliente === 'string') {
+      const clienteEncontrado = clientes.find(c => c.id?.toString() === cliente.toString());
+      if (clienteEncontrado) {
+        return clienteEncontrado.nome;
+      }
+      return cliente; // Fallback para o próprio valor
+    }
+
+    return "";
   };
 
   const handleSort = (field: SortField) => {
