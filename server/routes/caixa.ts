@@ -433,7 +433,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       // Se o cliente não existir, definir como null para não quebrar o foreign key
       if (!cliente) {
         console.log(
-          `[Caixa] Cliente ID ${data.clienteId} não encontrado. Definindo como null.`,
+          `[Caixa] Cliente ID ${data.clienteId} n��o encontrado. Definindo como null.`,
         );
         clienteIdValido = undefined;
       }
@@ -528,6 +528,16 @@ export const createLancamento: RequestHandler = async (req, res) => {
       });
       dadosLancamento.descricaoId = descricaoDefault.id;
       console.log("[Caixa] Criada descrição padrão id:", descricaoDefault.id);
+    }
+
+    // Verificar se há formaPagamentoId (obrigatório)
+    if (!dadosLancamento.formaPagamentoId) {
+      console.log("[Caixa] FormaPagamentoId não fornecido, criando forma padrão");
+      const formaPagamentoDefault = await prisma.formaPagamento.create({
+        data: { nome: "Dinheiro" },
+      });
+      dadosLancamento.formaPagamentoId = formaPagamentoDefault.id;
+      console.log("[Caixa] Criada forma de pagamento padrão id:", formaPagamentoDefault.id);
     }
 
     const lancamento = await prisma.lancamentoCaixa.create({
