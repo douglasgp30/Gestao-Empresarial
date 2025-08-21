@@ -213,8 +213,6 @@ export function createServer(): Express {
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
 
-
-
   // Rotas de Localização Geográfica (Cidades e Setores unificados)
   app.get("/api/localizacoes-geograficas", getLocalizacoesGeograficas);
   app.get("/api/cidades", getCidades);

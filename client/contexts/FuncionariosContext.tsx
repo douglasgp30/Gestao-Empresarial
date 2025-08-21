@@ -199,7 +199,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   // Carregar funcionários priorizando API sobre localStorage
   useEffect(() => {
     const inicializarFuncionarios = async () => {
-        try {
+      try {
         console.log(
           "[FuncionariosContext] Iniciando carregamento de funcionários...",
         );
@@ -210,7 +210,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         const response = await funcionariosApi.listar();
 
         if (!response.error && response.data && response.data.length > 0) {
-          console.log(`[FuncionariosContext] ${response.data.length} funcionários encontrados na API`);
+          console.log(
+            `[FuncionariosContext] ${response.data.length} funcionários encontrados na API`,
+          );
 
           // Converter dados da API para o formato do contexto
           const funcionariosFormatados = response.data.map((f: any) => ({
@@ -231,12 +233,16 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
           }));
 
           setFuncionarios(funcionariosFormatados);
-          console.log("[FuncionariosContext] ✅ Funcionários carregados da API com sucesso");
+          console.log(
+            "[FuncionariosContext] ✅ Funcionários carregados da API com sucesso",
+          );
           return;
         }
 
         // 2. Se não há dados na API, tentar localStorage como fallback
-        console.log("[FuncionariosContext] API vazia, tentando localStorage...");
+        console.log(
+          "[FuncionariosContext] API vazia, tentando localStorage...",
+        );
         setIsLoading(true);
 
         let funcionariosCarregados = carregarFuncionariosReais();
@@ -405,7 +411,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
 
   const excluirFuncionario = async (id: string) => {
     // Não permitir excluir o próprio usuário logado
-    const funcionarioParaExcluir = funcionarios.find(f => f.id === id);
+    const funcionarioParaExcluir = funcionarios.find((f) => f.id === id);
     if (funcionarioParaExcluir?.nomeCompleto === user?.nome) {
       alert("Não é possível excluir seu próprio usuário.");
       return;
@@ -421,7 +427,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       const isLocalId = id.length > 10; // Timestamps são longos, IDs do banco são pequenos
 
       if (isLocalId) {
-        console.log("[FuncionariosContext] Excluindo funcionário local (localStorage)");
+        console.log(
+          "[FuncionariosContext] Excluindo funcionário local (localStorage)",
+        );
         // Para funcionários locais, apenas remover do localStorage
         const funcionariosAtuais = carregarFuncionariosReais();
         const novosFuncionarios = funcionariosAtuais.filter((f) => f.id !== id);

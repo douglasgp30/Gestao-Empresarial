@@ -368,16 +368,16 @@ export default function ListaFuncionarios() {
                               Editar
                             </DropdownMenuItem>
                             {funcionario.nomeCompleto !== user?.nome && (
-                                <DropdownMenuItem
-                                  className="text-red-600"
-                                  onClick={() =>
-                                    setFuncionarioParaExcluir(funcionario.id)
-                                  }
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              )}
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() =>
+                                  setFuncionarioParaExcluir(funcionario.id)
+                                }
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
