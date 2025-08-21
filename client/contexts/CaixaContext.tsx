@@ -378,7 +378,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("📦 [CaixaContext] Erro na resposta:", errorText);
+        console.error("�� [CaixaContext] Erro na resposta:", errorText);
         throw new Error(
           `Erro ao carregar lançamentos: ${response.status} - ${errorText}`,
         );
@@ -457,7 +457,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Migrar dados antigos antes de carregar
       const foiMigrado = migrarDadosAntigos();
       if (foiMigrado) {
-        console.log("🔄 [CaixaContext] Dados migrados com sucesso");
+        console.log("���� [CaixaContext] Dados migrados com sucesso");
       }
 
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
@@ -818,12 +818,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(dadosParaAPI),
       });
 
-      if (!response.ok) {
-        const erro = await response.text();
-        throw new Error(`Erro na API: ${erro}`);
+      let responseData;
+      try {
+        responseData = await response.json();
+      } catch (parseError) {
+        const errorText = await response.text();
+        throw new Error(`Erro na API: ${errorText}`);
       }
 
-      const lancamentoCriado = await response.json();
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${responseData.message || 'Erro desconhecido'}`);
+      }
+
+      const lancamentoCriado = responseData;
       console.log(
         "[CaixaContext] Lançamento criado com sucesso:",
         lancamentoCriado.id,
