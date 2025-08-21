@@ -215,8 +215,6 @@ export function ListaLancamentosSimples() {
             : lancamento.campanha?.nome;
         return campanha || "-";
 
-      case "conta":
-        return lancamento.conta || "-";
 
       case "observacoes":
         return lancamento.observacoes ? (
