@@ -292,6 +292,53 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função para migrar lançamento antigo para novo formato
+  const migrarLancamentoAntigo = (lancamento: any): any => {
+    const migrado = { ...lancamento };
+
+    // Migrar descrição: string -> objeto com nome
+    if (typeof migrado.descricao === "string" && migrado.descricao.trim() !== "") {
+      migrado.descricao = { nome: migrado.descricao };
+    }
+
+    // Migrar formaPagamento: string -> objeto com nome
+    if (typeof migrado.formaPagamento === "string") {
+      migrado.formaPagamento = { id: migrado.formaPagamento, nome: migrado.formaPagamento };
+    }
+
+    // Garantir campo funcionario a partir de tecnicoResponsavel
+    if (!migrado.funcionario && migrado.tecnicoResponsavel) {
+      if (typeof migrado.tecnicoResponsavel === 'object') {
+        migrado.funcionario = {
+          id: migrado.tecnicoResponsavel.id?.toString?.() || migrado.tecnicoResponsavelId,
+          nome: migrado.tecnicoResponsavel.nome || migrado.tecnicoResponsavel.nomeCompleto
+        };
+      } else if (typeof migrado.tecnicoResponsavel === 'string') {
+        migrado.funcionario = {
+          id: migrado.tecnicoResponsavel,
+          nome: migrado.tecnicoResponsavel
+        };
+      }
+    }
+
+    // Migrar cliente: string -> objeto
+    if (typeof migrado.cliente === "string" && migrado.cliente.trim() !== "") {
+      migrado.cliente = { id: migrado.cliente, nome: migrado.cliente };
+    }
+
+    // Migrar setor: string -> objeto
+    if (typeof migrado.setor === "string" && migrado.setor.trim() !== "") {
+      migrado.setor = { id: migrado.setor, nome: migrado.setor };
+    }
+
+    // Migrar campanha: string -> objeto
+    if (typeof migrado.campanha === "string" && migrado.campanha.trim() !== "") {
+      migrado.campanha = { id: migrado.campanha, nome: migrado.campanha };
+    }
+
+    return migrado;
+  };
+
   // Função para carregar lançamentos do localStorage
   const carregarLancamentosLocalStorage = async () => {
     try {
@@ -302,20 +349,32 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
       if (lancamentosStorage) {
         const lancamentosParsed = JSON.parse(lancamentosStorage);
-        // Converter strings de data de volta para objetos Date
+
+        // Migrar dados antigos e converter strings de data de volta para objetos Date
         const lancamentosFormatados = lancamentosParsed.map(
-          (lancamento: any) => ({
-            ...lancamento,
-            data: new Date(lancamento.data),
-            dataHora: new Date(lancamento.dataHora),
-            dataCriacao: new Date(lancamento.dataCriacao),
-          }),
+          (lancamento: any) => {
+            // Primeiro migrar formato antigo
+            const lancamentoMigrado = migrarLancamentoAntigo(lancamento);
+
+            // Depois converter datas
+            return {
+              ...lancamentoMigrado,
+              data: new Date(lancamentoMigrado.data),
+              dataHora: new Date(lancamentoMigrado.dataHora),
+              dataCriacao: new Date(lancamentoMigrado.dataCriacao),
+            };
+          }
         );
 
         setLancamentos(lancamentosFormatados);
         console.log(
-          `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`,
+          `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados e migrados do localStorage`,
         );
+
+        // Se houve migração, salvar dados migrados de volta no localStorage
+        const dadosMigrados = lancamentosFormatados.map(normalizarLancamento);
+        localStorage.setItem("lancamentos_caixa", JSON.stringify(dadosMigrados));
+        console.log("📦 [CaixaContext] Dados migrados salvos de volta no localStorage");
       } else {
         setLancamentos([]);
         console.log(
