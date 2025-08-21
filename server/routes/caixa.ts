@@ -3,6 +3,9 @@ import { prisma } from "../lib/database";
 import { z } from "zod";
 import { AuditoriaService, extrairInfoRequisicao } from "../lib/auditoria";
 
+// Testar conexão com banco na inicialização
+console.log("[Caixa Routes] Arquivo caixa.ts carregado, Prisma importado:", !!prisma);
+
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
   valor: z
