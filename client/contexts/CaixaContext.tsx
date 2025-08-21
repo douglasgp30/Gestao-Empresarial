@@ -666,22 +666,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Função helper para verificar se é boleto
+  const isBoleto = (lancamento: any) => {
+    // Se formaPagamento é um objeto com nome
+    if (typeof lancamento.formaPagamento === 'object' && lancamento.formaPagamento?.nome) {
+      const nome = lancamento.formaPagamento.nome.toLowerCase();
+      return nome.includes('boleto') || nome.includes('bancário');
+    }
+
+    // Se formaPagamento é string, assumir que é nome direto
+    if (typeof lancamento.formaPagamento === 'string') {
+      const nome = lancamento.formaPagamento.toLowerCase();
+      return nome.includes('boleto') || nome.includes('bancário');
+    }
+
+    return false;
+  };
+
   // Calcular totais baseados nos lançamentos carregados
   const totais = React.useMemo(() => {
     const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
 
-    // Separar boletos (que não têm valorParaEmpresa ainda)
-    const receitasBoleto = receitasCompletas.filter(
-      (l) =>
-        l.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
-        l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
-    );
-
-    const receitasNaoBoleto = receitasCompletas.filter(
-      (l) =>
-        !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
-        !l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
-    );
+    // Separar boletos usando função helper
+    const receitasBoleto = receitasCompletas.filter(isBoleto);
+    const receitasNaoBoleto = receitasCompletas.filter((l) => !isBoleto(l));
 
     // Calcular totais
     const receitaBruta = receitasCompletas.reduce(
