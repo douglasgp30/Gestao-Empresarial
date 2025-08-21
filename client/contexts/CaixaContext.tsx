@@ -341,6 +341,69 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     return migrado;
   };
 
+  // Função para carregar lançamentos do banco de dados
+  const carregarLancamentosDoBanco = async () => {
+    try {
+      console.log("📦 [CaixaContext] Carregando lançamentos do banco de dados...");
+
+      // Construir query params com filtros atuais
+      const params = new URLSearchParams();
+
+      if (filtros.dataInicio) {
+        params.append('dataInicio', filtros.dataInicio.toISOString().split('T')[0]);
+      }
+      if (filtros.dataFim) {
+        params.append('dataFim', filtros.dataFim.toISOString().split('T')[0]);
+      }
+      if (filtros.tipo && filtros.tipo !== 'todos') {
+        params.append('tipo', filtros.tipo);
+      }
+
+      const response = await fetch(`/api/caixa?${params.toString()}`);
+
+      if (!response.ok) {
+        throw new Error(`Erro ao carregar lançamentos: ${response.status}`);
+      }
+
+      const lancamentosDoBanco = await response.json();
+
+      // Converter datas para objetos Date
+      const lancamentosFormatados = lancamentosDoBanco.map((lancamento: any) => ({
+        ...lancamento,
+        data: new Date(lancamento.dataHora),
+        dataHora: new Date(lancamento.dataHora),
+        dataCriacao: new Date(lancamento.dataHora),
+        // Mapear campos do banco para o formato esperado pelo frontend
+        id: lancamento.id.toString(),
+        tecnicoResponsavel: lancamento.funcionario ? {
+          id: lancamento.funcionario.id,
+          nome: lancamento.funcionario.nome
+        } : undefined,
+        formaPagamento: lancamento.formaPagamento ? {
+          id: lancamento.formaPagamento.id,
+          nome: lancamento.formaPagamento.nome
+        } : undefined,
+        cliente: lancamento.cliente ? {
+          id: lancamento.cliente.id,
+          nome: lancamento.cliente.nome
+        } : undefined,
+        campanha: lancamento.campanha ? {
+          id: lancamento.campanha.id,
+          nome: lancamento.campanha.nome
+        } : undefined,
+        categoria: lancamento.descricaoECategoria?.categoria || "Serviços",
+        descricao: lancamento.descricaoECategoria?.nome || "Serviço"
+      }));
+
+      setLancamentos(lancamentosFormatados);
+      console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do banco`);
+
+    } catch (error) {
+      console.error("Erro ao carregar lançamentos do banco:", error);
+      throw error;
+    }
+  };
+
   // Função para carregar lançamentos do localStorage
   const carregarLancamentosLocalStorage = async () => {
     try {
