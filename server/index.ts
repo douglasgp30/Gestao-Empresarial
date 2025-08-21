@@ -235,6 +235,18 @@ export function createServer(): Express {
     }
   });
 
+  // Endpoint para limpar funcionários duplicados
+  app.post("/api/debug/clean-duplicates", async (req, res) => {
+    try {
+      const { cleanDuplicateFuncionarios } = await import("./lib/clean-duplicate-funcionarios");
+      const result = await cleanDuplicateFuncionarios();
+      res.json({ success: true, ...result });
+    } catch (error) {
+      console.error("Erro ao limpar duplicatas:", error);
+      res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  });
+
   // Rotas de Localização Geográfica (Cidades e Setores unificados)
   app.get("/api/localizacoes-geograficas", getLocalizacoesGeograficas);
   app.get("/api/cidades", getCidades);
