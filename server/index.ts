@@ -279,6 +279,28 @@ export function createServer(): Express {
   app.get("/api/caixa", getLancamentos);
   app.get("/api/caixa/lancamentos", getLancamentos); // Manter compatibilidade
   app.get("/api/caixa/totais", getTotaisCaixa);
+
+  // Rota alternativa para criação que contorna o problema do body stream
+  app.post("/api/caixa/criar", debugCaixaMiddleware, async (req, res) => {
+    try {
+      console.log("[Caixa Criar] Rota alternativa para criação");
+
+      // Clonar o body para evitar problemas de stream
+      const bodyData = { ...req.body };
+
+      // Criar uma nova requisição simulada para o createLancamento
+      const mockReq = {
+        ...req,
+        body: bodyData
+      };
+
+      return await createLancamento(mockReq as any, res);
+    } catch (error) {
+      console.error("[Caixa Criar] Erro na rota alternativa:", error);
+      res.status(500).json({ error: "Erro interno do servidor", details: error.message });
+    }
+  });
+
   app.post("/api/caixa", debugCaixaMiddleware, createLancamento);
   app.post("/api/caixa/lancamentos", debugCaixaMiddleware, createLancamento); // Manter compatibilidade
   app.put("/api/caixa/:id", debugCaixaMiddleware, updateLancamento);
