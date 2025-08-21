@@ -371,9 +371,8 @@ export const createLancamento: RequestHandler = async (req, res) => {
       );
     }
 
-    // Verificar se os IDs de relacionamento existem
-    console.log("[Caixa] Verificando se os IDs de relacionamento existem...");
-
+    // Validar forma de pagamento (obrigatório)
+    console.log("[Caixa] Validando forma de pagamento...");
     if (ids.formaPagamentoId) {
       const formaPagamento = await prisma.formaPagamento.findUnique({
         where: { id: ids.formaPagamentoId },
@@ -387,36 +386,6 @@ export const createLancamento: RequestHandler = async (req, res) => {
           .status(400)
           .json({ error: "Forma de pagamento não encontrada" });
       }
-    }
-
-    if (ids.funcionarioId) {
-      const funcionario = await prisma.funcionario.findUnique({
-        where: { id: ids.funcionarioId },
-      });
-      console.log(
-        `[Caixa] Funcionário ID ${ids.funcionarioId}:`,
-        funcionario ? "EXISTS" : "NOT FOUND",
-      );
-    }
-
-    if (ids.localizacaoId) {
-      const localizacao = await prisma.localizacaoGeografica.findUnique({
-        where: { id: ids.localizacaoId },
-      });
-      console.log(
-        `[Caixa] Localização ID ${ids.localizacaoId}:`,
-        localizacao ? "EXISTS" : "NOT FOUND",
-      );
-    }
-
-    if (ids.campanhaId) {
-      const campanha = await prisma.campanha.findUnique({
-        where: { id: ids.campanhaId },
-      });
-      console.log(
-        `[Caixa] Campanha ID ${ids.campanhaId}:`,
-        campanha ? "EXISTS" : "NOT FOUND",
-      );
     }
 
     // Verificar se o cliente existe (se especificado)
