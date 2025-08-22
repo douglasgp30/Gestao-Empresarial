@@ -809,6 +809,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             )}
           </div>
 
+          {/* Técnico e Campanha na mesma linha */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
@@ -858,65 +859,65 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             </div>
 
             <SelectWithAdd
-              value={formData.setor}
+              value={formData.campanha}
               onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, setor: value }))
+                setFormData((prev) => ({ ...prev, campanha: value }))
               }
-              placeholder="Selecione o setor"
-              label="Setor/Região"
+              placeholder="Selecione a campanha"
+              label="Campanha"
               required={false}
-              items={setores}
+              items={campanhas}
+              renderItem={(item) => item.nome}
               onAddNew={async (data) => {
-                await adicionarSetor({
+                await adicionarCampanha({
                   nome: data.nome,
-                  cidade: data.cidade,
                 });
               }}
-              addNewTitle="Novo Setor/Região"
-              addNewDescription="Adicione um novo setor ou região."
+              addNewTitle="Nova Campanha"
+              addNewDescription="Adicione uma nova campanha de marketing."
               addNewFields={[
                 {
                   key: "nome",
-                  label: "Nome do Setor",
-                  required: true,
-                },
-                {
-                  key: "cidade",
-                  label: "Cidade",
+                  label: "Nome da Campanha",
                   required: true,
                 },
               ]}
-              renderItem={(setor) =>
-                `${setor.nome} - ${typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade}`
-              }
             />
           </div>
 
-          {/* Campanha - movido para antes de Cliente */}
+          {/* Setor/Região (que inclui cidade) */}
           <SelectWithAdd
-            value={formData.campanha}
+            value={formData.setor}
             onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, campanha: value }))
+              setFormData((prev) => ({ ...prev, setor: value }))
             }
-            placeholder="Selecione a campanha"
-            label="Campanha"
+            placeholder="Selecione o setor"
+            label="Setor/Região"
             required={false}
-            items={campanhas}
-            renderItem={(item) => item.nome}
+            items={setores}
             onAddNew={async (data) => {
-              await adicionarCampanha({
+              await adicionarSetor({
                 nome: data.nome,
+                cidade: data.cidade,
               });
             }}
-            addNewTitle="Nova Campanha"
-            addNewDescription="Adicione uma nova campanha de marketing."
+            addNewTitle="Novo Setor/Região"
+            addNewDescription="Adicione um novo setor ou região."
             addNewFields={[
               {
                 key: "nome",
-                label: "Nome da Campanha",
+                label: "Nome do Setor",
+                required: true,
+              },
+              {
+                key: "cidade",
+                label: "Cidade",
                 required: true,
               },
             ]}
+            renderItem={(setor) =>
+              `${setor.nome} - ${typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade}`
+            }
           />
 
           {/* Cliente */}

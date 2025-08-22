@@ -28,6 +28,7 @@ import {
   isContextLoading,
   setContextLoading,
 } from "../lib/globalLoadingControl";
+import { useFuncionarios } from "./FuncionariosContext";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
@@ -164,6 +165,9 @@ function carregarEntidadeDoStorage<T>(
 }
 
 export function EntidadesProvider({ children }: { children: ReactNode }) {
+  // === INTEGRAÇÃO COM FUNCIONARIOS CONTEXT ===
+  const { funcionarios: funcionariosDoContexto } = useFuncionarios();
+
   // === ESTADOS PRINCIPAIS ===
   const [descricoesECategorias, setDescricoesECategorias] = useState<
     DescricaoECategoria[]
@@ -292,6 +296,32 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     return resultado;
   }, [funcionarios, tecnicos]);
+
+  // === SINCRONIZAÇÃO COM FUNCIONARIOS CONTEXT ===
+  useEffect(() => {
+    if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
+      console.log(
+        `[EntidadesContext] Sincronizando ${funcionariosDoContexto.length} funcionários do FuncionariosContext`,
+      );
+      setFuncionarios(funcionariosDoContexto);
+
+      // Filtrar técnicos dos funcionários sincronizados
+      const tecnicosFiltrados = funcionariosDoContexto.filter((f) => {
+        return f.ehTecnico || f.tipoAcesso === "Técnico";
+      });
+      setTecnicos(tecnicosFiltrados);
+
+      // Salvar no localStorage para cache
+      try {
+        localStorage.setItem(
+          "funcionarios",
+          JSON.stringify(funcionariosDoContexto),
+        );
+      } catch (error) {
+        console.warn("Erro ao salvar funcionários no localStorage:", error);
+      }
+    }
+  }, [funcionariosDoContexto]);
 
   // === TIMEOUT DE SEGURANÇA PARA FORÇAR LOADING=FALSE ===
   useEffect(() => {
