@@ -82,7 +82,7 @@ export function FormularioConta({
       });
       valorInput.setValue(contaParaEditar.valor);
     }
-  }, [contaParaEditar, setValor]);
+  }, [contaParaEditar, valorInput.setValue]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
