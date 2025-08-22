@@ -1044,6 +1044,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
       throw error;
+    } finally {
+      setIsExcluindo(false);
     }
   };
 
