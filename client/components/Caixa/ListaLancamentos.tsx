@@ -96,8 +96,16 @@ export default function ListaLancamentos() {
   const getFormaPagamentoNome = (fp: any) => {
     if (!fp) return "N/A";
 
+    // Debug log para diagnosticar problema
+    console.log("getFormaPagamentoNome - Debug:", {
+      formaPagamento: fp,
+      tipo: typeof fp,
+      todasFormas: formasPagamento.map(f => ({ id: f.id, nome: f.nome })),
+    });
+
     // Se é um objeto snapshot, usar o nome
     if (typeof fp === "object" && fp.nome) {
+      console.log("getFormaPagamentoNome - Usando snapshot:", fp.nome);
       return fp.nome;
     }
 
@@ -106,6 +114,10 @@ export default function ListaLancamentos() {
       const forma = formasPagamento.find(
         (f) => f.id?.toString() === fp.id?.toString(),
       );
+      console.log("getFormaPagamentoNome - Busca por objeto ID:", {
+        procurandoId: fp.id,
+        encontrado: forma,
+      });
       return forma?.nome || "N/A";
     }
 
@@ -114,6 +126,10 @@ export default function ListaLancamentos() {
       const forma = formasPagamento.find(
         (f) => f.id?.toString() === fp.toString(),
       );
+      console.log("getFormaPagamentoNome - Busca por ID direto:", {
+        procurandoId: fp,
+        encontrado: forma,
+      });
       // Se encontrou, retorna o nome. Se não encontrou, retorna "N/A" ao invés do código
       return forma?.nome || "N/A";
     }
