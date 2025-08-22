@@ -157,7 +157,8 @@ export const updateFuncionario: RequestHandler = middlewareAuditoria(
   "update",
   async (req, res) => {
     const id = parseInt(req.params.id);
-    const data = FuncionarioSchema.partial().parse(req.body);
+    const rawData = FuncionarioBaseSchema.partial().parse(req.body);
+    const data = transformFuncionarioData(rawData);
 
     // Buscar dados antigos
     const funcionarioAntigo = await prisma.funcionario.findUnique({
