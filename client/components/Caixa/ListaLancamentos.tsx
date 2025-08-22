@@ -495,9 +495,7 @@ export default function ListaLancamentos() {
                           <p className="text-xs font-mono text-gray-600">
                             {lancamento.codigoServico}
                           </p>
-                          {lancamento.formaPagamento
-                            ?.toLowerCase()
-                            .includes("boleto") && (
+                          {isFormaBoleto(lancamento.formaPagamento) && (
                             <Badge variant="outline" className="text-xs mt-1">
                               Boleto
                             </Badge>
