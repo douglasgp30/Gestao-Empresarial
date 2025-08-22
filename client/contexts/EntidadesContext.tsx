@@ -17,6 +17,8 @@ import {
   Fornecedor,
   LocalizacaoGeografica,
 } from "@shared/types";
+import { FORMAS_PAGAMENTO_PADRAO } from "../lib/dadosBasicos";
+import { normalizeString } from "../lib/stringUtils";
 // APIs removidas para usar localStorage
 import { loadingManager } from "../lib/loadingManager";
 import { contextThrottle } from "../lib/contextThrottle";
