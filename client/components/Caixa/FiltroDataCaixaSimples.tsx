@@ -253,7 +253,6 @@ export default function FiltroDataCaixaSimples() {
       ...filtros,
       dataInicio: inicio,
       dataFim: fim,
-      __timestamp: Date.now(),
     });
 
     setIsOpen(false);
@@ -366,7 +365,6 @@ export default function FiltroDataCaixaSimples() {
                         setFiltros({
                           ...filtros,
                           dataInicio: novaData,
-                          __timestamp: Date.now(),
                         });
                       }}
                       className="h-8 text-xs"
@@ -399,7 +397,6 @@ export default function FiltroDataCaixaSimples() {
                         setFiltros({
                           ...filtros,
                           dataFim: novaData,
-                          __timestamp: Date.now(),
                         });
                       }}
                       className="h-8 text-xs"
