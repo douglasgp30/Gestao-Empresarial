@@ -98,7 +98,7 @@ export function ModalContasPagar({
       dataPagamento: undefined,
       novoFornecedor: "",
     });
-    setValor("");
+    valorInput.reset();
   };
 
   // Preencher formulário quando houver conta para editar
@@ -118,9 +118,9 @@ export function ModalContasPagar({
           : undefined,
         novoFornecedor: "",
       });
-      setValor(contaParaEditar.valor.toString());
+      valorInput.setValue(contaParaEditar.valor);
     }
-  }, [contaParaEditar, isOpen, setValor]);
+  }, [contaParaEditar, isOpen, valorInput.setValue]);
 
   const handleAddFornecedor = async () => {
     if (!formData.novoFornecedor.trim()) {
@@ -162,10 +162,7 @@ export function ModalContasPagar({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !valorFormatado ||
-      parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", ".")) <= 0
-    ) {
+    if (valorInput.numericValue <= 0) {
       toast({
         title: "Erro",
         description: "Por favor, insira um valor válido",
@@ -195,9 +192,7 @@ export function ModalContasPagar({
     setSalvando(true);
 
     try {
-      const valorNumerico = parseFloat(
-        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
-      );
+      const valorNumerico = valorInput.numericValue;
 
       const contaData = {
         tipo: "pagar" as const,
