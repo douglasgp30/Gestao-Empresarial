@@ -518,33 +518,82 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Se for boleto, criar automaticamente conta a receber
       if (isBoleto && dataVencimentoBoleto && codigoServico) {
         try {
+          console.log("Criando conta a receber para boleto:", {
+            clienteId: formData.cliente,
+            valor: valorInput.numericValue,
+            dataVencimento: dataVencimentoBoleto,
+            codigoServico,
+          });
+
+          const dadosContaReceber = {
+            tipo: "receber",
+            valor: valorInput.numericValue,
+            dataVencimento: dataVencimentoBoleto.toISOString().split("T")[0], // YYYY-MM-DD
+            codigoCliente: parseInt(formData.cliente),
+            observacoes: `[BOLETO AUTOMÁTICO] ${formData.categoria} - ${formData.descricao}${formData.observacoes ? ` | Obs: ${formData.observacoes}` : ""} | Cód: ${codigoServico}`,
+            codigoServico: codigoServico,
+            categoria: formData.categoria,
+            descricao: formData.descricao,
+            pago: false,
+            // Adicionar campos para integração
+            lancamentoCaixaId: lancamentoCaixa.id, // Vincular com o lançamento do caixa
+            sistemaOrigem: "caixa_boleto",
+            status: "pendente",
+            prioridadePagamento: "normal",
+          };
+
+          console.log("Dados para criar conta a receber:", dadosContaReceber);
+
           const responseContaReceber = await fetch("/api/contas", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              tipo: "receber",
-              valor: valorInput.numericValue,
-              dataVencimento: dataVencimentoBoleto.toISOString(),
-              codigoCliente: parseInt(formData.cliente),
-              observacoes: `Boleto gerado automaticamente - ${formData.descricao}${formData.observacoes ? ` - ${formData.observacoes}` : ""} - Código: ${codigoServico}`,
-              codigoServico: codigoServico, // Usar o mesmo código do serviço
-              categoria: formData.categoria,
-              descricao: formData.descricao,
-              pago: false,
-            }),
+            body: JSON.stringify(dadosContaReceber),
           });
 
           if (responseContaReceber.ok) {
-            console.log("Conta a receber criada automaticamente para boleto");
+            const contaCriada = await responseContaReceber.json();
+            console.log("✅ Conta a receber criada automaticamente para boleto:", contaCriada);
+
+            toast({
+              title: "Boleto registrado com sucesso!",
+              description: `Receita lançada no Caixa e conta a receber criada automaticamente. Vencimento: ${dataVencimentoBoleto.toLocaleDateString("pt-BR")}`,
+              variant: "default",
+            });
           } else {
-            console.error("Erro ao criar conta a receber para boleto");
+            const errorData = await responseContaReceber.json();
+            console.error("Erro ao criar conta a receber para boleto:", errorData);
+
+            toast({
+              title: "Atenção",
+              description: "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
+              variant: "destructive",
+            });
           }
         } catch (error) {
           console.error("Erro ao criar conta a receber:", error);
-          // Não interromper o fluxo principal se houver erro na criação da conta
+
+          toast({
+            title: "Atenção",
+            description: "Receita lançada no Caixa, mas houve erro na integração com Contas a Receber.",
+            variant: "destructive",
+          });
         }
+      } else if (isBoleto) {
+        // Sucesso normal para boletos sem integração
+        toast({
+          title: "Boleto registrado!",
+          description: `Receita de boleto lançada. O valor entrará no caixa quando for pago. Vencimento: ${dataVencimentoBoleto?.toLocaleDateString("pt-BR")}`,
+          variant: "default",
+        });
+      } else {
+        // Sucesso normal para outras formas de pagamento
+        toast({
+          title: "Sucesso",
+          description: "Receita lançada com sucesso!",
+          variant: "default",
+        });
       }
 
       toast({
