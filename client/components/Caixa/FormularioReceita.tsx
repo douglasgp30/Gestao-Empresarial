@@ -203,22 +203,31 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     valorQueEntrouInput.numericValue || valorCalculado;
   const impostoCalculado = impostoInput.numericValue;
 
-  // SEQUÊNCIA CORRETA DE CÁLCULOS:
-  // 1. Valor que entrou (para cartão, é o valor após taxas da operadora)
-  // 2. Aplicar descontos (nota fiscal, impostos)
-  // 3. Calcular comissão sobre o valor líquido
+  // SEQUÊNCIA CORRETA DE CÁLCULOS conforme especificação:
+  // 1. Valor total do serviço = base para cálculo da nota fiscal
+  // 2. Se cartão: valor que entrou (após taxas da operadora)
+  // 3. Descontar nota fiscal do valor que entrou
+  // 4. Calcular comissão sobre o valor após desconto da nota fiscal
+  // 5. Valor final para empresa = valor líquido - comissão
 
-  // Calcular descontos baseados nos percentuais
-  const percentualNotaFiscal = formData.temNotaFiscal ? 5 : 0; // 5% se houver nota fiscal
-  const descontoNotaFiscal =
-    (valorQueEntrouCalculado * percentualNotaFiscal) / 100;
+  // Exemplo: R$ 100 serviço, nota fiscal R$ 6, cartão entrou R$ 90
+  // R$ 90 - R$ 6 (nota) = R$ 84 (base para comissão)
+  // R$ 84 - comissão = valor final para empresa
 
-  // Taxa do cartão já foi aplicada pela operadora (valor que entrou já é líquido)
-  // Não aplicar taxa adicional se for cartão pois valorQueEntrou já considera a taxa
+  // 1. Valor base para nota fiscal = valor total do serviço
+  const valorBaseNotaFiscal = valorCalculado;
 
-  // Valor líquido = valor recebido - impostos - desconto nota fiscal
-  const valorLiquidoCalculado =
-    valorQueEntrouCalculado - impostoCalculado - descontoNotaFiscal;
+  // 2. Valor que efetivamente entrou (para cartão, é menor que o valor total)
+  const valorQueEntrouReal = isFormaPagamentoCartao && valorQueEntrouCalculado > 0
+    ? valorQueEntrouCalculado
+    : valorCalculado;
+
+  // 3. Calcular desconto da nota fiscal (6% do valor total do serviço)
+  const percentualNotaFiscal = formData.temNotaFiscal ? 6 : 0; // Corrigido para 6%
+  const descontoNotaFiscal = (valorBaseNotaFiscal * percentualNotaFiscal) / 100;
+
+  // 4. Valor líquido = valor que entrou - desconto nota fiscal - impostos/taxas adicionais
+  const valorLiquidoCalculado = valorQueEntrouReal - descontoNotaFiscal - impostoCalculado;
 
   // Calcular comissão baseada no percentual do t��cnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
