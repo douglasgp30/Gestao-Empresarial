@@ -29,6 +29,7 @@ import ResetarSistema from "../components/Debug/ResetarSistema";
 import { TesteBoleto } from "../components/Debug/TesteBoleto";
 import { TesteRapidoBoleto } from "../components/Debug/TesteRapidoBoleto";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
+import { TesteBasico } from "../components/Debug/TesteBasico";
 import {
   Settings,
   Building2,
@@ -870,6 +871,8 @@ export default function Configuracoes() {
               </p>
             </CardContent>
           </Card>
+
+          <TesteBasico />
 
           <DiagnosticoLoop />
 
