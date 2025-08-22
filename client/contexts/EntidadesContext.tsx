@@ -29,6 +29,7 @@ import {
   setContextLoading,
 } from "../lib/globalLoadingControl";
 import { useFuncionarios } from "./FuncionariosContext";
+import { criarDadosBasicosDescricoes } from "../lib/dadosBasicosDescricoes";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
@@ -301,7 +302,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
       console.log(
-        `[EntidadesContext] Sincronizando ${funcionariosDoContexto.length} funcionários do FuncionariosContext`,
+        `[EntidadesContext] Sincronizando ${funcionariosDoContexto.length} funcion��rios do FuncionariosContext`,
       );
       setFuncionarios(funcionariosDoContexto);
 
@@ -367,13 +368,26 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         if (descricoesStorage) {
           try {
             const parsed = JSON.parse(descricoesStorage);
-            setDescricoesECategorias(Array.isArray(parsed) ? parsed : []);
+            const arrayParsed = Array.isArray(parsed) ? parsed : [];
+
+          // Verificar se há categorias e descrições básicas
+          if (arrayParsed.length === 0) {
+            const dadosBasicos = criarDadosBasicosDescricoes();
+            setDescricoesECategorias(dadosBasicos);
+            localStorage.setItem("descricoes_e_categorias", JSON.stringify(dadosBasicos));
+            console.log("[EntidadesContext] Dados básicos de descrições criados");
+          } else {
+            setDescricoesECategorias(arrayParsed);
+          }
           } catch (error) {
             console.error("Erro ao parsear descrições e categorias:", error);
             setDescricoesECategorias([]);
           }
         } else {
-          setDescricoesECategorias([]);
+          const dadosBasicos = criarDadosBasicosDescricoes();
+          setDescricoesECategorias(dadosBasicos);
+          localStorage.setItem("descricoes_e_categorias", JSON.stringify(dadosBasicos));
+          console.log("[EntidadesContext] Nenhuma descrição encontrada, criando dados básicos");
         }
 
         // Carregar formas de pagamento com validação
