@@ -27,6 +27,7 @@ export function FiltrosCaixaCompacto() {
     setFiltros,
     campanhas,
     isLoading: caixaLoading,
+    filtrosDependencias,
   } = useCaixa();
 
   const {
@@ -44,7 +45,7 @@ export function FiltrosCaixaCompacto() {
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
   // Memoizar filtros para evitar re-renders desnecessários
-  const filtrosMemoizados = useMemo(() => filtros, [JSON.stringify(filtros)]);
+  const filtrosMemoizados = useMemo(() => filtros, [filtrosDependencias]);
 
   // Atualizar filtros locais quando os filtros do contexto mudarem
   useEffect(() => {
