@@ -399,7 +399,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         (c) => c.id?.toString() === formData.campanha,
       );
       const clienteSelecionado = clientes.find(
-        (c) => c.id === formData.cliente,
+        (c) => c.id?.toString() === formData.cliente?.toString(),
       );
       const setorSelecionado = setores.find(
         (s) => s.id?.toString() === formData.setor,
