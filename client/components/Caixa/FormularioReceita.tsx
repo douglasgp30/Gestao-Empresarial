@@ -244,6 +244,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           console.log("Calculando comissão:", {
             tecnico: tecnico.nome || tecnico.nomeCompleto,
             percentual,
+            valorBase: valorBaseNotaFiscal,
+            valorQueEntrou: valorQueEntrouReal,
+            descontoNota: descontoNotaFiscal,
             valorLiquido: valorLiquidoCalculado,
             comissao,
           });
@@ -252,7 +255,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       }
     }
     return 0;
-  }, [formData.tecnicoResponsavel, valorLiquidoCalculado, tecnicos]);
+  }, [formData.tecnicoResponsavel, valorLiquidoCalculado, valorBaseNotaFiscal, valorQueEntrouReal, descontoNotaFiscal, tecnicos]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
