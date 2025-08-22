@@ -382,10 +382,54 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
 
+      // Transformar dados para o formato da API
+      const dadosApi: any = {};
+
+      if (dadosAtualizados.nomeCompleto !== undefined) {
+        dadosApi.nome = dadosAtualizados.nomeCompleto;
+      }
+      if (dadosAtualizados.ehTecnico !== undefined) {
+        dadosApi.ehTecnico = dadosAtualizados.ehTecnico;
+      }
+      if (dadosAtualizados.email !== undefined) {
+        dadosApi.email = dadosAtualizados.email;
+      }
+      if (dadosAtualizados.telefone !== undefined) {
+        dadosApi.telefone = dadosAtualizados.telefone;
+      }
+      if (dadosAtualizados.cargo !== undefined) {
+        dadosApi.cargo = dadosAtualizados.cargo;
+      }
+      if (dadosAtualizados.salario !== undefined) {
+        dadosApi.salario = dadosAtualizados.salario;
+      }
+      if (dadosAtualizados.percentualComissao !== undefined) {
+        dadosApi.percentualComissao = typeof dadosAtualizados.percentualComissao === "string"
+          ? parseFloat(dadosAtualizados.percentualComissao) || 0
+          : dadosAtualizados.percentualComissao || 0;
+      }
+      if (dadosAtualizados.permissaoAcesso !== undefined) {
+        dadosApi.temAcessoSistema = dadosAtualizados.permissaoAcesso;
+      }
+      if (dadosAtualizados.tipoAcesso !== undefined) {
+        dadosApi.tipoAcesso = dadosAtualizados.tipoAcesso;
+      }
+      if (dadosAtualizados.login !== undefined) {
+        dadosApi.login = dadosAtualizados.login;
+      }
+      if (dadosAtualizados.senha !== undefined) {
+        dadosApi.senha = dadosAtualizados.senha;
+      }
+      if (dadosAtualizados.permissoes !== undefined) {
+        dadosApi.permissoes = dadosAtualizados.permissoes
+          ? JSON.stringify(dadosAtualizados.permissoes)
+          : undefined;
+      }
+
       // Fazer a requisição para o servidor
       const response = await funcionariosApi.atualizar(
         parseInt(id),
-        dadosAtualizados,
+        dadosApi,
       );
       if (response.error) {
         throw new Error(response.error);
