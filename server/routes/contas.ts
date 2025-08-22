@@ -606,4 +606,82 @@ router.get("/categorias", async (req, res) => {
   }
 });
 
+// GET /api/contas/teste-integracao - Endpoint para testar integração caixa-contas
+router.get("/teste-integracao", async (req, res) => {
+  try {
+    console.log("🧪 [API CONTAS] Testando integração...");
+
+    // Buscar contas de boleto
+    const contasBoleto = await prisma.contaLancamento.findMany({
+      where: {
+        OR: [
+          { sistemaOrigem: "caixa_boleto" },
+          { observacoes: { contains: "BOLETO AUTOMÁTICO" } },
+        ],
+      },
+      include: {
+        cliente: true,
+      },
+      orderBy: { dataCriacao: "desc" },
+      take: 10,
+    });
+
+    // Buscar lançamentos de boleto no caixa
+    const lancamentosBoleto = await prisma.lancamentoCaixa.findMany({
+      where: {
+        OR: [
+          { categoria: "Recebimento de Boletos" },
+          { observacoes: { contains: "BOLETO - Aguardando pagamento" } },
+        ],
+      },
+      include: {
+        formaPagamento: true,
+        cliente: true,
+      },
+      orderBy: { dataHora: "desc" },
+      take: 10,
+    });
+
+    const resultado = {
+      contasBoleto: contasBoleto.map(c => ({
+        id: c.id,
+        valor: c.valor,
+        cliente: c.cliente?.nome,
+        vencimento: c.dataVencimento,
+        pago: c.pago,
+        sistemaOrigem: c.sistemaOrigem,
+        status: c.status,
+      })),
+      lancamentosBoleto: lancamentosBoleto.map(l => ({
+        id: l.id,
+        valor: l.valor,
+        categoria: l.categoria,
+        cliente: l.cliente?.nome,
+        formaPagamento: l.formaPagamento?.nome,
+        observacoes: l.observacoes?.substring(0, 100),
+      })),
+      estatisticas: {
+        totalContasBoleto: contasBoleto.length,
+        totalLancamentosBoleto: lancamentosBoleto.length,
+        contasBoletoPagas: contasBoleto.filter(c => c.pago).length,
+        contasBoletoAguardando: contasBoleto.filter(c => !c.pago).length,
+      },
+    };
+
+    console.log("🧪 [API CONTAS] Resultado do teste:", resultado.estatisticas);
+
+    const response: ApiResponse<typeof resultado> = {
+      data: resultado,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Erro no teste de integração:", error);
+    const response: ApiResponse<null> = {
+      error: "Erro interno do servidor",
+    };
+    res.status(500).json(response);
+  }
+});
+
 export default router;
