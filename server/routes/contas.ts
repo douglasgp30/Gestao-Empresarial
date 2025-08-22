@@ -289,7 +289,7 @@ router.delete("/:id", async (req, res) => {
 router.patch("/:id/pagar", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { formaPg } = req.body;
+    const { formaPg, dataPagamento } = req.body;
 
     if (!formaPg) {
       const response: ApiResponse<null> = {
@@ -298,12 +298,36 @@ router.patch("/:id/pagar", async (req, res) => {
       return res.status(400).json(response);
     }
 
+    console.log("🔍 [API CONTAS] Marcando conta como paga:", { id, formaPg, dataPagamento });
+
+    // Buscar a conta antes de atualizar para verificar se é boleto
+    const contaAntiga = await prisma.contaLancamento.findUnique({
+      where: { id },
+      include: {
+        cliente: true,
+        fornecedor: true,
+      },
+    });
+
+    if (!contaAntiga) {
+      const response: ApiResponse<null> = {
+        error: "Conta não encontrada",
+      };
+      return res.status(404).json(response);
+    }
+
+    // Atualizar conta como paga
+    const dataPagamentoFinal = dataPagamento ? new Date(dataPagamento) : new Date();
+
     const conta = await prisma.contaLancamento.update({
-      where: { codLancamentoContas: id },
+      where: { id },
       data: {
         pago: true,
-        dataPagamento: new Date(),
+        dataPagamento: dataPagamentoFinal,
         formaPg: parseInt(formaPg),
+        status: "pago",
+        valorPago: contaAntiga.valor,
+        valorRestante: 0,
       },
       include: {
         cliente: true,
@@ -312,6 +336,65 @@ router.patch("/:id/pagar", async (req, res) => {
         categoria: true,
       },
     });
+
+    console.log("✅ [API CONTAS] Conta marcada como paga:", {
+      id: conta.id,
+      tipo: conta.tipo,
+      valor: conta.valor,
+      cliente: conta.cliente?.nome,
+    });
+
+    // Se for conta a receber e veio do sistema de caixa (boleto), criar lançamento automático no caixa
+    if (conta.tipo === "receber" && (conta.sistemaOrigem === "caixa_boleto" || conta.codigoExterno)) {
+      try {
+        console.log("🔄 [API CONTAS] Criando lançamento automático no caixa para boleto pago...");
+
+        const dadosLancamentoCaixa = {
+          valor: conta.valor,
+          valorRecebido: conta.valorPago || conta.valor,
+          valorLiquido: conta.valorLiquido || conta.valor,
+          tipo: "receita",
+          data: dataPagamentoFinal.toISOString().split("T")[0],
+          categoria: "Recebimento de Boletos",
+          descricao: `Boleto pago - ${conta.cliente?.nome || "Cliente"}`,
+          formaPagamentoId: conta.formaPg,
+          clienteId: conta.codigoCliente,
+          observacoes: `Recebimento automático de boleto. Conta #${conta.id}${conta.observacoes ? ` | Obs original: ${conta.observacoes}` : ""}`,
+          codigoServico: conta.codigoExterno,
+          sistemaOrigem: "contas_boleto_pago",
+        };
+
+        console.log("🔍 [API CONTAS] Dados para lançamento no caixa:", dadosLancamentoCaixa);
+
+        // Fazer requisição para API do caixa
+        const responseCaixa = await fetch("http://localhost:8080/api/caixa", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dadosLancamentoCaixa),
+        });
+
+        if (responseCaixa.ok) {
+          const lancamentoCriado = await responseCaixa.json();
+          console.log("✅ [API CONTAS] Lançamento criado automaticamente no caixa:", lancamentoCriado.id);
+
+          // Atualizar conta com referência ao lançamento do caixa
+          await prisma.contaLancamento.update({
+            where: { id },
+            data: {
+              observacoesInternas: `${conta.observacoesInternas || ""} | Lançamento Caixa ID: ${lancamentoCriado.id}`.trim(),
+            },
+          });
+        } else {
+          const errorCaixa = await responseCaixa.text();
+          console.error("❌ [API CONTAS] Erro ao criar lançamento no caixa:", errorCaixa);
+        }
+      } catch (errorCaixa) {
+        console.error("❌ [API CONTAS] Erro na integração com caixa:", errorCaixa);
+        // Não falhar a operação principal se houver erro na integração
+      }
+    }
 
     const response: ApiResponse<typeof conta> = {
       data: conta,
