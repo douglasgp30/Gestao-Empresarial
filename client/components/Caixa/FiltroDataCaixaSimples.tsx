@@ -20,18 +20,21 @@ export default function FiltroDataCaixaSimples() {
   const { filtros, setFiltros, isLoading } = useCaixa();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const datasCorrigidas = useRef(false); // Evitar correção infinita
 
-  // Verificar e corrigir datas inválidas na inicialização
+  // Verificar e corrigir datas inválidas na inicialização - apenas uma vez
   useEffect(() => {
     if (
-      !filtros?.dataInicio ||
-      !filtros?.dataFim ||
-      !(filtros.dataInicio instanceof Date) ||
-      !(filtros.dataFim instanceof Date) ||
-      isNaN(filtros.dataInicio.getTime()) ||
-      isNaN(filtros.dataFim.getTime())
+      !datasCorrigidas.current &&
+      (!filtros?.dataInicio ||
+        !filtros?.dataFim ||
+        !(filtros.dataInicio instanceof Date) ||
+        !(filtros.dataFim instanceof Date) ||
+        isNaN(filtros.dataInicio.getTime()) ||
+        isNaN(filtros.dataFim.getTime()))
     ) {
-      console.log("🔧 Corrigindo datas inválidas nos filtros");
+      console.log("🔧 Corrigindo datas inválidas nos filtros - uma vez apenas");
+      datasCorrigidas.current = true;
       const hoje = new Date();
       const inicioHoje = new Date(
         hoje.getFullYear(),
@@ -56,10 +59,9 @@ export default function FiltroDataCaixaSimples() {
         ...filtros,
         dataInicio: inicioHoje,
         dataFim: fimHoje,
-        __timestamp: Date.now(),
       });
     }
-  }, [filtros, setFiltros]);
+  }, [filtros?.dataInicio, filtros?.dataFim, setFiltros]);
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -254,7 +256,6 @@ export default function FiltroDataCaixaSimples() {
       ...filtros,
       dataInicio: inicio,
       dataFim: fim,
-      __timestamp: Date.now(),
     });
 
     setIsOpen(false);
@@ -367,7 +368,6 @@ export default function FiltroDataCaixaSimples() {
                         setFiltros({
                           ...filtros,
                           dataInicio: novaData,
-                          __timestamp: Date.now(),
                         });
                       }}
                       className="h-8 text-xs"
@@ -400,7 +400,6 @@ export default function FiltroDataCaixaSimples() {
                         setFiltros({
                           ...filtros,
                           dataFim: novaData,
-                          __timestamp: Date.now(),
                         });
                       }}
                       className="h-8 text-xs"

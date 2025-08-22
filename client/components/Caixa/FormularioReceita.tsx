@@ -91,7 +91,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     null,
   );
 
-  // Estados para categorias e descrições carregadas diretamente da API
+  // Estados para categorias e descriç��es carregadas diretamente da API
   const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
   const [descricoesFiltradas, setDescricoesFiltradas] = useState<any[]>([]);
   const [carregandoCategorias, setCarregandoCategorias] = useState(true);
@@ -546,7 +546,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             tipo: "receber",
             valor: valorInput.numericValue,
             dataVencimento: dataVencimentoBoleto.toISOString().split("T")[0], // YYYY-MM-DD
-            codigoCliente: parseInt(formData.cliente),
+            clienteId: formData.cliente, // Corrigido: usar clienteId em vez de codigoCliente
             observacoes: `[BOLETO AUTOMÁTICO] ${formData.categoria} - ${formData.descricao}${formData.observacoes ? ` | Obs: ${formData.observacoes}` : ""} | Cód: ${codigoServico}`,
             codigoServico: codigoServico,
             categoria: formData.categoria,

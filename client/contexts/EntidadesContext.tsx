@@ -6,6 +6,7 @@ import React, {
   useCallback,
   ReactNode,
   useMemo,
+  useRef,
 } from "react";
 import { toast } from "sonner";
 import {
@@ -794,7 +795,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       novaLocalizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
     ) => {
       console.log(
-        "📦 [EntidadesContext] Criando localização geográfica:",
+        "�� [EntidadesContext] Criando localização geográfica:",
         novaLocalizacao,
       );
 
@@ -833,6 +834,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // Estado para controlar sincronização em andamento
   const [sincronizacaoEmAndamento, setSincronizacaoEmAndamento] =
     useState(false);
+  const jaFezSincronizacao = useRef(false); // Evitar sincronização repetida
 
   // Função para sincronizar dados de localização com a API
   const sincronizarLocalizacoes = useCallback(async () => {
@@ -906,12 +908,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       // Cache invalidação removida - usando localStorage
       await carregarDados();
 
-      // Sincronizar localizações para garantir consistência (com delay)
-      setTimeout(() => {
-        if (!sincronizacaoEmAndamento) {
-          sincronizarLocalizacoes();
-        }
-      }, 1000); // 1 segundo de delay
+      // TEMPORARIAMENTE DESABILITADO - Sincronizar localizações para teste de loop
+      // setTimeout(() => {
+      //   if (!sincronizacaoEmAndamento && !jaFezSincronizacao.current) {
+      //     jaFezSincronizacao.current = true;
+      //     sincronizarLocalizacoes();
+      //   }
+      // }, 1000); // 1 segundo de delay
     };
 
     executarCarregamento();
