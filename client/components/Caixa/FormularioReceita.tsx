@@ -596,12 +596,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         });
       }
 
-      toast({
-        title: "Sucesso",
-        description: "Receita lançada com sucesso!",
-        variant: "default",
-      });
-
       // Resetar formulário
       setFormData({
         data: new Date().toISOString().split("T")[0],
