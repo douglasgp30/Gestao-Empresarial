@@ -809,6 +809,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             )}
           </div>
 
+          {/* Técnico + Campanha na mesma linha */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
@@ -858,6 +859,35 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             </div>
 
             <SelectWithAdd
+              value={formData.campanha}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, campanha: value }))
+              }
+              placeholder="Selecione a campanha"
+              label="Campanha"
+              required={false}
+              items={campanhas}
+              renderItem={(item) => item.nome}
+              onAddNew={async (data) => {
+                await adicionarCampanha({
+                  nome: data.nome,
+                });
+              }}
+              addNewTitle="Nova Campanha"
+              addNewDescription="Adicione uma nova campanha de marketing."
+              addNewFields={[
+                {
+                  key: "nome",
+                  label: "Nome da Campanha",
+                  required: true,
+                },
+              ]}
+            />
+          </div>
+
+          {/* Setor + Cidade na mesma linha */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SelectWithAdd
               value={formData.setor}
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, setor: value }))
@@ -890,34 +920,29 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 `${setor.nome} - ${typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade}`
               }
             />
-          </div>
 
-          {/* Campanha - movido para antes de Cliente */}
-          <SelectWithAdd
-            value={formData.campanha}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, campanha: value }))
-            }
-            placeholder="Selecione a campanha"
-            label="Campanha"
-            required={false}
-            items={campanhas}
-            renderItem={(item) => item.nome}
-            onAddNew={async (data) => {
-              await adicionarCampanha({
-                nome: data.nome,
-              });
-            }}
-            addNewTitle="Nova Campanha"
-            addNewDescription="Adicione uma nova campanha de marketing."
-            addNewFields={[
-              {
-                key: "nome",
-                label: "Nome da Campanha",
-                required: true,
-              },
-            ]}
-          />
+            <div className="space-y-2">
+              <Label htmlFor="cidade">Cidade</Label>
+              <Input
+                id="cidade"
+                placeholder="Digite a cidade"
+                value={formData.setor ?
+                  (() => {
+                    const setorSelecionado = setores.find(s => s.id?.toString() === formData.setor);
+                    return setorSelecionado ?
+                      (typeof setorSelecionado.cidade === "object" ? setorSelecionado.cidade?.nome : setorSelecionado.cidade) || ""
+                      : "";
+                  })()
+                  : ""
+                }
+                disabled
+                className="bg-gray-50"
+              />
+              <div className="text-xs text-muted-foreground">
+                A cidade é preenchida automaticamente com base no setor selecionado
+              </div>
+            </div>
+          </div>
 
           {/* Cliente */}
           <div className="space-y-2">
