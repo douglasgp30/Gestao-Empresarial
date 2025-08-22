@@ -1061,42 +1061,53 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           {/* Data de Vencimento do Boleto - só aparece para boletos */}
           {isBoleto && (
-            <div className="space-y-2 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <Label
-                htmlFor="dataVencimentoBoleto"
-                className="text-yellow-800 font-semibold"
-              >
-                Data de Vencimento do Boleto *
-              </Label>
+            <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <div className="flex items-center gap-2">
-                <Input
-                  id="dataVencimentoBoleto"
-                  type="date"
-                  value={
-                    dataVencimentoBoleto
-                      ? dataVencimentoBoleto.toISOString().split("T")[0]
-                      : ""
-                  }
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setDataVencimentoBoleto(new Date(e.target.value));
-                    } else {
-                      setDataVencimentoBoleto(null);
-                    }
-                  }}
-                  className="bg-yellow-50 border-yellow-300"
-                  required
-                />
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <Label
+                  htmlFor="dataVencimentoBoleto"
+                  className="text-blue-800 font-semibold"
+                >
+                  Data de Vencimento do Boleto *
+                </Label>
               </div>
+
+              <Input
+                id="dataVencimentoBoleto"
+                type="date"
+                value={
+                  dataVencimentoBoleto
+                    ? dataVencimentoBoleto.toISOString().split("T")[0]
+                    : ""
+                }
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setDataVencimentoBoleto(new Date(e.target.value));
+                  } else {
+                    setDataVencimentoBoleto(null);
+                  }
+                }}
+                className="bg-blue-50 border-blue-300"
+                required
+              />
+
               {!dataVencimentoBoleto && (
-                <p className="text-xs text-yellow-700">
+                <p className="text-xs text-red-600 font-medium">
                   ⚠️ Data de vencimento é obrigatória para boletos
                 </p>
               )}
-              <p className="text-xs text-yellow-600">
-                💡 Esta receita será registrada como receita bruta, mas não
-                entrar�� no valor para empresa até o pagamento do boleto.
-              </p>
+
+              <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
+                <h4 className="text-sm font-semibold text-blue-800 mb-2">
+                  🔄 Integração Automática Caixa + Contas a Receber
+                </h4>
+                <ul className="text-xs text-blue-700 space-y-1">
+                  <li>• <strong>Agora:</strong> Lança receita bruta no Caixa (não soma no saldo)</li>
+                  <li>• <strong>Agora:</strong> Cria automaticamente conta a receber</li>
+                  <li>• <strong>Quando pago:</strong> Marque como pago em Contas a Receber</li>
+                  <li>• <strong>Automático:</strong> Sistema lança receita real no Caixa</li>
+                </ul>
+              </div>
             </div>
           )}
 
