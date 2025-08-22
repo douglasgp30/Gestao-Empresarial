@@ -513,7 +513,7 @@ export default function ListaLancamentos() {
                           <span className="text-xs text-muted-foreground">
                             Integral:
                           </span>{" "}
-                          {formatCurrency(lancamento.valor)}
+                          {formatCurrencySafe(lancamento.valor)}
                         </p>
 
                         {/* Valor para Empresa */}
