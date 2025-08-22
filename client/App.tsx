@@ -273,7 +273,6 @@ function AppContent() {
                               </ProtectedRoute>
                             }
                           />
-                          <Route path="teste" element={<TestePage />} />
                           <Route path="*" element={<NotFound />} />
                         </Route>
                       </Routes>
