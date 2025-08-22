@@ -338,8 +338,8 @@ export const createLancamento: RequestHandler = async (req, res) => {
 
       // Verificar se é cartão
       if (
-        formaPagamento?.nome.toLowerCase().includes("cartão") ||
-        formaPagamento?.nome.toLowerCase().includes("cartao")
+        formaPagamento?.nome?.toLowerCase()?.includes("cartão") ||
+        formaPagamento?.nome?.toLowerCase()?.includes("cartao")
       ) {
         if (!data.valorRecebido || data.valorRecebido <= 0) {
           return res.status(400).json({
@@ -351,8 +351,8 @@ export const createLancamento: RequestHandler = async (req, res) => {
 
       // Verificar se é boleto
       if (
-        formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        formaPagamento?.nome.toLowerCase().includes("bancário")
+        formaPagamento?.nome?.toLowerCase()?.includes("boleto") ||
+        formaPagamento?.nome?.toLowerCase()?.includes("bancário")
       ) {
         isBoleto = true;
       }
@@ -453,9 +453,14 @@ export const createLancamento: RequestHandler = async (req, res) => {
 
     // Usar a data enviada pelo frontend ou a data atual como fallback
     let dataHoraLancamento: Date;
-    if (req.body.data) {
+    if (data.data) {
+      // Validar formato da data antes de fazer split
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(data.data)) {
+        return res.status(400).json({ error: "Formato de data inválido. Use YYYY-MM-DD" });
+      }
+
       // Se uma data específica foi enviada, usar ela às 12:00 para evitar problemas de timezone
-      const [ano, mes, dia] = req.body.data.split("-");
+      const [ano, mes, dia] = data.data.split("-");
       dataHoraLancamento = new Date(
         parseInt(ano),
         parseInt(mes) - 1,
@@ -466,7 +471,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       );
       console.log(
         "[Caixa] Usando data do frontend:",
-        req.body.data,
+        data.data,
         "->",
         dataHoraLancamento,
       );
@@ -603,30 +608,58 @@ export const createLancamento: RequestHandler = async (req, res) => {
 
     // Se ainda não há descricaoId, criar uma descrição padrão
     if (!dadosLancamento.descricaoId) {
-      console.log("[Caixa] Criando descrição padrão para lançamento");
-      const descricaoDefault = await prisma.descricao.create({
-        data: {
+      console.log("[Caixa] Verificando se já existe descrição padrão");
+
+      // Verificar se já existe descrição "Lançamento genérico"
+      let descricaoDefault = await prisma.descricao.findFirst({
+        where: {
           nome: "Lançamento genérico",
           tipo: data.tipo || "receita",
         },
       });
+
+      if (!descricaoDefault) {
+        descricaoDefault = await prisma.descricao.create({
+          data: {
+            nome: "Lançamento genérico",
+            tipo: data.tipo || "receita",
+          },
+        });
+        console.log("[Caixa] Criada descrição padrão id:", descricaoDefault.id);
+      } else {
+        console.log("[Caixa] Usando descrição existente id:", descricaoDefault.id);
+      }
+
       dadosLancamento.descricaoId = descricaoDefault.id;
-      console.log("[Caixa] Criada descrição padrão id:", descricaoDefault.id);
     }
 
     // Verificar se há formaPagamentoId (obrigatório)
     if (!dadosLancamento.formaPagamentoId) {
       console.log(
-        "[Caixa] FormaPagamentoId não fornecido, criando forma padrão",
+        "[Caixa] FormaPagamentoId não fornecido, verificando se já existe forma padrão",
       );
-      const formaPagamentoDefault = await prisma.formaPagamento.create({
-        data: { nome: "Dinheiro" },
+
+      // Verificar se já existe forma de pagamento "Dinheiro"
+      let formaPagamentoDefault = await prisma.formaPagamento.findFirst({
+        where: { nome: "Dinheiro" },
       });
+
+      if (!formaPagamentoDefault) {
+        formaPagamentoDefault = await prisma.formaPagamento.create({
+          data: { nome: "Dinheiro" },
+        });
+        console.log(
+          "[Caixa] Criada forma de pagamento padrão id:",
+          formaPagamentoDefault.id,
+        );
+      } else {
+        console.log(
+          "[Caixa] Usando forma de pagamento existente id:",
+          formaPagamentoDefault.id,
+        );
+      }
+
       dadosLancamento.formaPagamentoId = formaPagamentoDefault.id;
-      console.log(
-        "[Caixa] Criada forma de pagamento padrão id:",
-        formaPagamentoDefault.id,
-      );
     }
 
     const lancamento = await prisma.lancamentoCaixa.create({
