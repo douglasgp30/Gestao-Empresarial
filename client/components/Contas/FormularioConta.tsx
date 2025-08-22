@@ -311,9 +311,8 @@ export function FormularioConta({
             <Label htmlFor="valor">Valor *</Label>
             <Input
               id="valor"
-              value={valorFormatado}
-              onChange={onValorChange}
-              placeholder="R$ 0,00"
+              {...valorInput.inputProps}
+              required
             />
           </div>
 
