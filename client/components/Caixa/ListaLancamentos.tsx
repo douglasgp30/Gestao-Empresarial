@@ -203,8 +203,18 @@ export default function ListaLancamentos() {
       return cliente.nome;
     }
 
-    // Se é string, buscar pelo ID
-    if (typeof cliente === "string") {
+    // Se é objeto com ID, buscar pelo ID
+    if (typeof cliente === "object" && cliente.id) {
+      const clienteEncontrado = clientes.find(
+        (c) => c.id?.toString() === cliente.id?.toString(),
+      );
+      if (clienteEncontrado) {
+        return clienteEncontrado.nome;
+      }
+    }
+
+    // Se é string ou número, buscar pelo ID
+    if (typeof cliente === "string" || typeof cliente === "number") {
       const clienteEncontrado = clientes.find(
         (c) => c.id?.toString() === cliente.toString(),
       );
