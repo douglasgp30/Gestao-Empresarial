@@ -14,7 +14,6 @@ export default function FiltroDataCaixa() {
     setFiltros({
       ...filtros,
       dataInicio: novaData,
-      __timestamp: Date.now(),
     });
   };
 
@@ -27,7 +26,6 @@ export default function FiltroDataCaixa() {
     setFiltros({
       ...filtros,
       dataFim: novaData,
-      __timestamp: Date.now(),
     });
   };
 
