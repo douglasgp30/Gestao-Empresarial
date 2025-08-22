@@ -254,6 +254,8 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         categoria: "",
         descricao: "",
         formaPagamento: "",
+        campanha: "",
+        setor: "",
         observacoes: "",
       });
 
