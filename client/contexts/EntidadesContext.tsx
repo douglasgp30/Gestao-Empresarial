@@ -313,7 +313,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       // Salvar no localStorage para cache
       try {
-        localStorage.setItem("funcionarios", JSON.stringify(funcionariosDoContexto));
+        localStorage.setItem(
+          "funcionarios",
+          JSON.stringify(funcionariosDoContexto),
+        );
       } catch (error) {
         console.warn("Erro ao salvar funcionários no localStorage:", error);
       }
