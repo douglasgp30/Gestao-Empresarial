@@ -143,7 +143,10 @@ export function ListaLancamentosSimples() {
           if (!/^\d+$/.test(lancamento.descricao.trim())) {
             descricao = lancamento.descricao;
           }
-        } else if (typeof lancamento.descricao === "object" && lancamento.descricao?.nome) {
+        } else if (
+          typeof lancamento.descricao === "object" &&
+          lancamento.descricao?.nome
+        ) {
           // Se for objeto, usar o nome
           descricao = lancamento.descricao.nome;
         }
@@ -175,21 +178,31 @@ export function ListaLancamentosSimples() {
       case "valorParaEmpresa":
         // Calcular valor para empresa: valor líquido - comissão
         if (lancamento.tipo === "receita") {
-          const valorLiquidoEfetivo = lancamento.valorLiquido || lancamento.valorRecebido || lancamento.valor;
+          const valorLiquidoEfetivo =
+            lancamento.valorLiquido ||
+            lancamento.valorRecebido ||
+            lancamento.valor;
           const comissaoEfetiva = lancamento.comissao || 0;
           const valorParaEmpresa = valorLiquidoEfetivo - comissaoEfetiva;
 
           // Verificar se é boleto (valor não entra imediatamente)
-          const isBoleto = typeof lancamento.formaPagamento === "object"
-            ? lancamento.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
-              lancamento.formaPagamento?.nome?.toLowerCase().includes("bancário")
-            : typeof lancamento.formaPagamento === "string"
-            ? lancamento.formaPagamento.toLowerCase().includes("boleto") ||
-              lancamento.formaPagamento.toLowerCase().includes("bancário")
-            : false;
+          const isBoleto =
+            typeof lancamento.formaPagamento === "object"
+              ? lancamento.formaPagamento?.nome
+                  ?.toLowerCase()
+                  .includes("boleto") ||
+                lancamento.formaPagamento?.nome
+                  ?.toLowerCase()
+                  .includes("bancário")
+              : typeof lancamento.formaPagamento === "string"
+                ? lancamento.formaPagamento.toLowerCase().includes("boleto") ||
+                  lancamento.formaPagamento.toLowerCase().includes("bancário")
+                : false;
 
           return (
-            <span className={`font-medium ${isBoleto ? "text-yellow-600" : "text-green-600"}`}>
+            <span
+              className={`font-medium ${isBoleto ? "text-yellow-600" : "text-green-600"}`}
+            >
               {isBoleto ? "Pendente" : formatarMoeda(valorParaEmpresa)}
             </span>
           );
@@ -269,7 +282,10 @@ export function ListaLancamentosSimples() {
           if (!/^\d+$/.test(lancamento.campanha.trim())) {
             campanha = lancamento.campanha;
           }
-        } else if (typeof lancamento.campanha === "object" && lancamento.campanha?.nome) {
+        } else if (
+          typeof lancamento.campanha === "object" &&
+          lancamento.campanha?.nome
+        ) {
           campanha = lancamento.campanha.nome;
         }
         return campanha;

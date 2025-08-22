@@ -380,7 +380,9 @@ export const createLancamento: RequestHandler = async (req, res) => {
 
         if (funcionario) {
           const percentual =
-            funcionario.percentualComissao || funcionario.percentualServico || 0;
+            funcionario.percentualComissao ||
+            funcionario.percentualServico ||
+            0;
           if (percentual > 0) {
             comissaoCalculada = valorLiquidoEfetivo * (percentual / 100);
             console.log(
@@ -405,7 +407,9 @@ export const createLancamento: RequestHandler = async (req, res) => {
       // Valor para empresa = valor líquido - comissão
       valorParaEmpresaCalculado = valorLiquidoEfetivo - comissaoCalculada;
 
-      console.log(`[Caixa] Valor para empresa calculado: R$ ${valorParaEmpresaCalculado.toFixed(2)}`);
+      console.log(
+        `[Caixa] Valor para empresa calculado: R$ ${valorParaEmpresaCalculado.toFixed(2)}`,
+      );
     }
 
     // Validar forma de pagamento (obrigatório)

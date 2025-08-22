@@ -28,7 +28,9 @@ const transformFuncionarioData = (data: any) => {
   };
 };
 
-const FuncionarioSchema = FuncionarioBaseSchema.transform(transformFuncionarioData);
+const FuncionarioSchema = FuncionarioBaseSchema.transform(
+  transformFuncionarioData,
+);
 
 export const getFuncionarios: RequestHandler = async (req, res) => {
   try {

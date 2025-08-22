@@ -218,16 +218,18 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorBaseNotaFiscal = valorCalculado;
 
   // 2. Valor que efetivamente entrou (para cartão, é menor que o valor total)
-  const valorQueEntrouReal = isFormaPagamentoCartao && valorQueEntrouCalculado > 0
-    ? valorQueEntrouCalculado
-    : valorCalculado;
+  const valorQueEntrouReal =
+    isFormaPagamentoCartao && valorQueEntrouCalculado > 0
+      ? valorQueEntrouCalculado
+      : valorCalculado;
 
   // 3. Calcular desconto da nota fiscal (6% do valor total do serviço)
   const percentualNotaFiscal = formData.temNotaFiscal ? 6 : 0; // Corrigido para 6%
   const descontoNotaFiscal = (valorBaseNotaFiscal * percentualNotaFiscal) / 100;
 
   // 4. Valor líquido = valor que entrou - desconto nota fiscal - impostos/taxas adicionais
-  const valorLiquidoCalculado = valorQueEntrouReal - descontoNotaFiscal - impostoCalculado;
+  const valorLiquidoCalculado =
+    valorQueEntrouReal - descontoNotaFiscal - impostoCalculado;
 
   // Calcular comissão baseada no percentual do t��cnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
@@ -255,7 +257,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       }
     }
     return 0;
-  }, [formData.tecnicoResponsavel, valorLiquidoCalculado, valorBaseNotaFiscal, valorQueEntrouReal, descontoNotaFiscal, tecnicos]);
+  }, [
+    formData.tecnicoResponsavel,
+    valorLiquidoCalculado,
+    valorBaseNotaFiscal,
+    valorQueEntrouReal,
+    descontoNotaFiscal,
+    tecnicos,
+  ]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
@@ -1155,7 +1164,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   {formData.temNotaFiscal && (
                     <div>
                       <span className="text-gray-600">
-                        Desc. Nota Fiscal ({percentualNotaFiscal}% sobre R$ {valorBaseNotaFiscal.toFixed(2).replace(".", ",")}):
+                        Desc. Nota Fiscal ({percentualNotaFiscal}% sobre R${" "}
+                        {valorBaseNotaFiscal.toFixed(2).replace(".", ",")}):
                       </span>
                       <div className="font-medium text-orange-600">
                         - R$ {descontoNotaFiscal.toFixed(2).replace(".", ",")}

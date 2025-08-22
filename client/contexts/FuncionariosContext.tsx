@@ -404,9 +404,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         dadosApi.salario = dadosAtualizados.salario;
       }
       if (dadosAtualizados.percentualComissao !== undefined) {
-        dadosApi.percentualComissao = typeof dadosAtualizados.percentualComissao === "string"
-          ? parseFloat(dadosAtualizados.percentualComissao) || 0
-          : dadosAtualizados.percentualComissao || 0;
+        dadosApi.percentualComissao =
+          typeof dadosAtualizados.percentualComissao === "string"
+            ? parseFloat(dadosAtualizados.percentualComissao) || 0
+            : dadosAtualizados.percentualComissao || 0;
       }
       if (dadosAtualizados.permissaoAcesso !== undefined) {
         dadosApi.temAcessoSistema = dadosAtualizados.permissaoAcesso;
@@ -427,10 +428,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       }
 
       // Fazer a requisição para o servidor
-      const response = await funcionariosApi.atualizar(
-        parseInt(id),
-        dadosApi,
-      );
+      const response = await funcionariosApi.atualizar(parseInt(id), dadosApi);
       if (response.error) {
         throw new Error(response.error);
       }
