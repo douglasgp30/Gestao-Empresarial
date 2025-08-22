@@ -101,7 +101,6 @@ export default function ListaLancamentos() {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       // Se clicou na mesma coluna, alterna a direção
@@ -161,22 +160,22 @@ export default function ListaLancamentos() {
       const formaCorreta = matchesFilter(
         lancamento.formaPagamento,
         filtros.formaPagamento,
-        formasPagamento
+        formasPagamento,
       );
       const tecnicoCorreto = matchesFilter(
         lancamento.tecnicoResponsavel,
         filtros.tecnico,
-        getTecnicos()
+        getTecnicos(),
       );
       const campanhaCorreta = matchesFilter(
         lancamento.campanha,
         filtros.campanha,
-        campanhas
+        campanhas,
       );
       const setorCorreto = matchesFilter(
         lancamento.setor,
         filtros.setor,
-        setores
+        setores,
       );
 
       return (
@@ -359,12 +358,14 @@ export default function ListaLancamentos() {
                         </p>
                         {getCampanhaNome(lancamento.campanha, campanhas) && (
                           <p className="text-xs text-blue-600">
-                            Campanha: {getCampanhaNome(lancamento.campanha, campanhas)}
+                            Campanha:{" "}
+                            {getCampanhaNome(lancamento.campanha, campanhas)}
                           </p>
                         )}
                         {getClienteNome(lancamento.cliente, clientes) && (
                           <p className="text-xs text-green-600">
-                            Cliente: {getClienteNome(lancamento.cliente, clientes)}
+                            Cliente:{" "}
+                            {getClienteNome(lancamento.cliente, clientes)}
                           </p>
                         )}
                       </div>
@@ -446,18 +447,27 @@ export default function ListaLancamentos() {
                       <div className="flex items-center space-x-1">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          {getFormaPagamentoNome(lancamento.formaPagamento, formasPagamento)}
+                          {getFormaPagamentoNome(
+                            lancamento.formaPagamento,
+                            formasPagamento,
+                          )}
                         </span>
                       </div>
                     </TableCell>
 
                     <TableCell>
                       <div className="space-y-1">
-                        {getTecnicoNome(lancamento.tecnicoResponsavel, getTecnicos()) && (
+                        {getTecnicoNome(
+                          lancamento.tecnicoResponsavel,
+                          getTecnicos(),
+                        ) && (
                           <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                             <User className="h-3 w-3" />
                             <span>
-                              {getTecnicoNome(lancamento.tecnicoResponsavel, getTecnicos())}
+                              {getTecnicoNome(
+                                lancamento.tecnicoResponsavel,
+                                getTecnicos(),
+                              )}
                             </span>
                           </div>
                         )}

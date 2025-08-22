@@ -250,7 +250,9 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       if (dataInicio) {
         // Validar formato da data
         if (!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio as string)) {
-          return res.status(400).json({ error: "Formato de dataInicio inválido. Use YYYY-MM-DD" });
+          return res
+            .status(400)
+            .json({ error: "Formato de dataInicio inválido. Use YYYY-MM-DD" });
         }
         const [ano, mes, dia] = (dataInicio as string).split("-");
         where.dataHora.gte = new Date(
@@ -265,7 +267,9 @@ export const getLancamentos: RequestHandler = async (req, res) => {
       if (dataFim) {
         // Validar formato da data
         if (!/^\d{4}-\d{2}-\d{2}$/.test(dataFim as string)) {
-          return res.status(400).json({ error: "Formato de dataFim inválido. Use YYYY-MM-DD" });
+          return res
+            .status(400)
+            .json({ error: "Formato de dataFim inválido. Use YYYY-MM-DD" });
         }
         const [ano, mes, dia] = (dataFim as string).split("-");
         where.dataHora.lte = new Date(
@@ -464,7 +468,9 @@ export const createLancamento: RequestHandler = async (req, res) => {
     if (data.data) {
       // Validar formato da data antes de fazer split
       if (!/^\d{4}-\d{2}-\d{2}$/.test(data.data)) {
-        return res.status(400).json({ error: "Formato de data inválido. Use YYYY-MM-DD" });
+        return res
+          .status(400)
+          .json({ error: "Formato de data inválido. Use YYYY-MM-DD" });
       }
 
       // Se uma data específica foi enviada, usar ela às 12:00 para evitar problemas de timezone
@@ -635,7 +641,10 @@ export const createLancamento: RequestHandler = async (req, res) => {
         });
         console.log("[Caixa] Criada descrição padrão id:", descricaoDefault.id);
       } else {
-        console.log("[Caixa] Usando descrição existente id:", descricaoDefault.id);
+        console.log(
+          "[Caixa] Usando descrição existente id:",
+          descricaoDefault.id,
+        );
       }
 
       dadosLancamento.descricaoId = descricaoDefault.id;
@@ -913,7 +922,9 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
       if (dataInicio) {
         // Validar formato da data
         if (!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio as string)) {
-          return res.status(400).json({ error: "Formato de dataInicio inválido. Use YYYY-MM-DD" });
+          return res
+            .status(400)
+            .json({ error: "Formato de dataInicio inválido. Use YYYY-MM-DD" });
         }
         const [ano, mes, dia] = (dataInicio as string).split("-");
         where.dataHora.gte = new Date(
@@ -928,7 +939,9 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
       if (dataFim) {
         // Validar formato da data
         if (!/^\d{4}-\d{2}-\d{2}$/.test(dataFim as string)) {
-          return res.status(400).json({ error: "Formato de dataFim inválido. Use YYYY-MM-DD" });
+          return res
+            .status(400)
+            .json({ error: "Formato de dataFim inválido. Use YYYY-MM-DD" });
         }
         const [ano, mes, dia] = (dataFim as string).split("-");
         where.dataHora.lte = new Date(
@@ -952,19 +965,15 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     });
 
     // Separar boletos de outras formas de pagamento
-    const receitasBoleto = receitasCompletas.filter(
-      (r) => {
-        const nomeForma = r.formaPagamento?.nome?.toLowerCase() || "";
-        return nomeForma.includes("boleto") || nomeForma.includes("bancário");
-      }
-    );
+    const receitasBoleto = receitasCompletas.filter((r) => {
+      const nomeForma = r.formaPagamento?.nome?.toLowerCase() || "";
+      return nomeForma.includes("boleto") || nomeForma.includes("bancário");
+    });
 
-    const receitasNaoBoleto = receitasCompletas.filter(
-      (r) => {
-        const nomeForma = r.formaPagamento?.nome?.toLowerCase() || "";
-        return !nomeForma.includes("boleto") && !nomeForma.includes("bancário");
-      }
-    );
+    const receitasNaoBoleto = receitasCompletas.filter((r) => {
+      const nomeForma = r.formaPagamento?.nome?.toLowerCase() || "";
+      return !nomeForma.includes("boleto") && !nomeForma.includes("bancário");
+    });
 
     // Calcular totais
     const totalReceitaBruta = receitasCompletas.reduce(

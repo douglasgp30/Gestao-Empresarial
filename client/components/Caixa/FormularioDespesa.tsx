@@ -36,7 +36,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     adicionarLancamento,
     campanhas,
     adicionarCampanha,
-    isLoading: caixaLoading
+    isLoading: caixaLoading,
   } = useCaixa();
   const {
     formasPagamento,
@@ -526,20 +526,26 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
               <Input
                 id="cidade"
                 placeholder="Digite a cidade"
-                value={formData.setor ?
-                  (() => {
-                    const setorSelecionado = setores.find(s => s.id?.toString() === formData.setor);
-                    return setorSelecionado ?
-                      (typeof setorSelecionado.cidade === "object" ? setorSelecionado.cidade?.nome : setorSelecionado.cidade) || ""
-                      : "";
-                  })()
-                  : ""
+                value={
+                  formData.setor
+                    ? (() => {
+                        const setorSelecionado = setores.find(
+                          (s) => s.id?.toString() === formData.setor,
+                        );
+                        return setorSelecionado
+                          ? (typeof setorSelecionado.cidade === "object"
+                              ? setorSelecionado.cidade?.nome
+                              : setorSelecionado.cidade) || ""
+                          : "";
+                      })()
+                    : ""
                 }
                 disabled
                 className="bg-gray-50"
               />
               <div className="text-xs text-muted-foreground">
-                A cidade é preenchida automaticamente com base no setor selecionado
+                A cidade é preenchida automaticamente com base no setor
+                selecionado
               </div>
             </div>
           </div>

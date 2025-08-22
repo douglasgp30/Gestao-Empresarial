@@ -949,7 +949,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         });
 
         if (response.ok) {
-          console.log("[CaixaContext] Lançamento editado no servidor com sucesso");
+          console.log(
+            "[CaixaContext] Lançamento editado no servidor com sucesso",
+          );
           // Recarregar dados do servidor para sincronizar
           await carregarDados();
           return;
@@ -957,7 +959,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           throw new Error(`Erro do servidor: ${response.status}`);
         }
       } catch (serverError) {
-        console.warn("Servidor indisponível, editando localmente:", serverError);
+        console.warn(
+          "Servidor indisponível, editando localmente:",
+          serverError,
+        );
 
         // Fallback: editar apenas no localStorage
         const lancamentosExistentes = JSON.parse(
@@ -1019,7 +1024,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         });
 
         if (response.ok) {
-          console.log("[CaixaContext] Lançamento excluído no servidor com sucesso");
+          console.log(
+            "[CaixaContext] Lançamento excluído no servidor com sucesso",
+          );
           // Recarregar dados do servidor para sincronizar
           await carregarDados();
           return;
@@ -1027,7 +1034,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           throw new Error(`Erro do servidor: ${response.status}`);
         }
       } catch (serverError) {
-        console.warn("Servidor indisponível, excluindo localmente:", serverError);
+        console.warn(
+          "Servidor indisponível, excluindo localmente:",
+          serverError,
+        );
 
         // Fallback: excluir apenas do localStorage
         const lancamentosExistentes = JSON.parse(
@@ -1198,7 +1208,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       comissoes,
     };
   }, [lancamentos]);
-
 
   // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores
   const value = useMemo(

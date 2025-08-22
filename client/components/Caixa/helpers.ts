@@ -19,7 +19,10 @@ export const getDisplayName = (value: any): string => {
 };
 
 // Função para extrair nome de forma de pagamento
-export const getFormaPagamentoNome = (fp: any, formasPagamento: any[] = []): string => {
+export const getFormaPagamentoNome = (
+  fp: any,
+  formasPagamento: any[] = [],
+): string => {
   if (!fp) return "N/A";
 
   // Se é um objeto snapshot, usar o nome
@@ -87,7 +90,10 @@ export const getTecnicoNome = (tecnico: any, tecnicos: any[] = []): string => {
 };
 
 // Função para extrair nome da campanha
-export const getCampanhaNome = (campanha: any, campanhas: any[] = []): string => {
+export const getCampanhaNome = (
+  campanha: any,
+  campanhas: any[] = [],
+): string => {
   if (!campanha) return "";
 
   // Se é um objeto snapshot, usar o nome
@@ -133,7 +139,7 @@ export const getClienteNome = (cliente: any, clientes: any[] = []): string => {
 // Função para extrair descrição de exibição
 export const getDescricaoDisplay = (lancamento: any): string => {
   const descricao = lancamento.descricao;
-  
+
   if (!descricao) return "N/A";
 
   // Se é um objeto com nome
@@ -153,7 +159,7 @@ export const getDescricaoDisplay = (lancamento: any): string => {
 export const matchesFilter = (
   fieldValue: any,
   filterValue: string | undefined,
-  items: any[] = []
+  items: any[] = [],
 ): boolean => {
   if (!filterValue || filterValue === "todas" || filterValue === "todos") {
     return true;
@@ -164,7 +170,11 @@ export const matchesFilter = (
 };
 
 // Função para extrair valor para ordenação
-export const getSortValue = (lancamento: any, field: string, items: any[] = []): any => {
+export const getSortValue = (
+  lancamento: any,
+  field: string,
+  items: any[] = [],
+): any => {
   switch (field) {
     case "data":
       return new Date(lancamento.data).getTime();
