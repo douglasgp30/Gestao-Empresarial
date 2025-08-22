@@ -69,10 +69,10 @@ const defaultColumns: ColumnConfig[] = [
   },
   { key: "tecnico", label: "Técnico", visible: true, order: 10 },
   { key: "setor", label: "Setor", visible: true, order: 11 },
-  { key: "campanha", label: "Campanha", visible: false, order: 12 },
-  { key: "observacoes", label: "Observações", visible: false, order: 13 },
+  { key: "campanha", label: "Campanha", visible: true, order: 12 },
+  { key: "observacoes", label: "Observações", visible: true, order: 13 },
   { key: "numeroNota", label: "Número da Nota", visible: false, order: 14 },
-  { key: "cliente", label: "Cliente", visible: false, order: 15 },
+  { key: "cliente", label: "Cliente", visible: true, order: 15 },
   { key: "acoes", label: "Ações", visible: true, order: 16 },
 ];
 
