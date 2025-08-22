@@ -54,40 +54,8 @@ export function FixDadosSystem() {
   };
 
   const corrigirFormasPagamento = () => {
-    const formasDefault = [
-      {
-        id: "1",
-        nome: "Dinheiro",
-        descricao: "Pagamento em dinheiro",
-        dataCriacao: new Date(),
-      },
-      {
-        id: "2",
-        nome: "PIX",
-        descricao: "Pagamento via PIX",
-        dataCriacao: new Date(),
-      },
-      {
-        id: "3",
-        nome: "Cartao de Debito",
-        descricao: "Pagamento com cartao de debito",
-        dataCriacao: new Date(),
-      },
-      {
-        id: "4",
-        nome: "Cartao de Credito",
-        descricao: "Pagamento com cartao de credito",
-        dataCriacao: new Date(),
-      },
-      {
-        id: "5",
-        nome: "Boleto Bancario",
-        descricao: "Pagamento via boleto bancario",
-        dataCriacao: new Date(),
-      },
-    ];
-
-    localStorage.setItem("formas_pagamento", JSON.stringify(formasDefault));
+    // Usar formas padrão centralizadas com acentos corretos
+    localStorage.setItem("formas_pagamento", JSON.stringify(FORMAS_PAGAMENTO_PADRAO));
 
     toast({
       title: "Formas de Pagamento Corrigidas",
