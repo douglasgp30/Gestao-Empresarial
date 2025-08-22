@@ -416,6 +416,28 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         tecnico: tecnicoSelecionado,
       });
 
+      // Validar se cliente foi encontrado quando necessário
+      if (formData.cliente && !clienteSelecionado) {
+        console.error("Cliente selecionado não encontrado:", formData.cliente);
+        toast({
+          title: "Erro",
+          description: "Cliente selecionado não foi encontrado. Tente selecionar novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validar se forma de pagamento foi encontrada
+      if (formData.formaPagamento && !formaSelecionada) {
+        console.error("Forma de pagamento selecionada não encontrada:", formData.formaPagamento);
+        toast({
+          title: "Erro",
+          description: "Forma de pagamento selecionada não foi encontrada. Tente selecionar novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Criar lançamento no caixa com snapshots completos
       const lancamentoCaixa = await adicionarLancamento({
         data: new Date(formData.data),
