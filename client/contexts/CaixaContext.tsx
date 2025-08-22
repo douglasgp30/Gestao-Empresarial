@@ -467,10 +467,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             lancamento.descricao?.categoria ||
             "Serviços",
           descricao: {
-            nome:
-              lancamento.descricaoECategoria?.nome ||
-              lancamento.descricao?.nome ||
-              "Serviço",
+            nome: (() => {
+              // Verificar primeiro descricaoECategoria
+              if (lancamento.descricaoECategoria?.nome &&
+                  typeof lancamento.descricaoECategoria.nome === 'string' &&
+                  lancamento.descricaoECategoria.nome.trim() !== '') {
+                return lancamento.descricaoECategoria.nome;
+              }
+
+              // Depois verificar descricao legada
+              if (lancamento.descricao?.nome &&
+                  typeof lancamento.descricao.nome === 'string' &&
+                  lancamento.descricao.nome.trim() !== '') {
+                return lancamento.descricao.nome;
+              }
+
+              // Fallback seguro
+              return "Serviço";
+            })(),
           },
         }),
       );
