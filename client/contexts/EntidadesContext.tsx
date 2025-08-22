@@ -323,44 +323,83 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           setDescricoesECategorias([]);
         }
 
-        // Carregar formas de pagamento
+        // Carregar formas de pagamento com validação
         const formasStorage = localStorage.getItem("formas_pagamento");
+
+        // Valores padrão obrigatórios
+        const formasDefault = [
+          {
+            id: "1",
+            nome: "Dinheiro",
+            descricao: "Pagamento em dinheiro",
+            dataCriacao: new Date(),
+          },
+          {
+            id: "2",
+            nome: "PIX",
+            descricao: "Pagamento via PIX",
+            dataCriacao: new Date(),
+          },
+          {
+            id: "3",
+            nome: "Cartão de Débito",
+            descricao: "Pagamento com cartão de débito",
+            dataCriacao: new Date(),
+          },
+          {
+            id: "4",
+            nome: "Cartão de Crédito",
+            descricao: "Pagamento com cartão de crédito",
+            dataCriacao: new Date(),
+          },
+          {
+            id: "5",
+            nome: "Boleto Banc��rio",
+            descricao: "Pagamento via boleto bancário",
+            dataCriacao: new Date(),
+          },
+        ];
+
         if (formasStorage) {
-          setFormasPagamento(JSON.parse(formasStorage));
+          try {
+            const formasParsed = JSON.parse(formasStorage);
+            // Validar se é array e se tem dados válidos
+            if (Array.isArray(formasParsed) && formasParsed.length > 0) {
+              // Verificar se todos os itens essenciais existem
+              const formasValidadas = [...formasParsed];
+
+              // Garantir que boleto sempre existe
+              const temBoleto = formasValidadas.some(f =>
+                f.id === "5" ||
+                (f.nome && f.nome.toLowerCase().includes("boleto"))
+              );
+
+              if (!temBoleto) {
+                console.log("[EntidadesContext] Boleto não encontrado no localStorage, adicionando...");
+                formasValidadas.push({
+                  id: "5",
+                  nome: "Boleto Bancário",
+                  descricao: "Pagamento via boleto bancário",
+                  dataCriacao: new Date(),
+                });
+                // Salvar no localStorage a versão corrigida
+                localStorage.setItem("formas_pagamento", JSON.stringify(formasValidadas));
+              }
+
+              setFormasPagamento(formasValidadas);
+            } else {
+              console.log("[EntidadesContext] Dados inválidos no localStorage, usando defaults");
+              setFormasPagamento(formasDefault);
+              localStorage.setItem("formas_pagamento", JSON.stringify(formasDefault));
+            }
+          } catch (error) {
+            console.error("[EntidadesContext] Erro ao parsear formas de pagamento:", error);
+            setFormasPagamento(formasDefault);
+            localStorage.setItem("formas_pagamento", JSON.stringify(formasDefault));
+          }
         } else {
-          // Valores padrão com IDs como string
-          setFormasPagamento([
-            {
-              id: "1",
-              nome: "Dinheiro",
-              descricao: "Pagamento em dinheiro",
-              dataCriacao: new Date(),
-            },
-            {
-              id: "2",
-              nome: "PIX",
-              descricao: "Pagamento via PIX",
-              dataCriacao: new Date(),
-            },
-            {
-              id: "3",
-              nome: "Cartão de Débito",
-              descricao: "Pagamento com cartão de débito",
-              dataCriacao: new Date(),
-            },
-            {
-              id: "4",
-              nome: "Cartão de Crédito",
-              descricao: "Pagamento com cartão de crédito",
-              dataCriacao: new Date(),
-            },
-            {
-              id: "5",
-              nome: "Boleto Bancário",
-              descricao: "Pagamento via boleto bancário",
-              dataCriacao: new Date(),
-            },
-          ]);
+          setFormasPagamento(formasDefault);
+          localStorage.setItem("formas_pagamento", JSON.stringify(formasDefault));
         }
 
         // Carregar funcionários
