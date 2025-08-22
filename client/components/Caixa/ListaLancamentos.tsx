@@ -530,7 +530,7 @@ export default function ListaLancamentos() {
                                 .includes("boleto") ||
                               lancamento.formaPagamento
                                 ?.toLowerCase()
-                                .includes("bancário") ? (
+                                .includes("bancario") ? (
                               <p className="text-xs text-orange-600 font-medium">
                                 Aguardando recebimento
                               </p>
