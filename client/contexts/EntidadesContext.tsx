@@ -363,20 +363,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           },
           {
             id: "3",
-            nome: "Cartão de Débito",
-            descricao: "Pagamento com cartão de débito",
+            nome: "Cartao de Debito",
+            descricao: "Pagamento com cartao de debito",
             dataCriacao: new Date(),
           },
           {
             id: "4",
-            nome: "Cartão de Crédito",
-            descricao: "Pagamento com cartão de crédito",
+            nome: "Cartao de Credito",
+            descricao: "Pagamento com cartao de credito",
             dataCriacao: new Date(),
           },
           {
             id: "5",
-            nome: "Boleto Banc��rio",
-            descricao: "Pagamento via boleto bancário",
+            nome: "Boleto Bancario",
+            descricao: "Pagamento via boleto bancario",
             dataCriacao: new Date(),
           },
         ];
