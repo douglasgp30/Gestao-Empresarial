@@ -64,6 +64,13 @@ export function obterDadosBasicosIniciais(): DadosBasicosIniciais {
       },
       {
         id: "5",
+        nome: "Boleto Bancário",
+        ativo: true,
+        tipo: "boleto",
+        descricao: "Pagamento via boleto bancário",
+      },
+      {
+        id: "6",
         nome: "Transferência Bancária",
         ativo: true,
         tipo: "transferencia",
