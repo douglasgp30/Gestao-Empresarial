@@ -184,7 +184,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
       } else {
         console.warn(
-          "���� [CaixaContext] Erro desconhecido ao carregar campanhas:",
+          "�� [CaixaContext] Erro desconhecido ao carregar campanhas:",
           error,
         );
       }
@@ -991,7 +991,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   const excluirLancamento = async (id: string) => {
+    // Evitar múltiplas exclusões simultâneas
+    if (isExcluindo) {
+      console.log("[CaixaContext] Exclusão já em andamento, ignorando...");
+      return;
+    }
+
     try {
+      setIsExcluindo(true);
       setError(null);
 
       console.log("[CaixaContext] Excluindo lançamento via API:", id);
