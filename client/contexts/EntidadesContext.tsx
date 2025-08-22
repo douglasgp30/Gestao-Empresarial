@@ -349,39 +349,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         // Carregar formas de pagamento com validação
         const formasStorage = localStorage.getItem("formas_pagamento");
 
-        // Valores padrão obrigatórios
-        const formasDefault = [
-          {
-            id: "1",
-            nome: "Dinheiro",
-            descricao: "Pagamento em dinheiro",
-            dataCriacao: new Date(),
-          },
-          {
-            id: "2",
-            nome: "PIX",
-            descricao: "Pagamento via PIX",
-            dataCriacao: new Date(),
-          },
-          {
-            id: "3",
-            nome: "Cartao de Debito",
-            descricao: "Pagamento com cartao de debito",
-            dataCriacao: new Date(),
-          },
-          {
-            id: "4",
-            nome: "Cartao de Credito",
-            descricao: "Pagamento com cartao de credito",
-            dataCriacao: new Date(),
-          },
-          {
-            id: "5",
-            nome: "Boleto Bancario",
-            descricao: "Pagamento via boleto bancario",
-            dataCriacao: new Date(),
-          },
-        ];
+        // Usar formas padrão centralizadas
+        const formasDefault = FORMAS_PAGAMENTO_PADRAO;
 
         if (formasStorage) {
           try {
