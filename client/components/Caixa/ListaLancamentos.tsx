@@ -336,9 +336,14 @@ export default function ListaLancamentos() {
       return new Date(b.data).getTime() - new Date(a.data).getTime();
     });
 
-  const handleExcluir = (id: string) => {
-    excluirLancamento(id);
-    setLancamentoParaExcluir(null);
+  const handleExcluir = async (id: string) => {
+    try {
+      await excluirLancamento(id);
+      setLancamentoParaExcluir(null);
+    } catch (error) {
+      console.error("Erro ao excluir lançamento:", error);
+      // O erro já é tratado no contexto, aqui apenas mantemos o modal aberto
+    }
   };
 
   if (lancamentosFiltrados.length === 0) {
