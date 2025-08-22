@@ -32,10 +32,17 @@ interface FormularioDespesaProps {
 export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
   const formRef = useRef<HTMLFormElement>(null);
 
-  const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
+  const {
+    adicionarLancamento,
+    campanhas,
+    adicionarCampanha,
+    isLoading: caixaLoading
+  } = useCaixa();
   const {
     formasPagamento,
+    setores,
     adicionarFormaPagamento,
+    adicionarSetor,
     isLoading: entidadesLoading,
   } = useEntidades();
 
@@ -50,6 +57,8 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     categoria: "",
     descricao: "",
     formaPagamento: "",
+    campanha: "",
+    setor: "",
     observacoes: "",
   });
 
