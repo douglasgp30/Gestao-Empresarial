@@ -499,16 +499,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         })),
       );
 
-      // Debug detalhado para problema da descrição
-      console.log("🔍 [DEBUG DESCRIÇÃO] Dados brutos do servidor:", lancamentosDoBanco.slice(0, 2));
-      console.log("🔍 [DEBUG DESCRIÇÃO] Primeiro lançamento processado:", {
-        original: lancamentosDoBanco[0],
-        formatado: lancamentosFormatados[0],
-        descricaoOriginal: lancamentosDoBanco[0]?.descricao,
-        descricaoECategoriaOriginal: lancamentosDoBanco[0]?.descricaoECategoria,
-        descricaoFormatada: lancamentosFormatados[0]?.descricao,
-      });
-
       setLancamentos(lancamentosFormatados);
       console.log(
         `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do banco`,
