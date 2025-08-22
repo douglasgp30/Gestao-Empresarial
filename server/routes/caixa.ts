@@ -358,40 +358,54 @@ export const createLancamento: RequestHandler = async (req, res) => {
       }
     }
 
-    // Calcular comissão automaticamente se há técnico responsável
+    // Calcular comissão e valor para empresa automaticamente
     let comissaoCalculada = 0;
-    if (ids.funcionarioId && data.valorLiquido && data.tipo === "receita") {
-      const funcionario = await prisma.funcionario.findUnique({
-        where: { id: ids.funcionarioId },
-        select: {
-          percentualComissao: true,
-          percentualServico: true,
-          nome: true,
-        },
-      });
+    let valorParaEmpresaCalculado = 0;
 
-      if (funcionario) {
-        const percentual =
-          funcionario.percentualComissao || funcionario.percentualServico || 0;
-        if (percentual > 0) {
-          comissaoCalculada = data.valorLiquido * (percentual / 100);
-          console.log(
-            `[Caixa] Comissão calculada: ${funcionario.nome} - ${percentual}% sobre R$ ${data.valorLiquido.toFixed(2)} = R$ ${comissaoCalculada.toFixed(2)}`,
-          );
+    if (data.tipo === "receita") {
+      // Para receitas, calcular valor para empresa
+      const valorRecebido = data.valorRecebido || data.valor;
+      const valorLiquidoEfetivo = data.valorLiquido || valorRecebido;
+
+      // Calcular comissão se há técnico responsável
+      if (ids.funcionarioId && valorLiquidoEfetivo > 0) {
+        const funcionario = await prisma.funcionario.findUnique({
+          where: { id: ids.funcionarioId },
+          select: {
+            percentualComissao: true,
+            percentualServico: true,
+            nome: true,
+          },
+        });
+
+        if (funcionario) {
+          const percentual =
+            funcionario.percentualComissao || funcionario.percentualServico || 0;
+          if (percentual > 0) {
+            comissaoCalculada = valorLiquidoEfetivo * (percentual / 100);
+            console.log(
+              `[Caixa] Comissão calculada: ${funcionario.nome} - ${percentual}% sobre R$ ${valorLiquidoEfetivo.toFixed(2)} = R$ ${comissaoCalculada.toFixed(2)}`,
+            );
+          } else {
+            console.log(
+              `[Caixa] Técnico ${funcionario.nome} sem percentual de comissão definido`,
+            );
+          }
         } else {
           console.log(
-            `[Caixa] Técnico ${funcionario.nome} sem percentual de comissão definido`,
+            `[Caixa] Funcionário com ID ${ids.funcionarioId} não encontrado`,
           );
         }
-      } else {
+      } else if (!ids.funcionarioId) {
         console.log(
-          `[Caixa] Funcionário com ID ${ids.funcionarioId} não encontrado`,
+          `[Caixa] Receita sem técnico responsável - comissão será R$ 0,00`,
         );
       }
-    } else if (data.tipo === "receita" && !ids.funcionarioId) {
-      console.log(
-        `[Caixa] Receita sem técnico responsável - comissão será R$ 0,00`,
-      );
+
+      // Valor para empresa = valor líquido - comissão
+      valorParaEmpresaCalculado = valorLiquidoEfetivo - comissaoCalculada;
+
+      console.log(`[Caixa] Valor para empresa calculado: R$ ${valorParaEmpresaCalculado.toFixed(2)}`);
     }
 
     // Validar forma de pagamento (obrigatório)
