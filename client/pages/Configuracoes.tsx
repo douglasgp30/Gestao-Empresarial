@@ -27,6 +27,7 @@ import SistemaBackup from "../components/Backup/SistemaBackup";
 import { CleanFakeData } from "../components/Debug/CleanFakeData";
 import ResetarSistema from "../components/Debug/ResetarSistema";
 import { TesteBoleto } from "../components/Debug/TesteBoleto";
+import { TesteRapidoBoleto } from "../components/Debug/TesteRapidoBoleto";
 import {
   Settings,
   Building2,
@@ -868,6 +869,8 @@ export default function Configuracoes() {
               </p>
             </CardContent>
           </Card>
+
+          <TesteRapidoBoleto />
 
           <TesteBoleto />
 
