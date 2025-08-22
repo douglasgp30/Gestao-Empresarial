@@ -177,7 +177,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       (f) => f.id.toString() === formData.formaPagamento,
     );
 
-    return forma?.nome?.toLowerCase().includes("cartão") || false;
+    return forma?.nome?.toLowerCase().includes("cartao") || false;
   }, [formData.formaPagamento, formasPagamento]);
 
   // Verificar se forma de pagamento é boleto
