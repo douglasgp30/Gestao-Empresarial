@@ -1139,7 +1139,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <div>
                     <span className="text-gray-600">Valor Recebido:</span>
                     <div className="font-medium">
-                      R$ {valorQueEntrouCalculado.toFixed(2).replace(".", ",")}
+                      R$ {valorQueEntrouReal.toFixed(2).replace(".", ",")}
                     </div>
                   </div>
                   <div>
