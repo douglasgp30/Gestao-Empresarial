@@ -1260,6 +1260,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       adicionarCampanhaCb,
       carregarDadosCb,
       isLoading,
+      isExcluindo,
       error,
     ],
   );
