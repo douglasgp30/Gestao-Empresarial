@@ -1245,6 +1245,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setFiltros,
       carregarDados: carregarDadosCb,
       isLoading,
+      isExcluindo,
       error,
       filtrosDependencias, // Expor para componentes filhos evitarem JSON.stringify
     }),
