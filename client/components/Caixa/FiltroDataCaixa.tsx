@@ -36,7 +36,6 @@ export default function FiltroDataCaixa() {
     console.log("🔍 CAIXA Filtros atuais:", filtros);
     const novosFiltros = {
       ...filtros,
-      __timestamp: Date.now(),
     };
     setFiltros(novosFiltros);
   };
@@ -66,7 +65,6 @@ export default function FiltroDataCaixa() {
       ...filtros,
       dataInicio: inicioHoje,
       dataFim: fimHoje,
-      __timestamp: Date.now(),
     });
   };
 

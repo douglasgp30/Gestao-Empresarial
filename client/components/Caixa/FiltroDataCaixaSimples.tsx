@@ -56,10 +56,9 @@ export default function FiltroDataCaixaSimples() {
         ...filtros,
         dataInicio: inicioHoje,
         dataFim: fimHoje,
-        __timestamp: Date.now(),
       });
     }
-  }, [filtros, setFiltros]);
+  }, [filtros?.dataInicio, filtros?.dataFim, setFiltros]);
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
