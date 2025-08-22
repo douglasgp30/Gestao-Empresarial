@@ -92,7 +92,10 @@ export function ModalReceita() {
   // Filtrar descrições pela categoria selecionada
   const descricoesFiltradas = React.useMemo(() => {
     if (!formData.categoria) return [];
-    return getDescricoes("receita", formData.categoria);
+    const descricoes = getDescricoes("receita", formData.categoria);
+    console.log("[ModalReceita] Debug - Categoria selecionada:", formData.categoria);
+    console.log("[ModalReceita] Debug - Descrições filtradas:", descricoes);
+    return descricoes;
   }, [formData.categoria, getDescricoes]);
 
   // Filtrar setores pela cidade selecionada
