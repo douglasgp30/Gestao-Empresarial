@@ -82,7 +82,8 @@ type SortField =
 type SortDirection = "asc" | "desc" | null;
 
 export default function ListaLancamentos() {
-  const { lancamentos, filtros, excluirLancamento, campanhas } = useCaixa();
+  const { lancamentos, filtros, excluirLancamento, campanhas, isExcluindo } =
+    useCaixa();
   const { formasPagamento, setores, getTecnicos } = useEntidades();
   const { clientes } = useClientes();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
@@ -336,9 +337,14 @@ export default function ListaLancamentos() {
       return new Date(b.data).getTime() - new Date(a.data).getTime();
     });
 
-  const handleExcluir = (id: string) => {
-    excluirLancamento(id);
-    setLancamentoParaExcluir(null);
+  const handleExcluir = async (id: string) => {
+    try {
+      await excluirLancamento(id);
+      setLancamentoParaExcluir(null);
+    } catch (error) {
+      console.error("Erro ao excluir lançamento:", error);
+      // O erro já é tratado no contexto, aqui apenas mantemos o modal aberto
+    }
   };
 
   if (lancamentosFiltrados.length === 0) {
@@ -471,14 +477,32 @@ export default function ListaLancamentos() {
                     <TableCell>
                       <div>
                         <p className="font-medium text-sm">
-                          {/* Corrigir exibição da descrição - se for objeto, usar o nome */}
-                          {typeof lancamento.descricao === "object" &&
-                          lancamento.descricao?.nome
-                            ? lancamento.descricao.nome
-                            : typeof lancamento.descricao === "string" &&
-                                lancamento.descricao
-                              ? lancamento.descricao
-                              : "N/A"}
+                          {(() => {
+                            // Verificar se é um objeto com nome válido
+                            if (
+                              typeof lancamento.descricao === "object" &&
+                              lancamento.descricao?.nome &&
+                              typeof lancamento.descricao.nome === "string" &&
+                              lancamento.descricao.nome.trim() !== "" &&
+                              !/^\d+$/.test(lancamento.descricao.nome)
+                            ) {
+                              // Evitar strings apenas numéricas
+                              return lancamento.descricao.nome;
+                            }
+
+                            // Verificar se é uma string válida (não apenas números)
+                            if (
+                              typeof lancamento.descricao === "string" &&
+                              lancamento.descricao.trim() !== "" &&
+                              !/^\d+$/.test(lancamento.descricao)
+                            ) {
+                              // Evitar strings apenas numéricas
+                              return lancamento.descricao;
+                            }
+
+                            // Fallback seguro
+                            return "Serviço";
+                          })()}
                         </p>
                         {getCampanhaNome(lancamento.campanha) && (
                           <p className="text-xs text-blue-600">
@@ -651,14 +675,17 @@ export default function ListaLancamentos() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={isExcluindo}>
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() =>
                 lancamentoParaExcluir && handleExcluir(lancamentoParaExcluir)
               }
+              disabled={isExcluindo}
               className="bg-red-600 hover:bg-red-700"
             >
-              Excluir
+              {isExcluindo ? "Excluindo..." : "Excluir"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

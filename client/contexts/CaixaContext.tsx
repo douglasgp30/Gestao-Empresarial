@@ -60,6 +60,7 @@ interface CaixaContextType {
   setFiltros: (filtros: any) => void;
   carregarDados: () => Promise<void>;
   isLoading: boolean;
+  isExcluindo: boolean;
   error: string | null;
 }
 
@@ -72,6 +73,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCarregando, setIsCarregando] = useState(false);
+  const [isExcluindo, setIsExcluindo] = useState(false);
   const [filtros, setFiltros] = useState(() => {
     // Usar data atual do sistema mas normalizando para o dia correto
     const agora = new Date();
@@ -347,7 +349,26 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const url = `/api/caixa?${params.toString()}`;
       console.log("📦 [CaixaContext] URL da requisição:", url);
 
-      const response = await fetch(url);
+      // Adicionar timeout para evitar congelamentos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos
+
+      let response;
+      try {
+        response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
+        clearTimeout(timeoutId);
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === "AbortError") {
+          throw new Error("Timeout: Servidor demorou muito para responder");
+        }
+        throw fetchError;
+      }
 
       console.log("📦 [CaixaContext] Status da resposta:", response.status);
       console.log("📦 [CaixaContext] Headers da resposta:", [
@@ -467,10 +488,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             lancamento.descricao?.categoria ||
             "Serviços",
           descricao: {
-            nome:
-              lancamento.descricaoECategoria?.nome ||
-              lancamento.descricao?.nome ||
-              "Serviço",
+            nome: (() => {
+              // Verificar primeiro descricaoECategoria
+              if (
+                lancamento.descricaoECategoria?.nome &&
+                typeof lancamento.descricaoECategoria.nome === "string" &&
+                lancamento.descricaoECategoria.nome.trim() !== ""
+              ) {
+                return lancamento.descricaoECategoria.nome;
+              }
+
+              // Depois verificar descricao legada
+              if (
+                lancamento.descricao?.nome &&
+                typeof lancamento.descricao.nome === "string" &&
+                lancamento.descricao.nome.trim() !== ""
+              ) {
+                return lancamento.descricao.nome;
+              }
+
+              // Fallback seguro
+              return "Serviço";
+            })(),
           },
         }),
       );
@@ -976,35 +1015,60 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   const excluirLancamento = async (id: string) => {
+    // Evitar múltiplas exclusões simultâneas
+    if (isExcluindo) {
+      console.log("[CaixaContext] Exclusão já em andamento, ignorando...");
+      return;
+    }
+
     try {
+      setIsExcluindo(true);
       setError(null);
 
-      console.log("[CaixaContext] Excluindo lançamento:", id);
+      console.log("[CaixaContext] Excluindo lançamento via API:", id);
 
-      // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(
-        localStorage.getItem("lancamentos_caixa") || "[]",
-      );
+      // Primeiro remover otimisticamente da lista local para melhorar UX
+      const lancamentosAtuais = [...lancamentos];
+      const novaLista = lancamentosAtuais.filter((l) => l.id !== id);
+      setLancamentos(novaLista);
 
-      // Filtrar para remover o lançamento
-      const lancamentosFiltrados = lancamentosExistentes.filter(
-        (lancamento: any) => lancamento.id !== id,
-      );
+      // Fazer a chamada para a API para excluir do banco de dados
+      const response = await fetch(`/api/caixa/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      // Salvar no localStorage
-      localStorage.setItem(
-        "lancamentos_caixa",
-        JSON.stringify(lancamentosFiltrados),
-      );
+      if (!response.ok) {
+        // Reverter a exclusão otimística em caso de erro
+        setLancamentos(lancamentosAtuais);
 
-      // Recarregar lançamentos
-      await carregarLancamentosLocalStorage();
+        let errorMessage = `Erro ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            // Se não conseguir ler nada, usar mensagem padrão
+          }
+        }
+        throw new Error(`Erro na API: ${errorMessage}`);
+      }
 
-      console.log("[CaixaContext] Lançamento excluído com sucesso:", id);
+      console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
+
+      // Recarregar apenas os lançamentos de forma mais leve
+      await carregarLancamentosDoBanco();
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
       throw error;
+    } finally {
+      setIsExcluindo(false);
     }
   };
 
@@ -1184,6 +1248,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setFiltros,
       carregarDados: carregarDadosCb,
       isLoading,
+      isExcluindo,
       error,
       filtrosDependencias, // Expor para componentes filhos evitarem JSON.stringify
     }),
@@ -1198,6 +1263,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       adicionarCampanhaCb,
       carregarDadosCb,
       isLoading,
+      isExcluindo,
       error,
     ],
   );
