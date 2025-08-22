@@ -8,7 +8,10 @@ export const useCurrencyInput = (initialValue: string = "") => {
   // Converter valor inicial para formato de exibição
   const formatInitialValue = (value: string) => {
     if (!value) return "R$ 0,00";
-    const numericValue = parseFloat(value) || 0;
+
+    // Extrair apenas dígitos para lidar com strings formatadas
+    const digits = value.replace(/\D/g, "");
+    const numericValue = digits ? parseInt(digits) / 100 : 0;
     return formatCurrency(numericValue);
   };
 
@@ -29,24 +32,27 @@ export const useCurrencyInput = (initialValue: string = "") => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const input = event.target.value;
 
-      // Extrair apenas dígitos (mesmo padrão da Meta)
-      const digits = input.replace(/\D/g, "");
+      // Remover tudo que não é dígito (exatamente igual ao Dashboard)
+      const numericValue = input.replace(/\D/g, "");
 
-      // Se vazio, mostrar R$ 0,00
-      if (!digits) {
+      // Se vazio, retornar formato inicial
+      if (!numericValue) {
         setDisplayValue("R$ 0,00");
         setNumericValue(0);
         return;
       }
 
-      // Converter para número em reais (dividindo por 100 para considerar centavos)
-      const valueInReais = parseInt(digits) / 100;
+      // Converter para número (dividindo por 100 para considerar centavos)
+      const number = parseInt(numericValue) / 100;
 
-      // Formatar usando o mesmo padrão da Meta
-      const formatted = formatCurrency(valueInReais);
+      // Formatar como moeda brasileira (idêntico ao Dashboard)
+      const formatted = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(number);
 
       setDisplayValue(formatted);
-      setNumericValue(valueInReais);
+      setNumericValue(number);
     },
     [],
   );
@@ -104,6 +110,10 @@ export const useCurrencyInput = (initialValue: string = "") => {
       onChange: handleInputChange,
       onKeyDown: handleKeyDown,
       placeholder: "R$ 0,00",
+      inputMode: "numeric" as const,
+      pattern: "[0-9]*",
+      onFocus: (e: React.FocusEvent<HTMLInputElement>) =>
+        e.currentTarget.select(),
     },
   };
 };

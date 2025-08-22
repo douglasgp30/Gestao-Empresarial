@@ -138,7 +138,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const receitasNaoBoletoMesAtual = receitasMesAtual.filter(
       (l) =>
         !l.formaPagamento?.nome?.toLowerCase().includes("boleto") &&
-        !l.formaPagamento?.nome?.toLowerCase().includes("bancário"),
+        !l.formaPagamento?.nome?.toLowerCase().includes("bancario"),
     );
 
     // Total de receitas = apenas receitas líquidas (sem boletos)

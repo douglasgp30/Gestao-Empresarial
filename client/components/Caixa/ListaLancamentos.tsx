@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import {
+  isFormaPagamentoBoleto,
+  formatCurrencySafe,
+  extractSafeName,
+} from "../../lib/stringUtils";
 import { useClientes } from "../../contexts/ClientesContext";
 import TabelaResponsivaLancamentos from "../ui/tabela-responsiva";
 import {
@@ -62,6 +67,9 @@ function formatCurrency(value: number): string {
     currency: "BRL",
   });
 }
+
+// Helper seguro para detectar boleto
+const isFormaBoleto = (fp: any) => isFormaPagamentoBoleto(fp);
 
 type SortField =
   | "data"
@@ -491,9 +499,7 @@ export default function ListaLancamentos() {
                           <p className="text-xs font-mono text-gray-600">
                             {lancamento.codigoServico}
                           </p>
-                          {lancamento.formaPagamento
-                            ?.toLowerCase()
-                            .includes("boleto") && (
+                          {isFormaBoleto(lancamento.formaPagamento) && (
                             <Badge variant="outline" className="text-xs mt-1">
                               Boleto
                             </Badge>
@@ -511,7 +517,7 @@ export default function ListaLancamentos() {
                           <span className="text-xs text-muted-foreground">
                             Integral:
                           </span>{" "}
-                          {formatCurrency(lancamento.valor)}
+                          {formatCurrencySafe(lancamento.valor)}
                         </p>
 
                         {/* Valor para Empresa */}
@@ -522,15 +528,12 @@ export default function ListaLancamentos() {
                                 <span className="text-xs text-muted-foreground">
                                   P/ Empresa:
                                 </span>{" "}
-                                {formatCurrency(lancamento.valorParaEmpresa)}
+                                {formatCurrencySafe(
+                                  lancamento.valorParaEmpresa,
+                                )}
                               </p>
                             ) : // Verificar se é boleto
-                            lancamento.formaPagamento
-                                ?.toLowerCase()
-                                .includes("boleto") ||
-                              lancamento.formaPagamento
-                                ?.toLowerCase()
-                                .includes("bancário") ? (
+                            isFormaBoleto(lancamento.formaPagamento) ? (
                               <p className="text-xs text-orange-600 font-medium">
                                 Aguardando recebimento
                               </p>
@@ -539,10 +542,11 @@ export default function ListaLancamentos() {
                                 <span className="text-xs text-muted-foreground">
                                   P/ Empresa:
                                 </span>{" "}
-                                {formatCurrency(
+                                {formatCurrencySafe(
                                   (lancamento.valorLiquido ||
-                                    lancamento.valor) -
-                                    (lancamento.comissao || 0),
+                                    lancamento.valorRecebido ||
+                                    lancamento.valor ||
+                                    0) - (lancamento.comissao || 0),
                                 )}
                               </p>
                             )}
@@ -555,7 +559,7 @@ export default function ListaLancamentos() {
                             <span className="text-xs text-muted-foreground">
                               Despesa:
                             </span>{" "}
-                            {formatCurrency(lancamento.valor)}
+                            {formatCurrencySafe(lancamento.valor)}
                           </p>
                         )}
                       </div>

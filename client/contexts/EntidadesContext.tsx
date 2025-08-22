@@ -17,6 +17,8 @@ import {
   Fornecedor,
   LocalizacaoGeografica,
 } from "@shared/types";
+import { FORMAS_PAGAMENTO_PADRAO } from "../lib/dadosBasicos";
+import { normalizeString } from "../lib/stringUtils";
 // APIs removidas para usar localStorage
 import { loadingManager } from "../lib/loadingManager";
 import { contextThrottle } from "../lib/contextThrottle";
@@ -347,39 +349,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         // Carregar formas de pagamento com validação
         const formasStorage = localStorage.getItem("formas_pagamento");
 
-        // Valores padrão obrigatórios
-        const formasDefault = [
-          {
-            id: "1",
-            nome: "Dinheiro",
-            descricao: "Pagamento em dinheiro",
-            dataCriacao: new Date(),
-          },
-          {
-            id: "2",
-            nome: "PIX",
-            descricao: "Pagamento via PIX",
-            dataCriacao: new Date(),
-          },
-          {
-            id: "3",
-            nome: "Cartão de Débito",
-            descricao: "Pagamento com cartão de débito",
-            dataCriacao: new Date(),
-          },
-          {
-            id: "4",
-            nome: "Cartão de Crédito",
-            descricao: "Pagamento com cartão de crédito",
-            dataCriacao: new Date(),
-          },
-          {
-            id: "5",
-            nome: "Boleto Banc��rio",
-            descricao: "Pagamento via boleto bancário",
-            dataCriacao: new Date(),
-          },
-        ];
+        // Usar formas padrão centralizadas
+        const formasDefault = FORMAS_PAGAMENTO_PADRAO;
 
         if (formasStorage) {
           try {
@@ -402,8 +373,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
                 );
                 formasValidadas.push({
                   id: "5",
-                  nome: "Boleto Bancário",
-                  descricao: "Pagamento via boleto bancário",
+                  nome: "Boleto Bancario",
+                  descricao: "Pagamento via boleto bancario",
                   dataCriacao: new Date(),
                 });
                 // Salvar no localStorage a versão corrigida

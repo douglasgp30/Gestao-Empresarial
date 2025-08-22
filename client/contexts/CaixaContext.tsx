@@ -1079,13 +1079,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       lancamento.formaPagamento?.nome
     ) {
       const nome = lancamento.formaPagamento.nome.toLowerCase();
-      return nome.includes("boleto") || nome.includes("bancário");
+      return nome.includes("boleto") || nome.includes("bancario");
     }
 
     // Se formaPagamento é string, assumir que é nome direto
     if (typeof lancamento.formaPagamento === "string") {
       const nome = lancamento.formaPagamento.toLowerCase();
-      return nome.includes("boleto") || nome.includes("bancário");
+      return nome.includes("boleto") || nome.includes("bancario");
     }
 
     return false;
