@@ -168,7 +168,7 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
       setContas(todasContas);
     } catch (error) {
       console.error(
-        "❌ [CONTAS] Erro ao carregar contas do localStorage:",
+        "�� [CONTAS] Erro ao carregar contas do localStorage:",
         error,
       );
       setErro("Erro ao carregar contas locais");
@@ -257,8 +257,8 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
             { id: 2, nome: "PIX", descricao: "Pagamento via PIX" },
             {
               id: 3,
-              nome: "Cartão de Débito",
-              descricao: "Pagamento com cartão de débito",
+              nome: "Cartao de Debito",
+              descricao: "Pagamento com cartao de debito",
             },
             {
               id: 4,
