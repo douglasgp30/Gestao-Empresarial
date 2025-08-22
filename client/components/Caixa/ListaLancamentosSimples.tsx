@@ -59,6 +59,7 @@ const defaultColumns: ColumnConfig[] = [
   { key: "valor", label: "Valor", visible: true, order: 4 },
   { key: "valorLiquido", label: "Valor Líquido", visible: false, order: 5 },
   { key: "valorRecebido", label: "Valor Recebido", visible: false, order: 6 },
+  { key: "valorParaEmpresa", label: "Para Empresa", visible: true, order: 6.5 },
   { key: "comissao", label: "Comissão", visible: true, order: 7 },
   { key: "imposto", label: "Imposto/Taxa", visible: false, order: 8 },
   {
