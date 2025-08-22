@@ -224,7 +224,7 @@ export function ListaLancamentosSimples() {
         console.log("[ListaLancamentos] Debug forma pagamento:", {
           id: lancamento.id,
           formaPagamento: lancamento.formaPagamento,
-          tipoFormaPagamento: typeof lancamento.formaPagamento
+          tipoFormaPagamento: typeof lancamento.formaPagamento,
         });
 
         // Suporta tanto string quanto objeto com nome
@@ -319,7 +319,7 @@ export function ListaLancamentosSimples() {
         console.log("[ListaLancamentos] Debug cliente:", {
           id: lancamento.id,
           cliente: lancamento.cliente,
-          tipoCliente: typeof lancamento.cliente
+          tipoCliente: typeof lancamento.cliente,
         });
 
         // Priorizar dados do banco de dados

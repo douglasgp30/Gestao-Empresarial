@@ -654,7 +654,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         try {
           await carregarLancamentosDoBanco();
         } catch (error) {
-          console.warn("Erro ao carregar do banco, usando localStorage:", error);
+          console.warn(
+            "Erro ao carregar do banco, usando localStorage:",
+            error,
+          );
           await carregarLancamentosLocalStorage();
         }
       } catch (error) {
@@ -1099,8 +1102,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
 
       // Remover da lista local após sucesso na API
-      setLancamentos(prev => prev.filter(l => l.id !== id));
-
+      setLancamentos((prev) => prev.filter((l) => l.id !== id));
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");

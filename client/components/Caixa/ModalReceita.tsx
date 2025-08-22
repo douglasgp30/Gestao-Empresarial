@@ -94,7 +94,10 @@ export function ModalReceita() {
   const descricoesFiltradas = React.useMemo(() => {
     if (!formData.categoria) return [];
     const descricoes = getDescricoes("receita", formData.categoria);
-    console.log("[ModalReceita] Debug - Categoria selecionada:", formData.categoria);
+    console.log(
+      "[ModalReceita] Debug - Categoria selecionada:",
+      formData.categoria,
+    );
     console.log("[ModalReceita] Debug - Descrições filtradas:", descricoes);
     return descricoes;
   }, [formData.categoria, getDescricoes]);
@@ -301,9 +304,10 @@ export function ModalReceita() {
       });
 
       // Se for boleto, criar conta a receber automaticamente
-      const isBoleto = formasPagamento.find(
-        (f) => f.id.toString() === formData.formaPagamento
-      )?.nome?.toLowerCase().includes("boleto");
+      const isBoleto = formasPagamento
+        .find((f) => f.id.toString() === formData.formaPagamento)
+        ?.nome?.toLowerCase()
+        .includes("boleto");
 
       if (isBoleto) {
         try {
@@ -315,38 +319,49 @@ export function ModalReceita() {
             dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
             status: "pendente",
             categoria: formData.categoria,
-            cliente: clienteSelecionado ? {
-              id: clienteSelecionado.id,
-              nome: clienteSelecionado.nome
-            } : undefined,
-            observacoes: `Conta criada automaticamente para boleto do lançamento de receita`
+            cliente: clienteSelecionado
+              ? {
+                  id: clienteSelecionado.id,
+                  nome: clienteSelecionado.nome,
+                }
+              : undefined,
+            observacoes: `Conta criada automaticamente para boleto do lançamento de receita`,
           };
 
           // Fazer chamada para API de contas (se disponível)
           try {
-            const response = await fetch('/api/contas', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(contaData)
+            const response = await fetch("/api/contas", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(contaData),
             });
 
             if (response.ok) {
-              console.log("[ModalReceita] Conta a receber criada automaticamente para boleto");
+              console.log(
+                "[ModalReceita] Conta a receber criada automaticamente para boleto",
+              );
             }
           } catch (apiError) {
-            console.warn("[ModalReceita] Não foi possível criar conta via API, criando localmente");
+            console.warn(
+              "[ModalReceita] Não foi possível criar conta via API, criando localmente",
+            );
             // Fallback: salvar no localStorage
-            const contasExistentes = JSON.parse(localStorage.getItem('contas') || '[]');
+            const contasExistentes = JSON.parse(
+              localStorage.getItem("contas") || "[]",
+            );
             const novaConta = {
               ...contaData,
               id: `conta-${Date.now()}`,
-              dataCriacao: new Date().toISOString()
+              dataCriacao: new Date().toISOString(),
             };
             contasExistentes.push(novaConta);
-            localStorage.setItem('contas', JSON.stringify(contasExistentes));
+            localStorage.setItem("contas", JSON.stringify(contasExistentes));
           }
         } catch (contaError) {
-          console.error("[ModalReceita] Erro ao criar conta a receber:", contaError);
+          console.error(
+            "[ModalReceita] Erro ao criar conta a receber:",
+            contaError,
+          );
         }
       }
 
@@ -525,7 +540,9 @@ export function ModalReceita() {
                         ))
                       ) : (
                         <div className="px-2 py-1 text-sm text-gray-500">
-                          {formData.categoria ? "Nenhuma descrição encontrada para esta categoria" : "Selecione uma categoria primeiro"}
+                          {formData.categoria
+                            ? "Nenhuma descrição encontrada para esta categoria"
+                            : "Selecione uma categoria primeiro"}
                         </div>
                       )}
                     </SelectContent>

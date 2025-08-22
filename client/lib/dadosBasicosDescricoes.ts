@@ -15,7 +15,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: 2, 
+      id: 2,
       nome: "Vendas",
       categoria: "Vendas",
       tipo: "receita",
@@ -144,6 +144,6 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       tipoItem: "descricao",
       ativo: true,
       dataCriacao: agora,
-    }
+    },
   ];
 }
