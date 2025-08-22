@@ -68,11 +68,7 @@ export function ModalEditarConta({
     dataPagamento: undefined as Date | undefined,
   });
 
-  const {
-    value: valorFormatado,
-    onChange: onValorChange,
-    setValue: setValor,
-  } = useCurrencyInput();
+  const valorInput = useCurrencyInput();
 
   // Preencher formulário quando abrir o modal
   useEffect(() => {

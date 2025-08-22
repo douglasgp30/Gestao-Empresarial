@@ -65,11 +65,7 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
     dataPagamento: undefined as Date | undefined,
   });
 
-  const {
-    value: valorFormatado,
-    onChange: onValorChange,
-    setValue: setValor,
-  } = useCurrencyInput();
+  const valorInput = useCurrencyInput();
 
   // Resetar formulário
   const resetForm = () => {
