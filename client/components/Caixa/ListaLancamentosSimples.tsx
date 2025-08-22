@@ -196,7 +196,7 @@ export function ListaLancamentosSimples() {
                   .includes("bancario")
               : typeof lancamento.formaPagamento === "string"
                 ? lancamento.formaPagamento.toLowerCase().includes("boleto") ||
-                  lancamento.formaPagamento.toLowerCase().includes("bancário")
+                  lancamento.formaPagamento.toLowerCase().includes("bancario")
                 : false;
 
           return (
