@@ -64,6 +64,9 @@ function formatCurrency(value: number): string {
   });
 }
 
+// Helper seguro para detectar boleto
+const isFormaBoleto = (fp: any) => isFormaPagamentoBoleto(fp);
+
 type SortField =
   | "data"
   | "tipo"
