@@ -980,20 +980,33 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Se é objeto, tentar extrair o ID
     if (typeof objeto === "object" && objeto?.id) {
-      const id = parseInt(objeto.id);
-      return isNaN(id) ? undefined : id;
+      // Tentar primeiro como número
+      const idNumerico = parseInt(objeto.id);
+      if (!isNaN(idNumerico)) {
+        return idNumerico;
+      }
+      // Se não for número, retornar como string (para clientes com ID string)
+      return objeto.id;
     }
 
-    // Se é string/número, tentar converter
+    // Se é string/número, tentar converter mas manter string se for cliente
     if (objeto) {
       const id = parseInt(objeto);
-      return isNaN(id) ? undefined : id;
+      // Se conseguir converter para número, usar número
+      if (!isNaN(id)) {
+        return id;
+      }
+      // Se não conseguir, manter como string (útil para clientes)
+      return objeto;
     }
 
     // Fallback para o ID direto
     if (idFallback) {
       const id = parseInt(idFallback);
-      return isNaN(id) ? undefined : id;
+      if (!isNaN(id)) {
+        return id;
+      }
+      return idFallback;
     }
 
     return undefined;
@@ -1128,7 +1141,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
       } catch (serverError) {
         console.warn(
-          "Servidor indisponível, salvando campanha localmente:",
+          "Servidor indispon��vel, salvando campanha localmente:",
           serverError,
         );
 
