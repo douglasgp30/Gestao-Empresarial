@@ -7,7 +7,7 @@ export interface DadosBasicosIniciais {
     id: string;
     nome: string;
     ativo: boolean;
-    tipo: "dinheiro" | "cartao" | "pix" | "transferencia" | "outros";
+    tipo: "dinheiro" | "cartao" | "pix" | "transferencia" | "boleto" | "outros";
     descricao?: string;
   }>;
   categorias: Array<{
