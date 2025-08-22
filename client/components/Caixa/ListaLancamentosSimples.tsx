@@ -220,6 +220,13 @@ export function ListaLancamentosSimples() {
         return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
 
       case "formaPagamento":
+        // Debug para verificar dados da forma de pagamento
+        console.log("[ListaLancamentos] Debug forma pagamento:", {
+          id: lancamento.id,
+          formaPagamento: lancamento.formaPagamento,
+          tipoFormaPagamento: typeof lancamento.formaPagamento
+        });
+
         // Suporta tanto string quanto objeto com nome
         const formaPagamento =
           typeof lancamento.formaPagamento === "string"
@@ -308,6 +315,13 @@ export function ListaLancamentosSimples() {
         return lancamento.numeroNota || "-";
 
       case "cliente":
+        // Debug para verificar dados do cliente
+        console.log("[ListaLancamentos] Debug cliente:", {
+          id: lancamento.id,
+          cliente: lancamento.cliente,
+          tipoCliente: typeof lancamento.cliente
+        });
+
         // Priorizar dados do banco de dados
         if (lancamento.cliente?.nome) {
           return lancamento.cliente.nome;
