@@ -27,6 +27,7 @@ import { TrendingUp, UserPlus } from "lucide-react";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
+import { isFormaPagamentoCartao, isFormaPagamentoBoleto } from "../../lib/stringUtils";
 
 interface FormularioReceitaProps {
   onSuccess?: () => void;
@@ -167,8 +168,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     carregarDescricoes();
   }, [formData.categoria]);
 
-  // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
-  const isFormaPagamentoCartao = React.useMemo(() => {
+  // Verificar se forma de pagamento é cartão - usar utilitário padronizado
+  const isCartao = React.useMemo(() => {
     if (!formData.formaPagamento || formasPagamento.length === 0) {
       return false;
     }
@@ -177,11 +178,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       (f) => f.id.toString() === formData.formaPagamento,
     );
 
-    return forma?.nome?.toLowerCase().includes("cartao") || false;
+    return isFormaPagamentoCartao(forma);
   }, [formData.formaPagamento, formasPagamento]);
 
-  // Verificar se forma de pagamento é boleto
-  const isFormaPagamentoBoleto = React.useMemo(() => {
+  // Verificar se forma de pagamento é boleto - usar utilitário padronizado
+  const isBoleto = React.useMemo(() => {
     if (!formData.formaPagamento || formasPagamento.length === 0) {
       return false;
     }
@@ -190,11 +191,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       (f) => f.id.toString() === formData.formaPagamento,
     );
 
-    return (
-      forma?.nome?.toLowerCase().includes("boleto") ||
-      forma?.nome?.toLowerCase().includes("bancario") ||
-      false
-    );
+    return isFormaPagamentoBoleto(forma);
   }, [formData.formaPagamento, formasPagamento]);
 
   // Calcular campos automaticamente usando os hooks de moeda
@@ -219,11 +216,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // 2. Valor que efetivamente entrou (para cartão, é menor que o valor total)
   const valorQueEntrouReal = React.useMemo(() => {
-    if (isFormaPagamentoCartao && valorQueEntrouCalculado > 0) {
+    if (isCartao && valorQueEntrouCalculado > 0) {
       return valorQueEntrouCalculado;
     }
     return valorCalculado;
-  }, [isFormaPagamentoCartao, valorQueEntrouCalculado, valorCalculado]);
+  }, [isCartao, valorQueEntrouCalculado, valorCalculado]);
 
   // 3. Calcular desconto da nota fiscal (6% do valor total do serviço)
   const percentualNotaFiscal = formData.temNotaFiscal ? 6 : 0; // Corrigido para 6%
@@ -335,7 +332,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
 
     // Validações específicas para boleto
-    if (isFormaPagamentoBoleto) {
+    if (isBoleto) {
       if (!formData.cliente) {
         toast({
           title: "Campo obrigatório",
@@ -357,7 +354,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
 
     // Validar valor recebido para pagamentos com cartão
-    if (isFormaPagamentoCartao && valorQueEntrouInput.numericValue <= 0) {
+    if (isCartao && valorQueEntrouInput.numericValue <= 0) {
       toast({
         title: "Erro",
         description:
@@ -383,13 +380,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     try {
       // Para boletos, o valor não entra no caixa imediatamente (valor para empresa = 0)
       // Para outros, o valor para empresa é o valor líquido menos a comissão
-      const valorParaEmpresaCalculado = isFormaPagamentoBoleto
+      const valorParaEmpresaCalculado = isBoleto
         ? 0
         : valorParaEmpresa;
 
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
-      if (isFormaPagamentoBoleto) {
+      if (isBoleto) {
         codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       }
 
@@ -489,7 +486,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       });
 
       // Se for boleto, criar automaticamente conta a receber
-      if (isFormaPagamentoBoleto && dataVencimentoBoleto && codigoServico) {
+      if (isBoleto && dataVencimentoBoleto && codigoServico) {
         try {
           const responseContaReceber = await fetch("/api/contas", {
             method: "POST",
@@ -767,7 +764,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
 
             {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
-            {isFormaPagamentoCartao && (
+            {isCartao && (
               <div className="space-y-2 p-4 bg-yellow-50 rounded-lg border border-yellow-300">
                 <Label
                   htmlFor="valorQueEntrou"
@@ -829,7 +826,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <SelectContent>
                   {tecnicos.length === 0 ? (
                     <div className="px-2 py-1 text-sm text-gray-500">
-                      Nenhum t��cnico cadastrado
+                      Nenhum técnico cadastrado
                     </div>
                   ) : (
                     tecnicos
@@ -926,10 +923,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             <Label
               htmlFor="cliente"
               className={
-                isFormaPagamentoBoleto ? "text-red-600 font-semibold" : ""
+                isBoleto ? "text-red-600 font-semibold" : ""
               }
             >
-              Cliente {isFormaPagamentoBoleto && "*"}
+              Cliente {isBoleto && "*"}
             </Label>
             <div className="flex gap-2">
               <Select
@@ -937,14 +934,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, cliente: value }))
                 }
-                required={isFormaPagamentoBoleto}
+                required={isBoleto}
               >
                 <SelectTrigger
-                  className={`flex-1 ${isFormaPagamentoBoleto && !formData.cliente ? "border-red-500" : ""}`}
+                  className={`flex-1 ${isBoleto && !formData.cliente ? "border-red-500" : ""}`}
                 >
                   <SelectValue
                     placeholder={
-                      isFormaPagamentoBoleto
+                      isBoleto
                         ? "Selecione um cliente (obrigatório para boleto)"
                         : "Selecione um cliente"
                     }
@@ -974,7 +971,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }}
               />
             </div>
-            {isFormaPagamentoBoleto && !formData.cliente && (
+            {isBoleto && !formData.cliente && (
               <p className="text-xs text-red-500">
                 Cliente é obrigatório quando a forma de pagamento for boleto
               </p>
@@ -982,7 +979,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           </div>
 
           {/* Data de Vencimento do Boleto - só aparece para boletos */}
-          {isFormaPagamentoBoleto && (
+          {isBoleto && (
             <div className="space-y-2 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
               <Label
                 htmlFor="dataVencimentoBoleto"
@@ -1105,7 +1102,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {mostrarCamposAvancados && (
             <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {!isFormaPagamentoCartao && (
+                {!isCartao && (
                   <div className="space-y-2">
                     <Label htmlFor="valorQueEntrouAvancado">
                       Valor que Entrou (R$)
@@ -1138,16 +1135,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Resumo financeiro */}
           {valorInput.numericValue > 0 && (
             <div
-              className={`p-4 rounded-lg ${isFormaPagamentoBoleto ? "bg-yellow-50 border border-yellow-200" : "bg-green-50"}`}
+              className={`p-4 rounded-lg ${isBoleto ? "bg-yellow-50 border border-yellow-200" : "bg-green-50"}`}
             >
               <h4
-                className={`font-medium mb-3 ${isFormaPagamentoBoleto ? "text-yellow-800" : "text-green-800"}`}
+                className={`font-medium mb-3 ${isBoleto ? "text-yellow-800" : "text-green-800"}`}
               >
-                {isFormaPagamentoBoleto
+                {isBoleto
                   ? "Resumo Financeiro - BOLETO"
                   : "Resumo Financeiro Detalhado"}
               </h4>
-              {isFormaPagamentoBoleto && (
+              {isBoleto && (
                 <div className="mb-3 p-2 bg-yellow-100 rounded border-l-4 border-yellow-400">
                   <p className="text-sm text-yellow-800">
                     <strong>ATENÇÃO:</strong> Como é um boleto, este valor será
@@ -1169,20 +1166,20 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   </div>
                   <div
                     className={
-                      isFormaPagamentoCartao ? "bg-yellow-100 p-2 rounded" : ""
+                      isCartao ? "bg-yellow-100 p-2 rounded" : ""
                     }
                   >
                     <span className="text-gray-600">
-                      {isFormaPagamentoCartao
+                      {isCartao
                         ? "💳 Valor Recebido (após taxas):"
                         : "Valor Recebido:"}
                     </span>
                     <div
-                      className={`font-medium ${isFormaPagamentoCartao ? "text-yellow-800" : ""}`}
+                      className={`font-medium ${isCartao ? "text-yellow-800" : ""}`}
                     >
                       R$ {valorQueEntrouReal.toFixed(2).replace(".", ",")}
                     </div>
-                    {isFormaPagamentoCartao &&
+                    {isCartao &&
                       valorInput.numericValue !== valorQueEntrouReal && (
                         <div className="text-xs text-yellow-600">
                           Taxa: R${" "}
@@ -1215,7 +1212,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                       </div>
                     </div>
                   )}
-                  {isFormaPagamentoCartao && (
+                  {isCartao && (
                     <div>
                       <span className="text-gray-600">Taxa Cartão:</span>
                       <div className="font-medium text-green-600">
@@ -1239,14 +1236,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <div className="text-center">
                     <span className="text-gray-600">Para Empresa:</span>
                     <div
-                      className={`font-bold text-lg ${isFormaPagamentoBoleto ? "text-yellow-600" : "text-green-600"}`}
+                      className={`font-bold text-lg ${isBoleto ? "text-yellow-600" : "text-green-600"}`}
                     >
                       R${" "}
-                      {isFormaPagamentoBoleto
+                      {isBoleto
                         ? "0,00"
                         : valorParaEmpresa.toFixed(2).replace(".", ",")}
                     </div>
-                    {isFormaPagamentoBoleto && (
+                    {isBoleto && (
                       <p className="text-xs text-yellow-600 mt-1">
                         (Valor será creditado após pagamento do boleto)
                       </p>
