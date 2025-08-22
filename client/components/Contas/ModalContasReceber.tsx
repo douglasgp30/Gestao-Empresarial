@@ -98,7 +98,7 @@ export function ModalContasReceber({
       pago: false,
       dataPagamento: undefined,
     });
-    setValor("");
+    valorInput.reset();
   };
 
   // Preencher formulário quando houver conta para editar
@@ -117,17 +117,14 @@ export function ModalContasReceber({
           ? new Date(contaParaEditar.dataPagamento)
           : undefined,
       });
-      setValor(contaParaEditar.valor.toString());
+      valorInput.setValue(contaParaEditar.valor);
     }
-  }, [contaParaEditar, isOpen, setValor]);
+  }, [contaParaEditar, isOpen, valorInput.setValue]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !valorFormatado ||
-      parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", ".")) <= 0
-    ) {
+    if (valorInput.numericValue <= 0) {
       toast({
         title: "Erro",
         description: "Por favor, insira um valor válido",
@@ -157,9 +154,7 @@ export function ModalContasReceber({
     setSalvando(true);
 
     try {
-      const valorNumerico = parseFloat(
-        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
-      );
+      const valorNumerico = valorInput.numericValue;
 
       const contaData = {
         tipo: "receber" as const,
