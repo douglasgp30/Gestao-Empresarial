@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
-import { isFormaPagamentoBoleto, formatCurrencySafe, extractSafeName } from "../../lib/stringUtils";
+import {
+  isFormaPagamentoBoleto,
+  formatCurrencySafe,
+  extractSafeName,
+} from "../../lib/stringUtils";
 import { useClientes } from "../../contexts/ClientesContext";
 import TabelaResponsivaLancamentos from "../ui/tabela-responsiva";
 import {
@@ -524,7 +528,9 @@ export default function ListaLancamentos() {
                                 <span className="text-xs text-muted-foreground">
                                   P/ Empresa:
                                 </span>{" "}
-                                {formatCurrencySafe(lancamento.valorParaEmpresa)}
+                                {formatCurrencySafe(
+                                  lancamento.valorParaEmpresa,
+                                )}
                               </p>
                             ) : // Verificar se é boleto
                             isFormaBoleto(lancamento.formaPagamento) ? (

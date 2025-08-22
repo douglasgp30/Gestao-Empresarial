@@ -27,7 +27,10 @@ import { TrendingUp, UserPlus } from "lucide-react";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
-import { isFormaPagamentoCartao, isFormaPagamentoBoleto } from "../../lib/stringUtils";
+import {
+  isFormaPagamentoCartao,
+  isFormaPagamentoBoleto,
+} from "../../lib/stringUtils";
 
 interface FormularioReceitaProps {
   onSuccess?: () => void;
@@ -380,9 +383,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     try {
       // Para boletos, o valor não entra no caixa imediatamente (valor para empresa = 0)
       // Para outros, o valor para empresa é o valor líquido menos a comissão
-      const valorParaEmpresaCalculado = isBoleto
-        ? 0
-        : valorParaEmpresa;
+      const valorParaEmpresaCalculado = isBoleto ? 0 : valorParaEmpresa;
 
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
@@ -922,9 +923,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           <div className="space-y-2">
             <Label
               htmlFor="cliente"
-              className={
-                isBoleto ? "text-red-600 font-semibold" : ""
-              }
+              className={isBoleto ? "text-red-600 font-semibold" : ""}
             >
               Cliente {isBoleto && "*"}
             </Label>
@@ -1164,11 +1163,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                       R$ {valorInput.numericValue.toFixed(2).replace(".", ",")}
                     </div>
                   </div>
-                  <div
-                    className={
-                      isCartao ? "bg-yellow-100 p-2 rounded" : ""
-                    }
-                  >
+                  <div className={isCartao ? "bg-yellow-100 p-2 rounded" : ""}>
                     <span className="text-gray-600">
                       {isCartao
                         ? "💳 Valor Recebido (após taxas):"

@@ -55,7 +55,10 @@ export function FixDadosSystem() {
 
   const corrigirFormasPagamento = () => {
     // Usar formas padrão centralizadas com acentos corretos
-    localStorage.setItem("formas_pagamento", JSON.stringify(FORMAS_PAGAMENTO_PADRAO));
+    localStorage.setItem(
+      "formas_pagamento",
+      JSON.stringify(FORMAS_PAGAMENTO_PADRAO),
+    );
 
     toast({
       title: "Formas de Pagamento Corrigidas",

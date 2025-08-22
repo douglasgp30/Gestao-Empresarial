@@ -11,21 +11,21 @@ export const FORMAS_PAGAMENTO_PADRAO = [
     dataCriacao: new Date(),
   },
   {
-    id: "2", 
+    id: "2",
     nome: "PIX",
     descricao: "Pagamento via PIX",
     dataCriacao: new Date(),
   },
   {
     id: "3",
-    nome: "Cartão de Débito", 
+    nome: "Cartão de Débito",
     descricao: "Pagamento com cartão de débito",
     dataCriacao: new Date(),
   },
   {
     id: "4",
     nome: "Cartão de Crédito",
-    descricao: "Pagamento com cartão de crédito", 
+    descricao: "Pagamento com cartão de crédito",
     dataCriacao: new Date(),
   },
   {
@@ -38,7 +38,7 @@ export const FORMAS_PAGAMENTO_PADRAO = [
 
 export const CATEGORIAS_RECEITA_PADRAO = [
   "Serviços",
-  "Produtos", 
+  "Produtos",
   "Consultoria",
   "Manutenção",
 ];

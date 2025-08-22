@@ -9,7 +9,7 @@
  */
 export function normalizeString(str: any = ""): string {
   if (!str) return "";
-  
+
   return str
     .toString()
     .normalize("NFD")
@@ -23,7 +23,7 @@ export function normalizeString(str: any = ""): string {
  */
 export function isFormaPagamentoCartao(formaPagamento: any): boolean {
   if (!formaPagamento) return false;
-  
+
   let nome = "";
   if (typeof formaPagamento === "object" && formaPagamento.nome) {
     nome = formaPagamento.nome;
@@ -32,7 +32,7 @@ export function isFormaPagamentoCartao(formaPagamento: any): boolean {
   } else {
     return false;
   }
-  
+
   const nomeNormalizado = normalizeString(nome);
   return nomeNormalizado.includes("cartao");
 }
@@ -42,7 +42,7 @@ export function isFormaPagamentoCartao(formaPagamento: any): boolean {
  */
 export function isFormaPagamentoBoleto(formaPagamento: any): boolean {
   if (!formaPagamento) return false;
-  
+
   let nome = "";
   if (typeof formaPagamento === "object" && formaPagamento.nome) {
     nome = formaPagamento.nome;
@@ -51,9 +51,11 @@ export function isFormaPagamentoBoleto(formaPagamento: any): boolean {
   } else {
     return false;
   }
-  
+
   const nomeNormalizado = normalizeString(nome);
-  return nomeNormalizado.includes("boleto") || nomeNormalizado.includes("bancario");
+  return (
+    nomeNormalizado.includes("boleto") || nomeNormalizado.includes("bancario")
+  );
 }
 
 /**
@@ -63,11 +65,11 @@ export function formatCurrencySafe(value: any): string {
   if (value === null || value === undefined || Number.isNaN(Number(value))) {
     return "-";
   }
-  
+
   const numValue = Number(value);
   return new Intl.NumberFormat("pt-BR", {
-    style: "currency", 
-    currency: "BRL"
+    style: "currency",
+    currency: "BRL",
   }).format(numValue);
 }
 
@@ -76,11 +78,11 @@ export function formatCurrencySafe(value: any): string {
  */
 export function extractSafeName(item: any, fallback: string = "-"): string {
   if (!item) return fallback;
-  
+
   if (typeof item === "object") {
     return item.nome || item.name || fallback;
   }
-  
+
   if (typeof item === "string") {
     // Se for apenas um ID numérico, retornar fallback
     if (/^\d+$/.test(item.trim())) {
@@ -88,6 +90,6 @@ export function extractSafeName(item: any, fallback: string = "-"): string {
     }
     return item;
   }
-  
+
   return fallback;
 }

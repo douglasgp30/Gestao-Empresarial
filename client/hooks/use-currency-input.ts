@@ -112,7 +112,8 @@ export const useCurrencyInput = (initialValue: string = "") => {
       placeholder: "R$ 0,00",
       inputMode: "numeric" as const,
       pattern: "[0-9]*",
-      onFocus: (e: React.FocusEvent<HTMLInputElement>) => e.currentTarget.select(),
+      onFocus: (e: React.FocusEvent<HTMLInputElement>) =>
+        e.currentTarget.select(),
     },
   };
 };
