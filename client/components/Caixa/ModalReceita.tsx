@@ -262,6 +262,11 @@ export function ModalReceita() {
     setIsSubmitting(true);
 
     try {
+      // Buscar objetos completos para criar snapshots
+      const clienteSelecionado = clientes.find(
+        (c) => c.id === formData.cliente,
+      );
+
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
@@ -275,7 +280,16 @@ export function ModalReceita() {
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         setor: formData.setor || undefined,
         campanha: formData.campanha || undefined,
-        clienteId: formData.cliente || undefined,
+
+        // Incluir snapshot do cliente para preservar dados históricos
+        cliente: clienteSelecionado
+          ? {
+              id: clienteSelecionado.id,
+              nome: clienteSelecionado.nome,
+            }
+          : undefined,
+        clienteId: clienteSelecionado?.id || formData.cliente || undefined,
+
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
       });
