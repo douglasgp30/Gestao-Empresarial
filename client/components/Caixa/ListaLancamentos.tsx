@@ -82,7 +82,7 @@ type SortField =
 type SortDirection = "asc" | "desc" | null;
 
 export default function ListaLancamentos() {
-  const { lancamentos, filtros, excluirLancamento, campanhas } = useCaixa();
+  const { lancamentos, filtros, excluirLancamento, campanhas, isExcluindo } = useCaixa();
   const { formasPagamento, setores, getTecnicos } = useEntidades();
   const { clientes } = useClientes();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
