@@ -101,8 +101,16 @@ export default function ListaLancamentos() {
       return fp.nome;
     }
 
-    // Se é string, buscar pelo ID
-    if (typeof fp === "string") {
+    // Se é objeto com ID, buscar pelo ID
+    if (typeof fp === "object" && fp.id) {
+      const forma = formasPagamento.find(
+        (f) => f.id?.toString() === fp.id?.toString(),
+      );
+      return forma?.nome || "N/A";
+    }
+
+    // Se é string ou número, buscar pelo ID
+    if (typeof fp === "string" || typeof fp === "number") {
       const forma = formasPagamento.find(
         (f) => f.id?.toString() === fp.toString(),
       );
