@@ -60,6 +60,7 @@ interface CaixaContextType {
   setFiltros: (filtros: any) => void;
   carregarDados: () => Promise<void>;
   isLoading: boolean;
+  isExcluindo: boolean;
   error: string | null;
 }
 
@@ -402,7 +403,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Verificar se a resposta foi bem sucedida após fazer o parse
       if (!response.ok) {
         console.error(
-          "��� [CaixaContext] Erro na resposta:",
+          "📦 [CaixaContext] Erro na resposta:",
           lancamentosDoBanco,
         );
         const errorMessage =
