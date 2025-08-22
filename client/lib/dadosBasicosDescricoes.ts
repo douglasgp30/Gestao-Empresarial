@@ -6,7 +6,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
   return [
     // Categorias de Receita
     {
-      id: "cat-receita-1",
+      id: 1,
       nome: "Serviços",
       categoria: "Serviços",
       tipo: "receita",
@@ -15,7 +15,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "cat-receita-2", 
+      id: 2, 
       nome: "Vendas",
       categoria: "Vendas",
       tipo: "receita",
@@ -25,7 +25,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
     },
     // Descrições de Serviços
     {
-      id: "desc-servico-1",
+      id: 3,
       nome: "Desentupimento",
       categoria: "Serviços",
       tipo: "receita",
@@ -34,7 +34,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "desc-servico-2",
+      id: 4,
       nome: "Limpeza de Caixa D'Água",
       categoria: "Serviços",
       tipo: "receita",
@@ -43,7 +43,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "desc-servico-3",
+      id: 5,
       nome: "Instalação Hidráulica",
       categoria: "Serviços",
       tipo: "receita",
@@ -52,7 +52,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "desc-servico-4",
+      id: 6,
       nome: "Reparo de Encanamento",
       categoria: "Serviços",
       tipo: "receita",
@@ -61,7 +61,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "desc-servico-5",
+      id: 7,
       nome: "Detecção de Vazamentos",
       categoria: "Serviços",
       tipo: "receita",
@@ -71,7 +71,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
     },
     // Descrições de Vendas
     {
-      id: "desc-venda-1",
+      id: 8,
       nome: "Material Hidráulico",
       categoria: "Vendas",
       tipo: "receita",
@@ -80,7 +80,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "desc-venda-2",
+      id: 9,
       nome: "Equipamentos",
       categoria: "Vendas",
       tipo: "receita",
@@ -90,7 +90,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
     },
     // Categorias de Despesa
     {
-      id: "cat-despesa-1",
+      id: 10,
       nome: "Operacional",
       categoria: "Operacional",
       tipo: "despesa",
@@ -99,7 +99,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "cat-despesa-2",
+      id: 11,
       nome: "Administrativo",
       categoria: "Administrativo",
       tipo: "despesa",
@@ -109,7 +109,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
     },
     // Descrições de Despesas Operacionais
     {
-      id: "desc-op-1",
+      id: 12,
       nome: "Combustível",
       categoria: "Operacional",
       tipo: "despesa",
@@ -118,7 +118,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "desc-op-2",
+      id: 13,
       nome: "Material de Trabalho",
       categoria: "Operacional",
       tipo: "despesa",
@@ -128,7 +128,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
     },
     // Descrições de Despesas Administrativas
     {
-      id: "desc-admin-1",
+      id: 14,
       nome: "Aluguel",
       categoria: "Administrativo",
       tipo: "despesa",
@@ -137,7 +137,7 @@ export function criarDadosBasicosDescricoes(): DescricaoECategoria[] {
       dataCriacao: agora,
     },
     {
-      id: "desc-admin-2",
+      id: 15,
       nome: "Energia Elétrica",
       categoria: "Administrativo",
       tipo: "despesa",
