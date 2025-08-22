@@ -147,8 +147,38 @@ router.post("/", async (req, res) => {
 
     const dados = ContaLancamentoSchema.parse(req.body);
 
+    // Preparar dados para criação com mapeamento correto
+    const dadosParaCriacao: any = {
+      valor: dados.valor,
+      dataVencimento: dados.dataVencimento,
+      codigoCliente: dados.codigoCliente,
+      codigoFornecedor: dados.codigoFornecedor,
+      tipo: dados.tipo,
+      formaPg: dados.formaPg,
+      observacoes: dados.observacoes,
+      descricaoCategoria: dados.descricaoCategoria,
+      pago: dados.pago,
+      dataPagamento: dados.dataPagamento,
+
+      // Mapeamento para campos adicionais do schema
+      valorOriginal: dados.valorOriginal || dados.valor,
+      valorLiquido: dados.valorLiquido || dados.valor,
+      status: dados.status || (dados.pago ? "pago" : "pendente"),
+      prioridadePagamento: dados.prioridadePagamento || "normal",
+      codigoExterno: dados.codigoServico,
+      sistemaOrigem: dados.sistemaOrigem || "manual",
+      numeroDocumento: dados.numeroDocumento,
+
+      // Campos de observações estendidas
+      observacoesInternas: dados.categoria && dados.descricao
+        ? `Categoria: ${dados.categoria} | Descrição: ${dados.descricao}${dados.lancamentoCaixaId ? ` | Caixa ID: ${dados.lancamentoCaixaId}` : ""}`
+        : dados.lancamentoCaixaId ? `Lançamento Caixa ID: ${dados.lancamentoCaixaId}` : undefined,
+    };
+
+    console.log("🔍 [API CONTAS] Dados preparados para criação:", dadosParaCriacao);
+
     const conta = await prisma.contaLancamento.create({
-      data: dados,
+      data: dadosParaCriacao,
       include: {
         cliente: true,
         fornecedor: true,
@@ -158,11 +188,15 @@ router.post("/", async (req, res) => {
     });
 
     console.log("✅ [API CONTAS] Conta criada com sucesso:", {
-      id: conta.codLancamentoContas,
+      id: conta.id,
       tipo: conta.tipo,
       valor: conta.valor,
+      valorOriginal: conta.valorOriginal,
+      status: conta.status,
+      sistemaOrigem: conta.sistemaOrigem,
       cliente: conta.cliente?.nome,
       fornecedor: conta.fornecedor?.nome,
+      codigoExterno: conta.codigoExterno,
     });
 
     const response: ApiResponse<typeof conta> = {
