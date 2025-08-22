@@ -300,9 +300,61 @@ export function ModalReceita() {
         numeroNota: formData.numeroNota || undefined,
       });
 
+      // Se for boleto, criar conta a receber automaticamente
+      const isBoleto = formasPagamento.find(
+        (f) => f.id.toString() === formData.formaPagamento
+      )?.nome?.toLowerCase().includes("boleto");
+
+      if (isBoleto) {
+        try {
+          // Criar conta a receber
+          const contaData = {
+            tipo: "receber",
+            descricao: `Boleto - ${formData.descricao}`,
+            valor: valorCalculado,
+            dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
+            status: "pendente",
+            categoria: formData.categoria,
+            cliente: clienteSelecionado ? {
+              id: clienteSelecionado.id,
+              nome: clienteSelecionado.nome
+            } : undefined,
+            observacoes: `Conta criada automaticamente para boleto do lançamento de receita`
+          };
+
+          // Fazer chamada para API de contas (se disponível)
+          try {
+            const response = await fetch('/api/contas', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(contaData)
+            });
+
+            if (response.ok) {
+              console.log("[ModalReceita] Conta a receber criada automaticamente para boleto");
+            }
+          } catch (apiError) {
+            console.warn("[ModalReceita] Não foi possível criar conta via API, criando localmente");
+            // Fallback: salvar no localStorage
+            const contasExistentes = JSON.parse(localStorage.getItem('contas') || '[]');
+            const novaConta = {
+              ...contaData,
+              id: `conta-${Date.now()}`,
+              dataCriacao: new Date().toISOString()
+            };
+            contasExistentes.push(novaConta);
+            localStorage.setItem('contas', JSON.stringify(contasExistentes));
+          }
+        } catch (contaError) {
+          console.error("[ModalReceita] Erro ao criar conta a receber:", contaError);
+        }
+      }
+
       toast({
         title: "Sucesso",
-        description: "Receita lançada com sucesso!",
+        description: isBoleto
+          ? "Receita lançada e conta a receber criada com sucesso!"
+          : "Receita lançada com sucesso!",
         variant: "default",
       });
 
