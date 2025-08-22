@@ -234,11 +234,16 @@ export function ListaLancamentosSimples() {
 
       case "campanha":
         // Suporta tanto string quanto objeto com nome
-        const campanha =
-          typeof lancamento.campanha === "string"
-            ? lancamento.campanha
-            : lancamento.campanha?.nome;
-        return campanha || "-";
+        let campanha = "-";
+        if (typeof lancamento.campanha === "string") {
+          // Evitar exibir IDs numéricos como campanha
+          if (!/^\d+$/.test(lancamento.campanha.trim())) {
+            campanha = lancamento.campanha;
+          }
+        } else if (typeof lancamento.campanha === "object" && lancamento.campanha?.nome) {
+          campanha = lancamento.campanha.nome;
+        }
+        return campanha;
 
       case "observacoes":
         return lancamento.observacoes ? (
@@ -264,7 +269,8 @@ export function ListaLancamentosSimples() {
         }
         if (
           typeof lancamento.cliente === "string" &&
-          lancamento.cliente !== ""
+          lancamento.cliente !== "" &&
+          !/^\d+$/.test(lancamento.cliente.trim()) // Evitar IDs numéricos
         ) {
           return lancamento.cliente;
         }
