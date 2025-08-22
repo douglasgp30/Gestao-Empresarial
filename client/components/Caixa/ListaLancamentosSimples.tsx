@@ -172,6 +172,34 @@ export function ListaLancamentosSimples() {
           ? formatarMoeda(lancamento.valorRecebido)
           : "-";
 
+      case "valorParaEmpresa":
+        // Calcular valor para empresa: valor líquido - comissão
+        if (lancamento.tipo === "receita") {
+          const valorLiquidoEfetivo = lancamento.valorLiquido || lancamento.valorRecebido || lancamento.valor;
+          const comissaoEfetiva = lancamento.comissao || 0;
+          const valorParaEmpresa = valorLiquidoEfetivo - comissaoEfetiva;
+
+          // Verificar se é boleto (valor não entra imediatamente)
+          const isBoleto = typeof lancamento.formaPagamento === "object"
+            ? lancamento.formaPagamento?.nome?.toLowerCase().includes("boleto") ||
+              lancamento.formaPagamento?.nome?.toLowerCase().includes("bancário")
+            : typeof lancamento.formaPagamento === "string"
+            ? lancamento.formaPagamento.toLowerCase().includes("boleto") ||
+              lancamento.formaPagamento.toLowerCase().includes("bancário")
+            : false;
+
+          return (
+            <span className={`font-medium ${isBoleto ? "text-yellow-600" : "text-green-600"}`}>
+              {isBoleto ? "Pendente" : formatarMoeda(valorParaEmpresa)}
+            </span>
+          );
+        }
+        return (
+          <span className="font-medium text-red-600">
+            {formatarMoeda(-lancamento.valor)}
+          </span>
+        );
+
       case "comissao":
         return lancamento.comissao ? formatarMoeda(lancamento.comissao) : "-";
 
