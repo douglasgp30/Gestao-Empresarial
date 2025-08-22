@@ -228,9 +228,9 @@ function AppContent() {
 
   // Caso contrário, mostrar o app normal
   return (
-    <EntidadesProvider>
-      <ClientesProvider>
-        <FuncionariosProvider>
+    <FuncionariosProvider>
+      <EntidadesProvider>
+        <ClientesProvider>
           <AgendamentosProvider>
             <CaixaProvider>
               <ContasProvider>
@@ -291,9 +291,9 @@ function AppContent() {
               </ContasProvider>
             </CaixaProvider>
           </AgendamentosProvider>
-        </FuncionariosProvider>
-      </ClientesProvider>
-    </EntidadesProvider>
+        </ClientesProvider>
+      </EntidadesProvider>
+    </FuncionariosProvider>
   );
 }
 
