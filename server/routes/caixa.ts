@@ -248,6 +248,10 @@ export const getLancamentos: RequestHandler = async (req, res) => {
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
+        // Validar formato da data
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio as string)) {
+          return res.status(400).json({ error: "Formato de dataInicio inválido. Use YYYY-MM-DD" });
+        }
         const [ano, mes, dia] = (dataInicio as string).split("-");
         where.dataHora.gte = new Date(
           parseInt(ano),
@@ -259,6 +263,10 @@ export const getLancamentos: RequestHandler = async (req, res) => {
         );
       }
       if (dataFim) {
+        // Validar formato da data
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dataFim as string)) {
+          return res.status(400).json({ error: "Formato de dataFim inválido. Use YYYY-MM-DD" });
+        }
         const [ano, mes, dia] = (dataFim as string).split("-");
         where.dataHora.lte = new Date(
           parseInt(ano),
@@ -903,6 +911,10 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     if (dataInicio || dataFim) {
       where.dataHora = {};
       if (dataInicio) {
+        // Validar formato da data
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio as string)) {
+          return res.status(400).json({ error: "Formato de dataInicio inválido. Use YYYY-MM-DD" });
+        }
         const [ano, mes, dia] = (dataInicio as string).split("-");
         where.dataHora.gte = new Date(
           parseInt(ano),
@@ -914,6 +926,10 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
         );
       }
       if (dataFim) {
+        // Validar formato da data
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dataFim as string)) {
+          return res.status(400).json({ error: "Formato de dataFim inválido. Use YYYY-MM-DD" });
+        }
         const [ano, mes, dia] = (dataFim as string).split("-");
         where.dataHora.lte = new Date(
           parseInt(ano),
