@@ -218,18 +218,21 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorBaseNotaFiscal = valorCalculado;
 
   // 2. Valor que efetivamente entrou (para cartão, é menor que o valor total)
-  const valorQueEntrouReal =
-    isFormaPagamentoCartao && valorQueEntrouCalculado > 0
-      ? valorQueEntrouCalculado
-      : valorCalculado;
+  const valorQueEntrouReal = React.useMemo(() => {
+    if (isFormaPagamentoCartao && valorQueEntrouCalculado > 0) {
+      return valorQueEntrouCalculado;
+    }
+    return valorCalculado;
+  }, [isFormaPagamentoCartao, valorQueEntrouCalculado, valorCalculado]);
 
   // 3. Calcular desconto da nota fiscal (6% do valor total do serviço)
   const percentualNotaFiscal = formData.temNotaFiscal ? 6 : 0; // Corrigido para 6%
   const descontoNotaFiscal = (valorBaseNotaFiscal * percentualNotaFiscal) / 100;
 
   // 4. Valor líquido = valor que entrou - desconto nota fiscal - impostos/taxas adicionais
-  const valorLiquidoCalculado =
-    valorQueEntrouReal - descontoNotaFiscal - impostoCalculado;
+  const valorLiquidoCalculado = React.useMemo(() => {
+    return valorQueEntrouReal - descontoNotaFiscal - impostoCalculado;
+  }, [valorQueEntrouReal, descontoNotaFiscal, impostoCalculado]);
 
   // Calcular comissão baseada no percentual do t��cnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
@@ -267,7 +270,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   ]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
-  const valorParaEmpresa = valorLiquidoCalculado - comissaoCalculada;
+  const valorParaEmpresa = React.useMemo(() => {
+    return valorLiquidoCalculado - comissaoCalculada;
+  }, [valorLiquidoCalculado, comissaoCalculada]);
 
   // Remover useEffect que causa piscar da tela
 
@@ -763,29 +768,30 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
             {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
             {isFormaPagamentoCartao && (
-              <div className="space-y-2">
+              <div className="space-y-2 p-4 bg-yellow-50 rounded-lg border border-yellow-300">
                 <Label
                   htmlFor="valorQueEntrou"
-                  className="text-sm font-medium text-yellow-700"
+                  className="text-sm font-semibold text-yellow-800"
                 >
-                  Valor Recebido *
+                  💳 Valor Recebido (Líquido após taxas) *
                 </Label>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                  <div className="relative w-full sm:w-40">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                      R$
-                    </span>
-                    <Input
-                      id="valorQueEntrou"
-                      {...valorQueEntrouInput.inputProps}
-                      className="bg-yellow-50 border-yellow-300"
-                      required
-                    />
-                  </div>
-                  <p className="text-xs text-yellow-600 sm:flex-1">
-                    <strong>Importante:</strong> Valor líquido após taxas da
-                    operadora.
+                <div className="flex flex-col gap-2">
+                  <Input
+                    id="valorQueEntrou"
+                    {...valorQueEntrouInput.inputProps}
+                    className="bg-white border-yellow-400 text-lg font-medium"
+                    placeholder="R$ 0,00"
+                    required
+                  />
+                  <p className="text-xs text-yellow-700">
+                    ⚠️ <strong>Digite o valor que realmente entrou na conta após as taxas da operadora do cartão</strong>
                   </p>
+                  {valorInput.numericValue > 0 && valorQueEntrouCalculado > 0 && (
+                    <div className="text-xs text-yellow-600 bg-yellow-100 p-2 rounded">
+                      📊 Taxa da operadora: R$ {(valorInput.numericValue - valorQueEntrouCalculado).toFixed(2).replace('.', ',')}
+                      ({(((valorInput.numericValue - valorQueEntrouCalculado) / valorInput.numericValue) * 100).toFixed(1)}%)
+                    </div>
+                  )}
                 </div>
               </div>
             )}
