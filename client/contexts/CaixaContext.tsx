@@ -219,7 +219,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      console.log("��� [CaixaContext] Carregando dados do banco de dados...");
+      console.log("���� [CaixaContext] Carregando dados do banco de dados...");
 
       // Carregar campanhas do servidor
       try {
@@ -631,7 +631,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // Carregar dados na inicialização - versão otimizada
+  // Carregar dados na inicialização - versão simplificada
   useEffect(() => {
     if (typeof window === "undefined") {
       console.log("[CaixaContext] Servidor - pulando carregamento inicial");
@@ -640,12 +640,34 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Carregar apenas uma vez na inicialização
     let mounted = true;
-    const timeout = setTimeout(() => {
-      if (mounted) {
+    const loadInitialData = async () => {
+      if (!mounted) return;
+
+      try {
+        setIsLoading(true);
         console.log("[CaixaContext] Carregamento inicial executado");
-        carregarDados();
+
+        // Carregar campanhas
+        await carregarCampanhasSafe();
+
+        // Carregar lançamentos
+        try {
+          await carregarLancamentosDoBanco();
+        } catch (error) {
+          console.warn("Erro ao carregar do banco, usando localStorage:", error);
+          await carregarLancamentosLocalStorage();
+        }
+      } catch (error) {
+        console.error("Erro no carregamento inicial:", error);
+        setError("Erro ao carregar dados");
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
-    }, 500); // Tempo reduzido para melhor experiência
+    };
+
+    const timeout = setTimeout(loadInitialData, 300);
 
     return () => {
       mounted = false;
