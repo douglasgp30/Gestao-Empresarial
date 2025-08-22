@@ -201,6 +201,14 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
     setIsSubmitting(true);
 
     try {
+      // Encontrar objetos selecionados para criar snapshots
+      const campanhaSelecionada = campanhas.find(
+        (c) => c.id?.toString() === formData.campanha,
+      );
+      const setorSelecionado = setores.find(
+        (s) => s.id?.toString() === formData.setor,
+      );
+
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "despesa",
@@ -208,6 +216,29 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         categoria: formData.categoria,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
+
+        campanha: campanhaSelecionada
+          ? {
+              id: campanhaSelecionada.id,
+              nome: campanhaSelecionada.nome,
+            }
+          : undefined,
+        campanhaId:
+          campanhaSelecionada?.id?.toString() || formData.campanha || undefined,
+
+        setor: setorSelecionado
+          ? {
+              id: setorSelecionado.id,
+              nome: setorSelecionado.nome,
+              cidade:
+                typeof setorSelecionado.cidade === "object"
+                  ? setorSelecionado.cidade?.nome
+                  : setorSelecionado.cidade,
+            }
+          : undefined,
+        setorId:
+          setorSelecionado?.id?.toString() || formData.setor || undefined,
+
         observacoes: formData.observacoes || undefined,
       });
 
