@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { FORMAS_PAGAMENTO_PADRAO } from "../../lib/dadosBasicos";
 import { toast } from "../ui/use-toast";
 import { RefreshCw, Users, CreditCard } from "lucide-react";
 
