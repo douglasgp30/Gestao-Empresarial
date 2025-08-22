@@ -527,12 +527,7 @@ export default function ListaLancamentos() {
                                 {formatCurrency(lancamento.valorParaEmpresa)}
                               </p>
                             ) : // Verificar se é boleto
-                            lancamento.formaPagamento
-                                ?.toLowerCase()
-                                .includes("boleto") ||
-                              lancamento.formaPagamento
-                                ?.toLowerCase()
-                                .includes("bancario") ? (
+                            isFormaBoleto(lancamento.formaPagamento) ? (
                               <p className="text-xs text-orange-600 font-medium">
                                 Aguardando recebimento
                               </p>
