@@ -1099,11 +1099,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     const receitasBoleto = receitasCompletas.filter(isBoleto);
     const receitasNaoBoleto = receitasCompletas.filter((l) => !isBoleto(l));
 
-    // Calcular totais
-    const receitaBruta = receitasCompletas.reduce(
-      (total, l) => total + l.valor,
-      0,
-    );
+    // Calcular totais - Receita Bruta deve usar Valor para Empresa (incluindo boletos)
+    const receitaBruta = receitasCompletas.reduce((total, l) => {
+      // Para receitas, usar valorParaEmpresa se disponível
+      if (l.valorParaEmpresa !== undefined) {
+        return total + l.valorParaEmpresa;
+      }
+
+      // Para boletos e lançamentos antigos, calcular valor para empresa
+      const valorLiquido = l.valorLiquido || l.valor;
+      const comissao = l.comissao || 0;
+      const valorParaEmpresaCalculado = valorLiquido - comissao;
+
+      return total + valorParaEmpresaCalculado;
+    }, 0);
 
     // Receitas líquidas (para compatibilidade com versão anterior)
     const receitaLiquida = receitasNaoBoleto.reduce(
