@@ -64,6 +64,7 @@ export function ModalReceita() {
     valorQueEntrou: "",
     categoria: "",
     descricao: "",
+    descricaoId: "", // Adicionar campo para o ID da descrição
     formaPagamento: "",
     tecnicoResponsavel: "",
     cidade: "",
@@ -204,6 +205,7 @@ export function ModalReceita() {
       valorQueEntrou: "",
       categoria: "",
       descricao: "",
+      descricaoId: "",
       formaPagamento: "",
       tecnicoResponsavel: "",
       cidade: "",
@@ -415,6 +417,7 @@ export function ModalReceita() {
                         ...prev,
                         categoria: value,
                         descricao: "", // Limpar descrição quando categoria muda
+                        descricaoId: "", // Limpar ID da descrição quando categoria muda
                       }));
                     }}
                   >
@@ -434,15 +437,16 @@ export function ModalReceita() {
                 <div className="space-y-2">
                   <Label htmlFor="descricao">Descrição do Serviço *</Label>
                   <Select
-                    value={formData.descricao}
+                    value={formData.descricaoId}
                     onValueChange={(value) => {
-                      // Buscar a descrição selecionada para salvar o nome
+                      // Buscar a descrição selecionada para salvar o nome e ID
                       const descricaoSelecionada = descricoesFiltradas.find(
                         (d) => d.id?.toString() === value,
                       );
                       setFormData((prev) => ({
                         ...prev,
-                        descricao: descricaoSelecionada?.nome || value,
+                        descricaoId: value,
+                        descricao: descricaoSelecionada?.nome || "",
                       }));
                     }}
                     disabled={!formData.categoria}
@@ -457,11 +461,17 @@ export function ModalReceita() {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {descricoesFiltradas.map((desc) => (
-                        <SelectItem key={desc.id} value={desc.id.toString()}>
-                          {desc.nome}
-                        </SelectItem>
-                      ))}
+                      {descricoesFiltradas.length > 0 ? (
+                        descricoesFiltradas.map((desc) => (
+                          <SelectItem key={desc.id} value={desc.id.toString()}>
+                            {desc.nome}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="px-2 py-1 text-sm text-gray-500">
+                          {formData.categoria ? "Nenhuma descrição encontrada para esta categoria" : "Selecione uma categoria primeiro"}
+                        </div>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
