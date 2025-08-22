@@ -16,7 +16,9 @@ export default function FiltroDataAgendamentosSimples() {
         isNaN(filtros.dataInicio.getTime()) ||
         isNaN(filtros.dataFim.getTime()))
     ) {
-      console.log("🔧 Corrigindo datas inválidas nos filtros de agendamentos - uma vez apenas");
+      console.log(
+        "🔧 Corrigindo datas inválidas nos filtros de agendamentos - uma vez apenas",
+      );
       datasCorrigidas.current = true;
       const hoje = new Date();
       const inicioHoje = new Date(

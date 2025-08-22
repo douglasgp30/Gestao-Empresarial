@@ -55,7 +55,8 @@ export function isFormaPagamentoBoleto(formaPagamento: any): boolean {
   const nomeNormalizado = normalizeString(nome);
   return (
     nomeNormalizado.includes("boleto") ||
-    (nomeNormalizado.includes("bancario") && !nomeNormalizado.includes("transferencia"))
+    (nomeNormalizado.includes("bancario") &&
+      !nomeNormalizado.includes("transferencia"))
   );
 }
 

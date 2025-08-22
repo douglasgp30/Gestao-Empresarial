@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { toast } from "../ui/use-toast";
 
 export function TesteBasico() {
@@ -32,7 +38,7 @@ export function TesteBasico() {
         clienteId: "cPIcYlG3z", // ID de cliente existente
       };
 
-      setResultado(prev => prev + "\n⏳ Criando lançamento diretamente...");
+      setResultado((prev) => prev + "\n⏳ Criando lançamento diretamente...");
 
       const responseLancamento = await fetch("/api/caixa/criar", {
         method: "POST",
@@ -42,19 +48,25 @@ export function TesteBasico() {
 
       if (!responseLancamento.ok) {
         const errorData = await responseLancamento.json();
-        setResultado(prev => prev + `\n❌ Erro no lançamento: ${errorData.error}`);
+        setResultado(
+          (prev) => prev + `\n❌ Erro no lançamento: ${errorData.error}`,
+        );
         return;
       }
 
       const lancamentoCriado = await responseLancamento.json();
-      setResultado(prev => prev + `\n✅ Lançamento criado! ID: ${lancamentoCriado.id}`);
+      setResultado(
+        (prev) => prev + `\n✅ Lançamento criado! ID: ${lancamentoCriado.id}`,
+      );
 
       // 2. Testar criação de conta a receber diretamente
       const dadosConta = {
         tipo: "receber",
         descricao: "Boleto - Teste Direto",
         valor: 100,
-        dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
         status: "pendente",
         categoria: "Serviços",
         clienteId: "cPIcYlG3z", // AQUI ESTÁ O PROBLEMA - usar clienteId correto
@@ -64,7 +76,9 @@ export function TesteBasico() {
         lancamentoCaixaId: lancamentoCriado.id,
       };
 
-      setResultado(prev => prev + "\n⏳ Criando conta a receber diretamente...");
+      setResultado(
+        (prev) => prev + "\n⏳ Criando conta a receber diretamente...",
+      );
 
       const responseConta = await fetch("/api/contas", {
         method: "POST",
@@ -74,26 +88,27 @@ export function TesteBasico() {
 
       if (!responseConta.ok) {
         const errorData = await responseConta.json();
-        setResultado(prev => prev + `\n❌ Erro na conta: ${JSON.stringify(errorData)}`);
+        setResultado(
+          (prev) => prev + `\n❌ Erro na conta: ${JSON.stringify(errorData)}`,
+        );
         return;
       }
 
       const contaCriada = await responseConta.json();
-      setResultado(prev => prev + `\n✅ Conta criada! ID: ${contaCriada.id}`);
-      setResultado(prev => prev + `\n🎉 TESTE CONCLUÍDO COM SUCESSO!`);
+      setResultado((prev) => prev + `\n✅ Conta criada! ID: ${contaCriada.id}`);
+      setResultado((prev) => prev + `\n🎉 TESTE CONCLUÍDO COM SUCESSO!`);
 
       toast({
         title: "✅ Teste direto bem-sucedido!",
         description: "Lançamento e conta a receber criados diretamente",
-        variant: "default"
+        variant: "default",
       });
-
     } catch (error) {
-      setResultado(prev => prev + `\n❌ ERRO: ${error.message}`);
+      setResultado((prev) => prev + `\n❌ ERRO: ${error.message}`);
       toast({
         title: "❌ Erro no teste",
         description: `Falha: ${error.message}`,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -109,7 +124,7 @@ export function TesteBasico() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button 
+        <Button
           onClick={testarBoleto}
           disabled={isLoading}
           className="w-full"
@@ -117,7 +132,7 @@ export function TesteBasico() {
         >
           {isLoading ? "Testando..." : "🚀 Testar Boleto Direto"}
         </Button>
-        
+
         {resultado && (
           <div className="bg-gray-50 p-4 rounded-lg border">
             <h4 className="font-medium mb-2">Resultado:</h4>
@@ -126,9 +141,11 @@ export function TesteBasico() {
             </pre>
           </div>
         )}
-        
+
         <div className="text-xs text-gray-500">
-          <p><strong>Este teste bypassa os contextos e testa:</strong></p>
+          <p>
+            <strong>Este teste bypassa os contextos e testa:</strong>
+          </p>
           <ul className="list-disc list-inside space-y-1">
             <li>✅ Criação direta de lançamento (POST /api/caixa/criar)</li>
             <li>✅ Criação direta de conta a receber (POST /api/contas)</li>

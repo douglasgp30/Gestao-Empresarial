@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { toast } from "../ui/use-toast";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
@@ -15,17 +21,17 @@ export function TesteBoleto() {
     setIsLoading(true);
     try {
       console.log("[TesteBoleto] Iniciando teste de validação de boleto");
-      
+
       // Encontrar forma de pagamento boleto
-      const formaBoleto = formasPagamento.find(f => 
-        isFormaPagamentoBoleto(f)
+      const formaBoleto = formasPagamento.find((f) =>
+        isFormaPagamentoBoleto(f),
       );
-      
+
       if (!formaBoleto) {
         toast({
           title: "Erro",
           description: "Forma de pagamento Boleto não encontrada",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -36,9 +42,9 @@ export function TesteBoleto() {
       const clienteTeste = clientes[0];
       if (!clienteTeste) {
         toast({
-          title: "Erro", 
+          title: "Erro",
           description: "Nenhum cliente encontrado para teste",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
@@ -75,15 +81,14 @@ export function TesteBoleto() {
       toast({
         title: "Sucesso!",
         description: `Lançamento de boleto criado com sucesso. Cliente: ${clienteTeste.nome}`,
-        variant: "default"
+        variant: "default",
       });
-
     } catch (error) {
       console.error("[TesteBoleto] Erro:", error);
       toast({
         title: "Erro",
         description: `Erro no teste: ${error.message}`,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -92,10 +97,12 @@ export function TesteBoleto() {
 
   const verificarDeteccaoBoleto = () => {
     console.log("[TesteBoleto] Verificando detecção de boleto...");
-    
-    formasPagamento.forEach(forma => {
+
+    formasPagamento.forEach((forma) => {
       const eBoleto = isFormaPagamentoBoleto(forma);
-      console.log(`[TesteBoleto] ${forma.nome} (ID: ${forma.id}) - É boleto: ${eBoleto}`);
+      console.log(
+        `[TesteBoleto] ${forma.nome} (ID: ${forma.id}) - É boleto: ${eBoleto}`,
+      );
     });
 
     // Testar casos específicos
@@ -104,13 +111,15 @@ export function TesteBoleto() {
       { nome: "Transferência Bancária", esperado: false },
       { nome: "Boleto", esperado: true },
       { nome: "Pagamento Bancário", esperado: true }, // Este deveria ser true
-      { nome: "Cartão de Crédito", esperado: false }
+      { nome: "Cartão de Crédito", esperado: false },
     ];
 
-    casos.forEach(caso => {
+    casos.forEach((caso) => {
       const resultado = isFormaPagamentoBoleto({ nome: caso.nome });
       const status = resultado === caso.esperado ? "✅" : "❌";
-      console.log(`[TesteBoleto] ${status} "${caso.nome}" - Esperado: ${caso.esperado}, Resultado: ${resultado}`);
+      console.log(
+        `[TesteBoleto] ${status} "${caso.nome}" - Esperado: ${caso.esperado}, Resultado: ${resultado}`,
+      );
     });
 
     toast({
@@ -129,10 +138,7 @@ export function TesteBoleto() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 gap-4">
-          <Button
-            onClick={verificarDeteccaoBoleto}
-            variant="outline"
-          >
+          <Button onClick={verificarDeteccaoBoleto} variant="outline">
             🔍 Verificar Detecção de Boleto
           </Button>
 
@@ -146,17 +152,21 @@ export function TesteBoleto() {
         </div>
 
         <div className="text-sm text-gray-600 space-y-2">
-          <p><strong>Formas de pagamento disponíveis:</strong></p>
+          <p>
+            <strong>Formas de pagamento disponíveis:</strong>
+          </p>
           <ul className="space-y-1">
-            {formasPagamento.map(forma => (
+            {formasPagamento.map((forma) => (
               <li key={forma.id} className="flex justify-between">
                 <span>{forma.nome}</span>
-                <span className={`px-2 py-1 rounded text-xs ${
-                  isFormaPagamentoBoleto(forma) 
-                    ? 'bg-blue-100 text-blue-800' 
-                    : 'bg-gray-100 text-gray-600'
-                }`}>
-                  {isFormaPagamentoBoleto(forma) ? 'BOLETO' : 'OUTRO'}
+                <span
+                  className={`px-2 py-1 rounded text-xs ${
+                    isFormaPagamentoBoleto(forma)
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {isFormaPagamentoBoleto(forma) ? "BOLETO" : "OUTRO"}
                 </span>
               </li>
             ))}

@@ -781,15 +781,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (formasStorage) {
         try {
           const formas = JSON.parse(formasStorage);
-          const formaEncontrada = formas.find((f: any) =>
-            f.id === normalized.formaPagamento ||
-            f.id?.toString() === normalized.formaPagamento
+          const formaEncontrada = formas.find(
+            (f: any) =>
+              f.id === normalized.formaPagamento ||
+              f.id?.toString() === normalized.formaPagamento,
           );
           if (formaEncontrada?.nome) {
             nomeCorreto = formaEncontrada.nome;
           }
         } catch (error) {
-          console.warn("[CaixaContext] Erro ao resolver forma de pagamento:", error);
+          console.warn(
+            "[CaixaContext] Erro ao resolver forma de pagamento:",
+            error,
+          );
         }
       }
 

@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { toast } from "../ui/use-toast";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
@@ -15,48 +21,62 @@ export function TesteRapidoBoleto() {
 
   const executarTeste = async () => {
     setResultado("Iniciando teste...");
-    
+
     try {
       // 1. Verificar detecção de boleto
-      const formaBoleto = formasPagamento.find(f => 
-        isFormaPagamentoBoleto(f)
+      const formaBoleto = formasPagamento.find((f) =>
+        isFormaPagamentoBoleto(f),
       );
-      
+
       if (!formaBoleto) {
         setResultado("❌ FALHA: Forma de pagamento 'Boleto' não encontrada");
         return;
       }
-      
-      setResultado(`✅ Boleto detectado: ${formaBoleto.nome} (ID: ${formaBoleto.id})`);
-      
-      // 2. Verificar se não detecta transferência como boleto
-      const formaTransferencia = formasPagamento.find(f => 
-        f.nome.toLowerCase().includes("transferência") || f.nome.toLowerCase().includes("transferencia")
+
+      setResultado(
+        `✅ Boleto detectado: ${formaBoleto.nome} (ID: ${formaBoleto.id})`,
       );
-      
+
+      // 2. Verificar se não detecta transferência como boleto
+      const formaTransferencia = formasPagamento.find(
+        (f) =>
+          f.nome.toLowerCase().includes("transferência") ||
+          f.nome.toLowerCase().includes("transferencia"),
+      );
+
       if (formaTransferencia) {
-        const transferenciaEhBoleto = isFormaPagamentoBoleto(formaTransferencia);
+        const transferenciaEhBoleto =
+          isFormaPagamentoBoleto(formaTransferencia);
         if (transferenciaEhBoleto) {
-          setResultado(prev => prev + "\n❌ FALHA: Transferência foi detectada como boleto!");
+          setResultado(
+            (prev) =>
+              prev + "\n❌ FALHA: Transferência foi detectada como boleto!",
+          );
           return;
         } else {
-          setResultado(prev => prev + `\n✅ OK: Transferência (${formaTransferencia.nome}) não é detectada como boleto`);
+          setResultado(
+            (prev) =>
+              prev +
+              `\n✅ OK: Transferência (${formaTransferencia.nome}) não é detectada como boleto`,
+          );
         }
       }
-      
+
       // 3. Verificar se há clientes
       if (!clientes.length) {
-        setResultado(prev => prev + "\n❌ FALHA: Nenhum cliente encontrado");
+        setResultado((prev) => prev + "\n❌ FALHA: Nenhum cliente encontrado");
         return;
       }
-      
-      setResultado(prev => prev + `\n✅ OK: ${clientes.length} clientes encontrados`);
-      
+
+      setResultado(
+        (prev) => prev + `\n✅ OK: ${clientes.length} clientes encontrados`,
+      );
+
       // 4. Testar criação de lançamento boleto
       const clienteTeste = clientes[0];
       const dataVencimento = new Date();
       dataVencimento.setDate(dataVencimento.getDate() + 30);
-      
+
       const lancamentoTeste = {
         data: new Date(),
         tipo: "receita" as const,
@@ -75,28 +95,33 @@ export function TesteRapidoBoleto() {
         observacoes: `Teste automático - Vencimento: ${dataVencimento.toLocaleDateString()}`,
         codigoServico: `TESTE_${Date.now()}`,
       };
-      
-      setResultado(prev => prev + "\n⏳ Criando lançamento de boleto...");
-      
+
+      setResultado((prev) => prev + "\n⏳ Criando lançamento de boleto...");
+
       await adicionarLancamento(lancamentoTeste);
-      
-      setResultado(prev => prev + "\n✅ SUCESSO: Lançamento de boleto criado!");
-      setResultado(prev => prev + `\n📝 Cliente: ${clienteTeste.nome}`);
-      setResultado(prev => prev + `\n💰 Valor: R$ 100,00`);
-      setResultado(prev => prev + `\n📅 Vencimento: ${dataVencimento.toLocaleDateString()}`);
-      
+
+      setResultado(
+        (prev) => prev + "\n✅ SUCESSO: Lançamento de boleto criado!",
+      );
+      setResultado((prev) => prev + `\n📝 Cliente: ${clienteTeste.nome}`);
+      setResultado((prev) => prev + `\n💰 Valor: R$ 100,00`);
+      setResultado(
+        (prev) =>
+          prev + `\n📅 Vencimento: ${dataVencimento.toLocaleDateString()}`,
+      );
+
       toast({
         title: "✅ Teste de boleto concluído!",
-        description: "Todos os testes passaram. Verifique o console para detalhes.",
-        variant: "default"
+        description:
+          "Todos os testes passaram. Verifique o console para detalhes.",
+        variant: "default",
       });
-      
     } catch (error) {
-      setResultado(prev => prev + `\n❌ ERRO: ${error.message}`);
+      setResultado((prev) => prev + `\n❌ ERRO: ${error.message}`);
       toast({
         title: "❌ Erro no teste",
         description: `Falha: ${error.message}`,
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -106,18 +131,15 @@ export function TesteRapidoBoleto() {
       <CardHeader>
         <CardTitle>🧪 Teste Rápido - Sistema de Boleto</CardTitle>
         <CardDescription>
-          Teste automatizado para verificar se o sistema de boleto está funcionando corretamente
+          Teste automatizado para verificar se o sistema de boleto está
+          funcionando corretamente
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button 
-          onClick={executarTeste}
-          className="w-full"
-          size="lg"
-        >
+        <Button onClick={executarTeste} className="w-full" size="lg">
           🚀 Executar Teste Completo
         </Button>
-        
+
         {resultado && (
           <div className="bg-gray-50 p-4 rounded-lg border">
             <h4 className="font-medium mb-2">Resultado do Teste:</h4>
@@ -126,9 +148,11 @@ export function TesteRapidoBoleto() {
             </pre>
           </div>
         )}
-        
+
         <div className="text-xs text-gray-500 space-y-1">
-          <p><strong>O que este teste verifica:</strong></p>
+          <p>
+            <strong>O que este teste verifica:</strong>
+          </p>
           <ul className="list-disc list-inside space-y-1">
             <li>✅ Detecção correta de forma de pagamento "Boleto"</li>
             <li>✅ "Transferência" não é detectada como boleto</li>
