@@ -319,13 +319,10 @@ export function ModalReceita() {
             dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
             status: "pendente",
             categoria: formData.categoria,
-            cliente: clienteSelecionado
-              ? {
-                  id: clienteSelecionado.id,
-                  nome: clienteSelecionado.nome,
-                }
-              : undefined,
+            clienteId: clienteSelecionado?.id || formData.cliente, // Corrigido: usar clienteId
             observacoes: `Conta criada automaticamente para boleto do lançamento de receita`,
+            sistemaOrigem: "caixa_boleto",
+            pago: false,
           };
 
           // Fazer chamada para API de contas (se disponível)
