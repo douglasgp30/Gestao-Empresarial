@@ -487,6 +487,14 @@ export const createLancamento: RequestHandler = async (req, res) => {
       clienteId: clienteIdValido,
     };
 
+    // Adicionar observação com valor para empresa no campo observações para tracking
+    if (data.tipo === "receita" && valorParaEmpresaCalculado > 0) {
+      const obsValorEmpresa = `Valor para empresa: R$ ${valorParaEmpresaCalculado.toFixed(2)}`;
+      dadosLancamento.observacoes = dadosLancamento.observacoes
+        ? `${dadosLancamento.observacoes} | ${obsValorEmpresa}`
+        : obsValorEmpresa;
+    }
+
     // Adicionar apenas IDs que foram validados e existem
     if (ids.formaPagamentoId) {
       dadosLancamento.formaPagamentoId = ids.formaPagamentoId;
