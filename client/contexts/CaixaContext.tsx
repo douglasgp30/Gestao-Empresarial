@@ -72,6 +72,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCarregando, setIsCarregando] = useState(false);
+  const [isExcluindo, setIsExcluindo] = useState(false);
   const [filtros, setFiltros] = useState(() => {
     // Usar data atual do sistema mas normalizando para o dia correto
     const agora = new Date();
@@ -183,7 +184,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
       } else {
         console.warn(
-          "�� [CaixaContext] Erro desconhecido ao carregar campanhas:",
+          "���� [CaixaContext] Erro desconhecido ao carregar campanhas:",
           error,
         );
       }
