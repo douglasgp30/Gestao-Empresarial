@@ -896,52 +896,89 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
       },
     });
 
-    // Separar boletos de outras formas de pagamento
-    const receitasBoleto = receitasCompletas.filter(
-      (r) =>
-        r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        r.formaPagamento?.nome.toLowerCase().includes("bancário"),
-    );
+    console.log(`[Totais Caixa] Analisando ${receitasCompletas.length} receitas para cálculo de saldo`);
 
-    const receitasNaoBoleto = receitasCompletas.filter(
-      (r) =>
-        !r.formaPagamento?.nome.toLowerCase().includes("boleto") &&
-        !r.formaPagamento?.nome.toLowerCase().includes("bancário"),
-    );
+    // Separar receitas por tipo
+    const receitasBoletoNaoPagos = receitasCompletas.filter((r) => {
+      const isBoleto = r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
+                      r.formaPagamento?.nome.toLowerCase().includes("bancário");
+      const temObservacaoBoleto = r.observacoes?.includes("[BOLETO - Aguardando pagamento]");
+      const sistemaOrigemBoleto = r.observacoes?.includes("caixa_boleto");
+
+      return isBoleto || temObservacaoBoleto || sistemaOrigemBoleto;
+    });
+
+    const receitasRecebimentoBoleto = receitasCompletas.filter((r) => {
+      return r.categoria === "Recebimento de Boletos" ||
+             r.observacoes?.includes("Recebimento automático de boleto") ||
+             r.observacoes?.includes("contas_boleto_pago");
+    });
+
+    const receitasNormais = receitasCompletas.filter((r) => {
+      const isBoleto = r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
+                      r.formaPagamento?.nome.toLowerCase().includes("bancário");
+      const temObservacaoBoleto = r.observacoes?.includes("[BOLETO - Aguardando pagamento]");
+      const sistemaOrigemBoleto = r.observacoes?.includes("caixa_boleto");
+      const isRecebimentoBoleto = r.categoria === "Recebimento de Boletos" ||
+                                 r.observacoes?.includes("Recebimento automático de boleto");
+
+      return !isBoleto && !temObservacaoBoleto && !sistemaOrigemBoleto && !isRecebimentoBoleto;
+    });
+
+    console.log(`[Totais Caixa] Breakdown - Normais: ${receitasNormais.length}, Boletos não pagos: ${receitasBoletoNaoPagos.length}, Recebimentos de boleto: ${receitasRecebimentoBoleto.length}`);
 
     // Calcular totais
-    const totalReceitaBruta = receitasCompletas.reduce(
-      (sum, r) => sum + r.valor,
-      0,
-    );
-    const totalReceitaLiquida = receitasNaoBoleto.reduce(
-      (sum, r) => sum + (r.valorRecebido || r.valor),
-      0,
-    );
-    const totalBoletos = receitasBoleto.reduce((sum, r) => sum + r.valor, 0);
+    const totalReceitaBruta = receitasCompletas.reduce((sum, r) => sum + r.valor, 0);
 
-    // Calcular comissões (apenas receitas não-boleto)
-    const totalComissoes = receitasNaoBoleto.reduce(
-      (sum, r) => sum + (r.comissao || 0),
-      0,
+    // Receitas que efetivamente entraram no caixa (normais + recebimentos de boleto)
+    const receitasQueEntraramNoCaixa = [...receitasNormais, ...receitasRecebimentoBoleto];
+    const totalReceitaLiquida = receitasQueEntraramNoCaixa.reduce(
+      (sum, r) => sum + (r.valorRecebido || r.valor), 0
     );
 
+    // Boletos ainda não pagos (receita bruta informativa)
+    const totalBoletosNaoPagos = receitasBoletoNaoPagos.reduce((sum, r) => sum + r.valor, 0);
+
+    // Calcular comissões (apenas receitas que entraram no caixa)
+    const totalComissoes = receitasQueEntraramNoCaixa.reduce(
+      (sum, r) => sum + (r.comissao || 0), 0
+    );
+
+    // Buscar despesas
     const despesas = await prisma.lancamentoCaixa.aggregate({
       where: { ...where, tipo: "despesa" },
       _sum: { valor: true },
     });
 
+    const totalDespesas = despesas._sum.valor || 0;
+
+    // Calcular saldo real (só o que efetivamente entrou - despesas - comissões)
+    const saldoReal = totalReceitaLiquida - totalDespesas - totalComissoes;
+
     const totais = {
-      receitaBruta: totalReceitaBruta, // Todas as receitas incluindo boletos
-      receitaLiquida: totalReceitaLiquida, // Só receitas não-boleto (que entram no caixa)
-      boletos: totalBoletos, // Total em boletos pendentes
-      comissoes: totalComissoes, // Total de comissões pagas
-      despesas: despesas._sum.valor || 0,
-      saldo: totalReceitaLiquida - (despesas._sum.valor || 0) - totalComissoes, // Saldo final
-      // Manter campos antigos para compatibilidade
+      // Totais detalhados
+      receitaBruta: totalReceitaBruta, // Todas as receitas incluindo boletos não pagos
+      receitaLiquida: totalReceitaLiquida, // Só receitas que entraram no caixa
+      boletosNaoPagos: totalBoletosNaoPagos, // Boletos aguardando pagamento
+      receitasNormais: receitasNormais.reduce((sum, r) => sum + (r.valorRecebido || r.valor), 0),
+      receitasRecebimentoBoleto: receitasRecebimentoBoleto.reduce((sum, r) => sum + (r.valorRecebido || r.valor), 0),
+      comissoes: totalComissoes,
+      despesas: totalDespesas,
+      saldo: saldoReal, // Saldo real do caixa
+
+      // Campos para compatibilidade
       receitas: totalReceitaLiquida,
       receitasRecebidas: totalReceitaLiquida,
+      boletos: totalBoletosNaoPagos, // Para compatibilidade
     };
+
+    console.log(`[Totais Caixa] Resultado final:`, {
+      receitaBruta: totais.receitaBruta,
+      receitaLiquida: totais.receitaLiquida,
+      boletosNaoPagos: totais.boletosNaoPagos,
+      despesas: totais.despesas,
+      saldoReal: totais.saldo,
+    });
 
     res.json(totais);
   } catch (error) {
