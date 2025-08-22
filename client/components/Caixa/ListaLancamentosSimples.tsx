@@ -215,7 +215,12 @@ export function ListaLancamentosSimples() {
         if (!lancamento.setor) return "-";
 
         if (typeof lancamento.setor === "string") {
-          return lancamento.setor;
+          // Evitar exibir IDs numéricos como setor
+          if (!/^\d+$/.test(lancamento.setor.trim())) {
+            return lancamento.setor;
+          } else {
+            return "-";
+          }
         }
 
         // Formato objeto
