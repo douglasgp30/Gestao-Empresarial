@@ -278,7 +278,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     const resultado = tecnicosCombinados.filter((t) => t.id && t.id !== 0);
 
-    // Log de debug para facilitar diagn��stico
+    // Log de debug para facilitar diagnóstico
     if (funcionarios && funcionarios.length > 0) {
       console.log(
         `[EntidadesContext] getTecnicos: ${funcionarios.length} funcionários, ${funcionariosTecnicos.length} técnicos filtrados, ${resultado.length} resultado final`,
@@ -795,7 +795,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       novaLocalizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
     ) => {
       console.log(
-        "📦 [EntidadesContext] Criando localização geográfica:",
+        "�� [EntidadesContext] Criando localização geográfica:",
         novaLocalizacao,
       );
 
@@ -908,13 +908,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       // Cache invalidação removida - usando localStorage
       await carregarDados();
 
-      // Sincronizar localizações para garantir consistência (com delay) - apenas uma vez
-      setTimeout(() => {
-        if (!sincronizacaoEmAndamento && !jaFezSincronizacao.current) {
-          jaFezSincronizacao.current = true;
-          sincronizarLocalizacoes();
-        }
-      }, 1000); // 1 segundo de delay
+      // TEMPORARIAMENTE DESABILITADO - Sincronizar localizações para teste de loop
+      // setTimeout(() => {
+      //   if (!sincronizacaoEmAndamento && !jaFezSincronizacao.current) {
+      //     jaFezSincronizacao.current = true;
+      //     sincronizarLocalizacoes();
+      //   }
+      // }, 1000); // 1 segundo de delay
     };
 
     executarCarregamento();
