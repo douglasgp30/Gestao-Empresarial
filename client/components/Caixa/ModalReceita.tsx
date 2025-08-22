@@ -82,6 +82,7 @@ export function ModalReceita() {
   // Usar useMemo ao invés de useCallback para evitar re-renderizações desnecessárias
   const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
+    console.log("[ModalReceita] Debug - Categorias de receita:", categorias);
     return categorias.map((cat) => cat.nome).sort();
   }, [getCategorias]);
 
