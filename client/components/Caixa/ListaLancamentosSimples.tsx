@@ -199,7 +199,8 @@ export function ListaLancamentosSimples() {
         }
         if (
           typeof lancamento.tecnicoResponsavel === "string" &&
-          lancamento.tecnicoResponsavel !== ""
+          lancamento.tecnicoResponsavel !== "" &&
+          !/^\d+$/.test(lancamento.tecnicoResponsavel.trim()) // Evitar IDs numéricos
         ) {
           return lancamento.tecnicoResponsavel;
         }
