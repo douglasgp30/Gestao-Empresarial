@@ -87,6 +87,7 @@ import Ponto from "./pages/Ponto";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 import PrimeiroAcesso from "./components/Auth/PrimeiroAcesso";
+import TestePage from "./pages/TestePage";
 import TourGuiado, { useTourGuiado } from "./components/ui/tour-guiado";
 import { useAuth } from "./contexts/AuthContext";
 
