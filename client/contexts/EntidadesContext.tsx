@@ -402,8 +402,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
                 );
                 formasValidadas.push({
                   id: "5",
-                  nome: "Boleto Bancário",
-                  descricao: "Pagamento via boleto bancário",
+                  nome: "Boleto Bancario",
+                  descricao: "Pagamento via boleto bancario",
                   dataCriacao: new Date(),
                 });
                 // Salvar no localStorage a versão corrigida
