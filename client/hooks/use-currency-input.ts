@@ -8,7 +8,10 @@ export const useCurrencyInput = (initialValue: string = "") => {
   // Converter valor inicial para formato de exibição
   const formatInitialValue = (value: string) => {
     if (!value) return "R$ 0,00";
-    const numericValue = parseFloat(value) || 0;
+
+    // Extrair apenas dígitos para lidar com strings formatadas
+    const digits = value.replace(/\D/g, "");
+    const numericValue = digits ? parseInt(digits) / 100 : 0;
     return formatCurrency(numericValue);
   };
 
@@ -107,6 +110,9 @@ export const useCurrencyInput = (initialValue: string = "") => {
       onChange: handleInputChange,
       onKeyDown: handleKeyDown,
       placeholder: "R$ 0,00",
+      inputMode: "numeric" as const,
+      pattern: "[0-9]*",
+      onFocus: (e: React.FocusEvent<HTMLInputElement>) => e.currentTarget.select(),
     },
   };
 };
