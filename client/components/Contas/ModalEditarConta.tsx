@@ -85,9 +85,9 @@ export function ModalEditarConta({
         pago: conta.pago,
         dataPagamento: conta.dataPagamento,
       });
-      setValor(conta.valor.toString());
+      valorInput.setValue(conta.valor);
     }
-  }, [isOpen, conta, setValor]);
+  }, [isOpen, conta, valorInput.setValue]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,9 +95,7 @@ export function ModalEditarConta({
 
     try {
       // Validações obrigatórias
-      const valorNumerico = parseFloat(
-        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
-      );
+      const valorNumerico = valorInput.numericValue;
 
       if (!valorNumerico || valorNumerico <= 0) {
         toast({
@@ -300,8 +298,7 @@ export function ModalEditarConta({
               <Label htmlFor="valor">Valor (R$) *</Label>
               <Input
                 id="valor"
-                value={valorFormatado}
-                onChange={onValorChange}
+                {...valorInput.inputProps}
                 placeholder="R$ 0,00"
                 required
               />
