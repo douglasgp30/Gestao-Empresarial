@@ -335,17 +335,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     }
 
     // Validações específicas para boleto
-    console.log("[FormularioReceita] Verificando se é boleto:", {
-      isBoleto,
-      formaPagamento: formData.formaPagamento,
-      cliente: formData.cliente,
-      formasPagamento: formasPagamento.map(f => ({ id: f.id, nome: f.nome }))
-    });
-
     if (isBoleto) {
-      console.log("[FormularioReceita] É boleto! Validando cliente...");
       if (!formData.cliente) {
-        console.log("[FormularioReceita] Cliente não selecionado para boleto");
         toast({
           title: "Campo obrigatório",
           description:
@@ -1401,7 +1392,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Lan��ando..." : "Lançar Receita"}
+            {isSubmitting ? "Lançando..." : "Lançar Receita"}
           </Button>
         </form>
       </CardContent>
