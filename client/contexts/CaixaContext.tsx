@@ -932,6 +932,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("[CaixaContext] Dados preparados para API:", dadosParaAPI);
 
+      // Log específico para forma de pagamento
+      console.log("[CaixaContext] Forma de pagamento - Debug:", {
+        formaPagamentoOriginal: novoLancamento.formaPagamento,
+        formaPagamentoId: dadosParaAPI.formaPagamentoId,
+        formaPagamentoSnapshot: dadosParaAPI.formaPagamentoSnapshot,
+      });
+
       // Enviar para a API usando rota alternativa para evitar conflito de body stream
       const response = await fetch("/api/caixa/criar", {
         method: "POST",
