@@ -302,7 +302,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
       console.log(
-        `[EntidadesContext] Sincronizando ${funcionariosDoContexto.length} funcion��rios do FuncionariosContext`,
+        `[EntidadesContext] Sincronizando ${funcionariosDoContexto.length} funcionários do FuncionariosContext`,
       );
       setFuncionarios(funcionariosDoContexto);
 
@@ -451,11 +451,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
             );
           }
         } else {
+          console.log("[EntidadesContext] Nenhuma forma de pagamento encontrada, criando dados padrão");
           setFormasPagamento(formasDefault);
           localStorage.setItem(
             "formas_pagamento",
             JSON.stringify(formasDefault),
           );
+        }
+
+        // Forçar verificação de consistência das formas de pagamento
+        console.log("[EntidadesContext] Verificando consistência das formas de pagamento...");
+        const formasCarregadas = JSON.parse(localStorage.getItem("formas_pagamento") || '[]');
+        const temBoletoCorreto = formasCarregadas.find(f => f.id === "5" && f.nome.toLowerCase().includes("boleto"));
+
+        if (!temBoletoCorreto) {
+          console.log("[EntidadesContext] Inconsistência detectada, corrigindo formas de pagamento...");
+          setFormasPagamento(formasDefault);
+          localStorage.setItem("formas_pagamento", JSON.stringify(formasDefault));
         }
 
         // Carregar funcionários
