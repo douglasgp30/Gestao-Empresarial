@@ -267,7 +267,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
+    const resultado = tecnicosCombinados.filter((t) => t.id && t.id !== 0);
+
+    // Log de debug para facilitar diagnóstico
+    if (funcionarios && funcionarios.length > 0) {
+      console.log(`[EntidadesContext] getTecnicos: ${funcionarios.length} funcionários, ${funcionariosTecnicos.length} técnicos filtrados, ${resultado.length} resultado final`);
+      if (resultado.length === 0 && funcionarios.length > 0) {
+        console.warn("[EntidadesContext] AVISO: Nenhum técnico encontrado, verificar tipoAcesso dos funcionários:",
+          funcionarios.map(f => ({ id: f.id, nome: f.nome || f.nomeCompleto, tipoAcesso: f.tipoAcesso, ehTecnico: f.ehTecnico }))
+        );
+      }
+    }
+
+    return resultado;
   }, [funcionarios, tecnicos]);
 
   // === TIMEOUT DE SEGURANÇA PARA FORÇAR LOADING=FALSE ===
