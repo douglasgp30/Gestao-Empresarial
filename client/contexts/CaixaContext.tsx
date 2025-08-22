@@ -921,6 +921,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           novoLancamento.cliente,
           novoLancamento.clienteId,
         ),
+
+        // Snapshots dos objetos para preservar dados históricos
+        formaPagamentoSnapshot: novoLancamento.formaPagamento,
+        clienteSnapshot: novoLancamento.cliente,
+        tecnicoResponsavelSnapshot: novoLancamento.tecnicoResponsavel,
+        setorSnapshot: novoLancamento.setor,
+        campanhaSnapshot: novoLancamento.campanha,
       };
 
       console.log("[CaixaContext] Dados preparados para API:", dadosParaAPI);
@@ -1065,7 +1072,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const excluirLancamento = async (id: string) => {
     // Evitar múltiplas exclusões simultâneas
     if (isExcluindo) {
-      console.log("[CaixaContext] Exclusão já em andamento, ignorando...");
+      console.log("[CaixaContext] Exclus��o já em andamento, ignorando...");
       return;
     }
 
