@@ -165,6 +165,9 @@ function carregarEntidadeDoStorage<T>(
 }
 
 export function EntidadesProvider({ children }: { children: ReactNode }) {
+  // === INTEGRAÇÃO COM FUNCIONARIOS CONTEXT ===
+  const { funcionarios: funcionariosDoContexto } = useFuncionarios();
+
   // === ESTADOS PRINCIPAIS ===
   const [descricoesECategorias, setDescricoesECategorias] = useState<
     DescricaoECategoria[]
