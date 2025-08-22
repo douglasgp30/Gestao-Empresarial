@@ -1146,19 +1146,26 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 {/* Primeira linha - valores base */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
                   <div>
-                    <span className="text-gray-600">Valor Total:</span>
+                    <span className="text-gray-600">Valor Total do Serviço:</span>
                     <div className="font-medium">
                       R$ {valorInput.numericValue.toFixed(2).replace(".", ",")}
                     </div>
                   </div>
-                  <div>
-                    <span className="text-gray-600">Valor Recebido:</span>
-                    <div className="font-medium">
+                  <div className={isFormaPagamentoCartao ? "bg-yellow-100 p-2 rounded" : ""}>
+                    <span className="text-gray-600">
+                      {isFormaPagamentoCartao ? "💳 Valor Recebido (após taxas):" : "Valor Recebido:"}
+                    </span>
+                    <div className={`font-medium ${isFormaPagamentoCartao ? "text-yellow-800" : ""}`}>
                       R$ {valorQueEntrouReal.toFixed(2).replace(".", ",")}
                     </div>
+                    {isFormaPagamentoCartao && valorInput.numericValue !== valorQueEntrouReal && (
+                      <div className="text-xs text-yellow-600">
+                        Taxa: R$ {(valorInput.numericValue - valorQueEntrouReal).toFixed(2).replace(".", ",")}
+                      </div>
+                    )}
                   </div>
                   <div>
-                    <span className="text-gray-600">Impostos/Taxas:</span>
+                    <span className="text-gray-600">Outras Taxas/Impostos:</span>
                     <div className="font-medium">
                       R$ {impostoCalculado.toFixed(2).replace(".", ",")}
                     </div>
