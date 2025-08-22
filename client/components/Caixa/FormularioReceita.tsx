@@ -416,6 +416,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         tecnico: tecnicoSelecionado,
       });
 
+      console.log("FormularioReceita - Forma de pagamento detalhada:", {
+        formDataFormaPagamento: formData.formaPagamento,
+        formaSelecionadaId: formaSelecionada?.id,
+        formaSelecionadaNome: formaSelecionada?.nome,
+        todasFormasPagamento: formasPagamento.map(f => ({ id: f.id, nome: f.nome })),
+      });
+
       // Validar se cliente foi encontrado quando necessário
       if (formData.cliente && !clienteSelecionado) {
         console.error("Cliente selecionado não encontrado:", formData.cliente);
