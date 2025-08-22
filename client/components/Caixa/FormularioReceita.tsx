@@ -1155,7 +1155,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   {formData.temNotaFiscal && (
                     <div>
                       <span className="text-gray-600">
-                        Desc. Nota Fiscal ({percentualNotaFiscal}%):
+                        Desc. Nota Fiscal ({percentualNotaFiscal}% sobre R$ {valorBaseNotaFiscal.toFixed(2).replace(".", ",")}):
                       </span>
                       <div className="font-medium text-orange-600">
                         - R$ {descontoNotaFiscal.toFixed(2).replace(".", ",")}
