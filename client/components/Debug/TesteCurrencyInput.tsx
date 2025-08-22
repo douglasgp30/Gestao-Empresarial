@@ -21,15 +21,22 @@ export function TesteCurrencyInput() {
             className="text-lg font-medium"
           />
         </div>
-        
+
         <div className="p-3 bg-gray-50 rounded text-sm space-y-1">
-          <div><strong>Display:</strong> {valorInput.displayValue}</div>
-          <div><strong>Valor numérico:</strong> {valorInput.numericValue}</div>
-          <div><strong>Exemplo esperado:</strong></div>
+          <div>
+            <strong>Display:</strong> {valorInput.displayValue}
+          </div>
+          <div>
+            <strong>Valor numérico:</strong> {valorInput.numericValue}
+          </div>
+          <div>
+            <strong>Exemplo esperado:</strong>
+          </div>
           <div className="text-xs text-gray-600">
-            • Digite "12345" → deve mostrar "R$ 123,45"<br/>
-            • Digite "100" → deve mostrar "R$ 1,00"<br/>
-            • Digite "50000" → deve mostrar "R$ 500,00"
+            • Digite "12345" → deve mostrar "R$ 123,45"
+            <br />
+            • Digite "100" → deve mostrar "R$ 1,00"
+            <br />• Digite "50000" → deve mostrar "R$ 500,00"
           </div>
         </div>
 

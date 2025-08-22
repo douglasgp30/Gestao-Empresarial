@@ -251,10 +251,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       // Verificar tipoAcesso de forma robusta (case-insensitive e tolerante a acentos)
       const tipo = (func.tipoAcesso || "").toString();
-      const tipoNormalized = tipo
-        .normalize?.("NFD")
-        ?.replace(/[\u0300-\u036f]/g, "")
-        ?.toLowerCase() || tipo.toLowerCase();
+      const tipoNormalized =
+        tipo
+          .normalize?.("NFD")
+          ?.replace(/[\u0300-\u036f]/g, "")
+          ?.toLowerCase() || tipo.toLowerCase();
 
       return tipoNormalized === "tecnico";
     });
@@ -271,10 +272,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     // Log de debug para facilitar diagnóstico
     if (funcionarios && funcionarios.length > 0) {
-      console.log(`[EntidadesContext] getTecnicos: ${funcionarios.length} funcionários, ${funcionariosTecnicos.length} técnicos filtrados, ${resultado.length} resultado final`);
+      console.log(
+        `[EntidadesContext] getTecnicos: ${funcionarios.length} funcionários, ${funcionariosTecnicos.length} técnicos filtrados, ${resultado.length} resultado final`,
+      );
       if (resultado.length === 0 && funcionarios.length > 0) {
-        console.warn("[EntidadesContext] AVISO: Nenhum técnico encontrado, verificar tipoAcesso dos funcionários:",
-          funcionarios.map(f => ({ id: f.id, nome: f.nome || f.nomeCompleto, tipoAcesso: f.tipoAcesso, ehTecnico: f.ehTecnico }))
+        console.warn(
+          "[EntidadesContext] AVISO: Nenhum técnico encontrado, verificar tipoAcesso dos funcionários:",
+          funcionarios.map((f) => ({
+            id: f.id,
+            nome: f.nome || f.nomeCompleto,
+            tipoAcesso: f.tipoAcesso,
+            ehTecnico: f.ehTecnico,
+          })),
         );
       }
     }
@@ -381,13 +390,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
               const formasValidadas = [...formasParsed];
 
               // Garantir que boleto sempre existe
-              const temBoleto = formasValidadas.some(f =>
-                f.id === "5" ||
-                (f.nome && f.nome.toLowerCase().includes("boleto"))
+              const temBoleto = formasValidadas.some(
+                (f) =>
+                  f.id === "5" ||
+                  (f.nome && f.nome.toLowerCase().includes("boleto")),
               );
 
               if (!temBoleto) {
-                console.log("[EntidadesContext] Boleto não encontrado no localStorage, adicionando...");
+                console.log(
+                  "[EntidadesContext] Boleto não encontrado no localStorage, adicionando...",
+                );
                 formasValidadas.push({
                   id: "5",
                   nome: "Boleto Bancário",
@@ -395,23 +407,40 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
                   dataCriacao: new Date(),
                 });
                 // Salvar no localStorage a versão corrigida
-                localStorage.setItem("formas_pagamento", JSON.stringify(formasValidadas));
+                localStorage.setItem(
+                  "formas_pagamento",
+                  JSON.stringify(formasValidadas),
+                );
               }
 
               setFormasPagamento(formasValidadas);
             } else {
-              console.log("[EntidadesContext] Dados inválidos no localStorage, usando defaults");
+              console.log(
+                "[EntidadesContext] Dados inválidos no localStorage, usando defaults",
+              );
               setFormasPagamento(formasDefault);
-              localStorage.setItem("formas_pagamento", JSON.stringify(formasDefault));
+              localStorage.setItem(
+                "formas_pagamento",
+                JSON.stringify(formasDefault),
+              );
             }
           } catch (error) {
-            console.error("[EntidadesContext] Erro ao parsear formas de pagamento:", error);
+            console.error(
+              "[EntidadesContext] Erro ao parsear formas de pagamento:",
+              error,
+            );
             setFormasPagamento(formasDefault);
-            localStorage.setItem("formas_pagamento", JSON.stringify(formasDefault));
+            localStorage.setItem(
+              "formas_pagamento",
+              JSON.stringify(formasDefault),
+            );
           }
         } else {
           setFormasPagamento(formasDefault);
-          localStorage.setItem("formas_pagamento", JSON.stringify(formasDefault));
+          localStorage.setItem(
+            "formas_pagamento",
+            JSON.stringify(formasDefault),
+          );
         }
 
         // Carregar funcionários

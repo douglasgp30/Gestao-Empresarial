@@ -32,11 +32,11 @@ export function TesteCamposValor() {
       <CardHeader>
         <CardTitle>🧪 Teste - Campos de Valor Monetário</CardTitle>
         <p className="text-sm text-gray-600">
-          Todos os campos devem ter o mesmo comportamento: digite apenas números (ex: 12345) para ver R$ 123,45
+          Todos os campos devem ter o mesmo comportamento: digite apenas números
+          (ex: 12345) para ver R$ 123,45
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
-        
         {/* Teste Receita */}
         <div className="space-y-3">
           <Label className="text-lg font-semibold text-green-600">
@@ -54,8 +54,12 @@ export function TesteCamposValor() {
             <div className="space-y-2">
               <Label>Resultado:</Label>
               <div className="p-3 bg-green-50 rounded text-sm space-y-1">
-                <div><strong>Display:</strong> {valorReceita.displayValue}</div>
-                <div><strong>Valor numérico:</strong> {valorReceita.numericValue}</div>
+                <div>
+                  <strong>Display:</strong> {valorReceita.displayValue}
+                </div>
+                <div>
+                  <strong>Valor numérico:</strong> {valorReceita.numericValue}
+                </div>
               </div>
             </div>
           </div>
@@ -80,8 +84,12 @@ export function TesteCamposValor() {
             <div className="space-y-2">
               <Label>Resultado:</Label>
               <div className="p-3 bg-red-50 rounded text-sm space-y-1">
-                <div><strong>Display:</strong> {valorDespesa.displayValue}</div>
-                <div><strong>Valor numérico:</strong> {valorDespesa.numericValue}</div>
+                <div>
+                  <strong>Display:</strong> {valorDespesa.displayValue}
+                </div>
+                <div>
+                  <strong>Valor numérico:</strong> {valorDespesa.numericValue}
+                </div>
               </div>
             </div>
           </div>
@@ -106,8 +114,12 @@ export function TesteCamposValor() {
             <div className="space-y-2">
               <Label>Resultado:</Label>
               <div className="p-3 bg-blue-50 rounded text-sm space-y-1">
-                <div><strong>Display:</strong> {valorMeta.displayValue}</div>
-                <div><strong>Valor numérico:</strong> {valorMeta.numericValue}</div>
+                <div>
+                  <strong>Display:</strong> {valorMeta.displayValue}
+                </div>
+                <div>
+                  <strong>Valor numérico:</strong> {valorMeta.numericValue}
+                </div>
               </div>
             </div>
           </div>
@@ -134,8 +146,13 @@ export function TesteCamposValor() {
             <div className="space-y-2">
               <Label>Resultado:</Label>
               <div className="p-3 bg-purple-50 rounded text-sm space-y-1">
-                <div><strong>Display:</strong> {metaDashboard}</div>
-                <div><strong>Valor numérico:</strong> {parseInt(metaDashboard.replace(/\D/g, "") || "0") / 100}</div>
+                <div>
+                  <strong>Display:</strong> {metaDashboard}
+                </div>
+                <div>
+                  <strong>Valor numérico:</strong>{" "}
+                  {parseInt(metaDashboard.replace(/\D/g, "") || "0") / 100}
+                </div>
               </div>
             </div>
           </div>
@@ -145,9 +162,18 @@ export function TesteCamposValor() {
         <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
           <h4 className="font-semibold mb-2">📝 Instruções de Teste:</h4>
           <ul className="text-sm space-y-1 text-yellow-800">
-            <li>• Digite <strong>12345</strong> → deve mostrar <strong>R$ 123,45</strong></li>
-            <li>• Digite <strong>100</strong> → deve mostrar <strong>R$ 1,00</strong></li>
-            <li>• Digite <strong>50000</strong> → deve mostrar <strong>R$ 500,00</strong></li>
+            <li>
+              • Digite <strong>12345</strong> → deve mostrar{" "}
+              <strong>R$ 123,45</strong>
+            </li>
+            <li>
+              • Digite <strong>100</strong> → deve mostrar{" "}
+              <strong>R$ 1,00</strong>
+            </li>
+            <li>
+              • Digite <strong>50000</strong> → deve mostrar{" "}
+              <strong>R$ 500,00</strong>
+            </li>
             <li>• Teclas permitidas: números, backspace, delete, setas</li>
             <li>• Todos os campos devem se comportar EXATAMENTE igual</li>
           </ul>
@@ -155,12 +181,18 @@ export function TesteCamposValor() {
 
         {/* Status */}
         <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-          <h4 className="font-semibold mb-2 text-green-800">✅ Status dos Campos:</h4>
+          <h4 className="font-semibold mb-2 text-green-800">
+            ✅ Status dos Campos:
+          </h4>
           <ul className="text-sm space-y-1 text-green-700">
-            <li>✅ Hook useCurrencyInput corrigido para usar Intl.NumberFormat</li>
+            <li>
+              ✅ Hook useCurrencyInput corrigido para usar Intl.NumberFormat
+            </li>
             <li>✅ FormularioReceita usando {...valorInput.inputProps}</li>
             <li>✅ FormularioDespesa usando {...valorInput.inputProps}</li>
-            <li>✅ Resumo financeiro corrigido para usar valorInput.numericValue</li>
+            <li>
+              ✅ Resumo financeiro corrigido para usar valorInput.numericValue
+            </li>
             <li>✅ Comportamento idêntico ao campo Meta do Dashboard</li>
           </ul>
         </div>

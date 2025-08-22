@@ -309,11 +309,7 @@ export function FormularioConta({
           {/* Valor */}
           <div className="space-y-2">
             <Label htmlFor="valor">Valor *</Label>
-            <Input
-              id="valor"
-              {...valorInput.inputProps}
-              required
-            />
+            <Input id="valor" {...valorInput.inputProps} required />
           </div>
 
           {/* Data de Vencimento */}
