@@ -3,30 +3,34 @@ import { prisma } from "../lib/database";
 import { z } from "zod";
 import { middlewareAuditoria } from "../lib/auditoria";
 
-const FuncionarioSchema = z
-  .object({
-    nome: z.string().min(1, "Nome é obrigatório"),
-    ehTecnico: z.boolean().default(false),
-    percentualComissao: z.number().optional(),
-    email: z.string().email().optional().or(z.literal("")),
-    telefone: z.string().optional(),
-    cargo: z.string().optional(),
-    salario: z.number().optional(),
-    temAcessoSistema: z.boolean().default(false),
-    tipoAcesso: z.string().optional(),
-    login: z.string().optional().or(z.literal("")),
-    senha: z.string().optional().or(z.literal("")),
-    permissoes: z.string().optional(),
-  })
-  .transform((data) => {
-    // Transform empty strings to undefined/null for database
-    return {
-      ...data,
-      email: data.email === "" ? null : data.email,
-      login: data.login === "" ? null : data.login,
-      senha: data.senha === "" ? null : data.senha,
-    };
-  });
+const FuncionarioBaseSchema = z.object({
+  nome: z.string().min(1, "Nome é obrigatório"),
+  ehTecnico: z.boolean().default(false),
+  percentualComissao: z.number().optional(),
+  email: z.string().email().optional().or(z.literal("")),
+  telefone: z.string().optional(),
+  cargo: z.string().optional(),
+  salario: z.number().optional(),
+  temAcessoSistema: z.boolean().default(false),
+  tipoAcesso: z.string().optional(),
+  login: z.string().optional().or(z.literal("")),
+  senha: z.string().optional().or(z.literal("")),
+  permissoes: z.string().optional(),
+});
+
+const transformFuncionarioData = (data: any) => {
+  // Transform empty strings to undefined/null for database
+  return {
+    ...data,
+    email: data.email === "" ? null : data.email,
+    login: data.login === "" ? null : data.login,
+    senha: data.senha === "" ? null : data.senha,
+  };
+};
+
+const FuncionarioSchema = FuncionarioBaseSchema.transform(
+  transformFuncionarioData,
+);
 
 export const getFuncionarios: RequestHandler = async (req, res) => {
   try {
@@ -96,7 +100,8 @@ export const createFuncionario: RequestHandler = middlewareAuditoria(
   "Funcionario",
   "create",
   async (req, res) => {
-    const data = FuncionarioSchema.parse(req.body);
+    const rawData = FuncionarioBaseSchema.parse(req.body);
+    const data = transformFuncionarioData(rawData);
     const funcionario = await prisma.funcionario.create({
       data,
       select: {
@@ -155,7 +160,8 @@ export const updateFuncionario: RequestHandler = middlewareAuditoria(
   "update",
   async (req, res) => {
     const id = parseInt(req.params.id);
-    const data = FuncionarioSchema.partial().parse(req.body);
+    const rawData = FuncionarioBaseSchema.partial().parse(req.body);
+    const data = transformFuncionarioData(rawData);
 
     // Buscar dados antigos
     const funcionarioAntigo = await prisma.funcionario.findUnique({

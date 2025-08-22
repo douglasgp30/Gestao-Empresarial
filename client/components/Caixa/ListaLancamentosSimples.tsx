@@ -59,6 +59,7 @@ const defaultColumns: ColumnConfig[] = [
   { key: "valor", label: "Valor", visible: true, order: 4 },
   { key: "valorLiquido", label: "Valor Líquido", visible: false, order: 5 },
   { key: "valorRecebido", label: "Valor Recebido", visible: false, order: 6 },
+  { key: "valorParaEmpresa", label: "Para Empresa", visible: true, order: 6.5 },
   { key: "comissao", label: "Comissão", visible: true, order: 7 },
   { key: "imposto", label: "Imposto/Taxa", visible: false, order: 8 },
   {
@@ -69,10 +70,10 @@ const defaultColumns: ColumnConfig[] = [
   },
   { key: "tecnico", label: "Técnico", visible: true, order: 10 },
   { key: "setor", label: "Setor", visible: true, order: 11 },
-  { key: "campanha", label: "Campanha", visible: false, order: 12 },
-  { key: "observacoes", label: "Observações", visible: false, order: 13 },
+  { key: "campanha", label: "Campanha", visible: true, order: 12 },
+  { key: "observacoes", label: "Observações", visible: true, order: 13 },
   { key: "numeroNota", label: "Número da Nota", visible: false, order: 14 },
-  { key: "cliente", label: "Cliente", visible: false, order: 15 },
+  { key: "cliente", label: "Cliente", visible: true, order: 15 },
   { key: "acoes", label: "Ações", visible: true, order: 16 },
 ];
 
@@ -134,12 +135,28 @@ export function ListaLancamentosSimples() {
         return lancamento.categoria || "N/A";
 
       case "descricao":
-        // Suporta tanto string quanto objeto com nome
-        const descricao =
-          typeof lancamento.descricao === "string"
-            ? lancamento.descricao
-            : lancamento.descricao?.nome;
-        return descricao || "N/A";
+        // Suporta tanto string quanto objeto com nome, evitando números aleatórios
+        let descricao = "N/A";
+
+        if (typeof lancamento.descricao === "string") {
+          // Se for string e não for um número, usar como está
+          if (!/^\d+$/.test(lancamento.descricao.trim())) {
+            descricao = lancamento.descricao;
+          }
+        } else if (
+          typeof lancamento.descricao === "object" &&
+          lancamento.descricao?.nome
+        ) {
+          // Se for objeto, usar o nome
+          descricao = lancamento.descricao.nome;
+        }
+
+        // Fallback para descrição unificada se disponível
+        if (descricao === "N/A" && lancamento.descricaoECategoria?.nome) {
+          descricao = lancamento.descricaoECategoria.nome;
+        }
+
+        return descricao;
 
       case "valor":
         return (
@@ -157,6 +174,44 @@ export function ListaLancamentosSimples() {
         return lancamento.valorRecebido
           ? formatarMoeda(lancamento.valorRecebido)
           : "-";
+
+      case "valorParaEmpresa":
+        // Calcular valor para empresa: valor líquido - comissão
+        if (lancamento.tipo === "receita") {
+          const valorLiquidoEfetivo =
+            lancamento.valorLiquido ||
+            lancamento.valorRecebido ||
+            lancamento.valor;
+          const comissaoEfetiva = lancamento.comissao || 0;
+          const valorParaEmpresa = valorLiquidoEfetivo - comissaoEfetiva;
+
+          // Verificar se é boleto (valor não entra imediatamente)
+          const isBoleto =
+            typeof lancamento.formaPagamento === "object"
+              ? lancamento.formaPagamento?.nome
+                  ?.toLowerCase()
+                  .includes("boleto") ||
+                lancamento.formaPagamento?.nome
+                  ?.toLowerCase()
+                  .includes("bancário")
+              : typeof lancamento.formaPagamento === "string"
+                ? lancamento.formaPagamento.toLowerCase().includes("boleto") ||
+                  lancamento.formaPagamento.toLowerCase().includes("bancário")
+                : false;
+
+          return (
+            <span
+              className={`font-medium ${isBoleto ? "text-yellow-600" : "text-green-600"}`}
+            >
+              {isBoleto ? "Pendente" : formatarMoeda(valorParaEmpresa)}
+            </span>
+          );
+        }
+        return (
+          <span className="font-medium text-red-600">
+            {formatarMoeda(-lancamento.valor)}
+          </span>
+        );
 
       case "comissao":
         return lancamento.comissao ? formatarMoeda(lancamento.comissao) : "-";
@@ -186,7 +241,8 @@ export function ListaLancamentosSimples() {
         }
         if (
           typeof lancamento.tecnicoResponsavel === "string" &&
-          lancamento.tecnicoResponsavel !== ""
+          lancamento.tecnicoResponsavel !== "" &&
+          !/^\d+$/.test(lancamento.tecnicoResponsavel.trim()) // Evitar IDs numéricos
         ) {
           return lancamento.tecnicoResponsavel;
         }
@@ -201,7 +257,12 @@ export function ListaLancamentosSimples() {
         if (!lancamento.setor) return "-";
 
         if (typeof lancamento.setor === "string") {
-          return lancamento.setor;
+          // Evitar exibir IDs numéricos como setor
+          if (!/^\d+$/.test(lancamento.setor.trim())) {
+            return lancamento.setor;
+          } else {
+            return "-";
+          }
         }
 
         // Formato objeto
@@ -215,11 +276,19 @@ export function ListaLancamentosSimples() {
 
       case "campanha":
         // Suporta tanto string quanto objeto com nome
-        const campanha =
-          typeof lancamento.campanha === "string"
-            ? lancamento.campanha
-            : lancamento.campanha?.nome;
-        return campanha || "-";
+        let campanha = "-";
+        if (typeof lancamento.campanha === "string") {
+          // Evitar exibir IDs numéricos como campanha
+          if (!/^\d+$/.test(lancamento.campanha.trim())) {
+            campanha = lancamento.campanha;
+          }
+        } else if (
+          typeof lancamento.campanha === "object" &&
+          lancamento.campanha?.nome
+        ) {
+          campanha = lancamento.campanha.nome;
+        }
+        return campanha;
 
       case "observacoes":
         return lancamento.observacoes ? (
@@ -245,7 +314,8 @@ export function ListaLancamentosSimples() {
         }
         if (
           typeof lancamento.cliente === "string" &&
-          lancamento.cliente !== ""
+          lancamento.cliente !== "" &&
+          !/^\d+$/.test(lancamento.cliente.trim()) // Evitar IDs numéricos
         ) {
           return lancamento.cliente;
         }
