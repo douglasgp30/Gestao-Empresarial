@@ -7,6 +7,16 @@ import {
   extractSafeName,
 } from "../../lib/stringUtils";
 import { useClientes } from "../../contexts/ClientesContext";
+import {
+  getFormaPagamentoNome,
+  getSetorNome,
+  getTecnicoNome,
+  getCampanhaNome,
+  getClienteNome,
+  getDescricaoDisplay,
+  matchesFilter,
+  getSortValue,
+} from "./helpers";
 import TabelaResponsivaLancamentos from "../ui/tabela-responsiva";
 import {
   Card,
@@ -91,123 +101,6 @@ export default function ListaLancamentos() {
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-  // Funções helper para mapear IDs/snapshots para nomes - corrigidas para evitar exibir códigos
-  const getFormaPagamentoNome = (fp: any) => {
-    if (!fp) return "N/A";
-
-    // Se é um objeto snapshot, usar o nome
-    if (typeof fp === "object" && fp.nome) {
-      return fp.nome;
-    }
-
-    // Se é string, buscar pelo ID
-    if (typeof fp === "string") {
-      const forma = formasPagamento.find(
-        (f) => f.id?.toString() === fp.toString(),
-      );
-      // Se encontrou, retorna o nome. Se não encontrou, retorna "N/A" ao invés do código
-      return forma?.nome || "N/A";
-    }
-
-    return "N/A";
-  };
-
-  const getSetorNome = (setor: any) => {
-    if (!setor) return "";
-
-    // Se é um objeto snapshot, montar nome completo
-    if (typeof setor === "object" && setor.nome) {
-      return `${setor.nome}${setor.cidade ? ` - ${setor.cidade}` : ""}`;
-    }
-
-    // Se é string, buscar pelo ID
-    if (typeof setor === "string") {
-      const setorEncontrado = setores.find(
-        (s) => s.id?.toString() === setor.toString(),
-      );
-      if (setorEncontrado) {
-        const cidade =
-          typeof setorEncontrado.cidade === "object"
-            ? setorEncontrado.cidade?.nome
-            : setorEncontrado.cidade;
-        return `${setorEncontrado.nome}${cidade ? ` - ${cidade}` : ""}`;
-      }
-      // Se não encontrou o setor, retorna string vazia ao invés do código
-      return "";
-    }
-
-    return "";
-  };
-
-  const getTecnicoNome = (tecnico: any) => {
-    if (!tecnico) return "";
-
-    // Se é um objeto snapshot, usar o nome
-    if (typeof tecnico === "object" && tecnico.nome) {
-      return tecnico.nome;
-    }
-
-    // Se é string, buscar pelo ID
-    if (typeof tecnico === "string") {
-      const tecnicos = getTecnicos();
-      const tecnicoEncontrado = tecnicos.find(
-        (t) => t.id?.toString() === tecnico.toString(),
-      );
-      if (tecnicoEncontrado) {
-        return tecnicoEncontrado.nome || tecnicoEncontrado.nomeCompleto || "";
-      }
-      // Se não encontrou o técnico, retorna string vazia ao invés do código
-      return "";
-    }
-
-    return "";
-  };
-
-  const getCampanhaNome = (campanha: any) => {
-    if (!campanha) return "";
-
-    // Se é um objeto snapshot, usar o nome
-    if (typeof campanha === "object" && campanha.nome) {
-      return campanha.nome;
-    }
-
-    // Se é string, buscar pelo ID
-    if (typeof campanha === "string") {
-      const campanhaEncontrada = campanhas.find(
-        (c) => c.id?.toString() === campanha.toString(),
-      );
-      if (campanhaEncontrada) {
-        return campanhaEncontrada.nome;
-      }
-      // Se não encontrou a campanha, retorna string vazia ao invés do código
-      return "";
-    }
-
-    return "";
-  };
-
-  const getClienteNome = (cliente: any) => {
-    if (!cliente) return "";
-
-    // Se é um objeto snapshot, usar o nome
-    if (typeof cliente === "object" && cliente.nome) {
-      return cliente.nome;
-    }
-
-    // Se é string, buscar pelo ID
-    if (typeof cliente === "string") {
-      const clienteEncontrado = clientes.find(
-        (c) => c.id?.toString() === cliente.toString(),
-      );
-      if (clienteEncontrado) {
-        return clienteEncontrado.nome;
-      }
-      // Se não encontrou o cliente, retorna string vazia ao invés do código
-      return "";
-    }
-
-    return "";
-  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -265,14 +158,26 @@ export default function ListaLancamentos() {
       const dentroDataFim = dataLancNorm <= dataFim;
       const tipoCorreto =
         filtros.tipo === "todos" || lancamento.tipo === filtros.tipo;
-      const formaCorreta =
-        !filtros.formaPagamento ||
-        lancamento.formaPagamento === filtros.formaPagamento;
-      const tecnicoCorreto =
-        !filtros.tecnico || lancamento.tecnicoResponsavel === filtros.tecnico;
-      const campanhaCorreta =
-        !filtros.campanha || lancamento.campanha === filtros.campanha;
-      const setorCorreto = !filtros.setor || lancamento.setor === filtros.setor;
+      const formaCorreta = matchesFilter(
+        lancamento.formaPagamento,
+        filtros.formaPagamento,
+        formasPagamento
+      );
+      const tecnicoCorreto = matchesFilter(
+        lancamento.tecnicoResponsavel,
+        filtros.tecnico,
+        getTecnicos()
+      );
+      const campanhaCorreta = matchesFilter(
+        lancamento.campanha,
+        filtros.campanha,
+        campanhas
+      );
+      const setorCorreto = matchesFilter(
+        lancamento.setor,
+        filtros.setor,
+        setores
+      );
 
       return (
         dentroDataInicio &&
@@ -287,48 +192,27 @@ export default function ListaLancamentos() {
     .sort((a, b) => {
       // Aplicar ordenação personalizada se houver
       if (sortField && sortDirection) {
-        let aValue: any, bValue: any;
+        const allItems = {
+          formasPagamento,
+          tecnicos: getTecnicos(),
+          setores,
+          campanhas,
+          clientes,
+        };
 
-        switch (sortField) {
-          case "data":
-            aValue = new Date(a.data).getTime();
-            bValue = new Date(b.data).getTime();
-            break;
-          case "tipo":
-            aValue = a.tipo;
-            bValue = b.tipo;
-            break;
-          case "valor":
-            aValue = a.valorLiquido || a.valor;
-            bValue = b.valorLiquido || b.valor;
-            break;
-          case "formaPagamento":
-            aValue = a.formaPagamento;
-            bValue = b.formaPagamento;
-            break;
-          case "tecnicoResponsavel":
-            aValue = a.tecnicoResponsavel || "";
-            bValue = b.tecnicoResponsavel || "";
-            break;
-          case "setor":
-            aValue = a.setor || "";
-            bValue = b.setor || "";
-            break;
-          case "cidade":
-            aValue = a.cidade || "";
-            bValue = b.cidade || "";
-            break;
-          default:
-            return 0;
-        }
+        const aValue = getSortValue(a, sortField, allItems[sortField] || []);
+        const bValue = getSortValue(b, sortField, allItems[sortField] || []);
+
+        let normalizedA = aValue;
+        let normalizedB = bValue;
 
         if (typeof aValue === "string" && typeof bValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
+          normalizedA = aValue.toLowerCase();
+          normalizedB = bValue.toLowerCase();
         }
 
-        if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-        if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+        if (normalizedA < normalizedB) return sortDirection === "asc" ? -1 : 1;
+        if (normalizedA > normalizedB) return sortDirection === "asc" ? 1 : -1;
         return 0;
       }
 
