@@ -421,9 +421,16 @@ export function ModalReceita() {
                   <Label htmlFor="descricao">Descrição do Serviço *</Label>
                   <Select
                     value={formData.descricao}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({ ...prev, descricao: value }))
-                    }
+                    onValueChange={(value) => {
+                      // Buscar a descrição selecionada para salvar o nome
+                      const descricaoSelecionada = descricoesFiltradas.find(
+                        (d) => d.id?.toString() === value,
+                      );
+                      setFormData((prev) => ({
+                        ...prev,
+                        descricao: descricaoSelecionada?.nome || value,
+                      }));
+                    }}
                     disabled={!formData.categoria}
                   >
                     <SelectTrigger>
