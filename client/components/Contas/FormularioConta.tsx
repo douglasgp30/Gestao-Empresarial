@@ -62,11 +62,7 @@ export function FormularioConta({
     dataPagamento: undefined as Date | undefined,
   });
 
-  const {
-    value: valorFormatado,
-    onChange: onValorChange,
-    setValue: setValor,
-  } = useCurrencyInput();
+  const valorInput = useCurrencyInput();
 
   // Preencher formulário quando houver conta para editar
   useEffect(() => {
@@ -84,9 +80,9 @@ export function FormularioConta({
         pago: contaParaEditar.pago,
         dataPagamento: contaParaEditar.dataPagamento,
       });
-      setValor(contaParaEditar.valor.toString());
+      valorInput.setValue(contaParaEditar.valor);
     }
-  }, [contaParaEditar, setValor]);
+  }, [contaParaEditar, valorInput.setValue]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,9 +90,7 @@ export function FormularioConta({
 
     try {
       // Validações obrigatórias
-      const valorNumerico = parseFloat(
-        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
-      );
+      const valorNumerico = valorInput.numericValue;
 
       if (!valorNumerico || valorNumerico <= 0) {
         toast({
@@ -206,7 +200,7 @@ export function FormularioConta({
           pago: false,
           dataPagamento: undefined,
         });
-        setValor("");
+        valorInput.reset();
       }
 
       onSuccess?.();
@@ -315,12 +309,7 @@ export function FormularioConta({
           {/* Valor */}
           <div className="space-y-2">
             <Label htmlFor="valor">Valor *</Label>
-            <Input
-              id="valor"
-              value={valorFormatado}
-              onChange={onValorChange}
-              placeholder="R$ 0,00"
-            />
+            <Input id="valor" {...valorInput.inputProps} required />
           </div>
 
           {/* Data de Vencimento */}

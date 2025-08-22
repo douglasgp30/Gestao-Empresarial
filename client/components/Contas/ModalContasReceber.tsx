@@ -80,11 +80,7 @@ export function ModalContasReceber({
     dataPagamento: undefined as Date | undefined,
   });
 
-  const {
-    value: valorFormatado,
-    onChange: onValorChange,
-    setValue: setValor,
-  } = useCurrencyInput();
+  const valorInput = useCurrencyInput();
 
   // Filtrar descrições de receita para contas a receber
   const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
@@ -102,7 +98,7 @@ export function ModalContasReceber({
       pago: false,
       dataPagamento: undefined,
     });
-    setValor("");
+    valorInput.reset();
   };
 
   // Preencher formulário quando houver conta para editar
@@ -121,17 +117,14 @@ export function ModalContasReceber({
           ? new Date(contaParaEditar.dataPagamento)
           : undefined,
       });
-      setValor(contaParaEditar.valor.toString());
+      valorInput.setValue(contaParaEditar.valor);
     }
-  }, [contaParaEditar, isOpen, setValor]);
+  }, [contaParaEditar, isOpen, valorInput.setValue]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !valorFormatado ||
-      parseFloat(valorFormatado.replace(/[^\d,]/g, "").replace(",", ".")) <= 0
-    ) {
+    if (valorInput.numericValue <= 0) {
       toast({
         title: "Erro",
         description: "Por favor, insira um valor válido",
@@ -161,9 +154,7 @@ export function ModalContasReceber({
     setSalvando(true);
 
     try {
-      const valorNumerico = parseFloat(
-        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
-      );
+      const valorNumerico = valorInput.numericValue;
 
       const contaData = {
         tipo: "receber" as const,
@@ -235,14 +226,7 @@ export function ModalContasReceber({
           {/* Valor */}
           <div className="space-y-2">
             <Label htmlFor="valor">Valor *</Label>
-            <Input
-              id="valor"
-              type="text"
-              placeholder="R$ 0,00"
-              value={valorFormatado}
-              onChange={onValorChange}
-              required
-            />
+            <Input id="valor" {...valorInput.inputProps} required />
           </div>
 
           {/* Data de Vencimento */}

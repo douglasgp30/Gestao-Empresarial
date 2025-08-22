@@ -433,7 +433,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
           </div>
 
           {/* Resumo financeiro */}
-          {formData.valor && (
+          {valorInput.numericValue > 0 && (
             <div className="p-4 bg-red-50 rounded-lg">
               <h4 className="font-medium text-red-800 mb-2">
                 Resumo da Despesa
@@ -442,7 +442,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
                 <div>
                   <span className="text-gray-600">Valor a ser debitado:</span>
                   <div className="font-medium text-red-600 text-lg">
-                    R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                    R$ {valorInput.numericValue.toFixed(2).replace(".", ",")}
                   </div>
                 </div>
               </div>

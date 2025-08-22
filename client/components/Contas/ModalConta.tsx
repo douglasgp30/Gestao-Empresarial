@@ -65,11 +65,7 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
     dataPagamento: undefined as Date | undefined,
   });
 
-  const {
-    value: valorFormatado,
-    onChange: onValorChange,
-    setValue: setValor,
-  } = useCurrencyInput();
+  const valorInput = useCurrencyInput();
 
   // Resetar formulário
   const resetForm = () => {
@@ -85,7 +81,7 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
       pago: false,
       dataPagamento: undefined,
     });
-    setValor("");
+    valorInput.reset();
   };
 
   // Preencher formulário quando houver conta para editar
@@ -104,11 +100,11 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
         pago: contaParaEditar.pago,
         dataPagamento: contaParaEditar.dataPagamento,
       });
-      setValor(contaParaEditar.valor.toString());
+      valorInput.setValue(contaParaEditar.valor);
     } else if (isOpen && !contaParaEditar) {
       resetForm();
     }
-  }, [contaParaEditar, isOpen, setValor]);
+  }, [contaParaEditar, isOpen, valorInput.setValue]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,9 +112,7 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
 
     try {
       // Validações obrigatórias
-      const valorNumerico = parseFloat(
-        valorFormatado.replace(/[^\d,]/g, "").replace(",", "."),
-      );
+      const valorNumerico = valorInput.numericValue;
 
       if (!valorNumerico || valorNumerico <= 0) {
         toast({
@@ -361,8 +355,7 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
               <Label htmlFor="valor">Valor (R$) *</Label>
               <Input
                 id="valor"
-                value={valorFormatado}
-                onChange={onValorChange}
+                {...valorInput.inputProps}
                 placeholder="R$ 0,00"
                 required
               />
