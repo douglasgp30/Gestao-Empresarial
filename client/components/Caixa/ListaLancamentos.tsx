@@ -524,7 +524,7 @@ export default function ListaLancamentos() {
                                 <span className="text-xs text-muted-foreground">
                                   P/ Empresa:
                                 </span>{" "}
-                                {formatCurrency(lancamento.valorParaEmpresa)}
+                                {formatCurrencySafe(lancamento.valorParaEmpresa)}
                               </p>
                             ) : // Verificar se é boleto
                             isFormaBoleto(lancamento.formaPagamento) ? (
@@ -536,10 +536,11 @@ export default function ListaLancamentos() {
                                 <span className="text-xs text-muted-foreground">
                                   P/ Empresa:
                                 </span>{" "}
-                                {formatCurrency(
+                                {formatCurrencySafe(
                                   (lancamento.valorLiquido ||
-                                    lancamento.valor) -
-                                    (lancamento.comissao || 0),
+                                    lancamento.valorRecebido ||
+                                    lancamento.valor ||
+                                    0) - (lancamento.comissao || 0),
                                 )}
                               </p>
                             )}
@@ -552,7 +553,7 @@ export default function ListaLancamentos() {
                             <span className="text-xs text-muted-foreground">
                               Despesa:
                             </span>{" "}
-                            {formatCurrency(lancamento.valor)}
+                            {formatCurrencySafe(lancamento.valor)}
                           </p>
                         )}
                       </div>
