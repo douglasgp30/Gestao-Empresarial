@@ -471,22 +471,25 @@ export default function ListaLancamentos() {
                     <TableCell>
                       <div>
                         <p className="font-medium text-sm">
-                          {/* DEBUG: Verificar tipo de dados da descrição */}
                           {(() => {
-                            console.log("🔍 [DEBUG DESCRIÇÃO RENDER]", {
-                              id: lancamento.id,
-                              descricao: lancamento.descricao,
-                              tipoDescricao: typeof lancamento.descricao,
-                              descricaoStringified: JSON.stringify(lancamento.descricao),
-                            });
-
-                            if (typeof lancamento.descricao === "object" && lancamento.descricao?.nome) {
+                            // Verificar se é um objeto com nome válido
+                            if (typeof lancamento.descricao === "object" &&
+                                lancamento.descricao?.nome &&
+                                typeof lancamento.descricao.nome === 'string' &&
+                                lancamento.descricao.nome.trim() !== '' &&
+                                !/^\d+$/.test(lancamento.descricao.nome)) { // Evitar strings apenas numéricas
                               return lancamento.descricao.nome;
-                            } else if (typeof lancamento.descricao === "string" && lancamento.descricao) {
-                              return lancamento.descricao;
-                            } else {
-                              return "N/A";
                             }
+
+                            // Verificar se é uma string válida (não apenas números)
+                            if (typeof lancamento.descricao === "string" &&
+                                lancamento.descricao.trim() !== '' &&
+                                !/^\d+$/.test(lancamento.descricao)) { // Evitar strings apenas numéricas
+                              return lancamento.descricao;
+                            }
+
+                            // Fallback seguro
+                            return "Serviço";
                           })()}
                         </p>
                         {getCampanhaNome(lancamento.campanha) && (
