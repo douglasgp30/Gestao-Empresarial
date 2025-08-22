@@ -29,6 +29,7 @@ import {
   setContextLoading,
 } from "../lib/globalLoadingControl";
 import { useFuncionarios } from "./FuncionariosContext";
+import { criarDadosBasicosDescricoes } from "../lib/dadosBasicosDescricoes";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
@@ -367,13 +368,36 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         if (descricoesStorage) {
           try {
             const parsed = JSON.parse(descricoesStorage);
-            setDescricoesECategorias(Array.isArray(parsed) ? parsed : []);
+            const arrayParsed = Array.isArray(parsed) ? parsed : [];
+
+            // Verificar se há categorias e descrições básicas
+            if (arrayParsed.length === 0) {
+              const dadosBasicos = criarDadosBasicosDescricoes();
+              setDescricoesECategorias(dadosBasicos);
+              localStorage.setItem(
+                "descricoes_e_categorias",
+                JSON.stringify(dadosBasicos),
+              );
+              console.log(
+                "[EntidadesContext] Dados básicos de descrições criados",
+              );
+            } else {
+              setDescricoesECategorias(arrayParsed);
+            }
           } catch (error) {
             console.error("Erro ao parsear descrições e categorias:", error);
             setDescricoesECategorias([]);
           }
         } else {
-          setDescricoesECategorias([]);
+          const dadosBasicos = criarDadosBasicosDescricoes();
+          setDescricoesECategorias(dadosBasicos);
+          localStorage.setItem(
+            "descricoes_e_categorias",
+            JSON.stringify(dadosBasicos),
+          );
+          console.log(
+            "[EntidadesContext] Nenhuma descrição encontrada, criando dados básicos",
+          );
         }
 
         // Carregar formas de pagamento com validação
@@ -437,6 +461,31 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
             );
           }
         } else {
+          console.log(
+            "[EntidadesContext] Nenhuma forma de pagamento encontrada, criando dados padrão",
+          );
+          setFormasPagamento(formasDefault);
+          localStorage.setItem(
+            "formas_pagamento",
+            JSON.stringify(formasDefault),
+          );
+        }
+
+        // Forçar verificação de consistência das formas de pagamento
+        console.log(
+          "[EntidadesContext] Verificando consistência das formas de pagamento...",
+        );
+        const formasCarregadas = JSON.parse(
+          localStorage.getItem("formas_pagamento") || "[]",
+        );
+        const temBoletoCorreto = formasCarregadas.find(
+          (f) => f.id === "5" && f.nome.toLowerCase().includes("boleto"),
+        );
+
+        if (!temBoletoCorreto) {
+          console.log(
+            "[EntidadesContext] Inconsistência detectada, corrigindo formas de pagamento...",
+          );
           setFormasPagamento(formasDefault);
           localStorage.setItem(
             "formas_pagamento",

@@ -7,7 +7,7 @@ export interface DadosBasicosIniciais {
     id: string;
     nome: string;
     ativo: boolean;
-    tipo: "dinheiro" | "cartao" | "pix" | "transferencia" | "outros";
+    tipo: "dinheiro" | "cartao" | "pix" | "transferencia" | "boleto" | "outros";
     descricao?: string;
   }>;
   categorias: Array<{
@@ -64,6 +64,13 @@ export function obterDadosBasicosIniciais(): DadosBasicosIniciais {
       },
       {
         id: "5",
+        nome: "Boleto Bancário",
+        ativo: true,
+        tipo: "boleto",
+        descricao: "Pagamento via boleto bancário",
+      },
+      {
+        id: "6",
         nome: "Transferência Bancária",
         ativo: true,
         tipo: "transferencia",

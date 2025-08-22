@@ -64,6 +64,7 @@ export function ModalReceita() {
     valorQueEntrou: "",
     categoria: "",
     descricao: "",
+    descricaoId: "", // Adicionar campo para o ID da descrição
     formaPagamento: "",
     tecnicoResponsavel: "",
     cidade: "",
@@ -81,6 +82,7 @@ export function ModalReceita() {
   // Usar useMemo ao invés de useCallback para evitar re-renderizações desnecessárias
   const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
+    console.log("[ModalReceita] Debug - Categorias de receita:", categorias);
     return categorias.map((cat) => cat.nome).sort();
   }, [getCategorias]);
 
@@ -91,7 +93,13 @@ export function ModalReceita() {
   // Filtrar descrições pela categoria selecionada
   const descricoesFiltradas = React.useMemo(() => {
     if (!formData.categoria) return [];
-    return getDescricoes("receita", formData.categoria);
+    const descricoes = getDescricoes("receita", formData.categoria);
+    console.log(
+      "[ModalReceita] Debug - Categoria selecionada:",
+      formData.categoria,
+    );
+    console.log("[ModalReceita] Debug - Descrições filtradas:", descricoes);
+    return descricoes;
   }, [formData.categoria, getDescricoes]);
 
   // Filtrar setores pela cidade selecionada
@@ -204,6 +212,7 @@ export function ModalReceita() {
       valorQueEntrou: "",
       categoria: "",
       descricao: "",
+      descricaoId: "",
       formaPagamento: "",
       tecnicoResponsavel: "",
       cidade: "",
@@ -294,9 +303,73 @@ export function ModalReceita() {
         numeroNota: formData.numeroNota || undefined,
       });
 
+      // Se for boleto, criar conta a receber automaticamente
+      const isBoleto = formasPagamento
+        .find((f) => f.id.toString() === formData.formaPagamento)
+        ?.nome?.toLowerCase()
+        .includes("boleto");
+
+      if (isBoleto) {
+        try {
+          // Criar conta a receber
+          const contaData = {
+            tipo: "receber",
+            descricao: `Boleto - ${formData.descricao}`,
+            valor: valorCalculado,
+            dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
+            status: "pendente",
+            categoria: formData.categoria,
+            cliente: clienteSelecionado
+              ? {
+                  id: clienteSelecionado.id,
+                  nome: clienteSelecionado.nome,
+                }
+              : undefined,
+            observacoes: `Conta criada automaticamente para boleto do lançamento de receita`,
+          };
+
+          // Fazer chamada para API de contas (se disponível)
+          try {
+            const response = await fetch("/api/contas", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(contaData),
+            });
+
+            if (response.ok) {
+              console.log(
+                "[ModalReceita] Conta a receber criada automaticamente para boleto",
+              );
+            }
+          } catch (apiError) {
+            console.warn(
+              "[ModalReceita] Não foi possível criar conta via API, criando localmente",
+            );
+            // Fallback: salvar no localStorage
+            const contasExistentes = JSON.parse(
+              localStorage.getItem("contas") || "[]",
+            );
+            const novaConta = {
+              ...contaData,
+              id: `conta-${Date.now()}`,
+              dataCriacao: new Date().toISOString(),
+            };
+            contasExistentes.push(novaConta);
+            localStorage.setItem("contas", JSON.stringify(contasExistentes));
+          }
+        } catch (contaError) {
+          console.error(
+            "[ModalReceita] Erro ao criar conta a receber:",
+            contaError,
+          );
+        }
+      }
+
       toast({
         title: "Sucesso",
-        description: "Receita lançada com sucesso!",
+        description: isBoleto
+          ? "Receita lançada e conta a receber criada com sucesso!"
+          : "Receita lançada com sucesso!",
         variant: "default",
       });
 
@@ -415,6 +488,7 @@ export function ModalReceita() {
                         ...prev,
                         categoria: value,
                         descricao: "", // Limpar descrição quando categoria muda
+                        descricaoId: "", // Limpar ID da descrição quando categoria muda
                       }));
                     }}
                   >
@@ -434,15 +508,16 @@ export function ModalReceita() {
                 <div className="space-y-2">
                   <Label htmlFor="descricao">Descrição do Serviço *</Label>
                   <Select
-                    value={formData.descricao}
+                    value={formData.descricaoId}
                     onValueChange={(value) => {
-                      // Buscar a descrição selecionada para salvar o nome
+                      // Buscar a descrição selecionada para salvar o nome e ID
                       const descricaoSelecionada = descricoesFiltradas.find(
                         (d) => d.id?.toString() === value,
                       );
                       setFormData((prev) => ({
                         ...prev,
-                        descricao: descricaoSelecionada?.nome || value,
+                        descricaoId: value,
+                        descricao: descricaoSelecionada?.nome || "",
                       }));
                     }}
                     disabled={!formData.categoria}
@@ -457,11 +532,19 @@ export function ModalReceita() {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {descricoesFiltradas.map((desc) => (
-                        <SelectItem key={desc.id} value={desc.id.toString()}>
-                          {desc.nome}
-                        </SelectItem>
-                      ))}
+                      {descricoesFiltradas.length > 0 ? (
+                        descricoesFiltradas.map((desc) => (
+                          <SelectItem key={desc.id} value={desc.id.toString()}>
+                            {desc.nome}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <div className="px-2 py-1 text-sm text-gray-500">
+                          {formData.categoria
+                            ? "Nenhuma descrição encontrada para esta categoria"
+                            : "Selecione uma categoria primeiro"}
+                        </div>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>

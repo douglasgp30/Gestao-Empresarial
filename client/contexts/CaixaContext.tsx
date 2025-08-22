@@ -219,7 +219,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      console.log("��� [CaixaContext] Carregando dados do banco de dados...");
+      console.log("���� [CaixaContext] Carregando dados do banco de dados...");
 
       // Carregar campanhas do servidor
       try {
@@ -631,7 +631,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // Carregar dados na inicialização - versão otimizada
+  // Carregar dados na inicialização - versão simplificada
   useEffect(() => {
     if (typeof window === "undefined") {
       console.log("[CaixaContext] Servidor - pulando carregamento inicial");
@@ -640,12 +640,37 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Carregar apenas uma vez na inicialização
     let mounted = true;
-    const timeout = setTimeout(() => {
-      if (mounted) {
+    const loadInitialData = async () => {
+      if (!mounted) return;
+
+      try {
+        setIsLoading(true);
         console.log("[CaixaContext] Carregamento inicial executado");
-        carregarDados();
+
+        // Carregar campanhas
+        await carregarCampanhasSafe();
+
+        // Carregar lançamentos
+        try {
+          await carregarLancamentosDoBanco();
+        } catch (error) {
+          console.warn(
+            "Erro ao carregar do banco, usando localStorage:",
+            error,
+          );
+          await carregarLancamentosLocalStorage();
+        }
+      } catch (error) {
+        console.error("Erro no carregamento inicial:", error);
+        setError("Erro ao carregar dados");
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
-    }, 500); // Tempo reduzido para melhor experiência
+    };
+
+    const timeout = setTimeout(loadInitialData, 300);
 
     return () => {
       mounted = false;
@@ -684,10 +709,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.numeroNota,
   ]);
 
-  // Recarregar lançamentos quando os filtros mudarem - corrigido para evitar loop
+  // Recarregar lançamentos quando os filtros mudarem - otimizado
   const isFetchingRef = useRef(false);
+  const lastFiltrosRef = useRef<string>("");
 
   useEffect(() => {
+    // Evitar recarregamento desnecessário se os filtros não mudaram realmente
+    if (lastFiltrosRef.current === filtrosDependencias) {
+      return;
+    }
+
+    lastFiltrosRef.current = filtrosDependencias;
+
     // Debounce para evitar múltiplos lançamentos rápidos
     const timeoutId = setTimeout(() => {
       if (isFetchingRef.current) {
@@ -696,17 +729,19 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
       isFetchingRef.current = true;
       console.log("[CaixaContext] Recarregando por mudança de filtros");
-      carregarDados()
-        .catch((err) =>
-          console.error("[CaixaContext] erro carregarDados:", err),
-        )
+      carregarLancamentosDoBanco()
+        .catch((err) => {
+          console.error("[CaixaContext] erro carregarLancamentosDoBanco:", err);
+          // Em caso de erro, tentar localStorage como fallback
+          return carregarLancamentosLocalStorage();
+        })
         .finally(() => {
           isFetchingRef.current = false;
         });
-    }, 800);
+    }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias]); // REMOVIDO isLoading e isCarregando das dependências
+  }, [filtrosDependencias]);
 
   // Função para normalizar lançamento antes de salvar
   const normalizarLancamento = (lancamento: any): any => {
@@ -948,20 +983,33 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Se é objeto, tentar extrair o ID
     if (typeof objeto === "object" && objeto?.id) {
-      const id = parseInt(objeto.id);
-      return isNaN(id) ? undefined : id;
+      // Tentar primeiro como número
+      const idNumerico = parseInt(objeto.id);
+      if (!isNaN(idNumerico)) {
+        return idNumerico;
+      }
+      // Se não for número, retornar como string (para clientes com ID string)
+      return objeto.id;
     }
 
-    // Se é string/número, tentar converter
+    // Se é string/número, tentar converter mas manter string se for cliente
     if (objeto) {
       const id = parseInt(objeto);
-      return isNaN(id) ? undefined : id;
+      // Se conseguir converter para número, usar número
+      if (!isNaN(id)) {
+        return id;
+      }
+      // Se não conseguir, manter como string (útil para clientes)
+      return objeto;
     }
 
     // Fallback para o ID direto
     if (idFallback) {
       const id = parseInt(idFallback);
-      return isNaN(id) ? undefined : id;
+      if (!isNaN(id)) {
+        return id;
+      }
+      return idFallback;
     }
 
     return undefined;
@@ -1027,11 +1075,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("[CaixaContext] Excluindo lançamento via API:", id);
 
-      // Primeiro remover otimisticamente da lista local para melhorar UX
-      const lancamentosAtuais = [...lancamentos];
-      const novaLista = lancamentosAtuais.filter((l) => l.id !== id);
-      setLancamentos(novaLista);
-
       // Fazer a chamada para a API para excluir do banco de dados
       const response = await fetch(`/api/caixa/${id}`, {
         method: "DELETE",
@@ -1041,9 +1084,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       });
 
       if (!response.ok) {
-        // Reverter a exclusão otimística em caso de erro
-        setLancamentos(lancamentosAtuais);
-
         let errorMessage = `Erro ${response.status}`;
         try {
           const errorData = await response.json();
@@ -1061,8 +1101,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
 
-      // Recarregar apenas os lançamentos de forma mais leve
-      await carregarLancamentosDoBanco();
+      // Remover da lista local após sucesso na API
+      setLancamentos((prev) => prev.filter((l) => l.id !== id));
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
@@ -1103,7 +1143,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
       } catch (serverError) {
         console.warn(
-          "Servidor indisponível, salvando campanha localmente:",
+          "Servidor indispon��vel, salvando campanha localmente:",
           serverError,
         );
 
