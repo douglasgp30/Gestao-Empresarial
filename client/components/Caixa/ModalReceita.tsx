@@ -510,6 +510,7 @@ export function ModalReceita() {
                 )}
               </div>
 
+              {/* Técnico e Campanha na mesma linha */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="tecnicoResponsavel">
@@ -565,6 +566,35 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="campanha">Campanha</Label>
+                  <Select
+                    value={formData.campanha}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, campanha: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a campanha" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Array.isArray(campanhas) ? campanhas : []).map(
+                        (campanha) => (
+                          <SelectItem
+                            key={campanha.id}
+                            value={campanha.id.toString()}
+                          >
+                            {campanha.nome}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Cidade e Setor na mesma linha */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
                   <Label htmlFor="cidade">Cidade</Label>
                   <Select
                     value={formData.cidade}
@@ -593,60 +623,33 @@ export function ModalReceita() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="setor">Setor</Label>
-                <Select
-                  value={formData.setor}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, setor: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        formData.cidade
-                          ? "Selecione o setor"
-                          : "Primeiro selecione uma cidade"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {setoresFiltrados.map((setor) => (
-                      <SelectItem key={setor.id} value={setor.id.toString()}>
-                        {setor.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Campanha - movido para antes de Cliente */}
-              <div className="space-y-2">
-                <Label htmlFor="campanha">Campanha</Label>
-                <Select
-                  value={formData.campanha}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, campanha: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a campanha" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(Array.isArray(campanhas) ? campanhas : []).map(
-                      (campanha) => (
-                        <SelectItem
-                          key={campanha.id}
-                          value={campanha.id.toString()}
-                        >
-                          {campanha.nome}
+                <div className="space-y-2">
+                  <Label htmlFor="setor">Setor</Label>
+                  <Select
+                    value={formData.setor}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, setor: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          formData.cidade
+                            ? "Selecione o setor"
+                            : "Primeiro selecione uma cidade"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {setoresFiltrados.map((setor) => (
+                        <SelectItem key={setor.id} value={setor.id.toString()}>
+                          {setor.nome}
                         </SelectItem>
-                      ),
-                    )}
-                  </SelectContent>
-                </Select>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Cliente */}
