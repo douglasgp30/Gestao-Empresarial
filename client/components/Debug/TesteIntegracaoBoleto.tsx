@@ -17,7 +17,9 @@ interface TesteIntegracaoResult {
 }
 
 export default function TesteIntegracaoBoleto() {
-  const [resultado, setResultado] = useState<TesteIntegracaoResult | null>(null);
+  const [resultado, setResultado] = useState<TesteIntegracaoResult | null>(
+    null,
+  );
   const [testando, setTestando] = useState(false);
 
   const executarTeste = async () => {
@@ -57,8 +59,8 @@ export default function TesteIntegracaoBoleto() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
-          <Button 
-            onClick={executarTeste} 
+          <Button
+            onClick={executarTeste}
             disabled={testando}
             className="flex items-center gap-2"
           >
@@ -118,26 +120,40 @@ export default function TesteIntegracaoBoleto() {
             {resultado.contasBoleto.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Contas a Receber (Boletos)</CardTitle>
+                  <CardTitle className="text-lg">
+                    Contas a Receber (Boletos)
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     {resultado.contasBoleto.slice(0, 5).map((conta, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 border rounded">
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-2 border rounded"
+                      >
                         <div>
-                          <div className="font-medium">#{conta.id} - {conta.cliente}</div>
+                          <div className="font-medium">
+                            #{conta.id} - {conta.cliente}
+                          </div>
                           <div className="text-sm text-muted-foreground">
-                            R$ {conta.valor.toFixed(2)} - Venc: {new Date(conta.vencimento).toLocaleDateString()}
+                            R$ {conta.valor.toFixed(2)} - Venc:{" "}
+                            {new Date(conta.vencimento).toLocaleDateString()}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           {conta.pago ? (
-                            <Badge variant="default" className="bg-green-100 text-green-800">
+                            <Badge
+                              variant="default"
+                              className="bg-green-100 text-green-800"
+                            >
                               <CheckCircle className="h-3 w-3 mr-1" />
                               Pago
                             </Badge>
                           ) : (
-                            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                            <Badge
+                              variant="secondary"
+                              className="bg-yellow-100 text-yellow-800"
+                            >
                               <Clock className="h-3 w-3 mr-1" />
                               Pendente
                             </Badge>
@@ -153,25 +169,35 @@ export default function TesteIntegracaoBoleto() {
             {resultado.lancamentosBoleto.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Lançamentos no Caixa</CardTitle>
+                  <CardTitle className="text-lg">
+                    Lançamentos no Caixa
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {resultado.lancamentosBoleto.slice(0, 5).map((lancamento, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 border rounded">
-                        <div>
-                          <div className="font-medium">#{lancamento.id} - {lancamento.categoria}</div>
-                          <div className="text-sm text-muted-foreground">
-                            R$ {lancamento.valor.toFixed(2)} - {lancamento.cliente} - {lancamento.formaPagamento}
-                          </div>
-                          {lancamento.observacoes && (
-                            <div className="text-xs text-gray-500 mt-1">
-                              {lancamento.observacoes}...
+                    {resultado.lancamentosBoleto
+                      .slice(0, 5)
+                      .map((lancamento, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-2 border rounded"
+                        >
+                          <div>
+                            <div className="font-medium">
+                              #{lancamento.id} - {lancamento.categoria}
                             </div>
-                          )}
+                            <div className="text-sm text-muted-foreground">
+                              R$ {lancamento.valor.toFixed(2)} -{" "}
+                              {lancamento.cliente} - {lancamento.formaPagamento}
+                            </div>
+                            {lancamento.observacoes && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                {lancamento.observacoes}...
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 </CardContent>
               </Card>
@@ -181,13 +207,15 @@ export default function TesteIntegracaoBoleto() {
               <div className="flex items-start gap-2">
                 <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-green-800">Integração Funcionando!</h4>
+                  <h4 className="font-medium text-green-800">
+                    Integração Funcionando!
+                  </h4>
                   <p className="text-sm text-green-700 mt-1">
-                    A integração entre Caixa e Contas a Receber está operacional. 
-                    {resultado.estatisticas.totalContasBoleto > 0 
+                    A integração entre Caixa e Contas a Receber está
+                    operacional.
+                    {resultado.estatisticas.totalContasBoleto > 0
                       ? ` Foram encontrados ${resultado.estatisticas.totalContasBoleto} boletos no sistema.`
-                      : " Nenhum boleto encontrado ainda - teste criando um lançamento com forma de pagamento 'Boleto'."
-                    }
+                      : " Nenhum boleto encontrado ainda - teste criando um lançamento com forma de pagamento 'Boleto'."}
                   </p>
                 </div>
               </div>

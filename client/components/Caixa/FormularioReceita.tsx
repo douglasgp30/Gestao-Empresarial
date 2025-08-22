@@ -429,7 +429,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         formDataFormaPagamento: formData.formaPagamento,
         formaSelecionadaId: formaSelecionada?.id,
         formaSelecionadaNome: formaSelecionada?.nome,
-        todasFormasPagamento: formasPagamento.map(f => ({ id: f.id, nome: f.nome })),
+        todasFormasPagamento: formasPagamento.map((f) => ({
+          id: f.id,
+          nome: f.nome,
+        })),
       });
 
       // Validar se cliente foi encontrado quando necessário
@@ -437,7 +440,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         console.error("Cliente selecionado não encontrado:", formData.cliente);
         toast({
           title: "Erro",
-          description: "Cliente selecionado não foi encontrado. Tente selecionar novamente.",
+          description:
+            "Cliente selecionado não foi encontrado. Tente selecionar novamente.",
           variant: "destructive",
         });
         return;
@@ -445,10 +449,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
       // Validar se forma de pagamento foi encontrada
       if (formData.formaPagamento && !formaSelecionada) {
-        console.error("Forma de pagamento selecionada não encontrada:", formData.formaPagamento);
+        console.error(
+          "Forma de pagamento selecionada não encontrada:",
+          formData.formaPagamento,
+        );
         toast({
           title: "Erro",
-          description: "Forma de pagamento selecionada não foi encontrada. Tente selecionar novamente.",
+          description:
+            "Forma de pagamento selecionada não foi encontrada. Tente selecionar novamente.",
           variant: "destructive",
         });
         return;
@@ -563,7 +571,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           if (responseContaReceber.ok) {
             const contaCriada = await responseContaReceber.json();
-            console.log("✅ Conta a receber criada automaticamente para boleto:", contaCriada);
+            console.log(
+              "✅ Conta a receber criada automaticamente para boleto:",
+              contaCriada,
+            );
 
             toast({
               title: "Boleto registrado com sucesso!",
@@ -572,11 +583,15 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             });
           } else {
             const errorData = await responseContaReceber.json();
-            console.error("Erro ao criar conta a receber para boleto:", errorData);
+            console.error(
+              "Erro ao criar conta a receber para boleto:",
+              errorData,
+            );
 
             toast({
               title: "Atenção",
-              description: "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
+              description:
+                "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
               variant: "destructive",
             });
           }
@@ -585,7 +600,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           toast({
             title: "Atenção",
-            description: "Receita lançada no Caixa, mas houve erro na integração com Contas a Receber.",
+            description:
+              "Receita lançada no Caixa, mas houve erro na integração com Contas a Receber.",
             variant: "destructive",
           });
         }
@@ -1102,10 +1118,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   🔄 Integração Automática Caixa + Contas a Receber
                 </h4>
                 <ul className="text-xs text-blue-700 space-y-1">
-                  <li>• <strong>Agora:</strong> Lança receita bruta no Caixa (não soma no saldo)</li>
-                  <li>• <strong>Agora:</strong> Cria automaticamente conta a receber</li>
-                  <li>• <strong>Quando pago:</strong> Marque como pago em Contas a Receber</li>
-                  <li>• <strong>Automático:</strong> Sistema lança receita real no Caixa</li>
+                  <li>
+                    • <strong>Agora:</strong> Lança receita bruta no Caixa (não
+                    soma no saldo)
+                  </li>
+                  <li>
+                    • <strong>Agora:</strong> Cria automaticamente conta a
+                    receber
+                  </li>
+                  <li>
+                    • <strong>Quando pago:</strong> Marque como pago em Contas a
+                    Receber
+                  </li>
+                  <li>
+                    • <strong>Automático:</strong> Sistema lança receita real no
+                    Caixa
+                  </li>
                 </ul>
               </div>
             </div>

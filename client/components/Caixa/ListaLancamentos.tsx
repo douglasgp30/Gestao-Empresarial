@@ -100,7 +100,7 @@ export default function ListaLancamentos() {
     console.log("getFormaPagamentoNome - Debug:", {
       formaPagamento: fp,
       tipo: typeof fp,
-      todasFormas: formasPagamento.map(f => ({ id: f.id, nome: f.nome })),
+      todasFormas: formasPagamento.map((f) => ({ id: f.id, nome: f.nome })),
     });
 
     // Se é um objeto snapshot, usar o nome
