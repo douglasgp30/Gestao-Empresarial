@@ -934,77 +934,128 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
+      setIsLoading(true);
 
       console.log("[CaixaContext] Editando lançamento:", id, dadosAtualizados);
 
-      // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(
-        localStorage.getItem("lancamentos_caixa") || "[]",
-      );
+      // Tentar editar no servidor primeiro
+      try {
+        const response = await fetch(`/api/caixa/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dadosAtualizados),
+        });
 
-      // Encontrar e atualizar o lançamento
-      const lancamentosAtualizados = lancamentosExistentes.map(
-        (lancamento: any) => {
-          if (lancamento.id === id) {
-            return {
-              ...lancamento,
-              ...dadosAtualizados,
-              // Preservar campos que não devem ser sobrescritos
-              id: lancamento.id,
-              dataCriacao: lancamento.dataCriacao,
-            };
-          }
-          return lancamento;
-        },
-      );
+        if (response.ok) {
+          console.log("[CaixaContext] Lançamento editado no servidor com sucesso");
+          // Recarregar dados do servidor para sincronizar
+          await carregarDados();
+          return;
+        } else {
+          throw new Error(`Erro do servidor: ${response.status}`);
+        }
+      } catch (serverError) {
+        console.warn("Servidor indisponível, editando localmente:", serverError);
 
-      // Salvar no localStorage
-      localStorage.setItem(
-        "lancamentos_caixa",
-        JSON.stringify(lancamentosAtualizados),
-      );
+        // Fallback: editar apenas no localStorage
+        const lancamentosExistentes = JSON.parse(
+          localStorage.getItem("lancamentos_caixa") || "[]",
+        );
 
-      // Recarregar lançamentos
-      await carregarLancamentosLocalStorage();
+        // Encontrar e atualizar o lançamento
+        const lancamentosAtualizados = lancamentosExistentes.map(
+          (lancamento: any) => {
+            if (lancamento.id === id) {
+              return {
+                ...lancamento,
+                ...dadosAtualizados,
+                // Preservar campos que não devem ser sobrescritos
+                id: lancamento.id,
+                dataCriacao: lancamento.dataCriacao,
+                // Marcar como pendente de sincronização
+                _pendingSync: true,
+              };
+            }
+            return lancamento;
+          },
+        );
+
+        // Salvar no localStorage
+        localStorage.setItem(
+          "lancamentos_caixa",
+          JSON.stringify(lancamentosAtualizados),
+        );
+
+        // Recarregar lançamentos
+        await carregarLancamentosLocalStorage();
+      }
 
       console.log("[CaixaContext] Lançamento editado com sucesso:", id);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
       setError("Erro ao editar lançamento");
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const excluirLancamento = async (id: string) => {
     try {
       setError(null);
+      setIsLoading(true);
 
       console.log("[CaixaContext] Excluindo lançamento:", id);
 
-      // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(
-        localStorage.getItem("lancamentos_caixa") || "[]",
-      );
+      // Tentar excluir no servidor primeiro
+      try {
+        const response = await fetch(`/api/caixa/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      // Filtrar para remover o lançamento
-      const lancamentosFiltrados = lancamentosExistentes.filter(
-        (lancamento: any) => lancamento.id !== id,
-      );
+        if (response.ok) {
+          console.log("[CaixaContext] Lançamento excluído no servidor com sucesso");
+          // Recarregar dados do servidor para sincronizar
+          await carregarDados();
+          return;
+        } else {
+          throw new Error(`Erro do servidor: ${response.status}`);
+        }
+      } catch (serverError) {
+        console.warn("Servidor indisponível, excluindo localmente:", serverError);
 
-      // Salvar no localStorage
-      localStorage.setItem(
-        "lancamentos_caixa",
-        JSON.stringify(lancamentosFiltrados),
-      );
+        // Fallback: excluir apenas do localStorage
+        const lancamentosExistentes = JSON.parse(
+          localStorage.getItem("lancamentos_caixa") || "[]",
+        );
 
-      // Recarregar lançamentos
-      await carregarLancamentosLocalStorage();
+        // Filtrar para remover o lançamento
+        const lancamentosFiltrados = lancamentosExistentes.filter(
+          (lancamento: any) => lancamento.id !== id,
+        );
+
+        // Salvar no localStorage
+        localStorage.setItem(
+          "lancamentos_caixa",
+          JSON.stringify(lancamentosFiltrados),
+        );
+
+        // Recarregar lançamentos
+        await carregarLancamentosLocalStorage();
+      }
 
       console.log("[CaixaContext] Lançamento excluído com sucesso:", id);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -1148,18 +1199,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, [lancamentos]);
 
-  // Memoizar funções para estabilizar referências e evitar re-renders
-  const carregarDadosCb = useCallback(() => carregarDados(), []);
-  const adicionarLancamentoCb = useCallback(
-    (novo) => adicionarLancamento(novo),
-    [],
-  );
-  const editarLancamentoCb = useCallback(
-    (id, dados) => editarLancamento(id, dados),
-    [],
-  );
-  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
-  const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
   // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores
   const value = useMemo(
