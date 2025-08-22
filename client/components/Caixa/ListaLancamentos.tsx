@@ -668,14 +668,15 @@ export default function ListaLancamentos() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={isExcluindo}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() =>
                 lancamentoParaExcluir && handleExcluir(lancamentoParaExcluir)
               }
+              disabled={isExcluindo}
               className="bg-red-600 hover:bg-red-700"
             >
-              Excluir
+              {isExcluindo ? "Excluindo..." : "Excluir"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
