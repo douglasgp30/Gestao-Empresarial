@@ -995,6 +995,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("[CaixaContext] Excluindo lançamento via API:", id);
 
+      // Primeiro remover otimisticamente da lista local para melhorar UX
+      const lancamentosAtuais = [...lancamentos];
+      const novaLista = lancamentosAtuais.filter(l => l.id !== id);
+      setLancamentos(novaLista);
+
       // Fazer a chamada para a API para excluir do banco de dados
       const response = await fetch(`/api/caixa/${id}`, {
         method: "DELETE",
@@ -1004,6 +1009,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       });
 
       if (!response.ok) {
+        // Reverter a exclusão otimística em caso de erro
+        setLancamentos(lancamentosAtuais);
+
         let errorMessage = `Erro ${response.status}`;
         try {
           const errorData = await response.json();
@@ -1021,8 +1029,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
 
-      // Recarregar todos os dados após exclusão
-      await carregarDados();
+      // Recarregar apenas os lançamentos de forma mais leve
+      await carregarLancamentosDoBanco();
 
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
