@@ -196,6 +196,7 @@ export function FormularioDespesa({ onSuccess }: FormularioDespesaProps) {
         data: new Date(formData.data),
         tipo: "despesa",
         valor: valorInput.numericValue,
+        categoria: formData.categoria,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         observacoes: formData.observacoes || undefined,
