@@ -245,9 +245,19 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const getTecnicos = useCallback(() => {
     // Combinar técnicos específicos + funcionários que são técnicos
     const tecnicosEspecificos = tecnicos || [];
-    const funcionariosTecnicos = (funcionarios || []).filter(
-      (func) => func.ehTecnico || func.tipoAcesso === "tecnico",
-    );
+    const funcionariosTecnicos = (funcionarios || []).filter((func) => {
+      // ehTecnico tem prioridade
+      if (func.ehTecnico) return true;
+
+      // Verificar tipoAcesso de forma robusta (case-insensitive e tolerante a acentos)
+      const tipo = (func.tipoAcesso || "").toString();
+      const tipoNormalized = tipo
+        .normalize?.("NFD")
+        ?.replace(/[\u0300-\u036f]/g, "")
+        ?.toLowerCase() || tipo.toLowerCase();
+
+      return tipoNormalized === "tecnico";
+    });
 
     // Deduplicar por ID
     const tecnicosCombinados = [...tecnicosEspecificos];
@@ -413,7 +423,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
             },
             {
               id: 5,
-              nome: "Jardim Goiás",
+              nome: "Jardim Goi��s",
               tipoItem: "setor",
               cidade: "Goiânia",
               ativo: true,
