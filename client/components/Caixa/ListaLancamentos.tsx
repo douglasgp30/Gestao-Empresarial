@@ -344,9 +344,9 @@ export default function ListaLancamentos() {
                         <p className="font-medium text-sm">
                           {lancamento.categoria || "N/A"}
                         </p>
-                        {getSetorNome(lancamento.setor) && (
+                        {getSetorNome(lancamento.setor, setores) && (
                           <p className="text-xs text-muted-foreground">
-                            {getSetorNome(lancamento.setor)}
+                            {getSetorNome(lancamento.setor, setores)}
                           </p>
                         )}
                       </div>
@@ -355,23 +355,16 @@ export default function ListaLancamentos() {
                     <TableCell>
                       <div>
                         <p className="font-medium text-sm">
-                          {/* Corrigir exibição da descrição - se for objeto, usar o nome */}
-                          {typeof lancamento.descricao === "object" &&
-                          lancamento.descricao?.nome
-                            ? lancamento.descricao.nome
-                            : typeof lancamento.descricao === "string" &&
-                                lancamento.descricao
-                              ? lancamento.descricao
-                              : "N/A"}
+                          {getDescricaoDisplay(lancamento)}
                         </p>
-                        {getCampanhaNome(lancamento.campanha) && (
+                        {getCampanhaNome(lancamento.campanha, campanhas) && (
                           <p className="text-xs text-blue-600">
-                            Campanha: {getCampanhaNome(lancamento.campanha)}
+                            Campanha: {getCampanhaNome(lancamento.campanha, campanhas)}
                           </p>
                         )}
-                        {getClienteNome(lancamento.cliente) && (
+                        {getClienteNome(lancamento.cliente, clientes) && (
                           <p className="text-xs text-green-600">
-                            Cliente: {getClienteNome(lancamento.cliente)}
+                            Cliente: {getClienteNome(lancamento.cliente, clientes)}
                           </p>
                         )}
                       </div>
@@ -453,18 +446,18 @@ export default function ListaLancamentos() {
                       <div className="flex items-center space-x-1">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">
-                          {getFormaPagamentoNome(lancamento.formaPagamento)}
+                          {getFormaPagamentoNome(lancamento.formaPagamento, formasPagamento)}
                         </span>
                       </div>
                     </TableCell>
 
                     <TableCell>
                       <div className="space-y-1">
-                        {getTecnicoNome(lancamento.tecnicoResponsavel) && (
+                        {getTecnicoNome(lancamento.tecnicoResponsavel, getTecnicos()) && (
                           <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                             <User className="h-3 w-3" />
                             <span>
-                              {getTecnicoNome(lancamento.tecnicoResponsavel)}
+                              {getTecnicoNome(lancamento.tecnicoResponsavel, getTecnicos())}
                             </span>
                           </div>
                         )}
