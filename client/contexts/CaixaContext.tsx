@@ -358,14 +358,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         response = await fetch(url, {
           signal: controller.signal,
           headers: {
-            'Cache-Control': 'no-cache'
-          }
+            "Cache-Control": "no-cache",
+          },
         });
         clearTimeout(timeoutId);
       } catch (fetchError) {
         clearTimeout(timeoutId);
-        if (fetchError.name === 'AbortError') {
-          throw new Error('Timeout: Servidor demorou muito para responder');
+        if (fetchError.name === "AbortError") {
+          throw new Error("Timeout: Servidor demorou muito para responder");
         }
         throw fetchError;
       }
@@ -490,16 +490,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           descricao: {
             nome: (() => {
               // Verificar primeiro descricaoECategoria
-              if (lancamento.descricaoECategoria?.nome &&
-                  typeof lancamento.descricaoECategoria.nome === 'string' &&
-                  lancamento.descricaoECategoria.nome.trim() !== '') {
+              if (
+                lancamento.descricaoECategoria?.nome &&
+                typeof lancamento.descricaoECategoria.nome === "string" &&
+                lancamento.descricaoECategoria.nome.trim() !== ""
+              ) {
                 return lancamento.descricaoECategoria.nome;
               }
 
               // Depois verificar descricao legada
-              if (lancamento.descricao?.nome &&
-                  typeof lancamento.descricao.nome === 'string' &&
-                  lancamento.descricao.nome.trim() !== '') {
+              if (
+                lancamento.descricao?.nome &&
+                typeof lancamento.descricao.nome === "string" &&
+                lancamento.descricao.nome.trim() !== ""
+              ) {
                 return lancamento.descricao.nome;
               }
 
@@ -1025,7 +1029,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Primeiro remover otimisticamente da lista local para melhorar UX
       const lancamentosAtuais = [...lancamentos];
-      const novaLista = lancamentosAtuais.filter(l => l.id !== id);
+      const novaLista = lancamentosAtuais.filter((l) => l.id !== id);
       setLancamentos(novaLista);
 
       // Fazer a chamada para a API para excluir do banco de dados
@@ -1059,7 +1063,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Recarregar apenas os lançamentos de forma mais leve
       await carregarLancamentosDoBanco();
-
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");

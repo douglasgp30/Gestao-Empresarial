@@ -82,7 +82,8 @@ type SortField =
 type SortDirection = "asc" | "desc" | null;
 
 export default function ListaLancamentos() {
-  const { lancamentos, filtros, excluirLancamento, campanhas, isExcluindo } = useCaixa();
+  const { lancamentos, filtros, excluirLancamento, campanhas, isExcluindo } =
+    useCaixa();
   const { formasPagamento, setores, getTecnicos } = useEntidades();
   const { clientes } = useClientes();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
@@ -478,18 +479,24 @@ export default function ListaLancamentos() {
                         <p className="font-medium text-sm">
                           {(() => {
                             // Verificar se é um objeto com nome válido
-                            if (typeof lancamento.descricao === "object" &&
-                                lancamento.descricao?.nome &&
-                                typeof lancamento.descricao.nome === 'string' &&
-                                lancamento.descricao.nome.trim() !== '' &&
-                                !/^\d+$/.test(lancamento.descricao.nome)) { // Evitar strings apenas numéricas
+                            if (
+                              typeof lancamento.descricao === "object" &&
+                              lancamento.descricao?.nome &&
+                              typeof lancamento.descricao.nome === "string" &&
+                              lancamento.descricao.nome.trim() !== "" &&
+                              !/^\d+$/.test(lancamento.descricao.nome)
+                            ) {
+                              // Evitar strings apenas numéricas
                               return lancamento.descricao.nome;
                             }
 
                             // Verificar se é uma string válida (não apenas números)
-                            if (typeof lancamento.descricao === "string" &&
-                                lancamento.descricao.trim() !== '' &&
-                                !/^\d+$/.test(lancamento.descricao)) { // Evitar strings apenas numéricas
+                            if (
+                              typeof lancamento.descricao === "string" &&
+                              lancamento.descricao.trim() !== "" &&
+                              !/^\d+$/.test(lancamento.descricao)
+                            ) {
+                              // Evitar strings apenas numéricas
                               return lancamento.descricao;
                             }
 
@@ -668,7 +675,9 @@ export default function ListaLancamentos() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isExcluindo}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={isExcluindo}>
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() =>
                 lancamentoParaExcluir && handleExcluir(lancamentoParaExcluir)
