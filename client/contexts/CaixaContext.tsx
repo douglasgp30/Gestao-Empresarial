@@ -979,28 +979,37 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
 
-      console.log("[CaixaContext] Excluindo lançamento:", id);
+      console.log("[CaixaContext] Excluindo lançamento via API:", id);
 
-      // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(
-        localStorage.getItem("lancamentos_caixa") || "[]",
-      );
+      // Fazer a chamada para a API para excluir do banco de dados
+      const response = await fetch(`/api/caixa/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      // Filtrar para remover o lançamento
-      const lancamentosFiltrados = lancamentosExistentes.filter(
-        (lancamento: any) => lancamento.id !== id,
-      );
+      if (!response.ok) {
+        let errorMessage = `Erro ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          try {
+            const errorText = await response.text();
+            errorMessage = errorText || errorMessage;
+          } catch {
+            // Se não conseguir ler nada, usar mensagem padrão
+          }
+        }
+        throw new Error(`Erro na API: ${errorMessage}`);
+      }
 
-      // Salvar no localStorage
-      localStorage.setItem(
-        "lancamentos_caixa",
-        JSON.stringify(lancamentosFiltrados),
-      );
+      console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
 
-      // Recarregar lançamentos
-      await carregarLancamentosLocalStorage();
+      // Recarregar todos os dados após exclusão
+      await carregarDados();
 
-      console.log("[CaixaContext] Lançamento excluído com sucesso:", id);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
