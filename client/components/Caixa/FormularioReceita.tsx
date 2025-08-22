@@ -192,7 +192,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
     return (
       forma?.nome?.toLowerCase().includes("boleto") ||
-      forma?.nome?.toLowerCase().includes("bancário") ||
+      forma?.nome?.toLowerCase().includes("bancario") ||
       false
     );
   }, [formData.formaPagamento, formasPagamento]);
@@ -829,7 +829,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <SelectContent>
                   {tecnicos.length === 0 ? (
                     <div className="px-2 py-1 text-sm text-gray-500">
-                      Nenhum técnico cadastrado
+                      Nenhum t��cnico cadastrado
                     </div>
                   ) : (
                     tecnicos
