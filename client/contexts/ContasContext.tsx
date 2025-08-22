@@ -262,8 +262,8 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
             },
             {
               id: 4,
-              nome: "Cartão de Crédito",
-              descricao: "Pagamento com cartão de crédito",
+              nome: "Cartao de Credito",
+              descricao: "Pagamento com cartao de credito",
             },
           ] as FormaPagamento[]);
         }
