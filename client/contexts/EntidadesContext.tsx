@@ -28,6 +28,7 @@ import {
   isContextLoading,
   setContextLoading,
 } from "../lib/globalLoadingControl";
+import { useFuncionarios } from "./FuncionariosContext";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
