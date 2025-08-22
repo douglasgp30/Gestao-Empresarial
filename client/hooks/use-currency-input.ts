@@ -17,27 +17,36 @@ export const useCurrencyInput = (initialValue: string = "") => {
   );
   const [numericValue, setNumericValue] = useState(0);
 
-  const formatCurrency = (cents: number) => {
-    const reais = Math.floor(cents / 100);
-    const centavos = cents % 100;
-    return `R$ ${reais.toLocaleString("pt-BR")},${centavos.toString().padStart(2, "0")}`;
+  const formatCurrency = (valueInReais: number) => {
+    // Usar o mesmo padrão da Meta - Intl.NumberFormat
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(valueInReais);
   };
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const input = event.target.value;
 
-      // Extrair apenas dígitos
+      // Extrair apenas dígitos (mesmo padrão da Meta)
       const digits = input.replace(/\D/g, "");
 
-      // Converter para número (em centavos)
-      const numericCents = parseInt(digits) || 0;
+      // Se vazio, mostrar R$ 0,00
+      if (!digits) {
+        setDisplayValue("R$ 0,00");
+        setNumericValue(0);
+        return;
+      }
 
-      // Formatar para exibição
-      const formatted = formatCurrency(numericCents);
+      // Converter para número em reais (dividindo por 100 para considerar centavos)
+      const valueInReais = parseInt(digits) / 100;
+
+      // Formatar usando o mesmo padrão da Meta
+      const formatted = formatCurrency(valueInReais);
 
       setDisplayValue(formatted);
-      setNumericValue(numericCents / 100); // Valor em reais
+      setNumericValue(valueInReais);
     },
     [],
   );
@@ -71,9 +80,8 @@ export const useCurrencyInput = (initialValue: string = "") => {
 
   // Função para definir um valor programaticamente
   const setValue = useCallback((value: number) => {
-    const cents = Math.round(value * 100);
     setNumericValue(value);
-    setDisplayValue(formatCurrency(cents));
+    setDisplayValue(formatCurrency(value));
   }, []);
 
   // Função para resetar
