@@ -8,7 +8,7 @@ export const useCurrencyInput = (initialValue: string = "") => {
   // Converter valor inicial para formato de exibição
   const formatInitialValue = (value: string) => {
     if (!value) return "R$ 0,00";
-    const numericValue = parseFloat(value.replace(/[^\d]/g, "")) || 0;
+    const numericValue = parseFloat(value) || 0;
     return formatCurrency(numericValue);
   };
 
