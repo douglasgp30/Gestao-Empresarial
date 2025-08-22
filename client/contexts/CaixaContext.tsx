@@ -772,11 +772,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       normalized.descricao = { nome: normalized.descricao };
     }
 
-    // 2. Forma de Pagamento: garantir objeto com nome
+    // 2. Forma de Pagamento: garantir objeto com nome correto
     if (typeof normalized.formaPagamento === "string") {
+      // Tentar resolver o nome correto a partir das formas de pagamento disponíveis
+      const formasStorage = localStorage.getItem("formas_pagamento");
+      let nomeCorreto = normalized.formaPagamento; // fallback
+
+      if (formasStorage) {
+        try {
+          const formas = JSON.parse(formasStorage);
+          const formaEncontrada = formas.find((f: any) =>
+            f.id === normalized.formaPagamento ||
+            f.id?.toString() === normalized.formaPagamento
+          );
+          if (formaEncontrada?.nome) {
+            nomeCorreto = formaEncontrada.nome;
+          }
+        } catch (error) {
+          console.warn("[CaixaContext] Erro ao resolver forma de pagamento:", error);
+        }
+      }
+
       normalized.formaPagamento = {
         id: normalized.formaPagamento,
-        nome: normalized.formaPagamento,
+        nome: nomeCorreto,
       };
     }
 
