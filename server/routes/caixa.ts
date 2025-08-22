@@ -937,15 +937,17 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
 
     // Separar boletos de outras formas de pagamento
     const receitasBoleto = receitasCompletas.filter(
-      (r) =>
-        r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        r.formaPagamento?.nome.toLowerCase().includes("bancário"),
+      (r) => {
+        const nomeForma = r.formaPagamento?.nome?.toLowerCase() || "";
+        return nomeForma.includes("boleto") || nomeForma.includes("bancário");
+      }
     );
 
     const receitasNaoBoleto = receitasCompletas.filter(
-      (r) =>
-        !r.formaPagamento?.nome.toLowerCase().includes("boleto") &&
-        !r.formaPagamento?.nome.toLowerCase().includes("bancário"),
+      (r) => {
+        const nomeForma = r.formaPagamento?.nome?.toLowerCase() || "";
+        return !nomeForma.includes("boleto") && !nomeForma.includes("bancário");
+      }
     );
 
     // Calcular totais
