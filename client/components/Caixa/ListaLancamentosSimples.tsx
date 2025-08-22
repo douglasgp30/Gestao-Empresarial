@@ -134,12 +134,25 @@ export function ListaLancamentosSimples() {
         return lancamento.categoria || "N/A";
 
       case "descricao":
-        // Suporta tanto string quanto objeto com nome
-        const descricao =
-          typeof lancamento.descricao === "string"
-            ? lancamento.descricao
-            : lancamento.descricao?.nome;
-        return descricao || "N/A";
+        // Suporta tanto string quanto objeto com nome, evitando números aleatórios
+        let descricao = "N/A";
+
+        if (typeof lancamento.descricao === "string") {
+          // Se for string e não for um número, usar como está
+          if (!/^\d+$/.test(lancamento.descricao.trim())) {
+            descricao = lancamento.descricao;
+          }
+        } else if (typeof lancamento.descricao === "object" && lancamento.descricao?.nome) {
+          // Se for objeto, usar o nome
+          descricao = lancamento.descricao.nome;
+        }
+
+        // Fallback para descrição unificada se disponível
+        if (descricao === "N/A" && lancamento.descricaoECategoria?.nome) {
+          descricao = lancamento.descricaoECategoria.nome;
+        }
+
+        return descricao;
 
       case "valor":
         return (
