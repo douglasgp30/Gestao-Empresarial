@@ -79,11 +79,7 @@ export function ModalContasPagar({
     novoFornecedor: "",
   });
 
-  const {
-    value: valorFormatado,
-    onChange: onValorChange,
-    setValue: setValor,
-  } = useCurrencyInput();
+  const valorInput = useCurrencyInput();
 
   // Filtrar descrições de despesa para contas a pagar
   const descricoesDespesa = descricoes.filter((d) => d.tipo === "despesa");
@@ -273,10 +269,7 @@ export function ModalContasPagar({
             <Label htmlFor="valor">Valor *</Label>
             <Input
               id="valor"
-              type="text"
-              placeholder="R$ 0,00"
-              value={valorFormatado}
-              onChange={onValorChange}
+              {...valorInput.inputProps}
               required
             />
           </div>

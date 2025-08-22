@@ -80,11 +80,7 @@ export function ModalContasReceber({
     dataPagamento: undefined as Date | undefined,
   });
 
-  const {
-    value: valorFormatado,
-    onChange: onValorChange,
-    setValue: setValor,
-  } = useCurrencyInput();
+  const valorInput = useCurrencyInput();
 
   // Filtrar descrições de receita para contas a receber
   const descricoesReceita = descricoes.filter((d) => d.tipo === "receita");
@@ -237,10 +233,7 @@ export function ModalContasReceber({
             <Label htmlFor="valor">Valor *</Label>
             <Input
               id="valor"
-              type="text"
-              placeholder="R$ 0,00"
-              value={valorFormatado}
-              onChange={onValorChange}
+              {...valorInput.inputProps}
               required
             />
           </div>
