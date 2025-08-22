@@ -21,6 +21,20 @@ const ContaLancamentoSchema = z
       .string()
       .optional()
       .transform((str) => (str ? new Date(str) : undefined)),
+
+    // Campos para integração com Caixa
+    codigoServico: z.string().optional(),
+    categoria: z.string().optional(),
+    descricao: z.string().optional(),
+    lancamentoCaixaId: z.union([z.string(), z.number()]).optional(),
+    sistemaOrigem: z.string().optional(),
+    status: z.string().optional(),
+    prioridadePagamento: z.string().optional(),
+
+    // Campos adicionais do schema Prisma
+    valorOriginal: z.number().optional(),
+    valorLiquido: z.number().optional(),
+    numeroDocumento: z.string().optional(),
   })
   .refine(
     (data) => {
