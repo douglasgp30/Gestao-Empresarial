@@ -348,7 +348,26 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const url = `/api/caixa?${params.toString()}`;
       console.log("📦 [CaixaContext] URL da requisição:", url);
 
-      const response = await fetch(url);
+      // Adicionar timeout para evitar congelamentos
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos
+
+      let response;
+      try {
+        response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+        clearTimeout(timeoutId);
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === 'AbortError') {
+          throw new Error('Timeout: Servidor demorou muito para responder');
+        }
+        throw fetchError;
+      }
 
       console.log("📦 [CaixaContext] Status da resposta:", response.status);
       console.log("📦 [CaixaContext] Headers da resposta:", [
@@ -383,7 +402,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Verificar se a resposta foi bem sucedida após fazer o parse
       if (!response.ok) {
         console.error(
-          "📦 [CaixaContext] Erro na resposta:",
+          "��� [CaixaContext] Erro na resposta:",
           lancamentosDoBanco,
         );
         const errorMessage =
