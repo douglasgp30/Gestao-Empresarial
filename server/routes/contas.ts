@@ -21,6 +21,20 @@ const ContaLancamentoSchema = z
       .string()
       .optional()
       .transform((str) => (str ? new Date(str) : undefined)),
+
+    // Campos para integração com Caixa
+    codigoServico: z.string().optional(),
+    categoria: z.string().optional(),
+    descricao: z.string().optional(),
+    lancamentoCaixaId: z.union([z.string(), z.number()]).optional(),
+    sistemaOrigem: z.string().optional(),
+    status: z.string().optional(),
+    prioridadePagamento: z.string().optional(),
+
+    // Campos adicionais do schema Prisma
+    valorOriginal: z.number().optional(),
+    valorLiquido: z.number().optional(),
+    numeroDocumento: z.string().optional(),
   })
   .refine(
     (data) => {
@@ -133,8 +147,44 @@ router.post("/", async (req, res) => {
 
     const dados = ContaLancamentoSchema.parse(req.body);
 
+    // Preparar dados para criação com mapeamento correto
+    const dadosParaCriacao: any = {
+      valor: dados.valor,
+      dataVencimento: dados.dataVencimento,
+      codigoCliente: dados.codigoCliente,
+      codigoFornecedor: dados.codigoFornecedor,
+      tipo: dados.tipo,
+      formaPg: dados.formaPg,
+      observacoes: dados.observacoes,
+      descricaoCategoria: dados.descricaoCategoria,
+      pago: dados.pago,
+      dataPagamento: dados.dataPagamento,
+
+      // Mapeamento para campos adicionais do schema
+      valorOriginal: dados.valorOriginal || dados.valor,
+      valorLiquido: dados.valorLiquido || dados.valor,
+      status: dados.status || (dados.pago ? "pago" : "pendente"),
+      prioridadePagamento: dados.prioridadePagamento || "normal",
+      codigoExterno: dados.codigoServico,
+      sistemaOrigem: dados.sistemaOrigem || "manual",
+      numeroDocumento: dados.numeroDocumento,
+
+      // Campos de observações estendidas
+      observacoesInternas:
+        dados.categoria && dados.descricao
+          ? `Categoria: ${dados.categoria} | Descrição: ${dados.descricao}${dados.lancamentoCaixaId ? ` | Caixa ID: ${dados.lancamentoCaixaId}` : ""}`
+          : dados.lancamentoCaixaId
+            ? `Lançamento Caixa ID: ${dados.lancamentoCaixaId}`
+            : undefined,
+    };
+
+    console.log(
+      "🔍 [API CONTAS] Dados preparados para criação:",
+      dadosParaCriacao,
+    );
+
     const conta = await prisma.contaLancamento.create({
-      data: dados,
+      data: dadosParaCriacao,
       include: {
         cliente: true,
         fornecedor: true,
@@ -144,11 +194,15 @@ router.post("/", async (req, res) => {
     });
 
     console.log("✅ [API CONTAS] Conta criada com sucesso:", {
-      id: conta.codLancamentoContas,
+      id: conta.id,
       tipo: conta.tipo,
       valor: conta.valor,
+      valorOriginal: conta.valorOriginal,
+      status: conta.status,
+      sistemaOrigem: conta.sistemaOrigem,
       cliente: conta.cliente?.nome,
       fornecedor: conta.fornecedor?.nome,
+      codigoExterno: conta.codigoExterno,
     });
 
     const response: ApiResponse<typeof conta> = {
@@ -241,7 +295,7 @@ router.delete("/:id", async (req, res) => {
 router.patch("/:id/pagar", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { formaPg } = req.body;
+    const { formaPg, dataPagamento } = req.body;
 
     if (!formaPg) {
       const response: ApiResponse<null> = {
@@ -250,12 +304,42 @@ router.patch("/:id/pagar", async (req, res) => {
       return res.status(400).json(response);
     }
 
+    console.log("🔍 [API CONTAS] Marcando conta como paga:", {
+      id,
+      formaPg,
+      dataPagamento,
+    });
+
+    // Buscar a conta antes de atualizar para verificar se é boleto
+    const contaAntiga = await prisma.contaLancamento.findUnique({
+      where: { id },
+      include: {
+        cliente: true,
+        fornecedor: true,
+      },
+    });
+
+    if (!contaAntiga) {
+      const response: ApiResponse<null> = {
+        error: "Conta não encontrada",
+      };
+      return res.status(404).json(response);
+    }
+
+    // Atualizar conta como paga
+    const dataPagamentoFinal = dataPagamento
+      ? new Date(dataPagamento)
+      : new Date();
+
     const conta = await prisma.contaLancamento.update({
-      where: { codLancamentoContas: id },
+      where: { id },
       data: {
         pago: true,
-        dataPagamento: new Date(),
+        dataPagamento: dataPagamentoFinal,
         formaPg: parseInt(formaPg),
+        status: "pago",
+        valorPago: contaAntiga.valor,
+        valorRestante: 0,
       },
       include: {
         cliente: true,
@@ -264,6 +348,83 @@ router.patch("/:id/pagar", async (req, res) => {
         categoria: true,
       },
     });
+
+    console.log("✅ [API CONTAS] Conta marcada como paga:", {
+      id: conta.id,
+      tipo: conta.tipo,
+      valor: conta.valor,
+      cliente: conta.cliente?.nome,
+    });
+
+    // Se for conta a receber e veio do sistema de caixa (boleto), criar lançamento automático no caixa
+    if (
+      conta.tipo === "receber" &&
+      (conta.sistemaOrigem === "caixa_boleto" || conta.codigoExterno)
+    ) {
+      try {
+        console.log(
+          "🔄 [API CONTAS] Criando lançamento automático no caixa para boleto pago...",
+        );
+
+        const dadosLancamentoCaixa = {
+          valor: conta.valor,
+          valorRecebido: conta.valorPago || conta.valor,
+          valorLiquido: conta.valorLiquido || conta.valor,
+          tipo: "receita",
+          data: dataPagamentoFinal.toISOString().split("T")[0],
+          categoria: "Recebimento de Boletos",
+          descricao: `Boleto pago - ${conta.cliente?.nome || "Cliente"}`,
+          formaPagamentoId: conta.formaPg,
+          clienteId: conta.codigoCliente,
+          observacoes: `Recebimento automático de boleto. Conta #${conta.id}${conta.observacoes ? ` | Obs original: ${conta.observacoes}` : ""}`,
+          codigoServico: conta.codigoExterno,
+          sistemaOrigem: "contas_boleto_pago",
+        };
+
+        console.log(
+          "🔍 [API CONTAS] Dados para lançamento no caixa:",
+          dadosLancamentoCaixa,
+        );
+
+        // Fazer requisição para API do caixa
+        const responseCaixa = await fetch("http://localhost:8080/api/caixa", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dadosLancamentoCaixa),
+        });
+
+        if (responseCaixa.ok) {
+          const lancamentoCriado = await responseCaixa.json();
+          console.log(
+            "✅ [API CONTAS] Lançamento criado automaticamente no caixa:",
+            lancamentoCriado.id,
+          );
+
+          // Atualizar conta com referência ao lançamento do caixa
+          await prisma.contaLancamento.update({
+            where: { id },
+            data: {
+              observacoesInternas:
+                `${conta.observacoesInternas || ""} | Lançamento Caixa ID: ${lancamentoCriado.id}`.trim(),
+            },
+          });
+        } else {
+          const errorCaixa = await responseCaixa.text();
+          console.error(
+            "❌ [API CONTAS] Erro ao criar lançamento no caixa:",
+            errorCaixa,
+          );
+        }
+      } catch (errorCaixa) {
+        console.error(
+          "❌ [API CONTAS] Erro na integração com caixa:",
+          errorCaixa,
+        );
+        // Não falhar a operação principal se houver erro na integração
+      }
+    }
 
     const response: ApiResponse<typeof conta> = {
       data: conta,
@@ -468,6 +629,84 @@ router.get("/categorias", async (req, res) => {
     res.json(response);
   } catch (error) {
     console.error("Erro ao buscar categorias:", error);
+    const response: ApiResponse<null> = {
+      error: "Erro interno do servidor",
+    };
+    res.status(500).json(response);
+  }
+});
+
+// GET /api/contas/teste-integracao - Endpoint para testar integração caixa-contas
+router.get("/teste-integracao", async (req, res) => {
+  try {
+    console.log("🧪 [API CONTAS] Testando integração...");
+
+    // Buscar contas de boleto
+    const contasBoleto = await prisma.contaLancamento.findMany({
+      where: {
+        OR: [
+          { sistemaOrigem: "caixa_boleto" },
+          { observacoes: { contains: "BOLETO AUTOMÁTICO" } },
+        ],
+      },
+      include: {
+        cliente: true,
+      },
+      orderBy: { dataCriacao: "desc" },
+      take: 10,
+    });
+
+    // Buscar lançamentos de boleto no caixa
+    const lancamentosBoleto = await prisma.lancamentoCaixa.findMany({
+      where: {
+        OR: [
+          { categoria: "Recebimento de Boletos" },
+          { observacoes: { contains: "BOLETO - Aguardando pagamento" } },
+        ],
+      },
+      include: {
+        formaPagamento: true,
+        cliente: true,
+      },
+      orderBy: { dataHora: "desc" },
+      take: 10,
+    });
+
+    const resultado = {
+      contasBoleto: contasBoleto.map((c) => ({
+        id: c.id,
+        valor: c.valor,
+        cliente: c.cliente?.nome,
+        vencimento: c.dataVencimento,
+        pago: c.pago,
+        sistemaOrigem: c.sistemaOrigem,
+        status: c.status,
+      })),
+      lancamentosBoleto: lancamentosBoleto.map((l) => ({
+        id: l.id,
+        valor: l.valor,
+        categoria: l.categoria,
+        cliente: l.cliente?.nome,
+        formaPagamento: l.formaPagamento?.nome,
+        observacoes: l.observacoes?.substring(0, 100),
+      })),
+      estatisticas: {
+        totalContasBoleto: contasBoleto.length,
+        totalLancamentosBoleto: lancamentosBoleto.length,
+        contasBoletoPagas: contasBoleto.filter((c) => c.pago).length,
+        contasBoletoAguardando: contasBoleto.filter((c) => !c.pago).length,
+      },
+    };
+
+    console.log("🧪 [API CONTAS] Resultado do teste:", resultado.estatisticas);
+
+    const response: ApiResponse<typeof resultado> = {
+      data: resultado,
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Erro no teste de integração:", error);
     const response: ApiResponse<null> = {
       error: "Erro interno do servidor",
     };

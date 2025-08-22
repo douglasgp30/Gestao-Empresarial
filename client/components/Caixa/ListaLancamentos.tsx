@@ -96,16 +96,40 @@ export default function ListaLancamentos() {
   const getFormaPagamentoNome = (fp: any) => {
     if (!fp) return "N/A";
 
+    // Debug log para diagnosticar problema
+    console.log("getFormaPagamentoNome - Debug:", {
+      formaPagamento: fp,
+      tipo: typeof fp,
+      todasFormas: formasPagamento.map((f) => ({ id: f.id, nome: f.nome })),
+    });
+
     // Se é um objeto snapshot, usar o nome
     if (typeof fp === "object" && fp.nome) {
+      console.log("getFormaPagamentoNome - Usando snapshot:", fp.nome);
       return fp.nome;
     }
 
-    // Se é string, buscar pelo ID
-    if (typeof fp === "string") {
+    // Se é objeto com ID, buscar pelo ID
+    if (typeof fp === "object" && fp.id) {
+      const forma = formasPagamento.find(
+        (f) => f.id?.toString() === fp.id?.toString(),
+      );
+      console.log("getFormaPagamentoNome - Busca por objeto ID:", {
+        procurandoId: fp.id,
+        encontrado: forma,
+      });
+      return forma?.nome || "N/A";
+    }
+
+    // Se é string ou número, buscar pelo ID
+    if (typeof fp === "string" || typeof fp === "number") {
       const forma = formasPagamento.find(
         (f) => f.id?.toString() === fp.toString(),
       );
+      console.log("getFormaPagamentoNome - Busca por ID direto:", {
+        procurandoId: fp,
+        encontrado: forma,
+      });
       // Se encontrou, retorna o nome. Se não encontrou, retorna "N/A" ao invés do código
       return forma?.nome || "N/A";
     }
@@ -195,8 +219,18 @@ export default function ListaLancamentos() {
       return cliente.nome;
     }
 
-    // Se é string, buscar pelo ID
-    if (typeof cliente === "string") {
+    // Se é objeto com ID, buscar pelo ID
+    if (typeof cliente === "object" && cliente.id) {
+      const clienteEncontrado = clientes.find(
+        (c) => c.id?.toString() === cliente.id?.toString(),
+      );
+      if (clienteEncontrado) {
+        return clienteEncontrado.nome;
+      }
+    }
+
+    // Se é string ou número, buscar pelo ID
+    if (typeof cliente === "string" || typeof cliente === "number") {
       const clienteEncontrado = clientes.find(
         (c) => c.id?.toString() === cliente.toString(),
       );

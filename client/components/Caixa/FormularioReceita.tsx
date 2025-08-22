@@ -385,6 +385,15 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Para outros, o valor para empresa é o valor líquido menos a comissão
       const valorParaEmpresaCalculado = isBoleto ? 0 : valorParaEmpresa;
 
+      console.log("Valores calculados para lançamento:", {
+        isBoleto,
+        valorTotal: valorInput.numericValue,
+        valorQueEntrou: valorQueEntrouReal,
+        valorLiquido: valorLiquidoCalculado,
+        comissao: comissaoCalculada,
+        valorParaEmpresa: valorParaEmpresaCalculado,
+      });
+
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
       if (isBoleto) {
@@ -415,6 +424,43 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         setor: setorSelecionado,
         tecnico: tecnicoSelecionado,
       });
+
+      console.log("FormularioReceita - Forma de pagamento detalhada:", {
+        formDataFormaPagamento: formData.formaPagamento,
+        formaSelecionadaId: formaSelecionada?.id,
+        formaSelecionadaNome: formaSelecionada?.nome,
+        todasFormasPagamento: formasPagamento.map((f) => ({
+          id: f.id,
+          nome: f.nome,
+        })),
+      });
+
+      // Validar se cliente foi encontrado quando necessário
+      if (formData.cliente && !clienteSelecionado) {
+        console.error("Cliente selecionado não encontrado:", formData.cliente);
+        toast({
+          title: "Erro",
+          description:
+            "Cliente selecionado não foi encontrado. Tente selecionar novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validar se forma de pagamento foi encontrada
+      if (formData.formaPagamento && !formaSelecionada) {
+        console.error(
+          "Forma de pagamento selecionada não encontrada:",
+          formData.formaPagamento,
+        );
+        toast({
+          title: "Erro",
+          description:
+            "Forma de pagamento selecionada não foi encontrada. Tente selecionar novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       // Criar lançamento no caixa com snapshots completos
       const lancamentoCaixa = await adicionarLancamento({
@@ -489,40 +535,91 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Se for boleto, criar automaticamente conta a receber
       if (isBoleto && dataVencimentoBoleto && codigoServico) {
         try {
+          console.log("Criando conta a receber para boleto:", {
+            clienteId: formData.cliente,
+            valor: valorInput.numericValue,
+            dataVencimento: dataVencimentoBoleto,
+            codigoServico,
+          });
+
+          const dadosContaReceber = {
+            tipo: "receber",
+            valor: valorInput.numericValue,
+            dataVencimento: dataVencimentoBoleto.toISOString().split("T")[0], // YYYY-MM-DD
+            codigoCliente: parseInt(formData.cliente),
+            observacoes: `[BOLETO AUTOMÁTICO] ${formData.categoria} - ${formData.descricao}${formData.observacoes ? ` | Obs: ${formData.observacoes}` : ""} | Cód: ${codigoServico}`,
+            codigoServico: codigoServico,
+            categoria: formData.categoria,
+            descricao: formData.descricao,
+            pago: false,
+            // Adicionar campos para integração
+            lancamentoCaixaId: lancamentoCaixa.id, // Vincular com o lançamento do caixa
+            sistemaOrigem: "caixa_boleto",
+            status: "pendente",
+            prioridadePagamento: "normal",
+          };
+
+          console.log("Dados para criar conta a receber:", dadosContaReceber);
+
           const responseContaReceber = await fetch("/api/contas", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              tipo: "receber",
-              valor: valorInput.numericValue,
-              dataVencimento: dataVencimentoBoleto.toISOString(),
-              codigoCliente: parseInt(formData.cliente),
-              observacoes: `Boleto gerado automaticamente - ${formData.descricao}${formData.observacoes ? ` - ${formData.observacoes}` : ""} - Código: ${codigoServico}`,
-              codigoServico: codigoServico, // Usar o mesmo código do serviço
-              categoria: formData.categoria,
-              descricao: formData.descricao,
-              pago: false,
-            }),
+            body: JSON.stringify(dadosContaReceber),
           });
 
           if (responseContaReceber.ok) {
-            console.log("Conta a receber criada automaticamente para boleto");
+            const contaCriada = await responseContaReceber.json();
+            console.log(
+              "✅ Conta a receber criada automaticamente para boleto:",
+              contaCriada,
+            );
+
+            toast({
+              title: "Boleto registrado com sucesso!",
+              description: `Receita lançada no Caixa e conta a receber criada automaticamente. Vencimento: ${dataVencimentoBoleto.toLocaleDateString("pt-BR")}`,
+              variant: "default",
+            });
           } else {
-            console.error("Erro ao criar conta a receber para boleto");
+            const errorData = await responseContaReceber.json();
+            console.error(
+              "Erro ao criar conta a receber para boleto:",
+              errorData,
+            );
+
+            toast({
+              title: "Atenção",
+              description:
+                "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
+              variant: "destructive",
+            });
           }
         } catch (error) {
           console.error("Erro ao criar conta a receber:", error);
-          // Não interromper o fluxo principal se houver erro na criação da conta
-        }
-      }
 
-      toast({
-        title: "Sucesso",
-        description: "Receita lançada com sucesso!",
-        variant: "default",
-      });
+          toast({
+            title: "Atenção",
+            description:
+              "Receita lançada no Caixa, mas houve erro na integração com Contas a Receber.",
+            variant: "destructive",
+          });
+        }
+      } else if (isBoleto) {
+        // Sucesso normal para boletos sem integração
+        toast({
+          title: "Boleto registrado!",
+          description: `Receita de boleto lançada. O valor entrará no caixa quando for pago. Vencimento: ${dataVencimentoBoleto?.toLocaleDateString("pt-BR")}`,
+          variant: "default",
+        });
+      } else {
+        // Sucesso normal para outras formas de pagamento
+        toast({
+          title: "Sucesso",
+          description: "Receita lançada com sucesso!",
+          variant: "default",
+        });
+      }
 
       // Resetar formulário
       setFormData({
@@ -980,42 +1077,65 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           {/* Data de Vencimento do Boleto - só aparece para boletos */}
           {isBoleto && (
-            <div className="space-y-2 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <Label
-                htmlFor="dataVencimentoBoleto"
-                className="text-yellow-800 font-semibold"
-              >
-                Data de Vencimento do Boleto *
-              </Label>
+            <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <div className="flex items-center gap-2">
-                <Input
-                  id="dataVencimentoBoleto"
-                  type="date"
-                  value={
-                    dataVencimentoBoleto
-                      ? dataVencimentoBoleto.toISOString().split("T")[0]
-                      : ""
-                  }
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setDataVencimentoBoleto(new Date(e.target.value));
-                    } else {
-                      setDataVencimentoBoleto(null);
-                    }
-                  }}
-                  className="bg-yellow-50 border-yellow-300"
-                  required
-                />
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <Label
+                  htmlFor="dataVencimentoBoleto"
+                  className="text-blue-800 font-semibold"
+                >
+                  Data de Vencimento do Boleto *
+                </Label>
               </div>
+
+              <Input
+                id="dataVencimentoBoleto"
+                type="date"
+                value={
+                  dataVencimentoBoleto
+                    ? dataVencimentoBoleto.toISOString().split("T")[0]
+                    : ""
+                }
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setDataVencimentoBoleto(new Date(e.target.value));
+                  } else {
+                    setDataVencimentoBoleto(null);
+                  }
+                }}
+                className="bg-blue-50 border-blue-300"
+                required
+              />
+
               {!dataVencimentoBoleto && (
-                <p className="text-xs text-yellow-700">
+                <p className="text-xs text-red-600 font-medium">
                   ⚠️ Data de vencimento é obrigatória para boletos
                 </p>
               )}
-              <p className="text-xs text-yellow-600">
-                💡 Esta receita será registrada como receita bruta, mas não
-                entrará no valor para empresa até o pagamento do boleto.
-              </p>
+
+              <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
+                <h4 className="text-sm font-semibold text-blue-800 mb-2">
+                  🔄 Integração Automática Caixa + Contas a Receber
+                </h4>
+                <ul className="text-xs text-blue-700 space-y-1">
+                  <li>
+                    • <strong>Agora:</strong> Lança receita bruta no Caixa (não
+                    soma no saldo)
+                  </li>
+                  <li>
+                    • <strong>Agora:</strong> Cria automaticamente conta a
+                    receber
+                  </li>
+                  <li>
+                    • <strong>Quando pago:</strong> Marque como pago em Contas a
+                    Receber
+                  </li>
+                  <li>
+                    • <strong>Automático:</strong> Sistema lança receita real no
+                    Caixa
+                  </li>
+                </ul>
+              </div>
             </div>
           )}
 
