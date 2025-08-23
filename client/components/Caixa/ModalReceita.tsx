@@ -384,10 +384,18 @@ export function ModalReceita() {
           // Ler o JSON uma única vez para evitar "body stream already read"
           let responseData;
           try {
-            responseData = await response.json();
+            // Verificar se há conteúdo para fazer parse
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+              responseData = await response.json();
+            } else {
+              // Se não é JSON, tentar ler como texto
+              const textResponse = await response.text();
+              responseData = textResponse ? { error: textResponse } : null;
+            }
           } catch (jsonError) {
             console.error(
-              "❌ [ModalReceita] Erro ao fazer parse do JSON da resposta:",
+              "❌ [ModalReceita] Erro ao fazer parse da resposta:",
               jsonError,
             );
             responseData = null;
