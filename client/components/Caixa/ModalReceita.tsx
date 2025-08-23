@@ -381,24 +381,34 @@ export function ModalReceita() {
             body: JSON.stringify(contaData),
           });
 
-          // Ler o JSON uma única vez para evitar "body stream already read"
+          // Ler o response uma única vez para evitar "body stream already read"
           let responseData;
           try {
-            // Verificar se há conteúdo para fazer parse
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-              responseData = await response.json();
+            // Verificar se o response ainda está disponível para leitura
+            if (response.bodyUsed) {
+              console.warn("⚠️ [ModalReceita] Response body já foi consumido");
+              responseData = null;
             } else {
-              // Se não é JSON, tentar ler como texto
-              const textResponse = await response.text();
-              responseData = textResponse ? { error: textResponse } : null;
+              // Verificar se há conteúdo para fazer parse
+              const contentType = response.headers.get("content-type");
+              if (contentType && contentType.includes("application/json")) {
+                responseData = await response.json();
+              } else {
+                // Se não é JSON, tentar ler como texto
+                const textResponse = await response.text();
+                responseData = textResponse ? { error: textResponse } : null;
+              }
             }
-          } catch (jsonError) {
+          } catch (parseError) {
             console.error(
               "❌ [ModalReceita] Erro ao fazer parse da resposta:",
-              jsonError,
+              parseError,
             );
-            responseData = null;
+            // Fornecer informações mais detalhadas do erro
+            responseData = {
+              error: "Erro ao processar resposta do servidor",
+              details: parseError.message
+            };
           }
 
           if (response.ok) {
