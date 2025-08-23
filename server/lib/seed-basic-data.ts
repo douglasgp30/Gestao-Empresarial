@@ -161,16 +161,18 @@ export async function seedBasicData() {
     ];
 
     for (const localizacao of localizacoes) {
-      await prisma.localizacaoGeografica.upsert({
-        where: { 
-          nome_tipoItem: {
-            nome: localizacao.nome,
-            tipoItem: localizacao.tipoItem
-          }
-        },
-        update: {},
-        create: localizacao
+      const existing = await prisma.localizacaoGeografica.findFirst({
+        where: {
+          nome: localizacao.nome,
+          tipoItem: localizacao.tipoItem
+        }
       });
+
+      if (!existing) {
+        await prisma.localizacaoGeografica.create({
+          data: localizacao
+        });
+      }
     }
 
     console.log('✅ Dados básicos criados com sucesso!');
