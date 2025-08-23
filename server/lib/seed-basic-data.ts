@@ -102,23 +102,25 @@ export async function seedBasicData() {
     ];
 
     for (const descricao of descricoes) {
-      await prisma.descricaoECategoria.upsert({
-        where: { 
-          nome_tipo_tipoItem: {
-            nome: descricao.nome,
-            tipo: descricao.tipo,
-            tipoItem: descricao.tipoItem
-          }
-        },
-        update: {},
-        create: {
+      const existing = await prisma.descricaoECategoria.findFirst({
+        where: {
           nome: descricao.nome,
           tipo: descricao.tipo,
-          tipoItem: descricao.tipoItem,
-          categoria: descricao.categoria,
-          ativo: true
+          tipoItem: descricao.tipoItem
         }
       });
+
+      if (!existing) {
+        await prisma.descricaoECategoria.create({
+          data: {
+            nome: descricao.nome,
+            tipo: descricao.tipo,
+            tipoItem: descricao.tipoItem,
+            categoria: descricao.categoria,
+            ativo: true
+          }
+        });
+      }
     }
 
     // 5. Criar campanhas básicas
