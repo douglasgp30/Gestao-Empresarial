@@ -378,11 +378,8 @@ export const createLancamento: RequestHandler = async (req, res) => {
         }
       }
 
-      // Verificar se é boleto
-      if (
-        formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        formaPagamento?.nome.toLowerCase().includes("bancário")
-      ) {
+      // Verificar se é boleto usando função padronizada
+      if (isFormaPagamentoBoleto(formaPagamento)) {
         isBoleto = true;
       }
     }
@@ -598,7 +595,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
     if (!dadosLancamento.descricaoId && data.descricao) {
       console.log("[Caixa] Resolvendo descricao legacy para:", data.descricao);
 
-      // Sanitizar descrição - evitar nomes apenas numéricos
+      // Sanitizar descri��ão - evitar nomes apenas numéricos
       let nomeDescricao = data.descricao;
       if (/^\d+$/.test(nomeDescricao)) {
         console.log("[Caixa] Descrição numérica detectada, usando nome padrão");
