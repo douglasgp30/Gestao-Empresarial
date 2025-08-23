@@ -556,7 +556,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Melhor tratamento de erro baseado no tipo
       if (error instanceof Error) {
         if (error.message.includes("Failed to fetch")) {
-          console.warn("📦 [CaixaContext] Problema de conectividade, usando fallback");
+          console.warn("�� [CaixaContext] Problema de conectividade, usando fallback");
         } else if (error.message.includes("Timeout")) {
           console.warn("📦 [CaixaContext] Timeout na requisição, usando fallback");
         }
@@ -771,12 +771,29 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
       isFetchingRef.current = true;
       console.log("[CaixaContext] Recarregando por mudança de filtros");
-      carregarLancamentosDoBanco()
-        .catch((err) => {
-          console.error("[CaixaContext] erro carregarLancamentosDoBanco:", err);
-          // Em caso de erro, tentar localStorage como fallback
-          return carregarLancamentosLocalStorage();
-        })
+
+      // Implementar retry com backoff
+      const tentarCarregarComRetry = async (tentativas = 2) => {
+        for (let i = 0; i < tentativas; i++) {
+          try {
+            await carregarLancamentosDoBanco();
+            return; // Sucesso, sair do loop
+          } catch (error) {
+            console.warn(`📦 [CaixaContext] Tentativa ${i + 1}/${tentativas} falhou:`, error);
+
+            if (i === tentativas - 1) {
+              // Última tentativa, usar fallback
+              console.log("📦 [CaixaContext] Todas as tentativas falharam, usando localStorage");
+              return carregarLancamentosLocalStorage();
+            }
+
+            // Aguardar antes da próxima tentativa
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        }
+      };
+
+      tentarCarregarComRetry()
         .finally(() => {
           isFetchingRef.current = false;
         });
