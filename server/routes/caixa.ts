@@ -494,6 +494,10 @@ export const createLancamento: RequestHandler = async (req, res) => {
       tipo: data.tipo,
       dataHora: dataHoraLancamento,
       clienteId: clienteIdValido,
+
+      // Campos de integração
+      codigoExterno: data.codigoExterno || data.codigoServico,
+      sistemaOrigem: data.sistemaOrigem,
     };
 
     // Observação removida - não é necessário duplicar informação que já tem coluna própria
@@ -528,7 +532,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       if (localizacao) {
         dadosLancamento.localizacaoId = ids.localizacaoId;
         console.log(
-          `[Caixa] Localização ID ${ids.localizacaoId} validada e adicionada`,
+          `[Caixa] Localizaç��o ID ${ids.localizacaoId} validada e adicionada`,
         );
       } else {
         console.log(
