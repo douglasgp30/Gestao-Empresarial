@@ -339,7 +339,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Função para carregar lançamentos do banco de dados
   const carregarLancamentosDoBanco = async () => {
+    // Evitar múltiplas requisições simultâneas
+    if (lancamentosLoadingRef.current) {
+      console.log("📦 [CaixaContext] Carregamento de lançamentos já em andamento");
+      return [];
+    }
+
     try {
+      lancamentosLoadingRef.current = true;
+
       console.log(
         "📦 [CaixaContext] Carregando lançamentos do banco de dados...",
       );
