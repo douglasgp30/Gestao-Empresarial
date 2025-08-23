@@ -319,7 +319,7 @@ export function ModalReceita() {
 
       // Buscar objetos completos para criar snapshots
       const clienteSelecionado = clientes.find(
-        (c) => c.id === formData.cliente,
+        (c) => c.id === formData.cliente || c.id.toString() === formData.cliente,
       );
 
       const lancamentoCaixa = await adicionarLancamento({
@@ -362,6 +362,8 @@ export function ModalReceita() {
             valor: valorCalculado,
             dataVencimento: dataVencimentoBoleto.toISOString().split("T")[0], // YYYY-MM-DD
             codigoCliente: parseInt(formData.cliente), // Usar codigoCliente como esperado pela API
+            valorOriginal: valorCalculado, // Adicionar campo obrigatório
+            valorLiquido: valorLiquidoCalculado || valorCalculado, // Adicionar campo obrigatório
             observacoes: `[BOLETO AUTOMÁTICO] ${formData.categoria} - ${formData.descricao}${formData.observacoes ? ` | Obs: ${formData.observacoes}` : ""} | Cód: ${codigoServico}`,
             codigoServico: codigoServico,
             categoria: formData.categoria,
@@ -421,6 +423,9 @@ export function ModalReceita() {
               "❌ [ModalReceita] Erro ao criar conta a receber para boleto:",
               responseData,
             );
+
+            console.log("🔍 [ModalReceita] Dados enviados:", contaData);
+            console.log("🔍 [ModalReceita] Status da resposta:", response.status);
 
             // Detectar se é erro de cliente não encontrado
             const isClienteError = responseData?.error?.includes('Cliente com ID') && responseData?.error?.includes('não encontrado');
@@ -600,7 +605,7 @@ export function ModalReceita() {
                   <Select
                     value={formData.descricaoId}
                     onValueChange={(value) => {
-                      // Buscar a descrição selecionada para salvar o nome e ID
+                      // Buscar a descriç��o selecionada para salvar o nome e ID
                       const descricaoSelecionada = descricoesFiltradas.find(
                         (d) => d.id?.toString() === value,
                       );
