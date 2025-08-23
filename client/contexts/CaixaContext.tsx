@@ -197,7 +197,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
       } else {
         console.warn(
-          "���� [CaixaContext] Erro desconhecido ao carregar campanhas:",
+          "�� [CaixaContext] Erro desconhecido ao carregar campanhas:",
           error,
         );
       }
@@ -215,6 +215,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     } catch (localError) {
       console.warn("Erro ao carregar campanhas do localStorage:", localError);
       setCampanhas([]);
+    } finally {
+      campanhasLoadingRef.current = false;
     }
   };
 
@@ -520,7 +522,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
               }
 
               // Fallback seguro
-              return "Servi��o";
+              return "Serviço";
             })(),
           },
         }),
@@ -727,7 +729,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const excludingRef = useRef(false); // Evitar recarregar durante exclusão
 
   useEffect(() => {
-    // Evitar recarregamento durante opera��ões de exclusão
+    // Evitar recarregamento durante operações de exclusão
     if (isExcluindo || excludingRef.current) {
       console.log("[CaixaContext] Operação em andamento, pulando recarregamento");
       return;
