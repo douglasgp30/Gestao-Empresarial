@@ -149,21 +149,26 @@ router.post("/", async (req, res) => {
 
     // Preparar dados para criação com mapeamento correto
     const dadosParaCriacao: any = {
-      valor: dados.valor,
+      // Remover campo 'valor' que não existe no schema
       dataVencimento: dados.dataVencimento,
       codigoCliente: dados.codigoCliente,
       codigoFornecedor: dados.codigoFornecedor,
       tipo: dados.tipo,
-      formaPg: dados.formaPg,
+      formaPagamentoId: dados.formaPg, // Corrigir nome do campo
       observacoes: dados.observacoes,
-      descricaoCategoria: dados.descricaoCategoria,
-      pago: dados.pago,
+      categoriaId: dados.descricaoCategoria, // Corrigir nome do campo
+
+      // Status de pagamento
+      status: dados.pago ? "pago" : "pendente",
       dataPagamento: dados.dataPagamento,
 
-      // Mapeamento para campos adicionais do schema
+      // Campos de valor corretos do schema
       valorOriginal: dados.valorOriginal || dados.valor,
       valorLiquido: dados.valorLiquido || dados.valor,
-      status: dados.status || (dados.pago ? "pago" : "pendente"),
+      valorPago: dados.pago ? (dados.valorOriginal || dados.valor) : 0,
+      valorRestante: dados.pago ? 0 : (dados.valorOriginal || dados.valor),
+
+      // Campos adicionais
       prioridadePagamento: dados.prioridadePagamento || "normal",
       codigoExterno: dados.codigoServico,
       sistemaOrigem: dados.sistemaOrigem || "manual",
