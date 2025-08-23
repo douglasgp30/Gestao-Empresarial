@@ -58,11 +58,15 @@ export async function seedBasicData() {
     ];
 
     for (const funcionario of funcionarios) {
-      await prisma.funcionario.upsert({
-        where: { nome: funcionario.nome },
-        update: {},
-        create: funcionario
+      const existing = await prisma.funcionario.findFirst({
+        where: { nome: funcionario.nome }
       });
+
+      if (!existing) {
+        await prisma.funcionario.create({
+          data: funcionario
+        });
+      }
     }
 
     // 3. Criar categorias e descrições básicas
