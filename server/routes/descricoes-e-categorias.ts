@@ -226,10 +226,14 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
 
     if (lancamentosVinculados.length > 0) {
       const exemplos = lancamentosVinculados
-        .map((l) => `#${l.id} (${l.tipo}: R$ ${l.valor.toFixed(2)} em ${l.dataHora.toLocaleDateString('pt-BR')})`)
+        .map(
+          (l) =>
+            `#${l.id} (${l.tipo}: R$ ${l.valor.toFixed(2)} em ${l.dataHora.toLocaleDateString("pt-BR")})`,
+        )
         .join(", ");
 
-      const tipoTexto = item.tipoItem === "categoria" ? "categoria" : "descrição";
+      const tipoTexto =
+        item.tipoItem === "categoria" ? "categoria" : "descrição";
       const errorMessage = `Não é possível excluir a ${tipoTexto} "${item.nome}" pois existem ${lancamentosVinculados.length} lançamento(s) do caixa vinculado(s). Exemplos: ${exemplos}${lancamentosVinculados.length > 5 ? " e outros..." : ""}. Para excluir esta ${tipoTexto}, primeiro você deve remover ou alterar estes lançamentos.`;
 
       const response: ApiResponse<null> = {

@@ -10,24 +10,41 @@ const ContaLancamentoSchema = z
   .object({
     // Aceitar valor principal ou valorOriginal
     valor: z.number().positive("Valor deve ser positivo").optional(),
-    valorOriginal: z.number().positive("Valor original deve ser positivo").optional(),
+    valorOriginal: z
+      .number()
+      .positive("Valor original deve ser positivo")
+      .optional(),
     valorLiquido: z.number().optional(),
 
     dataVencimento: z.string().transform((str) => new Date(str)),
-    codigoCliente: z.union([z.number(), z.string().transform(str => {
-      const num = parseInt(str);
-      if (isNaN(num)) throw new Error(`Invalid codigoCliente: ${str}`);
-      return num;
-    })]).optional(),
-    codigoFornecedor: z.union([z.number(), z.string().transform(str => {
-      const num = parseInt(str);
-      if (isNaN(num)) throw new Error(`Invalid codigoFornecedor: ${str}`);
-      return num;
-    })]).optional(),
+    codigoCliente: z
+      .union([
+        z.number(),
+        z.string().transform((str) => {
+          const num = parseInt(str);
+          if (isNaN(num)) throw new Error(`Invalid codigoCliente: ${str}`);
+          return num;
+        }),
+      ])
+      .optional(),
+    codigoFornecedor: z
+      .union([
+        z.number(),
+        z.string().transform((str) => {
+          const num = parseInt(str);
+          if (isNaN(num)) throw new Error(`Invalid codigoFornecedor: ${str}`);
+          return num;
+        }),
+      ])
+      .optional(),
     tipo: z.enum(["receber", "pagar"]),
-    formaPg: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
+    formaPg: z
+      .union([z.number(), z.string().transform((str) => parseInt(str))])
+      .optional(),
     observacoes: z.string().optional(),
-    descricaoCategoria: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
+    descricaoCategoria: z
+      .union([z.number(), z.string().transform((str) => parseInt(str))])
+      .optional(),
     pago: z.boolean().default(false).optional(), // Manter para compatibilidade
     dataPagamento: z
       .string()
@@ -51,18 +68,26 @@ const ContaLancamentoSchema = z
     },
     {
       message: "Deve ter pelo menos um valor (valor ou valorOriginal)",
-    }
+    },
   )
   .refine(
     (data) => {
       // Regra: tipo = receber → precisa ter codigoCliente e não pode ter codigoFornecedor
       if (data.tipo === "receber") {
-        const hasCliente = data.codigoCliente && (typeof data.codigoCliente === 'number' ? data.codigoCliente > 0 : parseInt(data.codigoCliente) > 0);
+        const hasCliente =
+          data.codigoCliente &&
+          (typeof data.codigoCliente === "number"
+            ? data.codigoCliente > 0
+            : parseInt(data.codigoCliente) > 0);
         return hasCliente && !data.codigoFornecedor;
       }
       // Regra: tipo = pagar → precisa ter codigoFornecedor e não pode ter codigoCliente
       if (data.tipo === "pagar") {
-        const hasFornecedor = data.codigoFornecedor && (typeof data.codigoFornecedor === 'number' ? data.codigoFornecedor > 0 : parseInt(data.codigoFornecedor) > 0);
+        const hasFornecedor =
+          data.codigoFornecedor &&
+          (typeof data.codigoFornecedor === "number"
+            ? data.codigoFornecedor > 0
+            : parseInt(data.codigoFornecedor) > 0);
         return hasFornecedor && !data.codigoCliente;
       }
       return true;
@@ -163,24 +188,43 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     console.log("🔍 [API CONTAS] Dados recebidos para criar conta:", req.body);
-    console.log("🔍 [API CONTAS] Tipo do valor:", typeof req.body.valor, "Valor:", req.body.valor);
-    console.log("🔍 [API CONTAS] Tipo do codigoCliente:", typeof req.body.codigoCliente, "Valor:", req.body.codigoCliente);
+    console.log(
+      "🔍 [API CONTAS] Tipo do valor:",
+      typeof req.body.valor,
+      "Valor:",
+      req.body.valor,
+    );
+    console.log(
+      "🔍 [API CONTAS] Tipo do codigoCliente:",
+      typeof req.body.codigoCliente,
+      "Valor:",
+      req.body.codigoCliente,
+    );
 
     // Parse com tratamento de erro mais detalhado
     let dados;
     try {
       dados = ContaLancamentoSchema.parse(req.body);
-      console.log("✅ [API CONTAS] Schema validation passou. Dados validados:", {
-        tipo: dados.tipo,
-        valor: dados.valor,
-        valorOriginal: dados.valorOriginal,
-        codigoCliente: dados.codigoCliente,
-        dataVencimento: dados.dataVencimento
-      });
+      console.log(
+        "✅ [API CONTAS] Schema validation passou. Dados validados:",
+        {
+          tipo: dados.tipo,
+          valor: dados.valor,
+          valorOriginal: dados.valorOriginal,
+          codigoCliente: dados.codigoCliente,
+          dataVencimento: dados.dataVencimento,
+        },
+      );
     } catch (schemaError) {
-      console.error("❌ [API CONTAS] Erro na validação do schema:", schemaError);
+      console.error(
+        "❌ [API CONTAS] Erro na validação do schema:",
+        schemaError,
+      );
       if (schemaError instanceof z.ZodError) {
-        console.error("❌ [API CONTAS] Detalhes dos erros:", schemaError.errors);
+        console.error(
+          "❌ [API CONTAS] Detalhes dos erros:",
+          schemaError.errors,
+        );
         const response: ApiResponse<null> = {
           error: "Dados inválidos",
           details: schemaError.errors,
@@ -197,7 +241,9 @@ router.post("/", async (req, res) => {
       const clienteId = Number(dados.codigoCliente);
 
       if (isNaN(clienteId) || clienteId <= 0) {
-        console.log(`❌ [API CONTAS] Cliente ID inválido: ${dados.codigoCliente}`);
+        console.log(
+          `❌ [API CONTAS] Cliente ID inválido: ${dados.codigoCliente}`,
+        );
         const response: ApiResponse<null> = {
           error: `ID do cliente inválido: ${dados.codigoCliente}. Deve ser um número válido.`,
         };
@@ -216,7 +262,9 @@ router.post("/", async (req, res) => {
         return res.status(400).json(response);
       }
 
-      console.log(`✅ [API CONTAS] Cliente ${clienteExiste.nome} (ID: ${clienteId}) validado`);
+      console.log(
+        `✅ [API CONTAS] Cliente ${clienteExiste.nome} (ID: ${clienteId}) validado`,
+      );
 
       // Atualizar o valor com o número válido
       dados.codigoCliente = clienteId;
@@ -228,7 +276,9 @@ router.post("/", async (req, res) => {
       const fornecedorId = Number(dados.codigoFornecedor);
 
       if (isNaN(fornecedorId) || fornecedorId <= 0) {
-        console.log(`❌ [API CONTAS] Fornecedor ID inválido: ${dados.codigoFornecedor}`);
+        console.log(
+          `❌ [API CONTAS] Fornecedor ID inválido: ${dados.codigoFornecedor}`,
+        );
         const response: ApiResponse<null> = {
           error: `ID do fornecedor inválido: ${dados.codigoFornecedor}. Deve ser um número válido.`,
         };
@@ -240,19 +290,22 @@ router.post("/", async (req, res) => {
       });
 
       if (!fornecedorExiste) {
-        console.log(`❌ [API CONTAS] Fornecedor ID ${fornecedorId} não encontrado`);
+        console.log(
+          `❌ [API CONTAS] Fornecedor ID ${fornecedorId} não encontrado`,
+        );
         const response: ApiResponse<null> = {
           error: `Fornecedor com ID ${fornecedorId} não encontrado. Verifique se o fornecedor existe antes de criar a conta a pagar.`,
         };
         return res.status(400).json(response);
       }
 
-      console.log(`✅ [API CONTAS] Fornecedor ${fornecedorExiste.nome} (ID: ${fornecedorId}) validado`);
+      console.log(
+        `✅ [API CONTAS] Fornecedor ${fornecedorExiste.nome} (ID: ${fornecedorId}) validado`,
+      );
 
       // Atualizar o valor com o número válido
       dados.codigoFornecedor = fornecedorId;
     }
-
 
     // Verificar se valor é válido
     const valorFinal = dados.valorOriginal || dados.valor;
@@ -274,16 +327,22 @@ router.post("/", async (req, res) => {
     dadosParaCriacao.valorLiquido = dados.valorLiquido || valorFinal;
 
     // Campos condicionais - apenas adicionar se não undefined
-    if (dados.codigoCliente) dadosParaCriacao.codigoCliente = dados.codigoCliente;
-    if (dados.codigoFornecedor) dadosParaCriacao.codigoFornecedor = dados.codigoFornecedor;
+    if (dados.codigoCliente)
+      dadosParaCriacao.codigoCliente = dados.codigoCliente;
+    if (dados.codigoFornecedor)
+      dadosParaCriacao.codigoFornecedor = dados.codigoFornecedor;
     if (dados.formaPg) dadosParaCriacao.formaPagamentoId = dados.formaPg;
     if (dados.observacoes) dadosParaCriacao.observacoes = dados.observacoes;
-    if (dados.descricaoCategoria) dadosParaCriacao.categoriaId = dados.descricaoCategoria;
-    if (dados.numeroDocumento) dadosParaCriacao.numeroDocumento = dados.numeroDocumento;
+    if (dados.descricaoCategoria)
+      dadosParaCriacao.categoriaId = dados.descricaoCategoria;
+    if (dados.numeroDocumento)
+      dadosParaCriacao.numeroDocumento = dados.numeroDocumento;
 
     // Status baseado no campo pago
-    dadosParaCriacao.status = dados.status || (dados.pago ? "pago" : "pendente");
-    if (dados.dataPagamento) dadosParaCriacao.dataPagamento = dados.dataPagamento;
+    dadosParaCriacao.status =
+      dados.status || (dados.pago ? "pago" : "pendente");
+    if (dados.dataPagamento)
+      dadosParaCriacao.dataPagamento = dados.dataPagamento;
 
     // Valores calculados
     const isPago = dados.pago || dados.status === "pago";
@@ -292,8 +351,10 @@ router.post("/", async (req, res) => {
     dadosParaCriacao.valorRestante = isPago ? 0 : valorTotal;
 
     // Campos opcionais com defaults seguros
-    dadosParaCriacao.prioridadePagamento = dados.prioridadePagamento || "normal";
-    if (dados.codigoServico) dadosParaCriacao.codigoExterno = dados.codigoServico;
+    dadosParaCriacao.prioridadePagamento =
+      dados.prioridadePagamento || "normal";
+    if (dados.codigoServico)
+      dadosParaCriacao.codigoExterno = dados.codigoServico;
     dadosParaCriacao.sistemaOrigem = dados.sistemaOrigem || "manual";
 
     // Observações internas
@@ -312,10 +373,11 @@ router.post("/", async (req, res) => {
     if (!dadosParaCriacao.valorOriginal || !dadosParaCriacao.valorLiquido) {
       console.error("❌ [API CONTAS] Valores obrigatórios não definidos:", {
         valorOriginal: dadosParaCriacao.valorOriginal,
-        valorLiquido: dadosParaCriacao.valorLiquido
+        valorLiquido: dadosParaCriacao.valorLiquido,
       });
       const response: ApiResponse<null> = {
-        error: "Valores financeiros obrigat��rios não foram definidos corretamente.",
+        error:
+          "Valores financeiros obrigat��rios não foram definidos corretamente.",
       };
       return res.status(400).json(response);
     }
@@ -334,23 +396,27 @@ router.post("/", async (req, res) => {
         },
       });
     } catch (prismaError) {
-      console.error("❌ [API CONTAS] Erro do Prisma ao criar conta:", prismaError);
+      console.error(
+        "❌ [API CONTAS] Erro do Prisma ao criar conta:",
+        prismaError,
+      );
 
       // Tratamento específico para diferentes tipos de erro
-      if (prismaError.code === 'P2002') {
+      if (prismaError.code === "P2002") {
         const response: ApiResponse<null> = {
           error: "Erro de duplicação: este registro já existe.",
         };
         return res.status(409).json(response);
-      } else if (prismaError.code === 'P2003') {
+      } else if (prismaError.code === "P2003") {
         const response: ApiResponse<null> = {
-          error: "Erro de referência: cliente, fornecedor ou forma de pagamento não existe.",
+          error:
+            "Erro de referência: cliente, fornecedor ou forma de pagamento não existe.",
         };
         return res.status(400).json(response);
       } else {
         const response: ApiResponse<null> = {
           error: "Erro interno ao criar conta a receber/pagar.",
-          details: prismaError.message
+          details: prismaError.message,
         };
         return res.status(500).json(response);
       }

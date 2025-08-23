@@ -120,7 +120,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const carregarCampanhasSafe = async () => {
     // Evitar múltiplas requisições simultâneas
     if (campanhasLoadingRef.current) {
-      console.log("📊 [CaixaContext] Carregamento de campanhas já em andamento");
+      console.log(
+        "📊 [CaixaContext] Carregamento de campanhas já em andamento",
+      );
       return;
     }
 
@@ -233,7 +235,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      console.log("������ [CaixaContext] Carregando dados do banco de dados...");
+      console.log(
+        "������ [CaixaContext] Carregando dados do banco de dados...",
+      );
 
       // Carregar campanhas do servidor
       try {
@@ -341,7 +345,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const carregarLancamentosDoBanco = async () => {
     // Evitar múltiplas requisições simultâneas
     if (lancamentosLoadingRef.current) {
-      console.log("📦 [CaixaContext] Carregamento de lançamentos já em andamento");
+      console.log(
+        "📦 [CaixaContext] Carregamento de lançamentos já em andamento",
+      );
       return [];
     }
 
@@ -556,9 +562,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Melhor tratamento de erro baseado no tipo
       if (error instanceof Error) {
         if (error.message.includes("Failed to fetch")) {
-          console.warn("�� [CaixaContext] Problema de conectividade, usando fallback");
+          console.warn(
+            "�� [CaixaContext] Problema de conectividade, usando fallback",
+          );
         } else if (error.message.includes("Timeout")) {
-          console.warn("📦 [CaixaContext] Timeout na requisição, usando fallback");
+          console.warn(
+            "📦 [CaixaContext] Timeout na requisição, usando fallback",
+          );
         }
       }
 
@@ -752,7 +762,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Evitar recarregamento durante operações de exclusão
     if (isExcluindo || excludingRef.current) {
-      console.log("[CaixaContext] Operação em andamento, pulando recarregamento");
+      console.log(
+        "[CaixaContext] Operação em andamento, pulando recarregamento",
+      );
       return;
     }
 
@@ -779,24 +791,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             await carregarLancamentosDoBanco();
             return; // Sucesso, sair do loop
           } catch (error) {
-            console.warn(`📦 [CaixaContext] Tentativa ${i + 1}/${tentativas} falhou:`, error);
+            console.warn(
+              `📦 [CaixaContext] Tentativa ${i + 1}/${tentativas} falhou:`,
+              error,
+            );
 
             if (i === tentativas - 1) {
               // Última tentativa, usar fallback
-              console.log("📦 [CaixaContext] Todas as tentativas falharam, usando localStorage");
+              console.log(
+                "📦 [CaixaContext] Todas as tentativas falharam, usando localStorage",
+              );
               return carregarLancamentosLocalStorage();
             }
 
             // Aguardar antes da próxima tentativa
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise((resolve) => setTimeout(resolve, 2000));
           }
         }
       };
 
-      tentarCarregarComRetry()
-        .finally(() => {
-          isFetchingRef.current = false;
-        });
+      tentarCarregarComRetry().finally(() => {
+        isFetchingRef.current = false;
+      });
     }, 1000); // Aumentar debounce para 1 segundo
 
     return () => clearTimeout(timeoutId);
@@ -1391,7 +1407,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     (id, dados) => editarLancamento(id, dados),
     [],
   );
-  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), [isExcluindo]);
+  const excluirLancamentoCb = useCallback(
+    (id) => excluirLancamento(id),
+    [isExcluindo],
+  );
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
   // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores

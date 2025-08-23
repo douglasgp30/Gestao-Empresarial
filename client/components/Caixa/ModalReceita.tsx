@@ -319,7 +319,8 @@ export function ModalReceita() {
 
       // Buscar objetos completos para criar snapshots
       const clienteSelecionado = clientes.find(
-        (c) => c.id === formData.cliente || c.id.toString() === formData.cliente,
+        (c) =>
+          c.id === formData.cliente || c.id.toString() === formData.cliente,
       );
 
       const lancamentoCaixa = await adicionarLancamento({
@@ -409,7 +410,7 @@ export function ModalReceita() {
             // Fornecer informações mais detalhadas do erro
             responseData = {
               error: "Erro ao processar resposta do servidor",
-              details: parseError.message
+              details: parseError.message,
             };
           }
 
@@ -425,10 +426,15 @@ export function ModalReceita() {
             );
 
             console.log("🔍 [ModalReceita] Dados enviados:", contaData);
-            console.log("🔍 [ModalReceita] Status da resposta:", response.status);
+            console.log(
+              "🔍 [ModalReceita] Status da resposta:",
+              response.status,
+            );
 
             // Detectar se é erro de cliente não encontrado
-            const isClienteError = responseData?.error?.includes('Cliente com ID') && responseData?.error?.includes('não encontrado');
+            const isClienteError =
+              responseData?.error?.includes("Cliente com ID") &&
+              responseData?.error?.includes("não encontrado");
 
             toast({
               title: "Atenção",
