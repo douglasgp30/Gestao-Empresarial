@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { runMigration, checkMigration } from "./routes/migrate";
 import { seedUnifiedData } from "./routes/seed-unified-data";
 import { cleanCategories, listCategories } from "./routes/clean-categories";
+import { seedBasicData } from "./lib/seed-basic-data";
 
 // Importar rotas do banco de dados
 import {
