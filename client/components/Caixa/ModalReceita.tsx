@@ -404,10 +404,14 @@ export function ModalReceita() {
               responseData,
             );
 
+            // Detectar se é erro de cliente não encontrado
+            const isClienteError = responseData?.error?.includes('Cliente com ID') && responseData?.error?.includes('não encontrado');
+
             toast({
               title: "Atenção",
-              description:
-                "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
+              description: isClienteError
+                ? "Receita lançada no Caixa, mas o cliente selecionado não foi encontrado. Verifique se o cliente existe no cadastro."
+                : "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
               variant: "destructive",
             });
           }
@@ -467,7 +471,7 @@ export function ModalReceita() {
       if (!loadingForced) {
         setLoadingForced(true);
       }
-    }, 3000); // 3 segundos máximo
+    }, 3000); // 3 segundos m��ximo
 
     return () => clearTimeout(timer);
   }, [loadingForced]);
