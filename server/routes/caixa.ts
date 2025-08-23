@@ -9,6 +9,30 @@ console.log(
   !!prisma,
 );
 
+// Função utilitária para normalizar strings (remove acentos e converte para minúscula)
+function normalizeString(str: any = ""): string {
+  if (!str) return "";
+  return str
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+// Função para verificar se forma de pagamento é boleto (padronizada com frontend)
+function isFormaPagamentoBoleto(formaPagamento: any): boolean {
+  if (!formaPagamento) return false;
+
+  const nome = formaPagamento.nome || formaPagamento;
+  const nomeNormalizado = normalizeString(nome);
+  return (
+    nomeNormalizado.includes("boleto") ||
+    (nomeNormalizado.includes("bancario") &&
+      !nomeNormalizado.includes("transferencia"))
+  );
+}
+
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
   valor: z
