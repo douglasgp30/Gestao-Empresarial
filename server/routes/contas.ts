@@ -144,8 +144,32 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     console.log("🔍 [API CONTAS] Dados recebidos para criar conta:", req.body);
+    console.log("🔍 [API CONTAS] Tipo do valor:", typeof req.body.valor, "Valor:", req.body.valor);
+    console.log("🔍 [API CONTAS] Tipo do codigoCliente:", typeof req.body.codigoCliente, "Valor:", req.body.codigoCliente);
 
-    const dados = ContaLancamentoSchema.parse(req.body);
+    // Parse com tratamento de erro mais detalhado
+    let dados;
+    try {
+      dados = ContaLancamentoSchema.parse(req.body);
+      console.log("✅ [API CONTAS] Schema validation passou. Dados validados:", {
+        tipo: dados.tipo,
+        valor: dados.valor,
+        valorOriginal: dados.valorOriginal,
+        codigoCliente: dados.codigoCliente,
+        dataVencimento: dados.dataVencimento
+      });
+    } catch (schemaError) {
+      console.error("❌ [API CONTAS] Erro na validação do schema:", schemaError);
+      if (schemaError instanceof z.ZodError) {
+        console.error("❌ [API CONTAS] Detalhes dos erros:", schemaError.errors);
+        const response: ApiResponse<null> = {
+          error: "Dados inválidos",
+          details: schemaError.errors,
+        };
+        return res.status(400).json(response);
+      }
+      throw schemaError;
+    }
 
     // Preparar dados para criação com mapeamento correto
     // Validar se cliente existe (para contas a receber)
@@ -263,6 +287,18 @@ router.post("/", async (req, res) => {
       "🔍 [API CONTAS] Dados preparados para criação:",
       dadosParaCriacao,
     );
+
+    // Verificação final antes de criar
+    if (!dadosParaCriacao.valorOriginal || !dadosParaCriacao.valorLiquido) {
+      console.error("❌ [API CONTAS] Valores obrigatórios não definidos:", {
+        valorOriginal: dadosParaCriacao.valorOriginal,
+        valorLiquido: dadosParaCriacao.valorLiquido
+      });
+      const response: ApiResponse<null> = {
+        error: "Valores financeiros obrigatórios não foram definidos corretamente.",
+      };
+      return res.status(400).json(response);
+    }
 
     const conta = await prisma.contaLancamento.create({
       data: dadosParaCriacao,
