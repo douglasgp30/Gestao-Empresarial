@@ -546,7 +546,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             tipo: "receber",
             valor: valorInput.numericValue,
             dataVencimento: dataVencimentoBoleto.toISOString().split("T")[0], // YYYY-MM-DD
-            clienteId: formData.cliente, // Corrigido: usar clienteId em vez de codigoCliente
+            codigoCliente: parseInt(formData.cliente), // Corrigido: usar codigoCliente (number) como esperado pela API
             observacoes: `[BOLETO AUTOMÁTICO] ${formData.categoria} - ${formData.descricao}${formData.observacoes ? ` | Obs: ${formData.observacoes}` : ""} | Cód: ${codigoServico}`,
             codigoServico: codigoServico,
             categoria: formData.categoria,
