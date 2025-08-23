@@ -1074,7 +1074,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Encontrar e atualizar o lançamento
       const lancamentosAtualizados = lancamentosExistentes.map(
         (lancamento: any) => {
-          if (lancamento.id === id) {
+          // Garantir comparação segura de IDs convertendo ambos para string
+          if (lancamento.id?.toString() === id?.toString()) {
             return {
               ...lancamento,
               ...dadosAtualizados,
