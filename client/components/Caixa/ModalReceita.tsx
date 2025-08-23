@@ -352,11 +352,8 @@ export function ModalReceita() {
       });
 
       // Se for boleto, criar conta a receber automaticamente
-      if (isBoleto && dataVencimentoBoleto) {
+      if (isBoleto && dataVencimentoBoleto && codigoServico) {
         try {
-          // Gerar código único do serviço
-          const codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-
           // Criar conta a receber
           const contaData = {
             tipo: "receber",
@@ -371,6 +368,8 @@ export function ModalReceita() {
             sistemaOrigem: "caixa_boleto",
             status: "pendente",
             prioridadePagamento: "normal",
+            // Adicionar campos para integração
+            lancamentoCaixaId: lancamentoCaixa?.id, // Vincular com o lançamento do caixa
           };
 
           // Fazer chamada para API de contas (se disponível)
