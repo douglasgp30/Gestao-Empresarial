@@ -138,11 +138,15 @@ export async function seedBasicData() {
     ];
 
     for (const campanha of campanhas) {
-      await prisma.campanha.upsert({
-        where: { nome: campanha.nome },
-        update: {},
-        create: campanha
+      const existing = await prisma.campanha.findFirst({
+        where: { nome: campanha.nome }
       });
+
+      if (!existing) {
+        await prisma.campanha.create({
+          data: campanha
+        });
+      }
     }
 
     // 6. Criar clientes básicos
