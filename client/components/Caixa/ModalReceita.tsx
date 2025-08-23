@@ -341,25 +341,25 @@ export function ModalReceita() {
       });
 
       // Se for boleto, criar conta a receber automaticamente
-      const isBoleto = formasPagamento
-        .find((f) => f.id.toString() === formData.formaPagamento)
-        ?.nome?.toLowerCase()
-        .includes("boleto");
-
-      if (isBoleto) {
+      if (isBoleto && dataVencimentoBoleto) {
         try {
+          // Gerar código único do serviço
+          const codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
           // Criar conta a receber
           const contaData = {
             tipo: "receber",
-            descricao: `Boleto - ${formData.descricao}`,
             valor: valorCalculado,
-            dataVencimento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
-            status: "pendente",
+            dataVencimento: dataVencimentoBoleto.toISOString().split("T")[0], // YYYY-MM-DD
+            codigoCliente: parseInt(formData.cliente), // Usar codigoCliente como esperado pela API
+            observacoes: `[BOLETO AUTOMÁTICO] ${formData.categoria} - ${formData.descricao}${formData.observacoes ? ` | Obs: ${formData.observacoes}` : ""} | Cód: ${codigoServico}`,
+            codigoServico: codigoServico,
             categoria: formData.categoria,
-            clienteId: clienteSelecionado?.id || formData.cliente, // Corrigido: usar clienteId
-            observacoes: `Conta criada automaticamente para boleto do lançamento de receita`,
-            sistemaOrigem: "caixa_boleto",
+            descricao: formData.descricao,
             pago: false,
+            sistemaOrigem: "caixa_boleto",
+            status: "pendente",
+            prioridadePagamento: "normal",
           };
 
           // Fazer chamada para API de contas (se disponível)
