@@ -125,6 +125,19 @@ export function ModalReceita() {
     );
   }, [formData.formaPagamento, formasPagamento]);
 
+  // Verificar se forma de pagamento é boleto - usar função padronizada
+  const isBoleto = React.useMemo(() => {
+    if (!formData.formaPagamento || formasPagamento.length === 0) {
+      return false;
+    }
+
+    const forma = formasPagamento.find(
+      (f) => f.id.toString() === formData.formaPagamento,
+    );
+
+    return isFormaPagamentoBoleto(forma);
+  }, [formData.formaPagamento, formasPagamento]);
+
   // Buscar percentual de imposto das configurações
   const getPercentualImposto = () => {
     try {
