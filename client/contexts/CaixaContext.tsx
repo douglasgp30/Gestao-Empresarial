@@ -370,7 +370,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw fetchError;
       }
 
-      console.log("📦 [CaixaContext] Status da resposta:", response.status);
+      console.log("��� [CaixaContext] Status da resposta:", response.status);
       console.log("📦 [CaixaContext] Headers da resposta:", [
         ...response.headers.entries(),
       ]);
@@ -1150,7 +1150,17 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Remover da lista local após sucesso na API
       // Garantir comparação segura de IDs convertendo ambos para string
-      setLancamentos((prev) => prev.filter((l) => l.id?.toString() !== id?.toString()));
+      setLancamentos((prev) => {
+        const antes = prev.length;
+        const depois = prev.filter((l) => l.id?.toString() !== id?.toString());
+        console.log("[CaixaContext] Estado atualizado após exclusão:", {
+          idExcluido: id,
+          lancamentosAntes: antes,
+          lancamentosDepois: depois.length,
+          removido: antes - depois.length === 1
+        });
+        return depois;
+      });
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
