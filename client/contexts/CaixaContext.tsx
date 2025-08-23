@@ -118,7 +118,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Função para carregar campanhas com fallback seguro
   const carregarCampanhasSafe = async () => {
+    // Evitar múltiplas requisições simultâneas
+    if (campanhasLoadingRef.current) {
+      console.log("📊 [CaixaContext] Carregamento de campanhas já em andamento");
+      return;
+    }
+
     try {
+      campanhasLoadingRef.current = true;
+
       // Verificar se estamos em um ambiente onde fetch deve funcionar
       if (typeof window === "undefined") {
         console.log("📊 [CaixaContext] Executando no servidor, pulando fetch");
@@ -189,7 +197,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         }
       } else {
         console.warn(
-          "�� [CaixaContext] Erro desconhecido ao carregar campanhas:",
+          "���� [CaixaContext] Erro desconhecido ao carregar campanhas:",
           error,
         );
       }
@@ -512,7 +520,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
               }
 
               // Fallback seguro
-              return "Serviço";
+              return "Servi��o";
             })(),
           },
         }),
@@ -719,7 +727,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const excludingRef = useRef(false); // Evitar recarregar durante exclusão
 
   useEffect(() => {
-    // Evitar recarregamento durante operações de exclusão
+    // Evitar recarregamento durante opera��ões de exclusão
     if (isExcluindo || excludingRef.current) {
       console.log("[CaixaContext] Operação em andamento, pulando recarregamento");
       return;
