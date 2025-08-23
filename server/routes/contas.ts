@@ -386,8 +386,8 @@ router.patch("/:id/pagar", async (req, res) => {
           dadosLancamentoCaixa,
         );
 
-        // Fazer requisição para API do caixa
-        const responseCaixa = await fetch("http://localhost:8080/api/caixa", {
+        // Fazer requisição para API do caixa usando URL relativa
+        const responseCaixa = await fetch("/api/caixa", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -422,7 +422,7 @@ router.patch("/:id/pagar", async (req, res) => {
           "❌ [API CONTAS] Erro na integração com caixa:",
           errorCaixa,
         );
-        // Não falhar a operação principal se houver erro na integração
+        // Não falhar a operação principal se houver erro na integra��ão
       }
     }
 
