@@ -365,7 +365,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
         where: { id: ids.formaPagamentoId },
       });
 
-      // Verificar se é cartão
+      // Verificar se é cart��o
       if (
         formaPagamento?.nome.toLowerCase().includes("cartão") ||
         formaPagamento?.nome.toLowerCase().includes("cartao")
@@ -950,9 +950,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     });
 
     const receitasNormais = receitasCompletas.filter((r) => {
-      const isBoleto =
-        r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        r.formaPagamento?.nome.toLowerCase().includes("bancário");
+      const isBoleto = isFormaPagamentoBoleto(r.formaPagamento);
       const temObservacaoBoleto = r.observacoes?.includes(
         "[BOLETO - Aguardando pagamento]",
       );
