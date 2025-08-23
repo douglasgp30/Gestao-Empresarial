@@ -709,11 +709,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.numeroNota,
   ]);
 
-  // Recarregar lançamentos quando os filtros mudarem - otimizado
+  // Recarregar lançamentos quando os filtros mudarem - otimizado e sem loops
   const isFetchingRef = useRef(false);
   const lastFiltrosRef = useRef<string>("");
+  const excludingRef = useRef(false); // Evitar recarregar durante exclusão
 
   useEffect(() => {
+    // Evitar recarregamento durante operações de exclusão
+    if (isExcluindo || excludingRef.current) {
+      console.log("[CaixaContext] Operação em andamento, pulando recarregamento");
+      return;
+    }
+
     // Evitar recarregamento desnecessário se os filtros não mudaram realmente
     if (lastFiltrosRef.current === filtrosDependencias) {
       return;
@@ -723,7 +730,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Debounce para evitar múltiplos lançamentos rápidos
     const timeoutId = setTimeout(() => {
-      if (isFetchingRef.current) {
+      if (isFetchingRef.current || isExcluindo) {
         console.log("[CaixaContext] fetch já em andamento, ignorando");
         return;
       }
@@ -741,7 +748,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias]);
+  }, [filtrosDependencias, isExcluindo]);
 
   // Função para normalizar lançamento antes de salvar
   const normalizarLancamento = (lancamento: any): any => {
@@ -1162,15 +1169,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         return depois;
       });
 
-      // Recarregar dados do servidor como segurança adicional
-      setTimeout(() => {
-        carregarDados().catch((error) => {
-          console.warn(
-            "[CaixaContext] Erro ao recarregar dados após exclusão:",
-            error,
-          );
-        });
-      }, 500);
+      // REMOVIDO: setTimeout e carregarDados() que causavam loop infinito
+      console.log("[CaixaContext] Exclusão concluída com sucesso");
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
