@@ -372,34 +372,32 @@ export function ModalReceita() {
             lancamentoCaixaId: lancamentoCaixa?.id, // Vincular com o lançamento do caixa
           };
 
-          // Fazer chamada para API de contas (se disponível)
-          try {
-            const response = await fetch("/api/contas", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(contaData),
-            });
+          // Fazer chamada para API de contas
+          const response = await fetch("/api/contas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(contaData),
+          });
 
-            if (response.ok) {
-              console.log(
-                "[ModalReceita] Conta a receber criada automaticamente para boleto",
-              );
-            }
-          } catch (apiError) {
-            console.warn(
-              "[ModalReceita] Não foi possível criar conta via API, criando localmente",
+          if (response.ok) {
+            const contaCriada = await response.json();
+            console.log(
+              "✅ [ModalReceita] Conta a receber criada automaticamente para boleto:",
+              contaCriada,
             );
-            // Fallback: salvar no localStorage
-            const contasExistentes = JSON.parse(
-              localStorage.getItem("contas") || "[]",
+          } else {
+            const errorData = await response.json();
+            console.error(
+              "❌ [ModalReceita] Erro ao criar conta a receber para boleto:",
+              errorData,
             );
-            const novaConta = {
-              ...contaData,
-              id: `conta-${Date.now()}`,
-              dataCriacao: new Date().toISOString(),
-            };
-            contasExistentes.push(novaConta);
-            localStorage.setItem("contas", JSON.stringify(contasExistentes));
+
+            toast({
+              title: "Atenção",
+              description:
+                "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
+              variant: "destructive",
+            });
           }
         } catch (contaError) {
           console.error(
