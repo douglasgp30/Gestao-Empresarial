@@ -78,6 +78,7 @@ export function ModalReceita() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
+  const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(null);
 
   // Usar useMemo ao invés de useCallback para evitar re-renderizações desnecessárias
   const categoriasReceita = React.useMemo(() => {
