@@ -14,8 +14,16 @@ const ContaLancamentoSchema = z
     valorLiquido: z.number().optional(),
 
     dataVencimento: z.string().transform((str) => new Date(str)),
-    codigoCliente: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
-    codigoFornecedor: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
+    codigoCliente: z.union([z.number(), z.string().transform(str => {
+      const num = parseInt(str);
+      if (isNaN(num)) throw new Error(`Invalid codigoCliente: ${str}`);
+      return num;
+    })]).optional(),
+    codigoFornecedor: z.union([z.number(), z.string().transform(str => {
+      const num = parseInt(str);
+      if (isNaN(num)) throw new Error(`Invalid codigoFornecedor: ${str}`);
+      return num;
+    })]).optional(),
     tipo: z.enum(["receber", "pagar"]),
     formaPg: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
     observacoes: z.string().optional(),
