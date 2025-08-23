@@ -373,7 +373,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Adicionar timeout para evitar congelamentos
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 6000); // Reduzir timeout para 6 segundos
 
       let response;
       try {
