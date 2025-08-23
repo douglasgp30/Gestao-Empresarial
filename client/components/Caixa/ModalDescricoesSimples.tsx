@@ -233,6 +233,7 @@ export default function ModalDescricoesSimples() {
             const errorData = await response.json();
             console.log("🔍 Error data from server:", errorData);
 
+            // Preservar a mensagem original do servidor que contém detalhes importantes
             if (
               errorData &&
               errorData.error &&
@@ -262,7 +263,12 @@ export default function ModalDescricoesSimples() {
         }
 
         console.log("🔍 Final error message:", errorMessage);
-        throw new Error(errorMessage);
+
+        // Não lançar um novo erro genérico, mas sim preservar a mensagem original
+        // que contém informações valiosas sobre as dependências
+        const errorToShow = new Error(errorMessage);
+        errorToShow.name = "DependencyError";
+        throw errorToShow;
       }
 
       // Status 204 (No Content) indica sucesso na exclusão
