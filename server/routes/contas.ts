@@ -246,6 +246,16 @@ router.post("/", async (req, res) => {
     }
 
 
+    // Verificar se valor é válido
+    const valorFinal = dados.valorOriginal || dados.valor;
+    if (!valorFinal || isNaN(valorFinal) || valorFinal <= 0) {
+      console.log(`❌ [API CONTAS] Valor inválido: ${valorFinal}`);
+      const response: ApiResponse<null> = {
+        error: `Valor inválido: ${valorFinal}. Deve ser um número positivo.`,
+      };
+      return res.status(400).json(response);
+    }
+
     // Remover campos undefined antes de enviar para o Prisma
     const dadosParaCriacao: any = {};
 
