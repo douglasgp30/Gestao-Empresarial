@@ -68,6 +68,10 @@ const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 
 export function CaixaProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+
+  // Estado para controlar requisições concorrentes
+  const campanhasLoadingRef = useRef(false);
+  const lancamentosLoadingRef = useRef(false);
   const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>([]);
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -114,7 +118,17 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Função para carregar campanhas com fallback seguro
   const carregarCampanhasSafe = async () => {
+    // Evitar múltiplas requisições simultâneas
+    if (campanhasLoadingRef.current) {
+      console.log(
+        "📊 [CaixaContext] Carregamento de campanhas já em andamento",
+      );
+      return;
+    }
+
     try {
+      campanhasLoadingRef.current = true;
+
       // Verificar se estamos em um ambiente onde fetch deve funcionar
       if (typeof window === "undefined") {
         console.log("📊 [CaixaContext] Executando no servidor, pulando fetch");
@@ -123,21 +137,21 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("📊 [CaixaContext] Carregando campanhas...");
 
-      // Fazer requisição com timeout simples
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout")), 10000),
-      );
+      // Fazer requisição com timeout e abort controller
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 6000); // Reduzir timeout para 6 segundos
 
-      const fetchPromise = fetch("/api/campanhas", {
+      const response = await fetch("/api/campanhas", {
+        signal: controller.signal,
         headers: {
           "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
         },
       });
 
-      const response = (await Promise.race([
-        fetchPromise,
-        timeoutPromise,
-      ])) as Response;
+      clearTimeout(timeoutId);
       console.log("📊 [CaixaContext] Response status:", response.status);
 
       if (response.ok) {
@@ -203,6 +217,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     } catch (localError) {
       console.warn("Erro ao carregar campanhas do localStorage:", localError);
       setCampanhas([]);
+    } finally {
+      campanhasLoadingRef.current = false;
     }
   };
 
@@ -219,7 +235,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      console.log("���� [CaixaContext] Carregando dados do banco de dados...");
+      console.log(
+        "������ [CaixaContext] Carregando dados do banco de dados...",
+      );
 
       // Carregar campanhas do servidor
       try {
@@ -325,7 +343,17 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Função para carregar lançamentos do banco de dados
   const carregarLancamentosDoBanco = async () => {
+    // Evitar múltiplas requisições simultâneas
+    if (lancamentosLoadingRef.current) {
+      console.log(
+        "📦 [CaixaContext] Carregamento de lançamentos já em andamento",
+      );
+      return [];
+    }
+
     try {
+      lancamentosLoadingRef.current = true;
+
       console.log(
         "📦 [CaixaContext] Carregando lançamentos do banco de dados...",
       );
@@ -351,7 +379,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Adicionar timeout para evitar congelamentos
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 6000); // Reduzir timeout para 6 segundos
 
       let response;
       try {
@@ -530,7 +558,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       );
     } catch (error) {
       console.error("Erro ao carregar lançamentos do banco:", error);
-      throw error;
+
+      // Melhor tratamento de erro baseado no tipo
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          console.warn(
+            "�� [CaixaContext] Problema de conectividade, usando fallback",
+          );
+        } else if (error.message.includes("Timeout")) {
+          console.warn(
+            "📦 [CaixaContext] Timeout na requisição, usando fallback",
+          );
+        }
+      }
+
+      // Retornar array vazio em vez de throw para permitir fallback
+      return [];
+    } finally {
+      lancamentosLoadingRef.current = false;
     }
   };
 
@@ -584,7 +629,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       } else {
         setLancamentos([]);
         console.log(
-          "📦 [CaixaContext] Nenhum lançamento encontrado no localStorage",
+          "��� [CaixaContext] Nenhum lançamento encontrado no localStorage",
         );
       }
     } catch (error) {
@@ -709,11 +754,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.numeroNota,
   ]);
 
-  // Recarregar lançamentos quando os filtros mudarem - otimizado
+  // Recarregar lançamentos quando os filtros mudarem - otimizado e sem loops
   const isFetchingRef = useRef(false);
   const lastFiltrosRef = useRef<string>("");
+  const excludingRef = useRef(false); // Evitar recarregar durante exclusão
 
   useEffect(() => {
+    // Evitar recarregamento durante operações de exclusão
+    if (isExcluindo || excludingRef.current) {
+      console.log(
+        "[CaixaContext] Operação em andamento, pulando recarregamento",
+      );
+      return;
+    }
+
     // Evitar recarregamento desnecessário se os filtros não mudaram realmente
     if (lastFiltrosRef.current === filtrosDependencias) {
       return;
@@ -723,25 +777,46 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     // Debounce para evitar múltiplos lançamentos rápidos
     const timeoutId = setTimeout(() => {
-      if (isFetchingRef.current) {
+      if (isFetchingRef.current || isExcluindo) {
         console.log("[CaixaContext] fetch já em andamento, ignorando");
         return;
       }
       isFetchingRef.current = true;
       console.log("[CaixaContext] Recarregando por mudança de filtros");
-      carregarLancamentosDoBanco()
-        .catch((err) => {
-          console.error("[CaixaContext] erro carregarLancamentosDoBanco:", err);
-          // Em caso de erro, tentar localStorage como fallback
-          return carregarLancamentosLocalStorage();
-        })
-        .finally(() => {
-          isFetchingRef.current = false;
-        });
-    }, 500);
+
+      // Implementar retry com backoff
+      const tentarCarregarComRetry = async (tentativas = 2) => {
+        for (let i = 0; i < tentativas; i++) {
+          try {
+            await carregarLancamentosDoBanco();
+            return; // Sucesso, sair do loop
+          } catch (error) {
+            console.warn(
+              `📦 [CaixaContext] Tentativa ${i + 1}/${tentativas} falhou:`,
+              error,
+            );
+
+            if (i === tentativas - 1) {
+              // Última tentativa, usar fallback
+              console.log(
+                "📦 [CaixaContext] Todas as tentativas falharam, usando localStorage",
+              );
+              return carregarLancamentosLocalStorage();
+            }
+
+            // Aguardar antes da próxima tentativa
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+        }
+      };
+
+      tentarCarregarComRetry().finally(() => {
+        isFetchingRef.current = false;
+      });
+    }, 1000); // Aumentar debounce para 1 segundo
 
     return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias]);
+  }, [filtrosDependencias, isExcluindo]);
 
   // Função para normalizar lançamento antes de salvar
   const normalizarLancamento = (lancamento: any): any => {
@@ -1162,15 +1237,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         return depois;
       });
 
-      // Recarregar dados do servidor como segurança adicional
-      setTimeout(() => {
-        carregarDados().catch((error) => {
-          console.warn(
-            "[CaixaContext] Erro ao recarregar dados após exclusão:",
-            error,
-          );
-        });
-      }, 500);
+      // REMOVIDO: setTimeout e carregarDados() que causavam loop infinito
+      console.log("[CaixaContext] Exclusão concluída com sucesso");
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
@@ -1339,7 +1407,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     (id, dados) => editarLancamento(id, dados),
     [],
   );
-  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
+  const excluirLancamentoCb = useCallback(
+    (id) => excluirLancamento(id),
+    [isExcluindo],
+  );
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
   // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores

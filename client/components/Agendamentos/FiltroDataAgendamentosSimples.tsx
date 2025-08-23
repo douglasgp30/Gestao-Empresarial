@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAgendamentos } from "../../contexts/AgendamentosContext";
 import FiltroDataSimples from "../ui/FiltroDataSimples";
 
 export default function FiltroDataAgendamentosSimples() {
   const { filtros, setFiltros, isLoading } = useAgendamentos();
+  const datasCorrigidas = useRef(false); // Evitar correção infinita
 
   // Verificar e corrigir datas inválidas na inicialização - apenas uma vez
   useEffect(() => {

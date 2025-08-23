@@ -210,6 +210,40 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
       return res.status(404).json(response);
     }
 
+    // Verificar se existem lançamentos que usam este item
+    const lancamentosVinculados = await prisma.lancamentoCaixa.findMany({
+      where: {
+        descricaoECategoriaId: item.id,
+      },
+      select: {
+        id: true,
+        dataHora: true,
+        valor: true,
+        tipo: true,
+      },
+      take: 5, // Limitar para mostrar apenas alguns exemplos
+    });
+
+    if (lancamentosVinculados.length > 0) {
+      const exemplos = lancamentosVinculados
+        .map(
+          (l) =>
+            `#${l.id} (${l.tipo}: R$ ${l.valor.toFixed(2)} em ${l.dataHora.toLocaleDateString("pt-BR")})`,
+        )
+        .join(", ");
+
+      const tipoTexto =
+        item.tipoItem === "categoria" ? "categoria" : "descrição";
+      const errorMessage = `Não é possível excluir a ${tipoTexto} "${item.nome}" pois existem ${lancamentosVinculados.length} lançamento(s) do caixa vinculado(s). Exemplos: ${exemplos}${lancamentosVinculados.length > 5 ? " e outros..." : ""}. Para excluir esta ${tipoTexto}, primeiro você deve remover ou alterar estes lançamentos.`;
+
+      const response: ApiResponse<null> = {
+        error: errorMessage,
+      };
+
+      console.log("🔴 Enviando erro de lançamentos vinculados:", response);
+      return res.status(400).json(response);
+    }
+
     // Se for uma categoria, verificar se existem descrições que dependem dela
     if (item.tipoItem === "categoria") {
       const descricoesVinculadas = await prisma.descricaoECategoria.findMany({
@@ -231,7 +265,7 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
           error: errorMessage,
         };
 
-        console.log("🔴 Enviando erro de dependência:", response);
+        console.log("🔴 Enviando erro de dependência de descrições:", response);
         return res.status(400).json(response);
       }
     }

@@ -8,15 +8,44 @@ const prisma = new PrismaClient();
 
 const ContaLancamentoSchema = z
   .object({
-    valor: z.number().positive("Valor deve ser positivo"),
+    // Aceitar valor principal ou valorOriginal
+    valor: z.number().positive("Valor deve ser positivo").optional(),
+    valorOriginal: z
+      .number()
+      .positive("Valor original deve ser positivo")
+      .optional(),
+    valorLiquido: z.number().optional(),
+
     dataVencimento: z.string().transform((str) => new Date(str)),
-    codigoCliente: z.number().optional(),
-    codigoFornecedor: z.number().optional(),
+    codigoCliente: z
+      .union([
+        z.number(),
+        z.string().transform((str) => {
+          const num = parseInt(str);
+          if (isNaN(num)) throw new Error(`Invalid codigoCliente: ${str}`);
+          return num;
+        }),
+      ])
+      .optional(),
+    codigoFornecedor: z
+      .union([
+        z.number(),
+        z.string().transform((str) => {
+          const num = parseInt(str);
+          if (isNaN(num)) throw new Error(`Invalid codigoFornecedor: ${str}`);
+          return num;
+        }),
+      ])
+      .optional(),
     tipo: z.enum(["receber", "pagar"]),
-    formaPg: z.number().optional(),
+    formaPg: z
+      .union([z.number(), z.string().transform((str) => parseInt(str))])
+      .optional(),
     observacoes: z.string().optional(),
-    descricaoCategoria: z.number().optional(),
-    pago: z.boolean().default(false),
+    descricaoCategoria: z
+      .union([z.number(), z.string().transform((str) => parseInt(str))])
+      .optional(),
+    pago: z.boolean().default(false).optional(), // Manter para compatibilidade
     dataPagamento: z
       .string()
       .optional()
@@ -30,37 +59,52 @@ const ContaLancamentoSchema = z
     sistemaOrigem: z.string().optional(),
     status: z.string().optional(),
     prioridadePagamento: z.string().optional(),
-
-    // Campos adicionais do schema Prisma
-    valorOriginal: z.number().optional(),
-    valorLiquido: z.number().optional(),
     numeroDocumento: z.string().optional(),
   })
   .refine(
     (data) => {
+      // Deve ter pelo menos valor ou valorOriginal
+      return data.valor || data.valorOriginal;
+    },
+    {
+      message: "Deve ter pelo menos um valor (valor ou valorOriginal)",
+    },
+  )
+  .refine(
+    (data) => {
       // Regra: tipo = receber → precisa ter codigoCliente e não pode ter codigoFornecedor
       if (data.tipo === "receber") {
-        return data.codigoCliente && !data.codigoFornecedor;
+        const hasCliente =
+          data.codigoCliente &&
+          (typeof data.codigoCliente === "number"
+            ? data.codigoCliente > 0
+            : parseInt(data.codigoCliente) > 0);
+        return hasCliente && !data.codigoFornecedor;
       }
       // Regra: tipo = pagar → precisa ter codigoFornecedor e não pode ter codigoCliente
       if (data.tipo === "pagar") {
-        return data.codigoFornecedor && !data.codigoCliente;
+        const hasFornecedor =
+          data.codigoFornecedor &&
+          (typeof data.codigoFornecedor === "number"
+            ? data.codigoFornecedor > 0
+            : parseInt(data.codigoFornecedor) > 0);
+        return hasFornecedor && !data.codigoCliente;
       }
       return true;
     },
     {
       message:
-        "Contas a receber devem ter cliente, contas a pagar devem ter fornecedor",
+        "Contas a receber devem ter cliente válido, contas a pagar devem ter fornecedor válido",
     },
   )
   .refine(
     (data) => {
-      // Regra: Se pago = true → precisa ter dataPagamento e formaPg
-      if (data.pago) {
+      // Regra simplificada: se tem dataPagamento ou status="pago", deve ter formaPg
+      const isPago = data.pago || data.status === "pago";
+      if (isPago) {
         return data.dataPagamento && data.formaPg;
       }
-      // Regra: Se pago = false → dataPagamento e formaPg devem estar nulos
-      return !data.dataPagamento && !data.formaPg;
+      return true;
     },
     {
       message: "Contas pagas devem ter data de pagamento e forma de pagamento",
@@ -144,66 +188,260 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     console.log("🔍 [API CONTAS] Dados recebidos para criar conta:", req.body);
+    console.log(
+      "🔍 [API CONTAS] Tipo do valor:",
+      typeof req.body.valor,
+      "Valor:",
+      req.body.valor,
+    );
+    console.log(
+      "🔍 [API CONTAS] Tipo do codigoCliente:",
+      typeof req.body.codigoCliente,
+      "Valor:",
+      req.body.codigoCliente,
+    );
 
-    const dados = ContaLancamentoSchema.parse(req.body);
+    // Parse com tratamento de erro mais detalhado
+    let dados;
+    try {
+      dados = ContaLancamentoSchema.parse(req.body);
+      console.log(
+        "✅ [API CONTAS] Schema validation passou. Dados validados:",
+        {
+          tipo: dados.tipo,
+          valor: dados.valor,
+          valorOriginal: dados.valorOriginal,
+          codigoCliente: dados.codigoCliente,
+          dataVencimento: dados.dataVencimento,
+        },
+      );
+    } catch (schemaError) {
+      console.error(
+        "❌ [API CONTAS] Erro na validação do schema:",
+        schemaError,
+      );
+      if (schemaError instanceof z.ZodError) {
+        console.error(
+          "❌ [API CONTAS] Detalhes dos erros:",
+          schemaError.errors,
+        );
+        const response: ApiResponse<null> = {
+          error: "Dados inválidos",
+          details: schemaError.errors,
+        };
+        return res.status(400).json(response);
+      }
+      throw schemaError;
+    }
 
     // Preparar dados para criação com mapeamento correto
-    const dadosParaCriacao: any = {
-      valor: dados.valor,
-      dataVencimento: dados.dataVencimento,
-      codigoCliente: dados.codigoCliente,
-      codigoFornecedor: dados.codigoFornecedor,
-      tipo: dados.tipo,
-      formaPg: dados.formaPg,
-      observacoes: dados.observacoes,
-      descricaoCategoria: dados.descricaoCategoria,
-      pago: dados.pago,
-      dataPagamento: dados.dataPagamento,
+    // Validar se cliente existe (para contas a receber)
+    if (dados.tipo === "receber" && dados.codigoCliente) {
+      // Garantir que codigoCliente é um número válido
+      const clienteId = Number(dados.codigoCliente);
 
-      // Mapeamento para campos adicionais do schema
-      valorOriginal: dados.valorOriginal || dados.valor,
-      valorLiquido: dados.valorLiquido || dados.valor,
-      status: dados.status || (dados.pago ? "pago" : "pendente"),
-      prioridadePagamento: dados.prioridadePagamento || "normal",
-      codigoExterno: dados.codigoServico,
-      sistemaOrigem: dados.sistemaOrigem || "manual",
-      numeroDocumento: dados.numeroDocumento,
+      if (isNaN(clienteId) || clienteId <= 0) {
+        console.log(
+          `❌ [API CONTAS] Cliente ID inválido: ${dados.codigoCliente}`,
+        );
+        const response: ApiResponse<null> = {
+          error: `ID do cliente inválido: ${dados.codigoCliente}. Deve ser um número válido.`,
+        };
+        return res.status(400).json(response);
+      }
 
-      // Campos de observações estendidas
-      observacoesInternas:
-        dados.categoria && dados.descricao
-          ? `Categoria: ${dados.categoria} | Descrição: ${dados.descricao}${dados.lancamentoCaixaId ? ` | Caixa ID: ${dados.lancamentoCaixaId}` : ""}`
-          : dados.lancamentoCaixaId
-            ? `Lançamento Caixa ID: ${dados.lancamentoCaixaId}`
-            : undefined,
-    };
+      const clienteExiste = await prisma.cliente.findUnique({
+        where: { id: clienteId },
+      });
+
+      if (!clienteExiste) {
+        console.log(`❌ [API CONTAS] Cliente ID ${clienteId} não encontrado`);
+        const response: ApiResponse<null> = {
+          error: `Cliente com ID ${clienteId} não encontrado. Verifique se o cliente existe antes de criar a conta a receber.`,
+        };
+        return res.status(400).json(response);
+      }
+
+      console.log(
+        `✅ [API CONTAS] Cliente ${clienteExiste.nome} (ID: ${clienteId}) validado`,
+      );
+
+      // Atualizar o valor com o número válido
+      dados.codigoCliente = clienteId;
+    }
+
+    // Validar se fornecedor existe (para contas a pagar)
+    if (dados.tipo === "pagar" && dados.codigoFornecedor) {
+      // Garantir que codigoFornecedor �� um número válido
+      const fornecedorId = Number(dados.codigoFornecedor);
+
+      if (isNaN(fornecedorId) || fornecedorId <= 0) {
+        console.log(
+          `❌ [API CONTAS] Fornecedor ID inválido: ${dados.codigoFornecedor}`,
+        );
+        const response: ApiResponse<null> = {
+          error: `ID do fornecedor inválido: ${dados.codigoFornecedor}. Deve ser um número válido.`,
+        };
+        return res.status(400).json(response);
+      }
+
+      const fornecedorExiste = await prisma.fornecedor.findUnique({
+        where: { id: fornecedorId },
+      });
+
+      if (!fornecedorExiste) {
+        console.log(
+          `❌ [API CONTAS] Fornecedor ID ${fornecedorId} não encontrado`,
+        );
+        const response: ApiResponse<null> = {
+          error: `Fornecedor com ID ${fornecedorId} não encontrado. Verifique se o fornecedor existe antes de criar a conta a pagar.`,
+        };
+        return res.status(400).json(response);
+      }
+
+      console.log(
+        `✅ [API CONTAS] Fornecedor ${fornecedorExiste.nome} (ID: ${fornecedorId}) validado`,
+      );
+
+      // Atualizar o valor com o número válido
+      dados.codigoFornecedor = fornecedorId;
+    }
+
+    // Verificar se valor é válido
+    const valorFinal = dados.valorOriginal || dados.valor;
+    if (!valorFinal || isNaN(valorFinal) || valorFinal <= 0) {
+      console.log(`❌ [API CONTAS] Valor inválido: ${valorFinal}`);
+      const response: ApiResponse<null> = {
+        error: `Valor inválido: ${valorFinal}. Deve ser um número positivo.`,
+      };
+      return res.status(400).json(response);
+    }
+
+    // Remover campos undefined antes de enviar para o Prisma
+    const dadosParaCriacao: any = {};
+
+    // Campos obrigatórios
+    dadosParaCriacao.dataVencimento = dados.dataVencimento;
+    dadosParaCriacao.tipo = dados.tipo;
+    dadosParaCriacao.valorOriginal = valorFinal;
+    dadosParaCriacao.valorLiquido = dados.valorLiquido || valorFinal;
+
+    // Campos condicionais - apenas adicionar se não undefined
+    if (dados.codigoCliente)
+      dadosParaCriacao.codigoCliente = dados.codigoCliente;
+    if (dados.codigoFornecedor)
+      dadosParaCriacao.codigoFornecedor = dados.codigoFornecedor;
+    if (dados.formaPg) dadosParaCriacao.formaPagamentoId = dados.formaPg;
+    if (dados.observacoes) dadosParaCriacao.observacoes = dados.observacoes;
+    if (dados.descricaoCategoria)
+      dadosParaCriacao.categoriaId = dados.descricaoCategoria;
+    if (dados.numeroDocumento)
+      dadosParaCriacao.numeroDocumento = dados.numeroDocumento;
+
+    // Status baseado no campo pago
+    dadosParaCriacao.status =
+      dados.status || (dados.pago ? "pago" : "pendente");
+    if (dados.dataPagamento)
+      dadosParaCriacao.dataPagamento = dados.dataPagamento;
+
+    // Valores calculados
+    const isPago = dados.pago || dados.status === "pago";
+    const valorTotal = dados.valorOriginal || dados.valor;
+    dadosParaCriacao.valorPago = isPago ? valorTotal : 0;
+    dadosParaCriacao.valorRestante = isPago ? 0 : valorTotal;
+
+    // Campos opcionais com defaults seguros
+    dadosParaCriacao.prioridadePagamento =
+      dados.prioridadePagamento || "normal";
+    if (dados.codigoServico)
+      dadosParaCriacao.codigoExterno = dados.codigoServico;
+    dadosParaCriacao.sistemaOrigem = dados.sistemaOrigem || "manual";
+
+    // Observações internas
+    if (dados.categoria && dados.descricao) {
+      dadosParaCriacao.observacoesInternas = `Categoria: ${dados.categoria} | Descrição: ${dados.descricao}${dados.lancamentoCaixaId ? ` | Caixa ID: ${dados.lancamentoCaixaId}` : ""}`;
+    } else if (dados.lancamentoCaixaId) {
+      dadosParaCriacao.observacoesInternas = `Lançamento Caixa ID: ${dados.lancamentoCaixaId}`;
+    }
 
     console.log(
       "🔍 [API CONTAS] Dados preparados para criação:",
       dadosParaCriacao,
     );
 
-    const conta = await prisma.contaLancamento.create({
-      data: dadosParaCriacao,
-      include: {
-        cliente: true,
-        fornecedor: true,
-        formaPagamento: true,
-        categoria: true,
-      },
-    });
+    // Verificação final antes de criar
+    if (!dadosParaCriacao.valorOriginal || !dadosParaCriacao.valorLiquido) {
+      console.error("❌ [API CONTAS] Valores obrigatórios não definidos:", {
+        valorOriginal: dadosParaCriacao.valorOriginal,
+        valorLiquido: dadosParaCriacao.valorLiquido,
+      });
+      const response: ApiResponse<null> = {
+        error:
+          "Valores financeiros obrigat��rios não foram definidos corretamente.",
+      };
+      return res.status(400).json(response);
+    }
+
+    let conta;
+    try {
+      conta = await prisma.contaLancamento.create({
+        data: dadosParaCriacao,
+        include: {
+          cliente: true,
+          fornecedor: true,
+          formaPagamento: true,
+          categoria: true,
+          descricaoECategoria: true,
+          localizacao: true,
+        },
+      });
+    } catch (prismaError) {
+      console.error(
+        "❌ [API CONTAS] Erro do Prisma ao criar conta:",
+        prismaError,
+      );
+
+      // Tratamento específico para diferentes tipos de erro
+      if (prismaError.code === "P2002") {
+        const response: ApiResponse<null> = {
+          error: "Erro de duplicação: este registro já existe.",
+        };
+        return res.status(409).json(response);
+      } else if (prismaError.code === "P2003") {
+        const response: ApiResponse<null> = {
+          error:
+            "Erro de referência: cliente, fornecedor ou forma de pagamento não existe.",
+        };
+        return res.status(400).json(response);
+      } else {
+        const response: ApiResponse<null> = {
+          error: "Erro interno ao criar conta a receber/pagar.",
+          details: prismaError.message,
+        };
+        return res.status(500).json(response);
+      }
+    }
 
     console.log("✅ [API CONTAS] Conta criada com sucesso:", {
       id: conta.id,
       tipo: conta.tipo,
-      valor: conta.valor,
       valorOriginal: conta.valorOriginal,
+      valorLiquido: conta.valorLiquido,
       status: conta.status,
       sistemaOrigem: conta.sistemaOrigem,
       cliente: conta.cliente?.nome,
       fornecedor: conta.fornecedor?.nome,
       codigoExterno: conta.codigoExterno,
     });
+
+    // Verificar se a conta foi criada corretamente
+    if (!conta || !conta.id) {
+      console.error("❌ [API CONTAS] Conta criada mas sem ID válido:", conta);
+      const response: ApiResponse<null> = {
+        error: "Conta criada mas não foi possível obter o ID.",
+      };
+      return res.status(500).json(response);
+    }
 
     const response: ApiResponse<typeof conta> = {
       data: conta,
@@ -235,7 +473,7 @@ router.put("/:id", async (req, res) => {
     const dados = ContaLancamentoSchema.partial().parse(req.body);
 
     const conta = await prisma.contaLancamento.update({
-      where: { codLancamentoContas: id },
+      where: { id: id },
       data: dados,
       include: {
         cliente: true,
@@ -274,7 +512,7 @@ router.delete("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
 
     await prisma.contaLancamento.delete({
-      where: { codLancamentoContas: id },
+      where: { id: id },
     });
 
     const response: ApiResponse<null> = {
