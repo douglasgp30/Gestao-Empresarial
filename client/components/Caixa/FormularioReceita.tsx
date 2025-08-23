@@ -397,7 +397,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
       if (isBoleto) {
-        codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
       }
 
       // Buscar objetos completos para criar snapshots
