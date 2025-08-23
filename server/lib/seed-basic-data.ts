@@ -1,65 +1,185 @@
-import { prisma } from "./database";
+import { prisma } from './database';
 
 export async function seedBasicData() {
-  console.log("[Seed] Criando dados básicos...");
+  console.log('🌱 Criando dados básicos...');
 
-  // Criar descrições básicas se não existirem
-  const descricoesCount = await prisma.descricao.count();
-  if (descricoesCount === 0) {
-    await prisma.descricao.createMany({
-      data: [
-        { nome: "Conserto de Celular", categoria: "Serviços", tipo: "receita" },
-        { nome: "Troca de Tela", categoria: "Serviços", tipo: "receita" },
-        { nome: "Venda de Capinha", categoria: "Produtos", tipo: "receita" },
-        {
-          nome: "Material de Escritório",
-          categoria: "Materiais",
-          tipo: "despesa",
+  try {
+    // 1. Criar formas de pagamento básicas
+    const formasPagamento = [
+      { nome: 'Dinheiro' },
+      { nome: 'PIX' },
+      { nome: 'Cartão de Débito' },
+      { nome: 'Cartão de Crédito' },
+      { nome: 'Boleto Bancário' },
+      { nome: 'Transferência Bancária' }
+    ];
+
+    for (const forma of formasPagamento) {
+      await prisma.formaPagamento.upsert({
+        where: { nome: forma.nome },
+        update: {},
+        create: forma
+      });
+    }
+
+    // 2. Criar funcionários/técnicos básicos
+    const funcionarios = [
+      {
+        nome: 'Admin Sistema',
+        percentualServico: 0,
+        percentualComissao: 0,
+        ehTecnico: false,
+        temAcessoSistema: true,
+        tipoAcesso: 'Administrador',
+        registraPonto: false
+      },
+      {
+        nome: 'Técnico 1',
+        percentualServico: 30,
+        percentualComissao: 30,
+        ehTecnico: true,
+        temAcessoSistema: true,
+        tipoAcesso: 'Técnico',
+        registraPonto: true
+      },
+      {
+        nome: 'Técnico 2',
+        percentualServico: 25,
+        percentualComissao: 25,
+        ehTecnico: true,
+        temAcessoSistema: true,
+        tipoAcesso: 'Técnico',
+        registraPonto: true
+      }
+    ];
+
+    for (const funcionario of funcionarios) {
+      await prisma.funcionario.upsert({
+        where: { nome: funcionario.nome },
+        update: {},
+        create: funcionario
+      });
+    }
+
+    // 3. Criar categorias e descrições básicas
+    const categorias = [
+      { nome: 'Serviços', tipo: 'receita', tipoItem: 'categoria' },
+      { nome: 'Vendas', tipo: 'receita', tipoItem: 'categoria' },
+      { nome: 'Recebimento de Boletos', tipo: 'receita', tipoItem: 'categoria' },
+      { nome: 'Despesas Operacionais', tipo: 'despesa', tipoItem: 'categoria' },
+      { nome: 'Materiais', tipo: 'despesa', tipoItem: 'categoria' }
+    ];
+
+    for (const categoria of categorias) {
+      await prisma.descricaoECategoria.upsert({
+        where: { 
+          nome_tipo_tipoItem: {
+            nome: categoria.nome,
+            tipo: categoria.tipo,
+            tipoItem: categoria.tipoItem
+          }
         },
-        { nome: "Combustível", categoria: "Combustível", tipo: "despesa" },
-      ],
-    });
-    console.log("[Seed] Descrições criadas");
+        update: {},
+        create: {
+          nome: categoria.nome,
+          tipo: categoria.tipo,
+          tipoItem: categoria.tipoItem,
+          ativo: true
+        }
+      });
+    }
+
+    // 4. Criar descrições básicas
+    const descricoes = [
+      { nome: 'Instalação', tipo: 'receita', tipoItem: 'descricao', categoria: 'Serviços' },
+      { nome: 'Manutenção', tipo: 'receita', tipoItem: 'descricao', categoria: 'Serviços' },
+      { nome: 'Reparo', tipo: 'receita', tipoItem: 'descricao', categoria: 'Serviços' },
+      { nome: 'Produto Vendido', tipo: 'receita', tipoItem: 'descricao', categoria: 'Vendas' },
+      { nome: 'Combustível', tipo: 'despesa', tipoItem: 'descricao', categoria: 'Despesas Operacionais' },
+      { nome: 'Material de Consumo', tipo: 'despesa', tipoItem: 'descricao', categoria: 'Materiais' }
+    ];
+
+    for (const descricao of descricoes) {
+      await prisma.descricaoECategoria.upsert({
+        where: { 
+          nome_tipo_tipoItem: {
+            nome: descricao.nome,
+            tipo: descricao.tipo,
+            tipoItem: descricao.tipoItem
+          }
+        },
+        update: {},
+        create: {
+          nome: descricao.nome,
+          tipo: descricao.tipo,
+          tipoItem: descricao.tipoItem,
+          categoria: descricao.categoria,
+          ativo: true
+        }
+      });
+    }
+
+    // 5. Criar campanhas básicas
+    const campanhas = [
+      { nome: 'Campanha Padrão' },
+      { nome: 'Promoção Verão' }
+    ];
+
+    for (const campanha of campanhas) {
+      await prisma.campanha.upsert({
+        where: { nome: campanha.nome },
+        update: {},
+        create: campanha
+      });
+    }
+
+    // 6. Criar clientes básicos
+    const clientes = [
+      {
+        nome: 'Cliente Teste',
+        telefonePrincipal: '(62) 99999-9999'
+      }
+    ];
+
+    for (const cliente of clientes) {
+      await prisma.cliente.upsert({
+        where: { nome: cliente.nome },
+        update: {},
+        create: cliente
+      });
+    }
+
+    // 7. Criar localizações básicas
+    const localizacoes = [
+      { nome: 'Goiânia', tipoItem: 'cidade', ativo: true },
+      { nome: 'Centro', tipoItem: 'setor', cidade: 'Goiânia', ativo: true },
+      { nome: 'Setor Oeste', tipoItem: 'setor', cidade: 'Goiânia', ativo: true }
+    ];
+
+    for (const localizacao of localizacoes) {
+      await prisma.localizacaoGeografica.upsert({
+        where: { 
+          nome_tipoItem: {
+            nome: localizacao.nome,
+            tipoItem: localizacao.tipoItem
+          }
+        },
+        update: {},
+        create: localizacao
+      });
+    }
+
+    console.log('✅ Dados básicos criados com sucesso!');
+    
+    // Mostrar IDs criados para debug
+    const formasCreated = await prisma.formaPagamento.findMany();
+    const funcionariosCreated = await prisma.funcionario.findMany();
+    
+    console.log('📋 Formas de pagamento criadas:', formasCreated.map(f => ({ id: f.id, nome: f.nome })));
+    console.log('👥 Funcionários criados:', funcionariosCreated.map(f => ({ id: f.id, nome: f.nome })));
+
+  } catch (error) {
+    console.error('❌ Erro ao criar dados básicos:', error);
+    throw error;
   }
-
-  // Criar formas de pagamento básicas se não existirem
-  const formasCount = await prisma.formaPagamento.count();
-  if (formasCount === 0) {
-    await prisma.formaPagamento.createMany({
-      data: [
-        { nome: "Dinheiro" },
-        { nome: "PIX" },
-        { nome: "Cartão de Crédito" },
-        { nome: "Cartão de Débito" },
-      ],
-    });
-    console.log("[Seed] Formas de pagamento criadas");
-  }
-
-  // Não criar funcionários fictícios - apenas verificar se há funcionários
-  const funcionariosCount = await prisma.funcionario.count();
-  console.log(`[Seed] Funcionários no banco: ${funcionariosCount}`);
-
-  // Criar setores básicos se não existirem
-  const setoresCount = await prisma.setor.count();
-  if (setoresCount === 0) {
-    await prisma.setor.createMany({
-      data: [
-        { nome: "Centro", cidade: "Goiânia" },
-        { nome: "Setor Oeste", cidade: "Goiânia" },
-      ],
-    });
-    console.log("[Seed] Setores criados");
-  }
-
-  // Criar campanhas básicas se não existirem
-  const campanhasCount = await prisma.campanha.count();
-  if (campanhasCount === 0) {
-    await prisma.campanha.createMany({
-      data: [{ nome: "Promoção de Inverno" }, { nome: "Black Friday" }],
-    });
-    console.log("[Seed] Campanhas criadas");
-  }
-
-  console.log("[Seed] Dados básicos criados com sucesso!");
 }
