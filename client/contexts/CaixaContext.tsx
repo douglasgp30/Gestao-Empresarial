@@ -233,7 +233,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-      console.log("���� [CaixaContext] Carregando dados do banco de dados...");
+      console.log("������ [CaixaContext] Carregando dados do banco de dados...");
 
       // Carregar campanhas do servidor
       try {
@@ -780,7 +780,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         .finally(() => {
           isFetchingRef.current = false;
         });
-    }, 500);
+    }, 1000); // Aumentar debounce para 1 segundo
 
     return () => clearTimeout(timeoutId);
   }, [filtrosDependencias, isExcluindo]);
