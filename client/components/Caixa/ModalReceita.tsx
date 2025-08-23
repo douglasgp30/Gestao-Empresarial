@@ -792,16 +792,30 @@ export function ModalReceita() {
 
               {/* Cliente */}
               <div className="space-y-2">
-                <Label htmlFor="cliente">Cliente</Label>
+                <Label
+                  htmlFor="cliente"
+                  className={isBoleto ? "text-red-600 font-semibold" : ""}
+                >
+                  Cliente {isBoleto && "*"}
+                </Label>
                 <div className="flex gap-2">
                   <Select
                     value={formData.cliente}
                     onValueChange={(value) =>
                       setFormData((prev) => ({ ...prev, cliente: value }))
                     }
+                    required={isBoleto}
                   >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Selecione um cliente" />
+                    <SelectTrigger
+                      className={`flex-1 ${isBoleto && !formData.cliente ? "border-red-500" : ""}`}
+                    >
+                      <SelectValue
+                        placeholder={
+                          isBoleto
+                            ? "Selecione um cliente (obrigatório para boleto)"
+                            : "Selecione um cliente"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {clientes.map((cliente) => (
@@ -827,7 +841,76 @@ export function ModalReceita() {
                     }}
                   />
                 </div>
+                {isBoleto && !formData.cliente && (
+                  <p className="text-xs text-red-500">
+                    Cliente é obrigatório quando a forma de pagamento for boleto
+                  </p>
+                )}
               </div>
+
+              {/* Data de Vencimento do Boleto - só aparece para boletos */}
+              {isBoleto && (
+                <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <Label
+                      htmlFor="dataVencimentoBoleto"
+                      className="text-blue-800 font-semibold"
+                    >
+                      Data de Vencimento do Boleto *
+                    </Label>
+                  </div>
+
+                  <Input
+                    id="dataVencimentoBoleto"
+                    type="date"
+                    value={
+                      dataVencimentoBoleto
+                        ? dataVencimentoBoleto.toISOString().split("T")[0]
+                        : ""
+                    }
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        setDataVencimentoBoleto(new Date(e.target.value));
+                      } else {
+                        setDataVencimentoBoleto(null);
+                      }
+                    }}
+                    className="bg-blue-50 border-blue-300"
+                    required
+                  />
+
+                  {!dataVencimentoBoleto && (
+                    <p className="text-xs text-red-600 font-medium">
+                      ⚠️ Data de vencimento é obrigatória para boletos
+                    </p>
+                  )}
+
+                  <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
+                    <h4 className="text-sm font-semibold text-blue-800 mb-2">
+                      🔄 Integração Automática Caixa + Contas a Receber
+                    </h4>
+                    <ul className="text-xs text-blue-700 space-y-1">
+                      <li>
+                        • <strong>Agora:</strong> Lança receita bruta no Caixa (não
+                        soma no saldo)
+                      </li>
+                      <li>
+                        • <strong>Agora:</strong> Cria automaticamente conta a
+                        receber
+                      </li>
+                      <li>
+                        • <strong>Quando pago:</strong> Marque como pago em Contas a
+                        Receber
+                      </li>
+                      <li>
+                        • <strong>Automático:</strong> Sistema lança receita real no
+                        Caixa
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
 
               {/* Nota Fiscal */}
               <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
