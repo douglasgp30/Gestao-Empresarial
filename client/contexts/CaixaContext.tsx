@@ -584,7 +584,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       } else {
         setLancamentos([]);
         console.log(
-          "📦 [CaixaContext] Nenhum lançamento encontrado no localStorage",
+          "��� [CaixaContext] Nenhum lançamento encontrado no localStorage",
         );
       }
     } catch (error) {
@@ -1339,7 +1339,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     (id, dados) => editarLancamento(id, dados),
     [],
   );
-  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
+  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), [isExcluindo]);
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
   // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores
