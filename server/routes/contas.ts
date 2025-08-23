@@ -150,36 +150,74 @@ router.post("/", async (req, res) => {
     // Preparar dados para criação com mapeamento correto
     // Validar se cliente existe (para contas a receber)
     if (dados.tipo === "receber" && dados.codigoCliente) {
-      const clienteExiste = await prisma.cliente.findUnique({
-        where: { id: dados.codigoCliente },
-      });
+      // Garantir que codigoCliente é um número válido
+      const clienteId = Number(dados.codigoCliente);
 
-      if (!clienteExiste) {
-        console.log(`❌ [API CONTAS] Cliente ID ${dados.codigoCliente} não encontrado`);
+      if (isNaN(clienteId) || clienteId <= 0) {
+        console.log(`❌ [API CONTAS] Cliente ID inválido: ${dados.codigoCliente}`);
         const response: ApiResponse<null> = {
-          error: `Cliente com ID ${dados.codigoCliente} não encontrado. Verifique se o cliente existe antes de criar a conta a receber.`,
+          error: `ID do cliente inválido: ${dados.codigoCliente}. Deve ser um número válido.`,
         };
         return res.status(400).json(response);
       }
 
-      console.log(`✅ [API CONTAS] Cliente ${clienteExiste.nome} (ID: ${dados.codigoCliente}) validado`);
+      const clienteExiste = await prisma.cliente.findUnique({
+        where: { id: clienteId },
+      });
+
+      if (!clienteExiste) {
+        console.log(`❌ [API CONTAS] Cliente ID ${clienteId} não encontrado`);
+        const response: ApiResponse<null> = {
+          error: `Cliente com ID ${clienteId} não encontrado. Verifique se o cliente existe antes de criar a conta a receber.`,
+        };
+        return res.status(400).json(response);
+      }
+
+      console.log(`✅ [API CONTAS] Cliente ${clienteExiste.nome} (ID: ${clienteId}) validado`);
+
+      // Atualizar o valor com o número válido
+      dados.codigoCliente = clienteId;
     }
 
     // Validar se fornecedor existe (para contas a pagar)
     if (dados.tipo === "pagar" && dados.codigoFornecedor) {
-      const fornecedorExiste = await prisma.fornecedor.findUnique({
-        where: { id: dados.codigoFornecedor },
-      });
+      // Garantir que codigoFornecedor é um número válido
+      const fornecedorId = Number(dados.codigoFornecedor);
 
-      if (!fornecedorExiste) {
-        console.log(`❌ [API CONTAS] Fornecedor ID ${dados.codigoFornecedor} não encontrado`);
+      if (isNaN(fornecedorId) || fornecedorId <= 0) {
+        console.log(`❌ [API CONTAS] Fornecedor ID inválido: ${dados.codigoFornecedor}`);
         const response: ApiResponse<null> = {
-          error: `Fornecedor com ID ${dados.codigoFornecedor} não encontrado. Verifique se o fornecedor existe antes de criar a conta a pagar.`,
+          error: `ID do fornecedor inválido: ${dados.codigoFornecedor}. Deve ser um número válido.`,
         };
         return res.status(400).json(response);
       }
 
-      console.log(`✅ [API CONTAS] Fornecedor ${fornecedorExiste.nome} (ID: ${dados.codigoFornecedor}) validado`);
+      const fornecedorExiste = await prisma.fornecedor.findUnique({
+        where: { id: fornecedorId },
+      });
+
+      if (!fornecedorExiste) {
+        console.log(`❌ [API CONTAS] Fornecedor ID ${fornecedorId} não encontrado`);
+        const response: ApiResponse<null> = {
+          error: `Fornecedor com ID ${fornecedorId} não encontrado. Verifique se o fornecedor existe antes de criar a conta a pagar.`,
+        };
+        return res.status(400).json(response);
+      }
+
+      console.log(`✅ [API CONTAS] Fornecedor ${fornecedorExiste.nome} (ID: ${fornecedorId}) validado`);
+
+      // Atualizar o valor com o número válido
+      dados.codigoFornecedor = fornecedorId;
+    }
+
+    // Verificar se valor é válido
+    const valorFinal = dados.valorOriginal || dados.valor;
+    if (!valorFinal || isNaN(valorFinal) || valorFinal <= 0) {
+      console.log(`❌ [API CONTAS] Valor inválido: ${valorFinal}`);
+      const response: ApiResponse<null> = {
+        error: `Valor inválido: ${valorFinal}. Deve ser um número positivo.`,
+      };
+      return res.status(400).json(response);
     }
 
     // Remover campos undefined antes de enviar para o Prisma
@@ -188,8 +226,8 @@ router.post("/", async (req, res) => {
     // Campos obrigatórios
     dadosParaCriacao.dataVencimento = dados.dataVencimento;
     dadosParaCriacao.tipo = dados.tipo;
-    dadosParaCriacao.valorOriginal = dados.valorOriginal || dados.valor;
-    dadosParaCriacao.valorLiquido = dados.valorLiquido || dados.valor;
+    dadosParaCriacao.valorOriginal = valorFinal;
+    dadosParaCriacao.valorLiquido = dados.valorLiquido || valorFinal;
 
     // Campos condicionais - apenas adicionar se não undefined
     if (dados.codigoCliente) dadosParaCriacao.codigoCliente = dados.codigoCliente;
@@ -280,7 +318,7 @@ router.put("/:id", async (req, res) => {
     const dados = ContaLancamentoSchema.partial().parse(req.body);
 
     const conta = await prisma.contaLancamento.update({
-      where: { codLancamentoContas: id },
+      where: { id: id },
       data: dados,
       include: {
         cliente: true,
@@ -319,7 +357,7 @@ router.delete("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
 
     await prisma.contaLancamento.delete({
-      where: { codLancamentoContas: id },
+      where: { id: id },
     });
 
     const response: ApiResponse<null> = {
