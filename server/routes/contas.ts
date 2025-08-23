@@ -224,7 +224,7 @@ router.post("/", async (req, res) => {
 
     // Validar se fornecedor existe (para contas a pagar)
     if (dados.tipo === "pagar" && dados.codigoFornecedor) {
-      // Garantir que codigoFornecedor é um número válido
+      // Garantir que codigoFornecedor �� um número válido
       const fornecedorId = Number(dados.codigoFornecedor);
 
       if (isNaN(fornecedorId) || fornecedorId <= 0) {
@@ -315,22 +315,46 @@ router.post("/", async (req, res) => {
         valorLiquido: dadosParaCriacao.valorLiquido
       });
       const response: ApiResponse<null> = {
-        error: "Valores financeiros obrigatórios não foram definidos corretamente.",
+        error: "Valores financeiros obrigat��rios não foram definidos corretamente.",
       };
       return res.status(400).json(response);
     }
 
-    const conta = await prisma.contaLancamento.create({
-      data: dadosParaCriacao,
-      include: {
-        cliente: true,
-        fornecedor: true,
-        formaPagamento: true,
-        categoria: true,
-        descricaoECategoria: true,
-        localizacao: true,
-      },
-    });
+    let conta;
+    try {
+      conta = await prisma.contaLancamento.create({
+        data: dadosParaCriacao,
+        include: {
+          cliente: true,
+          fornecedor: true,
+          formaPagamento: true,
+          categoria: true,
+          descricaoECategoria: true,
+          localizacao: true,
+        },
+      });
+    } catch (prismaError) {
+      console.error("❌ [API CONTAS] Erro do Prisma ao criar conta:", prismaError);
+
+      // Tratamento específico para diferentes tipos de erro
+      if (prismaError.code === 'P2002') {
+        const response: ApiResponse<null> = {
+          error: "Erro de duplicação: este registro já existe.",
+        };
+        return res.status(409).json(response);
+      } else if (prismaError.code === 'P2003') {
+        const response: ApiResponse<null> = {
+          error: "Erro de referência: cliente, fornecedor ou forma de pagamento não existe.",
+        };
+        return res.status(400).json(response);
+      } else {
+        const response: ApiResponse<null> = {
+          error: "Erro interno ao criar conta a receber/pagar.",
+          details: prismaError.message
+        };
+        return res.status(500).json(response);
+      }
+    }
 
     console.log("✅ [API CONTAS] Conta criada com sucesso:", {
       id: conta.id,
@@ -343,6 +367,15 @@ router.post("/", async (req, res) => {
       fornecedor: conta.fornecedor?.nome,
       codigoExterno: conta.codigoExterno,
     });
+
+    // Verificar se a conta foi criada corretamente
+    if (!conta || !conta.id) {
+      console.error("❌ [API CONTAS] Conta criada mas sem ID válido:", conta);
+      const response: ApiResponse<null> = {
+        error: "Conta criada mas não foi possível obter o ID.",
+      };
+      return res.status(500).json(response);
+    }
 
     const response: ApiResponse<typeof conta> = {
       data: conta,
