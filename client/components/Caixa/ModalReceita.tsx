@@ -239,6 +239,7 @@ export function ModalReceita() {
       temNotaFiscal: false,
     });
     setNotaFiscalEmitida(false);
+    setDataVencimentoBoleto(null);
   };
 
   // Função removida - o contexto já atualiza automaticamente após adicionar lançamento
