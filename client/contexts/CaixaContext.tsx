@@ -945,6 +945,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           novoLancamento.clienteId,
         ),
 
+        // Campos de integração para boletos e outros sistemas
+        codigoServico: novoLancamento.codigoServico,
+        sistemaOrigem: novoLancamento.sistemaOrigem,
+        codigoExterno: novoLancamento.codigoExterno,
+
         // Snapshots dos objetos para preservar dados históricos
         formaPagamentoSnapshot: novoLancamento.formaPagamento,
         clienteSnapshot: novoLancamento.cliente,
