@@ -15,11 +15,15 @@ export async function seedBasicData() {
     ];
 
     for (const forma of formasPagamento) {
-      await prisma.formaPagamento.upsert({
-        where: { nome: forma.nome },
-        update: {},
-        create: forma
+      const existing = await prisma.formaPagamento.findFirst({
+        where: { nome: forma.nome }
       });
+
+      if (!existing) {
+        await prisma.formaPagamento.create({
+          data: forma
+        });
+      }
     }
 
     // 2. Criar funcionários/técnicos básicos
