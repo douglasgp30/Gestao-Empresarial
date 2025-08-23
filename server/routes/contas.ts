@@ -8,14 +8,18 @@ const prisma = new PrismaClient();
 
 const ContaLancamentoSchema = z
   .object({
-    valor: z.number().positive("Valor deve ser positivo"),
+    // Aceitar valor principal ou valorOriginal
+    valor: z.number().positive("Valor deve ser positivo").optional(),
+    valorOriginal: z.number().positive("Valor original deve ser positivo").optional(),
+    valorLiquido: z.number().optional(),
+
     dataVencimento: z.string().transform((str) => new Date(str)),
-    codigoCliente: z.number().optional(),
-    codigoFornecedor: z.number().optional(),
+    codigoCliente: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
+    codigoFornecedor: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
     tipo: z.enum(["receber", "pagar"]),
-    formaPg: z.number().optional(),
+    formaPg: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
     observacoes: z.string().optional(),
-    descricaoCategoria: z.number().optional(),
+    descricaoCategoria: z.union([z.number(), z.string().transform(str => parseInt(str))]).optional(),
     pago: z.boolean().default(false).optional(), // Manter para compatibilidade
     dataPagamento: z
       .string()
@@ -30,27 +34,34 @@ const ContaLancamentoSchema = z
     sistemaOrigem: z.string().optional(),
     status: z.string().optional(),
     prioridadePagamento: z.string().optional(),
-
-    // Campos adicionais do schema Prisma
-    valorOriginal: z.number().optional(),
-    valorLiquido: z.number().optional(),
     numeroDocumento: z.string().optional(),
   })
   .refine(
     (data) => {
+      // Deve ter pelo menos valor ou valorOriginal
+      return data.valor || data.valorOriginal;
+    },
+    {
+      message: "Deve ter pelo menos um valor (valor ou valorOriginal)",
+    }
+  )
+  .refine(
+    (data) => {
       // Regra: tipo = receber → precisa ter codigoCliente e não pode ter codigoFornecedor
       if (data.tipo === "receber") {
-        return data.codigoCliente && !data.codigoFornecedor;
+        const hasCliente = data.codigoCliente && (typeof data.codigoCliente === 'number' ? data.codigoCliente > 0 : parseInt(data.codigoCliente) > 0);
+        return hasCliente && !data.codigoFornecedor;
       }
       // Regra: tipo = pagar → precisa ter codigoFornecedor e não pode ter codigoCliente
       if (data.tipo === "pagar") {
-        return data.codigoFornecedor && !data.codigoCliente;
+        const hasFornecedor = data.codigoFornecedor && (typeof data.codigoFornecedor === 'number' ? data.codigoFornecedor > 0 : parseInt(data.codigoFornecedor) > 0);
+        return hasFornecedor && !data.codigoCliente;
       }
       return true;
     },
     {
       message:
-        "Contas a receber devem ter cliente, contas a pagar devem ter fornecedor",
+        "Contas a receber devem ter cliente válido, contas a pagar devem ter fornecedor válido",
     },
   )
   .refine(
@@ -234,15 +245,6 @@ router.post("/", async (req, res) => {
       dados.codigoFornecedor = fornecedorId;
     }
 
-    // Verificar se valor é válido
-    const valorFinal = dados.valorOriginal || dados.valor;
-    if (!valorFinal || isNaN(valorFinal) || valorFinal <= 0) {
-      console.log(`❌ [API CONTAS] Valor inválido: ${valorFinal}`);
-      const response: ApiResponse<null> = {
-        error: `Valor inválido: ${valorFinal}. Deve ser um número positivo.`,
-      };
-      return res.status(400).json(response);
-    }
 
     // Remover campos undefined antes de enviar para o Prisma
     const dadosParaCriacao: any = {};
