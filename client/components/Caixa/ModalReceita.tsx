@@ -1020,10 +1020,25 @@ export function ModalReceita() {
 
               {/* Resumo financeiro */}
               {formData.valor && (
-                <div className="p-4 bg-green-50 rounded-lg">
-                  <h4 className="font-medium text-green-800 mb-2">
-                    Resumo Financeiro
+                <div
+                  className={`p-4 rounded-lg ${isBoleto ? "bg-yellow-50 border border-yellow-200" : "bg-green-50"}`}
+                >
+                  <h4
+                    className={`font-medium mb-2 ${isBoleto ? "text-yellow-800" : "text-green-800"}`}
+                  >
+                    {isBoleto
+                      ? "Resumo Financeiro - BOLETO"
+                      : "Resumo Financeiro"}
                   </h4>
+                  {isBoleto && (
+                    <div className="mb-3 p-2 bg-yellow-100 rounded border-l-4 border-yellow-400">
+                      <p className="text-sm text-yellow-800">
+                        <strong>ATENÇÃO:</strong> Como é um boleto, este valor será
+                        registrado apenas como receita bruta. O valor não entrará
+                        para a empresa até o pagamento do boleto.
+                      </p>
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-2 text-sm">
                     <div>
                       <span className="text-gray-600">Valor Total:</span>
@@ -1070,10 +1085,19 @@ export function ModalReceita() {
                     </div>
                     <div>
                       <span className="text-gray-600">Para Empresa:</span>
-                      <div className="font-medium text-green-600">
+                      <div
+                        className={`font-medium ${isBoleto ? "text-yellow-600" : "text-green-600"}`}
+                      >
                         R${" "}
-                        {(valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
+                        {isBoleto
+                          ? "0,00"
+                          : (valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
                       </div>
+                      {isBoleto && (
+                        <p className="text-xs text-yellow-600 mt-1">
+                          (Valor será creditado após pagamento do boleto)
+                        </p>
+                      )}
                     </div>
                   </div>
                   {formData.temNotaFiscal && (
