@@ -79,7 +79,9 @@ export function ModalReceita() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
-  const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(null);
+  const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(
+    null,
+  );
 
   // Usar useMemo ao invés de useCallback para evitar re-renderizações desnecessárias
   const categoriasReceita = React.useMemo(() => {
@@ -914,20 +916,20 @@ export function ModalReceita() {
                     </h4>
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
-                        • <strong>Agora:</strong> Lança receita bruta no Caixa (não
-                        soma no saldo)
+                        • <strong>Agora:</strong> Lança receita bruta no Caixa
+                        (não soma no saldo)
                       </li>
                       <li>
                         • <strong>Agora:</strong> Cria automaticamente conta a
                         receber
                       </li>
                       <li>
-                        • <strong>Quando pago:</strong> Marque como pago em Contas a
-                        Receber
+                        • <strong>Quando pago:</strong> Marque como pago em
+                        Contas a Receber
                       </li>
                       <li>
-                        • <strong>Automático:</strong> Sistema lança receita real no
-                        Caixa
+                        • <strong>Automático:</strong> Sistema lança receita
+                        real no Caixa
                       </li>
                     </ul>
                   </div>
@@ -1033,9 +1035,9 @@ export function ModalReceita() {
                   {isBoleto && (
                     <div className="mb-3 p-2 bg-yellow-100 rounded border-l-4 border-yellow-400">
                       <p className="text-sm text-yellow-800">
-                        <strong>ATENÇÃO:</strong> Como é um boleto, este valor será
-                        registrado apenas como receita bruta. O valor não entrará
-                        para a empresa até o pagamento do boleto.
+                        <strong>ATENÇÃO:</strong> Como é um boleto, este valor
+                        será registrado apenas como receita bruta. O valor não
+                        entrará para a empresa até o pagamento do boleto.
                       </p>
                     </div>
                   )}
@@ -1091,7 +1093,9 @@ export function ModalReceita() {
                         R${" "}
                         {isBoleto
                           ? "0,00"
-                          : (valorLiquidoCalculado - comissaoCalculada).toFixed(2)}
+                          : (valorLiquidoCalculado - comissaoCalculada).toFixed(
+                              2,
+                            )}
                       </div>
                       {isBoleto && (
                         <p className="text-xs text-yellow-600 mt-1">

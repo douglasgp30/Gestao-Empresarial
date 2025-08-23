@@ -1119,7 +1119,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("[CaixaContext] Excluindo lançamento via API:", {
         id,
         tipo: typeof id,
-        totalLancamentos: lancamentos.length
+        totalLancamentos: lancamentos.length,
       });
 
       // Fazer a chamada para a API para excluir do banco de dados
@@ -1157,15 +1157,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           idExcluido: id,
           lancamentosAntes: antes,
           lancamentosDepois: depois.length,
-          removido: antes - depois.length === 1
+          removido: antes - depois.length === 1,
         });
         return depois;
       });
 
       // Recarregar dados do servidor como segurança adicional
       setTimeout(() => {
-        carregarDados().catch(error => {
-          console.warn("[CaixaContext] Erro ao recarregar dados após exclusão:", error);
+        carregarDados().catch((error) => {
+          console.warn(
+            "[CaixaContext] Erro ao recarregar dados após exclusão:",
+            error,
+          );
         });
       }, 500);
     } catch (error) {
