@@ -370,7 +370,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         throw fetchError;
       }
 
-      console.log("��� [CaixaContext] Status da resposta:", response.status);
+      console.log("📦 [CaixaContext] Status da resposta:", response.status);
       console.log("📦 [CaixaContext] Headers da resposta:", [
         ...response.headers.entries(),
       ]);
@@ -1161,6 +1161,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         });
         return depois;
       });
+
+      // Recarregar dados do servidor como segurança adicional
+      setTimeout(() => {
+        carregarDados().catch(error => {
+          console.warn("[CaixaContext] Erro ao recarregar dados após exclusão:", error);
+        });
+      }, 500);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
