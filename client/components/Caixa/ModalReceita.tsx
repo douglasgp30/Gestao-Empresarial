@@ -401,10 +401,24 @@ export function ModalReceita() {
           }
         } catch (contaError) {
           console.error(
-            "[ModalReceita] Erro ao criar conta a receber:",
+            "❌ [ModalReceita] Erro na integração com contas a receber:",
             contaError,
           );
+
+          toast({
+            title: "Atenção",
+            description:
+              "Receita lançada no Caixa, mas houve erro na integração com Contas a Receber.",
+            variant: "destructive",
+          });
         }
+      } else if (isBoleto) {
+        // Caso especial: boleto sem data de vencimento ou código (já validado antes)
+        toast({
+          title: "Boleto registrado!",
+          description: `Receita de boleto lançada. O valor entrará no caixa quando for pago.`,
+          variant: "default",
+        });
       }
 
       toast({
