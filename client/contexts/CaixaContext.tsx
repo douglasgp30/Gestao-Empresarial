@@ -945,6 +945,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           novoLancamento.clienteId,
         ),
 
+        // Campos de integração para boletos e outros sistemas
+        codigoServico: novoLancamento.codigoServico,
+        sistemaOrigem: novoLancamento.sistemaOrigem,
+        codigoExterno: novoLancamento.codigoExterno,
+
         // Snapshots dos objetos para preservar dados históricos
         formaPagamentoSnapshot: novoLancamento.formaPagamento,
         clienteSnapshot: novoLancamento.cliente,
@@ -1069,7 +1074,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Encontrar e atualizar o lançamento
       const lancamentosAtualizados = lancamentosExistentes.map(
         (lancamento: any) => {
-          if (lancamento.id === id) {
+          // Garantir comparação segura de IDs convertendo ambos para string
+          if (lancamento.id?.toString() === id?.toString()) {
             return {
               ...lancamento,
               ...dadosAtualizados,
@@ -1102,7 +1108,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const excluirLancamento = async (id: string) => {
     // Evitar múltiplas exclusões simultâneas
     if (isExcluindo) {
-      console.log("[CaixaContext] Exclus��o já em andamento, ignorando...");
+      console.log("[CaixaContext] Exclusão já em andamento, ignorando...");
       return;
     }
 
@@ -1110,7 +1116,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsExcluindo(true);
       setError(null);
 
-      console.log("[CaixaContext] Excluindo lançamento via API:", id);
+      console.log("[CaixaContext] Excluindo lançamento via API:", {
+        id,
+        tipo: typeof id,
+        totalLancamentos: lancamentos.length,
+      });
 
       // Fazer a chamada para a API para excluir do banco de dados
       const response = await fetch(`/api/caixa/${id}`, {
@@ -1139,7 +1149,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
 
       // Remover da lista local após sucesso na API
-      setLancamentos((prev) => prev.filter((l) => l.id !== id));
+      // Garantir comparação segura de IDs convertendo ambos para string
+      setLancamentos((prev) => {
+        const antes = prev.length;
+        const depois = prev.filter((l) => l.id?.toString() !== id?.toString());
+        console.log("[CaixaContext] Estado atualizado após exclusão:", {
+          idExcluido: id,
+          lancamentosAntes: antes,
+          lancamentosDepois: depois.length,
+          removido: antes - depois.length === 1,
+        });
+        return depois;
+      });
+
+      // Recarregar dados do servidor como segurança adicional
+      setTimeout(() => {
+        carregarDados().catch((error) => {
+          console.warn(
+            "[CaixaContext] Erro ao recarregar dados após exclusão:",
+            error,
+          );
+        });
+      }, 500);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");

@@ -9,6 +9,30 @@ console.log(
   !!prisma,
 );
 
+// Função utilitária para normalizar strings (remove acentos e converte para minúscula)
+function normalizeString(str: any = ""): string {
+  if (!str) return "";
+  return str
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+// Função para verificar se forma de pagamento é boleto (padronizada com frontend)
+function isFormaPagamentoBoleto(formaPagamento: any): boolean {
+  if (!formaPagamento) return false;
+
+  const nome = formaPagamento.nome || formaPagamento;
+  const nomeNormalizado = normalizeString(nome);
+  return (
+    nomeNormalizado.includes("boleto") ||
+    (nomeNormalizado.includes("bancario") &&
+      !nomeNormalizado.includes("transferencia"))
+  );
+}
+
 // Schema com validação customizada incluindo sistema unificado
 const LancamentoCaixaSchema = z.object({
   valor: z
@@ -34,6 +58,11 @@ const LancamentoCaixaSchema = z.object({
     required_error: "Tipo é obrigatório",
   }),
   data: z.string().optional(), // Data no formato YYYY-MM-DD
+
+  // Campos de integração
+  codigoExterno: z.string().optional(),
+  codigoServico: z.string().optional(),
+  sistemaOrigem: z.string().optional(),
 
   // Sistema unificado
   categoria: z.string().optional(),
@@ -336,7 +365,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
         where: { id: ids.formaPagamentoId },
       });
 
-      // Verificar se é cartão
+      // Verificar se é cart��o
       if (
         formaPagamento?.nome.toLowerCase().includes("cartão") ||
         formaPagamento?.nome.toLowerCase().includes("cartao")
@@ -349,11 +378,8 @@ export const createLancamento: RequestHandler = async (req, res) => {
         }
       }
 
-      // Verificar se é boleto
-      if (
-        formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        formaPagamento?.nome.toLowerCase().includes("bancário")
-      ) {
+      // Verificar se é boleto usando função padronizada
+      if (isFormaPagamentoBoleto(formaPagamento)) {
         isBoleto = true;
       }
     }
@@ -489,6 +515,10 @@ export const createLancamento: RequestHandler = async (req, res) => {
       tipo: data.tipo,
       dataHora: dataHoraLancamento,
       clienteId: clienteIdValido,
+
+      // Campos de integração
+      codigoExterno: data.codigoExterno || data.codigoServico,
+      sistemaOrigem: data.sistemaOrigem,
     };
 
     // Observação removida - não é necessário duplicar informação que já tem coluna própria
@@ -523,7 +553,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       if (localizacao) {
         dadosLancamento.localizacaoId = ids.localizacaoId;
         console.log(
-          `[Caixa] Localização ID ${ids.localizacaoId} validada e adicionada`,
+          `[Caixa] Localizaç��o ID ${ids.localizacaoId} validada e adicionada`,
         );
       } else {
         console.log(
@@ -565,7 +595,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
     if (!dadosLancamento.descricaoId && data.descricao) {
       console.log("[Caixa] Resolvendo descricao legacy para:", data.descricao);
 
-      // Sanitizar descrição - evitar nomes apenas numéricos
+      // Sanitizar descri��ão - evitar nomes apenas numéricos
       let nomeDescricao = data.descricao;
       if (/^\d+$/.test(nomeDescricao)) {
         console.log("[Caixa] Descrição numérica detectada, usando nome padrão");
@@ -902,9 +932,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
 
     // Separar receitas por tipo
     const receitasBoletoNaoPagos = receitasCompletas.filter((r) => {
-      const isBoleto =
-        r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        r.formaPagamento?.nome.toLowerCase().includes("bancário");
+      const isBoleto = isFormaPagamentoBoleto(r.formaPagamento);
       const temObservacaoBoleto = r.observacoes?.includes(
         "[BOLETO - Aguardando pagamento]",
       );
@@ -922,9 +950,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
     });
 
     const receitasNormais = receitasCompletas.filter((r) => {
-      const isBoleto =
-        r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        r.formaPagamento?.nome.toLowerCase().includes("bancário");
+      const isBoleto = isFormaPagamentoBoleto(r.formaPagamento);
       const temObservacaoBoleto = r.observacoes?.includes(
         "[BOLETO - Aguardando pagamento]",
       );

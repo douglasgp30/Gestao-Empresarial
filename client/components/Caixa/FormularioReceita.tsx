@@ -397,7 +397,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
       if (isBoleto) {
-        codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
       }
 
       // Buscar objetos completos para criar snapshots
@@ -408,7 +408,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         (c) => c.id?.toString() === formData.campanha,
       );
       const clienteSelecionado = clientes.find(
-        (c) => c.id === formData.cliente,
+        (c) => c.id.toString() === formData.cliente,
       );
       const setorSelecionado = setores.find(
         (s) => s.id?.toString() === formData.setor,
@@ -546,7 +546,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             tipo: "receber",
             valor: valorInput.numericValue,
             dataVencimento: dataVencimentoBoleto.toISOString().split("T")[0], // YYYY-MM-DD
-            clienteId: formData.cliente, // Corrigido: usar clienteId em vez de codigoCliente
+            codigoCliente: parseInt(formData.cliente), // Corrigido: usar codigoCliente (number) como esperado pela API
             observacoes: `[BOLETO AUTOMÁTICO] ${formData.categoria} - ${formData.descricao}${formData.observacoes ? ` | Obs: ${formData.observacoes}` : ""} | Cód: ${codigoServico}`,
             codigoServico: codigoServico,
             categoria: formData.categoria,

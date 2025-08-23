@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { runMigration, checkMigration } from "./routes/migrate";
 import { seedUnifiedData } from "./routes/seed-unified-data";
 import { cleanCategories, listCategories } from "./routes/clean-categories";
+import { seedBasicData } from "./lib/seed-basic-data";
 
 // Importar rotas do banco de dados
 import {
@@ -169,6 +170,26 @@ export function createServer(): Express {
         success: false,
         error: error.message,
         stack: error.stack,
+      });
+    }
+  });
+
+  // Endpoint para criar dados básicos
+  app.post("/api/seed-basic-data", async (req, res) => {
+    try {
+      console.log("[Server] Iniciando seed de dados básicos...");
+      await seedBasicData();
+      res.json({
+        success: true,
+        message: "Dados básicos criados com sucesso!",
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("[Server] Erro ao criar dados básicos:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
       });
     }
   });

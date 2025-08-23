@@ -200,6 +200,8 @@ model LancamentoCaixa {
   numeroNota        String?  // Número da nota fiscal
   arquivoNota       String?  // Arquivo da nota fiscal
   tipo              String   // "receita" ou "despesa" (obrigatório)
+  codigoExterno     String?  // Código para integração com outros sistemas (ex: boletos)
+  sistemaOrigem     String?  // Sistema que originou o lançamento (ex: "caixa_boleto", "manual")
   dataCriacao       DateTime @default(now())
 
   // Chaves estrangeiras obrigatórias
@@ -207,7 +209,7 @@ model LancamentoCaixa {
   formaPagamentoId  Int      // Puxa da tabela Forma de Pagamento
 
   // Chaves estrangeiras opcionais
-  subdescricaoId    Int?     // Puxa da tabela Subdescrição
+  subdescricaoId    Int?     // Puxa da tabela Subdescri��ão
   funcionarioId     Int?     // Puxa da tabela Técnicos
   campanhaId        Int?     // Puxa da tabela Campanhas
   clienteId         Int?     // Puxa da tabela Clientes
