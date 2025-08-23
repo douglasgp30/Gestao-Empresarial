@@ -201,8 +201,8 @@ router.post("/", async (req, res) => {
     console.log("✅ [API CONTAS] Conta criada com sucesso:", {
       id: conta.id,
       tipo: conta.tipo,
-      valor: conta.valor,
       valorOriginal: conta.valorOriginal,
+      valorLiquido: conta.valorLiquido,
       status: conta.status,
       sistemaOrigem: conta.sistemaOrigem,
       cliente: conta.cliente?.nome,
