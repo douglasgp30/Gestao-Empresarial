@@ -112,7 +112,7 @@ export default function ModalDescricoesSimples() {
         item.tipoItem === "descricao" && item.ativo && item.tipo === "receita",
     );
     console.log(
-      `[ModalDescricoesSimples] Descrições de receita filtradas: ${filtered.length}`,
+      `[ModalDescricoesSimples] Descriç��es de receita filtradas: ${filtered.length}`,
       filtered,
     );
     return filtered;
@@ -296,9 +296,19 @@ export default function ModalDescricoesSimples() {
         ),
       );
 
+      // Preservar a mensagem original do servidor que contém informações detalhadas
       const errorMessage =
         error instanceof Error ? error.message : "Erro ao excluir item";
-      toast.error(errorMessage);
+
+      // Para erros de dependência, mostrar uma mensagem mais amigável mas preservando o detalhe
+      if (error instanceof Error && error.name === "DependencyError") {
+        toast.error(errorMessage, {
+          duration: 8000, // Mensagem mais longa para o usuário ler os detalhes
+          description: "Veja os detalhes sobre as dependências acima",
+        });
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setIsDeleting(false);
     }
