@@ -158,11 +158,15 @@ export async function seedBasicData() {
     ];
 
     for (const cliente of clientes) {
-      await prisma.cliente.upsert({
-        where: { nome: cliente.nome },
-        update: {},
-        create: cliente
+      const existing = await prisma.cliente.findFirst({
+        where: { nome: cliente.nome }
       });
+
+      if (!existing) {
+        await prisma.cliente.create({
+          data: cliente
+        });
+      }
     }
 
     // 7. Criar localizações básicas
