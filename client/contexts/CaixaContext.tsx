@@ -135,21 +135,21 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("📊 [CaixaContext] Carregando campanhas...");
 
-      // Fazer requisição com timeout simples
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout")), 10000),
-      );
+      // Fazer requisição com timeout e abort controller
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 6000); // Reduzir timeout para 6 segundos
 
-      const fetchPromise = fetch("/api/campanhas", {
+      const response = await fetch("/api/campanhas", {
+        signal: controller.signal,
         headers: {
           "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
         },
       });
 
-      const response = (await Promise.race([
-        fetchPromise,
-        timeoutPromise,
-      ])) as Response;
+      clearTimeout(timeoutId);
       console.log("📊 [CaixaContext] Response status:", response.status);
 
       if (response.ok) {
