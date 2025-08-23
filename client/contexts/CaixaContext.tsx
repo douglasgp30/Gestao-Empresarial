@@ -552,7 +552,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       );
     } catch (error) {
       console.error("Erro ao carregar lançamentos do banco:", error);
-      throw error;
+
+      // Melhor tratamento de erro baseado no tipo
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          console.warn("📦 [CaixaContext] Problema de conectividade, usando fallback");
+        } else if (error.message.includes("Timeout")) {
+          console.warn("📦 [CaixaContext] Timeout na requisição, usando fallback");
+        }
+      }
+
+      // Retornar array vazio em vez de throw para permitir fallback
+      return [];
+    } finally {
+      lancamentosLoadingRef.current = false;
     }
   };
 
