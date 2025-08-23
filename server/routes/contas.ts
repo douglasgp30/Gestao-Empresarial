@@ -195,6 +195,8 @@ router.post("/", async (req, res) => {
         fornecedor: true,
         formaPagamento: true,
         categoria: true,
+        descricaoECategoria: true,
+        localizacao: true,
       },
     });
 
