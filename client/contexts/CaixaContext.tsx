@@ -1108,7 +1108,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const excluirLancamento = async (id: string) => {
     // Evitar múltiplas exclusões simultâneas
     if (isExcluindo) {
-      console.log("[CaixaContext] Exclus��o já em andamento, ignorando...");
+      console.log("[CaixaContext] Exclusão já em andamento, ignorando...");
       return;
     }
 
@@ -1116,7 +1116,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsExcluindo(true);
       setError(null);
 
-      console.log("[CaixaContext] Excluindo lançamento via API:", id);
+      console.log("[CaixaContext] Excluindo lançamento via API:", {
+        id,
+        tipo: typeof id,
+        totalLancamentos: lancamentos.length
+      });
 
       // Fazer a chamada para a API para excluir do banco de dados
       const response = await fetch(`/api/caixa/${id}`, {
