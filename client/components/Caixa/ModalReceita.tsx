@@ -309,12 +309,18 @@ export function ModalReceita() {
     setIsSubmitting(true);
 
     try {
+      // Gerar código único do serviço se for boleto
+      let codigoServico = undefined;
+      if (isBoleto) {
+        codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+      }
+
       // Buscar objetos completos para criar snapshots
       const clienteSelecionado = clientes.find(
         (c) => c.id === formData.cliente,
       );
 
-      await adicionarLancamento({
+      const lancamentoCaixa = await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "receita",
         valor: valorCalculado,
@@ -339,6 +345,10 @@ export function ModalReceita() {
 
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
+
+        // Campos de integração para boletos
+        codigoServico: codigoServico,
+        sistemaOrigem: isBoleto ? "caixa_boleto" : undefined,
       });
 
       // Se for boleto, criar conta a receber automaticamente
