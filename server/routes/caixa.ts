@@ -932,9 +932,7 @@ export const getTotaisCaixa: RequestHandler = async (req, res) => {
 
     // Separar receitas por tipo
     const receitasBoletoNaoPagos = receitasCompletas.filter((r) => {
-      const isBoleto =
-        r.formaPagamento?.nome.toLowerCase().includes("boleto") ||
-        r.formaPagamento?.nome.toLowerCase().includes("bancário");
+      const isBoleto = isFormaPagamentoBoleto(r.formaPagamento);
       const temObservacaoBoleto = r.observacoes?.includes(
         "[BOLETO - Aguardando pagamento]",
       );
