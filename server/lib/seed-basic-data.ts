@@ -71,22 +71,24 @@ export async function seedBasicData() {
     ];
 
     for (const categoria of categorias) {
-      await prisma.descricaoECategoria.upsert({
-        where: { 
-          nome_tipo_tipoItem: {
-            nome: categoria.nome,
-            tipo: categoria.tipo,
-            tipoItem: categoria.tipoItem
-          }
-        },
-        update: {},
-        create: {
+      const existing = await prisma.descricaoECategoria.findFirst({
+        where: {
           nome: categoria.nome,
           tipo: categoria.tipo,
-          tipoItem: categoria.tipoItem,
-          ativo: true
+          tipoItem: categoria.tipoItem
         }
       });
+
+      if (!existing) {
+        await prisma.descricaoECategoria.create({
+          data: {
+            nome: categoria.nome,
+            tipo: categoria.tipo,
+            tipoItem: categoria.tipoItem,
+            ativo: true
+          }
+        });
+      }
     }
 
     // 4. Criar descrições básicas
