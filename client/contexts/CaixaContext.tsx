@@ -1144,7 +1144,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
 
       // Remover da lista local após sucesso na API
-      setLancamentos((prev) => prev.filter((l) => l.id !== id));
+      // Garantir comparação segura de IDs convertendo ambos para string
+      setLancamentos((prev) => prev.filter((l) => l.id?.toString() !== id?.toString()));
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
