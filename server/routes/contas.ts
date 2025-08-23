@@ -16,7 +16,7 @@ const ContaLancamentoSchema = z
     formaPg: z.number().optional(),
     observacoes: z.string().optional(),
     descricaoCategoria: z.number().optional(),
-    pago: z.boolean().default(false),
+    pago: z.boolean().default(false).optional(), // Manter para compatibilidade
     dataPagamento: z
       .string()
       .optional()
@@ -55,12 +55,12 @@ const ContaLancamentoSchema = z
   )
   .refine(
     (data) => {
-      // Regra: Se pago = true → precisa ter dataPagamento e formaPg
-      if (data.pago) {
+      // Regra simplificada: se tem dataPagamento ou status="pago", deve ter formaPg
+      const isPago = data.pago || data.status === "pago";
+      if (isPago) {
         return data.dataPagamento && data.formaPg;
       }
-      // Regra: Se pago = false → dataPagamento e formaPg devem estar nulos
-      return !data.dataPagamento && !data.formaPg;
+      return true;
     },
     {
       message: "Contas pagas devem ter data de pagamento e forma de pagamento",
