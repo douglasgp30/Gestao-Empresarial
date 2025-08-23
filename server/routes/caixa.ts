@@ -35,6 +35,11 @@ const LancamentoCaixaSchema = z.object({
   }),
   data: z.string().optional(), // Data no formato YYYY-MM-DD
 
+  // Campos de integração
+  codigoExterno: z.string().optional(),
+  codigoServico: z.string().optional(),
+  sistemaOrigem: z.string().optional(),
+
   // Sistema unificado
   categoria: z.string().optional(),
   descricao: z.string().optional(),
