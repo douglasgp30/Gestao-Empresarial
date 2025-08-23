@@ -148,40 +148,44 @@ router.post("/", async (req, res) => {
     const dados = ContaLancamentoSchema.parse(req.body);
 
     // Preparar dados para criação com mapeamento correto
-    const dadosParaCriacao: any = {
-      // Remover campo 'valor' que não existe no schema
-      dataVencimento: dados.dataVencimento,
-      codigoCliente: dados.codigoCliente,
-      codigoFornecedor: dados.codigoFornecedor,
-      tipo: dados.tipo,
-      formaPagamentoId: dados.formaPg, // Corrigir nome do campo
-      observacoes: dados.observacoes,
-      categoriaId: dados.descricaoCategoria, // Corrigir nome do campo
+    // Remover campos undefined antes de enviar para o Prisma
+    const dadosParaCriacao: any = {};
 
-      // Status de pagamento
-      status: dados.pago ? "pago" : "pendente",
-      dataPagamento: dados.dataPagamento,
+    // Campos obrigatórios
+    dadosParaCriacao.dataVencimento = dados.dataVencimento;
+    dadosParaCriacao.tipo = dados.tipo;
+    dadosParaCriacao.valorOriginal = dados.valorOriginal || dados.valor;
+    dadosParaCriacao.valorLiquido = dados.valorLiquido || dados.valor;
 
-      // Campos de valor corretos do schema
-      valorOriginal: dados.valorOriginal || dados.valor,
-      valorLiquido: dados.valorLiquido || dados.valor,
-      valorPago: dados.pago ? (dados.valorOriginal || dados.valor) : 0,
-      valorRestante: dados.pago ? 0 : (dados.valorOriginal || dados.valor),
+    // Campos condicionais - apenas adicionar se não undefined
+    if (dados.codigoCliente) dadosParaCriacao.codigoCliente = dados.codigoCliente;
+    if (dados.codigoFornecedor) dadosParaCriacao.codigoFornecedor = dados.codigoFornecedor;
+    if (dados.formaPg) dadosParaCriacao.formaPagamentoId = dados.formaPg;
+    if (dados.observacoes) dadosParaCriacao.observacoes = dados.observacoes;
+    if (dados.descricaoCategoria) dadosParaCriacao.categoriaId = dados.descricaoCategoria;
+    if (dados.numeroDocumento) dadosParaCriacao.numeroDocumento = dados.numeroDocumento;
 
-      // Campos adicionais
-      prioridadePagamento: dados.prioridadePagamento || "normal",
-      codigoExterno: dados.codigoServico,
-      sistemaOrigem: dados.sistemaOrigem || "manual",
-      numeroDocumento: dados.numeroDocumento,
+    // Status baseado no campo pago
+    dadosParaCriacao.status = dados.status || (dados.pago ? "pago" : "pendente");
+    if (dados.dataPagamento) dadosParaCriacao.dataPagamento = dados.dataPagamento;
 
-      // Campos de observações estendidas
-      observacoesInternas:
-        dados.categoria && dados.descricao
-          ? `Categoria: ${dados.categoria} | Descrição: ${dados.descricao}${dados.lancamentoCaixaId ? ` | Caixa ID: ${dados.lancamentoCaixaId}` : ""}`
-          : dados.lancamentoCaixaId
-            ? `Lançamento Caixa ID: ${dados.lancamentoCaixaId}`
-            : undefined,
-    };
+    // Valores calculados
+    const isPago = dados.pago || dados.status === "pago";
+    const valorTotal = dados.valorOriginal || dados.valor;
+    dadosParaCriacao.valorPago = isPago ? valorTotal : 0;
+    dadosParaCriacao.valorRestante = isPago ? 0 : valorTotal;
+
+    // Campos opcionais com defaults seguros
+    dadosParaCriacao.prioridadePagamento = dados.prioridadePagamento || "normal";
+    if (dados.codigoServico) dadosParaCriacao.codigoExterno = dados.codigoServico;
+    dadosParaCriacao.sistemaOrigem = dados.sistemaOrigem || "manual";
+
+    // Observações internas
+    if (dados.categoria && dados.descricao) {
+      dadosParaCriacao.observacoesInternas = `Categoria: ${dados.categoria} | Descrição: ${dados.descricao}${dados.lancamentoCaixaId ? ` | Caixa ID: ${dados.lancamentoCaixaId}` : ""}`;
+    } else if (dados.lancamentoCaixaId) {
+      dadosParaCriacao.observacoesInternas = `Lançamento Caixa ID: ${dados.lancamentoCaixaId}`;
+    }
 
     console.log(
       "🔍 [API CONTAS] Dados preparados para criação:",
