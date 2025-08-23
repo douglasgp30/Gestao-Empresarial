@@ -381,17 +381,27 @@ export function ModalReceita() {
             body: JSON.stringify(contaData),
           });
 
+          // Ler o JSON uma única vez para evitar "body stream already read"
+          let responseData;
+          try {
+            responseData = await response.json();
+          } catch (jsonError) {
+            console.error(
+              "❌ [ModalReceita] Erro ao fazer parse do JSON da resposta:",
+              jsonError,
+            );
+            responseData = null;
+          }
+
           if (response.ok) {
-            const contaCriada = await response.json();
             console.log(
               "✅ [ModalReceita] Conta a receber criada automaticamente para boleto:",
-              contaCriada,
+              responseData,
             );
           } else {
-            const errorData = await response.json();
             console.error(
               "❌ [ModalReceita] Erro ao criar conta a receber para boleto:",
-              errorData,
+              responseData,
             );
 
             toast({
