@@ -299,12 +299,19 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
                       ))}
                     </SelectContent>
                   </Select>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    title="Adicionar Cliente"
+                    onClick={() => setIsModalClienteOpen(true)}
+                  >
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
+
                   <ModalCadastroCliente
-                    trigger={
-                      <Button type="button" variant="outline" size="icon">
-                        <UserPlus className="h-4 w-4" />
-                      </Button>
-                    }
+                    isOpen={isModalClienteOpen}
+                    onOpenChange={setIsModalClienteOpen}
                     onClienteAdicionado={(cliente) => {
                       setFormData((prev) => ({
                         ...prev,
