@@ -1342,7 +1342,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   );
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
-  // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores
+  // Value simplificado do contexto
   const value = useMemo(
     () => ({
       lancamentos,
@@ -1358,12 +1358,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       isLoading,
       isExcluindo,
       error,
-      filtrosDependencias, // Expor para componentes filhos evitarem JSON.stringify
     }),
     [
       lancamentos,
       campanhas,
-      filtrosDependencias, // Usar string memoizada em vez do objeto filtros
+      filtros, // Usar objeto filtros normal
       totais,
       adicionarLancamentoCb,
       editarLancamentoCb,
