@@ -1,7 +1,4 @@
 import React from "react";
-import { CaixaProvider } from "../contexts/CaixaContext";
-import { EntidadesProvider } from "../contexts/EntidadesContext";
-import { ClientesProvider } from "../contexts/ClientesContext";
 import { ModalReceita } from "../components/Caixa/ModalReceita";
 import { ModalDespesa } from "../components/Caixa/ModalDespesa";
 import ModalCampanhasSimples from "../components/Caixa/ModalCampanhasSimples";
@@ -13,7 +10,7 @@ import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
 import { AlertaMigracaoCaixa } from "../components/ui/alerta-migracao-caixa";
 import { DollarSign } from "lucide-react";
 
-function CaixaContent() {
+export default function Caixa() {
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       {/* Alerta de migração */}
@@ -58,17 +55,5 @@ function CaixaContent() {
       {/* Lista de Lançamentos */}
       <ListaLancamentosSimples />
     </div>
-  );
-}
-
-export default function Caixa() {
-  return (
-    <EntidadesProvider>
-      <ClientesProvider>
-        <CaixaProvider>
-          <CaixaContent />
-        </CaixaProvider>
-      </ClientesProvider>
-    </EntidadesProvider>
   );
 }

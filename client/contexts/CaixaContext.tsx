@@ -10,18 +10,16 @@ import React, {
 } from "react";
 import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
-import { loadingManager } from "../lib/loadingManager";
-import { contextThrottle } from "../lib/contextThrottle";
 import {
-  shouldSkipLoading,
-  getLoadingDelay,
-  isContextLoading,
-  setContextLoading,
-} from "../lib/globalLoadingControl";
-import { migrarDadosAntigos } from "../lib/migrarDadosAntigos";
+  normalizeSetorValue,
+  extractCategoriaNome,
+  normalizeComissao,
+  isFilterActive,
+} from "../lib/normalizeLancamento";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
+  lancamentosFiltrados: LancamentoCaixa[];
   campanhas: Campanha[];
   filtros: {
     dataInicio: Date;
@@ -68,32 +66,27 @@ const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 
 export function CaixaProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-
-  // Refs para controlar carregamentos
-  const campanhasLoadingRef = useRef(false);
-  const lancamentosLoadingRef = useRef(false);
   const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>([]);
   const [campanhas, setCampanhas] = useState<Campanha[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isCarregando, setIsCarregando] = useState(false);
   const [isExcluindo, setIsExcluindo] = useState(false);
   const [filtros, setFiltros] = useState(() => {
-    // Usar data atual do sistema mas normalizando para o dia correto
+    // MUDANÇA: Filtrar por período mais amplo (último mês) para garantir que receitas recém-criadas apareçam
     const agora = new Date();
-    const inicioHoje = new Date(
+    const inicioMes = new Date(
       agora.getFullYear(),
       agora.getMonth(),
-      agora.getDate(),
+      1,
       0,
       0,
       0,
       0,
     );
-    const fimHoje = new Date(
+    const fimMes = new Date(
       agora.getFullYear(),
-      agora.getMonth(),
-      agora.getDate(),
+      agora.getMonth() + 1,
+      0,
       23,
       59,
       59,
@@ -101,8 +94,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     );
 
     return {
-      dataInicio: inicioHoje,
-      dataFim: fimHoje,
+      dataInicio: inicioMes,
+      dataFim: fimMes,
       tipo: "todos" as "receita" | "despesa" | "todos",
       formaPagamento: "todas",
       tecnico: "todos",
@@ -116,964 +109,367 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // Função para carregar campanhas com fallback seguro
-  const carregarCampanhasSafe = async () => {
-    // Evitar múltiplas requisições simultâneas
-    if (campanhasLoadingRef.current) {
-      console.log(
-        "📊 [CaixaContext] Carregamento de campanhas já em andamento",
+  // Função para criar dados básicos se não existirem
+  const criarDadosBasicos = useCallback(() => {
+    console.log("🔧 [CaixaContext] Criando dados básicos...");
+
+    // Campanhas padrão
+    const campanhasPadrao: Campanha[] = [
+      {
+        id: "1",
+        nome: "Campanha Principal",
+        descricao: "Campanha principal da empresa",
+      },
+      {
+        id: "2",
+        nome: "Sem Campanha",
+        descricao: "Lançamentos sem campanha específica",
+      },
+      { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" },
+    ];
+
+    // Verificar se campanhas existem
+    const campanhasExistentes = localStorage.getItem("campanhas");
+    if (!campanhasExistentes) {
+      localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
+      console.log("✅ [CaixaContext] Campanhas padrão criadas");
+    }
+
+    // Lançamentos de exemplo
+    const lancamentosPadrao: LancamentoCaixa[] = [
+      {
+        id: "1",
+        tipo: "receita",
+        valor: 500.0,
+        valorLiquido: 450.0,
+        comissao: 50.0,
+        descricao: { nome: "Serviço de manutenção" },
+        categoria: "Serviços",
+        formaPagamento: { id: "1", nome: "Dinheiro" },
+        tecnicoResponsavel: { id: "1", nome: "Técnico Padrão" },
+        cliente: { id: "1", nome: "Cliente Exemplo" },
+        campanha: { id: "1", nome: "Campanha Principal" },
+        data: new Date(),
+        dataHora: new Date(),
+        dataCriacao: new Date(),
+        funcionarioId: "1",
+      },
+    ];
+
+    // Verificar se lançamentos existem
+    const lancamentosExistentes = localStorage.getItem("lancamentos_caixa");
+    if (!lancamentosExistentes) {
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(lancamentosPadrao),
       );
-      return;
+      console.log("✅ [CaixaContext] Lançamentos padrão criados");
     }
 
+    // Carregar dados criados
+    setCampanhas(campanhasPadrao);
+    setLancamentos(lancamentosPadrao);
+  }, []);
+
+  // Carregar campanhas do localStorage ou criar padrão
+  const carregarCampanhasLocalStorage = useCallback(() => {
     try {
-      campanhasLoadingRef.current = true;
-
-      // Verificar se estamos em um ambiente onde fetch deve funcionar
-      if (typeof window === "undefined") {
-        console.log("📊 [CaixaContext] Executando no servidor, pulando fetch");
-        return;
-      }
-
-      console.log("📊 [CaixaContext] Carregando campanhas...");
-
-      // Fazer requisição com timeout e abort controller
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        controller.abort();
-      }, 6000); // Reduzir timeout para 6 segundos
-
-      const response = await fetch("/api/campanhas", {
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-        },
-      });
-
-      clearTimeout(timeoutId);
-      console.log("📊 [CaixaContext] Response status:", response.status);
-
-      if (response.ok) {
-        const campanhasServidor = await response.json();
-        console.log(
-          "���� [CaixaContext] Campanhas carregadas do servidor:",
-          campanhasServidor.length,
-        );
-        setCampanhas(campanhasServidor || []);
-
-        // Sincronizar com localStorage para cache
-        try {
-          localStorage.setItem(
-            "campanhas",
-            JSON.stringify(campanhasServidor || []),
-          );
-        } catch (storageError) {
-          console.warn(
-            "Erro ao salvar campanhas no localStorage:",
-            storageError,
-          );
-        }
-        return;
-      } else {
-        console.warn(
-          `📊 [CaixaContext] Resposta não OK: ${response.status} ${response.statusText}`,
-        );
-      }
-    } catch (error) {
-      // Tratar diferentes tipos de erro
-      if (error instanceof Error) {
-        if (error.name === "AbortError") {
-          console.warn(
-            "�� [CaixaContext] Timeout ao carregar campanhas do servidor",
-          );
-        } else if (error.message.includes("Failed to fetch")) {
-          console.warn(
-            "📊 [CaixaContext] Falha na conexão com servidor, usando localStorage",
-          );
-        } else {
-          console.warn(
-            "📊 [CaixaContext] Erro ao carregar campanhas:",
-            error.message,
-          );
-        }
-      } else {
-        console.warn(
-          "�� [CaixaContext] Erro desconhecido ao carregar campanhas:",
-          error,
-        );
-      }
-    }
-
-    // Fallback para localStorage
-    try {
+      console.log("📊 [CaixaContext] Carregando campanhas do localStorage");
       const campanhasStorage = localStorage.getItem("campanhas");
+
       if (campanhasStorage) {
-        const campanhasParsed = JSON.parse(campanhasStorage);
-        setCampanhas(campanhasParsed || []);
+        const campanhas = JSON.parse(campanhasStorage);
+        setCampanhas(campanhas || []);
+        console.log(
+          `📊 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`,
+        );
       } else {
-        setCampanhas([]);
+        // Se não existir, criar dados básicos
+        console.log(
+          "📊 [CaixaContext] Campanhas não encontradas, criando dados básicos",
+        );
+        const campanhasPadrao: Campanha[] = [
+          {
+            id: "1",
+            nome: "Campanha Principal",
+            descricao: "Campanha principal da empresa",
+          },
+          {
+            id: "2",
+            nome: "Sem Campanha",
+            descricao: "Lançamentos sem campanha específica",
+          },
+          { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" },
+        ];
+        setCampanhas(campanhasPadrao);
+        localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
+        console.log("✅ [CaixaContext] Campanhas padrão criadas e salvas");
       }
-    } catch (localError) {
-      console.warn("Erro ao carregar campanhas do localStorage:", localError);
+    } catch (error) {
+      console.error("Erro ao carregar campanhas do localStorage:", error);
       setCampanhas([]);
-    } finally {
-      campanhasLoadingRef.current = false;
     }
-  };
+  }, []);
 
-  // Função para carregar dados do banco de dados
-  const carregarDados = async () => {
-    // Evitar múltiplos carregamentos simultâneos
-    if (isCarregando) {
-      console.log("CaixaContext: Carregamento já em andamento, ignorando...");
-      return;
-    }
-
+  const carregarLancamentosLocalStorage = useCallback(() => {
     try {
-      setIsCarregando(true);
-      setIsLoading(true);
-      setError(null);
-
-      console.log(
-        "������ [CaixaContext] Carregando dados do banco de dados...",
-      );
-
-      // Carregar campanhas do servidor
-      try {
-        await carregarCampanhasSafe();
-      } catch (campanhasError) {
-        console.warn(
-          "Erro ao carregar campanhas, usando fallback:",
-          campanhasError,
-        );
-        setCampanhas([]);
-      }
-
-      // Carregar lançamentos do banco de dados
-      try {
-        await carregarLancamentosDoBanco();
-      } catch (lancamentosError) {
-        console.warn(
-          "Erro ao carregar lançamentos do banco, tentando localStorage:",
-          lancamentosError,
-        );
-
-        // Fallback para localStorage (temporário durante migração)
-        try {
-          await carregarLancamentosLocalStorage();
-          console.log(
-            "⚠️ [CaixaContext] Dados carregados do localStorage (migração pendente)",
-          );
-        } catch (localError) {
-          console.warn("Erro no fallback localStorage:", localError);
-          setLancamentos([]);
-        }
-      }
-
-      console.log("✅ [CaixaContext] Dados carregados com sucesso");
-    } catch (error) {
-      console.error("Erro geral ao carregar dados:", error);
-      setError("Erro ao carregar dados");
-    } finally {
-      setIsLoading(false);
-      setIsCarregando(false);
-    }
-  };
-
-  // Função para migrar lançamento antigo para novo formato
-  const migrarLancamentoAntigo = (lancamento: any): any => {
-    const migrado = { ...lancamento };
-
-    // Migrar descrição: string -> objeto com nome
-    if (
-      typeof migrado.descricao === "string" &&
-      migrado.descricao.trim() !== ""
-    ) {
-      migrado.descricao = { nome: migrado.descricao };
-    }
-
-    // Migrar formaPagamento: string -> objeto com nome
-    if (typeof migrado.formaPagamento === "string") {
-      migrado.formaPagamento = {
-        id: migrado.formaPagamento,
-        nome: migrado.formaPagamento,
-      };
-    }
-
-    // Garantir campo funcionario a partir de tecnicoResponsavel
-    if (!migrado.funcionario && migrado.tecnicoResponsavel) {
-      if (typeof migrado.tecnicoResponsavel === "object") {
-        migrado.funcionario = {
-          id:
-            migrado.tecnicoResponsavel.id?.toString?.() ||
-            migrado.tecnicoResponsavelId,
-          nome:
-            migrado.tecnicoResponsavel.nome ||
-            migrado.tecnicoResponsavel.nomeCompleto,
-        };
-      } else if (typeof migrado.tecnicoResponsavel === "string") {
-        migrado.funcionario = {
-          id: migrado.tecnicoResponsavel,
-          nome: migrado.tecnicoResponsavel,
-        };
-      }
-    }
-
-    // Migrar cliente: string -> objeto
-    if (typeof migrado.cliente === "string" && migrado.cliente.trim() !== "") {
-      migrado.cliente = { id: migrado.cliente, nome: migrado.cliente };
-    }
-
-    // Migrar setor: string -> objeto
-    if (typeof migrado.setor === "string" && migrado.setor.trim() !== "") {
-      migrado.setor = { id: migrado.setor, nome: migrado.setor };
-    }
-
-    // Migrar campanha: string -> objeto
-    if (
-      typeof migrado.campanha === "string" &&
-      migrado.campanha.trim() !== ""
-    ) {
-      migrado.campanha = { id: migrado.campanha, nome: migrado.campanha };
-    }
-
-    return migrado;
-  };
-
-  // Função para carregar lan��amentos do banco de dados
-  const carregarLancamentosDoBanco = async () => {
-    // Evitar múltiplas requisições simultâneas
-    if (lancamentosLoadingRef.current) {
-      console.log(
-        "📦 [CaixaContext] Carregamento de lançamentos já em andamento",
-      );
-      return [];
-    }
-
-    try {
-      lancamentosLoadingRef.current = true;
-
-      console.log(
-        "📦 [CaixaContext] Carregando lançamentos do banco de dados...",
-      );
-
-      // Construir query params com filtros atuais
-      const params = new URLSearchParams();
-
-      if (filtros.dataInicio) {
-        params.append(
-          "dataInicio",
-          filtros.dataInicio.toISOString().split("T")[0],
-        );
-      }
-      if (filtros.dataFim) {
-        params.append("dataFim", filtros.dataFim.toISOString().split("T")[0]);
-      }
-      if (filtros.tipo && filtros.tipo !== "todos") {
-        params.append("tipo", filtros.tipo);
-      }
-
-      const url = `/api/caixa?${params.toString()}`;
-      console.log("📦 [CaixaContext] URL da requisição:", url);
-
-      // Adicionar timeout para evitar congelamentos
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000); // Reduzir timeout para 6 segundos
-
-      let response;
-      try {
-        response = await fetch(url, {
-          signal: controller.signal,
-          headers: {
-            "Cache-Control": "no-cache",
-          },
-        });
-        clearTimeout(timeoutId);
-      } catch (fetchError) {
-        clearTimeout(timeoutId);
-        if (fetchError.name === "AbortError") {
-          throw new Error("Timeout: Servidor demorou muito para responder");
-        }
-        throw fetchError;
-      }
-
-      console.log("📦 [CaixaContext] Status da resposta:", response.status);
-      console.log("📦 [CaixaContext] Headers da resposta:", [
-        ...response.headers.entries(),
-      ]);
-
-      // Verificar se o content-type é JSON antes de tentar ler
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        const responseText = await response.text();
-        console.error(
-          "📦 [CaixaContext] Resposta não é JSON:",
-          responseText.substring(0, 200),
-        );
-        throw new Error(
-          `Resposta não é JSON. Content-Type: ${contentType}. Resposta: ${responseText.substring(0, 100)}...`,
-        );
-      }
-
-      // Tentar fazer parse da resposta JSON
-      let lancamentosDoBanco;
-      try {
-        lancamentosDoBanco = await response.json();
-      } catch (parseError) {
-        console.error(
-          "📦 [CaixaContext] Erro ao fazer parse do JSON:",
-          parseError,
-        );
-        throw new Error(`Erro ao fazer parse da resposta JSON: ${parseError}`);
-      }
-
-      // Verificar se a resposta foi bem sucedida após fazer o parse
-      if (!response.ok) {
-        console.error(
-          "📦 [CaixaContext] Erro na resposta:",
-          lancamentosDoBanco,
-        );
-        const errorMessage =
-          lancamentosDoBanco?.message ||
-          lancamentosDoBanco?.error ||
-          "Erro desconhecido";
-        throw new Error(
-          `Erro ao carregar lançamentos: ${response.status} - ${errorMessage}`,
-        );
-      }
-
-      // Converter datas para objetos Date
-      const lancamentosFormatados = lancamentosDoBanco.map(
-        (lancamento: any) => ({
-          ...lancamento,
-          data: new Date(lancamento.dataHora),
-          dataHora: new Date(lancamento.dataHora),
-          dataCriacao: new Date(lancamento.dataHora),
-          // Mapear campos do banco para o formato esperado pelo frontend
-          id: lancamento.id.toString(),
-
-          // Técnico/Funcionário - mapear para ambos os campos
-          funcionario: lancamento.funcionario
-            ? {
-                id: lancamento.funcionario.id?.toString(),
-                nome: lancamento.funcionario.nome,
-                percentualComissao:
-                  lancamento.funcionario.percentualComissao ||
-                  lancamento.funcionario.percentualServico,
-              }
-            : undefined,
-          tecnicoResponsavel: lancamento.funcionario
-            ? {
-                id: lancamento.funcionario.id,
-                nome: lancamento.funcionario.nome,
-              }
-            : undefined,
-
-          // Forma de pagamento
-          formaPagamento: lancamento.formaPagamento
-            ? {
-                id: lancamento.formaPagamento.id,
-                nome: lancamento.formaPagamento.nome,
-              }
-            : undefined,
-
-          // Cliente
-          cliente: lancamento.cliente
-            ? {
-                id: lancamento.cliente.id,
-                nome: lancamento.cliente.nome,
-              }
-            : undefined,
-
-          // Campanha
-          campanha: lancamento.campanha
-            ? {
-                id: lancamento.campanha.id,
-                nome: lancamento.campanha.nome,
-              }
-            : undefined,
-
-          // Localização/Setor - mapear para ambos os campos
-          localizacao: lancamento.localizacao
-            ? {
-                id: lancamento.localizacao.id?.toString(),
-                nome: lancamento.localizacao.nome,
-                cidade: lancamento.localizacao.cidade,
-              }
-            : undefined,
-          setor: lancamento.localizacao
-            ? {
-                id: lancamento.localizacao.id?.toString(),
-                nome: lancamento.localizacao.nome,
-                cidade: lancamento.localizacao.cidade,
-              }
-            : undefined,
-
-          // Categoria e descrição com fallback melhorado
-          categoria:
-            lancamento.descricaoECategoria?.categoria ||
-            lancamento.descricao?.categoria ||
-            "Serviços",
-          descricao: {
-            nome: (() => {
-              // Verificar primeiro descricaoECategoria
-              if (
-                lancamento.descricaoECategoria?.nome &&
-                typeof lancamento.descricaoECategoria.nome === "string" &&
-                lancamento.descricaoECategoria.nome.trim() !== ""
-              ) {
-                return lancamento.descricaoECategoria.nome;
-              }
-
-              // Depois verificar descricao legada
-              if (
-                lancamento.descricao?.nome &&
-                typeof lancamento.descricao.nome === "string" &&
-                lancamento.descricao.nome.trim() !== ""
-              ) {
-                return lancamento.descricao.nome;
-              }
-
-              // Fallback seguro
-              return "Serviço";
-            })(),
-          },
-        }),
-      );
-
-      // Debug: verificar dados processados
-      console.log(
-        "🔍 [DEBUG] Lançamentos formatados:",
-        lancamentosFormatados.map((l) => ({
-          id: l.id,
-          descricao: l.descricao,
-          categoria: l.categoria,
-        })),
-      );
-
-      setLancamentos(lancamentosFormatados);
-      console.log(
-        `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do banco`,
-      );
-    } catch (error) {
-      console.error("Erro ao carregar lançamentos do banco:", error);
-
-      // Melhor tratamento de erro baseado no tipo
-      if (error instanceof Error) {
-        if (error.message.includes("Failed to fetch")) {
-          console.warn(
-            "�� [CaixaContext] Problema de conectividade, usando fallback",
-          );
-        } else if (error.message.includes("Timeout")) {
-          console.warn(
-            "📦 [CaixaContext] Timeout na requisição, usando fallback",
-          );
-        }
-      }
-
-      // Retornar array vazio em vez de throw para permitir fallback
-      return [];
-    } finally {
-      lancamentosLoadingRef.current = false;
-    }
-  };
-
-  // Função para carregar lançamentos do localStorage
-  const carregarLancamentosLocalStorage = async () => {
-    try {
-      console.log(
-        "📦 [CaixaContext] Carregando lançamentos do localStorage...",
-      );
-
-      // Migrar dados antigos antes de carregar
-      const foiMigrado = migrarDadosAntigos();
-      if (foiMigrado) {
-        console.log("���� [CaixaContext] Dados migrados com sucesso");
-      }
-
+      console.log("📦 [CaixaContext] Carregando lançamentos do localStorage");
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
+
       if (lancamentosStorage) {
-        const lancamentosParsed = JSON.parse(lancamentosStorage);
+        // Parse assíncrono para não bloquear UI em arrays grandes
+        setTimeout(() => {
+          try {
+            const lancamentosParsed = JSON.parse(lancamentosStorage);
+            const lancamentosFormatados = lancamentosParsed.map(
+              (lancamento: any) => {
+                // Datas
+                const data = new Date(lancamento.data);
+                const dataHora = lancamento.dataHora
+                  ? new Date(lancamento.dataHora)
+                  : data;
+                const dataCriacao = lancamento.dataCriacao
+                  ? new Date(lancamento.dataCriacao)
+                  : new Date();
 
-        // Migrar dados antigos e converter strings de data de volta para objetos Date
-        const lancamentosFormatados = lancamentosParsed.map(
-          (lancamento: any) => {
-            // Primeiro migrar formato antigo
-            const lancamentoMigrado = migrarLancamentoAntigo(lancamento);
+                // Normalizar setor e cidade
+                const setorNorm = normalizeSetorValue(lancamento.setor);
+                const cidadeFromSetor = setorNorm?.cidade;
 
-            // Depois converter datas
-            return {
-              ...lancamentoMigrado,
-              data: new Date(lancamentoMigrado.data),
-              dataHora: new Date(lancamentoMigrado.dataHora),
-              dataCriacao: new Date(lancamentoMigrado.dataCriacao),
-            };
-          },
-        );
+                // Normalizar categoria
+                const categoriaNome =
+                  extractCategoriaNome(lancamento) ||
+                  lancamento.categoria ||
+                  undefined;
 
-        setLancamentos(lancamentosFormatados);
-        console.log(
-          `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados e migrados do localStorage`,
-        );
+                // Normalizar comissao
+                const comissao = normalizeComissao(lancamento.comissao);
 
-        // Se houve migração, salvar dados migrados de volta no localStorage
-        const dadosMigrados = lancamentosFormatados.map(normalizarLancamento);
-        localStorage.setItem(
-          "lancamentos_caixa",
-          JSON.stringify(dadosMigrados),
-        );
-        console.log(
-          "📦 [CaixaContext] Dados migrados salvos de volta no localStorage",
-        );
+                return {
+                  ...lancamento,
+                  data,
+                  dataHora,
+                  dataCriacao,
+                  setor: setorNorm ? { ...setorNorm } : lancamento.setor,
+                  cidade: lancamento.cidade || cidadeFromSetor || undefined,
+                  categoria: categoriaNome,
+                  comissao,
+                };
+              },
+            );
+            setLancamentos(lancamentosFormatados);
+            console.log(
+              `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`,
+            );
+          } catch (error) {
+            console.error(
+              "Erro ao processar lançamentos do localStorage:",
+              error,
+            );
+            setLancamentos([]);
+          }
+        }, 0);
       } else {
-        setLancamentos([]);
         console.log(
-          "��� [CaixaContext] Nenhum lançamento encontrado no localStorage",
+          "📦 [CaixaContext] Nenhum lançamento encontrado no localStorage",
         );
+        setLancamentos([]);
       }
     } catch (error) {
       console.error("Erro ao carregar lançamentos do localStorage:", error);
       setLancamentos([]);
     }
-  };
+  }, []);
 
-  // Função utilitária para conversão segura de string para número
-  const parseIntSafe = (value: string): number | undefined => {
-    if (!value || value === "todos" || value === "todas") return undefined;
-    const parsed = parseInt(value);
-    return isNaN(parsed) ? undefined : parsed;
-  };
+  // CARREGAMENTO INICIAL IMEDIATO E ÚNICO
+  const inicializado = useRef(false);
+  useEffect(() => {
+    if (inicializado.current) return;
+    inicializado.current = true;
 
-  // Função para formatar data para o servidor (YYYY-MM-DD)
-  const formatarDataParaServidor = (data: Date): string => {
-    return data.toISOString().split("T")[0];
-  };
+    console.log("🚀 [CaixaContext] INICIALIZAÇÃO IMEDIATA");
 
-  // Função para carregar lançamentos com base nos filtros (localStorage)
-  const carregarLancamentos = useCallback(
-    async (forceLoad = false) => {
+    try {
+      // Executar migração automática SEMPRE (até funcionar corretamente)
       try {
-        // Evitar múltiplas chamadas simultâneas, exceto quando forçado
-        if (isCarregando && !forceLoad) {
-          console.log(
-            "[CaixaContext] Carregamento de lançamentos já em andamento, ignorando...",
-          );
-          return;
-        }
-
         console.log(
-          "📦 [CaixaContext] Recarregando lançamentos do localStorage...",
+          "[CaixaContext] Executando migração FORÇADA de dados legados...",
         );
 
-        // Simplesmente recarregar do localStorage
-        await carregarLancamentosLocalStorage();
-      } catch (error) {
-        console.error("Erro ao carregar lançamentos do localStorage:", error);
-        setError("Erro ao carregar lançamentos locais");
-      }
-    },
-    [filtros, isCarregando],
-  );
-
-  // Carregamento inicial simples e único
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    let mounted = true;
-    const loadInitialData = async () => {
-      if (!mounted) return;
-
-      try {
-        setIsLoading(true);
-        console.log("📦 [CaixaContext] Carregamento inicial único");
-
-        // Carregar apenas campanhas (lançamentos serão carregados sob demanda)
-        await carregarCampanhasSafe();
-
-        // Carregar lançamentos apenas se não há filtros específicos
-        if (mounted) {
+        // Migração manual inline para garantir que funcione
+        const lancamentosRaw = localStorage.getItem("lancamentos_caixa");
+        if (lancamentosRaw) {
           try {
-            await carregarLancamentosDoBanco();
-          } catch (error) {
-            console.warn("Usando localStorage como fallback:", error);
-            await carregarLancamentosLocalStorage();
+            const lancamentos = JSON.parse(lancamentosRaw);
+            let houveAlteracao = false;
+
+            const lancamentosMigrados = lancamentos.map((l: any) => {
+              let migrado = { ...l };
+
+              // Migrar forma de pagamento
+              if (
+                typeof l.formaPagamento === "string" &&
+                /^\d+$/.test(l.formaPagamento)
+              ) {
+                const formasMap: any = {
+                  "1": { id: 1, nome: "Dinheiro" },
+                  "2": { id: 2, nome: "PIX" },
+                  "3": { id: 3, nome: "Cartão de Débito" },
+                  "4": { id: 4, nome: "Cartão de Crédito" },
+                  "5": { id: 5, nome: "Transferência" },
+                  "6": { id: 6, nome: "Boleto" },
+                };
+                if (formasMap[l.formaPagamento]) {
+                  migrado.formaPagamento = formasMap[l.formaPagamento];
+                  houveAlteracao = true;
+                }
+              }
+
+              return migrado;
+            });
+
+            if (houveAlteracao) {
+              localStorage.setItem(
+                "lancamentos_caixa",
+                JSON.stringify(lancamentosMigrados),
+              );
+              console.log(
+                "[CaixaContext] Migração inline concluída - dados atualizados",
+              );
+            }
+          } catch (e) {
+            console.warn("[CaixaContext] Erro na migração inline:", e);
           }
         }
-      } catch (error) {
-        console.error("Erro no carregamento inicial:", error);
-        setError("Erro ao carregar dados");
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+      } catch (e) {
+        console.warn("[CaixaContext] Erro ao executar migração:", e);
       }
-    };
 
-    // Carregamento com delay mínimo
-    const timeout = setTimeout(loadInitialData, 100);
+      // FORÇAR carregamento IMEDIATO dos dados
+      carregarCampanhasLocalStorage();
+      carregarLancamentosLocalStorage();
+      console.log("✅ [CaixaContext] Dados carregados imediatamente");
+    } catch (error) {
+      console.error("Erro na inicialização:", error);
+      // Se falhar, criar dados básicos
+      criarDadosBasicos();
+    }
+  }, []); // Remover dependencies para evitar loops
 
-    return () => {
-      mounted = false;
-      clearTimeout(timeout);
-    };
-  }, []); // Array vazio - executa apenas uma vez
-
-  // Função manual para recarregar apenas quando necessário
-  const recarregarManual = useCallback(async () => {
+  // Função manual para recarregar dados
+  const carregarDados = async () => {
     try {
       setIsLoading(true);
-      console.log("📦 [CaixaContext] Recarregamento manual solicitado");
-      await carregarLancamentosDoBanco();
+      setError(null);
+      console.log("🔄 [CaixaContext] Recarregamento manual solicitado");
+      carregarLancamentosLocalStorage();
     } catch (error) {
-      console.warn(
-        "Erro no recarregamento manual, usando localStorage:",
-        error,
-      );
-      await carregarLancamentosLocalStorage();
+      console.error("Erro ao recarregar dados:", error);
+      setError("Erro ao carregar dados");
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  // Função para atualizar filtros e recarregar dados apenas quando necessário
-  const atualizarFiltros = useCallback(
-    (novosFiltros: any) => {
-      setFiltros(novosFiltros);
-
-      // Recarregar dados apenas se os filtros de data mudaram significativamente
-      const datasMudaram =
-        novosFiltros.dataInicio?.getTime() !== filtros.dataInicio?.getTime() ||
-        novosFiltros.dataFim?.getTime() !== filtros.dataFim?.getTime();
-
-      if (datasMudaram) {
-        console.log(
-          "📅 [CaixaContext] Datas dos filtros mudaram, recarregando...",
-        );
-        // Debounce para evitar múltiplos recarregamentos
-        setTimeout(() => {
-          recarregarManual();
-        }, 500);
-      }
-    },
-    [filtros.dataInicio, filtros.dataFim, recarregarManual],
-  );
-
-  // REMOVIDO: useEffect automático que causava loops infinitos
-  // O recarregamento agora é feito apenas manualmente ou na inicialização
-
-  // Função para normalizar lançamento antes de salvar
-  const normalizarLancamento = (lancamento: any): any => {
-    // Converter datas para ISO strings para serialização
-    const normalized = {
-      ...lancamento,
-      data:
-        lancamento.data instanceof Date
-          ? lancamento.data.toISOString()
-          : lancamento.data,
-      dataHora:
-        lancamento.dataHora instanceof Date
-          ? lancamento.dataHora.toISOString()
-          : lancamento.dataHora,
-      dataCriacao:
-        lancamento.dataCriacao instanceof Date
-          ? lancamento.dataCriacao.toISOString()
-          : lancamento.dataCriacao,
-    };
-
-    // NORMALIZAÇÃO DE CAMPOS PARA COMPATIBILIDADE DA UI
-
-    // 1. Descrição: garantir que seja objeto com 'nome' para a UI
-    if (
-      typeof normalized.descricao === "string" &&
-      normalized.descricao.trim() !== ""
-    ) {
-      normalized.descricao = { nome: normalized.descricao };
-    }
-
-    // 2. Forma de Pagamento: garantir objeto com nome correto
-    if (typeof normalized.formaPagamento === "string") {
-      // Tentar resolver o nome correto a partir das formas de pagamento disponíveis
-      const formasStorage = localStorage.getItem("formas_pagamento");
-      let nomeCorreto = normalized.formaPagamento; // fallback
-
-      if (formasStorage) {
-        try {
-          const formas = JSON.parse(formasStorage);
-          const formaEncontrada = formas.find(
-            (f: any) =>
-              f.id === normalized.formaPagamento ||
-              f.id?.toString() === normalized.formaPagamento,
-          );
-          if (formaEncontrada?.nome) {
-            nomeCorreto = formaEncontrada.nome;
-          }
-        } catch (error) {
-          console.warn(
-            "[CaixaContext] Erro ao resolver forma de pagamento:",
-            error,
-          );
-        }
-      }
-
-      normalized.formaPagamento = {
-        id: normalized.formaPagamento,
-        nome: nomeCorreto,
-      };
-    }
-
-    // 3. Técnico: popular campo 'funcionario' a partir de 'tecnicoResponsavel' (compatibilidade com UI)
-    if (!normalized.funcionario && normalized.tecnicoResponsavel) {
-      if (typeof normalized.tecnicoResponsavel === "object") {
-        normalized.funcionario = {
-          id:
-            normalized.tecnicoResponsavel.id?.toString?.() ||
-            normalized.tecnicoResponsavelId,
-          nome:
-            normalized.tecnicoResponsavel.nome ||
-            normalized.tecnicoResponsavel.nomeCompleto,
-          percentualComissao: normalized.tecnicoResponsavel.percentualComissao,
-        };
-      } else if (typeof normalized.tecnicoResponsavel === "string") {
-        normalized.funcionario = {
-          id: normalized.tecnicoResponsavel,
-          nome: normalized.tecnicoResponsavel,
-        };
-      }
-    }
-
-    // 4. Cliente: garantir formato consistente
-    if (
-      typeof normalized.cliente === "string" &&
-      normalized.cliente.trim() !== ""
-    ) {
-      normalized.cliente = { id: normalized.cliente, nome: normalized.cliente };
-    }
-
-    // 5. Setor: garantir formato consistente
-    if (
-      typeof normalized.setor === "string" &&
-      normalized.setor.trim() !== ""
-    ) {
-      normalized.setor = { id: normalized.setor, nome: normalized.setor };
-    }
-
-    // 6. Campanha: garantir formato consistente
-    if (
-      typeof normalized.campanha === "string" &&
-      normalized.campanha.trim() !== ""
-    ) {
-      normalized.campanha = {
-        id: normalized.campanha,
-        nome: normalized.campanha,
-      };
-    }
-
-    // 7. Garantir IDs como strings coerentes
-    if (!normalized.formaPagamentoId && normalized.formaPagamento?.id) {
-      normalized.formaPagamentoId = normalized.formaPagamento.id?.toString();
-    }
-    if (!normalized.tecnicoResponsavelId && normalized.tecnicoResponsavel?.id) {
-      normalized.tecnicoResponsavelId =
-        normalized.tecnicoResponsavel.id?.toString();
-    }
-    if (!normalized.clienteId && normalized.cliente?.id) {
-      normalized.clienteId = normalized.cliente.id?.toString();
-    }
-    if (!normalized.setorId && normalized.setor?.id) {
-      normalized.setorId = normalized.setor.id?.toString();
-    }
-    if (!normalized.campanhaId && normalized.campanha?.id) {
-      normalized.campanhaId = normalized.campanha.id?.toString();
-    }
-
-    // Log detalhado para debug
-    console.log("[CaixaContext] Lançamento normalizado:", {
-      id: normalized.id,
-      categoria: normalized.categoria,
-      descricao: normalized.descricao,
-      formaPagamento: normalized.formaPagamento,
-      formaPagamentoId: normalized.formaPagamentoId,
-      tecnicoResponsavel: normalized.tecnicoResponsavel,
-      funcionario: normalized.funcionario,
-      setor: normalized.setor,
-      campanha: normalized.campanha,
-      cliente: normalized.cliente,
-      valor: normalized.valor,
-      valorLiquido: normalized.valorLiquido,
-      comissao: normalized.comissao,
-    });
-
-    return normalized;
   };
 
+  // Função para atualizar filtros SEM recarregamento automático
+  const atualizarFiltros = (novosFiltros: any) => {
+    setFiltros(novosFiltros);
+    console.log("📅 [CaixaContext] Filtros atualizados");
+  };
+
+  // ✅ FUNÇÃO DE VALIDAÇÃO para evitar regressões
+  const validarLancamento = (lancamento: any, contexto: string) => {
+    const erros = [];
+
+    if (!lancamento.id) erros.push("ID é obrigatório");
+    if (!lancamento.tipo) erros.push("Tipo é obrigatório");
+    if (!lancamento.valor || typeof lancamento.valor !== "number")
+      erros.push("Valor deve ser um número válido");
+    if (!lancamento.data) erros.push("Data é obrigatória");
+
+    // Verificações específicas para receitas
+    if (
+      lancamento.tipo === "receita" &&
+      lancamento.tecnicoResponsavel &&
+      !lancamento.comissao
+    ) {
+      console.warn(
+        `⚠️ [${contexto}] Receita com técnico mas sem comissão:`,
+        lancamento.id,
+      );
+    }
+
+    if (erros.length > 0) {
+      console.error(`❌ [${contexto}] Lançamento inválido:`, erros);
+      throw new Error(`Dados inválidos: ${erros.join(", ")}`);
+    }
+
+    console.log(`✅ [${contexto}] Lançamento validado:`, lancamento.id);
+  };
+
+  // Adicionar lançamento
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
     try {
       setError(null);
+      console.log("➕ [CaixaContext] Adicionando lançamento:", novoLancamento);
 
-      console.log(
-        "[CaixaContext] Adicionando lançamento via API:",
-        novoLancamento,
-      );
+      // Gerar ID único
+      const novoId = Date.now().toString();
 
-      // Preparar dados para a API
-      const dadosParaAPI = {
-        valor: novoLancamento.valor || 0,
-        valorRecebido:
-          novoLancamento.valorQueEntrou ||
-          novoLancamento.valorLiquido ||
-          novoLancamento.valor,
-        valorLiquido: novoLancamento.valorLiquido || novoLancamento.valor,
-        comissao: novoLancamento.comissao || 0,
-        imposto: novoLancamento.imposto || 0,
-        observacoes: novoLancamento.observacoes || "",
-        numeroNota: novoLancamento.numeroNota || "",
-        tipo: novoLancamento.tipo || "receita",
-        data: novoLancamento.data
-          ? new Date(novoLancamento.data).toISOString().split("T")[0]
-          : new Date().toISOString().split("T")[0],
-
-        // Categoria e descrição
-        categoria: novoLancamento.categoria || "Serviços",
-        descricao:
-          typeof novoLancamento.descricao === "object" &&
-          novoLancamento.descricao?.nome
-            ? novoLancamento.descricao.nome
-            : typeof novoLancamento.descricao === "string"
-              ? novoLancamento.descricao
-              : "Serviço",
-
-        // IDs dos relacionamentos
-        formaPagamentoId: extrairIdParaAPI(
-          novoLancamento.formaPagamento,
-          novoLancamento.formaPagamentoId,
-        ),
-        funcionarioId: extrairIdParaAPI(
-          novoLancamento.tecnicoResponsavel,
-          novoLancamento.tecnicoResponsavelId,
-        ),
-        setorId: extrairIdParaAPI(novoLancamento.setor, novoLancamento.setorId),
-        campanhaId: extrairIdParaAPI(
-          novoLancamento.campanha,
-          novoLancamento.campanhaId,
-        ),
-        clienteId: extrairIdParaAPI(
-          novoLancamento.cliente,
-          novoLancamento.clienteId,
-        ),
-
-        // Campos de integração para boletos e outros sistemas
-        codigoServico: novoLancamento.codigoServico,
-        sistemaOrigem: novoLancamento.sistemaOrigem,
-        codigoExterno: novoLancamento.codigoExterno,
-
-        // Snapshots dos objetos para preservar dados históricos
-        formaPagamentoSnapshot: novoLancamento.formaPagamento,
-        clienteSnapshot: novoLancamento.cliente,
-        tecnicoResponsavelSnapshot: novoLancamento.tecnicoResponsavel,
-        setorSnapshot: novoLancamento.setor,
-        campanhaSnapshot: novoLancamento.campanha,
+      // Criar lançamento completo
+      const lancamentoCompleto: LancamentoCaixa = {
+        ...novoLancamento,
+        id: novoId,
+        funcionarioId: user?.id || "1",
+        data: novoLancamento.data || new Date(),
+        dataHora: novoLancamento.dataHora || new Date(),
+        dataCriacao: new Date(),
       };
 
-      console.log("[CaixaContext] Dados preparados para API:", dadosParaAPI);
+      // ✅ VALIDAR antes de salvar
+      validarLancamento(lancamentoCompleto, "adicionarLancamento");
 
-      // Log específico para forma de pagamento
-      console.log("[CaixaContext] Forma de pagamento - Debug:", {
-        formaPagamentoOriginal: novoLancamento.formaPagamento,
-        formaPagamentoId: dadosParaAPI.formaPagamentoId,
-        formaPagamentoSnapshot: dadosParaAPI.formaPagamentoSnapshot,
-      });
-
-      // Enviar para a API usando rota alternativa para evitar conflito de body stream
-      const response = await fetch("/api/caixa/criar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dadosParaAPI),
-      });
-
-      // Verificar se a resposta está ok primeiro
-      if (!response.ok) {
-        let errorMessage = `Erro ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
-        } catch {
-          try {
-            const errorText = await response.text();
-            errorMessage = errorText || errorMessage;
-          } catch {
-            // Se não conseguir ler nada, usar mensagem padrão
-          }
-        }
-        throw new Error(`Erro na API: ${errorMessage}`);
-      }
-
-      // Se resposta ok, tentar fazer parse do JSON
-      let responseData;
-      try {
-        responseData = await response.json();
-      } catch (parseError) {
-        console.error(
-          "[CaixaContext] Erro ao fazer parse do JSON:",
-          parseError,
-        );
-        throw new Error(`Erro ao processar resposta da API`);
-      }
-
-      const lancamentoCriado = responseData;
-      console.log(
-        "[CaixaContext] Lançamento criado com sucesso:",
-        lancamentoCriado.id,
+      // Carregar lançamentos existentes
+      const lancamentosExistentes = JSON.parse(
+        localStorage.getItem("lancamentos_caixa") || "[]",
       );
 
-      // Recarregar dados após criação
-      await carregarDados();
+      // Adicionar novo lançamento
+      const novosLancamentos = [...lancamentosExistentes, lancamentoCompleto];
+
+      // Salvar no localStorage
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(novosLancamentos),
+      );
+
+      // Atualizar estado IMEDIATAMENTE
+      setLancamentos((prev) => {
+        const novoArray = [...prev, lancamentoCompleto];
+        console.log(
+          "🔄 [CaixaContext] Estado atualizado - total de lançamentos:",
+          novoArray.length,
+        );
+        return novoArray;
+      });
+
+      console.log(
+        "✅ [CaixaContext] Lançamento adicionado com sucesso:",
+        novoId,
+      );
+      console.log(
+        "📊 [CaixaContext] Dados salvos no localStorage - Tamanho:",
+        novosLancamentos.length,
+      );
+
+      // NOVO: Retornar o lançamento criado para confirmação
+      return lancamentoCompleto;
     } catch (error) {
-      console.error("Erro ao adicionar lançamento:", error);
+      console.error("❌ [CaixaContext] Erro ao adicionar lançamento:", error);
       throw error;
     }
-  };
-
-  // Função auxiliar para extrair ID para API
-  const extrairIdParaAPI = (objeto: any, idFallback: any) => {
-    if (!objeto && !idFallback) return undefined;
-
-    // Se é objeto, tentar extrair o ID
-    if (typeof objeto === "object" && objeto?.id) {
-      // Tentar primeiro como número
-      const idNumerico = parseInt(objeto.id);
-      if (!isNaN(idNumerico)) {
-        return idNumerico;
-      }
-      // Se não for número, retornar como string (para clientes com ID string)
-      return objeto.id;
-    }
-
-    // Se é string/número, tentar converter mas manter string se for cliente
-    if (objeto) {
-      const id = parseInt(objeto);
-      // Se conseguir converter para número, usar número
-      if (!isNaN(id)) {
-        return id;
-      }
-      // Se não conseguir, manter como string (útil para clientes)
-      return objeto;
-    }
-
-    // Fallback para o ID direto
-    if (idFallback) {
-      const id = parseInt(idFallback);
-      if (!isNaN(id)) {
-        return id;
-      }
-      return idFallback;
-    }
-
-    return undefined;
   };
 
   const editarLancamento = async (
@@ -1082,26 +478,48 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   ) => {
     try {
       setError(null);
+      console.log(
+        "✏️ [CaixaContext] Editando lançamento:",
+        id,
+        dadosAtualizados,
+      );
 
-      console.log("[CaixaContext] Editando lançamento:", id, dadosAtualizados);
+      if (!id || id.toString().trim() === "") {
+        throw new Error("ID do lançamento é obrigatório para edição");
+      }
 
-      // Carregar lançamentos existentes
       const lancamentosExistentes = JSON.parse(
         localStorage.getItem("lancamentos_caixa") || "[]",
       );
-
-      // Encontrar e atualizar o lançamento
       const lancamentosAtualizados = lancamentosExistentes.map(
         (lancamento: any) => {
-          // Garantir comparação segura de IDs convertendo ambos para string
           if (lancamento.id?.toString() === id?.toString()) {
-            return {
+            // ✅ CORREÇÃO: Preservar campos importantes e adicionar dados atualizados
+            const lancamentoAtualizado = {
               ...lancamento,
               ...dadosAtualizados,
-              // Preservar campos que não devem ser sobrescritos
               id: lancamento.id,
               dataCriacao: lancamento.dataCriacao,
+              dataHora: lancamento.dataHora || new Date(),
+              funcionarioId: lancamento.funcionarioId,
             };
+
+            // ✅ VALIDAR dados atualizados
+            try {
+              validarLancamento(lancamentoAtualizado, "editarLancamento");
+            } catch (validationError) {
+              console.warn(
+                "⚠️ [CaixaContext] Validação falhou na edição:",
+                validationError.message,
+              );
+              // Continuar mesmo com aviso, mas logar o problema
+            }
+
+            console.log(
+              "📝 [CaixaContext] Lançamento atualizado:",
+              lancamentoAtualizado,
+            );
+            return lancamentoAtualizado;
           }
           return lancamento;
         },
@@ -1113,166 +531,119 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         JSON.stringify(lancamentosAtualizados),
       );
 
-      // Recarregar lançamentos
-      await carregarLancamentosLocalStorage();
+      // ✅ CORREÇÃO: Atualizar estado diretamente sem usar carregarLancamentosLocalStorage (evita async)
+      setLancamentos(
+        lancamentosAtualizados.map((lancamento: any) => {
+          // Normalizar dados como no carregamento inicial
+          const data = new Date(lancamento.data);
+          const dataHora = lancamento.dataHora
+            ? new Date(lancamento.dataHora)
+            : data;
+          const dataCriacao = lancamento.dataCriacao
+            ? new Date(lancamento.dataCriacao)
+            : new Date();
 
-      console.log("[CaixaContext] Lançamento editado com sucesso:", id);
+          return {
+            ...lancamento,
+            data,
+            dataHora,
+            dataCriacao,
+          };
+        }),
+      );
+
+      console.log("✅ [CaixaContext] Lançamento editado com sucesso:", id);
     } catch (error) {
-      console.error("Erro ao editar lançamento:", error);
-      setError("Erro ao editar lançamento");
+      console.error("❌ [CaixaContext] Erro ao editar lançamento:", error);
+      setError(`Erro ao editar lançamento: ${error.message}`);
       throw error;
     }
   };
 
-  const excluirLancamento = async (id: string) => {
-    // Evitar múltiplas exclusões simultâneas
-    if (isExcluindo) {
-      console.log("[CaixaContext] Exclusão já em andamento, ignorando...");
-      return Promise.resolve(); // Retorna uma Promise resolvida para evitar problemas na UI
-    }
+  const excluirLancamento = useCallback(
+    async (id: string) => {
+      // ✅ CORREÇÃO: Verificação mais robusta para evitar exclusões múltiplas
+      if (isExcluindo) {
+        console.warn(
+          "🚫 [CaixaContext] Tentativa de exclusão ignorada - operação já em andamento",
+        );
+        return;
+      }
 
-    try {
-      setIsExcluindo(true);
-      setError(null);
-
-      console.log("[CaixaContext] Excluindo lançamento:", id);
-
-      // Timeout reduzido para 5 segundos para evitar congelamentos longos
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      if (!id || id.toString().trim() === "") {
+        throw new Error("ID do lançamento é obrigatório");
+      }
 
       try {
-        // Fazer a chamada para a API
-        const response = await fetch(`/api/caixa/${id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        });
+        setIsExcluindo(true);
+        setError(null);
+        console.log("🗑️ [CaixaContext] Iniciando exclusão do lançamento:", id);
 
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          let errorMessage = `Erro ${response.status}`;
-          try {
-            const errorData = await response.json();
-            errorMessage = errorData.message || errorData.error || errorMessage;
-          } catch {
-            // Ignorar erros de parse
-          }
-          throw new Error(errorMessage);
-        }
-
-        console.log("✅ Lançamento excluído com sucesso da API");
-
-        // APENAS remover da lista local - SEM recarregamentos
-        setLancamentos((prev) =>
-          prev.filter((l) => l.id?.toString() !== id?.toString()),
+        // ✅ CORREÇÃO: Abordagem mais segura - primeiro carregar, depois filtrar e salvar
+        const lancamentosAtuais = JSON.parse(
+          localStorage.getItem("lancamentos_caixa") || "[]",
+        );
+        const lancamentosAtualizados = lancamentosAtuais.filter(
+          (l: any) => l.id?.toString() !== id?.toString(),
         );
 
-        console.log("✅ Exclusão concluída");
-        return Promise.resolve(); // Sucesso
-      } catch (fetchError: any) {
-        clearTimeout(timeoutId);
-        if (fetchError.name === "AbortError") {
-          // Para timeout, tentar excluir localmente como fallback
-          console.warn("⏰ Timeout na API, removendo localmente como fallback");
-          setLancamentos((prev) =>
-            prev.filter((l) => l.id?.toString() !== id?.toString()),
-          );
-          return Promise.resolve(); // Não queremos que o erro seja propagado para a UI
-        }
-        throw fetchError;
-      }
-    } catch (error: any) {
-      console.error("❌ Erro ao excluir:", error);
-
-      // Se for erro de rede, tentar fallback local
-      if (
-        error.message?.includes("fetch") ||
-        error.message?.includes("Failed")
-      ) {
-        console.warn("🔄 Erro de rede, removendo localmente como fallback");
-        setLancamentos((prev) =>
-          prev.filter((l) => l.id?.toString() !== id?.toString()),
+        console.log(
+          `📊 [CaixaContext] Lançamentos antes: ${lancamentosAtuais.length}, depois: ${lancamentosAtualizados.length}`,
         );
-        return Promise.resolve(); // Sucesso local
+
+        // Salvar no localStorage de forma síncrona para garantir consistência
+        localStorage.setItem(
+          "lancamentos_caixa",
+          JSON.stringify(lancamentosAtualizados),
+        );
+
+        // Atualizar estado React de forma síncrona
+        setLancamentos(lancamentosAtualizados);
+
+        console.log("✅ [CaixaContext] Lançamento excluído com sucesso");
+      } catch (error: any) {
+        console.error("❌ [CaixaContext] Erro ao excluir lançamento:", error);
+        setError(`Erro ao excluir lançamento: ${error.message}`);
+        throw error;
+      } finally {
+        // ✅ CORREÇÃO: Sempre garantir que isExcluindo seja resetado
+        setTimeout(() => {
+          setIsExcluindo(false);
+          console.log("🔓 [CaixaContext] Flag isExcluindo resetada");
+        }, 100);
       }
+    },
+    [isExcluindo],
+  );
 
-      setError("Erro ao excluir lançamento");
-      throw error;
-    } finally {
-      setIsExcluindo(false);
-    }
-  };
-
+  // Adicionar campanha
   const adicionarCampanha = async (novaCampanha: Omit<Campanha, "id">) => {
     try {
       setError(null);
+      console.log("➕ [CaixaContext] Adicionando campanha:", novaCampanha);
 
-      console.log("[CaixaContext] Adicionando campanha:", novaCampanha);
+      const novoId = `campanha-${Date.now()}`;
+      const campanha: Campanha = { ...novaCampanha, id: novoId };
 
-      // Tentar criar no servidor primeiro
-      try {
-        const response = await fetch("/api/campanhas", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(novaCampanha),
-        });
+      // Carregar campanhas existentes
+      const campanhasExistentes = JSON.parse(
+        localStorage.getItem("campanhas") || "[]",
+      );
+      const novasCampanhas = [...campanhasExistentes, campanha];
 
-        if (response.ok) {
-          const campanhaServidor = await response.json();
-          console.log(
-            "✅ [CaixaContext] Campanha criada no servidor:",
-            campanhaServidor,
-          );
+      // Salvar no localStorage
+      localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
+      setCampanhas(novasCampanhas);
 
-          // Recarregar campanhas do servidor para sincronizar
-          await carregarDados();
-          return;
-        } else {
-          throw new Error("Erro ao salvar no servidor");
-        }
-      } catch (serverError) {
-        console.warn(
-          "Servidor indispon��vel, salvando campanha localmente:",
-          serverError,
-        );
-
-        // Fallback: salvar apenas no localStorage
-        const campanha: Campanha = {
-          ...novaCampanha,
-          id: `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        };
-
-        // Carregar campanhas existentes
-        const campanhasExistentes = JSON.parse(
-          localStorage.getItem("campanhas") || "[]",
-        );
-
-        // Adicionar a nova campanha
-        const novasCampanhas = [...campanhasExistentes, campanha];
-
-        // Salvar no localStorage
-        localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
-
-        // Atualizar estado
-        setCampanhas(novasCampanhas);
-
-        console.log("[CaixaContext] Campanha salva localmente:", campanha.id);
-      }
+      console.log("✅ [CaixaContext] Campanha adicionada com sucesso:", novoId);
     } catch (error) {
       console.error("Erro ao adicionar campanha:", error);
       throw error;
     }
   };
 
-  // Função helper para verificar se é boleto
+  // Helper para verificar se é boleto
   const isBoleto = (lancamento: any) => {
-    // Se formaPagamento é um objeto com nome
     if (
       typeof lancamento.formaPagamento === "object" &&
       lancamento.formaPagamento?.nome
@@ -1280,126 +651,186 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const nome = lancamento.formaPagamento.nome.toLowerCase();
       return nome.includes("boleto") || nome.includes("bancario");
     }
-
-    // Se formaPagamento �� string, assumir que é nome direto
     if (typeof lancamento.formaPagamento === "string") {
       const nome = lancamento.formaPagamento.toLowerCase();
       return nome.includes("boleto") || nome.includes("bancario");
     }
-
     return false;
   };
 
-  // Calcular totais baseados nos lançamentos carregados
-  const totais = React.useMemo(() => {
-    const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
+  // Calcular totais
+  // Aplicar filtros aos lançamentos
+  const lancamentosFiltrados = useMemo(() => {
+    if (!filtros || !lancamentos) return lancamentos;
 
-    // Separar boletos usando função helper
+    return lancamentos.filter((l) => {
+      // 1) Datas
+      const data = l.data instanceof Date ? l.data : new Date(l.data);
+      if (filtros.dataInicio && data < filtros.dataInicio) return false;
+      if (filtros.dataFim && data > filtros.dataFim) return false;
+
+      // 2) Tipo
+      if (
+        isFilterActive(filtros.tipo) &&
+        filtros.tipo !== "todos" &&
+        l.tipo !== filtros.tipo
+      )
+        return false;
+
+      // 3) Forma de pagamento (com suporte a id/string/obj)
+      if (isFilterActive(filtros.formaPagamento)) {
+        const fpId =
+          typeof l.formaPagamento === "object"
+            ? String(l.formaPagamento?.id)
+            : String(l.formaPagamento || "");
+        if (fpId !== String(filtros.formaPagamento)) return false;
+      }
+
+      // 4) Técnico (id ou nome)
+      if (isFilterActive(filtros.tecnico)) {
+        const tecnicoId =
+          (l.tecnicoResponsavel?.id ??
+            l.funcionario?.id ??
+            l.tecnicoResponsavel ??
+            l.funcionario) ||
+          "";
+        if (String(tecnicoId) !== String(filtros.tecnico)) return false;
+      }
+
+      // 5) Campanha
+      if (isFilterActive(filtros.campanha)) {
+        const camp =
+          typeof l.campanha === "object"
+            ? String(l.campanha?.id)
+            : String(l.campanha || "");
+        if (camp !== String(filtros.campanha)) return false;
+      }
+
+      // 6) Setor
+      if (isFilterActive(filtros.setor)) {
+        const setorId =
+          typeof l.setor === "object"
+            ? String(l.setor?.id || l.setor?.nome)
+            : String(l.setor || "");
+        if (setorId !== String(filtros.setor)) return false;
+      }
+
+      // 7) Categoria
+      if (isFilterActive(filtros.categoria)) {
+        const cat = extractCategoriaNome(l) || l.categoria || "";
+        if (String(cat) !== String(filtros.categoria)) return false;
+      }
+
+      // 8) Cliente
+      if (isFilterActive(filtros.cliente)) {
+        const cli =
+          typeof l.cliente === "object"
+            ? String(l.cliente?.id)
+            : String(l.cliente || "");
+        if (cli !== String(filtros.cliente)) return false;
+      }
+
+      // 9) Cidade (tentar localizar no setor)
+      if (isFilterActive(filtros.cidade)) {
+        const cidadeValor =
+          (l.setor &&
+            (typeof l.setor === "object"
+              ? l.setor.cidade?.nome || l.setor.cidade
+              : undefined)) ||
+          (l.localizacao &&
+            (typeof l.localizacao === "object"
+              ? l.localizacao.cidade?.nome || l.localizacao.cidade
+              : l.localizacao)) ||
+          l.cidade ||
+          "";
+        if (cidadeValor && String(cidadeValor) !== String(filtros.cidade))
+          return false;
+      }
+
+      // 10) Número da nota (match parcial)
+      if (filtros.numeroNota && String(filtros.numeroNota).trim() !== "") {
+        const numero = String(l.numeroNota || "");
+        if (!numero.includes(String(filtros.numeroNota))) return false;
+      }
+
+      return true;
+    });
+  }, [lancamentos, filtros]);
+
+  const totais = useMemo(() => {
+    const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
     const receitasBoleto = receitasCompletas.filter(isBoleto);
     const receitasNaoBoleto = receitasCompletas.filter((l) => !isBoleto(l));
 
-    // Calcular totais - Receita Bruta deve usar Valor para Empresa (incluindo boletos)
     const receitaBruta = receitasCompletas.reduce((total, l) => {
-      // Para receitas, usar valorParaEmpresa se disponível
       if (l.valorParaEmpresa !== undefined) {
         return total + l.valorParaEmpresa;
       }
-
-      // Para boletos e lançamentos antigos, calcular valor para empresa
       const valorLiquido = l.valorLiquido || l.valor;
       const comissao = l.comissao || 0;
       const valorParaEmpresaCalculado = valorLiquido - comissao;
-
       return total + valorParaEmpresaCalculado;
     }, 0);
 
-    // Receitas líquidas (para compatibilidade com versão anterior)
     const receitaLiquida = receitasNaoBoleto.reduce(
       (total, l) => total + (l.valorLiquido || l.valor),
       0,
     );
 
-    // Receitas efetivamente para a empresa (principal mudança)
     const receitasParaEmpresa = receitasNaoBoleto.reduce((total, l) => {
-      // Se tem valorParaEmpresa definido, use
       if (l.valorParaEmpresa !== undefined) {
         return total + l.valorParaEmpresa;
       }
-
-      // Fallback para lançamentos antigos: calcular valor para empresa
       const valorLiquido = l.valorLiquido || l.valor;
       const comissao = l.comissao || 0;
       const valorParaEmpresaCalculado = valorLiquido - comissao;
-
       return total + valorParaEmpresaCalculado;
     }, 0);
 
     const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
-
     const despesas = lancamentos
       .filter((l) => l.tipo === "despesa")
       .reduce((total, l) => total + l.valor, 0);
-
     const comissoes = receitasNaoBoleto
       .filter((l) => l.comissao)
       .reduce((total, l) => total + (l.comissao || 0), 0);
 
     return {
-      receitas: receitasParaEmpresa, // Agora usa valor para empresa
+      receitas: receitasParaEmpresa,
       receitaBruta,
       receitaLiquida,
-      receitasParaEmpresa, // Novo campo
+      receitasParaEmpresa,
       boletos,
       despesas,
-      saldo: receitasParaEmpresa - despesas, // Saldo baseado no valor para empresa
+      saldo: receitasParaEmpresa - despesas,
       comissoes,
     };
   }, [lancamentos]);
 
-  // Memoizar funções para estabilizar referências
-  const carregarDadosCb = useCallback(
-    () => recarregarManual(),
-    [recarregarManual],
-  );
-  const adicionarLancamentoCb = useCallback(
-    (novo) => adicionarLancamento(novo),
-    [],
-  );
-  const editarLancamentoCb = useCallback(
-    (id, dados) => editarLancamento(id, dados),
-    [],
-  );
-  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
-  const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
-
-  // Value otimizado do contexto
   const value = useMemo(
     () => ({
       lancamentos,
+      lancamentosFiltrados,
       campanhas,
       filtros,
       totais,
-      adicionarLancamento: adicionarLancamentoCb,
-      editarLancamento: editarLancamentoCb,
-      excluirLancamento: excluirLancamentoCb,
-      adicionarCampanha: adicionarCampanhaCb,
+      adicionarLancamento,
+      editarLancamento,
+      excluirLancamento,
+      adicionarCampanha,
       setFiltros: atualizarFiltros,
-      carregarDados: carregarDadosCb,
+      carregarDados,
       isLoading,
       isExcluindo,
       error,
     }),
     [
       lancamentos,
+      lancamentosFiltrados,
       campanhas,
       filtros,
       totais,
-      adicionarLancamentoCb,
-      editarLancamentoCb,
-      excluirLancamentoCb,
-      adicionarCampanhaCb,
-      atualizarFiltros,
-      carregarDadosCb,
+      excluirLancamento,
       isLoading,
       isExcluindo,
       error,

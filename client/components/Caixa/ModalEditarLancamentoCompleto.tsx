@@ -91,6 +91,7 @@ export function ModalEditarLancamentoCompleto({
   });
 
   const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Carregar dados do lançamento quando modal abrir
@@ -109,7 +110,7 @@ export function ModalEditarLancamentoCompleto({
         tecnicoResponsavel: lancamento.funcionario?.id?.toString() || "none",
         setor: lancamento.setor?.id?.toString() || "",
         campanha: lancamento.campanha?.id?.toString() || "",
-        cliente: lancamento.cliente?.id || "none",
+        cliente: lancamento.cliente?.id || "",
         observacoes: lancamento.observacoes || "",
         numeroNota: lancamento.numeroNota || "",
         temNotaFiscal: !!lancamento.numeroNota,
@@ -238,7 +239,7 @@ export function ModalEditarLancamentoCompleto({
 
     if (camposFaltando.length > 0) {
       toast({
-        title: "Campos obrigatórios não preenchidos",
+        title: "Campos obrigatórios n��o preenchidos",
         description: `Preencha os seguintes campos: ${camposFaltando.join(", ")}`,
         variant: "destructive",
       });
@@ -607,27 +608,24 @@ export function ModalEditarLancamentoCompleto({
                     <SelectContent>
                       <SelectItem value="none">Nenhum</SelectItem>
                       {clientes.map((cliente) => (
-                        <SelectItem key={cliente.id} value={cliente.id}>
+                        <SelectItem
+                          key={cliente.id}
+                          value={cliente.id?.toString()}
+                        >
                           {cliente.nome}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <ModalCadastroCliente
-                    trigger={
-                      <Button type="button" variant="outline" size="icon">
-                        <UserPlus className="h-4 w-4" />
-                      </Button>
-                    }
-                    onClienteAdicionado={(cliente) => {
-                      setFormData((prev) => ({ ...prev, cliente: cliente.id }));
-                      toast({
-                        title: "Cliente Adicionado",
-                        description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
-                        variant: "default",
-                      });
-                    }}
-                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    title="Adicionar Cliente"
+                    onClick={() => setIsModalClienteOpen(true)}
+                  >
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             )}
@@ -930,6 +928,23 @@ export function ModalEditarLancamentoCompleto({
             </div>
           </form>
         )}
+
+        {/* Modal de Cliente fora do form para evitar aninhamento */}
+        <ModalCadastroCliente
+          isOpen={isModalClienteOpen}
+          onOpenChange={setIsModalClienteOpen}
+          onClienteAdicionado={(cliente) => {
+            setFormData((prev) => ({
+              ...prev,
+              cliente: cliente.id?.toString(),
+            }));
+            toast({
+              title: "Cliente Adicionado",
+              description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+              variant: "default",
+            });
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

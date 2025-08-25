@@ -263,7 +263,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       qtdContasReceberAtrasadas,
       contasVencendoHoje,
       contasAtrasadas,
-      _lastUpdate: Date.now(), // Força re-render
     };
 
     setStats(newStats);
@@ -316,17 +315,29 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(`metaMes_${mesAtual}`, valor.toString());
   };
 
-  const value = {
-    stats,
-    contas: contasContext?.contas || [],
-    contasVencendo,
-    isLoading,
-    // Meta do Mês
-    metaMes,
-    totalMetaMes,
-    restanteParaMeta,
-    setMetaMes: handleSetMetaMes,
-  };
+  const value = useMemo(
+    () => ({
+      stats,
+      contas: contasContext?.contas || [],
+      contasVencendo,
+      isLoading,
+      // Meta do Mês
+      metaMes,
+      totalMetaMes,
+      restanteParaMeta,
+      setMetaMes: handleSetMetaMes,
+    }),
+    [
+      stats,
+      contasContext?.contas,
+      contasVencendo,
+      isLoading,
+      metaMes,
+      totalMetaMes,
+      restanteParaMeta,
+      handleSetMetaMes,
+    ],
+  );
 
   return (
     <DashboardContext.Provider value={value}>

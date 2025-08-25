@@ -1,5 +1,12 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
+import { useEntidades } from "../../contexts/EntidadesContext";
+import {
+  extractCategoriaNome,
+  extractSetorNome,
+  extractSetorCidade,
+  normalizeComissao,
+} from "../../lib/normalizeLancamento";
 import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import {
@@ -70,6 +77,7 @@ const defaultColumns: ColumnConfig[] = [
   },
   { key: "tecnico", label: "Técnico", visible: true, order: 10 },
   { key: "setor", label: "Setor", visible: true, order: 11 },
+  { key: "cidade", label: "Cidade", visible: false, order: 11.5 },
   { key: "campanha", label: "Campanha", visible: true, order: 12 },
   { key: "observacoes", label: "Observações", visible: true, order: 13 },
   { key: "numeroNota", label: "Número da Nota", visible: false, order: 14 },
@@ -78,21 +86,31 @@ const defaultColumns: ColumnConfig[] = [
 ];
 
 export function ListaLancamentosSimples() {
-  const { lancamentos, excluirLancamento, isLoading, error } = useCaixa();
+  const {
+    lancamentosFiltrados: lancamentos,
+    excluirLancamento,
+    isLoading,
+    error,
+    isExcluindo,
+    campanhas,
+  } = useCaixa();
+  const { formasPagamento, setores, getTecnicos } = useEntidades();
+
+  // Obter lista de técnicos
+  const tecnicosLista = getTecnicos ? getTecnicos() : [];
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
     string | null
   >(null);
   const [lancamentoParaEditar, setLancamentoParaEditar] =
     useState<LancamentoCaixa | null>(null);
-  const [excluindo, setExcluindo] = useState(false);
 
   // Hook para gerenciar colunas
   const {
     columns,
+    visibleColumns,
     toggleColumnVisibility,
     reorderColumns,
     resetColumns,
-    getVisibleColumns,
     getColumnByKey,
   } = useTableColumns("lancamentos-caixa", defaultColumns);
 
@@ -103,7 +121,7 @@ export function ListaLancamentosSimples() {
     }).format(valor);
   };
 
-  // Função para renderizar o conteúdo de cada célula
+  // Fun��ão para renderizar o conteúdo de cada célula
   const renderCellContent = (
     lancamento: LancamentoCaixa,
     columnKey: string,
@@ -131,8 +149,10 @@ export function ListaLancamentosSimples() {
           </Badge>
         );
 
-      case "categoria":
-        return lancamento.categoria || "N/A";
+      case "categoria": {
+        const cat = extractCategoriaNome(lancamento);
+        return cat || "N/A";
+      }
 
       case "descricao":
         // Suporta tanto string quanto objeto com nome, evitando números aleatórios
@@ -214,27 +234,34 @@ export function ListaLancamentosSimples() {
         );
 
       case "comissao":
-        return lancamento.comissao ? formatarMoeda(lancamento.comissao) : "-";
+        return lancamento.comissao != null
+          ? formatarMoeda(lancamento.comissao)
+          : "-";
 
       case "imposto":
         return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
 
-      case "formaPagamento":
-        // Debug para verificar dados da forma de pagamento
-        console.log("[ListaLancamentos] Debug forma pagamento:", {
-          id: lancamento.id,
-          formaPagamento: lancamento.formaPagamento,
-          tipoFormaPagamento: typeof lancamento.formaPagamento,
-        });
+      case "formaPagamento": {
+        const fp = lancamento.formaPagamento;
+        // Se já é objeto com nome
+        if (typeof fp === "object" && fp?.nome) return fp.nome;
+        // Se for string, tentar encontrar na lista global de formas
+        if (typeof fp === "string") {
+          // procura por id ou por nome exato
+          const found = (formasPagamento || []).find(
+            (f) =>
+              f.id?.toString() === fp.toString() ||
+              (f.nome && f.nome.toString() === fp.toString()),
+          );
+          if (found) return found.nome;
+          // se for número não reconhecido, mostrar "N/A"
+          if (/^\d+$/.test(fp.trim())) return "N/A";
+          return fp; // string legível
+        }
+        return "N/A";
+      }
 
-        // Suporta tanto string quanto objeto com nome
-        const formaPagamento =
-          typeof lancamento.formaPagamento === "string"
-            ? lancamento.formaPagamento
-            : lancamento.formaPagamento?.nome;
-        return formaPagamento || "N/A";
-
-      case "tecnico":
+      case "tecnico": {
         // Priorizar funcionario do banco de dados
         if (lancamento.funcionario?.nome) {
           return lancamento.funcionario.nome;
@@ -246,49 +273,100 @@ export function ListaLancamentosSimples() {
         ) {
           return lancamento.tecnicoResponsavel.nome;
         }
-        if (
-          typeof lancamento.tecnicoResponsavel === "string" &&
-          lancamento.tecnicoResponsavel !== "" &&
-          !/^\d+$/.test(lancamento.tecnicoResponsavel.trim()) // Evitar IDs numéricos
-        ) {
-          return lancamento.tecnicoResponsavel;
+        // se for string ou id, tentar mapear usando contexto
+        const tr = lancamento.tecnicoResponsavel;
+        if (typeof tr === "string" && tr.trim() !== "") {
+          const encontrado = tecnicosLista.find(
+            (t) =>
+              t.id?.toString() === tr.toString() ||
+              t.nome?.toString() === tr.toString() ||
+              t.nomeCompleto?.toString() === tr.toString(),
+          );
+          if (encontrado)
+            return encontrado.nome || encontrado.nomeCompleto || tr;
+          // evitar exibir id numérico - mostrar N/A
+          if (/^\d+$/.test(tr.trim())) return "N/A";
+          return tr;
         }
         return "-";
+      }
 
-      case "setor":
+      case "setor": {
         // Priorizar localizacao do banco de dados
         if (lancamento.localizacao?.nome) {
           return lancamento.localizacao.nome;
         }
-        // Fallback para setor (dados legados)
-        if (!lancamento.setor) return "-";
 
-        if (typeof lancamento.setor === "string") {
-          // Evitar exibir IDs numéricos como setor
-          if (!/^\d+$/.test(lancamento.setor.trim())) {
-            return lancamento.setor;
+        const setorNome = extractSetorNome(lancamento.setor);
+        if (setorNome) return setorNome;
+
+        // tentar mapear usando setores do contexto
+        if (
+          typeof lancamento.setor === "string" &&
+          lancamento.setor.trim() !== ""
+        ) {
+          const encontrado = (setores || []).find(
+            (s) =>
+              s.id?.toString() === lancamento.setor.toString() ||
+              s.nome?.toString() === lancamento.setor.toString(),
+          );
+          if (encontrado) return encontrado.nome;
+
+          // evitar exibir id numérico
+          if (/^\d+$/.test(lancamento.setor.trim())) {
+            return "N/A";
           } else {
-            return "-";
+            return lancamento.setor;
           }
         }
 
-        // Formato objeto
-        const nomeSetor = lancamento.setor.nome || lancamento.setor;
-        const cidadeSetor =
-          typeof lancamento.setor.cidade === "object"
-            ? lancamento.setor.cidade?.nome
-            : lancamento.setor.cidade;
+        return "-";
+      }
 
-        return cidadeSetor ? `${nomeSetor} - ${cidadeSetor}` : nomeSetor;
+      case "cidade": {
+        // Nova coluna para cidade
+        const cidade = extractSetorCidade(lancamento.setor, lancamento.cidade);
+        if (cidade) return cidade;
 
-      case "campanha":
+        // tentar mapear usando setores do contexto
+        if (
+          typeof lancamento.setor === "string" &&
+          lancamento.setor.trim() !== ""
+        ) {
+          const encontrado = (setores || []).find(
+            (s) =>
+              s.id?.toString() === lancamento.setor.toString() ||
+              s.nome?.toString() === lancamento.setor.toString(),
+          );
+          if (encontrado) {
+            const cidadeNome =
+              typeof encontrado.cidade === "object"
+                ? encontrado.cidade?.nome
+                : encontrado.cidade;
+            return cidadeNome || "-";
+          }
+        }
+
+        return "-";
+      }
+
+      case "campanha": {
         // Suporta tanto string quanto objeto com nome
         let campanha = "-";
-        if (typeof lancamento.campanha === "string") {
-          // Evitar exibir IDs numéricos como campanha
-          if (!/^\d+$/.test(lancamento.campanha.trim())) {
+        if (
+          typeof lancamento.campanha === "string" &&
+          lancamento.campanha.trim() !== ""
+        ) {
+          // procurar em campanhas do contexto
+          const found = (campanhas || []).find(
+            (c) =>
+              c.id?.toString() === lancamento.campanha.toString() ||
+              c.nome?.toString() === lancamento.campanha.toString(),
+          );
+          if (found) campanha = found.nome;
+          else if (!/^\d+$/.test(lancamento.campanha.trim()))
             campanha = lancamento.campanha;
-          }
+          else campanha = "N/A";
         } else if (
           typeof lancamento.campanha === "object" &&
           lancamento.campanha?.nome
@@ -296,6 +374,7 @@ export function ListaLancamentosSimples() {
           campanha = lancamento.campanha.nome;
         }
         return campanha;
+      }
 
       case "observacoes":
         return lancamento.observacoes ? (
@@ -315,12 +394,7 @@ export function ListaLancamentosSimples() {
         return lancamento.numeroNota || "-";
 
       case "cliente":
-        // Debug para verificar dados do cliente
-        console.log("[ListaLancamentos] Debug cliente:", {
-          id: lancamento.id,
-          cliente: lancamento.cliente,
-          tipoCliente: typeof lancamento.cliente,
-        });
+        // Debug removido para melhorar performance
 
         // Priorizar dados do banco de dados
         if (lancamento.cliente?.nome) {
@@ -370,9 +444,7 @@ export function ListaLancamentosSimples() {
   };
 
   const handleExcluir = async () => {
-    if (!lancamentoParaExcluir || excluindo) return;
-
-    setExcluindo(true);
+    if (!lancamentoParaExcluir || isExcluindo) return;
 
     try {
       console.log(
@@ -403,8 +475,7 @@ export function ListaLancamentosSimples() {
           : "Erro ao excluir lançamento. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
-      setExcluindo(false);
+      // Em caso de erro, não fechar modal para permitir retry
     }
   };
 
@@ -458,7 +529,7 @@ export function ListaLancamentosSimples() {
       <CardContent>
         {lancamentos.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            Nenhum lançamento encontrado para o período selecionado.
+            Nenhum lançamento encontrado para o per����odo selecionado.
           </div>
         ) : (
           <>
@@ -467,7 +538,7 @@ export function ListaLancamentosSimples() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    {getVisibleColumns().map((column) => (
+                    {visibleColumns.map((column) => (
                       <TableHead
                         key={column.key}
                         className={column.key === "acoes" ? "text-right" : ""}
@@ -480,7 +551,7 @@ export function ListaLancamentosSimples() {
                 <TableBody>
                   {lancamentos.map((lancamento) => (
                     <TableRow key={lancamento.id}>
-                      {getVisibleColumns().map((column) => (
+                      {visibleColumns.map((column) => (
                         <TableCell
                           key={column.key}
                           className={column.key === "acoes" ? "text-right" : ""}
@@ -494,7 +565,7 @@ export function ListaLancamentosSimples() {
               </Table>
             </div>
 
-            {/* Versão Mobile - Cards */}
+            {/* Vers��o Mobile - Cards */}
             <div className="lg:hidden space-y-3">
               {lancamentos.map((lancamento) => (
                 <Card key={lancamento.id} className="border border-gray-200">
@@ -530,8 +601,21 @@ export function ListaLancamentosSimples() {
                             </span>
                           </div>
                           <p className="font-medium text-sm">
-                            {lancamento.descricao?.nome || "N/A"}
+                            {lancamento.descricao?.nome ||
+                              lancamento.descricao ||
+                              "N/A"}
                           </p>
+                          {/* Mostrar comissão se existir */}
+                          {(() => {
+                            const comissao = normalizeComissao(
+                              lancamento.comissao,
+                            );
+                            return comissao != null && comissao > 0 ? (
+                              <p className="text-xs text-muted-foreground">
+                                Comissão: {formatarMoeda(comissao)}
+                              </p>
+                            ) : null;
+                          })()}
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -625,7 +709,7 @@ export function ListaLancamentosSimples() {
         open={!!lancamentoParaExcluir}
         onOpenChange={(open) => {
           // Só permitir fechar se não estiver excluindo
-          if (!open && !excluindo) {
+          if (!open && !isExcluindo) {
             setLancamentoParaExcluir(null);
           }
         }}
@@ -633,7 +717,7 @@ export function ListaLancamentosSimples() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              {excluindo ? (
+              {isExcluindo ? (
                 <>
                   <div className="animate-spin h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full"></div>
                   Excluindo...
@@ -643,21 +727,21 @@ export function ListaLancamentosSimples() {
               )}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {excluindo
+              {isExcluindo
                 ? "Aguarde, excluindo o lançamento do sistema..."
                 : "Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={excluindo}>
-              {excluindo ? "Aguarde..." : "Cancelar"}
+            <AlertDialogCancel disabled={isExcluindo}>
+              {isExcluindo ? "Aguarde..." : "Cancelar"}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleExcluir}
-              disabled={excluindo}
+              disabled={isExcluindo}
               className="bg-red-600 hover:bg-red-700 disabled:opacity-50"
             >
-              {excluindo ? (
+              {isExcluindo ? (
                 <>
                   <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
                   Excluindo...

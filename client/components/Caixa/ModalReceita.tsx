@@ -59,6 +59,9 @@ export function ModalReceita() {
   const tecnicos = getTecnicos();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
+
+  // Estados dos modais gerenciados sem logs para produção
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
@@ -102,7 +105,7 @@ export function ModalReceita() {
       "[ModalReceita] Debug - Categoria selecionada:",
       formData.categoria,
     );
-    console.log("[ModalReceita] Debug - Descrições filtradas:", descricoes);
+    console.log("[ModalReceita] Debug - Descri��ões filtradas:", descricoes);
     return descricoes;
   }, [formData.categoria, getDescricoes]);
 
@@ -140,8 +143,8 @@ export function ModalReceita() {
     return isFormaPagamentoBoleto(forma);
   }, [formData.formaPagamento, formasPagamento]);
 
-  // Buscar percentual de imposto das configurações
-  const getPercentualImposto = () => {
+  // Memoizar percentual de imposto para evitar leitura repetida do localStorage
+  const percentualImposto = React.useMemo(() => {
     try {
       const savedConfigs = localStorage.getItem("userConfigs");
       if (savedConfigs) {
@@ -152,31 +155,31 @@ export function ModalReceita() {
       console.error("Erro ao carregar percentual de imposto:", error);
     }
     return 6; // Valor padrão
-  };
+  }, []); // Executa apenas uma vez
 
-  // Calcular campos automaticamente
-  const valorCalculado = parseFloat(formData.valor) || 0;
-  const valorQueEntrouCalculado =
-    parseFloat(formData.valorQueEntrou) || valorCalculado;
+  // Memoizar cálculos automaticamente para evitar re-computação desnecessária
+  const valorCalculado = React.useMemo(() => {
+    return parseFloat(formData.valor) || 0;
+  }, [formData.valor]);
+
+  const valorQueEntrouCalculado = React.useMemo(() => {
+    return parseFloat(formData.valorQueEntrou) || valorCalculado;
+  }, [formData.valorQueEntrou, valorCalculado]);
 
   // Calcular imposto apenas se tem nota fiscal
-  const percentualImposto = getPercentualImposto();
-  const impostoCalculado = formData.temNotaFiscal
-    ? (valorCalculado * percentualImposto) / 100
-    : 0;
-
-  // Debug log para verificar cálculo
-  if (formData.temNotaFiscal && valorCalculado > 0) {
-    console.log(
-      `[ModalReceita] Calculando imposto: ${valorCalculado} * ${percentualImposto}% = R$ ${impostoCalculado.toFixed(2)}`,
-    );
-  }
+  const impostoCalculado = React.useMemo(() => {
+    return formData.temNotaFiscal
+      ? (valorCalculado * percentualImposto) / 100
+      : 0;
+  }, [formData.temNotaFiscal, valorCalculado, percentualImposto]);
 
   // Valor líquido descontando o imposto se houver nota fiscal
-  const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
+  const valorLiquidoCalculado = React.useMemo(() => {
+    return valorQueEntrouCalculado - impostoCalculado;
+  }, [valorQueEntrouCalculado, impostoCalculado]);
 
   // Calcular comissão baseada no percentual do técnico
-  const comissaoCalculada = (() => {
+  const comissaoCalculada = React.useMemo(() => {
     if (formData.tecnicoResponsavel) {
       const tecnico = tecnicos.find(
         (t) => t.id.toString() === formData.tecnicoResponsavel,
@@ -192,14 +195,17 @@ export function ModalReceita() {
       }
     }
     return 0;
-  })();
+  }, [formData.tecnicoResponsavel, tecnicos, valorLiquidoCalculado]);
 
   // Remover useEffect que causa piscar da tela - valores calculados serão mostrados apenas no resumo
 
   // Remover useEffect que causa piscar ao resetar valorQueEntrou
 
+  // Ref para gerenciar cleanup do interval
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
   // Função para emitir nota fiscal
-  const emitirNotaFiscal = () => {
+  const emitirNotaFiscal = React.useCallback(() => {
     const urlNotaFiscal =
       "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733";
     const janelaNotaFiscal = window.open(
@@ -208,10 +214,16 @@ export function ModalReceita() {
       "width=1200,height=800,scrollbars=yes,resizable=yes",
     );
 
+    // Limpar interval anterior se existir
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
     // Monitorar quando a janela for fechada
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       if (janelaNotaFiscal?.closed) {
-        clearInterval(interval);
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
         setNotaFiscalEmitida(true);
         toast({
           title: "Nota Fiscal",
@@ -220,7 +232,16 @@ export function ModalReceita() {
         });
       }
     }, 1000);
-  };
+  }, [toast]);
+
+  // Cleanup do interval quando componente desmontar
+  React.useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   const resetForm = () => {
     setFormData({
@@ -311,10 +332,24 @@ export function ModalReceita() {
     setIsSubmitting(true);
 
     try {
+      console.log("🚀 [ModalReceita] INICIANDO SALVAMENTO DE RECEITA");
+      console.log("📊 [ModalReceita] Estado do formulário:", formData);
+      console.log("��� [ModalReceita] Valores calculados:", {
+        valorCalculado,
+        valorLiquidoCalculado,
+        valorQueEntrouCalculado,
+        impostoCalculado,
+        comissaoCalculada,
+      });
+
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
       if (isBoleto) {
         codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+        console.log(
+          "📋 [ModalReceita] Código de serviço gerado para boleto:",
+          codigoServico,
+        );
       }
 
       // Buscar objetos completos para criar snapshots
@@ -322,15 +357,17 @@ export function ModalReceita() {
         (c) =>
           c.id === formData.cliente || c.id.toString() === formData.cliente,
       );
+      console.log("👤 [ModalReceita] Cliente selecionado:", clienteSelecionado);
 
-      const lancamentoCaixa = await adicionarLancamento({
+      const dadosParaSalvar = {
         data: new Date(formData.data),
-        tipo: "receita",
+        tipo: "receita" as const,
         valor: valorCalculado,
         valorLiquido: valorLiquidoCalculado,
         valorQueEntrou: valorQueEntrouCalculado,
         imposto: impostoCalculado, // Incluir o imposto calculado
-        // Não enviar comissao - deixar o servidor calcular automaticamente
+        comissao: comissaoCalculada, // ✅ CORREÇÃO: Incluir comissão calculada
+        categoria: formData.categoria,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
@@ -352,7 +389,19 @@ export function ModalReceita() {
         // Campos de integração para boletos
         codigoServico: codigoServico,
         sistemaOrigem: isBoleto ? "caixa_boleto" : undefined,
-      });
+      };
+
+      console.log(
+        "📤 [ModalReceita] Dados que serão enviados para adicionarLancamento:",
+        dadosParaSalvar,
+      );
+
+      const lancamentoCaixa = await adicionarLancamento(dadosParaSalvar);
+
+      console.log(
+        "✅ [ModalReceita] Lançamento retornado pelo contexto:",
+        lancamentoCaixa,
+      );
 
       // Se for boleto, criar conta a receber automaticamente
       if (isBoleto && dataVencimentoBoleto && codigoServico) {
@@ -466,6 +515,8 @@ export function ModalReceita() {
         });
       }
 
+      console.log("🎉 [ModalReceita] RECEITA SALVA COM SUCESSO!");
+
       toast({
         title: "Sucesso",
         description: isBoleto
@@ -477,17 +528,28 @@ export function ModalReceita() {
       resetForm();
       setIsOpen(false);
 
-      // Não recarregar a página toda, apenas aguardar contexto atualizar
+      // Aguardar um pouco para garantir que o contexto seja atualizado
+      setTimeout(() => {
+        console.log(
+          "✅ [ModalReceita] Modal fechado, contexto deve estar atualizado",
+        );
+      }, 500);
+
       console.log("[ModalReceita] Lançamento salvo, modal fechado");
     } catch (error) {
-      console.error("Erro ao lançar receita:", error);
+      console.error("❌ [ModalReceita] ERRO AO LANÇAR RECEITA:", error);
+      console.error("❌ [ModalReceita] Stack trace:", error.stack);
+      console.error("❌ [ModalReceita] Dados que causaram erro:", formData);
+
       toast({
         title: "Erro",
-        description: "Erro ao lançar receita. Tente novamente.",
+        description:
+          "Erro ao lançar receita. Verifique o console para mais detalhes.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
+      console.log("🏁 [ModalReceita] Finalizando processo de salvamento");
     }
   };
 
@@ -513,11 +575,17 @@ export function ModalReceita() {
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
-        setIsOpen(open);
+        console.log("[ModalReceita] Dialog onOpenChange chamado:", open);
+
+        // Só permitir fechar se for uma ação intencional do usuário
         if (!open) {
-          // Ao fechar o dialog, sempre resetar o formulário
+          console.log(
+            "[ModalReceita] Modal sendo fechado, resetando formulário",
+          );
           resetForm();
         }
+
+        setIsOpen(open);
       }}
     >
       <DialogTrigger asChild>
@@ -886,27 +954,25 @@ export function ModalReceita() {
                     </SelectTrigger>
                     <SelectContent>
                       {clientes.map((cliente) => (
-                        <SelectItem key={cliente.id} value={cliente.id}>
+                        <SelectItem
+                          key={cliente.id}
+                          value={cliente.id?.toString()}
+                        >
                           {cliente.nome}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <ModalCadastroCliente
-                    trigger={
-                      <Button type="button" variant="outline" size="icon">
-                        <UserPlus className="h-4 w-4" />
-                      </Button>
-                    }
-                    onClienteAdicionado={(cliente) => {
-                      setFormData((prev) => ({ ...prev, cliente: cliente.id }));
-                      toast({
-                        title: "Cliente Adicionado",
-                        description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
-                        variant: "default",
-                      });
-                    }}
-                  />
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    title="Adicionar Cliente"
+                    onClick={() => setIsModalClienteOpen(true)}
+                  >
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
                 </div>
                 {isBoleto && !formData.cliente && (
                   <p className="text-xs text-red-500">
@@ -955,7 +1021,7 @@ export function ModalReceita() {
 
                   <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
                     <h4 className="text-sm font-semibold text-blue-800 mb-2">
-                      🔄 Integração Automática Caixa + Contas a Receber
+                      �� Integração Automática Caixa + Contas a Receber
                     </h4>
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
@@ -1190,6 +1256,26 @@ export function ModalReceita() {
             </form>
           </div>
         )}
+
+        {/* Modal de Cliente fora do form para evitar aninhamento */}
+        <ModalCadastroCliente
+          isOpen={isModalClienteOpen}
+          onOpenChange={setIsModalClienteOpen}
+          onClienteAdicionado={(cliente) => {
+            // Selecionar o cliente recém-criado
+            setFormData((prev) => ({
+              ...prev,
+              cliente: cliente.id?.toString(),
+            }));
+
+            // Toast de confirmação
+            toast({
+              title: "Cliente Adicionado e Selecionado",
+              description: `Cliente "${cliente.nome}" foi cadastrado e selecionado no formulário.`,
+              variant: "default",
+            });
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

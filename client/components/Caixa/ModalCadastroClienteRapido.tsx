@@ -15,7 +15,7 @@ import { toast } from "../ui/use-toast";
 import { User, Plus } from "lucide-react";
 
 interface ModalCadastroClienteRapidoProps {
-  onClienteAdicionado?: (nomeCliente: string) => void;
+  onClienteAdicionado?: (cliente: { id: string; nome: string }) => void;
 }
 
 export function ModalCadastroClienteRapido({
@@ -31,6 +31,7 @@ export function ModalCadastroClienteRapido({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevenir bubbling que pode afetar modal pai
 
     if (!formData.nome.trim() || !formData.telefone.trim()) {
       toast({
@@ -56,8 +57,14 @@ export function ModalCadastroClienteRapido({
         variant: "default",
       });
 
-      // Retornar o nome do cliente para o formulário principal
-      onClienteAdicionado?.(formData.nome);
+      // Criar cliente simplificado com ID temporário
+      const clienteTemporario = {
+        id: `temp-${Date.now()}`,
+        nome: formData.nome,
+      };
+
+      // Retornar cliente com ID para compatibilidade com outros modals
+      onClienteAdicionado?.(clienteTemporario);
 
       // Resetar e fechar
       setFormData({ nome: "", telefone: "", email: "" });

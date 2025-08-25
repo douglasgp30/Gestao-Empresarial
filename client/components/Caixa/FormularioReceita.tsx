@@ -67,10 +67,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos com memoização estabilizada - evitar dependências instáveis
+  // Carregar técnicos com memoização estabilizada - usar getTecnicos como dependência
   const tecnicos = useMemo(() => {
     return getTecnicos();
-  }, [formasPagamento.length, setores.length]); // Usar length para estabilizar
+  }, [getTecnicos]); // Usar getTecnicos corretamente
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -87,6 +87,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   });
 
   const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
   const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(
@@ -829,7 +830,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     required
                   />
                   <p className="text-xs text-yellow-700">
-                    ⚠️{" "}
+                    ⚠��{" "}
                     <strong>
                       Digite o valor que realmente entrou na conta após as taxas
                       da operadora do cartão
@@ -859,7 +860,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Técnico e Campanha na mesma linha */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
+              <Label htmlFor="tecnicoResponsavel">T��cnico Responsável</Label>
               <Select
                 value={formData.tecnicoResponsavel}
                 onValueChange={(value) =>
@@ -996,49 +997,21 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {clientes.map((cliente) => (
-                    <SelectItem key={cliente.id} value={cliente.id}>
+                    <SelectItem key={cliente.id} value={cliente.id?.toString()}>
                       {cliente.nome}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <ModalCadastroCliente
-                trigger={
-                  <Button type="button" variant="outline" size="icon">
-                    <UserPlus className="h-4 w-4" />
-                  </Button>
-                }
-                onClienteAdicionado={(cliente) => {
-                  // Selecionar o cliente recém-criado
-                  setFormData((prev) => ({ ...prev, cliente: cliente.id }));
-
-                  // Marcar que cliente foi recém-adicionado
-                  setClienteRecemAdicionado(true);
-
-                  // Feedback positivo ao usuário
-                  toast({
-                    title: "Cliente Adicionado com Sucesso! ✅",
-                    description: `Cliente "${cliente.nome}" foi cadastrado e selecionado. Você pode continuar editando o lançamento.`,
-                    variant: "default",
-                    duration: 4000,
-                  });
-
-                  // Focar no campo de observações após um breve delay para permitir edições
-                  setTimeout(() => {
-                    const observacoesField =
-                      document.getElementById("observacoes");
-                    if (observacoesField) {
-                      observacoesField.focus();
-                      observacoesField.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center",
-                      });
-                    }
-                    // Reset flag após o foco
-                    setClienteRecemAdicionado(false);
-                  }, 500);
-                }}
-              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                title="Adicionar Cliente"
+                onClick={() => setIsModalClienteOpen(true)}
+              >
+                <UserPlus className="h-4 w-4" />
+              </Button>
             </div>
             {isBoleto && !formData.cliente && (
               <p className="text-xs text-red-500">
@@ -1097,7 +1070,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
               {!dataVencimentoBoleto && (
                 <p className="text-xs text-red-600 font-medium">
-                  ⚠️ Data de vencimento é obrigatória para boletos
+                  ⚠�� Data de vencimento é obrigatória para boletos
                 </p>
               )}
 
@@ -1387,6 +1360,44 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 : "Lançar Receita"}
           </Button>
         </form>
+
+        {/* Modal de Cliente fora do form para evitar aninhamento */}
+        <ModalCadastroCliente
+          isOpen={isModalClienteOpen}
+          onOpenChange={setIsModalClienteOpen}
+          onClienteAdicionado={(cliente) => {
+            // Selecionar o cliente recém-criado
+            setFormData((prev) => ({
+              ...prev,
+              cliente: cliente.id?.toString(),
+            }));
+
+            // Marcar que cliente foi recém-adicionado
+            setClienteRecemAdicionado(true);
+
+            // Feedback positivo ao usuário
+            toast({
+              title: "Cliente Adicionado com Sucesso! ✅",
+              description: `Cliente "${cliente.nome}" foi cadastrado e selecionado. Você pode continuar editando o lançamento.`,
+              variant: "default",
+              duration: 4000,
+            });
+
+            // Focar no campo de observações após um breve delay para permitir edições
+            setTimeout(() => {
+              const observacoesField = document.getElementById("observacoes");
+              if (observacoesField) {
+                observacoesField.focus();
+                observacoesField.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }
+              // Reset flag após o foco
+              setClienteRecemAdicionado(false);
+            }, 500);
+          }}
+        />
       </CardContent>
     </Card>
   );

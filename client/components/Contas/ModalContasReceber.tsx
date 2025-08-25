@@ -68,6 +68,7 @@ export function ModalContasReceber({
 
   const [isOpen, setIsOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
   const [formData, setFormData] = useState({
     valor: "",
     dataVencimento: new Date(),
@@ -288,16 +289,15 @@ export function ModalContasReceber({
                   ))}
                 </SelectContent>
               </Select>
-              <ModalCadastroCliente
-                trigger={
-                  <Button type="button" size="icon" variant="outline">
-                    <UserPlus className="h-4 w-4" />
-                  </Button>
-                }
-                onSuccess={() => {
-                  // Cliente será automaticamente adicionado à lista via contexto
-                }}
-              />
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={() => setIsModalClienteOpen(true)}
+                title="Adicionar Cliente"
+              >
+                <UserPlus className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
@@ -500,6 +500,23 @@ export function ModalContasReceber({
             </Button>
           </div>
         </form>
+
+        {/* Modal de Cliente fora do form para evitar aninhamento */}
+        <ModalCadastroCliente
+          isOpen={isModalClienteOpen}
+          onOpenChange={setIsModalClienteOpen}
+          onClienteAdicionado={(cliente) => {
+            setFormData((prev) => ({
+              ...prev,
+              codigoCliente: cliente.id?.toString(),
+            }));
+            toast({
+              title: "Cliente Adicionado",
+              description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+              variant: "default",
+            });
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

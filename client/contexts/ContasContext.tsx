@@ -4,6 +4,8 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
+  ReactNode,
 } from "react";
 // import { apiService } from "@/lib/apiService"; // Removido para usar localStorage
 import {
@@ -603,28 +605,51 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     [descricoes],
   );
 
-  const value: ContasContextType = {
-    contas,
-    filtros,
-    setFiltros,
-    atualizarFiltros,
-    carregando,
-    isLoading: carregando,
-    erro,
-    adicionarConta,
-    atualizarConta,
-    excluirConta,
-    marcarComoPago,
-    forcarRecarregamento,
-    clientes,
-    fornecedores,
-    formasPagamento,
-    categorias,
-    descricoes,
-    getCategorias,
-    getDescricoes,
-    adicionarFornecedor,
-  };
+  const value: ContasContextType = useMemo(
+    () => ({
+      contas,
+      filtros,
+      setFiltros,
+      atualizarFiltros,
+      carregando,
+      isLoading: carregando,
+      erro,
+      adicionarConta,
+      atualizarConta,
+      excluirConta,
+      marcarComoPago,
+      forcarRecarregamento,
+      clientes,
+      fornecedores,
+      formasPagamento,
+      categorias,
+      descricoes,
+      getCategorias,
+      getDescricoes,
+      adicionarFornecedor,
+    }),
+    [
+      contas,
+      filtros,
+      setFiltros,
+      atualizarFiltros,
+      carregando,
+      erro,
+      adicionarConta,
+      atualizarConta,
+      excluirConta,
+      marcarComoPago,
+      forcarRecarregamento,
+      clientes,
+      fornecedores,
+      formasPagamento,
+      categorias,
+      descricoes,
+      getCategorias,
+      getDescricoes,
+      adicionarFornecedor,
+    ],
+  );
 
   return (
     <ContasContext.Provider value={value}>{children}</ContasContext.Provider>

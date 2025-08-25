@@ -175,10 +175,10 @@ export default function ModalDescricoesSimples() {
       });
 
       // Usar API diretamente em vez do contexto para melhor controle
-      const response = await fetch('/api/descricoes-e-categorias', {
-        method: 'POST',
+      const response = await fetch("/api/descricoes-e-categorias", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           nome: formDescricao.nome.trim(),
@@ -213,7 +213,11 @@ export default function ModalDescricoesSimples() {
       await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("❌ Erro ao adicionar descrição:", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao adicionar descrição. Tente novamente.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erro ao adicionar descrição. Tente novamente.",
+      );
     } finally {
       setIsSaving(false);
     }
@@ -235,10 +239,10 @@ export default function ModalDescricoesSimples() {
       });
 
       // Usar API diretamente em vez do contexto para melhor controle
-      const response = await fetch('/api/descricoes-e-categorias', {
-        method: 'POST',
+      const response = await fetch("/api/descricoes-e-categorias", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           nome: formCategoria.nome.trim(),
@@ -272,7 +276,11 @@ export default function ModalDescricoesSimples() {
       await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("❌ Erro ao adicionar categoria:", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao adicionar categoria. Tente novamente.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erro ao adicionar categoria. Tente novamente.",
+      );
     } finally {
       setIsSaving(false);
     }
@@ -319,15 +327,18 @@ export default function ModalDescricoesSimples() {
     try {
       console.log("✏️ Salvando edição:", itemEditando.id, nomeEditando);
 
-      const response = await fetch(`/api/descricoes-e-categorias/${itemEditando.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/descricoes-e-categorias/${itemEditando.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nome: nomeEditando.trim(),
+          }),
         },
-        body: JSON.stringify({
-          nome: nomeEditando.trim(),
-        }),
-      });
+      );
 
       if (!response.ok) {
         let errorMessage = "Erro ao salvar alterações";
@@ -348,10 +359,14 @@ export default function ModalDescricoesSimples() {
 
       setItemEditando(null);
       setNomeEditando("");
-      toast.success(`${itemEditando.tipo === 'categoria' ? 'Categoria' : 'Descrição'} "${nomeEditando}" salva com sucesso`);
+      toast.success(
+        `${itemEditando.tipo === "categoria" ? "Categoria" : "Descrição"} "${nomeEditando}" salva com sucesso`,
+      );
     } catch (error) {
       console.error("❌ Erro ao salvar edição:", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao salvar alterações");
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao salvar alterações",
+      );
     }
   };
 
@@ -377,7 +392,7 @@ export default function ModalDescricoesSimples() {
         try {
           const contentType = response.headers.get("content-type");
           console.log("🔍 Response status:", response.status);
-          console.log("🔍 Content-Type:", contentType);
+          console.log("�� Content-Type:", contentType);
 
           if (contentType && contentType.includes("application/json")) {
             const errorData = await response.json();
@@ -391,7 +406,10 @@ export default function ModalDescricoesSimples() {
             ) {
               errorMessage = errorData.error;
               // Detectar se é um erro de dependência
-              if (errorMessage.includes("vinculada") || errorMessage.includes("lançamento")) {
+              if (
+                errorMessage.includes("vinculada") ||
+                errorMessage.includes("lançamento")
+              ) {
                 isDependencyError = true;
               }
             }
@@ -436,7 +454,7 @@ export default function ModalDescricoesSimples() {
                 onClick: () => {
                   // Encontrar a categoria no array para passar os dados corretos
                   const categoria = descricoesECategorias.find(
-                    (item) => item.id === itemToDelete.id
+                    (item) => item.id === itemToDelete.id,
                   );
                   if (categoria) {
                     setCategoriaParaDependencias({
@@ -474,25 +492,36 @@ export default function ModalDescricoesSimples() {
       // Recarregar dados da API para sincronizar
       try {
         console.log("🔄 Sincronizando dados após exclusão...");
-        const response = await fetch('/api/descricoes-e-categorias');
+        const response = await fetch("/api/descricoes-e-categorias");
         if (response.ok) {
           const data = await response.json();
-          console.log("📦 Dados atualizados recebidos da API:", data.data?.length || 0);
+          console.log(
+            "📦 Dados atualizados recebidos da API:",
+            data.data?.length || 0,
+          );
 
           // Atualizar localStorage com dados atualizados
           if (data.data) {
-            localStorage.setItem('descricoes_e_categorias', JSON.stringify(data.data));
+            localStorage.setItem(
+              "descricoes_e_categorias",
+              JSON.stringify(data.data),
+            );
           }
         }
       } catch (syncError) {
-        console.warn("⚠️ Erro ao sincronizar dados, usando recarregamento local:", syncError);
+        console.warn(
+          "⚠️ Erro ao sincronizar dados, usando recarregamento local:",
+          syncError,
+        );
       }
 
       // Recarregar do contexto (agora com dados atualizados)
       await recarregarDescricoesECategorias();
       setShowConfirm(false);
       setItemToDelete(null);
-      toast.success(`${itemToDelete.tipo === 'categoria' ? 'Categoria' : 'Descrição'} "${itemToDelete.nome}" excluída com sucesso`);
+      toast.success(
+        `${itemToDelete.tipo === "categoria" ? "Categoria" : "Descrição"} "${itemToDelete.nome}" excluída com sucesso`,
+      );
     } catch (error) {
       console.error("❌ Erro inesperado no handleDelete:", error);
 
@@ -501,7 +530,9 @@ export default function ModalDescricoesSimples() {
       setItemToDelete(null);
 
       // Mostrar erro genérico para problemas de rede ou outros erros inesperados
-      toast.error("Erro inesperado ao excluir item. Verifique sua conexão e tente novamente.");
+      toast.error(
+        "Erro inesperado ao excluir item. Verifique sua conexão e tente novamente.",
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -607,9 +638,9 @@ export default function ModalDescricoesSimples() {
                             onChange={(e) => setNomeEditando(e.target.value)}
                             className="flex-1"
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
+                              if (e.key === "Enter") {
                                 handleSalvarEdicao();
-                              } else if (e.key === 'Escape') {
+                              } else if (e.key === "Escape") {
                                 handleCancelarEdicao();
                               }
                             }}
@@ -620,13 +651,16 @@ export default function ModalDescricoesSimples() {
                         <>
                           <span className="font-medium">{categoria.nome}</span>
                           {(() => {
-                            const numDescricoes = contarDescricoesDaCategoria(categoria.nome, categoria.tipo);
+                            const numDescricoes = contarDescricoesDaCategoria(
+                              categoria.nome,
+                              categoria.tipo,
+                            );
                             return (
                               <span
                                 className={`px-2 py-1 text-xs rounded-full ${
                                   numDescricoes > 0
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'bg-gray-100 text-gray-500'
+                                    ? "bg-blue-100 text-blue-700"
+                                    : "bg-gray-100 text-gray-500"
                                 }`}
                                 title={`${numDescricoes} descrição(ões) vinculada(s)`}
                               >
@@ -768,9 +802,9 @@ export default function ModalDescricoesSimples() {
                             onChange={(e) => setNomeEditando(e.target.value)}
                             className="flex-1"
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
+                              if (e.key === "Enter") {
                                 handleSalvarEdicao();
-                              } else if (e.key === 'Escape') {
+                              } else if (e.key === "Escape") {
                                 handleCancelarEdicao();
                               }
                             }}
@@ -843,7 +877,7 @@ export default function ModalDescricoesSimples() {
 
         {/* Modal de confirma��ão super simples */}
         {showConfirm && (
-          <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center">
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
               <h3 className="text-lg font-semibold mb-2">Confirmar Exclusão</h3>
               <p className="text-gray-600 mb-4">

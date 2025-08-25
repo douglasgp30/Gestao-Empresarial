@@ -52,6 +52,7 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
   const [formData, setFormData] = useState({
     valor: "",
     dataVencimento: new Date(),
@@ -298,24 +299,15 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
                       ))}
                     </SelectContent>
                   </Select>
-                  <ModalCadastroCliente
-                    trigger={
-                      <Button type="button" variant="outline" size="icon">
-                        <UserPlus className="h-4 w-4" />
-                      </Button>
-                    }
-                    onClienteAdicionado={(cliente) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        codigoCliente: cliente.id,
-                      }));
-                      toast({
-                        title: "Cliente Adicionado",
-                        description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
-                        variant: "default",
-                      });
-                    }}
-                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    title="Adicionar Cliente"
+                    onClick={() => setIsModalClienteOpen(true)}
+                  >
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
                 </div>
               </>
             ) : (
@@ -504,6 +496,23 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
             </Button>
           </div>
         </form>
+
+        {/* Modal de Cliente fora do form para evitar aninhamento */}
+        <ModalCadastroCliente
+          isOpen={isModalClienteOpen}
+          onOpenChange={setIsModalClienteOpen}
+          onClienteAdicionado={(cliente) => {
+            setFormData((prev) => ({
+              ...prev,
+              codigoCliente: cliente.id?.toString(),
+            }));
+            toast({
+              title: "Cliente Adicionado",
+              description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+              variant: "default",
+            });
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

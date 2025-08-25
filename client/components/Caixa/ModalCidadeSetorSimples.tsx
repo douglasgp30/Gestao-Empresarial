@@ -39,7 +39,7 @@ function ModalDependenciasSetor({
   const temVinculados = setoresVinculados.length > 0;
 
   return (
-    <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
         <div className="p-6 border-b">
           <div className="flex items-center gap-3">
@@ -379,7 +379,7 @@ export default function ModalCidadeSetorSimples() {
       if (setoresVinculados.length > 0) {
         const nomesSetores = setoresVinculados.map((s) => s.nome).join(", ");
         console.log(
-          "⚠️ Validação: cidade possui setores vinculados:",
+          "⚠�� Validação: cidade possui setores vinculados:",
           nomesSetores,
         );
 
@@ -697,7 +697,7 @@ export default function ModalCidadeSetorSimples() {
 
         {/* Modal de confirmação de exclusão */}
         {showConfirm && (
-          <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center">
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
               <h3 className="text-lg font-semibold mb-2">Confirmar Exclusão</h3>
               <p className="text-gray-600 mb-4">

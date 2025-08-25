@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
 import { Button } from "../ui/button";
@@ -54,18 +54,18 @@ export function ModalDespesa() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Filtrar descrições de despesa usando tabela unificada - usando useCallback para evitar re-renderizações
-  const categoriasDespesa = useCallback(() => {
+  // Usar useMemo para memoizar arrays e evitar re-renderizações desnecessárias
+  const categoriasDespesa = useMemo(() => {
     const categorias = getCategorias("despesa");
     return categorias.map((cat) => cat.nome).sort();
   }, [getCategorias]);
 
-  const descricoesDespesa = useCallback(() => {
+  const descricoesDespesa = useMemo(() => {
     return getDescricoes("despesa");
   }, [getDescricoes]);
 
   // Filtrar descrições pela categoria selecionada
-  const descricoesFiltradas = useCallback(() => {
+  const descricoesFiltradas = useMemo(() => {
     if (!formData.categoria) return [];
     return getDescricoes("despesa", formData.categoria);
   }, [formData.categoria, getDescricoes]);
@@ -242,7 +242,7 @@ export function ModalDespesa() {
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categoriasDespesa().map((categoria) => (
+                    {categoriasDespesa.map((categoria) => (
                       <SelectItem key={categoria} value={categoria}>
                         {categoria}
                       </SelectItem>
@@ -263,7 +263,7 @@ export function ModalDespesa() {
                       ? "Selecione a descrição"
                       : "Primeiro selecione uma categoria"
                   }
-                  options={descricoesFiltradas().map((desc) => ({
+                  options={descricoesFiltradas.map((desc) => ({
                     value: desc.id.toString(),
                     label: desc.nome,
                   }))}

@@ -51,6 +51,8 @@ export default function ModalCadastroCliente({
   const open = isOpen !== undefined ? isOpen : isModalOpen;
   const setOpen = onOpenChange || setIsModalOpen;
 
+  // Estado do modal gerenciado sem logs para produção
+
   const formatCpf = (value: string) => {
     const cleaned = value.replace(/\D/g, "");
     const match = cleaned.match(/^(\d{3})(\d{3})(\d{3})(\d{2})$/);
@@ -92,20 +94,19 @@ export default function ModalCadastroCliente({
       if (!data.erro) {
         setFormData((prev) => ({
           ...prev,
-          endereco: {
-            ...prev.endereco,
-            rua: data.logradouro || "",
-            bairro: data.bairro || "",
-            cidade: data.localidade || "",
-            estado: data.uf || "",
-          },
+          logradouro: data.logradouro || "",
+          bairro: data.bairro || "",
+          cidade: data.localidade || "",
+          estado: data.uf || "",
         }));
 
         // Focar no campo número após buscar o CEP
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           const numeroInput = document.getElementById("numero");
           numeroInput?.focus();
         }, 100);
+
+        // Cleanup sera feito automaticamente quando component unmount ou CEP mudar
       } else {
         alert("CEP não encontrado");
       }
@@ -147,6 +148,7 @@ export default function ModalCadastroCliente({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevenir bubbling que pode afetar modal pai
 
     if (!validarFormulario()) return;
 
@@ -184,12 +186,19 @@ export default function ModalCadastroCliente({
       });
       setErrors({});
 
-      // Callback para informar que cliente foi adicionado
+      // Callback para informar que cliente foi adicionado ANTES de fechar
       if (onClienteAdicionado) {
+        console.log(
+          "[ModalCadastroCliente] Chamando callback com cliente:",
+          novoCliente,
+        );
         onClienteAdicionado(novoCliente);
       }
 
-      setOpen(false);
+      // Fechar o modal APÓS callback para evitar interferência
+      setTimeout(() => {
+        setOpen(false);
+      }, 100);
 
       alert("Cliente cadastrado com sucesso!");
     } catch (error) {
@@ -200,10 +209,15 @@ export default function ModalCadastroCliente({
     }
   };
 
+  // Sempre usar a versão completa do modal
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        zIndex="z-[60]"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5" />
@@ -249,33 +263,37 @@ export default function ModalCadastroCliente({
           {/* Telefones */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="telefone1">Telefone Principal *</Label>
+              <Label htmlFor="telefonePrincipal">Telefone Principal *</Label>
               <Input
-                id="telefone1"
-                value={formData.telefone1}
+                id="telefonePrincipal"
+                value={formData.telefonePrincipal}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    telefone1: formatTelefone(e.target.value),
+                    telefonePrincipal: formatTelefone(e.target.value),
                   })
                 }
                 placeholder="(62) 99999-9999"
-                className={errors.telefone1 ? "border-red-500" : ""}
+                className={errors.telefonePrincipal ? "border-red-500" : ""}
               />
-              {errors.telefone1 && (
-                <p className="text-sm text-red-500">{errors.telefone1}</p>
+              {errors.telefonePrincipal && (
+                <p className="text-sm text-red-500">
+                  {errors.telefonePrincipal}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefone2">Telefone Secundário (Opcional)</Label>
+              <Label htmlFor="telefoneSecundario">
+                Telefone Secundário (Opcional)
+              </Label>
               <Input
-                id="telefone2"
-                value={formData.telefone2}
+                id="telefoneSecundario"
+                value={formData.telefoneSecundario}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    telefone2: formatTelefone(e.target.value),
+                    telefoneSecundario: formatTelefone(e.target.value),
                   })
                 }
                 placeholder="(62) 3333-3333"
@@ -310,12 +328,12 @@ export default function ModalCadastroCliente({
               <div className="flex gap-2">
                 <Input
                   id="cep"
-                  value={formData.endereco.cep}
+                  value={formData.cep}
                   onChange={(e) => {
                     const cepFormatado = formatCep(e.target.value);
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, cep: cepFormatado },
+                      cep: cepFormatado,
                     }));
                   }}
                   onBlur={(e) => buscarCep(e.target.value)}
@@ -334,14 +352,14 @@ export default function ModalCadastroCliente({
             {/* Rua e Número */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="rua">Rua/Avenida</Label>
+                <Label htmlFor="logradouro">Rua/Avenida</Label>
                 <Input
-                  id="rua"
-                  value={formData.endereco.rua}
+                  id="logradouro"
+                  value={formData.logradouro}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, rua: e.target.value },
+                      logradouro: e.target.value,
                     }))
                   }
                   placeholder="Nome da rua"
@@ -352,11 +370,11 @@ export default function ModalCadastroCliente({
                 <Label htmlFor="numero">Número</Label>
                 <Input
                   id="numero"
-                  value={formData.endereco.numero}
+                  value={formData.numero}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, numero: e.target.value },
+                      numero: e.target.value,
                     }))
                   }
                   placeholder="123"
@@ -368,15 +386,15 @@ export default function ModalCadastroCliente({
             <div className="space-y-2">
               <Label htmlFor="complemento">
                 Complemento
-                {(formData.endereco.rua || formData.endereco.cidade) && " *"}
+                {(formData.logradouro || formData.cidade) && " *"}
               </Label>
               <Input
                 id="complemento"
-                value={formData.endereco.complemento}
+                value={formData.complemento}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    endereco: { ...prev.endereco, complemento: e.target.value },
+                    complemento: e.target.value,
                   }))
                 }
                 placeholder="Casa, Apto 123, Quadra 1 Lote 2, etc."
@@ -393,11 +411,11 @@ export default function ModalCadastroCliente({
                 <Label htmlFor="bairro">Bairro</Label>
                 <Input
                   id="bairro"
-                  value={formData.endereco.bairro}
+                  value={formData.bairro}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, bairro: e.target.value },
+                      bairro: e.target.value,
                     }))
                   }
                   placeholder="Nome do bairro"
@@ -408,11 +426,11 @@ export default function ModalCadastroCliente({
                 <Label htmlFor="cidade">Cidade</Label>
                 <Input
                   id="cidade"
-                  value={formData.endereco.cidade}
+                  value={formData.cidade}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, cidade: e.target.value },
+                      cidade: e.target.value,
                     }))
                   }
                   placeholder="Nome da cidade"

@@ -20,6 +20,7 @@ import {
 import { Badge } from "../ui/badge";
 import FiltroDataCaixaSimples from "./FiltroDataCaixaSimples";
 import { Filter, ChevronDown, X, Search } from "lucide-react";
+import { toast } from "../ui/use-toast";
 
 export function FiltrosCaixaCompacto() {
   const {
@@ -27,7 +28,6 @@ export function FiltrosCaixaCompacto() {
     setFiltros,
     campanhas,
     isLoading: caixaLoading,
-    filtrosDependencias,
   } = useCaixa();
 
   const {
@@ -45,7 +45,7 @@ export function FiltrosCaixaCompacto() {
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
   // Memoizar filtros para evitar re-renders desnecessários
-  const filtrosMemoizados = useMemo(() => filtros, [filtrosDependencias]);
+  const filtrosMemoizados = useMemo(() => filtros, [filtros]);
 
   // Atualizar filtros locais quando os filtros do contexto mudarem
   useEffect(() => {
@@ -53,8 +53,36 @@ export function FiltrosCaixaCompacto() {
   }, [filtrosMemoizados]);
 
   const aplicarFiltros = useCallback(() => {
-    setFiltros(filtrosLocal);
+    console.log("🔍 [FiltrosCaixaCompacto] Aplicando filtros:", filtrosLocal);
+
+    // Normalizar filtros - transformar "todos"/"todas" para undefined
+    const filtrosNormalizados = { ...filtrosLocal };
+    Object.keys(filtrosNormalizados).forEach((key) => {
+      const value =
+        filtrosNormalizados[key as keyof typeof filtrosNormalizados];
+      if (
+        typeof value === "string" &&
+        (value === "todos" || value === "todas")
+      ) {
+        filtrosNormalizados[key as keyof typeof filtrosNormalizados] =
+          undefined as any;
+      }
+    });
+
+    setFiltros(filtrosNormalizados);
+    toast({
+      title: "Filtros aplicados",
+      description: "Os filtros foram aplicados com sucesso",
+    });
   }, [filtrosLocal, setFiltros]);
+
+  // Handler genérico para evitar functions inline
+  const handleFieldChange = useCallback(
+    (field: string) => (value: any) => {
+      setFiltrosLocal((prev) => ({ ...prev, [field]: value }));
+    },
+    [],
+  );
 
   const limparFiltros = useCallback(() => {
     const filtrosLimpos = {
@@ -125,41 +153,39 @@ export function FiltrosCaixaCompacto() {
     <Card className="w-full max-w-4xl mx-auto">
       <CardContent className="p-3">
         <div className="space-y-3">
-          {/* Linha Principal: Tudo em uma linha compacta */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
-            {/* Filtro de Data - 4 colunas */}
-            <div className="lg:col-span-4">
-              <FiltroDataCaixaSimples />
-            </div>
+          <Collapsible
+            open={filtrosAvancadosAbertos}
+            onOpenChange={setFiltrosAvancadosAbertos}
+          >
+            {/* Linha Principal: Tudo em uma linha compacta */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+              {/* Filtro de Data - 4 colunas */}
+              <div className="lg:col-span-4">
+                <FiltroDataCaixaSimples />
+              </div>
 
-            {/* Filtro de Tipo - 3 colunas */}
-            <div className="lg:col-span-3">
-              <label className="text-xs font-medium mb-1 block text-gray-600">
-                Tipo
-              </label>
-              <Select
-                value={filtrosLocal.tipo}
-                onValueChange={(value: "todos" | "receita" | "despesa") =>
-                  setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="receita">Receitas</SelectItem>
-                  <SelectItem value="despesa">Despesas</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Filtro de Tipo - 3 colunas */}
+              <div className="lg:col-span-3">
+                <label className="text-xs font-medium mb-1 block text-gray-600">
+                  Tipo
+                </label>
+                <Select
+                  value={filtrosLocal.tipo}
+                  onValueChange={handleFieldChange("tipo")}
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="receita">Receitas</SelectItem>
+                    <SelectItem value="despesa">Despesas</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Filtros Avançados - 3 colunas */}
-            <div className="lg:col-span-3">
-              <Collapsible
-                open={filtrosAvancadosAbertos}
-                onOpenChange={setFiltrosAvancadosAbertos}
-              >
+              {/* Filtros Avançados - 3 colunas */}
+              <div className="lg:col-span-3">
                 <CollapsibleTrigger asChild>
                   <div>
                     <label className="text-xs font-medium mb-1 block text-gray-600">
@@ -190,36 +216,31 @@ export function FiltrosCaixaCompacto() {
                     </Button>
                   </div>
                 </CollapsibleTrigger>
-              </Collapsible>
+              </div>
+
+              {/* Botões de Ação - 2 colunas */}
+              <div className="lg:col-span-2 flex gap-1">
+                <Button
+                  onClick={aplicarFiltros}
+                  size="sm"
+                  className="h-8 text-xs flex-1"
+                  disabled={isLoading}
+                >
+                  <Search className="h-3 w-3 mr-1" />
+                  Filtrar
+                </Button>
+                <Button
+                  onClick={limparFiltros}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
 
-            {/* Botões de Ação - 2 colunas */}
-            <div className="lg:col-span-2 flex gap-1">
-              <Button
-                onClick={aplicarFiltros}
-                size="sm"
-                className="h-8 text-xs flex-1"
-                disabled={isLoading}
-              >
-                <Search className="h-3 w-3 mr-1" />
-                Filtrar
-              </Button>
-              <Button
-                onClick={limparFiltros}
-                variant="outline"
-                size="sm"
-                className="h-8 w-8 p-0"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Filtros Avançados Colapsáveis */}
-          <Collapsible
-            open={filtrosAvancadosAbertos}
-            onOpenChange={setFiltrosAvancadosAbertos}
-          >
+            {/* Filtros Avançados Colapsáveis */}
             <CollapsibleContent>
               <div className="bg-gray-50 rounded p-3 mt-2 border">
                 <div className="space-y-4">
@@ -359,7 +380,6 @@ export function FiltrosCaixaCompacto() {
 
                   {/* Segunda linha de filtros */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {/* Conta */}
                     {/* Categoria */}
                     <div>
                       <label className="text-xs font-medium mb-1 block text-gray-600">

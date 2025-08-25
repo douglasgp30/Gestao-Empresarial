@@ -5,6 +5,8 @@ import React, {
   useEffect,
   useCallback,
   ReactNode,
+  useMemo,
+  useRef,
 } from "react";
 import { Cliente } from "@shared/types";
 
@@ -27,295 +29,267 @@ const ClientesContext = createContext<ClientesContextType | undefined>(
 
 export function ClientesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const inicializado = useRef(false);
 
-  // Carregar clientes da API
-  const carregarClientesAPI = useCallback(async () => {
-    try {
-      console.log("[ClientesContext] Carregando clientes da API...");
-      const response = await fetch("/api/clientes");
+  // 🚨 CRIAR DADOS BÁSICOS SE NÃO EXISTIREM
+  const criarClientesBasicos = useCallback(() => {
+    console.log("🔧 [ClientesContext] Criando clientes básicos...");
 
-      if (!response.ok) {
-        throw new Error(`Erro ${response.status}: ${response.statusText}`);
-      }
+    const clientesPadrao: Cliente[] = [
+      {
+        id: "1",
+        nome: "Cliente Exemplo",
+        telefonePrincipal: "(62) 99999-9999",
+        email: "cliente@exemplo.com",
+        complemento: "Centro, Goiânia",
+        dataCriacao: new Date(),
+      },
+      {
+        id: "2",
+        nome: "Empresa ABC",
+        telefonePrincipal: "(62) 88888-8888",
+        email: "contato@abc.com",
+        complemento: "Setor Oeste, Goiânia",
+        dataCriacao: new Date(),
+      },
+    ];
 
-      const clientesAPI = await response.json();
-      console.log("[ClientesContext] Clientes carregados da API:", clientesAPI);
-
-      // Converter dados da API para o formato esperado
-      const clientesFormatados: Cliente[] = clientesAPI.map((c: any) => ({
-        id: c.id.toString(),
-        nome: c.nome,
-        cpf: c.cpf || undefined,
-        telefonePrincipal: c.telefonePrincipal,
-        telefoneSecundario: c.telefoneSecundario || undefined,
-        email: c.email || undefined,
-        cep: c.cep || undefined,
-        logradouro: c.logradouro || undefined,
-        complemento: c.complemento || undefined,
-        dataCriacao: new Date(c.dataCriacao),
-      }));
-
-      setClientes(clientesFormatados);
-      return clientesFormatados;
-    } catch (error) {
-      console.error(
-        "[ClientesContext] Erro ao carregar clientes da API:",
-        error,
-      );
-      // Em caso de erro, carregar do localStorage como fallback
-      return carregarClientesLocalStorage();
+    // Verificar se clientes existem
+    const clientesExistentes = localStorage.getItem("clientes");
+    if (!clientesExistentes) {
+      localStorage.setItem("clientes", JSON.stringify(clientesPadrao));
+      console.log("✅ [ClientesContext] Clientes básicos criados");
     }
+
+    setClientes(clientesPadrao);
   }, []);
 
-  // Função para carregar clientes do localStorage (fallback)
-  const carregarClientesLocalStorage = useCallback((): Cliente[] => {
+  // 🚨 CARREGAR APENAS DO LOCALSTORAGE - ZERO APIS
+  const carregarClientesLocalStorage = useCallback(() => {
     try {
       console.log(
-        "[ClientesContext] Carregando clientes do localStorage como fallback...",
+        "📂 [ClientesContext] Carregando clientes APENAS do localStorage",
       );
-      const clientes = localStorage.getItem("clientes");
-      if (clientes) {
-        const parsedClientes = JSON.parse(clientes);
-        return parsedClientes.map((c: any) => ({
+      const clientesStorage = localStorage.getItem("clientes");
+
+      if (clientesStorage) {
+        const parsedClientes = JSON.parse(clientesStorage);
+        const clientesFormatados = parsedClientes.map((c: any) => ({
           ...c,
           dataCriacao: new Date(c.dataCriacao),
         }));
+        setClientes(clientesFormatados);
+        console.log(
+          `📂 [ClientesContext] ${clientesFormatados.length} clientes carregados do localStorage`,
+        );
+      } else {
+        console.log(
+          "📂 [ClientesContext] Clientes não encontrados, criando dados básicos",
+        );
+        criarClientesBasicos();
       }
-      return [];
     } catch (error) {
       console.warn(
         "[ClientesContext] Erro ao carregar clientes do localStorage:",
         error,
       );
-      return [];
+      // Em caso de erro, criar dados básicos
+      criarClientesBasicos();
     }
-  }, []);
+  }, [criarClientesBasicos]);
 
-  // Salvar no localStorage como backup
-  const salvarClientesNoLocalStorage = useCallback((clientes: Cliente[]) => {
+  // 🚨 CARREGAMENTO INICIAL IMEDIATO E ÚNICO
+  useEffect(() => {
+    if (inicializado.current) return;
+    inicializado.current = true;
+
+    console.log("🚀 [ClientesContext] INICIALIZAÇÃO IMEDIATA");
+
     try {
-      localStorage.setItem("clientes", JSON.stringify(clientes));
+      // FORÇAR carregamento IMEDIATO dos dados
+      carregarClientesLocalStorage();
+      console.log("✅ [ClientesContext] Dados carregados imediatamente");
     } catch (error) {
-      console.warn(
-        "[ClientesContext] Erro ao salvar clientes no localStorage:",
-        error,
-      );
+      console.error("[ClientesContext] Erro ao inicializar:", error);
+      criarClientesBasicos();
     }
-  }, []);
+  }, [carregarClientesLocalStorage, criarClientesBasicos]);
 
-  // Carregar dados na inicialização
-  useEffect(() => {
-    const inicializar = async () => {
-      setIsLoading(true);
-      try {
-        await carregarClientesAPI();
-      } catch (error) {
-        console.error("[ClientesContext] Erro ao inicializar:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    inicializar();
-  }, [carregarClientesAPI]);
-
-  // Salvar no localStorage sempre que clientes mudarem (backup)
-  useEffect(() => {
-    if (!isLoading && clientes.length > 0) {
-      salvarClientesNoLocalStorage(clientes);
-    }
-  }, [clientes, isLoading, salvarClientesNoLocalStorage]);
-
+  // 🚨 ADICIONAR CLIENTE - APENAS LOCALSTORAGE
   const adicionarCliente = async (
     novoCliente: Omit<Cliente, "id" | "dataCriacao">,
   ): Promise<Cliente> => {
     try {
-      console.log("[ClientesContext] Adicionando cliente:", novoCliente);
+      console.log(
+        "➕ [ClientesContext] Adicionando cliente APENAS no localStorage:",
+        novoCliente,
+      );
 
-      // Preparar dados para a API (mapeamento de campos)
-      const dadosAPI = {
-        nome: novoCliente.nome,
-        telefone: novoCliente.telefonePrincipal, // API espera 'telefone'
-        email: novoCliente.email || null,
-        endereco: novoCliente.complemento || undefined, // API espera 'endereco'
-        observacoes: undefined, // Campo opcional da API
-      };
+      // Gerar ID único
+      const novoId = Date.now().toString();
 
-      const response = await fetch("/api/clientes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dadosAPI),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Erro ${response.status}`);
-      }
-
-      const clienteAPI = await response.json();
-      console.log("[ClientesContext] Cliente criado na API:", clienteAPI);
-
-      // Converter resposta da API para formato esperado
       const cliente: Cliente = {
-        id: clienteAPI.id.toString(),
-        nome: clienteAPI.nome,
-        cpf: clienteAPI.cpf || undefined,
-        telefonePrincipal: clienteAPI.telefone,
-        telefoneSecundario: undefined,
-        email: clienteAPI.email || undefined,
-        cep: undefined,
-        logradouro: undefined,
-        complemento: clienteAPI.endereco || undefined,
-        dataCriacao: new Date(clienteAPI.dataCriacao),
+        ...novoCliente,
+        id: novoId,
+        dataCriacao: new Date(),
       };
 
-      // Atualizar estado local
+      // Carregar clientes existentes
+      const clientesExistentes = JSON.parse(
+        localStorage.getItem("clientes") || "[]",
+      );
+      const novosClientes = [...clientesExistentes, cliente];
+
+      // Salvar no localStorage
+      localStorage.setItem("clientes", JSON.stringify(novosClientes));
+
+      // Atualizar estado
       setClientes((prev) => [...prev, cliente]);
 
+      console.log(
+        "✅ [ClientesContext] Cliente adicionado com sucesso:",
+        novoId,
+      );
       return cliente;
     } catch (error) {
       console.error("[ClientesContext] Erro ao adicionar cliente:", error);
-
-      // Fallback: salvar apenas localmente
-      const cliente: Cliente = {
-        ...novoCliente,
-        id: `temp_${Date.now()}`,
-        dataCriacao: new Date(),
-      };
-      setClientes((prev) => [...prev, cliente]);
-
-      throw error; // Re-throw para o componente lidar com o erro
+      throw error;
     }
   };
 
+  // 🚨 EDITAR CLIENTE - APENAS LOCALSTORAGE
   const editarCliente = async (
     id: string,
     dadosAtualizados: Partial<Cliente>,
   ): Promise<void> => {
     try {
-      console.log("[ClientesContext] Editando cliente:", id, dadosAtualizados);
+      console.log(
+        "✏️ [ClientesContext] Editando cliente no localStorage:",
+        id,
+        dadosAtualizados,
+      );
 
-      // Preparar dados para a API
-      const dadosAPI = {
-        nome: dadosAtualizados.nome,
-        telefone: dadosAtualizados.telefonePrincipal,
-        email: dadosAtualizados.email || null,
-        endereco: dadosAtualizados.complemento || undefined,
-      };
+      // Carregar clientes existentes
+      const clientesExistentes = JSON.parse(
+        localStorage.getItem("clientes") || "[]",
+      );
+      const clientesAtualizados = clientesExistentes.map((cliente: any) =>
+        cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
+      );
 
-      const response = await fetch(`/api/clientes/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dadosAPI),
-      });
+      // Salvar no localStorage
+      localStorage.setItem("clientes", JSON.stringify(clientesAtualizados));
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Erro ${response.status}`);
-      }
-
-      // Atualizar estado local
+      // Atualizar estado
       setClientes((prev) =>
         prev.map((cliente) =>
           cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
         ),
       );
+
+      console.log("✅ [ClientesContext] Cliente editado com sucesso:", id);
     } catch (error) {
       console.error("[ClientesContext] Erro ao editar cliente:", error);
       throw error;
     }
   };
 
+  // 🚨 EXCLUIR CLIENTE - APENAS LOCALSTORAGE
   const excluirCliente = async (id: string): Promise<void> => {
     try {
-      console.log("[ClientesContext] Excluindo cliente:", id);
+      console.log(
+        "🗑️ [ClientesContext] Excluindo cliente do localStorage:",
+        id,
+      );
 
-      const response = await fetch(`/api/clientes/${id}`, {
-        method: "DELETE",
-      });
+      // Carregar clientes existentes
+      const clientesExistentes = JSON.parse(
+        localStorage.getItem("clientes") || "[]",
+      );
+      const clientesAtualizados = clientesExistentes.filter(
+        (cliente: any) => cliente.id !== id,
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Erro ${response.status}`);
-      }
+      // Salvar no localStorage
+      localStorage.setItem("clientes", JSON.stringify(clientesAtualizados));
 
-      // Atualizar estado local
+      // Atualizar estado
       setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+
+      console.log("✅ [ClientesContext] Cliente excluído com sucesso:", id);
     } catch (error) {
       console.error("[ClientesContext] Erro ao excluir cliente:", error);
       throw error;
     }
   };
 
+  // 🚨 RECARREGAR CLIENTES - APENAS LOCALSTORAGE
   const recarregarClientes = useCallback(async () => {
     setIsLoading(true);
     try {
-      await carregarClientesAPI();
+      carregarClientesLocalStorage();
+      console.log("🔄 [ClientesContext] Clientes recarregados do localStorage");
     } catch (error) {
       console.error("[ClientesContext] Erro ao recarregar clientes:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [carregarClientesAPI]);
+  }, [carregarClientesLocalStorage]);
 
-  const buscarCliente = (id: string): Cliente | undefined => {
-    return clientes.find((cliente) => cliente.id === id);
-  };
+  const buscarCliente = useCallback(
+    (id: string): Cliente | undefined => {
+      return clientes.find((cliente) => cliente.id === id);
+    },
+    [clientes],
+  );
 
-  const filtrarClientes = (termo: string): Cliente[] => {
-    if (!termo.trim()) return clientes;
+  const filtrarClientes = useCallback(
+    (termo: string): Cliente[] => {
+      if (!termo.trim()) return clientes;
 
-    const termoLower = termo.toLowerCase();
-    return clientes.filter((cliente) => {
-      // Pesquisar por nome
-      if (cliente.nome.toLowerCase().includes(termoLower)) return true;
+      const termoLower = termo.toLowerCase();
+      return clientes.filter((cliente) => {
+        if (cliente.nome.toLowerCase().includes(termoLower)) return true;
+        if (cliente.cpf && cliente.cpf.includes(termo)) return true;
+        if (cliente.telefonePrincipal.includes(termo)) return true;
+        if (
+          cliente.telefoneSecundario &&
+          cliente.telefoneSecundario.includes(termo)
+        )
+          return true;
+        if (cliente.email && cliente.email.toLowerCase().includes(termoLower))
+          return true;
+        if (
+          cliente.complemento &&
+          cliente.complemento.toLowerCase().includes(termoLower)
+        )
+          return true;
+        if (
+          cliente.logradouro &&
+          cliente.logradouro.toLowerCase().includes(termoLower)
+        )
+          return true;
+        if (cliente.cep && cliente.cep.includes(termo)) return true;
+        return false;
+      });
+    },
+    [clientes],
+  );
 
-      // Pesquisar por CPF
-      if (cliente.cpf && cliente.cpf.includes(termo)) return true;
-
-      // Pesquisar por telefone
-      if (cliente.telefonePrincipal.includes(termo)) return true;
-      if (
-        cliente.telefoneSecundario &&
-        cliente.telefoneSecundario.includes(termo)
-      )
-        return true;
-
-      // Pesquisar por email
-      if (cliente.email && cliente.email.toLowerCase().includes(termoLower))
-        return true;
-
-      // Pesquisar por endereço
-      if (
-        cliente.complemento &&
-        cliente.complemento.toLowerCase().includes(termoLower)
-      )
-        return true;
-      if (
-        cliente.logradouro &&
-        cliente.logradouro.toLowerCase().includes(termoLower)
-      )
-        return true;
-      if (cliente.cep && cliente.cep.includes(termo)) return true;
-
-      return false;
-    });
-  };
-
-  const value = {
-    clientes,
-    adicionarCliente,
-    editarCliente,
-    excluirCliente,
-    buscarCliente,
-    filtrarClientes,
-    recarregarClientes,
-    isLoading,
-  };
+  const value = useMemo(
+    () => ({
+      clientes,
+      adicionarCliente,
+      editarCliente,
+      excluirCliente,
+      buscarCliente,
+      filtrarClientes,
+      recarregarClientes,
+      isLoading,
+    }),
+    [clientes, isLoading],
+  );
 
   return (
     <ClientesContext.Provider value={value}>

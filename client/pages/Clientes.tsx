@@ -55,6 +55,7 @@ export default function Clientes() {
   const { lancamentos } = useCaixa();
   const [termoPesquisa, setTermoPesquisa] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<any>(null);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
 
   // Filtrar clientes baseado no termo de pesquisa
   const clientesFiltrados = clientes.filter((cliente) => {
@@ -109,13 +110,21 @@ export default function Clientes() {
             Gerencie os clientes da empresa e visualize o histórico de serviços
           </p>
         </div>
+        <Button
+          className="flex items-center gap-2"
+          onClick={() => setIsModalClienteOpen(true)}
+        >
+          <UserPlus className="h-4 w-4" />
+          Novo Cliente
+        </Button>
+
         <ModalCadastroCliente
-          trigger={
-            <Button className="flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              Novo Cliente
-            </Button>
-          }
+          isOpen={isModalClienteOpen}
+          onOpenChange={setIsModalClienteOpen}
+          onClienteAdicionado={(cliente) => {
+            // Cliente será automaticamente adicionado à lista via contexto
+            // Opcional: mostrar toast de sucesso
+          }}
         />
       </div>
 
@@ -175,14 +184,13 @@ export default function Clientes() {
                   : "Nenhum cliente cadastrado ainda"}
               </p>
               {!termoPesquisa && (
-                <ModalCadastroCliente
-                  trigger={
-                    <Button className="mt-4">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Cadastrar Primeiro Cliente
-                    </Button>
-                  }
-                />
+                <Button
+                  className="mt-4"
+                  onClick={() => setIsModalClienteOpen(true)}
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Cadastrar Primeiro Cliente
+                </Button>
               )}
             </div>
           ) : (

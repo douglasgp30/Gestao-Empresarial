@@ -4,6 +4,9 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
 } from "react";
 import { Funcionario } from "@shared/types";
 import { useAuth } from "./AuthContext";
@@ -46,13 +49,12 @@ function carregarFuncionariosReais(): Funcionario[] {
     const funcionarios = localStorage.getItem("funcionarios");
     if (funcionarios) {
       const parsedFuncionarios = JSON.parse(funcionarios);
-      // Converter strings de data de volta para objetos Date
       return parsedFuncionarios.map((f: any) => ({
         ...f,
         dataCadastro: new Date(f.dataCadastro),
       }));
     }
-    // Se não houver funcionarios salvos, criar apenas o admin padrão
+
     return [
       {
         id: "1",
@@ -95,7 +97,6 @@ function carregarFuncionariosReais(): Funcionario[] {
     ];
   } catch (error) {
     console.warn("Erro ao carregar funcionarios do localStorage:", error);
-    // Retornar admin padrão em caso de erro
     return [
       {
         id: "1",
@@ -142,162 +143,142 @@ function carregarFuncionariosReais(): Funcionario[] {
 export function FuncionariosProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Função para carregar funcionários da API
-  const carregarFuncionarios = async () => {
-    try {
-      console.log(
-        "[FuncionariosContext] Iniciando carregamento de funcionários...",
-      );
-      setIsLoading(true);
-      const response = await funcionariosApi.listar();
-      if (response.error) {
-        console.error("Erro ao carregar funcionários:", response.error);
-        return;
-      }
-
-      // Converter dados da API para o formato do contexto
-      const funcionariosFormatados = (response.data || []).map((f: any) => ({
-        id: f.id.toString(),
-        nomeCompleto: f.nome,
-        ehTecnico: f.ehTecnico || false,
-        percentualComissao: f.percentualComissao || 0,
-        email: f.email,
-        telefone: f.telefone,
-        cargo: f.cargo,
-        salario: f.salario,
-        permissaoAcesso: f.temAcessoSistema || false,
-        tipoAcesso: f.tipoAcesso || "Operador",
-        login: f.login || "",
-        permissoes: f.permissoes ? JSON.parse(f.permissoes) : undefined,
-        ativo: true, // Assumir ativo por padrão
-        dataCadastro: new Date(f.dataCriacao),
-      }));
-
-      setFuncionarios(funcionariosFormatados);
-      console.log(
-        `[FuncionariosContext] ${funcionariosFormatados.length} funcionários carregados`,
-      );
-    } catch (error) {
-      console.error("Erro ao carregar funcionários:", error);
-    } finally {
-      setIsLoading(false);
-      console.log("[FuncionariosContext] Carregamento finalizado");
-    }
-  };
-
-  // Função para salvar funcionarios no localStorage
-  const salvarFuncionariosNoLocalStorage = (funcionarios: Funcionario[]) => {
-    try {
-      localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
-    } catch (error) {
-      console.warn("Erro ao salvar funcionarios no localStorage:", error);
-    }
-  };
-
-  // Carregar funcionários priorizando API sobre localStorage
-  useEffect(() => {
-    const inicializarFuncionarios = async () => {
-      try {
-        // Iniciando carregamento de funcionários
-        setIsLoading(true);
-
-        // 1. Primeiro tentar carregar da API (banco de dados)
-        const response = await funcionariosApi.listar();
-
-        if (!response.error && response.data && response.data.length > 0) {
-          console.log(
-            `[FuncionariosContext] ${response.data.length} funcionários encontrados na API`,
-          );
-
-          // Converter dados da API para o formato do contexto
-          const funcionariosFormatados = response.data.map((f: any) => ({
-            id: f.id.toString(),
-            nomeCompleto: f.nome,
-            ehTecnico: f.ehTecnico || false,
-            percentualComissao: f.percentualComissao || 0,
-            email: f.email,
-            telefone: f.telefone,
-            cargo: f.cargo,
-            salario: f.salario,
-            permissaoAcesso: f.temAcessoSistema || false,
-            tipoAcesso: f.tipoAcesso || "Operador",
-            login: f.login || "",
-            permissoes: f.permissoes ? JSON.parse(f.permissoes) : undefined,
-            ativo: true,
-            dataCadastro: new Date(f.dataCriacao),
-          }));
-
-          setFuncionarios(funcionariosFormatados);
-          console.log(
-            "[FuncionariosContext] ✅ Funcionários carregados da API com sucesso",
-          );
-          return;
-        }
-
-        // 2. Se não há dados na API, tentar localStorage como fallback
-        console.log(
-          "[FuncionariosContext] API vazia, tentando localStorage...",
-        );
-        setIsLoading(true);
-
-        let funcionariosCarregados = carregarFuncionariosReais();
-
-        // Limpar duplicados se houver
-        const funcionariosUnicos = funcionariosCarregados.filter(
-          (func, index, arr) => {
-            return arr.findIndex((f) => f.id === func.id) === index;
-          },
-        );
-
-        if (funcionariosCarregados.length !== funcionariosUnicos.length) {
-          console.log(
-            `[FuncionariosContext] Removendo ${funcionariosCarregados.length - funcionariosUnicos.length} duplicados`,
-          );
-          funcionariosCarregados = funcionariosUnicos;
-          salvarFuncionariosNoLocalStorage(funcionariosUnicos);
-        }
-
-        setFuncionarios(funcionariosCarregados);
-
-        console.log(
-          `[FuncionariosContext] ${funcionariosCarregados.length} funcionários carregados do localStorage`,
-        );
-
-        // Debug detalhado
-        console.log("[FuncionariosContext] Funcionários carregados:");
-        funcionariosCarregados.forEach((func, index) => {
-          console.log(
-            `  ${index + 1}. ${func.nomeCompleto} (ID: ${func.id}) - Ativo: ${func.ativo}`,
-          );
-        });
-      } catch (error) {
-        console.error("Erro ao carregar funcionários do localStorage:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    inicializarFuncionarios();
-
-    // Durante hot reload, n��o carregar automaticamente
-    if (
-      typeof window !== "undefined" &&
-      (window.location.href.includes("reload=") ||
-        window.location.href.includes("?t="))
-    ) {
-      console.log(
-        "[FuncionariosContext] Hot reload detectado, pulando carregamento automático",
-      );
-      return;
-    }
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
+  const inicializado = useRef(false);
 
   const [filtros, setFiltros] = useState({
     tipoAcesso: "todos" as "Administrador" | "Operador" | "Técnico" | "todos",
     status: "todos" as "ativo" | "inativo" | "todos",
   });
+
+  // CARREGAMENTO MANUAL APENAS - SEM LOOPS
+  const carregarFuncionarios = useCallback(async () => {
+    try {
+      console.log(
+        "[FuncionariosContext] Carregamento MANUAL de funcionários...",
+      );
+
+      const response = await funcionariosApi.listar();
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (response.data && response.data.length > 0) {
+        const funcionariosFormatados = response.data.map((f: any) => ({
+          id: f.id.toString(),
+          nomeCompleto: f.nome,
+          ehTecnico: f.ehTecnico || false,
+          percentualComissao: f.percentualComissao || 0,
+          email: f.email,
+          telefone: f.telefone,
+          cargo: f.cargo,
+          salario: f.salario,
+          permissaoAcesso: f.temAcessoSistema || false,
+          tipoAcesso: f.tipoAcesso || "Operador",
+          login: f.login || "",
+          permissoes: f.permissoes ? JSON.parse(f.permissoes) : undefined,
+          ativo: true,
+          dataCadastro: new Date(f.dataCriacao),
+        }));
+
+        setFuncionarios(funcionariosFormatados);
+        console.log(
+          `[FuncionariosContext] ${funcionariosFormatados.length} funcionários carregados MANUALMENTE`,
+        );
+
+        // Backup no localStorage
+        try {
+          localStorage.setItem(
+            "funcionarios",
+            JSON.stringify(funcionariosFormatados),
+          );
+        } catch {}
+
+        return;
+      }
+
+      // Fallback para localStorage
+      throw new Error("API retornou dados vazios");
+    } catch (error) {
+      console.warn(
+        "[FuncionariosContext] Erro na API, usando localStorage:",
+        error,
+      );
+      carregarFuncionariosLocalStorage();
+    }
+  }, []);
+
+  const carregarFuncionariosLocalStorage = useCallback(() => {
+    try {
+      console.log("[FuncionariosContext] Carregando do localStorage...");
+
+      let funcionariosCarregados = carregarFuncionariosReais();
+
+      // Limpar duplicados se houver
+      const funcionariosUnicos = funcionariosCarregados.filter(
+        (func, index, arr) => arr.findIndex((f) => f.id === func.id) === index,
+      );
+
+      if (funcionariosCarregados.length !== funcionariosUnicos.length) {
+        console.log(
+          `[FuncionariosContext] Removendo ${funcionariosCarregados.length - funcionariosUnicos.length} duplicados`,
+        );
+        funcionariosCarregados = funcionariosUnicos;
+        try {
+          localStorage.setItem(
+            "funcionarios",
+            JSON.stringify(funcionariosUnicos),
+          );
+        } catch {}
+      }
+
+      setFuncionarios(funcionariosCarregados);
+      console.log(
+        `[FuncionariosContext] ${funcionariosCarregados.length} funcionários carregados do localStorage`,
+      );
+    } catch (error) {
+      console.error("Erro ao carregar funcionários do localStorage:", error);
+      setFuncionarios([]);
+    }
+  }, []);
+
+  // CARREGAMENTO INICIAL ÚNICA VEZ - SEM LOOPS
+  useEffect(() => {
+    if (inicializado.current || typeof window === "undefined") return;
+    inicializado.current = true;
+
+    console.log(
+      "🚨 [FuncionariosContext] CARREGAMENTO INICIAL ÚNICO E CONTROLADO",
+    );
+
+    const inicializarFuncionarios = async () => {
+      setIsLoading(true);
+      try {
+        // Carregar apenas do localStorage para evitar piscar
+        carregarFuncionariosLocalStorage();
+        console.log(
+          "✅ [FuncionariosContext] Inicialização SEM carregamento automático da API",
+        );
+      } catch (error) {
+        console.error("Erro ao inicializar funcionários:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    setTimeout(inicializarFuncionarios, 100);
+  }, []);
+
+  const salvarFuncionariosNoLocalStorage = useCallback(
+    (funcionarios: Funcionario[]) => {
+      try {
+        localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
+      } catch (error) {
+        console.warn("Erro ao salvar funcionarios no localStorage:", error);
+      }
+    },
+    [],
+  );
 
   const adicionarFuncionario = async (
     novoFuncionario: Omit<Funcionario, "id" | "dataCadastro">,
@@ -308,9 +289,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         novoFuncionario.nomeCompleto,
       );
 
-      // Gerar ID único para o localStorage
       const novoId = Date.now().toString();
-
       const funcionarioCompleto: Funcionario = {
         ...novoFuncionario,
         id: novoId,
@@ -318,7 +297,6 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         ativo: true,
       };
 
-      // Adicionar ao localStorage
       const funcionariosAtuais = carregarFuncionariosReais();
       const novosFuncionarios = [...funcionariosAtuais, funcionarioCompleto];
 
@@ -329,7 +307,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         "[FuncionariosContext] Funcionário adicionado com sucesso ao localStorage",
       );
 
-      // Tentar salvar na API também (se disponível)
+      // Tentar salvar na API também (sem bloquear o fluxo)
       try {
         const dadosApi = {
           nome: novoFuncionario.nomeCompleto,
@@ -379,7 +357,6 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
 
-      // Transformar dados para o formato da API
       const dadosApi: any = {};
 
       if (dadosAtualizados.nomeCompleto !== undefined) {
@@ -424,32 +401,39 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
           : undefined;
       }
 
-      // Fazer a requisição para o servidor
       const response = await funcionariosApi.atualizar(parseInt(id), dadosApi);
       if (response.error) {
         throw new Error(response.error);
       }
 
-      // Atualizar o estado local apenas se o servidor confirmar
-      setFuncionarios((prev) =>
-        prev.map((funcionario) =>
+      setFuncionarios((prev) => {
+        const funcionariosAtualizados = prev.map((funcionario) =>
           funcionario.id === id
             ? { ...funcionario, ...dadosAtualizados }
             : funcionario,
-        ),
-      );
+        );
+
+        // Atualizar localStorage com dados corretos
+        try {
+          localStorage.setItem(
+            "funcionarios",
+            JSON.stringify(funcionariosAtualizados),
+          );
+        } catch {}
+
+        return funcionariosAtualizados;
+      });
 
       console.log("✅ Funcionário editado com sucesso");
     } catch (error) {
       console.error("❌ Erro ao editar funcionário:", error);
-      throw error; // Relançar erro para o componente tratar
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
   const excluirFuncionario = async (id: string) => {
-    // Não permitir excluir o próprio usuário logado
     const funcionarioParaExcluir = funcionarios.find((f) => f.id === id);
     if (funcionarioParaExcluir?.nomeCompleto === user?.nome) {
       alert("Não é possível excluir seu próprio usuário.");
@@ -462,20 +446,17 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         id,
       );
 
-      // Verificar se o ID é um timestamp (funcionário local) ou ID do banco
-      const isLocalId = id.length > 10; // Timestamps são longos, IDs do banco são pequenos
+      const isLocalId = id.length > 10;
 
       if (isLocalId) {
         console.log(
           "[FuncionariosContext] Excluindo funcionário local (localStorage)",
         );
-        // Para funcionários locais, apenas remover do localStorage
         const funcionariosAtuais = carregarFuncionariosReais();
         const novosFuncionarios = funcionariosAtuais.filter((f) => f.id !== id);
         salvarFuncionariosNoLocalStorage(novosFuncionarios);
       } else {
         console.log("[FuncionariosContext] Excluindo funcionário do servidor");
-        // Para funcionários do servidor, chamar a API
         const response = await funcionariosApi.excluir(parseInt(id));
         if (response.error) {
           throw new Error(response.error);
@@ -485,9 +466,19 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       console.log(
         "[FuncionariosContext] Funcionário excluído com sucesso, atualizando lista...",
       );
+      setFuncionarios((prev) => {
+        const funcionariosAtualizados = prev.filter((func) => func.id !== id);
 
-      // Atualizar a lista localmente
-      setFuncionarios((prev) => prev.filter((func) => func.id !== id));
+        // Atualizar localStorage com dados corretos
+        try {
+          localStorage.setItem(
+            "funcionarios",
+            JSON.stringify(funcionariosAtualizados),
+          );
+        } catch {}
+
+        return funcionariosAtualizados;
+      });
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
       throw error;
@@ -495,17 +486,15 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   };
 
   const alterarStatusFuncionario = (id: string, ativo: boolean) => {
-    // Não permitir desativar o próprio usuário ou o admin principal
     if ((id === user?.id || id === "1") && !ativo) {
       alert("Não é possível desativar este usuário.");
       return;
     }
-
     editarFuncionario(id, { ativo });
   };
 
   // Calcular estatísticas baseadas nos filtros
-  const estatisticas = React.useMemo(() => {
+  const estatisticas = useMemo(() => {
     const funcionariosFiltrados = funcionarios.filter((funcionario) => {
       const buscaCorreta =
         !filtros.busca ||
@@ -541,17 +530,20 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     };
   }, [funcionarios, filtros]);
 
-  const value = {
-    funcionarios,
-    filtros,
-    estatisticas,
-    adicionarFuncionario,
-    editarFuncionario,
-    excluirFuncionario,
-    alterarStatusFuncionario,
-    setFiltros,
-    isLoading,
-  };
+  const value = useMemo(
+    () => ({
+      funcionarios,
+      filtros,
+      estatisticas,
+      adicionarFuncionario,
+      editarFuncionario,
+      excluirFuncionario,
+      alterarStatusFuncionario,
+      setFiltros,
+      isLoading,
+    }),
+    [funcionarios, filtros, estatisticas, isLoading],
+  );
 
   return (
     <FuncionariosContext.Provider value={value}>

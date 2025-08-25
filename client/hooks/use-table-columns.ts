@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export interface ColumnConfig {
   key: string;
@@ -76,11 +76,13 @@ export const useTableColumns = (
     setColumns(defaultColumns);
   };
 
-  const getVisibleColumns = () => {
+  const visibleColumns = useMemo(() => {
     return columns
       .filter((col) => col.visible)
       .sort((a, b) => a.order - b.order);
-  };
+  }, [columns]);
+
+  const getVisibleColumns = () => visibleColumns;
 
   const getColumnByKey = (key: string) => {
     return columns.find((col) => col.key === key);
@@ -88,6 +90,7 @@ export const useTableColumns = (
 
   return {
     columns,
+    visibleColumns,
     toggleColumnVisibility,
     reorderColumns,
     resetColumns,
