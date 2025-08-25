@@ -144,6 +144,7 @@ export default function ModalCadastroCliente({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevenir bubbling que pode afetar modal pai
 
     if (!validarFormulario()) return;
 
