@@ -365,14 +365,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Para outros, o valor para empresa é o valor líquido menos a comissão
       const valorParaEmpresaCalculado = isBoleto ? 0 : valorParaEmpresa;
 
-      console.log("Valores calculados para lançamento:", {
-        isBoleto,
-        valorTotal: valorInput.numericValue,
-        valorQueEntrou: valorQueEntrouReal,
-        valorLiquido: valorLiquidoCalculado,
-        comissao: comissaoCalculada,
-        valorParaEmpresa: valorParaEmpresaCalculado,
-      });
+      // Valores calculados para lançamento
 
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
