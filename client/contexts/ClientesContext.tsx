@@ -124,7 +124,7 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     const handleClienteCriado = async (event: CustomEvent) => {
       console.log("[ClientesContext] Evento cliente-criado recebido:", event.detail);
 
-      // For��ar recarregamento após um breve delay
+      // Forçar recarregamento após um breve delay
       setTimeout(async () => {
         try {
           await recarregarClientes();
@@ -178,7 +178,7 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       }
 
       const clienteAPI = await response.json();
-      console.log("[ClientesContext] Cliente criado na API:", clienteAPI);
+      console.log("[ClientesContext] ✅ Cliente criado na API:", clienteAPI);
 
       // Converter resposta da API para formato esperado
       const cliente: Cliente = {
@@ -194,12 +194,26 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
         dataCriacao: new Date(clienteAPI.dataCriacao),
       };
 
-      // Atualizar estado local
-      setClientes((prev) => [...prev, cliente]);
+      // Atualizar estado local imediatamente
+      setClientes((prev) => {
+        const novosClientes = [...prev, cliente];
+        console.log("[ClientesContext] 📝 Estado local atualizado, total de clientes:", novosClientes.length);
+        return novosClientes;
+      });
+
+      // Forçar recarregamento após criar para garantir sincronização
+      setTimeout(async () => {
+        try {
+          console.log("[ClientesContext] 🔄 Forçando recarregamento após criação...");
+          await carregarClientesAPI();
+        } catch (error) {
+          console.warn("[ClientesContext] ⚠️ Erro no recarregamento pós-criação:", error);
+        }
+      }, 200);
 
       return cliente;
     } catch (error) {
-      console.error("[ClientesContext] Erro ao adicionar cliente:", error);
+      console.error("[ClientesContext] ❌ Erro ao adicionar cliente:", error);
 
       // Fallback: salvar apenas localmente
       const cliente: Cliente = {
