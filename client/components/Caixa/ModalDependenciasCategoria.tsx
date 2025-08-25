@@ -40,7 +40,7 @@ export default function ModalDependenciasCategoria({
   const temVinculadas = descricoesVinculadas.length > 0;
 
   return (
-    <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-md w-full mx-4 max-h-[80vh] overflow-hidden">
         {/* Header */}
         <div className="p-6 border-b">
