@@ -1011,6 +1011,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   // Selecionar o cliente recém-criado
                   setFormData((prev) => ({ ...prev, cliente: cliente.id }));
 
+                  // Marcar que cliente foi recém-adicionado
+                  setClienteRecemAdicionado(true);
+
                   // Feedback positivo ao usuário
                   toast({
                     title: "Cliente Adicionado com Sucesso! ✅",
@@ -1026,6 +1029,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                       observacoesField.focus();
                       observacoesField.scrollIntoView({ behavior: "smooth", block: "center" });
                     }
+                    // Reset flag após o foco
+                    setClienteRecemAdicionado(false);
                   }, 500);
                 }}
               />
@@ -1354,7 +1359,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Lançando..." : "Lan��ar Receita"}
+            {isSubmitting ? "Lançando..." : "Lançar Receita"}
           </Button>
         </form>
       </CardContent>
