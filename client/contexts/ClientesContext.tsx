@@ -119,8 +119,21 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   }, [carregarClientesAPI]); // SOMENTE carregarClientesAPI como dependência
 
-  // Carregar dados na inicialização
+  // TEMPORÁRIO: Carregamento desabilitado para debugar piscar na tela
   useEffect(() => {
+    console.log("[ClientesContext] CARREGAMENTO DESABILITADO - Debug piscar na tela");
+
+    // Carregar apenas do localStorage
+    try {
+      const clientesLocal = carregarClientesLocalStorage();
+      setClientes(clientesLocal);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("[ClientesContext] Erro ao carregar localmente:", error);
+      setIsLoading(false);
+    }
+    return;
+
     const inicializar = async () => {
       setIsLoading(true);
       try {
