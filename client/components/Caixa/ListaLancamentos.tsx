@@ -96,16 +96,8 @@ export default function ListaLancamentos() {
   const getFormaPagamentoNome = (fp: any) => {
     if (!fp) return "N/A";
 
-    // Debug log para diagnosticar problema
-    console.log("getFormaPagamentoNome - Debug:", {
-      formaPagamento: fp,
-      tipo: typeof fp,
-      todasFormas: formasPagamento.map((f) => ({ id: f.id, nome: f.nome })),
-    });
-
     // Se é um objeto snapshot, usar o nome
     if (typeof fp === "object" && fp.nome) {
-      console.log("getFormaPagamentoNome - Usando snapshot:", fp.nome);
       return fp.nome;
     }
 
