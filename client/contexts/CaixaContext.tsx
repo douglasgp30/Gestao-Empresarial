@@ -754,69 +754,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     filtros.numeroNota,
   ]);
 
-  // Recarregar lançamentos quando os filtros mudarem - otimizado e sem loops
-  const isFetchingRef = useRef(false);
-  const lastFiltrosRef = useRef<string>("");
-  const excludingRef = useRef(false); // Evitar recarregar durante exclusão
-
-  useEffect(() => {
-    // Evitar recarregamento durante operações de exclusão
-    if (isExcluindo || excludingRef.current) {
-      console.log(
-        "[CaixaContext] Operação em andamento, pulando recarregamento",
-      );
-      return;
-    }
-
-    // Evitar recarregamento desnecessário se os filtros não mudaram realmente
-    if (lastFiltrosRef.current === filtrosDependencias) {
-      return;
-    }
-
-    lastFiltrosRef.current = filtrosDependencias;
-
-    // Debounce para evitar múltiplos lançamentos rápidos
-    const timeoutId = setTimeout(() => {
-      if (isFetchingRef.current || isExcluindo) {
-        console.log("[CaixaContext] fetch já em andamento, ignorando");
-        return;
-      }
-      isFetchingRef.current = true;
-      console.log("[CaixaContext] Recarregando por mudança de filtros");
-
-      // Implementar retry com backoff
-      const tentarCarregarComRetry = async (tentativas = 2) => {
-        for (let i = 0; i < tentativas; i++) {
-          try {
-            await carregarLancamentosDoBanco();
-            return; // Sucesso, sair do loop
-          } catch (error) {
-            console.warn(
-              `📦 [CaixaContext] Tentativa ${i + 1}/${tentativas} falhou:`,
-              error,
-            );
-
-            if (i === tentativas - 1) {
-              // Última tentativa, usar fallback
-              console.log(
-                "📦 [CaixaContext] Todas as tentativas falharam, usando localStorage",
-              );
-              return carregarLancamentosLocalStorage();
-            }
-
-            // Aguardar antes da próxima tentativa
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-          }
-        }
-      };
-
-      tentarCarregarComRetry().finally(() => {
-        isFetchingRef.current = false;
-      });
-    }, 1000); // Aumentar debounce para 1 segundo
-
-    return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias, isExcluindo]);
+  // REMOVIDO: useEffect automático que causava loops infinitos
+  // O recarregamento agora é feito apenas manualmente ou na inicialização
 
   // Função para normalizar lançamento antes de salvar
   const normalizarLancamento = (lancamento: any): any => {
