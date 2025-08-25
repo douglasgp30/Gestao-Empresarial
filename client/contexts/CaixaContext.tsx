@@ -291,24 +291,33 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const excluirLancamento = async (id: string) => {
-    if (isExcluindo) return Promise.resolve();
+  const excluirLancamento = useCallback(async (id: string) => {
+    if (isExcluindo) {
+      throw new Error("Operação de exclusão já em andamento");
+    }
 
     try {
       setIsExcluindo(true);
       setError(null);
       console.log("🗑️ [CaixaContext] Excluindo lançamento:", id);
 
-      // Remover do localStorage
-      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
-      const lancamentosAtualizados = lancamentosExistentes.filter((l: any) => l.id?.toString() !== id?.toString());
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
+      // Atualizar estado em memória e persistir baseado no estado atual (evita JSON.parse pesado)
+      setLancamentos((prev) => {
+        const lancamentosAtualizados = prev.filter((l) => l.id?.toString() !== id?.toString());
 
-      // Atualizar estado
-      setLancamentos((prev) => prev.filter((l) => l.id?.toString() !== id?.toString()));
-      
+        // Persistir de forma assíncrona sem bloquear UI
+        setTimeout(() => {
+          try {
+            localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
+          } catch (e) {
+            console.error("Erro ao persistir lançamentos:", e);
+          }
+        }, 0);
+
+        return lancamentosAtualizados;
+      });
+
       console.log("✅ [CaixaContext] Lançamento excluído com sucesso");
-      return Promise.resolve();
     } catch (error: any) {
       console.error("❌ Erro ao excluir:", error);
       setError("Erro ao excluir lançamento");
@@ -316,7 +325,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsExcluindo(false);
     }
-  };
+  }, [isExcluindo]);
 
   // Adicionar campanha
   const adicionarCampanha = async (novaCampanha: Omit<Campanha, "id">) => {
