@@ -194,7 +194,7 @@ export default function ModalCidadeSetor() {
                     Nova Cidade
                   </Button>
                 </DialogTrigger>
-                <DialogContent zIndex="z-60">
+                <DialogContent zIndex="z-[60]">
                   <DialogHeader>
                     <DialogTitle>Adicionar Nova Cidade</DialogTitle>
                     <DialogDescription>
@@ -240,7 +240,7 @@ export default function ModalCidadeSetor() {
                     Novo Setor
                   </Button>
                 </DialogTrigger>
-                <DialogContent zIndex="z-60">
+                <DialogContent zIndex="z-[60]">
                   <DialogHeader>
                     <DialogTitle>Adicionar Novo Setor</DialogTitle>
                     <DialogDescription>
