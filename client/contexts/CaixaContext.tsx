@@ -206,18 +206,50 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     console.log("🚀 [CaixaContext] INICIALIZAÇÃO IMEDIATA");
 
     try {
-      // Executar migração automática se necessário
+      // Executar migração automática SEMPRE (até funcionar corretamente)
       try {
-        if (typeof window !== 'undefined' && window.migracaoCaixa) {
-          if (window.migracaoCaixa.verificar && window.migracaoCaixa.verificar()) {
-            console.log("[CaixaContext] Executando migração automática de dados legados...");
-            window.migracaoCaixa.backup && window.migracaoCaixa.backup();
-            window.migracaoCaixa.executar && window.migracaoCaixa.executar();
-            console.log("[CaixaContext] Migração automática concluída.");
+        console.log("[CaixaContext] Executando migração FORÇADA de dados legados...");
+
+        // Migração manual inline para garantir que funcione
+        const lancamentosRaw = localStorage.getItem("lancamentos_caixa");
+        if (lancamentosRaw) {
+          try {
+            const lancamentos = JSON.parse(lancamentosRaw);
+            let houveAlteracao = false;
+
+            const lancamentosMigrados = lancamentos.map((l: any) => {
+              let migrado = { ...l };
+
+              // Migrar forma de pagamento
+              if (typeof l.formaPagamento === "string" && /^\d+$/.test(l.formaPagamento)) {
+                const formasMap: any = {
+                  "1": { id: 1, nome: "Dinheiro" },
+                  "2": { id: 2, nome: "PIX" },
+                  "3": { id: 3, nome: "Cartão de Débito" },
+                  "4": { id: 4, nome: "Cartão de Crédito" },
+                  "5": { id: 5, nome: "Transferência" },
+                  "6": { id: 6, nome: "Boleto" }
+                };
+                if (formasMap[l.formaPagamento]) {
+                  migrado.formaPagamento = formasMap[l.formaPagamento];
+                  houveAlteracao = true;
+                }
+              }
+
+              return migrado;
+            });
+
+            if (houveAlteracao) {
+              localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosMigrados));
+              console.log("[CaixaContext] Migração inline concluída - dados atualizados");
+            }
+          } catch (e) {
+            console.warn("[CaixaContext] Erro na migração inline:", e);
           }
         }
+
       } catch (e) {
-        console.warn("[CaixaContext] Erro ao executar migração automática:", e);
+        console.warn("[CaixaContext] Erro ao executar migração:", e);
       }
 
       // FORÇAR carregamento IMEDIATO dos dados
