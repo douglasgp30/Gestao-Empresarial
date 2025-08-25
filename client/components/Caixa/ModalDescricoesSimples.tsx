@@ -232,6 +232,65 @@ export default function ModalDescricoesSimples() {
     setShowDependencies(true);
   };
 
+  const handleIniciarEdicao = (item: any) => {
+    setItemEditando({
+      id: item.id,
+      nome: item.nome,
+      tipo: item.tipoItem,
+    });
+    setNomeEditando(item.nome);
+  };
+
+  const handleCancelarEdicao = () => {
+    setItemEditando(null);
+    setNomeEditando("");
+  };
+
+  const handleSalvarEdicao = async () => {
+    if (!itemEditando || !nomeEditando.trim()) {
+      toast.error("Nome não pode estar vazio");
+      return;
+    }
+
+    try {
+      console.log("✏️ Salvando edição:", itemEditando.id, nomeEditando);
+
+      const response = await fetch(`/api/descricoes-e-categorias/${itemEditando.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: nomeEditando.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Erro ao salvar alterações";
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          console.warn("Erro ao ler resposta de erro:", e);
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Sincronizar dados após edição
+      console.log("🔄 Sincronizando dados após edição...");
+      await recarregarDescricoesECategorias();
+
+      setItemEditando(null);
+      setNomeEditando("");
+      toast.success(`${itemEditando.tipo === 'categoria' ? 'Categoria' : 'Descrição'} "${nomeEditando}" salva com sucesso`);
+    } catch (error) {
+      console.error("❌ Erro ao salvar edição:", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao salvar alterações");
+    }
+  };
+
   const handleDelete = async () => {
     if (!itemToDelete || isDeleting) return;
 
