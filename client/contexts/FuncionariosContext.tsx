@@ -200,9 +200,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const inicializarFuncionarios = async () => {
       try {
-        console.log(
-          "[FuncionariosContext] Iniciando carregamento de funcionários...",
-        );
+        // Iniciando carregamento de funcionários
         setIsLoading(true);
 
         // 1. Primeiro tentar carregar da API (banco de dados)
