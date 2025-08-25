@@ -166,18 +166,16 @@ export default function ModalCadastroCliente({
       setFormData({
         nome: "",
         cpf: "",
-        telefone1: "",
-        telefone2: "",
+        telefonePrincipal: "",
+        telefoneSecundario: "",
         email: "",
-        endereco: {
-          cep: "",
-          rua: "",
-          numero: "",
-          complemento: "",
-          bairro: "",
-          cidade: "",
-          estado: "",
-        },
+        cep: "",
+        logradouro: "",
+        numero: "",
+        complemento: "",
+        bairro: "",
+        cidade: "",
+        estado: "",
       });
       setErrors({});
 
