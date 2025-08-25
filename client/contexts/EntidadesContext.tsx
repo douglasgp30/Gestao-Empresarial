@@ -902,46 +902,25 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     return Promise.resolve();
   }, []);
 
-  // TEMPORÁRIO: Carregamento desabilitado para debugar piscar na tela
+  // ⚠️ ANTI-PISCAR: Carregamento controlado para evitar loops infinitos
   useEffect(() => {
-    console.log("[EntidadesContext] CARREGAMENTO DESABILITADO - Debug piscar na tela");
-
-    // Carregar apenas dados básicos do localStorage
-    try {
-      const formasLocal = JSON.parse(localStorage.getItem("formas_pagamento") || "[]");
-      setFormasPagamento(formasLocal.length > 0 ? formasLocal : FORMAS_PAGAMENTO_PADRAO);
-
-      const setoresLocal = JSON.parse(localStorage.getItem("setores") || "[]");
-      setSetores(setoresLocal);
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error("[EntidadesContext] Erro ao carregar localmente:", error);
-      setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
-      setIsLoading(false);
+    // Evitar múltiplos carregamentos
+    if (jaCarregou) {
+      console.log("[EntidadesContext] ⚠️ Carregamento já executado, ignorando");
+      return;
     }
-    return;
-
-    // === CARREGAMENTO ORIGINAL (DESABILITADO) ===
-    // Evitar carregamento duplo
-    let carregamentoExecutado = false;
 
     const executarCarregamento = async () => {
-      if (carregamentoExecutado) return;
-      carregamentoExecutado = true;
+      try {
+        setJaCarregou(true); // Marcar como carregado ANTES de começar
+        console.log("[EntidadesContext] 🔄 Iniciando carregamento único");
 
-      // Carregar dados sempre no mount, sem verificações
-
-      // Cache invalidação removida - usando localStorage
-      await carregarDados();
-
-      // TEMPORARIAMENTE DESABILITADO - Sincronizar localizações para teste de loop
-      // setTimeout(() => {
-      //   if (!sincronizacaoEmAndamento && !jaFezSincronizacao.current) {
-      //     jaFezSincronizacao.current = true;
-      //     sincronizarLocalizacoes();
-      //   }
-      // }, 1000); // 1 segundo de delay
+        // Carregar dados sempre no mount, sem verificações
+        await carregarDados();
+        console.log("[EntidadesContext] ✅ Carregamento concluído");
+      } catch (error) {
+        console.error("[EntidadesContext] Erro no carregamento:", error);
+      }
     };
 
     executarCarregamento();
@@ -958,7 +937,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // As cidades agora são pré-cadastradas e gerenciadas via ativação/desativação
 
   // === FUNÇÕES NOVAS DE LOCALIZAÇÃO GEOGRÁFICA ===
-  // Fun��ões removidas - usando versões stub acima para evitar chamadas de API
+  // Funções removidas - usando versões stub acima para evitar chamadas de API
 
   // === FUNÇÕES LEGADAS (COMPATIBILIDADE) ===
   const adicionarDescricao = async () => {
