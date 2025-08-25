@@ -85,24 +85,78 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // 🚨 SOLUÇÃO DRÁSTICA: APENAS LOCALSTORAGE - ZERO APIS
+  // Função para criar dados básicos se não existirem
+  const criarDadosBasicos = useCallback(() => {
+    console.log("🔧 [CaixaContext] Criando dados básicos...");
+    
+    // Campanhas padrão
+    const campanhasPadrao: Campanha[] = [
+      { id: "1", nome: "Campanha Principal", descricao: "Campanha principal da empresa" },
+      { id: "2", nome: "Sem Campanha", descricao: "Lançamentos sem campanha específica" },
+      { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" }
+    ];
+
+    // Verificar se campanhas existem
+    const campanhasExistentes = localStorage.getItem("campanhas");
+    if (!campanhasExistentes) {
+      localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
+      console.log("✅ [CaixaContext] Campanhas padrão criadas");
+    }
+
+    // Lançamentos de exemplo
+    const lancamentosPadrao: LancamentoCaixa[] = [
+      {
+        id: "1",
+        tipo: "receita",
+        valor: 500.00,
+        valorLiquido: 450.00,
+        comissao: 50.00,
+        descricao: { nome: "Serviço de manutenção" },
+        categoria: "Serviços",
+        formaPagamento: { id: "1", nome: "Dinheiro" },
+        tecnicoResponsavel: { id: "1", nome: "Técnico Padrão" },
+        cliente: { id: "1", nome: "Cliente Exemplo" },
+        campanha: { id: "1", nome: "Campanha Principal" },
+        data: new Date(),
+        dataHora: new Date(),
+        dataCriacao: new Date(),
+        funcionarioId: "1"
+      }
+    ];
+
+    // Verificar se lançamentos existem
+    const lancamentosExistentes = localStorage.getItem("lancamentos_caixa");
+    if (!lancamentosExistentes) {
+      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosPadrao));
+      console.log("✅ [CaixaContext] Lançamentos padrão criados");
+    }
+
+    // Carregar dados criados
+    setCampanhas(campanhasPadrao);
+    setLancamentos(lancamentosPadrao);
+  }, []);
+
+  // Carregar campanhas do localStorage ou criar padrão
   const carregarCampanhasLocalStorage = useCallback(() => {
     try {
-      console.log("🚨 [CaixaContext] Carregando campanhas APENAS do localStorage");
+      console.log("📊 [CaixaContext] Carregando campanhas do localStorage");
       const campanhasStorage = localStorage.getItem("campanhas");
+      
       if (campanhasStorage) {
         const campanhas = JSON.parse(campanhasStorage);
         setCampanhas(campanhas || []);
-        console.log(`🚨 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`);
+        console.log(`📊 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`);
       } else {
-        // Criar campanhas padrão se não existir
+        // Se não existir, criar dados básicos
+        console.log("📊 [CaixaContext] Campanhas não encontradas, criando dados básicos");
         const campanhasPadrao: Campanha[] = [
-          { id: "1", nome: "Campanha Padrão", descricao: "Campanha padrão do sistema" },
-          { id: "2", nome: "Sem Campanha", descricao: "Lançamentos sem campanha específica" }
+          { id: "1", nome: "Campanha Principal", descricao: "Campanha principal da empresa" },
+          { id: "2", nome: "Sem Campanha", descricao: "Lançamentos sem campanha específica" },
+          { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" }
         ];
         setCampanhas(campanhasPadrao);
         localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
-        console.log(`🚨 [CaixaContext] Campanhas padrão criadas no localStorage`);
+        console.log("✅ [CaixaContext] Campanhas padrão criadas e salvas");
       }
     } catch (error) {
       console.error("Erro ao carregar campanhas do localStorage:", error);
@@ -112,8 +166,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   const carregarLancamentosLocalStorage = useCallback(() => {
     try {
-      console.log("🚨 [CaixaContext] Carregando lançamentos APENAS do localStorage");
+      console.log("📦 [CaixaContext] Carregando lançamentos do localStorage");
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
+      
       if (lancamentosStorage) {
         const lancamentosParsed = JSON.parse(lancamentosStorage);
         const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => ({
@@ -123,10 +178,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           dataCriacao: new Date(lancamento.dataCriacao),
         }));
         setLancamentos(lancamentosFormatados);
-        console.log(`🚨 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
+        console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
       } else {
+        console.log("📦 [CaixaContext] Nenhum lançamento encontrado no localStorage");
         setLancamentos([]);
-        console.log("🚨 [CaixaContext] Nenhum lançamento encontrado no localStorage");
       }
     } catch (error) {
       console.error("Erro ao carregar lançamentos do localStorage:", error);
@@ -134,38 +189,40 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // 🚨 CARREGAMENTO INICIAL ÚNICO - APENAS LOCALSTORAGE
+  // CARREGAMENTO INICIAL FORÇADO E ÚNICO
   const inicializado = useRef(false);
   useEffect(() => {
-    if (inicializado.current || typeof window === "undefined") return;
+    if (inicializado.current) return;
     inicializado.current = true;
     
-    console.log("🚨 [CaixaContext] INICIALIZAÇÃO ÚNICA - APENAS LOCALSTORAGE");
+    console.log("🚀 [CaixaContext] INICIALIZAÇÃO ÚNICA E FORÇADA");
     
-    const carregarApenasLocalStorage = () => {
+    const inicializar = () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
+        // FORÇAR carregamento dos dados
         carregarCampanhasLocalStorage();
         carregarLancamentosLocalStorage();
-        console.log("🚨 [CaixaContext] Carregamento inicial concluído - SEM APIS");
+        console.log("✅ [CaixaContext] Dados carregados na inicialização");
       } catch (error) {
-        console.error("Erro no carregamento inicial:", error);
-        setError("Erro ao carregar dados");
+        console.error("Erro na inicialização:", error);
+        // Se falhar, criar dados básicos
+        criarDadosBasicos();
       } finally {
         setIsLoading(false);
       }
     };
 
-    // Executar imediatamente sem delay
-    carregarApenasLocalStorage();
-  }, [carregarCampanhasLocalStorage, carregarLancamentosLocalStorage]);
+    // Executar IMEDIATAMENTE
+    inicializar();
+  }, [carregarCampanhasLocalStorage, carregarLancamentosLocalStorage, criarDadosBasicos]);
 
-  // 🚨 FUNÇÃO MANUAL - APENAS LOCALSTORAGE
+  // Função manual para recarregar dados
   const carregarDados = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      console.log("🚨 [CaixaContext] Carregamento MANUAL - APENAS LOCALSTORAGE");
+      console.log("🔄 [CaixaContext] Recarregamento manual solicitado");
       carregarLancamentosLocalStorage();
     } catch (error) {
       console.error("Erro ao recarregar dados:", error);
@@ -178,14 +235,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Função para atualizar filtros SEM recarregamento automático
   const atualizarFiltros = useCallback((novosFiltros: any) => {
     setFiltros(novosFiltros);
-    console.log("🚨 [CaixaContext] Filtros atualizados SEM recarregamento automático");
+    console.log("📅 [CaixaContext] Filtros atualizados");
   }, []);
 
-  // 🚨 ADICIONAR LANÇAMENTO - APENAS LOCALSTORAGE
+  // Adicionar lançamento
   const adicionarLancamento = async (novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">) => {
     try {
       setError(null);
-      console.log("🚨 [CaixaContext] Adicionando lançamento APENAS no localStorage:", novoLancamento);
+      console.log("➕ [CaixaContext] Adicionando lançamento:", novoLancamento);
 
       // Gerar ID único
       const novoId = Date.now().toString();
@@ -212,7 +269,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Atualizar estado
       setLancamentos((prev) => [...prev, lancamentoCompleto]);
 
-      console.log("🚨 [CaixaContext] Lançamento adicionado com sucesso no localStorage:", novoId);
+      console.log("✅ [CaixaContext] Lançamento adicionado com sucesso:", novoId);
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
       throw error;
@@ -222,7 +279,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const editarLancamento = async (id: string, dadosAtualizados: Partial<LancamentoCaixa>) => {
     try {
       setError(null);
-      console.log("🚨 [CaixaContext] Editando lançamento no localStorage:", id, dadosAtualizados);
+      console.log("✏️ [CaixaContext] Editando lançamento:", id);
 
       const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
       const lancamentosAtualizados = lancamentosExistentes.map((lancamento: any) => {
@@ -233,11 +290,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       });
 
       localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
-      
-      // Recarregar do localStorage
       carregarLancamentosLocalStorage();
-      
-      console.log("🚨 [CaixaContext] Lançamento editado com sucesso no localStorage:", id);
+      console.log("✅ [CaixaContext] Lançamento editado com sucesso:", id);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
       setError("Erro ao editar lançamento");
@@ -246,15 +300,12 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   const excluirLancamento = async (id: string) => {
-    if (isExcluindo) {
-      console.log("🚨 [CaixaContext] Exclusão já em andamento, ignorando...");
-      return Promise.resolve();
-    }
+    if (isExcluindo) return Promise.resolve();
 
     try {
       setIsExcluindo(true);
       setError(null);
-      console.log("🚨 [CaixaContext] Excluindo lançamento do localStorage:", id);
+      console.log("🗑️ [CaixaContext] Excluindo lançamento:", id);
 
       // Remover do localStorage
       const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
@@ -264,7 +315,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Atualizar estado
       setLancamentos((prev) => prev.filter((l) => l.id?.toString() !== id?.toString()));
       
-      console.log("🚨 [CaixaContext] Lançamento excluído com sucesso do localStorage");
+      console.log("✅ [CaixaContext] Lançamento excluído com sucesso");
       return Promise.resolve();
     } catch (error: any) {
       console.error("❌ Erro ao excluir:", error);
@@ -275,33 +326,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 🚨 ADICIONAR CAMPANHA - APENAS LOCALSTORAGE
+  // Adicionar campanha
   const adicionarCampanha = async (novaCampanha: Omit<Campanha, "id">) => {
     try {
       setError(null);
-      console.log("🚨 [CaixaContext] Adicionando campanha APENAS no localStorage:", novaCampanha);
+      console.log("➕ [CaixaContext] Adicionando campanha:", novaCampanha);
 
-      // Gerar ID único
-      const novoId = `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      
-      const campanha: Campanha = {
-        ...novaCampanha,
-        id: novoId,
-      };
+      const novoId = `campanha-${Date.now()}`;
+      const campanha: Campanha = { ...novaCampanha, id: novoId };
 
       // Carregar campanhas existentes
       const campanhasExistentes = JSON.parse(localStorage.getItem("campanhas") || "[]");
-      
-      // Adicionar nova campanha
       const novasCampanhas = [...campanhasExistentes, campanha];
       
       // Salvar no localStorage
       localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
-      
-      // Atualizar estado
       setCampanhas(novasCampanhas);
 
-      console.log("🚨 [CaixaContext] Campanha adicionada com sucesso no localStorage:", novoId);
+      console.log("✅ [CaixaContext] Campanha adicionada com sucesso:", novoId);
     } catch (error) {
       console.error("Erro ao adicionar campanha:", error);
       throw error;
