@@ -831,7 +831,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     required
                   />
                   <p className="text-xs text-yellow-700">
-                    ⚠️{" "}
+                    ⚠��{" "}
                     <strong>
                       Digite o valor que realmente entrou na conta após as taxas
                       da operadora do cartão
@@ -1014,40 +1014,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <UserPlus className="h-4 w-4" />
               </Button>
 
-              <ModalClienteSimples
-                isOpen={isModalClienteOpen}
-                onClose={() => setIsModalClienteOpen(false)}
-                onClienteAdicionado={(cliente) => {
-                  // Selecionar o cliente recém-criado
-                  setFormData((prev) => ({ ...prev, cliente: cliente.id }));
-
-                  // Marcar que cliente foi recém-adicionado
-                  setClienteRecemAdicionado(true);
-
-                  // Feedback positivo ao usuário
-                  toast({
-                    title: "Cliente Adicionado com Sucesso! ✅",
-                    description: `Cliente "${cliente.nome}" foi cadastrado e selecionado. Você pode continuar editando o lançamento.`,
-                    variant: "default",
-                    duration: 4000,
-                  });
-
-                  // Focar no campo de observações após um breve delay para permitir edições
-                  setTimeout(() => {
-                    const observacoesField =
-                      document.getElementById("observacoes");
-                    if (observacoesField) {
-                      observacoesField.focus();
-                      observacoesField.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center",
-                      });
-                    }
-                    // Reset flag após o foco
-                    setClienteRecemAdicionado(false);
-                  }, 500);
-                }}
-              />
             </div>
             {isBoleto && !formData.cliente && (
               <p className="text-xs text-red-500">
