@@ -135,8 +135,21 @@ export function ListaLancamentosSimples() {
           </Badge>
         );
 
-      case "categoria":
-        return lancamento.categoria || "N/A";
+      case "categoria": {
+        // Se já tem categoria como string válida, usar ela
+        if (typeof lancamento.categoria === "string" && lancamento.categoria.trim() !== "") {
+          return lancamento.categoria;
+        }
+        // Se tem descricaoECategoria, usar a categoria de lá
+        if (lancamento.descricaoECategoria?.categoria) {
+          return lancamento.descricaoECategoria.categoria;
+        }
+        // Fallback para categoria do objeto descrição
+        if (typeof lancamento.descricao === "object" && lancamento.descricao?.categoria) {
+          return lancamento.descricao.categoria;
+        }
+        return "N/A";
+      }
 
       case "descricao":
         // Suporta tanto string quanto objeto com nome, evitando números aleatórios
@@ -555,8 +568,14 @@ export function ListaLancamentosSimples() {
                             </span>
                           </div>
                           <p className="font-medium text-sm">
-                            {lancamento.descricao?.nome || "N/A"}
+                            {lancamento.descricao?.nome || lancamento.descricao || "N/A"}
                           </p>
+                          {/* Mostrar comissão se existir */}
+                          {lancamento.comissao != null && (
+                            <p className="text-xs text-muted-foreground">
+                              Comissão: {formatarMoeda(lancamento.comissao)}
+                            </p>
+                          )}
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
