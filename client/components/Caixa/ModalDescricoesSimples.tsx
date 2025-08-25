@@ -577,24 +577,58 @@ export default function ModalDescricoesSimples() {
                       )}
                     </div>
                     <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleShowDependencies(categoria)}
-                        className="text-blue-600 hover:text-blue-700"
-                        title="Ver descrições vinculadas"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleConfirmDelete(categoria)}
-                        className="text-red-600 hover:text-red-700"
-                        title="Excluir categoria"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {itemEditando?.id === categoria.id ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleSalvarEdicao}
+                            className="text-green-600 hover:text-green-700"
+                            title="Salvar alterações"
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleCancelarEdicao}
+                            className="text-gray-600 hover:text-gray-700"
+                            title="Cancelar edição"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleShowDependencies(categoria)}
+                            className="text-blue-600 hover:text-blue-700"
+                            title="Ver descrições vinculadas"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleIniciarEdicao(categoria)}
+                            className="text-orange-600 hover:text-orange-700"
+                            title="Editar nome da categoria"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleConfirmDelete(categoria)}
+                            className="text-red-600 hover:text-red-700"
+                            title="Excluir categoria"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
