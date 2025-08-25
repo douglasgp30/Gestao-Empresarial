@@ -370,21 +370,33 @@ export function ListaLancamentosSimples() {
   };
 
   const handleExcluir = async () => {
-    if (!lancamentoParaExcluir) return;
+    if (!lancamentoParaExcluir || excluindo) return;
 
     setExcluindo(true);
+
     try {
+      console.log("🗑️ Iniciando exclusão do lançamento:", lancamentoParaExcluir);
+
       await excluirLancamento(lancamentoParaExcluir);
+
+      console.log("✅ Lançamento excluído com sucesso");
+
       toast({
         title: "Sucesso",
         description: "Lançamento excluído com sucesso!",
       });
+
       setLancamentoParaExcluir(null);
     } catch (error) {
-      console.error("Erro ao excluir lançamento:", error);
+      console.error("❌ Erro ao excluir lançamento:", error);
+
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+
       toast({
-        title: "Erro",
-        description: "Erro ao excluir lançamento. Tente novamente.",
+        title: "Erro ao excluir",
+        description: errorMessage.includes('Timeout')
+          ? "A operação demorou muito. Verifique sua conexão e tente novamente."
+          : "Erro ao excluir lançamento. Tente novamente.",
         variant: "destructive",
       });
     } finally {
