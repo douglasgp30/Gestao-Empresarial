@@ -72,13 +72,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isExcluindo, setIsExcluindo] = useState(false);
   const [filtros, setFiltros] = useState(() => {
+    // MUDANÇA: Filtrar por período mais amplo (último mês) para garantir que receitas recém-criadas apareçam
     const agora = new Date();
-    const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0, 0);
-    const fimHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
+    const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1, 0, 0, 0, 0);
+    const fimMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 0, 23, 59, 59, 999);
 
     return {
-      dataInicio: inicioHoje,
-      dataFim: fimHoje,
+      dataInicio: inicioMes,
+      dataFim: fimMes,
       tipo: "todos" as "receita" | "despesa" | "todos",
       formaPagamento: "todas",
       tecnico: "todos",
@@ -323,7 +324,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Gerar ID único
       const novoId = Date.now().toString();
-      
+
       // Criar lançamento completo
       const lancamentoCompleto: LancamentoCaixa = {
         ...novoLancamento,
@@ -336,19 +337,27 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // Carregar lançamentos existentes
       const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
-      
+
       // Adicionar novo lançamento
       const novosLancamentos = [...lancamentosExistentes, lancamentoCompleto];
-      
+
       // Salvar no localStorage
       localStorage.setItem("lancamentos_caixa", JSON.stringify(novosLancamentos));
-      
-      // Atualizar estado
-      setLancamentos((prev) => [...prev, lancamentoCompleto]);
+
+      // Atualizar estado IMEDIATAMENTE
+      setLancamentos((prev) => {
+        const novoArray = [...prev, lancamentoCompleto];
+        console.log("🔄 [CaixaContext] Estado atualizado - total de lançamentos:", novoArray.length);
+        return novoArray;
+      });
 
       console.log("✅ [CaixaContext] Lançamento adicionado com sucesso:", novoId);
+      console.log("📊 [CaixaContext] Dados salvos no localStorage - Tamanho:", novosLancamentos.length);
+
+      // NOVO: Retornar o lançamento criado para confirmação
+      return lancamentoCompleto;
     } catch (error) {
-      console.error("Erro ao adicionar lançamento:", error);
+      console.error("❌ [CaixaContext] Erro ao adicionar lançamento:", error);
       throw error;
     }
   };
