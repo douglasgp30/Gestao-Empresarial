@@ -78,13 +78,12 @@ const defaultColumns: ColumnConfig[] = [
 ];
 
 export function ListaLancamentosSimples() {
-  const { lancamentos, excluirLancamento, isLoading, error } = useCaixa();
+  const { lancamentos, excluirLancamento, isLoading, error, isExcluindo } = useCaixa();
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
     string | null
   >(null);
   const [lancamentoParaEditar, setLancamentoParaEditar] =
     useState<LancamentoCaixa | null>(null);
-  const [excluindo, setExcluindo] = useState(false);
 
   // Hook para gerenciar colunas
   const {
@@ -448,7 +447,7 @@ export function ListaLancamentosSimples() {
       <CardContent>
         {lancamentos.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            Nenhum lançamento encontrado para o período selecionado.
+            Nenhum lançamento encontrado para o per��odo selecionado.
           </div>
         ) : (
           <>
@@ -615,7 +614,7 @@ export function ListaLancamentosSimples() {
         open={!!lancamentoParaExcluir}
         onOpenChange={(open) => {
           // Só permitir fechar se não estiver excluindo
-          if (!open && !excluindo) {
+          if (!open && !isExcluindo) {
             setLancamentoParaExcluir(null);
           }
         }}
