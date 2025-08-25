@@ -28,6 +28,7 @@ import {
   TableRow,
 } from "../components/ui/table";
 import ModalCadastroCliente from "../components/Clientes/ModalCadastroCliente";
+import ModalClienteSimples from "../components/Clientes/ModalClienteSimples";
 import {
   Users,
   Search,
