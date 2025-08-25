@@ -223,17 +223,27 @@ export function ListaLancamentosSimples() {
       case "imposto":
         return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
 
-      case "formaPagamento":
-        // Debug removido para melhorar performance
+      case "formaPagamento": {
+        const fp = lancamento.formaPagamento;
+        // Se já é objeto com nome
+        if (typeof fp === "object" && fp?.nome) return fp.nome;
+        // Se for string, tentar encontrar na lista global de formas
+        if (typeof fp === "string") {
+          // procura por id ou por nome exato
+          const found = (formasPagamento || []).find(
+            (f) =>
+              f.id?.toString() === fp.toString() ||
+              (f.nome && f.nome.toString() === fp.toString())
+          );
+          if (found) return found.nome;
+          // se for número não reconhecido, mostrar "N/A"
+          if (/^\d+$/.test(fp.trim())) return "N/A";
+          return fp; // string legível
+        }
+        return "N/A";
+      }
 
-        // Suporta tanto string quanto objeto com nome
-        const formaPagamento =
-          typeof lancamento.formaPagamento === "string"
-            ? lancamento.formaPagamento
-            : lancamento.formaPagamento?.nome;
-        return formaPagamento || "N/A";
-
-      case "tecnico":
+      case "tecnico": {
         // Priorizar funcionario do banco de dados
         if (lancamento.funcionario?.nome) {
           return lancamento.funcionario.nome;
@@ -245,16 +255,23 @@ export function ListaLancamentosSimples() {
         ) {
           return lancamento.tecnicoResponsavel.nome;
         }
-        if (
-          typeof lancamento.tecnicoResponsavel === "string" &&
-          lancamento.tecnicoResponsavel !== "" &&
-          !/^\d+$/.test(lancamento.tecnicoResponsavel.trim()) // Evitar IDs numéricos
-        ) {
-          return lancamento.tecnicoResponsavel;
+        // se for string ou id, tentar mapear usando contexto
+        const tr = lancamento.tecnicoResponsavel;
+        if (typeof tr === "string" && tr.trim() !== "") {
+          const encontrado = tecnicosLista.find(t =>
+            t.id?.toString() === tr.toString() ||
+            t.nome?.toString() === tr.toString() ||
+            t.nomeCompleto?.toString() === tr.toString()
+          );
+          if (encontrado) return (encontrado.nome || encontrado.nomeCompleto || tr);
+          // evitar exibir id numérico - mostrar N/A
+          if (/^\d+$/.test(tr.trim())) return "N/A";
+          return tr;
         }
         return "-";
+      }
 
-      case "setor":
+      case "setor": {
         // Priorizar localizacao do banco de dados
         if (lancamento.localizacao?.nome) {
           return lancamento.localizacao.nome;
@@ -263,11 +280,22 @@ export function ListaLancamentosSimples() {
         if (!lancamento.setor) return "-";
 
         if (typeof lancamento.setor === "string") {
-          // Evitar exibir IDs numéricos como setor
-          if (!/^\d+$/.test(lancamento.setor.trim())) {
-            return lancamento.setor;
+          // tentar mapear usando setores do contexto
+          const encontrado = (setores || []).find(s =>
+            s.id?.toString() === lancamento.setor.toString() ||
+            s.nome?.toString() === lancamento.setor.toString()
+          );
+          if (encontrado) {
+            const cidadeNome = typeof encontrado.cidade === "object"
+              ? encontrado.cidade?.nome
+              : encontrado.cidade;
+            return cidadeNome ? `${encontrado.nome} - ${cidadeNome}` : encontrado.nome;
+          }
+          // evitar exibir id numérico
+          if (/^\d+$/.test(lancamento.setor.trim())) {
+            return "N/A";
           } else {
-            return "-";
+            return lancamento.setor;
           }
         }
 
@@ -279,15 +307,20 @@ export function ListaLancamentosSimples() {
             : lancamento.setor.cidade;
 
         return cidadeSetor ? `${nomeSetor} - ${cidadeSetor}` : nomeSetor;
+      }
 
-      case "campanha":
+      case "campanha": {
         // Suporta tanto string quanto objeto com nome
         let campanha = "-";
-        if (typeof lancamento.campanha === "string") {
-          // Evitar exibir IDs numéricos como campanha
-          if (!/^\d+$/.test(lancamento.campanha.trim())) {
-            campanha = lancamento.campanha;
-          }
+        if (typeof lancamento.campanha === "string" && lancamento.campanha.trim() !== "") {
+          // procurar em campanhas do contexto
+          const found = (campanhas || []).find(c =>
+            c.id?.toString() === lancamento.campanha.toString() ||
+            c.nome?.toString() === lancamento.campanha.toString()
+          );
+          if (found) campanha = found.nome;
+          else if (!/^\d+$/.test(lancamento.campanha.trim())) campanha = lancamento.campanha;
+          else campanha = "N/A";
         } else if (
           typeof lancamento.campanha === "object" &&
           lancamento.campanha?.nome
@@ -295,6 +328,7 @@ export function ListaLancamentosSimples() {
           campanha = lancamento.campanha.nome;
         }
         return campanha;
+      }
 
       case "observacoes":
         return lancamento.observacoes ? (
