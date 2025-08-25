@@ -676,8 +676,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // Carregamento inicial simples e único
+  // TEMPORÁRIO: Carregamento desabilitado para debugar piscar na tela
   useEffect(() => {
+    console.log("📦 [CaixaContext] CARREGAMENTO DESABILITADO - Debug piscar na tela");
+
+    // Apenas carregar campanhas do localStorage e dados básicos
+    try {
+      const campanhasLocal = JSON.parse(localStorage.getItem("campanhas") || "[]");
+      setCampanhas(campanhasLocal);
+
+      const lancamentosLocal = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+      setLancamentos(lancamentosLocal.map((l: any) => ({
+        ...l,
+        data: new Date(l.data),
+        dataHora: new Date(l.dataHora),
+        dataCriacao: new Date(l.dataCriacao),
+      })));
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Erro ao carregar dados localmente:", error);
+      setIsLoading(false);
+    }
+    return;
+
     if (typeof window === "undefined") return;
 
     let mounted = true;
