@@ -235,6 +235,17 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const recarregarClientes = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await carregarClientesAPI();
+    } catch (error) {
+      console.error("[ClientesContext] Erro ao recarregar clientes:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [carregarClientesAPI]);
+
   const buscarCliente = (id: string): Cliente | undefined => {
     return clientes.find((cliente) => cliente.id === id);
   };
@@ -251,35 +262,19 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       if (cliente.cpf && cliente.cpf.includes(termo)) return true;
 
       // Pesquisar por telefone
-      if (cliente.telefone1.includes(termo)) return true;
-      if (cliente.telefone2 && cliente.telefone2.includes(termo)) return true;
+      if (cliente.telefonePrincipal.includes(termo)) return true;
+      if (cliente.telefoneSecundario && cliente.telefoneSecundario.includes(termo)) return true;
 
       // Pesquisar por email
       if (cliente.email && cliente.email.toLowerCase().includes(termoLower))
         return true;
 
       // Pesquisar por endereço
-      if (cliente.endereco) {
-        const endereco = cliente.endereco;
-        if (endereco.rua && endereco.rua.toLowerCase().includes(termoLower))
-          return true;
-        if (
-          endereco.complemento &&
-          endereco.complemento.toLowerCase().includes(termoLower)
-        )
-          return true;
-        if (
-          endereco.bairro &&
-          endereco.bairro.toLowerCase().includes(termoLower)
-        )
-          return true;
-        if (
-          endereco.cidade &&
-          endereco.cidade.toLowerCase().includes(termoLower)
-        )
-          return true;
-        if (endereco.cep && endereco.cep.includes(termo)) return true;
-      }
+      if (cliente.complemento && cliente.complemento.toLowerCase().includes(termoLower))
+        return true;
+      if (cliente.logradouro && cliente.logradouro.toLowerCase().includes(termoLower))
+        return true;
+      if (cliente.cep && cliente.cep.includes(termo)) return true;
 
       return false;
     });
@@ -292,6 +287,7 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     excluirCliente,
     buscarCliente,
     filtrarClientes,
+    recarregarClientes,
     isLoading,
   };
 
