@@ -263,7 +263,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       qtdContasReceberAtrasadas,
       contasVencendoHoje,
       contasAtrasadas,
-      _lastUpdate: Date.now(), // Força re-render
     };
 
     setStats(newStats);
