@@ -579,6 +579,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     error,
   }), [
     lancamentos,
+    lancamentosFiltrados,
     campanhas,
     filtros,
     totais,
