@@ -157,7 +157,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const campanhasServidor = await response.json();
         console.log(
-          "���� [CaixaContext] Campanhas carregadas do servidor:",
+          "����� [CaixaContext] Campanhas carregadas do servidor:",
           campanhasServidor.length,
         );
         setCampanhas(campanhasServidor || []);
@@ -1129,20 +1129,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setIsExcluindo(true);
       setError(null);
-      excludingRef.current = true; // Evitar recarregamentos durante exclusão
 
-      console.log("[CaixaContext] Excluindo lançamento via API:", {
-        id,
-        tipo: typeof id,
-        totalLancamentos: lancamentos.length,
-      });
+      console.log("[CaixaContext] Excluindo lançamento:", id);
 
       // Timeout para evitar requests que ficam pendentes
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 segundos
 
       try {
-        // Fazer a chamada para a API para excluir do banco de dados
+        // Fazer a chamada para a API
         const response = await fetch(`/api/caixa/${id}`, {
           method: "DELETE",
           headers: {
@@ -1159,50 +1154,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             const errorData = await response.json();
             errorMessage = errorData.message || errorData.error || errorMessage;
           } catch {
-            try {
-              const errorText = await response.text();
-              errorMessage = errorText || errorMessage;
-            } catch {
-              // Se não conseguir ler nada, usar mensagem padrão
-            }
+            // Ignorar erros de parse
           }
-          throw new Error(`Erro na API: ${errorMessage}`);
+          throw new Error(errorMessage);
         }
 
-        console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
+        console.log("✅ Lançamento excluído com sucesso da API");
 
-        // Remover da lista local imediatamente após sucesso na API
-        setLancamentos((prev) => {
-          const lancamentosAtualizados = prev.filter((l) => l.id?.toString() !== id?.toString());
-          console.log("[CaixaContext] Estado atualizado após exclusão:", {
-            idExcluido: id,
-            lancamentosAntes: prev.length,
-            lancamentosDepois: lancamentosAtualizados.length,
-            removido: prev.length - lancamentosAtualizados.length === 1,
-          });
-          return lancamentosAtualizados;
-        });
+        // APENAS remover da lista local - SEM recarregamentos
+        setLancamentos((prev) => prev.filter((l) => l.id?.toString() !== id?.toString()));
 
-        console.log("[CaixaContext] Exclusão concluída com sucesso");
+        console.log("✅ Exclusão concluída");
       } catch (fetchError) {
         clearTimeout(timeoutId);
         if (fetchError.name === 'AbortError') {
-          throw new Error('Timeout: A operação demorou muito para responder');
+          throw new Error('Timeout: Operação demorou muito');
         }
         throw fetchError;
       }
     } catch (error) {
-      console.error("❌ Erro ao excluir lançamento:", error);
+      console.error("❌ Erro ao excluir:", error);
       setError("Erro ao excluir lançamento");
       throw error;
     } finally {
       setIsExcluindo(false);
-      excludingRef.current = false; // Permitir recarregamentos novamente
-
-      // Pequeno delay antes de permitir novos recarregamentos para evitar conflitos
-      setTimeout(() => {
-        excludingRef.current = false;
-      }, 1000);
     }
   };
 
