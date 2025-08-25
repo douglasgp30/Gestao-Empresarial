@@ -89,10 +89,10 @@ export function ListaLancamentosSimples() {
   // Hook para gerenciar colunas
   const {
     columns,
+    visibleColumns,
     toggleColumnVisibility,
     reorderColumns,
     resetColumns,
-    getVisibleColumns,
     getColumnByKey,
   } = useTableColumns("lancamentos-caixa", defaultColumns);
 
