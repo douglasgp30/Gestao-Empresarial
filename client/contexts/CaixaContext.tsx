@@ -694,8 +694,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (!mounted) return;
 
       try {
+        setJaCarregou(true); // Marcar como carregado ANTES de começar
         setIsLoading(true);
-        console.log("📦 [CaixaContext] Carregamento inicial único");
+        console.log("📦 [CaixaContext] 🔄 Iniciando carregamento único");
 
         // Carregar apenas campanhas (lançamentos serão carregados sob demanda)
         await carregarCampanhasSafe();
@@ -709,6 +710,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             await carregarLancamentosLocalStorage();
           }
         }
+
+        console.log("📦 [CaixaContext] ✅ Carregamento concluído");
       } catch (error) {
         console.error("Erro no carregamento inicial:", error);
         setError("Erro ao carregar dados");
