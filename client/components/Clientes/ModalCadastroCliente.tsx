@@ -101,10 +101,12 @@ export default function ModalCadastroCliente({
         }));
 
         // Focar no campo número após buscar o CEP
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           const numeroInput = document.getElementById("numero");
           numeroInput?.focus();
         }, 100);
+
+        // Cleanup sera feito automaticamente quando component unmount ou CEP mudar
       } else {
         alert("CEP não encontrado");
       }

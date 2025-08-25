@@ -359,7 +359,7 @@
 
 /* Garantir z-index adequado para popovers */
 [data-radix-popover-content] {
-  z-index: 50 !important;
+  z-index: 50;
 }
 
 .rdp-nav_button {
