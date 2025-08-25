@@ -467,7 +467,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       descricoesECategorias,
       adicionarDescricaoECategoria: criarDescricaoOuCategoria,
       editarDescricaoECategoria: atualizarDescricaoOuCategoria,
-      excluirDescricaoECategoria,
+      excluirDescricaoECategoria: excluirDescricaoOuCategoria,
       getCategorias,
       getDescricoes,
       localizacoesGeograficas,
