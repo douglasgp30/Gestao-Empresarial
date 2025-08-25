@@ -67,8 +67,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos com memoização para evitar re-renderizações
-  const tecnicos = useMemo(() => getTecnicos(), [getTecnicos]);
+  // Carregar técnicos com memoização estabilizada
+  const tecnicos = useMemo(() => {
+    return getTecnicos();
+  }, [formasPagamento, setores]); // Dependências mais estáveis
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
