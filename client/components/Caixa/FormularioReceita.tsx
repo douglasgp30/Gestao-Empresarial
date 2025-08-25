@@ -215,7 +215,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return valorCalculado;
   }, [isCartao, valorQueEntrouCalculado, valorCalculado]);
 
-  // 3. Calcular desconto da nota fiscal (6% do valor total do serviço) - memoizado
+  // 3. Calcular desconto da nota fiscal (6% do valor total do servi��o) - memoizado
   const { percentualNotaFiscal, descontoNotaFiscal } = useMemo(() => {
     const percentual = formData.temNotaFiscal ? 6 : 0;
     const desconto = (valorCalculado * percentual) / 100;
@@ -1026,15 +1026,43 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     duration: 4000,
                   });
 
-                  // Forçar recarregamento da lista de clientes
-                  setTimeout(async () => {
+                  // Forçar recarregamento da lista de clientes com verificação
+                  let tentativas = 0;
+                  const maxTentativas = 5;
+
+                  const verificarClienteNaLista = async () => {
+                    tentativas++;
+
                     try {
                       await recarregarClientes();
-                      console.log("[FormularioReceita] Lista de clientes recarregada após criação");
+                      console.log(`[FormularioReceita] Tentativa ${tentativas}: Lista de clientes recarregada`);
+
+                      // Verificar se o cliente apareceu na lista
+                      const clienteEncontrado = clientes.find(c => c.id === cliente.id);
+
+                      if (clienteEncontrado) {
+                        console.log("[FormularioReceita] ✅ Cliente encontrado na lista!");
+                        return;
+                      }
+
+                      if (tentativas < maxTentativas) {
+                        console.log(`[FormularioReceita] ⏳ Cliente ainda não apareceu, tentativa ${tentativas}/${maxTentativas}`);
+                        setTimeout(verificarClienteNaLista, 1000);
+                      } else {
+                        console.warn("[FormularioReceita] ⚠️ Cliente não apareceu na lista após várias tentativas");
+                        toast({
+                          title: "Atenção",
+                          description: "Cliente foi criado, mas pode demorar alguns segundos para aparecer na lista.",
+                          variant: "default",
+                          duration: 3000,
+                        });
+                      }
                     } catch (error) {
                       console.error("[FormularioReceita] Erro ao recarregar clientes:", error);
                     }
-                  }, 300);
+                  };
+
+                  setTimeout(verificarClienteNaLista, 300);
 
                   // Focar no campo de observações após um breve delay para permitir edições
                   setTimeout(() => {
