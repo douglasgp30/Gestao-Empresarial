@@ -142,7 +142,7 @@ export default function ModalCadastroCliente({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validarFormulario()) return;
@@ -160,7 +160,9 @@ export default function ModalCadastroCliente({
     };
 
     try {
-      const novoCliente = adicionarCliente(clienteData);
+      console.log("[ModalCadastroCliente] Adicionando cliente:", clienteData);
+      const novoCliente = await adicionarCliente(clienteData);
+      console.log("[ModalCadastroCliente] Cliente adicionado:", novoCliente);
 
       // Reset form
       setFormData({
@@ -188,8 +190,8 @@ export default function ModalCadastroCliente({
 
       alert("Cliente cadastrado com sucesso!");
     } catch (error) {
-      console.error("Erro ao cadastrar cliente:", error);
-      alert("Erro ao cadastrar cliente");
+      console.error("[ModalCadastroCliente] Erro ao cadastrar cliente:", error);
+      alert(`Erro ao cadastrar cliente: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
   };
 
