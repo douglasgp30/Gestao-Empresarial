@@ -386,38 +386,44 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   const excluirLancamento = useCallback(async (id: string) => {
+    // ✅ CORREÇÃO: Verificação mais robusta para evitar exclusões múltiplas
     if (isExcluindo) {
-      throw new Error("Operação de exclusão já em andamento");
+      console.warn("🚫 [CaixaContext] Tentativa de exclusão ignorada - operação já em andamento");
+      return;
+    }
+
+    if (!id || id.toString().trim() === "") {
+      throw new Error("ID do lançamento é obrigatório");
     }
 
     try {
       setIsExcluindo(true);
       setError(null);
-      console.log("🗑️ [CaixaContext] Excluindo lançamento:", id);
+      console.log("🗑️ [CaixaContext] Iniciando exclusão do lançamento:", id);
 
-      // Atualizar estado em memória e persistir baseado no estado atual (evita JSON.parse pesado)
-      setLancamentos((prev) => {
-        const lancamentosAtualizados = prev.filter((l) => l.id?.toString() !== id?.toString());
+      // ✅ CORREÇÃO: Abordagem mais segura - primeiro carregar, depois filtrar e salvar
+      const lancamentosAtuais = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+      const lancamentosAtualizados = lancamentosAtuais.filter((l: any) => l.id?.toString() !== id?.toString());
 
-        // Persistir de forma assíncrona sem bloquear UI
-        setTimeout(() => {
-          try {
-            localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
-          } catch (e) {
-            console.error("Erro ao persistir lançamentos:", e);
-          }
-        }, 0);
+      console.log(`📊 [CaixaContext] Lançamentos antes: ${lancamentosAtuais.length}, depois: ${lancamentosAtualizados.length}`);
 
-        return lancamentosAtualizados;
-      });
+      // Salvar no localStorage de forma síncrona para garantir consistência
+      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
+
+      // Atualizar estado React de forma síncrona
+      setLancamentos(lancamentosAtualizados);
 
       console.log("✅ [CaixaContext] Lançamento excluído com sucesso");
     } catch (error: any) {
-      console.error("❌ Erro ao excluir:", error);
-      setError("Erro ao excluir lançamento");
+      console.error("❌ [CaixaContext] Erro ao excluir lançamento:", error);
+      setError(`Erro ao excluir lançamento: ${error.message}`);
       throw error;
     } finally {
-      setIsExcluindo(false);
+      // ✅ CORREÇÃO: Sempre garantir que isExcluindo seja resetado
+      setTimeout(() => {
+        setIsExcluindo(false);
+        console.log("🔓 [CaixaContext] Flag isExcluindo resetada");
+      }, 100);
     }
   }, [isExcluindo]);
 
