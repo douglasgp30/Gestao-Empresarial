@@ -196,8 +196,21 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Carregar funcionários priorizando API sobre localStorage
+  // TEMPORÁRIO: Carregamento desabilitado para debugar piscar na tela
   useEffect(() => {
+    console.log("[FuncionariosContext] CARREGAMENTO DESABILITADO - Debug piscar na tela");
+
+    // Carregar apenas do localStorage sem API para evitar loops
+    try {
+      const funcionariosLocal = carregarFuncionariosReais();
+      setFuncionarios(funcionariosLocal);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Erro ao carregar funcionários localmente:", error);
+      setIsLoading(false);
+    }
+    return;
+
     const inicializarFuncionarios = async () => {
       try {
         // Iniciando carregamento de funcionários
@@ -452,7 +465,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     // Não permitir excluir o próprio usuário logado
     const funcionarioParaExcluir = funcionarios.find((f) => f.id === id);
     if (funcionarioParaExcluir?.nomeCompleto === user?.nome) {
-      alert("Não é possível excluir seu próprio usuário.");
+      alert("Não �� possível excluir seu próprio usuário.");
       return;
     }
 
