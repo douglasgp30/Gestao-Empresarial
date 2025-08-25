@@ -911,30 +911,13 @@ export function ModalReceita() {
                     </SelectContent>
                   </Select>
 
-                  {/* Botão de teste direto */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      console.log("[ModalReceita] Botão de teste clicado diretamente");
-                      alert("Botão funciona!");
-                    }}
-                    className="bg-red-100"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                  </Button>
-
                   <ModalCadastroCliente
                     trigger={
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
-                        onClick={(e) => {
-                          console.log("[ModalReceita] Botão de adicionar cliente clicado");
-                          e.stopPropagation();
-                        }}
+                        title="Adicionar Cliente"
                       >
                         <UserPlus className="h-4 w-4" />
                       </Button>
