@@ -49,21 +49,11 @@ export function ModalReceita() {
     getDescricoes,
     adicionarDescricaoECategoria,
   } = useEntidades();
-  const clientesContext = useClientes();
   const {
     clientes,
     adicionarCliente,
     isLoading: clientesLoading,
-  } = clientesContext;
-
-  // Debug do contexto de clientes
-  React.useEffect(() => {
-    console.log("[ModalReceita] Contexto de clientes:", {
-      clientes: clientes?.length || 0,
-      isLoading: clientesLoading,
-      hasAdicionarCliente: !!adicionarCliente
-    });
-  }, [clientes, clientesLoading, adicionarCliente]);
+  } = useClientes();
 
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
@@ -992,7 +982,7 @@ export function ModalReceita() {
 
                   <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
                     <h4 className="text-sm font-semibold text-blue-800 mb-2">
-                      🔄 Integração Automática Caixa + Contas a Receber
+                      �� Integração Automática Caixa + Contas a Receber
                     </h4>
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
