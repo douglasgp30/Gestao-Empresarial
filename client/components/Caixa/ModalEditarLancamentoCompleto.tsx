@@ -109,7 +109,7 @@ export function ModalEditarLancamentoCompleto({
         tecnicoResponsavel: lancamento.funcionario?.id?.toString() || "none",
         setor: lancamento.setor?.id?.toString() || "",
         campanha: lancamento.campanha?.id?.toString() || "",
-        cliente: lancamento.cliente?.id || "none",
+        cliente: lancamento.cliente?.id || "",
         observacoes: lancamento.observacoes || "",
         numeroNota: lancamento.numeroNota || "",
         temNotaFiscal: !!lancamento.numeroNota,
