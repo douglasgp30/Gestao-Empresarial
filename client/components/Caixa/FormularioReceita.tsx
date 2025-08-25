@@ -873,7 +873,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <SelectContent>
                   {tecnicos.length === 0 ? (
                     <div className="px-2 py-1 text-sm text-gray-500">
-                      Nenhum técnico cadastrado
+                      Nenhum t��cnico cadastrado
                     </div>
                   ) : (
                     tecnicos
@@ -1007,12 +1007,25 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   </Button>
                 }
                 onClienteAdicionado={(cliente) => {
+                  // Selecionar o cliente recém-criado
                   setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+
+                  // Feedback positivo ao usuário
                   toast({
-                    title: "Cliente Adicionado",
-                    description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+                    title: "Cliente Adicionado com Sucesso! ✅",
+                    description: `Cliente "${cliente.nome}" foi cadastrado e selecionado. Você pode continuar editando o lançamento.`,
                     variant: "default",
+                    duration: 4000,
                   });
+
+                  // Focar no campo de observações após um breve delay para permitir edições
+                  setTimeout(() => {
+                    const observacoesField = document.getElementById("observacoes");
+                    if (observacoesField) {
+                      observacoesField.focus();
+                      observacoesField.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                  }, 500);
                 }}
               />
             </div>
