@@ -212,12 +212,15 @@ export default function ModalCadastroCliente({
     }
   };
 
+  console.log("[ModalCadastroCliente] Renderizando modal, open:", open);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
         className="max-w-2xl max-h-[90vh] overflow-y-auto"
-        zIndex="z-60"
+        style={{ zIndex: 9999 }}
+        zIndex="z-[9999]"
       >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
