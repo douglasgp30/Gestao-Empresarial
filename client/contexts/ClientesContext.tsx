@@ -228,7 +228,7 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     filtrarClientes,
     recarregarClientes,
     isLoading,
-  }), [clientes, buscarCliente, filtrarClientes, recarregarClientes, isLoading]);
+  }), [clientes, isLoading]);
 
   return (
     <ClientesContext.Provider value={value}>
