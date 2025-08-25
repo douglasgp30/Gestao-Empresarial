@@ -151,13 +151,12 @@ export default function ModalCadastroCliente({
     const clienteData = {
       nome: formData.nome,
       cpf: formData.cpf || undefined,
-      telefone1: formData.telefone1,
-      telefone2: formData.telefone2 || undefined,
+      telefonePrincipal: formData.telefonePrincipal,
+      telefoneSecundario: formData.telefoneSecundario || undefined,
       email: formData.email || undefined,
-      endereco:
-        formData.endereco.rua || formData.endereco.cidade
-          ? formData.endereco
-          : undefined,
+      cep: formData.cep || undefined,
+      logradouro: formData.logradouro || undefined,
+      complemento: formData.complemento || undefined,
     };
 
     try {
