@@ -278,23 +278,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     const resultado = tecnicosCombinados.filter((t) => t.id && t.id !== 0);
 
-    // Log de debug para facilitar diagnóstico
-    if (funcionarios && funcionarios.length > 0) {
-      console.log(
-        `[EntidadesContext] getTecnicos: ${funcionarios.length} funcionários, ${funcionariosTecnicos.length} técnicos filtrados, ${resultado.length} resultado final`,
-      );
-      if (resultado.length === 0 && funcionarios.length > 0) {
-        console.warn(
-          "[EntidadesContext] AVISO: Nenhum técnico encontrado, verificar tipoAcesso dos funcionários:",
-          funcionarios.map((f) => ({
-            id: f.id,
-            nome: f.nome || f.nomeCompleto,
-            tipoAcesso: f.tipoAcesso,
-            ehTecnico: f.ehTecnico,
-          })),
-        );
-      }
-    }
+    // Debug removido para evitar logs constantes
 
     return resultado;
   }, [funcionarios, tecnicos]);
@@ -302,9 +286,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === SINCRONIZAÇÃO COM FUNCIONARIOS CONTEXT ===
   useEffect(() => {
     if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
-      console.log(
-        `[EntidadesContext] Sincronizando ${funcionariosDoContexto.length} funcionários do FuncionariosContext`,
-      );
+      // Sincronização sem logs para evitar ruído
       setFuncionarios(funcionariosDoContexto);
 
       // Filtrar técnicos dos funcionários sincronizados
@@ -629,20 +611,28 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       // Tentar buscar dados atualizados da API primeiro
       try {
-        const response = await fetch('/api/descricoes-e-categorias');
+        const response = await fetch("/api/descricoes-e-categorias");
         if (response.ok) {
           const data = await response.json();
           if (data.data && Array.isArray(data.data)) {
-            console.log(`🌐 [EntidadesContext] Dados da API: ${data.data.length} itens`);
+            console.log(
+              `🌐 [EntidadesContext] Dados da API: ${data.data.length} itens`,
+            );
             setDescricoesECategorias(data.data);
 
             // Atualizar localStorage para cache
-            localStorage.setItem('descricoes_e_categorias', JSON.stringify(data.data));
+            localStorage.setItem(
+              "descricoes_e_categorias",
+              JSON.stringify(data.data),
+            );
             return;
           }
         }
       } catch (apiError) {
-        console.warn("⚠️ [EntidadesContext] API não disponível, usando localStorage:", apiError);
+        console.warn(
+          "⚠️ [EntidadesContext] API não disponível, usando localStorage:",
+          apiError,
+        );
       }
 
       // Fallback para localStorage se API falhar
@@ -660,10 +650,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setDescricoesECategorias([]);
       }
     } catch (error) {
-      console.error(
-        "Erro ao recarregar descrições e categorias:",
-        error,
-      );
+      console.error("Erro ao recarregar descrições e categorias:", error);
       setDescricoesECategorias([]);
     }
   }, []);
@@ -922,7 +909,6 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       carregamentoExecutado = true;
 
       // Carregar dados sempre no mount, sem verificações
-      console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
 
       // Cache invalidação removida - usando localStorage
       await carregarDados();

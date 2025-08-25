@@ -34,18 +34,16 @@ export default function ModalCadastroCliente({
   const [formData, setFormData] = useState({
     nome: "",
     cpf: "",
-    telefone1: "",
-    telefone2: "",
+    telefonePrincipal: "",
+    telefoneSecundario: "",
     email: "",
-    endereco: {
-      cep: "",
-      rua: "",
-      numero: "",
-      complemento: "",
-      bairro: "",
-      cidade: "",
-      estado: "",
-    },
+    cep: "",
+    logradouro: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
   });
 
   const [errors, setErrors] = useState<any>({});
@@ -86,7 +84,9 @@ export default function ModalCadastroCliente({
 
     setIsBuscandoCep(true);
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const response = await fetch(
+        `https://viacep.com.br/ws/${cepLimpo}/json/`,
+      );
       const data = await response.json();
 
       if (!data.erro) {
@@ -124,19 +124,20 @@ export default function ModalCadastroCliente({
       newErrors.nome = "Nome é obrigatório";
     }
 
-    if (!formData.telefone1.trim()) {
-      newErrors.telefone1 = "Pelo menos um telefone é obrigatório";
+    if (!formData.telefonePrincipal.trim()) {
+      newErrors.telefonePrincipal = "Telefone principal é obrigatório";
     }
 
     // Se preencheu endereço, complemento é obrigatório
     if (
-      formData.endereco.rua ||
-      formData.endereco.numero ||
-      formData.endereco.bairro ||
-      formData.endereco.cidade
+      formData.logradouro ||
+      formData.numero ||
+      formData.bairro ||
+      formData.cidade
     ) {
-      if (!formData.endereco.complemento.trim()) {
-        newErrors.complemento = "Complemento é obrigatório quando endereço é preenchido";
+      if (!formData.complemento.trim()) {
+        newErrors.complemento =
+          "Complemento é obrigatório quando endereço é preenchido";
       }
     }
 
@@ -144,7 +145,7 @@ export default function ModalCadastroCliente({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validarFormulario()) return;
@@ -153,34 +154,33 @@ export default function ModalCadastroCliente({
     const clienteData = {
       nome: formData.nome,
       cpf: formData.cpf || undefined,
-      telefone1: formData.telefone1,
-      telefone2: formData.telefone2 || undefined,
+      telefonePrincipal: formData.telefonePrincipal,
+      telefoneSecundario: formData.telefoneSecundario || undefined,
       email: formData.email || undefined,
-      endereco:
-        formData.endereco.rua || formData.endereco.cidade
-          ? formData.endereco
-          : undefined,
+      cep: formData.cep || undefined,
+      logradouro: formData.logradouro || undefined,
+      complemento: formData.complemento || undefined,
     };
 
     try {
-      const novoCliente = adicionarCliente(clienteData);
+      console.log("[ModalCadastroCliente] Adicionando cliente:", clienteData);
+      const novoCliente = await adicionarCliente(clienteData);
+      console.log("[ModalCadastroCliente] Cliente adicionado:", novoCliente);
 
       // Reset form
       setFormData({
         nome: "",
         cpf: "",
-        telefone1: "",
-        telefone2: "",
+        telefonePrincipal: "",
+        telefoneSecundario: "",
         email: "",
-        endereco: {
-          cep: "",
-          rua: "",
-          numero: "",
-          complemento: "",
-          bairro: "",
-          cidade: "",
-          estado: "",
-        },
+        cep: "",
+        logradouro: "",
+        numero: "",
+        complemento: "",
+        bairro: "",
+        cidade: "",
+        estado: "",
       });
       setErrors({});
 
@@ -193,8 +193,10 @@ export default function ModalCadastroCliente({
 
       alert("Cliente cadastrado com sucesso!");
     } catch (error) {
-      console.error("Erro ao cadastrar cliente:", error);
-      alert("Erro ao cadastrar cliente");
+      console.error("[ModalCadastroCliente] Erro ao cadastrar cliente:", error);
+      alert(
+        `Erro ao cadastrar cliente: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+      );
     }
   };
 
@@ -219,7 +221,9 @@ export default function ModalCadastroCliente({
             <Input
               id="nome"
               value={formData.nome}
-              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, nome: e.target.value })
+              }
               placeholder="Nome completo do cliente"
               className={errors.nome ? "border-red-500" : ""}
             />
@@ -363,7 +367,7 @@ export default function ModalCadastroCliente({
             {/* Complemento */}
             <div className="space-y-2">
               <Label htmlFor="complemento">
-                Complemento 
+                Complemento
                 {(formData.endereco.rua || formData.endereco.cidade) && " *"}
               </Label>
               <Input

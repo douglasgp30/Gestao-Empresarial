@@ -67,8 +67,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos com memoização para evitar re-renderizações
-  const tecnicos = useMemo(() => getTecnicos(), [getTecnicos]);
+  // Carregar técnicos com memoização estabilizada - evitar dependências instáveis
+  const tecnicos = useMemo(() => {
+    return getTecnicos();
+  }, [formasPagamento.length, setores.length]); // Usar length para estabilizar
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -90,6 +92,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(
     null,
   );
+  const [clienteRecemAdicionado, setClienteRecemAdicionado] = useState(false);
 
   // Estados para categorias e descriç��es carregadas diretamente da API
   const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
@@ -112,16 +115,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             ...new Set(data.data.map((cat: any) => cat.nome)),
           ].sort();
           setCategoriasReceita(nomes);
-          console.log("[FormularioReceita] Categorias carregadas:", nomes);
-          console.log(
-            "[FormularioReceita] Dados completos das categorias:",
-            data.data,
-          );
         } else {
-          console.log(
-            "[FormularioReceita] Nenhuma categoria encontrada na resposta:",
-            data,
-          );
+          // Nenhuma categoria encontrada
         }
       } catch (error) {
         console.error(
@@ -152,12 +147,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
         if (data.data) {
           setDescricoesFiltradas(data.data);
-          console.log(
-            "[FormularioReceita] Descrições carregadas para",
-            formData.categoria,
-            ":",
-            data.data.length,
-          );
         }
       } catch (error) {
         console.error(
@@ -171,8 +160,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     carregarDescricoes();
   }, [formData.categoria]);
 
-  // Verificar se forma de pagamento é cartão - usar utilitário padronizado
-  const isCartao = React.useMemo(() => {
+  // Verificar se forma de pagamento é cartão - memoização estabilizada
+  const isCartao = useMemo(() => {
     if (!formData.formaPagamento || formasPagamento.length === 0) {
       return false;
     }
@@ -182,10 +171,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     );
 
     return isFormaPagamentoCartao(forma);
-  }, [formData.formaPagamento, formasPagamento]);
+  }, [formData.formaPagamento, formasPagamento.length]);
 
-  // Verificar se forma de pagamento é boleto - usar utilitário padronizado
-  const isBoleto = React.useMemo(() => {
+  // Verificar se forma de pagamento é boleto - memoização estabilizada
+  const isBoleto = useMemo(() => {
     if (!formData.formaPagamento || formasPagamento.length === 0) {
       return false;
     }
@@ -195,7 +184,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     );
 
     return isFormaPagamentoBoleto(forma);
-  }, [formData.formaPagamento, formasPagamento]);
+  }, [formData.formaPagamento, formasPagamento.length]);
 
   // Calcular campos automaticamente usando os hooks de moeda
   const valorCalculado = valorInput.numericValue;
@@ -225,9 +214,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return valorCalculado;
   }, [isCartao, valorQueEntrouCalculado, valorCalculado]);
 
-  // 3. Calcular desconto da nota fiscal (6% do valor total do serviço)
-  const percentualNotaFiscal = formData.temNotaFiscal ? 6 : 0; // Corrigido para 6%
-  const descontoNotaFiscal = (valorBaseNotaFiscal * percentualNotaFiscal) / 100;
+  // 3. Calcular desconto da nota fiscal (6% do valor total do serviço) - memoizado
+  const { percentualNotaFiscal, descontoNotaFiscal } = useMemo(() => {
+    const percentual = formData.temNotaFiscal ? 6 : 0;
+    const desconto = (valorCalculado * percentual) / 100;
+    return { percentualNotaFiscal: percentual, descontoNotaFiscal: desconto };
+  }, [formData.temNotaFiscal, valorCalculado]);
 
   // 4. Valor líquido = valor que entrou - desconto nota fiscal - impostos/taxas adicionais
   const valorLiquidoCalculado = React.useMemo(() => {
@@ -246,15 +238,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           tecnico.percentualComissao || tecnico.percentualServico || 0;
         if (percentual > 0) {
           const comissao = valorLiquidoCalculado * (percentual / 100);
-          console.log("Calculando comissão:", {
-            tecnico: tecnico.nome || tecnico.nomeCompleto,
-            percentual,
-            valorBase: valorBaseNotaFiscal,
-            valorQueEntrou: valorQueEntrouReal,
-            descontoNota: descontoNotaFiscal,
-            valorLiquido: valorLiquidoCalculado,
-            comissao,
-          });
           return comissao;
         }
       }
@@ -263,10 +246,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   }, [
     formData.tecnicoResponsavel,
     valorLiquidoCalculado,
-    valorBaseNotaFiscal,
-    valorQueEntrouReal,
-    descontoNotaFiscal,
-    tecnicos,
+    tecnicos.length, // Usar length para estabilizar
   ]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
@@ -385,14 +365,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Para outros, o valor para empresa é o valor líquido menos a comissão
       const valorParaEmpresaCalculado = isBoleto ? 0 : valorParaEmpresa;
 
-      console.log("Valores calculados para lançamento:", {
-        isBoleto,
-        valorTotal: valorInput.numericValue,
-        valorQueEntrou: valorQueEntrouReal,
-        valorLiquido: valorLiquidoCalculado,
-        comissao: comissaoCalculada,
-        valorParaEmpresa: valorParaEmpresaCalculado,
-      });
+      // Valores calculados para lançamento
 
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
@@ -417,23 +390,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         (t) => t.id?.toString() === formData.tecnicoResponsavel,
       );
 
-      console.log("FormularioReceita - Dados selecionados:", {
-        forma: formaSelecionada,
-        campanha: campanhaSelecionada,
-        cliente: clienteSelecionado,
-        setor: setorSelecionado,
-        tecnico: tecnicoSelecionado,
-      });
-
-      console.log("FormularioReceita - Forma de pagamento detalhada:", {
-        formDataFormaPagamento: formData.formaPagamento,
-        formaSelecionadaId: formaSelecionada?.id,
-        formaSelecionadaNome: formaSelecionada?.nome,
-        todasFormasPagamento: formasPagamento.map((f) => ({
-          id: f.id,
-          nome: f.nome,
-        })),
-      });
+      // Validar dados selecionados
 
       // Validar se cliente foi encontrado quando necessário
       if (formData.cliente && !clienteSelecionado) {
@@ -535,12 +492,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Se for boleto, criar automaticamente conta a receber
       if (isBoleto && dataVencimentoBoleto && codigoServico) {
         try {
-          console.log("Criando conta a receber para boleto:", {
-            clienteId: formData.cliente,
-            valor: valorInput.numericValue,
-            dataVencimento: dataVencimentoBoleto,
-            codigoServico,
-          });
+          // Criando conta a receber para boleto
 
           const dadosContaReceber = {
             tipo: "receber",
@@ -559,7 +511,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             prioridadePagamento: "normal",
           };
 
-          console.log("Dados para criar conta a receber:", dadosContaReceber);
+          // Dados preparados para criar conta a receber
 
           const responseContaReceber = await fetch("/api/contas", {
             method: "POST",
@@ -571,10 +523,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           if (responseContaReceber.ok) {
             const contaCriada = await responseContaReceber.json();
-            console.log(
-              "✅ Conta a receber criada automaticamente para boleto:",
-              contaCriada,
-            );
+            // Conta a receber criada automaticamente para boleto
 
             toast({
               title: "Boleto registrado com sucesso!",
@@ -642,6 +591,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       impostoInput.reset();
       setNotaFiscalEmitida(false);
       setDataVencimentoBoleto(null);
+      setClienteRecemAdicionado(false);
 
       onSuccess?.();
     } catch (error) {
@@ -827,7 +777,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               addNewFields={[
                 {
                   key: "nome",
-                  label: "Nome da Descrição",
+                  label: "Nome da Descriç��o",
                   required: true,
                 },
               ]}
@@ -1059,12 +1009,34 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   </Button>
                 }
                 onClienteAdicionado={(cliente) => {
+                  // Selecionar o cliente recém-criado
                   setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+
+                  // Marcar que cliente foi recém-adicionado
+                  setClienteRecemAdicionado(true);
+
+                  // Feedback positivo ao usuário
                   toast({
-                    title: "Cliente Adicionado",
-                    description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+                    title: "Cliente Adicionado com Sucesso! ✅",
+                    description: `Cliente "${cliente.nome}" foi cadastrado e selecionado. Você pode continuar editando o lançamento.`,
                     variant: "default",
+                    duration: 4000,
                   });
+
+                  // Focar no campo de observações após um breve delay para permitir edições
+                  setTimeout(() => {
+                    const observacoesField =
+                      document.getElementById("observacoes");
+                    if (observacoesField) {
+                      observacoesField.focus();
+                      observacoesField.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      });
+                    }
+                    // Reset flag após o foco
+                    setClienteRecemAdicionado(false);
+                  }, 500);
                 }}
               />
             </div>
@@ -1072,6 +1044,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               <p className="text-xs text-red-500">
                 Cliente é obrigatório quando a forma de pagamento for boleto
               </p>
+            )}
+
+            {formData.cliente && (
+              <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-green-800">
+                    Cliente selecionado:{" "}
+                    {clientes.find((c) => c.id === formData.cliente)?.nome}
+                  </span>
+                </div>
+                <p className="text-xs text-green-600 mt-1">
+                  ✓ Você pode continuar editando os campos e adicionar
+                  observações antes de finalizar o lançamento
+                </p>
+              </div>
             )}
           </div>
 
@@ -1392,7 +1380,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Lançando..." : "Lançar Receita"}
+            {isSubmitting
+              ? "Lançando..."
+              : formData.cliente
+                ? `Lançar Receita para ${clientes.find((c) => c.id === formData.cliente)?.nome || "Cliente Selecionado"}`
+                : "Lançar Receita"}
           </Button>
         </form>
       </CardContent>
