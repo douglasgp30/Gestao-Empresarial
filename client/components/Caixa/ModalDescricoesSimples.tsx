@@ -277,15 +277,40 @@ export default function ModalDescricoesSimples() {
 
         // Mostrar erro de forma adequada baseado no tipo
         if (isDependencyError) {
-          // Para erros de dependência, mostrar uma mensagem mais explicativa
-          toast.error("Não é possível excluir este item", {
-            duration: 10000,
-            description: errorMessage,
-            action: {
-              label: "Entendi",
-              onClick: () => console.log("Toast dismissed"),
-            },
-          });
+          // Para erros de dependência de categoria, permitir visualizar dependências
+          if (itemToDelete.tipo === "categoria") {
+            toast.error("Não é possível excluir esta categoria", {
+              duration: 12000,
+              description: errorMessage,
+              action: {
+                label: "Ver Dependências",
+                onClick: () => {
+                  // Encontrar a categoria no array para passar os dados corretos
+                  const categoria = descricoesECategorias.find(
+                    (item) => item.id === itemToDelete.id
+                  );
+                  if (categoria) {
+                    setCategoriaParaDependencias({
+                      id: categoria.id,
+                      nome: categoria.nome,
+                      tipo: categoria.tipo,
+                    });
+                    setShowDependencies(true);
+                  }
+                },
+              },
+            });
+          } else {
+            // Para descrições, apenas mostrar o erro detalhado
+            toast.error("Não é possível excluir esta descrição", {
+              duration: 10000,
+              description: errorMessage,
+              action: {
+                label: "Entendi",
+                onClick: () => console.log("Toast dismissed"),
+              },
+            });
+          }
         } else {
           // Para outros erros, mostrar mensagem simples
           toast.error(errorMessage);
