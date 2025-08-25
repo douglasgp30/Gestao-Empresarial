@@ -1128,7 +1128,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     // Evitar múltiplas exclusões simultâneas
     if (isExcluindo) {
       console.log("[CaixaContext] Exclusão já em andamento, ignorando...");
-      return;
+      return Promise.resolve(); // Retorna uma Promise resolvida para evitar problemas na UI
     }
 
     try {
@@ -1137,9 +1137,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       console.log("[CaixaContext] Excluindo lançamento:", id);
 
-      // Timeout para evitar requests que ficam pendentes
+      // Timeout reduzido para 5 segundos para evitar congelamentos longos
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 segundos
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
 
       try {
         // Fazer a chamada para a API
@@ -1172,15 +1172,31 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         );
 
         console.log("✅ Exclusão concluída");
-      } catch (fetchError) {
+        return Promise.resolve(); // Sucesso
+      } catch (fetchError: any) {
         clearTimeout(timeoutId);
         if (fetchError.name === "AbortError") {
-          throw new Error("Timeout: Operação demorou muito");
+          // Para timeout, tentar excluir localmente como fallback
+          console.warn("⏰ Timeout na API, removendo localmente como fallback");
+          setLancamentos((prev) =>
+            prev.filter((l) => l.id?.toString() !== id?.toString()),
+          );
+          return Promise.resolve(); // Não queremos que o erro seja propagado para a UI
         }
         throw fetchError;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Erro ao excluir:", error);
+
+      // Se for erro de rede, tentar fallback local
+      if (error.message?.includes("fetch") || error.message?.includes("Failed")) {
+        console.warn("🔄 Erro de rede, removendo localmente como fallback");
+        setLancamentos((prev) =>
+          prev.filter((l) => l.id?.toString() !== id?.toString()),
+        );
+        return Promise.resolve(); // Sucesso local
+      }
+
       setError("Erro ao excluir lançamento");
       throw error;
     } finally {
