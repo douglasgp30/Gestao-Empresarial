@@ -349,7 +349,7 @@ export function ModalReceita() {
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
 
-        // Campos de integração para boletos
+        // Campos de integra��ão para boletos
         codigoServico: codigoServico,
         sistemaOrigem: isBoleto ? "caixa_boleto" : undefined,
       });
@@ -898,7 +898,15 @@ export function ModalReceita() {
                   </Select>
                   <ModalCadastroCliente
                     trigger={
-                      <Button type="button" variant="outline" size="icon">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={(e) => {
+                          console.log("[ModalReceita] Botão de adicionar cliente clicado");
+                          e.stopPropagation();
+                        }}
+                      >
                         <UserPlus className="h-4 w-4" />
                       </Button>
                     }
