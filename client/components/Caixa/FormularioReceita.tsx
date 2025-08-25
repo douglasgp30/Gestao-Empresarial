@@ -245,10 +245,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   }, [
     formData.tecnicoResponsavel,
     valorLiquidoCalculado,
-    valorBaseNotaFiscal,
-    valorQueEntrouReal,
-    descontoNotaFiscal,
-    tecnicos,
+    tecnicos.length, // Usar length para estabilizar
   ]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
