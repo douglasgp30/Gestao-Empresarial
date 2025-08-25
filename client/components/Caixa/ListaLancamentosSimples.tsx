@@ -375,7 +375,10 @@ export function ListaLancamentosSimples() {
     setExcluindo(true);
 
     try {
-      console.log("🗑️ Iniciando exclusão do lançamento:", lancamentoParaExcluir);
+      console.log(
+        "🗑️ Iniciando exclusão do lançamento:",
+        lancamentoParaExcluir,
+      );
 
       await excluirLancamento(lancamentoParaExcluir);
 
@@ -390,11 +393,12 @@ export function ListaLancamentosSimples() {
     } catch (error) {
       console.error("❌ Erro ao excluir lançamento:", error);
 
-      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro desconhecido";
 
       toast({
         title: "Erro ao excluir",
-        description: errorMessage.includes('Timeout')
+        description: errorMessage.includes("Timeout")
           ? "A operação demorou muito. Verifique sua conexão e tente novamente."
           : "Erro ao excluir lançamento. Tente novamente.",
         variant: "destructive",
@@ -639,11 +643,9 @@ export function ListaLancamentosSimples() {
               )}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {excluindo ? (
-                "Aguarde, excluindo o lançamento do sistema..."
-              ) : (
-                "Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita."
-              )}
+              {excluindo
+                ? "Aguarde, excluindo o lançamento do sistema..."
+                : "Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

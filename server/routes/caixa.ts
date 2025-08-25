@@ -871,7 +871,9 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
 
     console.log(`🗑️ [Caixa DELETE] Executando delete no banco...`);
     await prisma.lancamentoCaixa.delete({ where: { id } });
-    console.log(`✅ [Caixa DELETE] Lançamento ${id} excluído com sucesso do banco`);
+    console.log(
+      `✅ [Caixa DELETE] Lançamento ${id} excluído com sucesso do banco`,
+    );
 
     // Registrar auditoria (se não der erro)
     try {
@@ -892,7 +894,10 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
         console.log(`📝 [Caixa DELETE] Auditoria registrada com sucesso`);
       }
     } catch (auditoriaError) {
-      console.warn(`⚠️ [Caixa DELETE] Erro na auditoria (não crítico):`, auditoriaError);
+      console.warn(
+        `⚠️ [Caixa DELETE] Erro na auditoria (não crítico):`,
+        auditoriaError,
+      );
     }
 
     console.log(`🎉 [Caixa DELETE] Respondendo com status 204 (No Content)`);
@@ -902,7 +907,7 @@ export const deleteLancamento: RequestHandler = async (req, res) => {
     console.error("❌ [Caixa DELETE] Stack trace:", error.stack);
     res.status(500).json({
       error: "Erro interno do servidor",
-      details: error.message
+      details: error.message,
     });
   }
 };

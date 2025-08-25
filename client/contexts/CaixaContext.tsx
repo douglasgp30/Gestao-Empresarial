@@ -720,22 +720,27 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   }, []); // Array vazio - executa apenas uma vez
 
   // Função para atualizar filtros e recarregar dados apenas quando necessário
-  const atualizarFiltros = useCallback((novosFiltros: any) => {
-    setFiltros(novosFiltros);
+  const atualizarFiltros = useCallback(
+    (novosFiltros: any) => {
+      setFiltros(novosFiltros);
 
-    // Recarregar dados apenas se os filtros de data mudaram significativamente
-    const datasMudaram =
-      novosFiltros.dataInicio?.getTime() !== filtros.dataInicio?.getTime() ||
-      novosFiltros.dataFim?.getTime() !== filtros.dataFim?.getTime();
+      // Recarregar dados apenas se os filtros de data mudaram significativamente
+      const datasMudaram =
+        novosFiltros.dataInicio?.getTime() !== filtros.dataInicio?.getTime() ||
+        novosFiltros.dataFim?.getTime() !== filtros.dataFim?.getTime();
 
-    if (datasMudaram) {
-      console.log("📅 [CaixaContext] Datas dos filtros mudaram, recarregando...");
-      // Debounce para evitar múltiplos recarregamentos
-      setTimeout(() => {
-        recarregarManual();
-      }, 500);
-    }
-  }, [filtros.dataInicio, filtros.dataFim, recarregarManual]);
+      if (datasMudaram) {
+        console.log(
+          "📅 [CaixaContext] Datas dos filtros mudaram, recarregando...",
+        );
+        // Debounce para evitar múltiplos recarregamentos
+        setTimeout(() => {
+          recarregarManual();
+        }, 500);
+      }
+    },
+    [filtros.dataInicio, filtros.dataFim, recarregarManual],
+  );
 
   // REMOVIDO: useEffect automático que causava loops infinitos
   // O recarregamento agora é feito apenas manualmente ou na inicialização
@@ -1145,13 +1150,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         console.log("✅ Lançamento excluído com sucesso da API");
 
         // APENAS remover da lista local - SEM recarregamentos
-        setLancamentos((prev) => prev.filter((l) => l.id?.toString() !== id?.toString()));
+        setLancamentos((prev) =>
+          prev.filter((l) => l.id?.toString() !== id?.toString()),
+        );
 
         console.log("✅ Exclusão concluída");
       } catch (fetchError) {
         clearTimeout(timeoutId);
-        if (fetchError.name === 'AbortError') {
-          throw new Error('Timeout: Operação demorou muito');
+        if (fetchError.name === "AbortError") {
+          throw new Error("Timeout: Operação demorou muito");
         }
         throw fetchError;
       }
@@ -1320,7 +1327,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("📦 [CaixaContext] Recarregamento manual solicitado");
       await carregarLancamentosDoBanco();
     } catch (error) {
-      console.warn("Erro no recarregamento manual, usando localStorage:", error);
+      console.warn(
+        "Erro no recarregamento manual, usando localStorage:",
+        error,
+      );
       await carregarLancamentosLocalStorage();
     } finally {
       setIsLoading(false);
@@ -1328,7 +1338,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Memoizar funções para estabilizar referências
-  const carregarDadosCb = useCallback(() => recarregarManual(), [recarregarManual]);
+  const carregarDadosCb = useCallback(
+    () => recarregarManual(),
+    [recarregarManual],
+  );
   const adicionarLancamentoCb = useCallback(
     (novo) => adicionarLancamento(novo),
     [],
@@ -1337,10 +1350,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     (id, dados) => editarLancamento(id, dados),
     [],
   );
-  const excluirLancamentoCb = useCallback(
-    (id) => excluirLancamento(id),
-    [],
-  );
+  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
   // Value otimizado do contexto
