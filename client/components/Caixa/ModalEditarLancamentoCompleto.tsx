@@ -27,7 +27,6 @@ import { TrendingUp, TrendingDown, UserPlus } from "lucide-react";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
-import ModalClienteSimples from "../Clientes/ModalClienteSimples";
 import { LancamentoCaixa } from "@shared/types";
 
 interface ModalEditarLancamentoCompletoProps {
@@ -929,9 +928,9 @@ export function ModalEditarLancamentoCompleto({
         )}
 
         {/* Modal de Cliente fora do form para evitar aninhamento */}
-        <ModalClienteSimples
+        <ModalCadastroCliente
           isOpen={isModalClienteOpen}
-          onClose={() => setIsModalClienteOpen(false)}
+          onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             setFormData((prev) => ({ ...prev, cliente: cliente.id }));
             toast({

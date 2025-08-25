@@ -41,7 +41,6 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ModalCadastroCliente from "@/components/Clientes/ModalCadastroCliente";
-import ModalClienteSimples from "@/components/Clientes/ModalClienteSimples";
 import SelectWithAdd from "@/components/ui/select-with-add";
 
 interface ModalContasReceberProps {
@@ -504,9 +503,9 @@ export function ModalContasReceber({
         </form>
 
         {/* Modal de Cliente fora do form para evitar aninhamento */}
-        <ModalClienteSimples
+        <ModalCadastroCliente
           isOpen={isModalClienteOpen}
-          onClose={() => setIsModalClienteOpen(false)}
+          onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             setFormData((prev) => ({
               ...prev,

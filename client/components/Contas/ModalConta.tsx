@@ -33,7 +33,6 @@ import { CalendarIcon, Plus, Receipt, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ModalCadastroCliente from "@/components/Clientes/ModalCadastroCliente";
-import ModalClienteSimples from "@/components/Clientes/ModalClienteSimples";
 
 interface ModalContaProps {
   contaParaEditar?: ContaLancamento;
@@ -500,9 +499,9 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
         </form>
 
         {/* Modal de Cliente fora do form para evitar aninhamento */}
-        <ModalClienteSimples
+        <ModalCadastroCliente
           isOpen={isModalClienteOpen}
-          onClose={() => setIsModalClienteOpen(false)}
+          onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             setFormData((prev) => ({
               ...prev,

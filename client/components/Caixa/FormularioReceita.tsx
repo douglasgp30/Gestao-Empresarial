@@ -27,7 +27,6 @@ import { TrendingUp, UserPlus } from "lucide-react";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
-import ModalClienteSimples from "../Clientes/ModalClienteSimples";
 import {
   isFormaPagamentoCartao,
   isFormaPagamentoBoleto,
@@ -1364,9 +1363,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         </form>
 
         {/* Modal de Cliente fora do form para evitar aninhamento */}
-        <ModalClienteSimples
+        <ModalCadastroCliente
           isOpen={isModalClienteOpen}
-          onClose={() => setIsModalClienteOpen(false)}
+          onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             // Selecionar o cliente recém-criado
             setFormData((prev) => ({ ...prev, cliente: cliente.id }));
