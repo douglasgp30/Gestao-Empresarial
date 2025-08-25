@@ -997,7 +997,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {clientes.map((cliente) => (
-                    <SelectItem key={cliente.id} value={cliente.id}>
+                    <SelectItem key={cliente.id} value={cliente.id?.toString()}>
                       {cliente.nome}
                     </SelectItem>
                   ))}
@@ -1071,7 +1071,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
               {!dataVencimentoBoleto && (
                 <p className="text-xs text-red-600 font-medium">
-                  ⚠️ Data de vencimento é obrigatória para boletos
+                  ⚠�� Data de vencimento é obrigatória para boletos
                 </p>
               )}
 
@@ -1368,7 +1368,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             // Selecionar o cliente recém-criado
-            setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+            setFormData((prev) => ({ ...prev, cliente: cliente.id?.toString() }));
 
             // Marcar que cliente foi recém-adicionado
             setClienteRecemAdicionado(true);
