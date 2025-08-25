@@ -27,6 +27,7 @@ import { TrendingUp, TrendingDown, UserPlus } from "lucide-react";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
+import ModalClienteSimples from "../Clientes/ModalClienteSimples";
 import { LancamentoCaixa } from "@shared/types";
 
 interface ModalEditarLancamentoCompletoProps {
@@ -239,7 +240,7 @@ export function ModalEditarLancamentoCompleto({
 
     if (camposFaltando.length > 0) {
       toast({
-        title: "Campos obrigatórios não preenchidos",
+        title: "Campos obrigatórios n��o preenchidos",
         description: `Preencha os seguintes campos: ${camposFaltando.join(", ")}`,
         variant: "destructive",
       });
