@@ -116,31 +116,28 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       await carregarClientesAPI();
       console.log("[ClientesContext] ✅ Recarregamento concluído");
     } catch (error) {
-      console.error("[ClientesContext] ❌ Erro ao recarregar clientes:", error);
+      console.error("[ClientesContext] ��� Erro ao recarregar clientes:", error);
     } finally {
       setIsLoading(false);
     }
   }, [carregarClientesAPI]); // SOMENTE carregarClientesAPI como dependência
 
-  // TEMPORÁRIO: Carregamento desabilitado para debugar piscar na tela
+  // ⚠️ ANTI-PISCAR: Carregamento controlado para evitar loops infinitos
   useEffect(() => {
-    console.log("[ClientesContext] CARREGAMENTO DESABILITADO - Debug piscar na tela");
-
-    // Carregar apenas do localStorage
-    try {
-      const clientesLocal = carregarClientesLocalStorage();
-      setClientes(clientesLocal);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("[ClientesContext] Erro ao carregar localmente:", error);
-      setIsLoading(false);
+    // Evitar múltiplos carregamentos
+    if (jaCarregou) {
+      console.log("[ClientesContext] ⚠️ Carregamento já executado, ignorando");
+      return;
     }
-    return;
 
     const inicializar = async () => {
-      setIsLoading(true);
       try {
+        setJaCarregou(true); // Marcar como carregado ANTES de começar
+        setIsLoading(true);
+        console.log("[ClientesContext] 🔄 Iniciando carregamento único");
+
         await carregarClientesAPI();
+        console.log("[ClientesContext] ✅ Carregamento concluído");
       } catch (error) {
         console.error("[ClientesContext] Erro ao inicializar:", error);
       } finally {
