@@ -189,6 +189,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [dadosCarregados, setDadosCarregados] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // ⚠️ FLAG ANTI-PISCAR: Evita múltiplos carregamentos simultâneos
+  const [jaCarregou, setJaCarregou] = useState(false);
+
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
     (tipo?: "receita" | "despesa") => {
@@ -955,7 +958,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // As cidades agora são pré-cadastradas e gerenciadas via ativação/desativação
 
   // === FUNÇÕES NOVAS DE LOCALIZAÇÃO GEOGRÁFICA ===
-  // Funções removidas - usando versões stub acima para evitar chamadas de API
+  // Fun��ões removidas - usando versões stub acima para evitar chamadas de API
 
   // === FUNÇÕES LEGADAS (COMPATIBILIDADE) ===
   const adicionarDescricao = async () => {
