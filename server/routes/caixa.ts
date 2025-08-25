@@ -358,7 +358,7 @@ export const createLancamento: RequestHandler = async (req, res) => {
       console.log("[Caixa] DescricaoECategoria ID:", descricaoECategoriaId);
     }
 
-    // Verificar forma de pagamento e aplicar validações específicas
+    // Verificar forma de pagamento e aplicar validações espec��ficas
     let isBoleto = false;
     if (ids.formaPagamentoId) {
       const formaPagamento = await prisma.formaPagamento.findUnique({
@@ -843,44 +843,67 @@ export const updateLancamento: RequestHandler = async (req, res) => {
 export const deleteLancamento: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    console.log(`[Caixa] Excluindo lançamento ID: ${id}`);
+    console.log(`🗑️ [Caixa DELETE] Iniciando exclusão do lançamento ID: ${id}`);
+    console.log(`🗑️ [Caixa DELETE] Request method: ${req.method}`);
+    console.log(`🗑�� [Caixa DELETE] Request URL: ${req.url}`);
 
     if (isNaN(id)) {
+      console.log(`❌ [Caixa DELETE] ID inválido: ${req.params.id}`);
       return res.status(400).json({ error: "ID do lançamento inválido" });
     }
 
     // Verificar se o lançamento existe antes de excluir
+    console.log(`🔍 [Caixa DELETE] Verificando se lançamento ${id} existe...`);
     const lancamentoExistente = await prisma.lancamentoCaixa.findUnique({
       where: { id },
     });
 
     if (!lancamentoExistente) {
+      console.log(`❌ [Caixa DELETE] Lançamento ${id} não encontrado`);
       return res.status(404).json({ error: "Lançamento não encontrado" });
     }
 
-    await prisma.lancamentoCaixa.delete({ where: { id } });
-    console.log(`[Caixa] Lançamento ${id} excluído com sucesso`);
+    console.log(`📄 [Caixa DELETE] Lançamento encontrado:`, {
+      id: lancamentoExistente.id,
+      tipo: lancamentoExistente.tipo,
+      valor: lancamentoExistente.valor,
+    });
 
-    // Registrar auditoria
-    if (req.user) {
-      const infoRequisicao = extrairInfoRequisicao(req);
-      await AuditoriaService.registrarLog({
-        acao: "DELETE",
-        entidade: "lancamentos_caixa",
-        entidadeId: id,
-        dadosAntigos: lancamentoExistente,
-        descricao: `Excluiu lançamento de ${lancamentoExistente.tipo} no valor de R$ ${lancamentoExistente.valor}`,
-        usuarioId: req.user.id,
-        usuarioNome: req.user.nome || req.user.nomeCompleto,
-        usuarioLogin: req.user.login,
-        ...infoRequisicao,
-      });
+    console.log(`🗑️ [Caixa DELETE] Executando delete no banco...`);
+    await prisma.lancamentoCaixa.delete({ where: { id } });
+    console.log(`✅ [Caixa DELETE] Lançamento ${id} excluído com sucesso do banco`);
+
+    // Registrar auditoria (se não der erro)
+    try {
+      if (req.user) {
+        console.log(`📝 [Caixa DELETE] Registrando auditoria...`);
+        const infoRequisicao = extrairInfoRequisicao(req);
+        await AuditoriaService.registrarLog({
+          acao: "DELETE",
+          entidade: "lancamentos_caixa",
+          entidadeId: id,
+          dadosAntigos: lancamentoExistente,
+          descricao: `Excluiu lançamento de ${lancamentoExistente.tipo} no valor de R$ ${lancamentoExistente.valor}`,
+          usuarioId: req.user.id,
+          usuarioNome: req.user.nome || req.user.nomeCompleto,
+          usuarioLogin: req.user.login,
+          ...infoRequisicao,
+        });
+        console.log(`📝 [Caixa DELETE] Auditoria registrada com sucesso`);
+      }
+    } catch (auditoriaError) {
+      console.warn(`⚠️ [Caixa DELETE] Erro na auditoria (não crítico):`, auditoriaError);
     }
 
+    console.log(`🎉 [Caixa DELETE] Respondendo com status 204 (No Content)`);
     res.status(204).send();
   } catch (error) {
-    console.error("Erro ao excluir lançamento:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error("❌ [Caixa DELETE] Erro ao excluir lançamento:", error);
+    console.error("❌ [Caixa DELETE] Stack trace:", error.stack);
+    res.status(500).json({
+      error: "Erro interno do servidor",
+      details: error.message
+    });
   }
 };
 
