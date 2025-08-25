@@ -199,25 +199,19 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // TEMPORÁRIO: Carregamento desabilitado para debugar piscar na tela
+  // ⚠️ ANTI-PISCAR: Carregamento controlado para evitar loops infinitos
   useEffect(() => {
-    console.log("[FuncionariosContext] CARREGAMENTO DESABILITADO - Debug piscar na tela");
-
-    // Carregar apenas do localStorage sem API para evitar loops
-    try {
-      const funcionariosLocal = carregarFuncionariosReais();
-      setFuncionarios(funcionariosLocal);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Erro ao carregar funcionários localmente:", error);
-      setIsLoading(false);
+    // Evitar múltiplos carregamentos
+    if (jaCarregou) {
+      console.log("[FuncionariosContext] ⚠️ Carregamento já executado, ignorando");
+      return;
     }
-    return;
 
     const inicializarFuncionarios = async () => {
       try {
-        // Iniciando carregamento de funcionários
+        setJaCarregou(true); // Marcar como carregado ANTES de começar
         setIsLoading(true);
+        console.log("[FuncionariosContext] 🔄 Iniciando carregamento único");
 
         // 1. Primeiro tentar carregar da API (banco de dados)
         const response = await funcionariosApi.listar();
