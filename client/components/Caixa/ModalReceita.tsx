@@ -143,8 +143,8 @@ export function ModalReceita() {
     return isFormaPagamentoBoleto(forma);
   }, [formData.formaPagamento, formasPagamento]);
 
-  // Buscar percentual de imposto das configurações
-  const getPercentualImposto = () => {
+  // Memoizar percentual de imposto para evitar leitura repetida do localStorage
+  const percentualImposto = React.useMemo(() => {
     try {
       const savedConfigs = localStorage.getItem("userConfigs");
       if (savedConfigs) {
@@ -155,31 +155,31 @@ export function ModalReceita() {
       console.error("Erro ao carregar percentual de imposto:", error);
     }
     return 6; // Valor padrão
-  };
+  }, []); // Executa apenas uma vez
 
-  // Calcular campos automaticamente
-  const valorCalculado = parseFloat(formData.valor) || 0;
-  const valorQueEntrouCalculado =
-    parseFloat(formData.valorQueEntrou) || valorCalculado;
+  // Memoizar cálculos automaticamente para evitar re-computação desnecessária
+  const valorCalculado = React.useMemo(() => {
+    return parseFloat(formData.valor) || 0;
+  }, [formData.valor]);
+
+  const valorQueEntrouCalculado = React.useMemo(() => {
+    return parseFloat(formData.valorQueEntrou) || valorCalculado;
+  }, [formData.valorQueEntrou, valorCalculado]);
 
   // Calcular imposto apenas se tem nota fiscal
-  const percentualImposto = getPercentualImposto();
-  const impostoCalculado = formData.temNotaFiscal
-    ? (valorCalculado * percentualImposto) / 100
-    : 0;
-
-  // Debug log para verificar cálculo
-  if (formData.temNotaFiscal && valorCalculado > 0) {
-    console.log(
-      `[ModalReceita] Calculando imposto: ${valorCalculado} * ${percentualImposto}% = R$ ${impostoCalculado.toFixed(2)}`,
-    );
-  }
+  const impostoCalculado = React.useMemo(() => {
+    return formData.temNotaFiscal
+      ? (valorCalculado * percentualImposto) / 100
+      : 0;
+  }, [formData.temNotaFiscal, valorCalculado, percentualImposto]);
 
   // Valor líquido descontando o imposto se houver nota fiscal
-  const valorLiquidoCalculado = valorQueEntrouCalculado - impostoCalculado;
+  const valorLiquidoCalculado = React.useMemo(() => {
+    return valorQueEntrouCalculado - impostoCalculado;
+  }, [valorQueEntrouCalculado, impostoCalculado]);
 
   // Calcular comissão baseada no percentual do técnico
-  const comissaoCalculada = (() => {
+  const comissaoCalculada = React.useMemo(() => {
     if (formData.tecnicoResponsavel) {
       const tecnico = tecnicos.find(
         (t) => t.id.toString() === formData.tecnicoResponsavel,
@@ -195,14 +195,17 @@ export function ModalReceita() {
       }
     }
     return 0;
-  })();
+  }, [formData.tecnicoResponsavel, tecnicos, valorLiquidoCalculado]);
 
   // Remover useEffect que causa piscar da tela - valores calculados serão mostrados apenas no resumo
 
   // Remover useEffect que causa piscar ao resetar valorQueEntrou
 
+  // Ref para gerenciar cleanup do interval
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
   // Função para emitir nota fiscal
-  const emitirNotaFiscal = () => {
+  const emitirNotaFiscal = React.useCallback(() => {
     const urlNotaFiscal =
       "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733";
     const janelaNotaFiscal = window.open(
@@ -211,10 +214,16 @@ export function ModalReceita() {
       "width=1200,height=800,scrollbars=yes,resizable=yes",
     );
 
+    // Limpar interval anterior se existir
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
     // Monitorar quando a janela for fechada
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       if (janelaNotaFiscal?.closed) {
-        clearInterval(interval);
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
         setNotaFiscalEmitida(true);
         toast({
           title: "Nota Fiscal",
@@ -223,7 +232,16 @@ export function ModalReceita() {
         });
       }
     }, 1000);
-  };
+  }, [toast]);
+
+  // Cleanup do interval quando componente desmontar
+  React.useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   const resetForm = () => {
     setFormData({
