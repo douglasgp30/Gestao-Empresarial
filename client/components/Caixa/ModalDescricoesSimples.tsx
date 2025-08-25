@@ -227,12 +227,42 @@ export default function ModalDescricoesSimples() {
 
     setIsSaving(true);
     try {
-      await adicionarDescricaoECategoria({
+      console.log("➕ Adicionando nova categoria:", {
         nome: formCategoria.nome.trim(),
         tipo: tipoAtivo,
         tipoItem: "categoria",
         ativo: true,
       });
+
+      // Usar API diretamente em vez do contexto para melhor controle
+      const response = await fetch('/api/descricoes-e-categorias', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: formCategoria.nome.trim(),
+          tipo: tipoAtivo,
+          tipoItem: "categoria",
+          ativo: true,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Erro ao adicionar categoria";
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          console.warn("Erro ao ler resposta de erro:", e);
+        }
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      console.log("✅ Categoria criada:", result);
 
       toast.success("Categoria adicionada com sucesso");
       setFormCategoria({ nome: "" });
@@ -241,8 +271,8 @@ export default function ModalDescricoesSimples() {
       console.log("🔄 Sincronizando dados após criação de categoria...");
       await recarregarDescricoesECategorias();
     } catch (error) {
-      console.error("Erro ao adicionar categoria:", error);
-      toast.error("Erro ao adicionar categoria. Tente novamente.");
+      console.error("❌ Erro ao adicionar categoria:", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao adicionar categoria. Tente novamente.");
     } finally {
       setIsSaving(false);
     }
@@ -435,7 +465,7 @@ export default function ModalDescricoesSimples() {
           toast.error(errorMessage);
         }
 
-        return; // Não lançar erro, já tratamos aqui
+        return; // Não lan��ar erro, já tratamos aqui
       }
 
       // Status 204 (No Content) indica sucesso na exclusão
