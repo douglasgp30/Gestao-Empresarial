@@ -10,11 +10,12 @@ import { Cliente } from "@shared/types";
 
 interface ClientesContextType {
   clientes: Cliente[];
-  adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => Cliente;
-  editarCliente: (id: string, cliente: Partial<Cliente>) => void;
-  excluirCliente: (id: string) => void;
+  adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => Promise<Cliente>;
+  editarCliente: (id: string, cliente: Partial<Cliente>) => Promise<void>;
+  excluirCliente: (id: string) => Promise<void>;
   buscarCliente: (id: string) => Cliente | undefined;
   filtrarClientes: (termo: string) => Cliente[];
+  recarregarClientes: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -22,53 +23,92 @@ const ClientesContext = createContext<ClientesContextType | undefined>(
   undefined,
 );
 
-// Função para carregar clientes reais do localStorage
-function carregarClientesReais(): Cliente[] {
-  try {
-    const clientes = localStorage.getItem("clientes");
-    if (clientes) {
-      const parsedClientes = JSON.parse(clientes);
-      // Converter strings de data de volta para objetos Date
-      return parsedClientes.map((c: any) => ({
-        ...c,
-        dataCriacao: new Date(c.dataCriacao),
-      }));
-    }
-    return [];
-  } catch (error) {
-    console.warn("Erro ao carregar clientes do localStorage:", error);
-    return [];
-  }
-}
-
 export function ClientesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Função para salvar clientes no localStorage
+  // Carregar clientes da API
+  const carregarClientesAPI = useCallback(async () => {
+    try {
+      console.log("[ClientesContext] Carregando clientes da API...");
+      const response = await fetch("/api/clientes");
+
+      if (!response.ok) {
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      }
+
+      const clientesAPI = await response.json();
+      console.log("[ClientesContext] Clientes carregados da API:", clientesAPI);
+
+      // Converter dados da API para o formato esperado
+      const clientesFormatados: Cliente[] = clientesAPI.map((c: any) => ({
+        id: c.id.toString(),
+        nome: c.nome,
+        cpf: c.cpf || undefined,
+        telefonePrincipal: c.telefonePrincipal,
+        telefoneSecundario: c.telefoneSecundario || undefined,
+        email: c.email || undefined,
+        cep: c.cep || undefined,
+        logradouro: c.logradouro || undefined,
+        complemento: c.complemento || undefined,
+        dataCriacao: new Date(c.dataCriacao),
+      }));
+
+      setClientes(clientesFormatados);
+      return clientesFormatados;
+    } catch (error) {
+      console.error("[ClientesContext] Erro ao carregar clientes da API:", error);
+      // Em caso de erro, carregar do localStorage como fallback
+      return carregarClientesLocalStorage();
+    }
+  }, []);
+
+  // Função para carregar clientes do localStorage (fallback)
+  const carregarClientesLocalStorage = useCallback((): Cliente[] => {
+    try {
+      console.log("[ClientesContext] Carregando clientes do localStorage como fallback...");
+      const clientes = localStorage.getItem("clientes");
+      if (clientes) {
+        const parsedClientes = JSON.parse(clientes);
+        return parsedClientes.map((c: any) => ({
+          ...c,
+          dataCriacao: new Date(c.dataCriacao),
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.warn("[ClientesContext] Erro ao carregar clientes do localStorage:", error);
+      return [];
+    }
+  }, []);
+
+  // Salvar no localStorage como backup
   const salvarClientesNoLocalStorage = useCallback((clientes: Cliente[]) => {
     try {
       localStorage.setItem("clientes", JSON.stringify(clientes));
     } catch (error) {
-      console.warn("Erro ao salvar clientes no localStorage:", error);
+      console.warn("[ClientesContext] Erro ao salvar clientes no localStorage:", error);
     }
   }, []);
 
-  // Carregar dados do localStorage na inicialização
+  // Carregar dados na inicialização
   useEffect(() => {
-    try {
-      const clientesReais = carregarClientesReais();
-      setClientes(clientesReais);
-    } catch (error) {
-      console.error("Erro ao carregar clientes:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    const inicializar = async () => {
+      setIsLoading(true);
+      try {
+        await carregarClientesAPI();
+      } catch (error) {
+        console.error("[ClientesContext] Erro ao inicializar:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    inicializar();
+  }, [carregarClientesAPI]);
 
-  // Salvar no localStorage sempre que clientes mudarem (exceto no carregamento inicial)
+  // Salvar no localStorage sempre que clientes mudarem (backup)
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && clientes.length > 0) {
       salvarClientesNoLocalStorage(clientes);
     }
   }, [clientes, isLoading, salvarClientesNoLocalStorage]);
