@@ -1026,43 +1026,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     duration: 4000,
                   });
 
-                  // Forçar recarregamento da lista de clientes com verificação
-                  let tentativas = 0;
-                  const maxTentativas = 5;
-
-                  const verificarClienteNaLista = async () => {
-                    tentativas++;
-
+                  // ATENÇÃO: EVITAR múltiplas chamadas de recarregarClientes pois FAZ A TELA PISCAR!
+                  // Recarregar APENAS UMA VEZ após criar cliente
+                  setTimeout(async () => {
                     try {
                       await recarregarClientes();
-                      console.log(`[FormularioReceita] Tentativa ${tentativas}: Lista de clientes recarregada`);
-
-                      // Verificar se o cliente apareceu na lista
-                      const clienteEncontrado = clientes.find(c => c.id === cliente.id);
-
-                      if (clienteEncontrado) {
-                        console.log("[FormularioReceita] ✅ Cliente encontrado na lista!");
-                        return;
-                      }
-
-                      if (tentativas < maxTentativas) {
-                        console.log(`[FormularioReceita] ⏳ Cliente ainda não apareceu, tentativa ${tentativas}/${maxTentativas}`);
-                        setTimeout(verificarClienteNaLista, 1000);
-                      } else {
-                        console.warn("[FormularioReceita] ⚠️ Cliente não apareceu na lista após várias tentativas");
-                        toast({
-                          title: "Atenção",
-                          description: "Cliente foi criado, mas pode demorar alguns segundos para aparecer na lista.",
-                          variant: "default",
-                          duration: 3000,
-                        });
-                      }
+                      console.log("[FormularioReceita] ✅ Lista de clientes recarregada após criação");
                     } catch (error) {
                       console.error("[FormularioReceita] Erro ao recarregar clientes:", error);
                     }
-                  };
-
-                  setTimeout(verificarClienteNaLista, 300);
+                  }, 500); // Delay único de 500ms
 
                   // Focar no campo de observações após um breve delay para permitir edições
                   setTimeout(() => {
