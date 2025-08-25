@@ -112,7 +112,7 @@ export default function ModalDescricoesSimples() {
         item.tipoItem === "descricao" && item.ativo && item.tipo === "receita",
     );
     console.log(
-      `[ModalDescricoesSimples] Descriç����es de receita filtradas: ${filtered.length}`,
+      `[ModalDescricoesSimples] Descriç��es de receita filtradas: ${filtered.length}`,
       filtered,
     );
     return filtered;
@@ -194,7 +194,9 @@ export default function ModalDescricoesSimples() {
 
       toast.success("Categoria adicionada com sucesso");
       setFormCategoria({ nome: "" });
-      // Forçar recarregamento para mostrar a nova categoria
+
+      // Sincronizar dados após criação
+      console.log("🔄 Sincronizando dados após criação de categoria...");
       await recarregarDescricoesECategorias();
     } catch (error) {
       console.error("Erro ao adicionar categoria:", error);
