@@ -168,17 +168,25 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       console.log("📦 [CaixaContext] Carregando lançamentos do localStorage");
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
-      
+
       if (lancamentosStorage) {
-        const lancamentosParsed = JSON.parse(lancamentosStorage);
-        const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => ({
-          ...lancamento,
-          data: new Date(lancamento.data),
-          dataHora: new Date(lancamento.dataHora),
-          dataCriacao: new Date(lancamento.dataCriacao),
-        }));
-        setLancamentos(lancamentosFormatados);
-        console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
+        // Parse assíncrono para não bloquear UI em arrays grandes
+        setTimeout(() => {
+          try {
+            const lancamentosParsed = JSON.parse(lancamentosStorage);
+            const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => ({
+              ...lancamento,
+              data: new Date(lancamento.data),
+              dataHora: new Date(lancamento.dataHora),
+              dataCriacao: new Date(lancamento.dataCriacao),
+            }));
+            setLancamentos(lancamentosFormatados);
+            console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
+          } catch (error) {
+            console.error("Erro ao processar lançamentos do localStorage:", error);
+            setLancamentos([]);
+          }
+        }, 0);
       } else {
         console.log("📦 [CaixaContext] Nenhum lançamento encontrado no localStorage");
         setLancamentos([]);
@@ -427,6 +435,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     campanhas,
     filtros,
     totais,
+    excluirLancamento,
     isLoading,
     isExcluindo,
     error,
