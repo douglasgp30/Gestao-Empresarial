@@ -559,9 +559,6 @@ export function ModalReceita() {
           <div className="text-center py-6">Carregando dados...</div>
         ) : (
           <div>
-            {/* DEBUG: Componente de teste */}
-            <TestModalCliente />
-
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {/* Campos básicos */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
