@@ -1009,6 +1009,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   </Button>
                 }
                 onClienteAdicionado={(cliente) => {
+                  console.log("[FormularioReceita] Cliente criado:", cliente);
+
                   // Selecionar o cliente recém-criado
                   setFormData((prev) => ({ ...prev, cliente: cliente.id }));
 
@@ -1023,6 +1025,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     duration: 4000,
                   });
 
+                  // Forçar recarregamento da lista de clientes
+                  setTimeout(async () => {
+                    try {
+                      await recarregarClientes();
+                      console.log("[FormularioReceita] Lista de clientes recarregada após criação");
+                    } catch (error) {
+                      console.error("[FormularioReceita] Erro ao recarregar clientes:", error);
+                    }
+                  }, 300);
+
                   // Focar no campo de observações após um breve delay para permitir edições
                   setTimeout(() => {
                     const observacoesField =
@@ -1036,7 +1048,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     }
                     // Reset flag após o foco
                     setClienteRecemAdicionado(false);
-                  }, 500);
+                  }, 800);
                 }}
               />
             </div>
