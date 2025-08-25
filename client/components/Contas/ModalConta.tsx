@@ -52,6 +52,7 @@ export function ModalConta({ contaParaEditar, onSuccess }: ModalContaProps) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
   const [formData, setFormData] = useState({
     valor: "",
     dataVencimento: new Date(),
