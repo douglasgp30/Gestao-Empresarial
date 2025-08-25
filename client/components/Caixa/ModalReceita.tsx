@@ -70,6 +70,7 @@ export function ModalReceita() {
   const tecnicos = getTecnicos();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
