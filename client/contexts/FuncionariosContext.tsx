@@ -144,6 +144,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ⚠️ FLAG ANTI-PISCAR: Evita múltiplos carregamentos simultâneos
+  const [jaCarregou, setJaCarregou] = useState(false);
+
   // Função para carregar funcionários da API
   const carregarFuncionarios = async () => {
     try {
@@ -465,7 +468,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     // Não permitir excluir o próprio usuário logado
     const funcionarioParaExcluir = funcionarios.find((f) => f.id === id);
     if (funcionarioParaExcluir?.nomeCompleto === user?.nome) {
-      alert("Não �� possível excluir seu próprio usuário.");
+      alert("Não é possível excluir seu próprio usuário.");
       return;
     }
 
