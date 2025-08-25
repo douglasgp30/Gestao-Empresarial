@@ -55,6 +55,14 @@ export default function ModalDescricoesSimples() {
     nome: "",
   });
 
+  // Estados para edição
+  const [itemEditando, setItemEditando] = useState<{
+    id: number;
+    nome: string;
+    tipo: "categoria" | "descricao";
+  } | null>(null);
+  const [nomeEditando, setNomeEditando] = useState("");
+
   // Carregar dados quando o modal é aberto
   useEffect(() => {
     const length = Array.isArray(descricoesECategorias)
