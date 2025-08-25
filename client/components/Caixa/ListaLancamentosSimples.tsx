@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
+import { extractCategoriaNome, extractSetorNome, extractSetorCidade, normalizeComissao } from "../../lib/normalizeLancamento";
 import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import {
@@ -79,7 +80,7 @@ const defaultColumns: ColumnConfig[] = [
 ];
 
 export function ListaLancamentosSimples() {
-  const { lancamentos, excluirLancamento, isLoading, error, isExcluindo, campanhas } = useCaixa();
+  const { lancamentosFiltrados: lancamentos, excluirLancamento, isLoading, error, isExcluindo, campanhas } = useCaixa();
   const { formasPagamento, setores, getTecnicos } = useEntidades();
 
   // Obter lista de técnicos
@@ -136,19 +137,8 @@ export function ListaLancamentosSimples() {
         );
 
       case "categoria": {
-        // Se já tem categoria como string válida, usar ela
-        if (typeof lancamento.categoria === "string" && lancamento.categoria.trim() !== "") {
-          return lancamento.categoria;
-        }
-        // Se tem descricaoECategoria, usar a categoria de lá
-        if (lancamento.descricaoECategoria?.categoria) {
-          return lancamento.descricaoECategoria.categoria;
-        }
-        // Fallback para categoria do objeto descrição
-        if (typeof lancamento.descricao === "object" && lancamento.descricao?.categoria) {
-          return lancamento.descricao.categoria;
-        }
-        return "N/A";
+        const cat = extractCategoriaNome(lancamento);
+        return cat || "N/A";
       }
 
       case "descricao":
@@ -289,21 +279,18 @@ export function ListaLancamentosSimples() {
         if (lancamento.localizacao?.nome) {
           return lancamento.localizacao.nome;
         }
-        // Fallback para setor (dados legados)
-        if (!lancamento.setor) return "-";
 
-        if (typeof lancamento.setor === "string") {
-          // tentar mapear usando setores do contexto
+        const setorNome = extractSetorNome(lancamento.setor);
+        if (setorNome) return setorNome;
+
+        // tentar mapear usando setores do contexto
+        if (typeof lancamento.setor === "string" && lancamento.setor.trim() !== "") {
           const encontrado = (setores || []).find(s =>
             s.id?.toString() === lancamento.setor.toString() ||
             s.nome?.toString() === lancamento.setor.toString()
           );
-          if (encontrado) {
-            const cidadeNome = typeof encontrado.cidade === "object"
-              ? encontrado.cidade?.nome
-              : encontrado.cidade;
-            return cidadeNome ? `${encontrado.nome} - ${cidadeNome}` : encontrado.nome;
-          }
+          if (encontrado) return encontrado.nome;
+
           // evitar exibir id numérico
           if (/^\d+$/.test(lancamento.setor.trim())) {
             return "N/A";
@@ -312,14 +299,29 @@ export function ListaLancamentosSimples() {
           }
         }
 
-        // Formato objeto
-        const nomeSetor = lancamento.setor.nome || lancamento.setor;
-        const cidadeSetor =
-          typeof lancamento.setor.cidade === "object"
-            ? lancamento.setor.cidade?.nome
-            : lancamento.setor.cidade;
+        return "-";
+      }
 
-        return cidadeSetor ? `${nomeSetor} - ${cidadeSetor}` : nomeSetor;
+      case "cidade": {
+        // Nova coluna para cidade
+        const cidade = extractSetorCidade(lancamento.setor, lancamento.cidade);
+        if (cidade) return cidade;
+
+        // tentar mapear usando setores do contexto
+        if (typeof lancamento.setor === "string" && lancamento.setor.trim() !== "") {
+          const encontrado = (setores || []).find(s =>
+            s.id?.toString() === lancamento.setor.toString() ||
+            s.nome?.toString() === lancamento.setor.toString()
+          );
+          if (encontrado) {
+            const cidadeNome = typeof encontrado.cidade === "object"
+              ? encontrado.cidade?.nome
+              : encontrado.cidade;
+            return cidadeNome || "-";
+          }
+        }
+
+        return "-";
       }
 
       case "campanha": {

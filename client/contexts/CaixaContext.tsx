@@ -10,9 +10,16 @@ import React, {
 } from "react";
 import { LancamentoCaixa, Campanha } from "@shared/types";
 import { useAuth } from "./AuthContext";
+import {
+  normalizeSetorValue,
+  extractCategoriaNome,
+  normalizeComissao,
+  isFilterActive,
+} from "../lib/normalizeLancamento";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
+  lancamentosFiltrados: LancamentoCaixa[];
   campanhas: Campanha[];
   filtros: {
     dataInicio: Date;
@@ -174,12 +181,36 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         setTimeout(() => {
           try {
             const lancamentosParsed = JSON.parse(lancamentosStorage);
-            const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => ({
-              ...lancamento,
-              data: new Date(lancamento.data),
-              dataHora: new Date(lancamento.dataHora),
-              dataCriacao: new Date(lancamento.dataCriacao),
-            }));
+            const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => {
+      // Datas
+      const data = new Date(lancamento.data);
+      const dataHora = lancamento.dataHora ? new Date(lancamento.dataHora) : data;
+      const dataCriacao = lancamento.dataCriacao
+        ? new Date(lancamento.dataCriacao)
+        : new Date();
+
+      // Normalizar setor e cidade
+      const setorNorm = normalizeSetorValue(lancamento.setor);
+      const cidadeFromSetor = setorNorm?.cidade;
+
+      // Normalizar categoria
+      const categoriaNome =
+        extractCategoriaNome(lancamento) || (lancamento.categoria || undefined);
+
+      // Normalizar comissao
+      const comissao = normalizeComissao(lancamento.comissao);
+
+      return {
+        ...lancamento,
+        data,
+        dataHora,
+        dataCriacao,
+        setor: setorNorm ? { ...setorNorm } : lancamento.setor,
+        cidade: lancamento.cidade || cidadeFromSetor || undefined,
+        categoria: categoriaNome,
+        comissao,
+      };
+    });
             setLancamentos(lancamentosFormatados);
             console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
           } catch (error) {
@@ -419,6 +450,75 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   // Calcular totais
+  // Aplicar filtros aos lançamentos
+  const lancamentosFiltrados = useMemo(() => {
+    if (!filtros || !lancamentos) return lancamentos;
+
+    return lancamentos.filter((l) => {
+      // 1) Datas
+      const data = l.data instanceof Date ? l.data : new Date(l.data);
+      if (filtros.dataInicio && data < filtros.dataInicio) return false;
+      if (filtros.dataFim && data > filtros.dataFim) return false;
+
+      // 2) Tipo
+      if (isFilterActive(filtros.tipo) && filtros.tipo !== "todos" && l.tipo !== filtros.tipo) return false;
+
+      // 3) Forma de pagamento (com suporte a id/string/obj)
+      if (isFilterActive(filtros.formaPagamento)) {
+        const fpId = typeof l.formaPagamento === "object" ? String(l.formaPagamento?.id) : String(l.formaPagamento || "");
+        if (fpId !== String(filtros.formaPagamento)) return false;
+      }
+
+      // 4) Técnico (id ou nome)
+      if (isFilterActive(filtros.tecnico)) {
+        const tecnicoId = (l.tecnicoResponsavel?.id ?? l.funcionario?.id ?? l.tecnicoResponsavel ?? l.funcionario) || "";
+        if (String(tecnicoId) !== String(filtros.tecnico)) return false;
+      }
+
+      // 5) Campanha
+      if (isFilterActive(filtros.campanha)) {
+        const camp = typeof l.campanha === "object" ? String(l.campanha?.id) : String(l.campanha || "");
+        if (camp !== String(filtros.campanha)) return false;
+      }
+
+      // 6) Setor
+      if (isFilterActive(filtros.setor)) {
+        const setorId = typeof l.setor === "object" ? String(l.setor?.id || l.setor?.nome) : String(l.setor || "");
+        if (setorId !== String(filtros.setor)) return false;
+      }
+
+      // 7) Categoria
+      if (isFilterActive(filtros.categoria)) {
+        const cat = extractCategoriaNome(l) || l.categoria || "";
+        if (String(cat) !== String(filtros.categoria)) return false;
+      }
+
+      // 8) Cliente
+      if (isFilterActive(filtros.cliente)) {
+        const cli = typeof l.cliente === "object" ? String(l.cliente?.id) : String(l.cliente || "");
+        if (cli !== String(filtros.cliente)) return false;
+      }
+
+      // 9) Cidade (tentar localizar no setor)
+      if (isFilterActive(filtros.cidade)) {
+        const cidadeValor =
+          (l.setor && (typeof l.setor === "object" ? (l.setor.cidade?.nome || l.setor.cidade) : undefined)) ||
+          (l.localizacao && (typeof l.localizacao === "object" ? (l.localizacao.cidade?.nome || l.localizacao.cidade) : l.localizacao)) ||
+          l.cidade ||
+          "";
+        if (cidadeValor && String(cidadeValor) !== String(filtros.cidade)) return false;
+      }
+
+      // 10) Número da nota (match parcial)
+      if (filtros.numeroNota && String(filtros.numeroNota).trim() !== "") {
+        const numero = String(l.numeroNota || "");
+        if (!numero.includes(String(filtros.numeroNota))) return false;
+      }
+
+      return true;
+    });
+  }, [lancamentos, filtros]);
+
   const totais = useMemo(() => {
     const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
     const receitasBoleto = receitasCompletas.filter(isBoleto);
@@ -464,6 +564,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({
     lancamentos,
+    lancamentosFiltrados,
     campanhas,
     filtros,
     totais,
