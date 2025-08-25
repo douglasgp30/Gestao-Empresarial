@@ -591,6 +591,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       impostoInput.reset();
       setNotaFiscalEmitida(false);
       setDataVencimentoBoleto(null);
+      setClienteRecemAdicionado(false);
 
       onSuccess?.();
     } catch (error) {
