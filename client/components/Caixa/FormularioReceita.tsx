@@ -67,10 +67,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos com memoização estabilizada - evitar dependências instáveis
+  // Carregar técnicos com memoização estabilizada - usar getTecnicos como dependência
   const tecnicos = useMemo(() => {
     return getTecnicos();
-  }, [formasPagamento.length, setores.length]); // Usar length para estabilizar
+  }, [getTecnicos]); // Usar getTecnicos corretamente
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -859,7 +859,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Técnico e Campanha na mesma linha */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tecnicoResponsavel">Técnico Responsável</Label>
+              <Label htmlFor="tecnicoResponsavel">T��cnico Responsável</Label>
               <Select
                 value={formData.tecnicoResponsavel}
                 onValueChange={(value) =>
