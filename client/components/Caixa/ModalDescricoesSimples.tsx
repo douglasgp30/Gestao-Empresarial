@@ -538,23 +538,43 @@ export default function ModalDescricoesSimples() {
                     key={categoria.id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{categoria.nome}</span>
-                      {(() => {
-                        const numDescricoes = contarDescricoesDaCategoria(categoria.nome, categoria.tipo);
-                        return (
-                          <span
-                            className={`px-2 py-1 text-xs rounded-full ${
-                              numDescricoes > 0
-                                ? 'bg-blue-100 text-blue-700'
-                                : 'bg-gray-100 text-gray-500'
-                            }`}
-                            title={`${numDescricoes} descrição(ões) vinculada(s)`}
-                          >
-                            {numDescricoes}
-                          </span>
-                        );
-                      })()}
+                    <div className="flex items-center gap-2 flex-1">
+                      {itemEditando?.id === categoria.id ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <Input
+                            value={nomeEditando}
+                            onChange={(e) => setNomeEditando(e.target.value)}
+                            className="flex-1"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleSalvarEdicao();
+                              } else if (e.key === 'Escape') {
+                                handleCancelarEdicao();
+                              }
+                            }}
+                            autoFocus
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <span className="font-medium">{categoria.nome}</span>
+                          {(() => {
+                            const numDescricoes = contarDescricoesDaCategoria(categoria.nome, categoria.tipo);
+                            return (
+                              <span
+                                className={`px-2 py-1 text-xs rounded-full ${
+                                  numDescricoes > 0
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-gray-100 text-gray-500'
+                                }`}
+                                title={`${numDescricoes} descrição(ões) vinculada(s)`}
+                              >
+                                {numDescricoes}
+                              </span>
+                            );
+                          })()}
+                        </>
+                      )}
                     </div>
                     <div className="flex gap-1">
                       <Button
@@ -666,7 +686,7 @@ export default function ModalDescricoesSimples() {
           </Card>
         </div>
 
-        {/* Modal de confirmação super simples */}
+        {/* Modal de confirma��ão super simples */}
         {showConfirm && (
           <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
