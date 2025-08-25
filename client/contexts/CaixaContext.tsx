@@ -207,7 +207,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Se falhar, criar dados básicos
       criarDadosBasicos();
     }
-  }, [carregarCampanhasLocalStorage, carregarLancamentosLocalStorage, criarDadosBasicos]);
+  }, []); // Remover dependencies para evitar loops
 
   // Função manual para recarregar dados
   const carregarDados = async () => {
