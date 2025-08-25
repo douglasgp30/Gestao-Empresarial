@@ -144,12 +144,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
         if (data.data) {
           setDescricoesFiltradas(data.data);
-          console.log(
-            "[FormularioReceita] Descrições carregadas para",
-            formData.categoria,
-            ":",
-            data.data.length,
-          );
         }
       } catch (error) {
         console.error(
@@ -1113,7 +1107,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     receber
                   </li>
                   <li>
-                    �� <strong>Quando pago:</strong> Marque como pago em Contas a
+                    • <strong>Quando pago:</strong> Marque como pago em Contas a
                     Receber
                   </li>
                   <li>
