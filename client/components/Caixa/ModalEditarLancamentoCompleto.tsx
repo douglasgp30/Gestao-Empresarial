@@ -927,6 +927,20 @@ export function ModalEditarLancamentoCompleto({
             </div>
           </form>
         )}
+
+        {/* Modal de Cliente fora do form para evitar aninhamento */}
+        <ModalClienteSimples
+          isOpen={isModalClienteOpen}
+          onClose={() => setIsModalClienteOpen(false)}
+          onClienteAdicionado={(cliente) => {
+            setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+            toast({
+              title: "Cliente Adicionado",
+              description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
+              variant: "default",
+            });
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
