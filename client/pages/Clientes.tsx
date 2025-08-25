@@ -111,13 +111,21 @@ export default function Clientes() {
             Gerencie os clientes da empresa e visualize o histórico de serviços
           </p>
         </div>
-        <ModalCadastroCliente
-          trigger={
-            <Button className="flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              Novo Cliente
-            </Button>
-          }
+        <Button
+          className="flex items-center gap-2"
+          onClick={() => setIsModalClienteOpen(true)}
+        >
+          <UserPlus className="h-4 w-4" />
+          Novo Cliente
+        </Button>
+
+        <ModalClienteSimples
+          isOpen={isModalClienteOpen}
+          onClose={() => setIsModalClienteOpen(false)}
+          onClienteAdicionado={(cliente) => {
+            // Cliente será automaticamente adicionado à lista via contexto
+            // Opcional: mostrar toast de sucesso
+          }}
         />
       </div>
 
