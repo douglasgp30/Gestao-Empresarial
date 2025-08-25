@@ -13,6 +13,9 @@ import {
   XCircle,
   Folder,
   Eye,
+  Edit2,
+  Save,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import ModalDependenciasCategoria from "./ModalDependenciasCategoria";
