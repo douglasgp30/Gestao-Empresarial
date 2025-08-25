@@ -408,6 +408,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             dataHora: lancamento.dataHora || new Date(),
             funcionarioId: lancamento.funcionarioId
           };
+
+          // ✅ VALIDAR dados atualizados
+          try {
+            validarLancamento(lancamentoAtualizado, "editarLancamento");
+          } catch (validationError) {
+            console.warn("⚠️ [CaixaContext] Validação falhou na edição:", validationError.message);
+            // Continuar mesmo com aviso, mas logar o problema
+          }
+
           console.log("📝 [CaixaContext] Lançamento atualizado:", lancamentoAtualizado);
           return lancamentoAtualizado;
         }
