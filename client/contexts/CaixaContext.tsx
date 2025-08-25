@@ -78,6 +78,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isCarregando, setIsCarregando] = useState(false);
   const [isExcluindo, setIsExcluindo] = useState(false);
+
+  // ⚠️ FLAG ANTI-PISCAR: Evita múltiplos carregamentos simultâneos
+  const [jaCarregou, setJaCarregou] = useState(false);
   const [filtros, setFiltros] = useState(() => {
     // Usar data atual do sistema mas normalizando para o dia correto
     const agora = new Date();
@@ -563,7 +566,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (error instanceof Error) {
         if (error.message.includes("Failed to fetch")) {
           console.warn(
-            "�� [CaixaContext] Problema de conectividade, usando fallback",
+            "��� [CaixaContext] Problema de conectividade, usando fallback",
           );
         } else if (error.message.includes("Timeout")) {
           console.warn(
