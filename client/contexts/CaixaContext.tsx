@@ -624,7 +624,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           JSON.stringify(dadosMigrados),
         );
         console.log(
-          "�� [CaixaContext] Dados migrados salvos de volta no localStorage",
+          "📦 [CaixaContext] Dados migrados salvos de volta no localStorage",
         );
       } else {
         setLancamentos([]);
@@ -1343,7 +1343,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   );
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
-  // Value simplificado do contexto
+  // Value otimizado do contexto
   const value = useMemo(
     () => ({
       lancamentos,
@@ -1354,7 +1354,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       editarLancamento: editarLancamentoCb,
       excluirLancamento: excluirLancamentoCb,
       adicionarCampanha: adicionarCampanhaCb,
-      setFiltros,
+      setFiltros: atualizarFiltros,
       carregarDados: carregarDadosCb,
       isLoading,
       isExcluindo,
@@ -1363,12 +1363,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [
       lancamentos,
       campanhas,
-      filtros, // Usar objeto filtros normal
+      filtros,
       totais,
       adicionarLancamentoCb,
       editarLancamentoCb,
       excluirLancamentoCb,
       adicionarCampanhaCb,
+      atualizarFiltros,
       carregarDadosCb,
       isLoading,
       isExcluindo,
