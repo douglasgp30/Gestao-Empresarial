@@ -9,7 +9,6 @@ import React, {
   useRef,
 } from "react";
 import { Cliente } from "@shared/types";
-import { loadingController, LoadTypes } from "../lib/loadingControl";
 
 interface ClientesContextType {
   clientes: Cliente[];
@@ -29,31 +28,21 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const inicializado = useRef(false);
 
-  // Função para carregar clientes da API
+  // CARREGAMENTO MANUAL APENAS - SEM LOOPS
   const carregarClientesAPI = useCallback(async () => {
-    if (!loadingController.startLoad(LoadTypes.CLIENTES)) {
-      return [];
-    }
-
     try {
-      console.log("[ClientesContext] Carregando clientes da API...");
+      console.log("[ClientesContext] Carregamento MANUAL de clientes...");
       
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
       const response = await fetch("/api/clientes", {
-        signal: controller.signal,
         headers: { "Cache-Control": "no-cache" },
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`Erro ${response.status}: ${response.statusText}`);
       }
 
       const clientesAPI = await response.json();
-      console.log("[ClientesContext] Clientes carregados da API:", clientesAPI.length);
+      console.log("[ClientesContext] Clientes carregados MANUALMENTE:", clientesAPI.length);
 
       const clientesFormatados: Cliente[] = clientesAPI.map((c: any) => ({
         id: c.id.toString(),
@@ -81,12 +70,9 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("[ClientesContext] Erro ao carregar clientes da API:", error);
       return carregarClientesLocalStorage();
-    } finally {
-      loadingController.finishLoad(LoadTypes.CLIENTES);
     }
   }, []);
 
-  // Função para carregar clientes do localStorage (fallback)
   const carregarClientesLocalStorage = useCallback((): Cliente[] => {
     try {
       console.log("[ClientesContext] Carregando clientes do localStorage como fallback...");
@@ -109,17 +95,18 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Carregamento inicial ÚNICO
+  // CARREGAMENTO INICIAL ÚNICA VEZ - SEM LOOPS
   useEffect(() => {
     if (inicializado.current || typeof window === "undefined") return;
     inicializado.current = true;
 
-    console.log("[ClientesContext] Carregamento inicial ÚNICO");
+    console.log("🚨 [ClientesContext] CARREGAMENTO INICIAL ÚNICO E CONTROLADO");
     
     const inicializar = async () => {
       setIsLoading(true);
       try {
-        await carregarClientesAPI();
+        // NÃO carregar na inicialização para evitar piscar
+        console.log("✅ [ClientesContext] Inicialização SEM carregamento automático");
       } catch (error) {
         console.error("[ClientesContext] Erro ao inicializar:", error);
       } finally {
@@ -127,8 +114,7 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    // Delay mínimo para evitar conflitos
-    setTimeout(inicializar, 150);
+    setTimeout(inicializar, 100);
   }, []);
 
   const adicionarCliente = async (novoCliente: Omit<Cliente, "id" | "dataCriacao">): Promise<Cliente> => {
