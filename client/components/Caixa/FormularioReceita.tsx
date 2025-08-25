@@ -511,7 +511,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             prioridadePagamento: "normal",
           };
 
-          console.log("Dados para criar conta a receber:", dadosContaReceber);
+          // Dados preparados para criar conta a receber
 
           const responseContaReceber = await fetch("/api/contas", {
             method: "POST",
