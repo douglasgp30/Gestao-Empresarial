@@ -27,7 +27,6 @@ import SelectWithAdd from "../ui/select-with-add";
 import { TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 import { isFormaPagamentoBoleto } from "../../lib/stringUtils";
-import { TestModalCliente } from "../Debug/TestModalCliente";
 
 export function ModalReceita() {
   const {
