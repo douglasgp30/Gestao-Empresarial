@@ -28,7 +28,6 @@ import {
   TableRow,
 } from "../components/ui/table";
 import ModalCadastroCliente from "../components/Clientes/ModalCadastroCliente";
-import ModalClienteSimples from "../components/Clientes/ModalClienteSimples";
 import {
   Users,
   Search,
@@ -119,9 +118,9 @@ export default function Clientes() {
           Novo Cliente
         </Button>
 
-        <ModalClienteSimples
+        <ModalCadastroCliente
           isOpen={isModalClienteOpen}
-          onClose={() => setIsModalClienteOpen(false)}
+          onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             // Cliente será automaticamente adicionado à lista via contexto
             // Opcional: mostrar toast de sucesso
