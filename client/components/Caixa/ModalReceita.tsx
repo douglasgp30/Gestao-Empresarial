@@ -332,10 +332,21 @@ export function ModalReceita() {
     setIsSubmitting(true);
 
     try {
+      console.log("🚀 [ModalReceita] INICIANDO SALVAMENTO DE RECEITA");
+      console.log("📊 [ModalReceita] Estado do formulário:", formData);
+      console.log("💰 [ModalReceita] Valores calculados:", {
+        valorCalculado,
+        valorLiquidoCalculado,
+        valorQueEntrouCalculado,
+        impostoCalculado,
+        comissaoCalculada
+      });
+
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
       if (isBoleto) {
         codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+        console.log("📋 [ModalReceita] Código de serviço gerado para boleto:", codigoServico);
       }
 
       // Buscar objetos completos para criar snapshots
@@ -343,15 +354,16 @@ export function ModalReceita() {
         (c) =>
           c.id === formData.cliente || c.id.toString() === formData.cliente,
       );
+      console.log("👤 [ModalReceita] Cliente selecionado:", clienteSelecionado);
 
-      const lancamentoCaixa = await adicionarLancamento({
+      const dadosParaSalvar = {
         data: new Date(formData.data),
-        tipo: "receita",
+        tipo: "receita" as const,
         valor: valorCalculado,
         valorLiquido: valorLiquidoCalculado,
         valorQueEntrou: valorQueEntrouCalculado,
         imposto: impostoCalculado, // Incluir o imposto calculado
-        // Não enviar comissao - deixar o servidor calcular automaticamente
+        categoria: formData.categoria,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
@@ -373,7 +385,13 @@ export function ModalReceita() {
         // Campos de integração para boletos
         codigoServico: codigoServico,
         sistemaOrigem: isBoleto ? "caixa_boleto" : undefined,
-      });
+      };
+
+      console.log("📤 [ModalReceita] Dados que serão enviados para adicionarLancamento:", dadosParaSalvar);
+
+      const lancamentoCaixa = await adicionarLancamento(dadosParaSalvar);
+
+      console.log("✅ [ModalReceita] Lançamento retornado pelo contexto:", lancamentoCaixa);
 
       // Se for boleto, criar conta a receber automaticamente
       if (isBoleto && dataVencimentoBoleto && codigoServico) {
@@ -487,6 +505,8 @@ export function ModalReceita() {
         });
       }
 
+      console.log("🎉 [ModalReceita] RECEITA SALVA COM SUCESSO!");
+
       toast({
         title: "Sucesso",
         description: isBoleto
@@ -498,17 +518,25 @@ export function ModalReceita() {
       resetForm();
       setIsOpen(false);
 
-      // Não recarregar a página toda, apenas aguardar contexto atualizar
+      // Aguardar um pouco para garantir que o contexto seja atualizado
+      setTimeout(() => {
+        console.log("✅ [ModalReceita] Modal fechado, contexto deve estar atualizado");
+      }, 500);
+
       console.log("[ModalReceita] Lançamento salvo, modal fechado");
     } catch (error) {
-      console.error("Erro ao lançar receita:", error);
+      console.error("❌ [ModalReceita] ERRO AO LANÇAR RECEITA:", error);
+      console.error("❌ [ModalReceita] Stack trace:", error.stack);
+      console.error("❌ [ModalReceita] Dados que causaram erro:", formData);
+
       toast({
         title: "Erro",
-        description: "Erro ao lançar receita. Tente novamente.",
+        description: "Erro ao lançar receita. Verifique o console para mais detalhes.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
+      console.log("🏁 [ModalReceita] Finalizando processo de salvamento");
     }
   };
 
