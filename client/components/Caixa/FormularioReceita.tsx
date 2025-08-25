@@ -68,7 +68,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos com memoização estabilizada - evitar dependências instáveis
+  // ATENÇÃO: Usar .length nas dependências para ESTABILIZAR e EVITAR PISCAR na tela!
+  // NÃO usar arrays completos como dependência pois causa re-renderizações excessivas
   const tecnicos = useMemo(() => {
     return getTecnicos();
   }, [formasPagamento.length, setores.length]); // Usar length para estabilizar
