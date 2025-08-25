@@ -566,7 +566,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (error instanceof Error) {
         if (error.message.includes("Failed to fetch")) {
           console.warn(
-            "��� [CaixaContext] Problema de conectividade, usando fallback",
+            "�� [CaixaContext] Problema de conectividade, usando fallback",
           );
         } else if (error.message.includes("Timeout")) {
           console.warn(
@@ -679,31 +679,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // TEMPORÁRIO: Carregamento desabilitado para debugar piscar na tela
+  // ⚠️ ANTI-PISCAR: Carregamento controlado para evitar loops infinitos
   useEffect(() => {
-    console.log("📦 [CaixaContext] CARREGAMENTO DESABILITADO - Debug piscar na tela");
-
-    // Apenas carregar campanhas do localStorage e dados básicos
-    try {
-      const campanhasLocal = JSON.parse(localStorage.getItem("campanhas") || "[]");
-      setCampanhas(campanhasLocal);
-
-      const lancamentosLocal = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
-      setLancamentos(lancamentosLocal.map((l: any) => ({
-        ...l,
-        data: new Date(l.data),
-        dataHora: new Date(l.dataHora),
-        dataCriacao: new Date(l.dataCriacao),
-      })));
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Erro ao carregar dados localmente:", error);
-      setIsLoading(false);
-    }
-    return;
-
     if (typeof window === "undefined") return;
+
+    // Evitar múltiplos carregamentos
+    if (jaCarregou) {
+      console.log("📦 [CaixaContext] ⚠️ Carregamento já executado, ignorando");
+      return;
+    }
 
     let mounted = true;
     const loadInitialData = async () => {
