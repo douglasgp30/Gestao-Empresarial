@@ -1326,8 +1326,22 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, [lancamentos]);
 
-  // Memoizar funções para estabilizar referências e evitar re-renders
-  const carregarDadosCb = useCallback(() => carregarDados(), []);
+  // Função manual para recarregar apenas quando necessário
+  const recarregarManual = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      console.log("📦 [CaixaContext] Recarregamento manual solicitado");
+      await carregarLancamentosDoBanco();
+    } catch (error) {
+      console.warn("Erro no recarregamento manual, usando localStorage:", error);
+      await carregarLancamentosLocalStorage();
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Memoizar funções para estabilizar referências
+  const carregarDadosCb = useCallback(() => recarregarManual(), [recarregarManual]);
   const adicionarLancamentoCb = useCallback(
     (novo) => adicionarLancamento(novo),
     [],
@@ -1338,7 +1352,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   );
   const excluirLancamentoCb = useCallback(
     (id) => excluirLancamento(id),
-    [isExcluindo],
+    [],
   );
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
