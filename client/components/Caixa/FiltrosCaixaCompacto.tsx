@@ -55,6 +55,11 @@ export function FiltrosCaixaCompacto() {
     setFiltros(filtrosLocal);
   }, [filtrosLocal, setFiltros]);
 
+  // Handler genérico para evitar functions inline
+  const handleFieldChange = useCallback((field: string) => (value: any) => {
+    setFiltrosLocal(prev => ({ ...prev, [field]: value }));
+  }, []);
+
   const limparFiltros = useCallback(() => {
     const filtrosLimpos = {
       dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
