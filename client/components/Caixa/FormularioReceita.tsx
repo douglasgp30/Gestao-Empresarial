@@ -112,16 +112,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             ...new Set(data.data.map((cat: any) => cat.nome)),
           ].sort();
           setCategoriasReceita(nomes);
-          console.log("[FormularioReceita] Categorias carregadas:", nomes);
-          console.log(
-            "[FormularioReceita] Dados completos das categorias:",
-            data.data,
-          );
         } else {
-          console.log(
-            "[FormularioReceita] Nenhuma categoria encontrada na resposta:",
-            data,
-          );
+          // Nenhuma categoria encontrada
         }
       } catch (error) {
         console.error(
@@ -1121,7 +1113,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     receber
                   </li>
                   <li>
-                    • <strong>Quando pago:</strong> Marque como pago em Contas a
+                    �� <strong>Quando pago:</strong> Marque como pago em Contas a
                     Receber
                   </li>
                   <li>
