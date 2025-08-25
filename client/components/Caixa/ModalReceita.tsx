@@ -911,17 +911,22 @@ export function ModalReceita() {
                     </SelectContent>
                   </Select>
 
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    title="Adicionar Cliente"
+                    onClick={() => {
+                      console.log("[ModalReceita] Abrindo modal de cliente via state");
+                      setIsModalClienteOpen(true);
+                    }}
+                  >
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
+
                   <ModalCadastroCliente
-                    trigger={
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        title="Adicionar Cliente"
-                      >
-                        <UserPlus className="h-4 w-4" />
-                      </Button>
-                    }
+                    isOpen={isModalClienteOpen}
+                    onOpenChange={setIsModalClienteOpen}
                     onClienteAdicionado={(cliente) => {
                       console.log("[ModalReceita] Cliente adicionado, atualizando formulário:", cliente);
 
