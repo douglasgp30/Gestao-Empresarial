@@ -104,6 +104,25 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Definir recarregarClientes antes dos useEffects que a usam
+  const recarregarClientes = useCallback(async () => {
+    console.log("[ClientesContext] 🔄 Iniciando recarregamento manual dos clientes...");
+    setIsLoading(true);
+    try {
+      const clientesAntes = clientes.length;
+      await carregarClientesAPI();
+
+      // Log do resultado
+      setTimeout(() => {
+        console.log(`[ClientesContext] ✅ Recarregamento concluído: ${clientesAntes} → ${clientes.length} clientes`);
+      }, 100);
+    } catch (error) {
+      console.error("[ClientesContext] ❌ Erro ao recarregar clientes:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [carregarClientesAPI, clientes.length]);
+
   // Carregar dados na inicialização
   useEffect(() => {
     const inicializar = async () => {
