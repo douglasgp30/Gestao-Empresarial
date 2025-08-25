@@ -29,6 +29,9 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ⚠️ FLAG ANTI-PISCAR: Evita múltiplos carregamentos simultâneos
+  const [jaCarregou, setJaCarregou] = useState(false);
+
   // Carregar clientes da API
   const carregarClientesAPI = useCallback(async () => {
     try {
