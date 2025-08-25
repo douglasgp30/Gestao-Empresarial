@@ -899,8 +899,27 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     return Promise.resolve();
   }, []);
 
-  // === CARREGAMENTO INICIAL FORÇADO ===
+  // TEMPORÁRIO: Carregamento desabilitado para debugar piscar na tela
   useEffect(() => {
+    console.log("[EntidadesContext] CARREGAMENTO DESABILITADO - Debug piscar na tela");
+
+    // Carregar apenas dados básicos do localStorage
+    try {
+      const formasLocal = JSON.parse(localStorage.getItem("formas_pagamento") || "[]");
+      setFormasPagamento(formasLocal.length > 0 ? formasLocal : FORMAS_PAGAMENTO_PADRAO);
+
+      const setoresLocal = JSON.parse(localStorage.getItem("setores") || "[]");
+      setSetores(setoresLocal);
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error("[EntidadesContext] Erro ao carregar localmente:", error);
+      setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
+      setIsLoading(false);
+    }
+    return;
+
+    // === CARREGAMENTO ORIGINAL (DESABILITADO) ===
     // Evitar carregamento duplo
     let carregamentoExecutado = false;
 
