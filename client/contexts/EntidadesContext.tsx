@@ -20,15 +20,6 @@ import {
 } from "@shared/types";
 import { FORMAS_PAGAMENTO_PADRAO } from "../lib/dadosBasicos";
 import { normalizeString } from "../lib/stringUtils";
-// APIs removidas para usar localStorage
-import { loadingManager } from "../lib/loadingManager";
-import { contextThrottle } from "../lib/contextThrottle";
-import {
-  shouldSkipLoading,
-  getLoadingDelay,
-  isContextLoading,
-  setContextLoading,
-} from "../lib/globalLoadingControl";
 import { useFuncionarios } from "./FuncionariosContext";
 import { criarDadosBasicosDescricoes } from "../lib/dadosBasicosDescricoes";
 
@@ -51,108 +42,61 @@ interface EntidadesContextType {
     categoria?: string,
   ) => DescricaoECategoria[];
 
-  // Mantém interfaces originais para compatibilidade
-  descricoes: Descricao[];
-  categorias: Categoria[];
-  adicionarDescricao: (
-    descricao: Omit<Descricao, "id" | "dataCriacao">,
+  // Localização geográfica
+  localizacoesGeograficas: LocalizacaoGeografica[];
+  getCidades: () => LocalizacaoGeografica[];
+  getSetores: (cidade?: string) => LocalizacaoGeografica[];
+  criarLocalizacaoGeografica: (
+    localizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
   ) => Promise<void>;
-  editarDescricao: (id: string, descricao: Partial<Descricao>) => Promise<void>;
-  excluirDescricao: (id: string) => Promise<void>;
-  adicionarCategoria: (
-    categoria: Omit<Categoria, "id" | "dataCriacao">,
-  ) => void;
-  editarCategoria: (id: string, categoria: Partial<Categoria>) => void;
-  excluirCategoria: (id: string) => void;
+  atualizarLocalizacaoGeografica: (
+    id: number,
+    localizacao: Partial<LocalizacaoGeografica>,
+  ) => Promise<void>;
+  excluirLocalizacaoGeografica: (id: number) => Promise<void>;
+  sincronizarLocalizacoes: () => Promise<void>;
 
-  // Formas de Pagamento
+  // Formas de pagamento
   formasPagamento: FormaPagamento[];
-  adicionarFormaPagamento: (
-    forma: Omit<FormaPagamento, "id" | "dataCriacao">,
-  ) => Promise<void>;
-  editarFormaPagamento: (
+  criarFormaPagamento: (forma: Omit<FormaPagamento, "id">) => Promise<void>;
+  atualizarFormaPagamento: (
     id: string,
     forma: Partial<FormaPagamento>,
   ) => Promise<void>;
   excluirFormaPagamento: (id: string) => Promise<void>;
 
-  // Funcionários/Técnicos
+  // Dados para compatibilidade com componentes antigos
+  descricoes: Descricao[];
+  categorias: Categoria[];
   funcionarios: any[];
   tecnicos: any[];
-  adicionarFuncionario: (funcionario: any) => Promise<void>;
-  editarFuncionario: (id: string, funcionario: any) => Promise<void>;
-  excluirFuncionario: (id: string) => Promise<void>;
-  getTecnicos: () => any[];
-
-  // Localização Geográfica (Cidades e Setores unificados)
-  localizacoesGeograficas: LocalizacaoGeografica[];
-  adicionarLocalizacaoGeografica: (
-    localizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
-  ) => Promise<void>;
-  editarLocalizacaoGeografica: (
-    id: number,
-    localizacao: Partial<LocalizacaoGeografica>,
-  ) => Promise<void>;
-  excluirLocalizacaoGeografica: (id: number) => Promise<void>;
-
-  // Funções de conveniência para filtrar localizações
-  getCidades: () => LocalizacaoGeografica[];
-  getSetores: (cidade?: string) => LocalizacaoGeografica[];
-
-  // Arrays de compatibilidade para componentes antigos
+  clientes: Cliente[];
+  fornecedores: Fornecedor[];
   cidades: string[];
   setores: LocalizacaoGeografica[];
 
-  // Clientes (API)
-  clientes: Cliente[];
-  adicionarCliente: (
-    cliente: Omit<Cliente, "id" | "dataCriacao">,
-  ) => Promise<void>;
-  editarCliente: (id: string, cliente: Partial<Cliente>) => Promise<void>;
-  excluirCliente: (id: string) => Promise<void>;
+  // Função para obter técnicos combinados
+  getTecnicos: () => any[];
 
-  // Fornecedores (localStorage temporário)
-  fornecedores: Fornecedor[];
-  adicionarFornecedor: (
-    fornecedor: Omit<Fornecedor, "id" | "dataCriacao">,
-  ) => void;
-  editarFornecedor: (id: string, fornecedor: Partial<Fornecedor>) => void;
-  excluirFornecedor: (id: string) => void;
-
-  // Controles gerais
+  // Estados de carregamento
   isLoading: boolean;
   error: string | null;
-  recarregarTudo: () => Promise<void>;
+  carregarDados: () => Promise<void>;
 }
 
 const EntidadesContext = createContext<EntidadesContextType | undefined>(
   undefined,
 );
 
-// Função para salvar entidade no localStorage com validação
-function salvarEntidadeNoStorage<T>(
-  chave: string,
-  dados: T[],
-  filtrarDadosFicticios = true,
-) {
+// === FUNÇÕES UTILITÁRIAS ===
+function salvarEntidadeNoStorage<T>(chave: string, dados: T[]): void {
   try {
-    // Filtrar dados fictícios se solicitado
-    const dadosParaSalvar = filtrarDadosFicticios
-      ? dados.filter(
-          (item: any) =>
-            !item.nome?.includes("Fictício") &&
-            !item.nome?.includes("Teste") &&
-            !item.nome?.startsWith("fake_"),
-        )
-      : dados;
-
-    localStorage.setItem(chave, JSON.stringify(dadosParaSalvar));
+    localStorage.setItem(chave, JSON.stringify(dados));
   } catch (error) {
     console.error(`Erro ao salvar ${chave} no localStorage:`, error);
   }
 }
 
-// Função para carregar entidade do localStorage com fallback
 function carregarEntidadeDoStorage<T>(
   chave: string,
   dadosPadrao: T[] = [],
@@ -184,10 +128,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   >([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isCarregando, setIsCarregando] = useState(false);
-  const [dadosCarregados, setDadosCarregados] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const inicializado = useRef(false);
 
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
@@ -233,14 +176,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       return localizacoesGeograficas.filter(
         (item) =>
           item.tipoItem === "setor" &&
-          item.ativo === true && // Garantir que seja explicitamente true
+          item.ativo === true &&
           (cidade ? item.cidade === cidade : true),
       );
     },
     [localizacoesGeograficas],
   );
 
-  // === FUNÇÕES PARA COMPATIBILIDADE AVEC COMPONENTES ANTIGOS ===
+  // === FUNÇÕES PARA COMPATIBILIDADE COM COMPONENTES ANTIGOS ===
   const cidades = useMemo(() => {
     const cidadesAtivas = getCidades();
     return cidadesAtivas.map((cidade) => cidade.nome);
@@ -251,24 +194,18 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   }, [getSetores]);
 
   const getTecnicos = useCallback(() => {
-    // Combinar técnicos específicos + funcionários que são técnicos
     const tecnicosEspecificos = tecnicos || [];
     const funcionariosTecnicos = (funcionarios || []).filter((func) => {
-      // ehTecnico tem prioridade
       if (func.ehTecnico) return true;
-
-      // Verificar tipoAcesso de forma robusta (case-insensitive e tolerante a acentos)
       const tipo = (func.tipoAcesso || "").toString();
       const tipoNormalized =
         tipo
           .normalize?.("NFD")
           ?.replace(/[\u0300-\u036f]/g, "")
           ?.toLowerCase() || tipo.toLowerCase();
-
       return tipoNormalized === "tecnico";
     });
 
-    // Deduplicar por ID
     const tecnicosCombinados = [...tecnicosEspecificos];
     funcionariosTecnicos.forEach((funcTecnico) => {
       if (!tecnicosCombinados.find((t) => t.id === funcTecnico.id)) {
@@ -276,26 +213,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    const resultado = tecnicosCombinados.filter((t) => t.id && t.id !== 0);
-
-    // Debug removido para evitar logs constantes
-
-    return resultado;
+    return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
   }, [funcionarios, tecnicos]);
 
   // === SINCRONIZAÇÃO COM FUNCIONARIOS CONTEXT ===
   useEffect(() => {
     if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
-      // Sincronização sem logs para evitar ruído
       setFuncionarios(funcionariosDoContexto);
 
-      // Filtrar técnicos dos funcionários sincronizados
       const tecnicosFiltrados = funcionariosDoContexto.filter((f) => {
         return f.ehTecnico || f.tipoAcesso === "Técnico";
       });
       setTecnicos(tecnicosFiltrados);
 
-      // Salvar no localStorage para cache
+      // Backup no localStorage
       try {
         localStorage.setItem(
           "funcionarios",
@@ -307,391 +238,96 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, [funcionariosDoContexto]);
 
-  // === TIMEOUT DE SEGURANÇA PARA FORÇAR LOADING=FALSE ===
-  useEffect(() => {
-    const timeoutSeguranca = setTimeout(() => {
-      if (isLoading) {
-        console.log(
-          "[EntidadesContext] TIMEOUT SEGURANÇA: Forçando loading=false após 5 segundos",
-        );
-        setIsLoading(false);
-        setIsCarregando(false);
-        setContextLoading("EntidadesContext", false);
-        setDadosCarregados(true);
-      }
-    }, 5000); // 5 segundos máximo
-
-    return () => clearTimeout(timeoutSeguranca);
-  }, [isLoading]);
-
-  // === CARREGAMENTO DE DADOS FORÇADO ===
+  // === CARREGAMENTO MANUAL APENAS - SEM LOOPS ===
   const carregarDados = useCallback(async () => {
-    console.log("[EntidadesContext] FORÇANDO carregamento de dados...");
-    setIsCarregando(true);
-    setIsLoading(true);
-    setError(null);
-
     try {
-      // Cache invalidação removida - usando localStorage
+      console.log("🚨 [EntidadesContext] Carregamento MANUAL de dados...");
+      setIsLoading(true);
+      setError(null);
 
-      console.log(
-        "[EntidadesContext] Cache invalidado - forçando recarregamento...",
-      );
-
-      // Carregar dados do localStorage em vez da API
-      console.log(
-        "���� [EntidadesContext] Carregando dados do localStorage...",
-      );
-
-      try {
-        // Carregar descri����ões e categorias
-        const descricoesStorage =
-          localStorage.getItem("descricoes_e_categorias") ||
-          localStorage.getItem("categorias_receita");
-        if (descricoesStorage) {
-          try {
-            const parsed = JSON.parse(descricoesStorage);
-            const arrayParsed = Array.isArray(parsed) ? parsed : [];
-
-            // Verificar se há categorias e descrições básicas
-            if (arrayParsed.length === 0) {
-              const dadosBasicos = criarDadosBasicosDescricoes();
-              setDescricoesECategorias(dadosBasicos);
-              localStorage.setItem(
-                "descricoes_e_categorias",
-                JSON.stringify(dadosBasicos),
-              );
-              console.log(
-                "[EntidadesContext] Dados básicos de descrições criados",
-              );
-            } else {
-              setDescricoesECategorias(arrayParsed);
-            }
-          } catch (error) {
-            console.error("Erro ao parsear descrições e categorias:", error);
-            setDescricoesECategorias([]);
-          }
-        } else {
-          const dadosBasicos = criarDadosBasicosDescricoes();
-          setDescricoesECategorias(dadosBasicos);
-          localStorage.setItem(
-            "descricoes_e_categorias",
-            JSON.stringify(dadosBasicos),
-          );
-          console.log(
-            "[EntidadesContext] Nenhuma descrição encontrada, criando dados básicos",
-          );
-        }
-
-        // Carregar formas de pagamento com validação
-        const formasStorage = localStorage.getItem("formas_pagamento");
-
-        // Usar formas padrão centralizadas
-        const formasDefault = FORMAS_PAGAMENTO_PADRAO;
-
-        if (formasStorage) {
-          try {
-            const formasParsed = JSON.parse(formasStorage);
-            // Validar se é array e se tem dados válidos
-            if (Array.isArray(formasParsed) && formasParsed.length > 0) {
-              // Verificar se todos os itens essenciais existem
-              const formasValidadas = [...formasParsed];
-
-              // Garantir que boleto sempre existe
-              const temBoleto = formasValidadas.some(
-                (f) =>
-                  f.id === "5" ||
-                  (f.nome && f.nome.toLowerCase().includes("boleto")),
-              );
-
-              if (!temBoleto) {
-                console.log(
-                  "[EntidadesContext] Boleto não encontrado no localStorage, adicionando...",
-                );
-                formasValidadas.push({
-                  id: "5",
-                  nome: "Boleto Bancario",
-                  descricao: "Pagamento via boleto bancario",
-                  dataCriacao: new Date(),
-                });
-                // Salvar no localStorage a versão corrigida
-                localStorage.setItem(
-                  "formas_pagamento",
-                  JSON.stringify(formasValidadas),
-                );
-              }
-
-              setFormasPagamento(formasValidadas);
-            } else {
-              console.log(
-                "[EntidadesContext] Dados inválidos no localStorage, usando defaults",
-              );
-              setFormasPagamento(formasDefault);
-              localStorage.setItem(
-                "formas_pagamento",
-                JSON.stringify(formasDefault),
-              );
-            }
-          } catch (error) {
-            console.error(
-              "[EntidadesContext] Erro ao parsear formas de pagamento:",
-              error,
-            );
-            setFormasPagamento(formasDefault);
-            localStorage.setItem(
-              "formas_pagamento",
-              JSON.stringify(formasDefault),
-            );
-          }
-        } else {
-          console.log(
-            "[EntidadesContext] Nenhuma forma de pagamento encontrada, criando dados padrão",
-          );
-          setFormasPagamento(formasDefault);
-          localStorage.setItem(
-            "formas_pagamento",
-            JSON.stringify(formasDefault),
-          );
-        }
-
-        // Forçar verificação de consistência das formas de pagamento
-        console.log(
-          "[EntidadesContext] Verificando consistência das formas de pagamento...",
-        );
-        const formasCarregadas = JSON.parse(
-          localStorage.getItem("formas_pagamento") || "[]",
-        );
-        const temBoletoCorreto = formasCarregadas.find(
-          (f) => f.id === "5" && f.nome.toLowerCase().includes("boleto"),
-        );
-
-        if (!temBoletoCorreto) {
-          console.log(
-            "[EntidadesContext] Inconsistência detectada, corrigindo formas de pagamento...",
-          );
-          setFormasPagamento(formasDefault);
-          localStorage.setItem(
-            "formas_pagamento",
-            JSON.stringify(formasDefault),
-          );
-        }
-
-        // Carregar funcionários
-        const funcionariosStorage = localStorage.getItem("funcionarios");
-        if (funcionariosStorage) {
-          const funcionariosParsed = JSON.parse(funcionariosStorage);
-          setFuncionarios(funcionariosParsed);
-          // Filtrar técnicos
-          const tecnicosFiltrados = funcionariosParsed.filter(
-            (f: any) => f.ehTecnico || f.tipoAcesso === "Técnico",
-          );
-          setTecnicos(tecnicosFiltrados);
-        }
-
-        // Carregar localizações geográficas
-        const localizacoesStorage =
-          localStorage.getItem("localizacoes_geograficas") ||
-          localStorage.getItem("cidades_goias");
-        if (localizacoesStorage) {
-          const localizacoes = JSON.parse(localizacoesStorage);
-          setLocalizacoesGeograficas(
-            Array.isArray(localizacoes) ? localizacoes : [],
-          );
-          console.log(
-            "[EntidadesContext] Localizações carregadas:",
-            localizacoes.length,
-          );
-        } else {
-          // Criar dados iniciais se não existirem
-          const dadosIniciais: LocalizacaoGeografica[] = [
-            {
-              id: 1,
-              nome: "Goiânia",
-              tipoItem: "cidade",
-              ativo: true,
-              dataCriacao: new Date(),
-            },
-            {
-              id: 2,
-              nome: "Anápolis",
-              tipoItem: "cidade",
-              ativo: true,
-              dataCriacao: new Date(),
-            },
-            {
-              id: 3,
-              nome: "Centro",
-              tipoItem: "setor",
-              cidade: "Goiânia",
-              ativo: true,
-              dataCriacao: new Date(),
-            },
-            {
-              id: 4,
-              nome: "Setor Oeste",
-              tipoItem: "setor",
-              cidade: "Goiânia",
-              ativo: true,
-              dataCriacao: new Date(),
-            },
-            {
-              id: 5,
-              nome: "Jardim Goi��s",
-              tipoItem: "setor",
-              cidade: "Goiânia",
-              ativo: true,
-              dataCriacao: new Date(),
-            },
-            {
-              id: 6,
-              nome: "Centro",
-              tipoItem: "setor",
-              cidade: "Anápolis",
-              ativo: true,
-              dataCriacao: new Date(),
-            },
-          ];
-          setLocalizacoesGeograficas(dadosIniciais);
-          localStorage.setItem(
-            "localizacoes_geograficas",
-            JSON.stringify(dadosIniciais),
-          );
-          console.log(
-            "[EntidadesContext] Dados iniciais de localização criados",
-          );
-        }
-      } catch (error) {
-        console.error("Erro ao carregar dados do localStorage:", error);
-      }
-
-      // Carregar dados do localStorage (compatibilidade)
-      const categoriasStorage = carregarEntidadeDoStorage<Categoria>(
-        "categorias",
-        [],
-      );
-      const clientesStorage = carregarEntidadeDoStorage<Cliente>(
-        "clientes",
-        [],
-      );
-      const fornecedoresStorage = carregarEntidadeDoStorage<Fornecedor>(
-        "fornecedores",
-        [],
-      );
-
-      setCategorias(categoriasStorage);
-      setClientes(clientesStorage);
-      setFornecedores(fornecedoresStorage);
-
-      console.log("[EntidadesContext] Carregamento concluído com sucesso");
-      setDadosCarregados(true);
-    } catch (error) {
-      console.error("Erro ao carregar entidades do localStorage:", error);
-      setError("Erro ao carregar dados locais");
-
-      // Dados padrão em caso de erro
-      setDescricoesECategorias([]);
-      setFormasPagamento([]);
-      setFuncionarios([]);
-      setTecnicos([]);
-      setLocalizacoesGeograficas([]);
-    } finally {
-      setIsLoading(false);
-      setIsCarregando(false);
-      setDadosCarregados(true);
-      console.log("[EntidadesContext] Carregamento finalizado - loading=false");
-    }
-  }, [isCarregando]);
-
-  // === RECARREGAMENTO OTIMIZADO ===
-  const recarregarDescricoesECategorias = useCallback(async () => {
-    try {
-      console.log(
-        "📦 [EntidadesContext] Recarregando descrições e categorias...",
-      );
-
-      // Tentar buscar dados atualizados da API primeiro
-      try {
-        const response = await fetch("/api/descricoes-e-categorias");
-        if (response.ok) {
-          const data = await response.json();
-          if (data.data && Array.isArray(data.data)) {
-            console.log(
-              `🌐 [EntidadesContext] Dados da API: ${data.data.length} itens`,
-            );
-            setDescricoesECategorias(data.data);
-
-            // Atualizar localStorage para cache
-            localStorage.setItem(
-              "descricoes_e_categorias",
-              JSON.stringify(data.data),
-            );
-            return;
-          }
-        }
-      } catch (apiError) {
-        console.warn(
-          "⚠️ [EntidadesContext] API não disponível, usando localStorage:",
-          apiError,
-        );
-      }
-
-      // Fallback para localStorage se API falhar
+      // Carregar apenas do localStorage para evitar piscar
       const descricoesStorage =
         localStorage.getItem("descricoes_e_categorias") ||
         localStorage.getItem("categorias_receita");
+      
       if (descricoesStorage) {
         const parsed = JSON.parse(descricoesStorage);
         const arrayParsed = Array.isArray(parsed) ? parsed : [];
         setDescricoesECategorias(arrayParsed);
-        console.log(
-          `📁 [EntidadesContext] Recarregadas do localStorage: ${arrayParsed.length} descrições/categorias`,
-        );
+        console.log(`📁 [EntidadesContext] Carregadas do localStorage: ${arrayParsed.length} descrições/categorias`);
       } else {
-        setDescricoesECategorias([]);
+        // Criar dados básicos se não existirem
+        const dadosBasicos = criarDadosBasicosDescricoes();
+        setDescricoesECategorias(dadosBasicos);
+        localStorage.setItem("descricoes_e_categorias", JSON.stringify(dadosBasicos));
+        console.log(`📁 [EntidadesContext] Dados básicos criados: ${dadosBasicos.length} items`);
       }
+
+      // Carregar formas de pagamento
+      const formasStorage = localStorage.getItem("formas_pagamento");
+      if (formasStorage) {
+        const formasParsed = JSON.parse(formasStorage);
+        setFormasPagamento(formasParsed);
+      } else {
+        setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
+        localStorage.setItem("formas_pagamento", JSON.stringify(FORMAS_PAGAMENTO_PADRAO));
+      }
+
+      // Carregar localizações geográficas
+      const localizacoesStorage = localStorage.getItem("localizacoes_geograficas");
+      if (localizacoesStorage) {
+        const localizacoesParsed = JSON.parse(localizacoesStorage);
+        setLocalizacoesGeograficas(localizacoesParsed);
+      } else {
+        setLocalizacoesGeograficas([]);
+      }
+
+      console.log("✅ [EntidadesContext] Carregamento MANUAL concluído");
     } catch (error) {
-      console.error("Erro ao recarregar descrições e categorias:", error);
-      setDescricoesECategorias([]);
+      console.error("Erro ao carregar dados do EntidadesContext:", error);
+      setError("Erro ao carregar dados");
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
-  // === FUNÇÕES STUB PARA EVITAR ERROS DE API ===
+  // === CARREGAMENTO INICIAL ÚNICA VEZ - SEM LOOPS ===
+  useEffect(() => {
+    if (inicializado.current || typeof window === "undefined") return;
+    inicializado.current = true;
+
+    console.log("🚨 [EntidadesContext] CARREGAMENTO INICIAL ÚNICO E CONTROLADO");
+    
+    const inicializar = async () => {
+      // NÃO carregar automaticamente para evitar piscar
+      console.log("✅ [EntidadesContext] Inicialização SEM carregamento automático");
+    };
+
+    setTimeout(inicializar, 100);
+  }, []);
+
+  // === FUNÇÕES PARA DESCRIÇÕES E CATEGORIAS ===
   const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
     try {
-      console.log(
-        "📦 [EntidadesContext] Criando descrição ou categoria:",
-        novoItem,
-      );
+      console.log("📦 [EntidadesContext] Criando descrição ou categoria:", novoItem);
 
-      // Gerar ID único
       const novoId = Date.now().toString();
-
-      // Criar item completo
       const itemCompleto = {
         ...novoItem,
         id: novoId,
         dataCriacao: new Date().toISOString(),
       };
 
-      // Adicionar ao estado atual
       setDescricoesECategorias((prev) => {
         const novaLista = [...prev, itemCompleto];
-
-        // Salvar no localStorage
         try {
-          localStorage.setItem(
-            "descricoes_e_categorias",
-            JSON.stringify(novaLista),
-          );
-          console.log("✅ [EntidadesContext] Item salvo no localStorage");
+          localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
         } catch (error) {
           console.error("Erro ao salvar no localStorage:", error);
         }
-
         return novaLista;
       });
 
-      console.log("✅ [EntidadesContext] Item criado com sucesso");
       return Promise.resolve();
     } catch (error) {
       console.error("❌ [EntidadesContext] Erro ao criar item:", error);
@@ -702,26 +338,15 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const atualizarDescricaoOuCategoria = useCallback(
     async (id: string, dadosAtualizados: any) => {
       try {
-        console.log(
-          "📦 [EntidadesContext] Atualizando descrição ou categoria:",
-          id,
-          dadosAtualizados,
-        );
+        console.log("📦 [EntidadesContext] Atualizando descrição ou categoria:", id, dadosAtualizados);
 
         setDescricoesECategorias((prev) => {
           const novaLista = prev.map((item) =>
             item.id === id ? { ...item, ...dadosAtualizados } : item,
           );
 
-          // Salvar no localStorage
           try {
-            localStorage.setItem(
-              "descricoes_e_categorias",
-              JSON.stringify(novaLista),
-            );
-            console.log(
-              "✅ [EntidadesContext] Item atualizado no localStorage",
-            );
+            localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
           } catch (error) {
             console.error("Erro ao salvar no localStorage:", error);
           }
@@ -729,7 +354,6 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           return novaLista;
         });
 
-        console.log("✅ [EntidadesContext] Item atualizado com sucesso");
         return Promise.resolve();
       } catch (error) {
         console.error("❌ [EntidadesContext] Erro ao atualizar item:", error);
@@ -741,21 +365,13 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const excluirDescricaoOuCategoria = useCallback(async (id: string) => {
     try {
-      console.log(
-        "📦 [EntidadesContext] Excluindo descrição ou categoria:",
-        id,
-      );
+      console.log("📦 [EntidadesContext] Excluindo descrição ou categoria:", id);
 
       setDescricoesECategorias((prev) => {
         const novaLista = prev.filter((item) => item.id !== id);
 
-        // Salvar no localStorage
         try {
-          localStorage.setItem(
-            "descricoes_e_categorias",
-            JSON.stringify(novaLista),
-          );
-          console.log("✅ [EntidadesContext] Item excluído do localStorage");
+          localStorage.setItem("descricoes_e_categorias", JSON.stringify(novaLista));
         } catch (error) {
           console.error("Erro ao salvar no localStorage:", error);
         }
@@ -763,7 +379,6 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         return novaLista;
       });
 
-      console.log("✅ [EntidadesContext] Item excluído com sucesso");
       return Promise.resolve();
     } catch (error) {
       console.error("❌ [EntidadesContext] Erro ao excluir item:", error);
@@ -771,20 +386,15 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // === FUNÇÕES STUB PARA FORMAS DE PAGAMENTO ===
   const criarFormaPagamento = useCallback(async (novaForma: any) => {
     console.log("📦 [EntidadesContext] STUB: criarFormaPagamento", novaForma);
-    // TODO: Implementar com localStorage
     return Promise.resolve();
   }, []);
 
   const atualizarFormaPagamento = useCallback(
     async (id: string, dadosAtualizados: any) => {
-      console.log(
-        "📦 [EntidadesContext] STUB: atualizarFormaPagamento",
-        id,
-        dadosAtualizados,
-      );
-      // TODO: Implementar com localStorage
+      console.log("📦 [EntidadesContext] STUB: atualizarFormaPagamento", id, dadosAtualizados);
       return Promise.resolve();
     },
     [],
@@ -792,42 +402,27 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const excluirFormaPagamento = useCallback(async (id: string) => {
     console.log("📦 [EntidadesContext] STUB: excluirFormaPagamento", id);
-    // TODO: Implementar com localStorage
     return Promise.resolve();
   }, []);
 
+  // === FUNÇÕES PARA LOCALIZAÇÃO GEOGRÁFICA ===
   const criarLocalizacaoGeografica = useCallback(
-    async (
-      novaLocalizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">,
-    ) => {
-      console.log(
-        "�� [EntidadesContext] Criando localização geográfica:",
-        novaLocalizacao,
-      );
+    async (novaLocalizacao: Omit<LocalizacaoGeografica, "id" | "dataCriacao">) => {
+      console.log("📦 [EntidadesContext] Criando localização geográfica:", novaLocalizacao);
 
       try {
-        const novoId =
-          Math.max(...localizacoesGeograficas.map((l) => l.id), 0) + 1;
+        const novoId = Math.max(...localizacoesGeograficas.map((l) => l.id), 0) + 1;
         const localizacaoCompleta: LocalizacaoGeografica = {
           ...novaLocalizacao,
           id: novoId,
           dataCriacao: new Date(),
         };
 
-        const novasLocalizacoes = [
-          ...localizacoesGeograficas,
-          localizacaoCompleta,
-        ];
+        const novasLocalizacoes = [...localizacoesGeograficas, localizacaoCompleta];
         setLocalizacoesGeograficas(novasLocalizacoes);
 
-        localStorage.setItem(
-          "localizacoes_geograficas",
-          JSON.stringify(novasLocalizacoes),
-        );
+        localStorage.setItem("localizacoes_geograficas", JSON.stringify(novasLocalizacoes));
 
-        console.log(
-          `[EntidadesContext] ${novaLocalizacao.tipoItem} "${novaLocalizacao.nome}" criado com sucesso`,
-        );
         return Promise.resolve();
       } catch (error) {
         console.error("Erro ao criar localização geográfica:", error);
@@ -837,57 +432,25 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     [localizacoesGeograficas],
   );
 
-  // Estado para controlar sincronização em andamento
-  const [sincronizacaoEmAndamento, setSincronizacaoEmAndamento] =
-    useState(false);
-  const jaFezSincronizacao = useRef(false); // Evitar sincronização repetida
-
-  // Função para sincronizar dados de localização com a API
   const sincronizarLocalizacoes = useCallback(async () => {
-    // Evitar múltiplas chamadas simultâneas
-    if (sincronizacaoEmAndamento) {
-      console.log(
-        "[EntidadesContext] Sincronização já em andamento, ignorando...",
-      );
-      return;
-    }
-
     try {
-      setSincronizacaoEmAndamento(true);
-      console.log("[EntidadesContext] Sincronizando localizações com a API...");
-
-      // Buscar dados atualizados da API
+      console.log("[EntidadesContext] Sincronização MANUAL de localizações...");
+      
       const response = await fetch("/api/localizacoes-geograficas");
       if (response.ok) {
         const dadosAPI = await response.json();
         setLocalizacoesGeograficas(dadosAPI);
-
-        // Atualizar localStorage
-        localStorage.setItem(
-          "localizacoes_geograficas",
-          JSON.stringify(dadosAPI),
-        );
-
-        console.log(
-          "[EntidadesContext] Localizações sincronizadas:",
-          dadosAPI.length,
-        );
+        localStorage.setItem("localizacoes_geograficas", JSON.stringify(dadosAPI));
+        console.log("[EntidadesContext] Localizações sincronizadas:", dadosAPI.length);
       }
     } catch (error) {
       console.error("Erro ao sincronizar localizações:", error);
-    } finally {
-      setSincronizacaoEmAndamento(false);
     }
-  }, [sincronizacaoEmAndamento]);
+  }, []);
 
   const atualizarLocalizacaoGeografica = useCallback(
     async (id: number, dadosAtualizados: any) => {
-      console.log(
-        "📦 [EntidadesContext] STUB: atualizarLocalizacaoGeografica",
-        id,
-        dadosAtualizados,
-      );
-      // TODO: Implementar com localStorage
+      console.log("📦 [EntidadesContext] STUB: atualizarLocalizacaoGeografica", id, dadosAtualizados);
       return Promise.resolve();
     },
     [],
@@ -895,194 +458,72 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const excluirLocalizacaoGeografica = useCallback(async (id: number) => {
     console.log("📦 [EntidadesContext] STUB: excluirLocalizacaoGeografica", id);
-    // TODO: Implementar com localStorage
     return Promise.resolve();
   }, []);
-
-  // === CARREGAMENTO INICIAL FORÇADO ===
-  useEffect(() => {
-    // Evitar carregamento duplo
-    let carregamentoExecutado = false;
-
-    const executarCarregamento = async () => {
-      if (carregamentoExecutado) return;
-      carregamentoExecutado = true;
-
-      // Carregar dados sempre no mount, sem verificações
-
-      // Cache invalidação removida - usando localStorage
-      await carregarDados();
-
-      // TEMPORARIAMENTE DESABILITADO - Sincronizar localizações para teste de loop
-      // setTimeout(() => {
-      //   if (!sincronizacaoEmAndamento && !jaFezSincronizacao.current) {
-      //     jaFezSincronizacao.current = true;
-      //     sincronizarLocalizacoes();
-      //   }
-      // }, 1000); // 1 segundo de delay
-    };
-
-    executarCarregamento();
-  }, []); // Array vazio - executa apenas no mount
-
-  // === FUNÇÕES CRUD PARA SISTEMA UNIFICADO ===
-  // Funções removidas - usando versões stub acima para evitar chamadas de API
-
-  // === FUNÇÕES CRUD PARA FORMAS DE PAGAMENTO ===
-  // Funções removidas - usando versões stub acima para evitar chamadas de API
-
-  // === FUNÇÕES CRUD PARA LOCALIZAÇÃO GEOGRÁFICA ===
-  // REMOVIDAS: As funções de adicionar/editar cidades foram removidas
-  // As cidades agora são pré-cadastradas e gerenciadas via ativação/desativação
-
-  // === FUNÇÕES NOVAS DE LOCALIZAÇÃO GEOGRÁFICA ===
-  // Funções removidas - usando versões stub acima para evitar chamadas de API
-
-  // === FUNÇÕES LEGADAS (COMPATIBILIDADE) ===
-  const adicionarDescricao = async () => {
-    console.warn("adicionarDescricao: Use adicionarDescricaoECategoria");
-  };
-
-  const editarDescricao = async () => {
-    console.warn("editarDescricao: Use editarDescricaoECategoria");
-  };
-
-  const excluirDescricao = async () => {
-    console.warn("excluirDescricao: Use excluirDescricaoECategoria");
-  };
-
-  const adicionarCategoria = () => {
-    console.warn("adicionarCategoria: Use adicionarDescricaoECategoria");
-  };
-
-  const editarCategoria = () => {
-    console.warn("editarCategoria: Use editarDescricaoECategoria");
-  };
-
-  const excluirCategoria = () => {
-    console.warn("excluirCategoria: Use excluirDescricaoECategoria");
-  };
-
-  const adicionarFuncionario = async () => {
-    console.warn("adicionarFuncionario: Funcionalidade não implementada");
-  };
-
-  const editarFuncionario = async () => {
-    console.warn("editarFuncionario: Funcionalidade não implementada");
-  };
-
-  const excluirFuncionario = async () => {
-    console.warn("excluirFuncionario: Funcionalidade não implementada");
-  };
-
-  const adicionarCliente = async () => {
-    console.warn("adicionarCliente: Funcionalidade não implementada");
-  };
-
-  const editarCliente = async () => {
-    console.warn("editarCliente: Funcionalidade não implementada");
-  };
-
-  const excluirCliente = async () => {
-    console.warn("excluirCliente: Funcionalidade não implementada");
-  };
-
-  const adicionarFornecedor = () => {
-    console.warn("adicionarFornecedor: Funcionalidade não implementada");
-  };
-
-  const editarFornecedor = () => {
-    console.warn("editarFornecedor: Funcionalidade não implementada");
-  };
-
-  const excluirFornecedor = () => {
-    console.warn("excluirFornecedor: Funcionalidade não implementada");
-  };
-
-  const recarregarTudo = carregarDados;
 
   // === VALUE DO CONTEXTO ===
   const value = useMemo(
     () => ({
-      // Sistema unificado
       descricoesECategorias,
-      getCategorias,
-      getDescricoes,
       adicionarDescricaoECategoria: criarDescricaoOuCategoria,
       editarDescricaoECategoria: atualizarDescricaoOuCategoria,
-      excluirDescricaoECategoria: excluirDescricaoOuCategoria,
-
-      // Entidades principais
-      formasPagamento,
-      adicionarFormaPagamento: criarFormaPagamento,
-      editarFormaPagamento: atualizarFormaPagamento,
-      excluirFormaPagamento,
-
-      funcionarios,
-      tecnicos,
-      getTecnicos,
-      adicionarFuncionario,
-      editarFuncionario,
-      excluirFuncionario,
-
+      excluirDescricaoECategoria,
+      getCategorias,
+      getDescricoes,
       localizacoesGeograficas,
       getCidades,
       getSetores,
-      adicionarLocalizacaoGeografica: criarLocalizacaoGeografica,
-      editarLocalizacaoGeografica: atualizarLocalizacaoGeografica,
+      criarLocalizacaoGeografica,
+      atualizarLocalizacaoGeografica,
       excluirLocalizacaoGeografica,
-
-      // Arrays de compatibilidade para componentes antigos
-      cidades,
-      setores,
-
-      // Compatibilidade
+      sincronizarLocalizacoes,
+      formasPagamento,
+      criarFormaPagamento,
+      atualizarFormaPagamento,
+      excluirFormaPagamento,
       descricoes,
       categorias,
-      adicionarDescricao,
-      editarDescricao,
-      excluirDescricao,
-      adicionarCategoria,
-      editarCategoria,
-      excluirCategoria,
-
-      clientes,
-      adicionarCliente,
-      editarCliente,
-      excluirCliente,
-
-      fornecedores,
-      adicionarFornecedor,
-      editarFornecedor,
-      excluirFornecedor,
-
-      // Estados
-      isLoading,
-      error,
-      recarregarTudo,
-      recarregarDescricoesECategorias,
-      sincronizarLocalizacoes,
-    }),
-    [
-      descricoesECategorias,
-      getCategorias,
-      getDescricoes,
-      formasPagamento,
       funcionarios,
       tecnicos,
-      getTecnicos,
-      localizacoesGeograficas,
-      cidades,
-      setores,
-      descricoes,
-      categorias,
       clientes,
       fornecedores,
+      cidades,
+      setores,
+      getTecnicos,
       isLoading,
       error,
       carregarDados,
-      recarregarDescricoesECategorias,
+    }),
+    [
+      descricoesECategorias,
+      criarDescricaoOuCategoria,
+      atualizarDescricaoOuCategoria,
+      excluirDescricaoOuCategoria,
+      getCategorias,
+      getDescricoes,
+      localizacoesGeograficas,
+      getCidades,
+      getSetores,
+      criarLocalizacaoGeografica,
+      atualizarLocalizacaoGeografica,
+      excluirLocalizacaoGeografica,
       sincronizarLocalizacoes,
+      formasPagamento,
+      criarFormaPagamento,
+      atualizarFormaPagamento,
+      excluirFormaPagamento,
+      descricoes,
+      categorias,
+      funcionarios,
+      tecnicos,
+      clientes,
+      fornecedores,
+      cidades,
+      setores,
+      getTecnicos,
+      isLoading,
+      error,
+      carregarDados,
     ],
   );
 
@@ -1096,9 +537,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 export function useEntidades() {
   const context = useContext(EntidadesContext);
   if (context === undefined) {
-    throw new Error(
-      "useEntidades deve ser usado dentro de um EntidadesProvider",
-    );
+    throw new Error("useEntidades must be used within an EntidadesProvider");
   }
   return context;
 }
