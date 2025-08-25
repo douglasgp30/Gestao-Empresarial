@@ -911,21 +911,6 @@ export function ModalReceita() {
                     <UserPlus className="h-4 w-4" />
                   </Button>
 
-                  <ModalClienteSimples
-                    isOpen={isModalClienteOpen}
-                    onClose={() => setIsModalClienteOpen(false)}
-                    onClienteAdicionado={(cliente) => {
-                      // Selecionar o cliente recém-criado
-                      setFormData((prev) => ({ ...prev, cliente: cliente.id }));
-
-                      // Toast de confirmação
-                      toast({
-                        title: "Cliente Adicionado e Selecionado",
-                        description: `Cliente "${cliente.nome}" foi cadastrado e selecionado no formulário.`,
-                        variant: "default",
-                      });
-                    }}
-                  />
                 </div>
                 {isBoleto && !formData.cliente && (
                   <p className="text-xs text-red-500">
