@@ -1262,7 +1262,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       return nome.includes("boleto") || nome.includes("bancario");
     }
 
-    // Se formaPagamento é string, assumir que é nome direto
+    // Se formaPagamento �� string, assumir que é nome direto
     if (typeof lancamento.formaPagamento === "string") {
       const nome = lancamento.formaPagamento.toLowerCase();
       return nome.includes("boleto") || nome.includes("bancario");
@@ -1336,23 +1336,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       comissoes,
     };
   }, [lancamentos]);
-
-  // Função manual para recarregar apenas quando necessário
-  const recarregarManual = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      console.log("📦 [CaixaContext] Recarregamento manual solicitado");
-      await carregarLancamentosDoBanco();
-    } catch (error) {
-      console.warn(
-        "Erro no recarregamento manual, usando localStorage:",
-        error,
-      );
-      await carregarLancamentosLocalStorage();
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
   // Memoizar funções para estabilizar referências
   const carregarDadosCb = useCallback(
