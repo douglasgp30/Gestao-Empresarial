@@ -61,7 +61,6 @@ import "./lib/migrateLancamentosCaixa"; // Disponibilizar funções de migraçã
 import "./lib/debugCaixa"; // Funções de debug do caixa
 import "./lib/migrarDadosAntigos"; // Migração automática de dados antigos
 import "./lib/migrarCaixaParaBanco"; // Migração para banco de dados
-import "../debug-localStorage"; // Garantir dados básicos no localStorage
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
