@@ -307,12 +307,12 @@ export default function ModalCadastroCliente({
               <div className="flex gap-2">
                 <Input
                   id="cep"
-                  value={formData.endereco.cep}
+                  value={formData.cep}
                   onChange={(e) => {
                     const cepFormatado = formatCep(e.target.value);
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, cep: cepFormatado },
+                      cep: cepFormatado,
                     }));
                   }}
                   onBlur={(e) => buscarCep(e.target.value)}
