@@ -1014,9 +1014,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <UserPlus className="h-4 w-4" />
               </Button>
 
-              <ModalCadastroCliente
+              <ModalClienteSimples
                 isOpen={isModalClienteOpen}
-                onOpenChange={setIsModalClienteOpen}
+                onClose={() => setIsModalClienteOpen(false)}
                 onClienteAdicionado={(cliente) => {
                   // Selecionar o cliente recém-criado
                   setFormData((prev) => ({ ...prev, cliente: cliente.id }));
