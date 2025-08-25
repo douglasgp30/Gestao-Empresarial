@@ -143,9 +143,7 @@ export function FiltrosCaixaCompacto() {
               </label>
               <Select
                 value={filtrosLocal.tipo}
-                onValueChange={(value: "todos" | "receita" | "despesa") =>
-                  setFiltrosLocal((prev) => ({ ...prev, tipo: value }))
-                }
+                onValueChange={handleFieldChange('tipo')}
               >
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
