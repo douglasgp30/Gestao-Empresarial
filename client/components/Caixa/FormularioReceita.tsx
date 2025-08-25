@@ -225,9 +225,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return valorCalculado;
   }, [isCartao, valorQueEntrouCalculado, valorCalculado]);
 
-  // 3. Calcular desconto da nota fiscal (6% do valor total do serviço)
-  const percentualNotaFiscal = formData.temNotaFiscal ? 6 : 0; // Corrigido para 6%
-  const descontoNotaFiscal = (valorBaseNotaFiscal * percentualNotaFiscal) / 100;
+  // 3. Calcular desconto da nota fiscal (6% do valor total do serviço) - memoizado
+  const { percentualNotaFiscal, descontoNotaFiscal } = useMemo(() => {
+    const percentual = formData.temNotaFiscal ? 6 : 0;
+    const desconto = (valorCalculado * percentual) / 100;
+    return { percentualNotaFiscal: percentual, descontoNotaFiscal: desconto };
+  }, [formData.temNotaFiscal, valorCalculado]);
 
   // 4. Valor líquido = valor que entrou - desconto nota fiscal - impostos/taxas adicionais
   const valorLiquidoCalculado = React.useMemo(() => {
