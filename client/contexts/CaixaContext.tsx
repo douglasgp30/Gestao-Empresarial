@@ -69,7 +69,7 @@ const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 export function CaixaProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
 
-  // Estado para controlar requisições concorrentes
+  // Refs para controlar carregamentos
   const campanhasLoadingRef = useRef(false);
   const lancamentosLoadingRef = useRef(false);
   const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>([]);
@@ -676,34 +676,29 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // Carregar dados na inicialização - versão simplificada
+  // Carregamento inicial simples e único
   useEffect(() => {
-    if (typeof window === "undefined") {
-      console.log("[CaixaContext] Servidor - pulando carregamento inicial");
-      return;
-    }
+    if (typeof window === "undefined") return;
 
-    // Carregar apenas uma vez na inicialização
     let mounted = true;
     const loadInitialData = async () => {
       if (!mounted) return;
 
       try {
         setIsLoading(true);
-        console.log("[CaixaContext] Carregamento inicial executado");
+        console.log("📦 [CaixaContext] Carregamento inicial único");
 
-        // Carregar campanhas
+        // Carregar apenas campanhas (lançamentos serão carregados sob demanda)
         await carregarCampanhasSafe();
 
-        // Carregar lançamentos
-        try {
-          await carregarLancamentosDoBanco();
-        } catch (error) {
-          console.warn(
-            "Erro ao carregar do banco, usando localStorage:",
-            error,
-          );
-          await carregarLancamentosLocalStorage();
+        // Carregar lançamentos apenas se não há filtros específicos
+        if (mounted) {
+          try {
+            await carregarLancamentosDoBanco();
+          } catch (error) {
+            console.warn("Usando localStorage como fallback:", error);
+            await carregarLancamentosLocalStorage();
+          }
         }
       } catch (error) {
         console.error("Erro no carregamento inicial:", error);
@@ -715,108 +710,40 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    const timeout = setTimeout(loadInitialData, 300);
+    // Carregamento com delay mínimo
+    const timeout = setTimeout(loadInitialData, 100);
 
     return () => {
       mounted = false;
       clearTimeout(timeout);
     };
-  }, []);
+  }, []); // Array vazio - executa apenas uma vez
 
-  // Memoizar string das dependências para evitar loops
-  const filtrosDependencias = useMemo(() => {
-    return JSON.stringify({
-      dataInicio: filtros.dataInicio.toISOString().split("T")[0],
-      dataFim: filtros.dataFim.toISOString().split("T")[0],
-      tipo: filtros.tipo,
-      formaPagamento: filtros.formaPagamento,
-      tecnico: filtros.tecnico,
-      campanha: filtros.campanha,
-      setor: filtros.setor,
-      categoria: filtros.categoria,
-      descricao: filtros.descricao,
-      cliente: filtros.cliente,
-      cidade: filtros.cidade,
-      numeroNota: filtros.numeroNota,
-    });
-  }, [
-    filtros.dataInicio,
-    filtros.dataFim,
-    filtros.tipo,
-    filtros.formaPagamento,
-    filtros.tecnico,
-    filtros.campanha,
-    filtros.setor,
-    filtros.categoria,
-    filtros.descricao,
-    filtros.cliente,
-    filtros.cidade,
-    filtros.numeroNota,
-  ]);
+  // Função para atualizar filtros e recarregar dados apenas quando necessário
+  const atualizarFiltros = useCallback(
+    (novosFiltros: any) => {
+      setFiltros(novosFiltros);
 
-  // Recarregar lançamentos quando os filtros mudarem - otimizado e sem loops
-  const isFetchingRef = useRef(false);
-  const lastFiltrosRef = useRef<string>("");
-  const excludingRef = useRef(false); // Evitar recarregar durante exclusão
+      // Recarregar dados apenas se os filtros de data mudaram significativamente
+      const datasMudaram =
+        novosFiltros.dataInicio?.getTime() !== filtros.dataInicio?.getTime() ||
+        novosFiltros.dataFim?.getTime() !== filtros.dataFim?.getTime();
 
-  useEffect(() => {
-    // Evitar recarregamento durante operações de exclusão
-    if (isExcluindo || excludingRef.current) {
-      console.log(
-        "[CaixaContext] Operação em andamento, pulando recarregamento",
-      );
-      return;
-    }
-
-    // Evitar recarregamento desnecessário se os filtros não mudaram realmente
-    if (lastFiltrosRef.current === filtrosDependencias) {
-      return;
-    }
-
-    lastFiltrosRef.current = filtrosDependencias;
-
-    // Debounce para evitar múltiplos lançamentos rápidos
-    const timeoutId = setTimeout(() => {
-      if (isFetchingRef.current || isExcluindo) {
-        console.log("[CaixaContext] fetch já em andamento, ignorando");
-        return;
+      if (datasMudaram) {
+        console.log(
+          "📅 [CaixaContext] Datas dos filtros mudaram, recarregando...",
+        );
+        // Debounce para evitar múltiplos recarregamentos
+        setTimeout(() => {
+          recarregarManual();
+        }, 500);
       }
-      isFetchingRef.current = true;
-      console.log("[CaixaContext] Recarregando por mudança de filtros");
+    },
+    [filtros.dataInicio, filtros.dataFim, recarregarManual],
+  );
 
-      // Implementar retry com backoff
-      const tentarCarregarComRetry = async (tentativas = 2) => {
-        for (let i = 0; i < tentativas; i++) {
-          try {
-            await carregarLancamentosDoBanco();
-            return; // Sucesso, sair do loop
-          } catch (error) {
-            console.warn(
-              `📦 [CaixaContext] Tentativa ${i + 1}/${tentativas} falhou:`,
-              error,
-            );
-
-            if (i === tentativas - 1) {
-              // Última tentativa, usar fallback
-              console.log(
-                "📦 [CaixaContext] Todas as tentativas falharam, usando localStorage",
-              );
-              return carregarLancamentosLocalStorage();
-            }
-
-            // Aguardar antes da próxima tentativa
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-          }
-        }
-      };
-
-      tentarCarregarComRetry().finally(() => {
-        isFetchingRef.current = false;
-      });
-    }, 1000); // Aumentar debounce para 1 segundo
-
-    return () => clearTimeout(timeoutId);
-  }, [filtrosDependencias, isExcluindo]);
+  // REMOVIDO: useEffect automático que causava loops infinitos
+  // O recarregamento agora é feito apenas manualmente ou na inicialização
 
   // Função para normalizar lançamento antes de salvar
   const normalizarLancamento = (lancamento: any): any => {
@@ -1191,56 +1118,52 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsExcluindo(true);
       setError(null);
 
-      console.log("[CaixaContext] Excluindo lançamento via API:", {
-        id,
-        tipo: typeof id,
-        totalLancamentos: lancamentos.length,
-      });
+      console.log("[CaixaContext] Excluindo lançamento:", id);
 
-      // Fazer a chamada para a API para excluir do banco de dados
-      const response = await fetch(`/api/caixa/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // Timeout para evitar requests que ficam pendentes
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 segundos
 
-      if (!response.ok) {
-        let errorMessage = `Erro ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
-        } catch {
-          try {
-            const errorText = await response.text();
-            errorMessage = errorText || errorMessage;
-          } catch {
-            // Se não conseguir ler nada, usar mensagem padrão
-          }
-        }
-        throw new Error(`Erro na API: ${errorMessage}`);
-      }
-
-      console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
-
-      // Remover da lista local após sucesso na API
-      // Garantir comparação segura de IDs convertendo ambos para string
-      setLancamentos((prev) => {
-        const antes = prev.length;
-        const depois = prev.filter((l) => l.id?.toString() !== id?.toString());
-        console.log("[CaixaContext] Estado atualizado após exclusão:", {
-          idExcluido: id,
-          lancamentosAntes: antes,
-          lancamentosDepois: depois.length,
-          removido: antes - depois.length === 1,
+      try {
+        // Fazer a chamada para a API
+        const response = await fetch(`/api/caixa/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
         });
-        return depois;
-      });
 
-      // REMOVIDO: setTimeout e carregarDados() que causavam loop infinito
-      console.log("[CaixaContext] Exclusão concluída com sucesso");
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          let errorMessage = `Erro ${response.status}`;
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorData.error || errorMessage;
+          } catch {
+            // Ignorar erros de parse
+          }
+          throw new Error(errorMessage);
+        }
+
+        console.log("✅ Lançamento excluído com sucesso da API");
+
+        // APENAS remover da lista local - SEM recarregamentos
+        setLancamentos((prev) =>
+          prev.filter((l) => l.id?.toString() !== id?.toString()),
+        );
+
+        console.log("✅ Exclusão concluída");
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === "AbortError") {
+          throw new Error("Timeout: Operação demorou muito");
+        }
+        throw fetchError;
+      }
     } catch (error) {
-      console.error("Erro ao excluir lançamento:", error);
+      console.error("❌ Erro ao excluir:", error);
       setError("Erro ao excluir lançamento");
       throw error;
     } finally {
@@ -1397,8 +1320,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, [lancamentos]);
 
-  // Memoizar funções para estabilizar referências e evitar re-renders
-  const carregarDadosCb = useCallback(() => carregarDados(), []);
+  // Função manual para recarregar apenas quando necessário
+  const recarregarManual = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      console.log("📦 [CaixaContext] Recarregamento manual solicitado");
+      await carregarLancamentosDoBanco();
+    } catch (error) {
+      console.warn(
+        "Erro no recarregamento manual, usando localStorage:",
+        error,
+      );
+      await carregarLancamentosLocalStorage();
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Memoizar funções para estabilizar referências
+  const carregarDadosCb = useCallback(
+    () => recarregarManual(),
+    [recarregarManual],
+  );
   const adicionarLancamentoCb = useCallback(
     (novo) => adicionarLancamento(novo),
     [],
@@ -1407,13 +1350,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     (id, dados) => editarLancamento(id, dados),
     [],
   );
-  const excluirLancamentoCb = useCallback(
-    (id) => excluirLancamento(id),
-    [isExcluindo],
-  );
+  const excluirLancamentoCb = useCallback((id) => excluirLancamento(id), []);
   const adicionarCampanhaCb = useCallback((c) => adicionarCampanha(c), []);
 
-  // Memoizar value para evitar re-renderizações desnecessárias em todos os consumidores
+  // Value otimizado do contexto
   const value = useMemo(
     () => ({
       lancamentos,
@@ -1424,22 +1364,22 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       editarLancamento: editarLancamentoCb,
       excluirLancamento: excluirLancamentoCb,
       adicionarCampanha: adicionarCampanhaCb,
-      setFiltros,
+      setFiltros: atualizarFiltros,
       carregarDados: carregarDadosCb,
       isLoading,
       isExcluindo,
       error,
-      filtrosDependencias, // Expor para componentes filhos evitarem JSON.stringify
     }),
     [
       lancamentos,
       campanhas,
-      filtrosDependencias, // Usar string memoizada em vez do objeto filtros
+      filtros,
       totais,
       adicionarLancamentoCb,
       editarLancamentoCb,
       excluirLancamentoCb,
       adicionarCampanhaCb,
+      atualizarFiltros,
       carregarDadosCb,
       isLoading,
       isExcluindo,

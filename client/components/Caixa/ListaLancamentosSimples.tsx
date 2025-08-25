@@ -370,21 +370,37 @@ export function ListaLancamentosSimples() {
   };
 
   const handleExcluir = async () => {
-    if (!lancamentoParaExcluir) return;
+    if (!lancamentoParaExcluir || excluindo) return;
 
     setExcluindo(true);
+
     try {
+      console.log(
+        "🗑️ Iniciando exclusão do lançamento:",
+        lancamentoParaExcluir,
+      );
+
       await excluirLancamento(lancamentoParaExcluir);
+
+      console.log("✅ Lançamento excluído com sucesso");
+
       toast({
         title: "Sucesso",
         description: "Lançamento excluído com sucesso!",
       });
+
       setLancamentoParaExcluir(null);
     } catch (error) {
-      console.error("Erro ao excluir lançamento:", error);
+      console.error("❌ Erro ao excluir lançamento:", error);
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro desconhecido";
+
       toast({
-        title: "Erro",
-        description: "Erro ao excluir lançamento. Tente novamente.",
+        title: "Erro ao excluir",
+        description: errorMessage.includes("Timeout")
+          ? "A operação demorou muito. Verifique sua conexão e tente novamente."
+          : "Erro ao excluir lançamento. Tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -607,24 +623,48 @@ export function ListaLancamentosSimples() {
       {/* Dialog de confirmação de exclusão */}
       <AlertDialog
         open={!!lancamentoParaExcluir}
-        onOpenChange={() => setLancamentoParaExcluir(null)}
+        onOpenChange={(open) => {
+          // Só permitir fechar se não estiver excluindo
+          if (!open && !excluindo) {
+            setLancamentoParaExcluir(null);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {excluindo ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full"></div>
+                  Excluindo...
+                </>
+              ) : (
+                "Confirmar exclusão"
+              )}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir este lançamento? Esta ação não pode
-              ser desfeita.
+              {excluindo
+                ? "Aguarde, excluindo o lançamento do sistema..."
+                : "Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={excluindo}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={excluindo}>
+              {excluindo ? "Aguarde..." : "Cancelar"}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleExcluir}
               disabled={excluindo}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 disabled:opacity-50"
             >
-              {excluindo ? "Excluindo..." : "Excluir"}
+              {excluindo ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                  Excluindo...
+                </>
+              ) : (
+                "Excluir"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

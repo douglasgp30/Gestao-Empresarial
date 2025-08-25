@@ -13,6 +13,9 @@ import {
   XCircle,
   Folder,
   Eye,
+  Edit2,
+  Save,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import ModalDependenciasCategoria from "./ModalDependenciasCategoria";
@@ -54,6 +57,14 @@ export default function ModalDescricoesSimples() {
   const [formCategoria, setFormCategoria] = useState({
     nome: "",
   });
+
+  // Estados para edição
+  const [itemEditando, setItemEditando] = useState<{
+    id: number;
+    nome: string;
+    tipo: "categoria" | "descricao";
+  } | null>(null);
+  const [nomeEditando, setNomeEditando] = useState("");
 
   // Carregar dados quando o modal é aberto
   useEffect(() => {
@@ -128,6 +139,20 @@ export default function ModalDescricoesSimples() {
     );
   }, [descricoesECategorias]);
 
+  // Função para contar quantas descrições uma categoria possui
+  const contarDescricoesDaCategoria = (nomeCategoria: string, tipo: string) => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return 0;
+    }
+    return descricoesECategorias.filter(
+      (item) =>
+        item.tipoItem === "descricao" &&
+        item.ativo &&
+        item.tipo === tipo &&
+        item.categoria === nomeCategoria,
+    ).length;
+  };
+
   const handleAdicionarDescricao = async () => {
     if (!formDescricao.nome.trim()) {
       toast.error("Nome da descrição é obrigatório");
@@ -141,7 +166,7 @@ export default function ModalDescricoesSimples() {
 
     setIsSaving(true);
     try {
-      await adicionarDescricaoECategoria({
+      console.log("➕ Adicionando nova descrição:", {
         nome: formDescricao.nome.trim(),
         tipo: tipoAtivo,
         categoria: formDescricao.categoria,
@@ -149,13 +174,46 @@ export default function ModalDescricoesSimples() {
         ativo: true,
       });
 
+      // Usar API diretamente em vez do contexto para melhor controle
+      const response = await fetch('/api/descricoes-e-categorias', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: formDescricao.nome.trim(),
+          tipo: tipoAtivo,
+          categoria: formDescricao.categoria,
+          tipoItem: "descricao",
+          ativo: true,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Erro ao adicionar descrição";
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          console.warn("Erro ao ler resposta de erro:", e);
+        }
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      console.log("✅ Descrição criada:", result);
+
       toast.success("Descrição adicionada com sucesso");
       setFormDescricao({ nome: "", categoria: "" });
-      // Forçar recarregamento para mostrar a nova descrição
+
+      // Sincronizar dados após criação
+      console.log("🔄 Sincronizando dados após criação de descrição...");
       await recarregarDescricoesECategorias();
     } catch (error) {
-      console.error("Erro ao adicionar descrição:", error);
-      toast.error("Erro ao adicionar descrição. Tente novamente.");
+      console.error("❌ Erro ao adicionar descrição:", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao adicionar descrição. Tente novamente.");
     } finally {
       setIsSaving(false);
     }
@@ -169,20 +227,52 @@ export default function ModalDescricoesSimples() {
 
     setIsSaving(true);
     try {
-      await adicionarDescricaoECategoria({
+      console.log("➕ Adicionando nova categoria:", {
         nome: formCategoria.nome.trim(),
         tipo: tipoAtivo,
         tipoItem: "categoria",
         ativo: true,
       });
 
+      // Usar API diretamente em vez do contexto para melhor controle
+      const response = await fetch('/api/descricoes-e-categorias', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: formCategoria.nome.trim(),
+          tipo: tipoAtivo,
+          tipoItem: "categoria",
+          ativo: true,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Erro ao adicionar categoria";
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          console.warn("Erro ao ler resposta de erro:", e);
+        }
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      console.log("✅ Categoria criada:", result);
+
       toast.success("Categoria adicionada com sucesso");
       setFormCategoria({ nome: "" });
-      // Forçar recarregamento para mostrar a nova categoria
+
+      // Sincronizar dados após criação
+      console.log("🔄 Sincronizando dados após criação de categoria...");
       await recarregarDescricoesECategorias();
     } catch (error) {
-      console.error("Erro ao adicionar categoria:", error);
-      toast.error("Erro ao adicionar categoria. Tente novamente.");
+      console.error("❌ Erro ao adicionar categoria:", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao adicionar categoria. Tente novamente.");
     } finally {
       setIsSaving(false);
     }
@@ -206,6 +296,65 @@ export default function ModalDescricoesSimples() {
     setShowDependencies(true);
   };
 
+  const handleIniciarEdicao = (item: any) => {
+    setItemEditando({
+      id: item.id,
+      nome: item.nome,
+      tipo: item.tipoItem,
+    });
+    setNomeEditando(item.nome);
+  };
+
+  const handleCancelarEdicao = () => {
+    setItemEditando(null);
+    setNomeEditando("");
+  };
+
+  const handleSalvarEdicao = async () => {
+    if (!itemEditando || !nomeEditando.trim()) {
+      toast.error("Nome não pode estar vazio");
+      return;
+    }
+
+    try {
+      console.log("✏️ Salvando edição:", itemEditando.id, nomeEditando);
+
+      const response = await fetch(`/api/descricoes-e-categorias/${itemEditando.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: nomeEditando.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Erro ao salvar alterações";
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          console.warn("Erro ao ler resposta de erro:", e);
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Sincronizar dados após edição
+      console.log("🔄 Sincronizando dados após edição...");
+      await recarregarDescricoesECategorias();
+
+      setItemEditando(null);
+      setNomeEditando("");
+      toast.success(`${itemEditando.tipo === 'categoria' ? 'Categoria' : 'Descrição'} "${nomeEditando}" salva com sucesso`);
+    } catch (error) {
+      console.error("❌ Erro ao salvar edição:", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao salvar alterações");
+    }
+  };
+
   const handleDelete = async () => {
     if (!itemToDelete || isDeleting) return;
 
@@ -222,6 +371,7 @@ export default function ModalDescricoesSimples() {
 
       if (!response.ok) {
         let errorMessage = "Não foi possível excluir o item.";
+        let isDependencyError = false;
 
         // Tentar extrair a mensagem de erro do servidor
         try {
@@ -240,6 +390,10 @@ export default function ModalDescricoesSimples() {
               typeof errorData.error === "string"
             ) {
               errorMessage = errorData.error;
+              // Detectar se é um erro de dependência
+              if (errorMessage.includes("vinculada") || errorMessage.includes("lançamento")) {
+                isDependencyError = true;
+              }
             }
           } else {
             // Resposta não é JSON, tentar ler como texto
@@ -254,7 +408,8 @@ export default function ModalDescricoesSimples() {
           // Se não conseguir ler a resposta, usar mensagem padrão baseada no status
           if (response.status === 400) {
             errorMessage =
-              "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.";
+              "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas.";
+            isDependencyError = true;
           } else if (response.status === 404) {
             errorMessage = "Item não encontrado.";
           } else {
@@ -263,52 +418,90 @@ export default function ModalDescricoesSimples() {
         }
 
         console.log("🔍 Final error message:", errorMessage);
+        console.log("🔍 Is dependency error:", isDependencyError);
 
-        // Não lançar um novo erro genérico, mas sim preservar a mensagem original
-        // que contém informações valiosas sobre as dependências
-        const errorToShow = new Error(errorMessage);
-        errorToShow.name = "DependencyError";
-        throw errorToShow;
+        // Fechar modal de confirmação
+        setShowConfirm(false);
+        setItemToDelete(null);
+
+        // Mostrar erro de forma adequada baseado no tipo
+        if (isDependencyError) {
+          // Para erros de dependência de categoria, permitir visualizar dependências
+          if (itemToDelete.tipo === "categoria") {
+            toast.error("Não é possível excluir esta categoria", {
+              duration: 12000,
+              description: errorMessage,
+              action: {
+                label: "Ver Dependências",
+                onClick: () => {
+                  // Encontrar a categoria no array para passar os dados corretos
+                  const categoria = descricoesECategorias.find(
+                    (item) => item.id === itemToDelete.id
+                  );
+                  if (categoria) {
+                    setCategoriaParaDependencias({
+                      id: categoria.id,
+                      nome: categoria.nome,
+                      tipo: categoria.tipo,
+                    });
+                    setShowDependencies(true);
+                  }
+                },
+              },
+            });
+          } else {
+            // Para descrições, apenas mostrar o erro detalhado
+            toast.error("Não é possível excluir esta descrição", {
+              duration: 10000,
+              description: errorMessage,
+              action: {
+                label: "Entendi",
+                onClick: () => console.log("Toast dismissed"),
+              },
+            });
+          }
+        } else {
+          // Para outros erros, mostrar mensagem simples
+          toast.error(errorMessage);
+        }
+
+        return; // Não lan��ar erro, já tratamos aqui
       }
 
       // Status 204 (No Content) indica sucesso na exclusão
       console.log("✅ Excluído com sucesso");
+
+      // Recarregar dados da API para sincronizar
+      try {
+        console.log("🔄 Sincronizando dados após exclusão...");
+        const response = await fetch('/api/descricoes-e-categorias');
+        if (response.ok) {
+          const data = await response.json();
+          console.log("📦 Dados atualizados recebidos da API:", data.data?.length || 0);
+
+          // Atualizar localStorage com dados atualizados
+          if (data.data) {
+            localStorage.setItem('descricoes_e_categorias', JSON.stringify(data.data));
+          }
+        }
+      } catch (syncError) {
+        console.warn("⚠️ Erro ao sincronizar dados, usando recarregamento local:", syncError);
+      }
+
+      // Recarregar do contexto (agora com dados atualizados)
       await recarregarDescricoesECategorias();
       setShowConfirm(false);
       setItemToDelete(null);
-      toast.success("Item excluído com sucesso");
+      toast.success(`${itemToDelete.tipo === 'categoria' ? 'Categoria' : 'Descrição'} "${itemToDelete.nome}" excluída com sucesso`);
     } catch (error) {
-      console.error("❌ Erro no handleDelete:", error);
-      console.error("❌ Error type:", typeof error);
-      console.error(
-        "❌ Error details:",
-        JSON.stringify(
-          {
-            name: error instanceof Error ? error.name : "unknown",
-            message: error instanceof Error ? error.message : "unknown",
-            stack:
-              error instanceof Error
-                ? error.stack?.substring(0, 200)
-                : "unknown",
-          },
-          null,
-          2,
-        ),
-      );
+      console.error("❌ Erro inesperado no handleDelete:", error);
 
-      // Preservar a mensagem original do servidor que contém informações detalhadas
-      const errorMessage =
-        error instanceof Error ? error.message : "Erro ao excluir item";
+      // Fechar modal de confirmação
+      setShowConfirm(false);
+      setItemToDelete(null);
 
-      // Para erros de dependência, mostrar uma mensagem mais amigável mas preservando o detalhe
-      if (error instanceof Error && error.name === "DependencyError") {
-        toast.error(errorMessage, {
-          duration: 8000, // Mensagem mais longa para o usuário ler os detalhes
-          description: "Veja os detalhes sobre as dependências acima",
-        });
-      } else {
-        toast.error(errorMessage);
-      }
+      // Mostrar erro genérico para problemas de rede ou outros erros inesperados
+      toast.error("Erro inesperado ao excluir item. Verifique sua conexão e tente novamente.");
     } finally {
       setIsDeleting(false);
     }
@@ -406,26 +599,97 @@ export default function ModalDescricoesSimples() {
                     key={categoria.id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    <span className="font-medium">{categoria.nome}</span>
+                    <div className="flex items-center gap-2 flex-1">
+                      {itemEditando?.id === categoria.id ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <Input
+                            value={nomeEditando}
+                            onChange={(e) => setNomeEditando(e.target.value)}
+                            className="flex-1"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleSalvarEdicao();
+                              } else if (e.key === 'Escape') {
+                                handleCancelarEdicao();
+                              }
+                            }}
+                            autoFocus
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <span className="font-medium">{categoria.nome}</span>
+                          {(() => {
+                            const numDescricoes = contarDescricoesDaCategoria(categoria.nome, categoria.tipo);
+                            return (
+                              <span
+                                className={`px-2 py-1 text-xs rounded-full ${
+                                  numDescricoes > 0
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-gray-100 text-gray-500'
+                                }`}
+                                title={`${numDescricoes} descrição(ões) vinculada(s)`}
+                              >
+                                {numDescricoes}
+                              </span>
+                            );
+                          })()}
+                        </>
+                      )}
+                    </div>
                     <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleShowDependencies(categoria)}
-                        className="text-blue-600 hover:text-blue-700"
-                        title="Ver descrições vinculadas"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleConfirmDelete(categoria)}
-                        className="text-red-600 hover:text-red-700"
-                        title="Excluir categoria"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {itemEditando?.id === categoria.id ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleSalvarEdicao}
+                            className="text-green-600 hover:text-green-700"
+                            title="Salvar alterações"
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleCancelarEdicao}
+                            className="text-gray-600 hover:text-gray-700"
+                            title="Cancelar edição"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleShowDependencies(categoria)}
+                            className="text-blue-600 hover:text-blue-700"
+                            title="Ver descrições vinculadas"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleIniciarEdicao(categoria)}
+                            className="text-orange-600 hover:text-orange-700"
+                            title="Editar nome da categoria"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleConfirmDelete(categoria)}
+                            className="text-red-600 hover:text-red-700"
+                            title="Excluir categoria"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -496,20 +760,80 @@ export default function ModalDescricoesSimples() {
                     key={descricao.id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    <div>
-                      <span className="font-medium">{descricao.nome}</span>
-                      <span className="ml-2 text-sm text-gray-500">
-                        ({descricao.categoria})
-                      </span>
+                    <div className="flex items-center gap-2 flex-1">
+                      {itemEditando?.id === descricao.id ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <Input
+                            value={nomeEditando}
+                            onChange={(e) => setNomeEditando(e.target.value)}
+                            className="flex-1"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleSalvarEdicao();
+                              } else if (e.key === 'Escape') {
+                                handleCancelarEdicao();
+                              }
+                            }}
+                            autoFocus
+                          />
+                          <span className="text-sm text-gray-500">
+                            ({descricao.categoria})
+                          </span>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="font-medium">{descricao.nome}</span>
+                          <span className="ml-2 text-sm text-gray-500">
+                            ({descricao.categoria})
+                          </span>
+                        </>
+                      )}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleConfirmDelete(descricao)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-1">
+                      {itemEditando?.id === descricao.id ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleSalvarEdicao}
+                            className="text-green-600 hover:text-green-700"
+                            title="Salvar alterações"
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleCancelarEdicao}
+                            className="text-gray-600 hover:text-gray-700"
+                            title="Cancelar edição"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleIniciarEdicao(descricao)}
+                            className="text-orange-600 hover:text-orange-700"
+                            title="Editar nome da descrição"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleConfirmDelete(descricao)}
+                            className="text-red-600 hover:text-red-700"
+                            title="Excluir descrição"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -517,7 +841,7 @@ export default function ModalDescricoesSimples() {
           </Card>
         </div>
 
-        {/* Modal de confirmação super simples */}
+        {/* Modal de confirma��ão super simples */}
         {showConfirm && (
           <div className="fixed inset-0 z-60 bg-black/50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">

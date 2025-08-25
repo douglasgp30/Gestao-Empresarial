@@ -362,7 +362,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       );
 
       try {
-        // Carregar descri��ões e categorias
+        // Carregar descri����ões e categorias
         const descricoesStorage =
           localStorage.getItem("descricoes_e_categorias") ||
           localStorage.getItem("categorias_receita");
@@ -624,9 +624,28 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const recarregarDescricoesECategorias = useCallback(async () => {
     try {
       console.log(
-        "📦 [EntidadesContext] Recarregando descrições e categorias do localStorage...",
+        "📦 [EntidadesContext] Recarregando descrições e categorias...",
       );
 
+      // Tentar buscar dados atualizados da API primeiro
+      try {
+        const response = await fetch('/api/descricoes-e-categorias');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data && Array.isArray(data.data)) {
+            console.log(`🌐 [EntidadesContext] Dados da API: ${data.data.length} itens`);
+            setDescricoesECategorias(data.data);
+
+            // Atualizar localStorage para cache
+            localStorage.setItem('descricoes_e_categorias', JSON.stringify(data.data));
+            return;
+          }
+        }
+      } catch (apiError) {
+        console.warn("⚠️ [EntidadesContext] API não disponível, usando localStorage:", apiError);
+      }
+
+      // Fallback para localStorage se API falhar
       const descricoesStorage =
         localStorage.getItem("descricoes_e_categorias") ||
         localStorage.getItem("categorias_receita");
@@ -635,14 +654,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         const arrayParsed = Array.isArray(parsed) ? parsed : [];
         setDescricoesECategorias(arrayParsed);
         console.log(
-          `���� [EntidadesContext] Recarregadas ${arrayParsed.length} descrições/categorias`,
+          `📁 [EntidadesContext] Recarregadas do localStorage: ${arrayParsed.length} descrições/categorias`,
         );
       } else {
         setDescricoesECategorias([]);
       }
     } catch (error) {
       console.error(
-        "Erro ao recarregar descrições e categorias do localStorage:",
+        "Erro ao recarregar descrições e categorias:",
         error,
       );
       setDescricoesECategorias([]);
