@@ -27,7 +27,6 @@ export function FiltrosCaixaCompacto() {
     setFiltros,
     campanhas,
     isLoading: caixaLoading,
-    filtrosDependencias,
   } = useCaixa();
 
   const {
