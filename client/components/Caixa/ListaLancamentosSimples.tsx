@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
+import { useEntidades } from "../../contexts/EntidadesContext";
 import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import {
@@ -78,7 +79,11 @@ const defaultColumns: ColumnConfig[] = [
 ];
 
 export function ListaLancamentosSimples() {
-  const { lancamentos, excluirLancamento, isLoading, error, isExcluindo } = useCaixa();
+  const { lancamentos, excluirLancamento, isLoading, error, isExcluindo, campanhas } = useCaixa();
+  const { formasPagamento, setores, getTecnicos } = useEntidades();
+
+  // Obter lista de técnicos
+  const tecnicosLista = getTecnicos ? getTecnicos() : [];
   const [lancamentoParaExcluir, setLancamentoParaExcluir] = useState<
     string | null
   >(null);
@@ -213,7 +218,7 @@ export function ListaLancamentosSimples() {
         );
 
       case "comissao":
-        return lancamento.comissao ? formatarMoeda(lancamento.comissao) : "-";
+        return lancamento.comissao != null ? formatarMoeda(lancamento.comissao) : "-";
 
       case "imposto":
         return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
@@ -444,7 +449,7 @@ export function ListaLancamentosSimples() {
       <CardContent>
         {lancamentos.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            Nenhum lançamento encontrado para o per��odo selecionado.
+            Nenhum lançamento encontrado para o per����odo selecionado.
           </div>
         ) : (
           <>
@@ -480,7 +485,7 @@ export function ListaLancamentosSimples() {
               </Table>
             </div>
 
-            {/* Versão Mobile - Cards */}
+            {/* Vers��o Mobile - Cards */}
             <div className="lg:hidden space-y-3">
               {lancamentos.map((lancamento) => (
                 <Card key={lancamento.id} className="border border-gray-200">
