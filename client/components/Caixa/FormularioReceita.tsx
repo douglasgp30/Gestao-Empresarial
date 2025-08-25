@@ -56,6 +56,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const {
     clientes,
     adicionarCliente,
+    recarregarClientes,
     isLoading: clientesLoading,
   } = useClientes();
 
