@@ -3,6 +3,8 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 import { AuthUser, LoginCredentials, Funcionario } from "@shared/types";
@@ -259,10 +261,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem("auth_user");
-  };
+  }, []);
 
   const criarPrimeiroAdministrador = async (admin: Funcionario) => {
     try {
@@ -298,7 +300,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     login,
     logout,
@@ -306,7 +308,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!user,
     precisaConfigurarPrimeiroAcesso,
     criarPrimeiroAdministrador,
-  };
+  }), [user, login, logout, isLoading, precisaConfigurarPrimeiroAcesso, criarPrimeiroAdministrador]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
