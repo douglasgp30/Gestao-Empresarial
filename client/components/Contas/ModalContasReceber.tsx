@@ -41,6 +41,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ModalCadastroCliente from "@/components/Clientes/ModalCadastroCliente";
+import ModalClienteSimples from "@/components/Clientes/ModalClienteSimples";
 import SelectWithAdd from "@/components/ui/select-with-add";
 
 interface ModalContasReceberProps {
