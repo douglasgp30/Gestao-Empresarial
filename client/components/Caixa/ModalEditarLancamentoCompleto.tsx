@@ -625,18 +625,6 @@ export function ModalEditarLancamentoCompleto({
                     <UserPlus className="h-4 w-4" />
                   </Button>
 
-                  <ModalClienteSimples
-                    isOpen={isModalClienteOpen}
-                    onClose={() => setIsModalClienteOpen(false)}
-                    onClienteAdicionado={(cliente) => {
-                      setFormData((prev) => ({ ...prev, cliente: cliente.id }));
-                      toast({
-                        title: "Cliente Adicionado",
-                        description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
-                        variant: "default",
-                      });
-                    }}
-                  />
                 </div>
               </div>
             )}
