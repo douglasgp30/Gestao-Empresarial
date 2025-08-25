@@ -390,23 +390,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
         (t) => t.id?.toString() === formData.tecnicoResponsavel,
       );
 
-      console.log("FormularioReceita - Dados selecionados:", {
-        forma: formaSelecionada,
-        campanha: campanhaSelecionada,
-        cliente: clienteSelecionado,
-        setor: setorSelecionado,
-        tecnico: tecnicoSelecionado,
-      });
-
-      console.log("FormularioReceita - Forma de pagamento detalhada:", {
-        formDataFormaPagamento: formData.formaPagamento,
-        formaSelecionadaId: formaSelecionada?.id,
-        formaSelecionadaNome: formaSelecionada?.nome,
-        todasFormasPagamento: formasPagamento.map((f) => ({
-          id: f.id,
-          nome: f.nome,
-        })),
-      });
+      // Validar dados selecionados
 
       // Validar se cliente foi encontrado quando necessário
       if (formData.cliente && !clienteSelecionado) {
