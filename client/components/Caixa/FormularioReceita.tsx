@@ -256,7 +256,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return valorLiquidoCalculado - comissaoCalculada;
   }, [valorLiquidoCalculado, comissaoCalculada]);
 
-  // Remover useEffect que causa piscar da tela
+  // ⚠️ NUNCA ADICIONAR useEffect aqui que reaja a mudanças de clientes, tecnicos, etc!
+  // Isso faria a tela PISCAR constantemente devido a re-renderizações em loop!
+  //
+  // ❌ NÃO FAZER:
+  // useEffect(() => { setAlgumaCoisa(...) }, [clientes, tecnicos, formasPagamento])
+  //
+  // ✅ USAR: useMemo com .length ou dependências estáveis
+  // ✅ USAR: useCallback apenas quando necessário e com deps estáveis
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {
