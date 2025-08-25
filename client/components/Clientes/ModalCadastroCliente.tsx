@@ -246,33 +246,33 @@ export default function ModalCadastroCliente({
           {/* Telefones */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="telefone1">Telefone Principal *</Label>
+              <Label htmlFor="telefonePrincipal">Telefone Principal *</Label>
               <Input
-                id="telefone1"
-                value={formData.telefone1}
+                id="telefonePrincipal"
+                value={formData.telefonePrincipal}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    telefone1: formatTelefone(e.target.value),
+                    telefonePrincipal: formatTelefone(e.target.value),
                   })
                 }
                 placeholder="(62) 99999-9999"
-                className={errors.telefone1 ? "border-red-500" : ""}
+                className={errors.telefonePrincipal ? "border-red-500" : ""}
               />
-              {errors.telefone1 && (
-                <p className="text-sm text-red-500">{errors.telefone1}</p>
+              {errors.telefonePrincipal && (
+                <p className="text-sm text-red-500">{errors.telefonePrincipal}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefone2">Telefone Secundário (Opcional)</Label>
+              <Label htmlFor="telefoneSecundario">Telefone Secundário (Opcional)</Label>
               <Input
-                id="telefone2"
-                value={formData.telefone2}
+                id="telefoneSecundario"
+                value={formData.telefoneSecundario}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    telefone2: formatTelefone(e.target.value),
+                    telefoneSecundario: formatTelefone(e.target.value),
                   })
                 }
                 placeholder="(62) 3333-3333"
@@ -307,12 +307,12 @@ export default function ModalCadastroCliente({
               <div className="flex gap-2">
                 <Input
                   id="cep"
-                  value={formData.endereco.cep}
+                  value={formData.cep}
                   onChange={(e) => {
                     const cepFormatado = formatCep(e.target.value);
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, cep: cepFormatado },
+                      cep: cepFormatado,
                     }));
                   }}
                   onBlur={(e) => buscarCep(e.target.value)}
@@ -331,14 +331,14 @@ export default function ModalCadastroCliente({
             {/* Rua e Número */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="rua">Rua/Avenida</Label>
+                <Label htmlFor="logradouro">Rua/Avenida</Label>
                 <Input
-                  id="rua"
-                  value={formData.endereco.rua}
+                  id="logradouro"
+                  value={formData.logradouro}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, rua: e.target.value },
+                      logradouro: e.target.value,
                     }))
                   }
                   placeholder="Nome da rua"
@@ -349,11 +349,11 @@ export default function ModalCadastroCliente({
                 <Label htmlFor="numero">Número</Label>
                 <Input
                   id="numero"
-                  value={formData.endereco.numero}
+                  value={formData.numero}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, numero: e.target.value },
+                      numero: e.target.value,
                     }))
                   }
                   placeholder="123"
@@ -365,15 +365,15 @@ export default function ModalCadastroCliente({
             <div className="space-y-2">
               <Label htmlFor="complemento">
                 Complemento
-                {(formData.endereco.rua || formData.endereco.cidade) && " *"}
+                {(formData.logradouro || formData.cidade) && " *"}
               </Label>
               <Input
                 id="complemento"
-                value={formData.endereco.complemento}
+                value={formData.complemento}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    endereco: { ...prev.endereco, complemento: e.target.value },
+                    complemento: e.target.value,
                   }))
                 }
                 placeholder="Casa, Apto 123, Quadra 1 Lote 2, etc."
@@ -390,11 +390,11 @@ export default function ModalCadastroCliente({
                 <Label htmlFor="bairro">Bairro</Label>
                 <Input
                   id="bairro"
-                  value={formData.endereco.bairro}
+                  value={formData.bairro}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, bairro: e.target.value },
+                      bairro: e.target.value,
                     }))
                   }
                   placeholder="Nome do bairro"
@@ -405,11 +405,11 @@ export default function ModalCadastroCliente({
                 <Label htmlFor="cidade">Cidade</Label>
                 <Input
                   id="cidade"
-                  value={formData.endereco.cidade}
+                  value={formData.cidade}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      endereco: { ...prev.endereco, cidade: e.target.value },
+                      cidade: e.target.value,
                     }))
                   }
                   placeholder="Nome da cidade"
