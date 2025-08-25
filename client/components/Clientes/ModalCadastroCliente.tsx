@@ -34,18 +34,16 @@ export default function ModalCadastroCliente({
   const [formData, setFormData] = useState({
     nome: "",
     cpf: "",
-    telefone1: "",
-    telefone2: "",
+    telefonePrincipal: "",
+    telefoneSecundario: "",
     email: "",
-    endereco: {
-      cep: "",
-      rua: "",
-      numero: "",
-      complemento: "",
-      bairro: "",
-      cidade: "",
-      estado: "",
-    },
+    cep: "",
+    logradouro: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
   });
 
   const [errors, setErrors] = useState<any>({});
