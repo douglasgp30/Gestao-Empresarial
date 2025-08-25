@@ -299,39 +299,16 @@ export default function ModalDescricoesSimples() {
       await recarregarDescricoesECategorias();
       setShowConfirm(false);
       setItemToDelete(null);
-      toast.success("Item excluído com sucesso");
+      toast.success(`${itemToDelete.tipo === 'categoria' ? 'Categoria' : 'Descrição'} "${itemToDelete.nome}" excluída com sucesso`);
     } catch (error) {
-      console.error("❌ Erro no handleDelete:", error);
-      console.error("❌ Error type:", typeof error);
-      console.error(
-        "❌ Error details:",
-        JSON.stringify(
-          {
-            name: error instanceof Error ? error.name : "unknown",
-            message: error instanceof Error ? error.message : "unknown",
-            stack:
-              error instanceof Error
-                ? error.stack?.substring(0, 200)
-                : "unknown",
-          },
-          null,
-          2,
-        ),
-      );
+      console.error("❌ Erro inesperado no handleDelete:", error);
 
-      // Preservar a mensagem original do servidor que contém informações detalhadas
-      const errorMessage =
-        error instanceof Error ? error.message : "Erro ao excluir item";
+      // Fechar modal de confirmação
+      setShowConfirm(false);
+      setItemToDelete(null);
 
-      // Para erros de dependência, mostrar uma mensagem mais amigável mas preservando o detalhe
-      if (error instanceof Error && error.name === "DependencyError") {
-        toast.error(errorMessage, {
-          duration: 8000, // Mensagem mais longa para o usuário ler os detalhes
-          description: "Veja os detalhes sobre as dependências acima",
-        });
-      } else {
-        toast.error(errorMessage);
-      }
+      // Mostrar erro genérico para problemas de rede ou outros erros inesperados
+      toast.error("Erro inesperado ao excluir item. Verifique sua conexão e tente novamente.");
     } finally {
       setIsDeleting(false);
     }
