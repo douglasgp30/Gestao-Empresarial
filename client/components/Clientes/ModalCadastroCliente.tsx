@@ -188,6 +188,13 @@ export default function ModalCadastroCliente({
 
       setOpen(false);
 
+      // Forçar recarregamento dos clientes para garantir sincronização
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('cliente-criado', {
+          detail: { cliente: novoCliente }
+        }));
+      }, 100);
+
       alert("Cliente cadastrado com sucesso!");
     } catch (error) {
       console.error("[ModalCadastroCliente] Erro ao cadastrar cliente:", error);
