@@ -51,6 +51,16 @@ export default function ModalCadastroCliente({
   const open = isOpen !== undefined ? isOpen : isModalOpen;
   const setOpen = onOpenChange || setIsModalOpen;
 
+  React.useEffect(() => {
+    console.log("[ModalCadastroCliente] Estado do modal:", {
+      isOpen,
+      isModalOpen,
+      open,
+      hasOnOpenChange: !!onOpenChange,
+      hasTrigger: !!trigger
+    });
+  }, [isOpen, isModalOpen, open, onOpenChange, trigger]);
+
   const formatCpf = (value: string) => {
     const cleaned = value.replace(/\D/g, "");
     const match = cleaned.match(/^(\d{3})(\d{3})(\d{3})(\d{2})$/);
