@@ -574,11 +574,14 @@ export function ListaLancamentosSimples() {
                             {lancamento.descricao?.nome || lancamento.descricao || "N/A"}
                           </p>
                           {/* Mostrar comissão se existir */}
-                          {lancamento.comissao != null && (
-                            <p className="text-xs text-muted-foreground">
-                              Comissão: {formatarMoeda(lancamento.comissao)}
-                            </p>
-                          )}
+                          {(() => {
+                            const comissao = normalizeComissao(lancamento.comissao);
+                            return comissao != null && comissao > 0 ? (
+                              <p className="text-xs text-muted-foreground">
+                                Comissão: {formatarMoeda(comissao)}
+                              </p>
+                            ) : null;
+                          })()}
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
