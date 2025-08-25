@@ -92,13 +92,10 @@ export default function ModalCadastroCliente({
       if (!data.erro) {
         setFormData((prev) => ({
           ...prev,
-          endereco: {
-            ...prev.endereco,
-            rua: data.logradouro || "",
-            bairro: data.bairro || "",
-            cidade: data.localidade || "",
-            estado: data.uf || "",
-          },
+          logradouro: data.logradouro || "",
+          bairro: data.bairro || "",
+          cidade: data.localidade || "",
+          estado: data.uf || "",
         }));
 
         // Focar no campo número após buscar o CEP
