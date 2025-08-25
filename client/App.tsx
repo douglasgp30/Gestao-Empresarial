@@ -65,7 +65,7 @@ import "../debug-localStorage"; // Garantir dados básicos no localStorage
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
-import { CaixaProvider } from "./contexts/CaixaContext";
+import { CaixaProviderSimples as CaixaProvider } from "./contexts/CaixaContextSimples";
 import { ContasProvider } from "./contexts/ContasContext";
 import { FuncionariosProvider } from "./contexts/FuncionariosContext";
 import { RelatoriosProvider } from "./contexts/RelatoriosContext";
