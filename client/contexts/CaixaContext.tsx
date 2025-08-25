@@ -85,154 +85,69 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // CARREGAMENTO MANUAL APENAS - SEM USEEFFECTS AUTOMÁTICOS
-  const carregarCampanhas = useCallback(async () => {
+  // 🚨 SOLUÇÃO DRÁSTICA: APENAS LOCALSTORAGE - ZERO APIS
+  const carregarCampanhasLocalStorage = useCallback(() => {
     try {
-      console.log("📊 [CaixaContext] Carregamento MANUAL de campanhas...");
-      
-      const response = await fetch("/api/campanhas", {
-        headers: { "Content-Type": "application/json", "Cache-Control": "no-cache" },
-      });
-
-      if (response.ok) {
-        const campanhasServidor = await response.json();
-        setCampanhas(campanhasServidor || []);
-        localStorage.setItem("campanhas", JSON.stringify(campanhasServidor || []));
-        console.log(`📊 [CaixaContext] ${campanhasServidor.length} campanhas carregadas MANUALMENTE`);
+      console.log("🚨 [CaixaContext] Carregando campanhas APENAS do localStorage");
+      const campanhasStorage = localStorage.getItem("campanhas");
+      if (campanhasStorage) {
+        const campanhas = JSON.parse(campanhasStorage);
+        setCampanhas(campanhas || []);
+        console.log(`🚨 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`);
       } else {
-        throw new Error(`Erro ${response.status}`);
+        // Criar campanhas padrão se não existir
+        const campanhasPadrao: Campanha[] = [
+          { id: "1", nome: "Campanha Padrão", descricao: "Campanha padrão do sistema" },
+          { id: "2", nome: "Sem Campanha", descricao: "Lançamentos sem campanha específica" }
+        ];
+        setCampanhas(campanhasPadrao);
+        localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
+        console.log(`🚨 [CaixaContext] Campanhas padrão criadas no localStorage`);
       }
     } catch (error) {
-      console.warn("📊 [CaixaContext] Erro ao carregar campanhas, usando localStorage", error);
-      try {
-        const campanhasStorage = localStorage.getItem("campanhas");
-        setCampanhas(campanhasStorage ? JSON.parse(campanhasStorage) : []);
-      } catch {
-        setCampanhas([]);
-      }
+      console.error("Erro ao carregar campanhas do localStorage:", error);
+      setCampanhas([]);
     }
   }, []);
 
-  const carregarLancamentos = useCallback(async () => {
+  const carregarLancamentosLocalStorage = useCallback(() => {
     try {
-      console.log("📦 [CaixaContext] Carregamento MANUAL de lançamentos...");
-      
-      const params = new URLSearchParams();
-      if (filtros.dataInicio) {
-        params.append("dataInicio", filtros.dataInicio.toISOString().split("T")[0]);
-      }
-      if (filtros.dataFim) {
-        params.append("dataFim", filtros.dataFim.toISOString().split("T")[0]);
-      }
-      if (filtros.tipo && filtros.tipo !== "todos") {
-        params.append("tipo", filtros.tipo);
-      }
-
-      const response = await fetch(`/api/caixa?${params.toString()}`, {
-        headers: { "Cache-Control": "no-cache" },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro ${response.status}`);
-      }
-
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Resposta não é JSON");
-      }
-
-      const lancamentosDoBanco = await response.json();
-
-      const lancamentosFormatados = lancamentosDoBanco.map((lancamento: any) => ({
-        ...lancamento,
-        data: new Date(lancamento.dataHora),
-        dataHora: new Date(lancamento.dataHora),
-        dataCriacao: new Date(lancamento.dataHora),
-        id: lancamento.id.toString(),
-        funcionario: lancamento.funcionario ? {
-          id: lancamento.funcionario.id?.toString(),
-          nome: lancamento.funcionario.nome,
-          percentualComissao: lancamento.funcionario.percentualComissao || lancamento.funcionario.percentualServico,
-        } : undefined,
-        tecnicoResponsavel: lancamento.funcionario ? {
-          id: lancamento.funcionario.id,
-          nome: lancamento.funcionario.nome,
-        } : undefined,
-        formaPagamento: lancamento.formaPagamento ? {
-          id: lancamento.formaPagamento.id,
-          nome: lancamento.formaPagamento.nome,
-        } : undefined,
-        cliente: lancamento.cliente ? {
-          id: lancamento.cliente.id,
-          nome: lancamento.cliente.nome,
-        } : undefined,
-        campanha: lancamento.campanha ? {
-          id: lancamento.campanha.id,
-          nome: lancamento.campanha.nome,
-        } : undefined,
-        localizacao: lancamento.localizacao ? {
-          id: lancamento.localizacao.id?.toString(),
-          nome: lancamento.localizacao.nome,
-          cidade: lancamento.localizacao.cidade,
-        } : undefined,
-        setor: lancamento.localizacao ? {
-          id: lancamento.localizacao.id?.toString(),
-          nome: lancamento.localizacao.nome,
-          cidade: lancamento.localizacao.cidade,
-        } : undefined,
-        categoria: lancamento.descricaoECategoria?.categoria || lancamento.descricao?.categoria || "Serviços",
-        descricao: {
-          nome: (() => {
-            if (lancamento.descricaoECategoria?.nome && typeof lancamento.descricaoECategoria.nome === "string" && lancamento.descricaoECategoria.nome.trim() !== "") {
-              return lancamento.descricaoECategoria.nome;
-            }
-            if (lancamento.descricao?.nome && typeof lancamento.descricao.nome === "string" && lancamento.descricao.nome.trim() !== "") {
-              return lancamento.descricao.nome;
-            }
-            return "Serviço";
-          })(),
-        },
-      }));
-
-      setLancamentos(lancamentosFormatados);
-      console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados MANUALMENTE`);
-    } catch (error) {
-      console.warn("📦 [CaixaContext] Erro ao carregar do banco, usando localStorage", error);
-      // Fallback para localStorage
-      try {
-        const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
-        if (lancamentosStorage) {
-          const lancamentosParsed = JSON.parse(lancamentosStorage);
-          const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => ({
-            ...lancamento,
-            data: new Date(lancamento.data),
-            dataHora: new Date(lancamento.dataHora),
-            dataCriacao: new Date(lancamento.dataCriacao),
-          }));
-          setLancamentos(lancamentosFormatados);
-        } else {
-          setLancamentos([]);
-        }
-      } catch {
+      console.log("🚨 [CaixaContext] Carregando lançamentos APENAS do localStorage");
+      const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
+      if (lancamentosStorage) {
+        const lancamentosParsed = JSON.parse(lancamentosStorage);
+        const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => ({
+          ...lancamento,
+          data: new Date(lancamento.data),
+          dataHora: new Date(lancamento.dataHora),
+          dataCriacao: new Date(lancamento.dataCriacao),
+        }));
+        setLancamentos(lancamentosFormatados);
+        console.log(`🚨 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
+      } else {
         setLancamentos([]);
+        console.log("🚨 [CaixaContext] Nenhum lançamento encontrado no localStorage");
       }
+    } catch (error) {
+      console.error("Erro ao carregar lançamentos do localStorage:", error);
+      setLancamentos([]);
     }
-  }, [filtros.dataInicio, filtros.dataFim, filtros.tipo]);
+  }, []);
 
-  // CARREGAMENTO INICIAL ÚNICA VEZ - SEM LOOPS
+  // 🚨 CARREGAMENTO INICIAL ÚNICO - APENAS LOCALSTORAGE
   const inicializado = useRef(false);
   useEffect(() => {
     if (inicializado.current || typeof window === "undefined") return;
     inicializado.current = true;
     
-    console.log("🚨 [CaixaContext] CARREGAMENTO INICIAL ÚNICO E CONTROLADO");
+    console.log("🚨 [CaixaContext] INICIALIZAÇÃO ÚNICA - APENAS LOCALSTORAGE");
     
-    const carregarUmaVez = async () => {
-      setIsLoading(true);
+    const carregarApenasLocalStorage = () => {
       try {
-        // Carregar apenas campanhas na inicialização
-        await carregarCampanhas();
-        console.log("✅ [CaixaContext] Carregamento inicial concluído SEM LOOPS");
+        setIsLoading(true);
+        carregarCampanhasLocalStorage();
+        carregarLancamentosLocalStorage();
+        console.log("🚨 [CaixaContext] Carregamento inicial concluído - SEM APIS");
       } catch (error) {
         console.error("Erro no carregamento inicial:", error);
         setError("Erro ao carregar dados");
@@ -241,130 +156,73 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    setTimeout(carregarUmaVez, 500); // Delay para evitar conflitos
-  }, []); // Array vazio - executa APENAS UMA VEZ
+    // Executar imediatamente sem delay
+    carregarApenasLocalStorage();
+  }, [carregarCampanhasLocalStorage, carregarLancamentosLocalStorage]);
 
-  // Função manual para carregar dados (SEM dependências automáticas)
+  // 🚨 FUNÇÃO MANUAL - APENAS LOCALSTORAGE
   const carregarDados = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      console.log("🔄 [CaixaContext] Carregamento MANUAL solicitado");
-      await carregarLancamentos();
+      console.log("🚨 [CaixaContext] Carregamento MANUAL - APENAS LOCALSTORAGE");
+      carregarLancamentosLocalStorage();
     } catch (error) {
       console.error("Erro ao recarregar dados:", error);
       setError("Erro ao carregar dados");
     } finally {
       setIsLoading(false);
     }
-  }, [carregarLancamentos]);
+  }, [carregarLancamentosLocalStorage]);
 
   // Função para atualizar filtros SEM recarregamento automático
   const atualizarFiltros = useCallback((novosFiltros: any) => {
     setFiltros(novosFiltros);
-    console.log("📅 [CaixaContext] Filtros atualizados SEM recarregamento automático");
-    // Usuário deve chamar carregarDados() manualmente se quiser recarregar
+    console.log("🚨 [CaixaContext] Filtros atualizados SEM recarregamento automático");
   }, []);
 
+  // 🚨 ADICIONAR LANÇAMENTO - APENAS LOCALSTORAGE
   const adicionarLancamento = async (novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">) => {
     try {
       setError(null);
-      console.log("[CaixaContext] Adicionando lançamento via API:", novoLancamento);
+      console.log("🚨 [CaixaContext] Adicionando lançamento APENAS no localStorage:", novoLancamento);
 
-      const dadosParaAPI = {
-        valor: novoLancamento.valor || 0,
-        valorRecebido: novoLancamento.valorQueEntrou || novoLancamento.valorLiquido || novoLancamento.valor,
-        valorLiquido: novoLancamento.valorLiquido || novoLancamento.valor,
-        comissao: novoLancamento.comissao || 0,
-        imposto: novoLancamento.imposto || 0,
-        observacoes: novoLancamento.observacoes || "",
-        numeroNota: novoLancamento.numeroNota || "",
-        tipo: novoLancamento.tipo || "receita",
-        data: novoLancamento.data ? new Date(novoLancamento.data).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
-        categoria: novoLancamento.categoria || "Serviços",
-        descricao: typeof novoLancamento.descricao === "object" && novoLancamento.descricao?.nome
-          ? novoLancamento.descricao.nome
-          : typeof novoLancamento.descricao === "string" ? novoLancamento.descricao : "Serviço",
-        formaPagamentoId: extrairIdParaAPI(novoLancamento.formaPagamento, novoLancamento.formaPagamentoId),
-        funcionarioId: extrairIdParaAPI(novoLancamento.tecnicoResponsavel, novoLancamento.tecnicoResponsavelId),
-        setorId: extrairIdParaAPI(novoLancamento.setor, novoLancamento.setorId),
-        campanhaId: extrairIdParaAPI(novoLancamento.campanha, novoLancamento.campanhaId),
-        clienteId: extrairIdParaAPI(novoLancamento.cliente, novoLancamento.clienteId),
-        codigoServico: novoLancamento.codigoServico,
-        sistemaOrigem: novoLancamento.sistemaOrigem,
-        codigoExterno: novoLancamento.codigoExterno,
-        formaPagamentoSnapshot: novoLancamento.formaPagamento,
-        clienteSnapshot: novoLancamento.cliente,
-        tecnicoResponsavelSnapshot: novoLancamento.tecnicoResponsavel,
-        setorSnapshot: novoLancamento.setor,
-        campanhaSnapshot: novoLancamento.campanha,
+      // Gerar ID único
+      const novoId = Date.now().toString();
+      
+      // Criar lançamento completo
+      const lancamentoCompleto: LancamentoCaixa = {
+        ...novoLancamento,
+        id: novoId,
+        funcionarioId: user?.id || "1",
+        data: novoLancamento.data || new Date(),
+        dataHora: novoLancamento.dataHora || new Date(),
+        dataCriacao: new Date(),
       };
 
-      const response = await fetch("/api/caixa/criar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dadosParaAPI),
-      });
+      // Carregar lançamentos existentes
+      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+      
+      // Adicionar novo lançamento
+      const novosLancamentos = [...lancamentosExistentes, lancamentoCompleto];
+      
+      // Salvar no localStorage
+      localStorage.setItem("lancamentos_caixa", JSON.stringify(novosLancamentos));
+      
+      // Atualizar estado
+      setLancamentos((prev) => [...prev, lancamentoCompleto]);
 
-      if (!response.ok) {
-        let errorMessage = `Erro ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
-        } catch {
-          try {
-            const errorText = await response.text();
-            errorMessage = errorText || errorMessage;
-          } catch {}
-        }
-        throw new Error(`Erro na API: ${errorMessage}`);
-      }
-
-      const responseData = await response.json();
-      console.log("[CaixaContext] Lançamento criado com sucesso:", responseData.id);
-
-      // RECARREGAR MANUALMENTE após criação
-      await carregarDados();
+      console.log("🚨 [CaixaContext] Lançamento adicionado com sucesso no localStorage:", novoId);
     } catch (error) {
       console.error("Erro ao adicionar lançamento:", error);
       throw error;
     }
   };
 
-  const extrairIdParaAPI = (objeto: any, idFallback: any) => {
-    if (!objeto && !idFallback) return undefined;
-
-    if (typeof objeto === "object" && objeto?.id) {
-      const idNumerico = parseInt(objeto.id);
-      if (!isNaN(idNumerico)) {
-        return idNumerico;
-      }
-      return objeto.id;
-    }
-
-    if (objeto) {
-      const id = parseInt(objeto);
-      if (!isNaN(id)) {
-        return id;
-      }
-      return objeto;
-    }
-
-    if (idFallback) {
-      const id = parseInt(idFallback);
-      if (!isNaN(id)) {
-        return id;
-      }
-      return idFallback;
-    }
-
-    return undefined;
-  };
-
   const editarLancamento = async (id: string, dadosAtualizados: Partial<LancamentoCaixa>) => {
     try {
       setError(null);
-      console.log("[CaixaContext] Editando lançamento:", id, dadosAtualizados);
+      console.log("🚨 [CaixaContext] Editando lançamento no localStorage:", id, dadosAtualizados);
 
       const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
       const lancamentosAtualizados = lancamentosExistentes.map((lancamento: any) => {
@@ -377,15 +235,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
       
       // Recarregar do localStorage
-      const lancamentosFormatados = lancamentosAtualizados.map((lancamento: any) => ({
-        ...lancamento,
-        data: new Date(lancamento.data),
-        dataHora: new Date(lancamento.dataHora),
-        dataCriacao: new Date(lancamento.dataCriacao),
-      }));
-      setLancamentos(lancamentosFormatados);
+      carregarLancamentosLocalStorage();
       
-      console.log("[CaixaContext] Lançamento editado com sucesso:", id);
+      console.log("🚨 [CaixaContext] Lançamento editado com sucesso no localStorage:", id);
     } catch (error) {
       console.error("Erro ao editar lançamento:", error);
       setError("Erro ao editar lançamento");
@@ -395,31 +247,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   const excluirLancamento = async (id: string) => {
     if (isExcluindo) {
-      console.log("[CaixaContext] Exclusão já em andamento, ignorando...");
+      console.log("🚨 [CaixaContext] Exclusão já em andamento, ignorando...");
       return Promise.resolve();
     }
 
     try {
       setIsExcluindo(true);
       setError(null);
-      console.log("[CaixaContext] Excluindo lançamento:", id);
+      console.log("🚨 [CaixaContext] Excluindo lançamento do localStorage:", id);
 
-      try {
-        const response = await fetch(`/api/caixa/${id}`, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        });
+      // Remover do localStorage
+      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+      const lancamentosAtualizados = lancamentosExistentes.filter((l: any) => l.id?.toString() !== id?.toString());
+      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
 
-        if (response.ok) {
-          console.log("✅ Lançamento excluído com sucesso da API");
-        }
-      } catch (error) {
-        console.warn("Erro na API, removendo localmente:", error);
-      }
-
-      // Sempre remover localmente independentemente da API
+      // Atualizar estado
       setLancamentos((prev) => prev.filter((l) => l.id?.toString() !== id?.toString()));
-      console.log("✅ Exclusão concluída");
+      
+      console.log("🚨 [CaixaContext] Lançamento excluído com sucesso do localStorage");
       return Promise.resolve();
     } catch (error: any) {
       console.error("❌ Erro ao excluir:", error);
@@ -430,41 +275,33 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // 🚨 ADICIONAR CAMPANHA - APENAS LOCALSTORAGE
   const adicionarCampanha = async (novaCampanha: Omit<Campanha, "id">) => {
     try {
       setError(null);
-      console.log("[CaixaContext] Adicionando campanha:", novaCampanha);
+      console.log("🚨 [CaixaContext] Adicionando campanha APENAS no localStorage:", novaCampanha);
 
-      try {
-        const response = await fetch("/api/campanhas", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(novaCampanha),
-        });
+      // Gerar ID único
+      const novoId = `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      const campanha: Campanha = {
+        ...novaCampanha,
+        id: novoId,
+      };
 
-        if (response.ok) {
-          const campanhaServidor = await response.json();
-          console.log("✅ [CaixaContext] Campanha criada no servidor:", campanhaServidor);
-          await carregarCampanhas(); // Recarregar campanhas MANUALMENTE
-          return;
-        } else {
-          throw new Error("Erro ao salvar no servidor");
-        }
-      } catch (serverError) {
-        console.warn("Servidor indisponível, salvando campanha localmente:", serverError);
+      // Carregar campanhas existentes
+      const campanhasExistentes = JSON.parse(localStorage.getItem("campanhas") || "[]");
+      
+      // Adicionar nova campanha
+      const novasCampanhas = [...campanhasExistentes, campanha];
+      
+      // Salvar no localStorage
+      localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
+      
+      // Atualizar estado
+      setCampanhas(novasCampanhas);
 
-        const campanha: Campanha = {
-          ...novaCampanha,
-          id: `campanha-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        };
-
-        const campanhasExistentes = JSON.parse(localStorage.getItem("campanhas") || "[]");
-        const novasCampanhas = [...campanhasExistentes, campanha];
-
-        localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
-        setCampanhas(novasCampanhas);
-        console.log("[CaixaContext] Campanha salva localmente:", campanha.id);
-      }
+      console.log("🚨 [CaixaContext] Campanha adicionada com sucesso no localStorage:", novoId);
     } catch (error) {
       console.error("Erro ao adicionar campanha:", error);
       throw error;
