@@ -86,29 +86,21 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   }, [criarClientesBasicos]);
 
-  // 🚨 CARREGAMENTO INICIAL FORÇADO E ÚNICO - SEM LOOPS
+  // 🚨 CARREGAMENTO INICIAL IMEDIATO E ÚNICO
   useEffect(() => {
     if (inicializado.current) return;
     inicializado.current = true;
 
-    console.log("🚀 [ClientesContext] INICIALIZAÇÃO ÚNICA E FORÇADA");
-    
-    const inicializar = () => {
-      setIsLoading(true);
-      try {
-        // FORÇAR carregamento dos dados
-        carregarClientesLocalStorage();
-        console.log("✅ [ClientesContext] Dados carregados na inicialização");
-      } catch (error) {
-        console.error("[ClientesContext] Erro ao inicializar:", error);
-        criarClientesBasicos();
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    console.log("🚀 [ClientesContext] INICIALIZAÇÃO IMEDIATA");
 
-    // Executar IMEDIATAMENTE
-    inicializar();
+    try {
+      // FORÇAR carregamento IMEDIATO dos dados
+      carregarClientesLocalStorage();
+      console.log("✅ [ClientesContext] Dados carregados imediatamente");
+    } catch (error) {
+      console.error("[ClientesContext] Erro ao inicializar:", error);
+      criarClientesBasicos();
+    }
   }, [carregarClientesLocalStorage, criarClientesBasicos]);
 
   // 🚨 ADICIONAR CLIENTE - APENAS LOCALSTORAGE

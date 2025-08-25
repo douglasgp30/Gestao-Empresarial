@@ -359,21 +359,59 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, [funcionariosDoContexto]);
 
-  // === CARREGAMENTO INICIAL FORÇADO E ÚNICO ===
+  // === CARREGAMENTO INICIAL IMEDIATO E ÚNICO ===
   useEffect(() => {
     if (inicializado.current) return;
     inicializado.current = true;
 
-    console.log("🚀 [EntidadesContext] INICIALIZAÇÃO ÚNICA E FORÇADA");
-    
-    const inicializar = async () => {
-      // FORÇAR carregamento imediato
-      await carregarDados();
-    };
+    console.log("🚀 [EntidadesContext] INICIALIZAÇÃO IMEDIATA");
 
-    // Executar IMEDIATAMENTE
-    inicializar();
-  }, [carregarDados]);
+    // FORÇAR carregamento SÍNCRONO e imediato
+    try {
+      console.log("📂 [EntidadesContext] Carregando dados do localStorage...");
+
+      // Carregar descrições e categorias
+      const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
+      if (descricoesStorage) {
+        const parsed = JSON.parse(descricoesStorage);
+        const arrayParsed = Array.isArray(parsed) ? parsed : [];
+        setDescricoesECategorias(arrayParsed);
+        console.log(`📂 [EntidadesContext] ${arrayParsed.length} descrições/categorias carregadas`);
+      } else {
+        console.log("📂 [EntidadesContext] Descrições não encontradas, criando dados básicos");
+        criarDadosBasicos();
+        return; // Sair aqui pois criarDadosBasicos já carrega tudo
+      }
+
+      // Carregar formas de pagamento
+      const formasStorage = localStorage.getItem("formas_pagamento");
+      if (formasStorage) {
+        const formasParsed = JSON.parse(formasStorage);
+        setFormasPagamento(formasParsed);
+        console.log(`📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`);
+      } else {
+        setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
+        localStorage.setItem("formas_pagamento", JSON.stringify(FORMAS_PAGAMENTO_PADRAO));
+      }
+
+      // Carregar localizações geográficas
+      const localizacoesStorage = localStorage.getItem("localizacoes_geograficas");
+      if (localizacoesStorage) {
+        const localizacoesParsed = JSON.parse(localizacoesStorage);
+        setLocalizacoesGeograficas(localizacoesParsed);
+        console.log(`📂 [EntidadesContext] ${localizacoesParsed.length} localizações carregadas`);
+      } else {
+        setLocalizacoesGeograficas([]);
+      }
+
+      console.log("✅ [EntidadesContext] Carregamento imediato concluído");
+    } catch (error) {
+      console.error("Erro ao carregar dados do EntidadesContext:", error);
+      setError("Erro ao carregar dados");
+      // Em caso de erro, criar dados básicos
+      criarDadosBasicos();
+    }
+  }, [criarDadosBasicos]);
 
   // === FUNÇÕES PARA DESCRIÇÕES E CATEGORIAS ===
   const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
