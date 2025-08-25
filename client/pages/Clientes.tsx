@@ -56,6 +56,7 @@ export default function Clientes() {
   const { lancamentos } = useCaixa();
   const [termoPesquisa, setTermoPesquisa] = useState("");
   const [clienteSelecionado, setClienteSelecionado] = useState<any>(null);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
 
   // Filtrar clientes baseado no termo de pesquisa
   const clientesFiltrados = clientes.filter((cliente) => {
