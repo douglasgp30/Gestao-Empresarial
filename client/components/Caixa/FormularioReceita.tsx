@@ -87,6 +87,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   });
 
   const [mostrarCamposAvancados, setMostrarCamposAvancados] = useState(false);
+  const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notaFiscalEmitida, setNotaFiscalEmitida] = useState(false);
   const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(
@@ -1002,12 +1003,19 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   ))}
                 </SelectContent>
               </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                title="Adicionar Cliente"
+                onClick={() => setIsModalClienteOpen(true)}
+              >
+                <UserPlus className="h-4 w-4" />
+              </Button>
+
               <ModalCadastroCliente
-                trigger={
-                  <Button type="button" variant="outline" size="icon">
-                    <UserPlus className="h-4 w-4" />
-                  </Button>
-                }
+                isOpen={isModalClienteOpen}
+                onOpenChange={setIsModalClienteOpen}
                 onClienteAdicionado={(cliente) => {
                   // Selecionar o cliente recém-criado
                   setFormData((prev) => ({ ...prev, cliente: cliente.id }));
