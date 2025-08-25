@@ -911,10 +911,10 @@ export function ModalReceita() {
                     </SelectTrigger>
                     <SelectContent>
                       {clientes.map((cliente) => (
-                        <SelectItem key={cliente.id} value={cliente.id}>
-                          {cliente.nome}
-                        </SelectItem>
-                      ))}
+                      <SelectItem key={cliente.id} value={cliente.id?.toString()}>
+                        {cliente.nome}
+                      </SelectItem>
+                    ))}
                     </SelectContent>
                   </Select>
 
@@ -1218,7 +1218,7 @@ export function ModalReceita() {
           onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             // Selecionar o cliente recém-criado
-            setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+            setFormData((prev) => ({ ...prev, cliente: cliente.id?.toString() }));
 
             // Toast de confirmação
             toast({
