@@ -624,7 +624,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           JSON.stringify(dadosMigrados),
         );
         console.log(
-          "📦 [CaixaContext] Dados migrados salvos de volta no localStorage",
+          "�� [CaixaContext] Dados migrados salvos de volta no localStorage",
         );
       } else {
         setLancamentos([]);
@@ -719,36 +719,23 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, []); // Array vazio - executa apenas uma vez
 
-  // Memoizar string das dependências para evitar loops
-  const filtrosDependencias = useMemo(() => {
-    return JSON.stringify({
-      dataInicio: filtros.dataInicio.toISOString().split("T")[0],
-      dataFim: filtros.dataFim.toISOString().split("T")[0],
-      tipo: filtros.tipo,
-      formaPagamento: filtros.formaPagamento,
-      tecnico: filtros.tecnico,
-      campanha: filtros.campanha,
-      setor: filtros.setor,
-      categoria: filtros.categoria,
-      descricao: filtros.descricao,
-      cliente: filtros.cliente,
-      cidade: filtros.cidade,
-      numeroNota: filtros.numeroNota,
-    });
-  }, [
-    filtros.dataInicio,
-    filtros.dataFim,
-    filtros.tipo,
-    filtros.formaPagamento,
-    filtros.tecnico,
-    filtros.campanha,
-    filtros.setor,
-    filtros.categoria,
-    filtros.descricao,
-    filtros.cliente,
-    filtros.cidade,
-    filtros.numeroNota,
-  ]);
+  // Função para atualizar filtros e recarregar dados apenas quando necessário
+  const atualizarFiltros = useCallback((novosFiltros: any) => {
+    setFiltros(novosFiltros);
+
+    // Recarregar dados apenas se os filtros de data mudaram significativamente
+    const datasMudaram =
+      novosFiltros.dataInicio?.getTime() !== filtros.dataInicio?.getTime() ||
+      novosFiltros.dataFim?.getTime() !== filtros.dataFim?.getTime();
+
+    if (datasMudaram) {
+      console.log("📅 [CaixaContext] Datas dos filtros mudaram, recarregando...");
+      // Debounce para evitar múltiplos recarregamentos
+      setTimeout(() => {
+        recarregarManual();
+      }, 500);
+    }
+  }, [filtros.dataInicio, filtros.dataFim, recarregarManual]);
 
   // REMOVIDO: useEffect automático que causava loops infinitos
   // O recarregamento agora é feito apenas manualmente ou na inicialização
