@@ -355,19 +355,18 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         throw new Error(response.error);
       }
 
-      setFuncionarios((prev) =>
-        prev.map((funcionario) =>
-          funcionario.id === id ? { ...funcionario, ...dadosAtualizados } : funcionario,
-        ),
-      );
-
-      // Atualizar localStorage
-      try {
-        const funcionariosAtualizados = funcionarios.map((funcionario) =>
+      setFuncionarios((prev) => {
+        const funcionariosAtualizados = prev.map((funcionario) =>
           funcionario.id === id ? { ...funcionario, ...dadosAtualizados } : funcionario,
         );
-        localStorage.setItem("funcionarios", JSON.stringify(funcionariosAtualizados));
-      } catch {}
+
+        // Atualizar localStorage com dados corretos
+        try {
+          localStorage.setItem("funcionarios", JSON.stringify(funcionariosAtualizados));
+        } catch {}
+
+        return funcionariosAtualizados;
+      });
 
       console.log("✅ Funcionário editado com sucesso");
     } catch (error) {
@@ -404,13 +403,16 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       }
 
       console.log("[FuncionariosContext] Funcionário excluído com sucesso, atualizando lista...");
-      setFuncionarios((prev) => prev.filter((func) => func.id !== id));
+      setFuncionarios((prev) => {
+        const funcionariosAtualizados = prev.filter((func) => func.id !== id);
 
-      // Atualizar localStorage
-      try {
-        const funcionariosAtualizados = funcionarios.filter((func) => func.id !== id);
-        localStorage.setItem("funcionarios", JSON.stringify(funcionariosAtualizados));
-      } catch {}
+        // Atualizar localStorage com dados corretos
+        try {
+          localStorage.setItem("funcionarios", JSON.stringify(funcionariosAtualizados));
+        } catch {}
+
+        return funcionariosAtualizados;
+      });
     } catch (error) {
       console.error("Erro ao excluir funcionário:", error);
       throw error;
