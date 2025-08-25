@@ -92,6 +92,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(
     null,
   );
+  const [clienteRecemAdicionado, setClienteRecemAdicionado] = useState(false);
 
   // Estados para categorias e descriç��es carregadas diretamente da API
   const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
@@ -873,7 +874,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <SelectContent>
                   {tecnicos.length === 0 ? (
                     <div className="px-2 py-1 text-sm text-gray-500">
-                      Nenhum t��cnico cadastrado
+                      Nenhum técnico cadastrado
                     </div>
                   ) : (
                     tecnicos
@@ -1353,7 +1354,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Lançando..." : "Lançar Receita"}
+            {isSubmitting ? "Lançando..." : "Lan��ar Receita"}
           </Button>
         </form>
       </CardContent>
