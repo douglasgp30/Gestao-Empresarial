@@ -313,3 +313,6 @@ export function useCaixaSimples() {
   }
   return context;
 }
+
+// Export para compatibilidade com componentes existentes
+export const useCaixa = useCaixaSimples;
