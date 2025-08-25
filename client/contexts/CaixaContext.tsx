@@ -174,7 +174,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   const carregarLancamentosLocalStorage = useCallback(() => {
     try {
-      console.log("📦 [CaixaContext] Carregando lan��amentos do localStorage");
+      console.log("📦 [CaixaContext] Carregando lançamentos do localStorage");
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
 
       if (lancamentosStorage) {
@@ -316,6 +316,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     console.log("📅 [CaixaContext] Filtros atualizados");
   };
 
+  // ✅ FUNÇÃO DE VALIDAÇÃO para evitar regressões
+  const validarLancamento = (lancamento: any, contexto: string) => {
+    const erros = [];
+
+    if (!lancamento.id) erros.push("ID é obrigatório");
+    if (!lancamento.tipo) erros.push("Tipo é obrigatório");
+    if (!lancamento.valor || typeof lancamento.valor !== "number") erros.push("Valor deve ser um número válido");
+    if (!lancamento.data) erros.push("Data é obrigatória");
+
+    // Verificações específicas para receitas
+    if (lancamento.tipo === "receita" && lancamento.tecnicoResponsavel && !lancamento.comissao) {
+      console.warn(`⚠️ [${contexto}] Receita com técnico mas sem comissão:`, lancamento.id);
+    }
+
+    if (erros.length > 0) {
+      console.error(`❌ [${contexto}] Lançamento inválido:`, erros);
+      throw new Error(`Dados inválidos: ${erros.join(", ")}`);
+    }
+
+    console.log(`✅ [${contexto}] Lançamento validado:`, lancamento.id);
+  };
+
   // Adicionar lançamento
   const adicionarLancamento = async (novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">) => {
     try {
@@ -334,6 +356,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         dataHora: novoLancamento.dataHora || new Date(),
         dataCriacao: new Date(),
       };
+
+      // ✅ VALIDAR antes de salvar
+      validarLancamento(lancamentoCompleto, "adicionarLancamento");
 
       // Carregar lançamentos existentes
       const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
