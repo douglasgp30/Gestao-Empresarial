@@ -204,7 +204,6 @@ export default function ModalCadastroCliente({
     }
   };
 
-  console.log("[ModalCadastroCliente] Renderizando modal, open:", open);
 
   // Se não tem trigger, renderizar apenas o modal controlado
   if (!trigger && (isOpen !== undefined)) {
