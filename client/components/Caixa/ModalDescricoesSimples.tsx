@@ -445,7 +445,24 @@ export default function ModalDescricoesSimples() {
                     key={categoria.id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    <span className="font-medium">{categoria.nome}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{categoria.nome}</span>
+                      {(() => {
+                        const numDescricoes = contarDescricoesDaCategoria(categoria.nome, categoria.tipo);
+                        return (
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              numDescricoes > 0
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-gray-100 text-gray-500'
+                            }`}
+                            title={`${numDescricoes} descrição(ões) vinculada(s)`}
+                          >
+                            {numDescricoes}
+                          </span>
+                        );
+                      })()}
+                    </div>
                     <div className="flex gap-1">
                       <Button
                         variant="ghost"
