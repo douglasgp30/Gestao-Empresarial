@@ -222,6 +222,7 @@ export default function ModalDescricoesSimples() {
 
       if (!response.ok) {
         let errorMessage = "Não foi possível excluir o item.";
+        let isDependencyError = false;
 
         // Tentar extrair a mensagem de erro do servidor
         try {
@@ -240,6 +241,10 @@ export default function ModalDescricoesSimples() {
               typeof errorData.error === "string"
             ) {
               errorMessage = errorData.error;
+              // Detectar se é um erro de dependência
+              if (errorMessage.includes("vinculada") || errorMessage.includes("lançamento")) {
+                isDependencyError = true;
+              }
             }
           } else {
             // Resposta não é JSON, tentar ler como texto
@@ -254,7 +259,8 @@ export default function ModalDescricoesSimples() {
           // Se não conseguir ler a resposta, usar mensagem padrão baseada no status
           if (response.status === 400) {
             errorMessage =
-              "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas a esta categoria.";
+              "Não foi possível excluir o item. Verifique se não há descrições ou dependências vinculadas.";
+            isDependencyError = true;
           } else if (response.status === 404) {
             errorMessage = "Item não encontrado.";
           } else {
@@ -263,12 +269,29 @@ export default function ModalDescricoesSimples() {
         }
 
         console.log("🔍 Final error message:", errorMessage);
+        console.log("🔍 Is dependency error:", isDependencyError);
 
-        // Não lançar um novo erro genérico, mas sim preservar a mensagem original
-        // que contém informações valiosas sobre as dependências
-        const errorToShow = new Error(errorMessage);
-        errorToShow.name = "DependencyError";
-        throw errorToShow;
+        // Fechar modal de confirmação
+        setShowConfirm(false);
+        setItemToDelete(null);
+
+        // Mostrar erro de forma adequada baseado no tipo
+        if (isDependencyError) {
+          // Para erros de dependência, mostrar uma mensagem mais explicativa
+          toast.error("Não é possível excluir este item", {
+            duration: 10000,
+            description: errorMessage,
+            action: {
+              label: "Entendi",
+              onClick: () => console.log("Toast dismissed"),
+            },
+          });
+        } else {
+          // Para outros erros, mostrar mensagem simples
+          toast.error(errorMessage);
+        }
+
+        return; // Não lançar erro, já tratamos aqui
       }
 
       // Status 204 (No Content) indica sucesso na exclusão
