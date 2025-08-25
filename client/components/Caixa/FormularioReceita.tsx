@@ -492,12 +492,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       // Se for boleto, criar automaticamente conta a receber
       if (isBoleto && dataVencimentoBoleto && codigoServico) {
         try {
-          console.log("Criando conta a receber para boleto:", {
-            clienteId: formData.cliente,
-            valor: valorInput.numericValue,
-            dataVencimento: dataVencimentoBoleto,
-            codigoServico,
-          });
+          // Criando conta a receber para boleto
 
           const dadosContaReceber = {
             tipo: "receber",
