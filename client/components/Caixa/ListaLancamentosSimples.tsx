@@ -467,7 +467,7 @@ export function ListaLancamentosSimples() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    {getVisibleColumns().map((column) => (
+                    {visibleColumns.map((column) => (
                       <TableHead
                         key={column.key}
                         className={column.key === "acoes" ? "text-right" : ""}
@@ -480,7 +480,7 @@ export function ListaLancamentosSimples() {
                 <TableBody>
                   {lancamentos.map((lancamento) => (
                     <TableRow key={lancamento.id}>
-                      {getVisibleColumns().map((column) => (
+                      {visibleColumns.map((column) => (
                         <TableCell
                           key={column.key}
                           className={column.key === "acoes" ? "text-right" : ""}
