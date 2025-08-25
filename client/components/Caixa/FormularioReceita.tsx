@@ -246,15 +246,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           tecnico.percentualComissao || tecnico.percentualServico || 0;
         if (percentual > 0) {
           const comissao = valorLiquidoCalculado * (percentual / 100);
-          console.log("Calculando comissão:", {
-            tecnico: tecnico.nome || tecnico.nomeCompleto,
-            percentual,
-            valorBase: valorBaseNotaFiscal,
-            valorQueEntrou: valorQueEntrouReal,
-            descontoNota: descontoNotaFiscal,
-            valorLiquido: valorLiquidoCalculado,
-            comissao,
-          });
           return comissao;
         }
       }
