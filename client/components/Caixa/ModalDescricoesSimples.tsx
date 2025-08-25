@@ -166,13 +166,44 @@ export default function ModalDescricoesSimples() {
 
     setIsSaving(true);
     try {
-      await adicionarDescricaoECategoria({
+      console.log("➕ Adicionando nova descrição:", {
         nome: formDescricao.nome.trim(),
         tipo: tipoAtivo,
         categoria: formDescricao.categoria,
         tipoItem: "descricao",
         ativo: true,
       });
+
+      // Usar API diretamente em vez do contexto para melhor controle
+      const response = await fetch('/api/descricoes-e-categorias', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome: formDescricao.nome.trim(),
+          tipo: tipoAtivo,
+          categoria: formDescricao.categoria,
+          tipoItem: "descricao",
+          ativo: true,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Erro ao adicionar descrição";
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          console.warn("Erro ao ler resposta de erro:", e);
+        }
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      console.log("✅ Descrição criada:", result);
 
       toast.success("Descrição adicionada com sucesso");
       setFormDescricao({ nome: "", categoria: "" });
@@ -181,8 +212,8 @@ export default function ModalDescricoesSimples() {
       console.log("🔄 Sincronizando dados após criação de descrição...");
       await recarregarDescricoesECategorias();
     } catch (error) {
-      console.error("Erro ao adicionar descrição:", error);
-      toast.error("Erro ao adicionar descrição. Tente novamente.");
+      console.error("❌ Erro ao adicionar descrição:", error);
+      toast.error(error instanceof Error ? error.message : "Erro ao adicionar descrição. Tente novamente.");
     } finally {
       setIsSaving(false);
     }
