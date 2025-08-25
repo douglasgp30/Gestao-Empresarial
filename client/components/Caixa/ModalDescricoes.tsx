@@ -176,7 +176,7 @@ export default function ModalDescricoes() {
                     Nova Descrição
                   </Button>
                 </DialogTrigger>
-                <DialogContent zIndex="z-60">
+                <DialogContent zIndex="z-[60]">
                   <DialogHeader>
                     <DialogTitle>Criar Nova Descrição</DialogTitle>
                     <DialogDescription>

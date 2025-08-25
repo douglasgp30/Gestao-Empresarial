@@ -509,7 +509,7 @@ export function ModalContasReceber({
           onClienteAdicionado={(cliente) => {
             setFormData((prev) => ({
               ...prev,
-              codigoCliente: cliente.id,
+              codigoCliente: cliente.id?.toString(),
             }));
             toast({
               title: "Cliente Adicionado",

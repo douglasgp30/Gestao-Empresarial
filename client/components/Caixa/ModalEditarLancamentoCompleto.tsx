@@ -608,7 +608,7 @@ export function ModalEditarLancamentoCompleto({
                     <SelectContent>
                       <SelectItem value="none">Nenhum</SelectItem>
                       {clientes.map((cliente) => (
-                        <SelectItem key={cliente.id} value={cliente.id}>
+                        <SelectItem key={cliente.id} value={cliente.id?.toString()}>
                           {cliente.nome}
                         </SelectItem>
                       ))}
@@ -932,7 +932,7 @@ export function ModalEditarLancamentoCompleto({
           isOpen={isModalClienteOpen}
           onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
-            setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+            setFormData((prev) => ({ ...prev, cliente: cliente.id?.toString() }));
             toast({
               title: "Cliente Adicionado",
               description: `Cliente "${cliente.nome}" foi cadastrado e selecionado.`,
