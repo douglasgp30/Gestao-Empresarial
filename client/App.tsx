@@ -64,7 +64,7 @@ import "./lib/migrarCaixaParaBanco"; // Migração para banco de dados
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
-import { CaixaProviderSimples as CaixaProvider } from "./contexts/CaixaContextSimples";
+import { CaixaProvider } from "./contexts/CaixaContext";
 import { ContasProvider } from "./contexts/ContasContext";
 import { FuncionariosProvider } from "./contexts/FuncionariosContext";
 import { RelatoriosProvider } from "./contexts/RelatoriosContext";
@@ -297,7 +297,7 @@ function AppContent() {
   );
 }
 
-// Evitar múltiplas inicializações do React
+// Evitar múltiplas inicializa��ões do React
 const rootElement = document.getElementById("root")!;
 let root: ReturnType<typeof createRoot>;
 
