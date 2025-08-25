@@ -265,14 +265,14 @@ export default function ModalCadastroCliente({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefone2">Telefone Secundário (Opcional)</Label>
+              <Label htmlFor="telefoneSecundario">Telefone Secundário (Opcional)</Label>
               <Input
-                id="telefone2"
-                value={formData.telefone2}
+                id="telefoneSecundario"
+                value={formData.telefoneSecundario}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    telefone2: formatTelefone(e.target.value),
+                    telefoneSecundario: formatTelefone(e.target.value),
                   })
                 }
                 placeholder="(62) 3333-3333"
