@@ -207,60 +207,7 @@ export default function ModalCadastroCliente({
   };
 
 
-  // Se não tem trigger, renderizar apenas o modal controlado
-  if (!trigger && (isOpen !== undefined)) {
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent
-          className="max-w-2xl max-h-[90vh] overflow-y-auto"
-          zIndex="z-[60]"
-        >
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5" />
-              Cadastrar Novo Cliente
-            </DialogTitle>
-            <DialogDescription>
-              Preencha os dados do cliente. Campos com * são obrigatórios.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Todo o conteúdo do formulário aqui */}
-            <div className="space-y-2">
-              <Label htmlFor="nome">Nome Completo *</Label>
-              <Input
-                id="nome"
-                value={formData.nome}
-                onChange={(e) =>
-                  setFormData({ ...formData, nome: e.target.value })
-                }
-                placeholder="Nome completo do cliente"
-                className={errors.nome ? "border-red-500" : ""}
-              />
-              {errors.nome && (
-                <p className="text-sm text-red-500">{errors.nome}</p>
-              )}
-            </div>
-
-            <div className="flex gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" className="flex-1">
-                Cadastrar Cliente
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  // Sempre usar a versão completa do modal
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
