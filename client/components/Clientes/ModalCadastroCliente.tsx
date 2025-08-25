@@ -51,15 +51,7 @@ export default function ModalCadastroCliente({
   const open = isOpen !== undefined ? isOpen : isModalOpen;
   const setOpen = onOpenChange || setIsModalOpen;
 
-  React.useEffect(() => {
-    console.log("[ModalCadastroCliente] Estado do modal:", {
-      isOpen,
-      isModalOpen,
-      open,
-      hasOnOpenChange: !!onOpenChange,
-      hasTrigger: !!trigger
-    });
-  }, [isOpen, isModalOpen, open, onOpenChange, trigger]);
+  // Estado do modal gerenciado sem logs para produção
 
   const formatCpf = (value: string) => {
     const cleaned = value.replace(/\D/g, "");
