@@ -246,21 +246,21 @@ export default function ModalCadastroCliente({
           {/* Telefones */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="telefone1">Telefone Principal *</Label>
+              <Label htmlFor="telefonePrincipal">Telefone Principal *</Label>
               <Input
-                id="telefone1"
-                value={formData.telefone1}
+                id="telefonePrincipal"
+                value={formData.telefonePrincipal}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    telefone1: formatTelefone(e.target.value),
+                    telefonePrincipal: formatTelefone(e.target.value),
                   })
                 }
                 placeholder="(62) 99999-9999"
-                className={errors.telefone1 ? "border-red-500" : ""}
+                className={errors.telefonePrincipal ? "border-red-500" : ""}
               />
-              {errors.telefone1 && (
-                <p className="text-sm text-red-500">{errors.telefone1}</p>
+              {errors.telefonePrincipal && (
+                <p className="text-sm text-red-500">{errors.telefonePrincipal}</p>
               )}
             </div>
 
