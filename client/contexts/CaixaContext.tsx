@@ -174,7 +174,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   const carregarLancamentosLocalStorage = useCallback(() => {
     try {
-      console.log("📦 [CaixaContext] Carregando lançamentos do localStorage");
+      console.log("📦 [CaixaContext] Carregando lan��amentos do localStorage");
       const lancamentosStorage = localStorage.getItem("lancamentos_caixa");
 
       if (lancamentosStorage) {
@@ -365,22 +365,52 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const editarLancamento = async (id: string, dadosAtualizados: Partial<LancamentoCaixa>) => {
     try {
       setError(null);
-      console.log("✏️ [CaixaContext] Editando lançamento:", id);
+      console.log("✏️ [CaixaContext] Editando lançamento:", id, dadosAtualizados);
+
+      if (!id || id.toString().trim() === "") {
+        throw new Error("ID do lançamento é obrigatório para edição");
+      }
 
       const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
       const lancamentosAtualizados = lancamentosExistentes.map((lancamento: any) => {
         if (lancamento.id?.toString() === id?.toString()) {
-          return { ...lancamento, ...dadosAtualizados, id: lancamento.id, dataCriacao: lancamento.dataCriacao };
+          // ✅ CORREÇÃO: Preservar campos importantes e adicionar dados atualizados
+          const lancamentoAtualizado = {
+            ...lancamento,
+            ...dadosAtualizados,
+            id: lancamento.id,
+            dataCriacao: lancamento.dataCriacao,
+            dataHora: lancamento.dataHora || new Date(),
+            funcionarioId: lancamento.funcionarioId
+          };
+          console.log("📝 [CaixaContext] Lançamento atualizado:", lancamentoAtualizado);
+          return lancamentoAtualizado;
         }
         return lancamento;
       });
 
+      // Salvar no localStorage
       localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
-      carregarLancamentosLocalStorage();
+
+      // ✅ CORREÇÃO: Atualizar estado diretamente sem usar carregarLancamentosLocalStorage (evita async)
+      setLancamentos(lancamentosAtualizados.map((lancamento: any) => {
+        // Normalizar dados como no carregamento inicial
+        const data = new Date(lancamento.data);
+        const dataHora = lancamento.dataHora ? new Date(lancamento.dataHora) : data;
+        const dataCriacao = lancamento.dataCriacao ? new Date(lancamento.dataCriacao) : new Date();
+
+        return {
+          ...lancamento,
+          data,
+          dataHora,
+          dataCriacao,
+        };
+      }));
+
       console.log("✅ [CaixaContext] Lançamento editado com sucesso:", id);
     } catch (error) {
-      console.error("Erro ao editar lançamento:", error);
-      setError("Erro ao editar lançamento");
+      console.error("❌ [CaixaContext] Erro ao editar lançamento:", error);
+      setError(`Erro ao editar lançamento: ${error.message}`);
       throw error;
     }
   };
