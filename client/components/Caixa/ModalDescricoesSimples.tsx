@@ -699,20 +699,80 @@ export default function ModalDescricoesSimples() {
                     key={descricao.id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    <div>
-                      <span className="font-medium">{descricao.nome}</span>
-                      <span className="ml-2 text-sm text-gray-500">
-                        ({descricao.categoria})
-                      </span>
+                    <div className="flex items-center gap-2 flex-1">
+                      {itemEditando?.id === descricao.id ? (
+                        <div className="flex items-center gap-2 flex-1">
+                          <Input
+                            value={nomeEditando}
+                            onChange={(e) => setNomeEditando(e.target.value)}
+                            className="flex-1"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleSalvarEdicao();
+                              } else if (e.key === 'Escape') {
+                                handleCancelarEdicao();
+                              }
+                            }}
+                            autoFocus
+                          />
+                          <span className="text-sm text-gray-500">
+                            ({descricao.categoria})
+                          </span>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="font-medium">{descricao.nome}</span>
+                          <span className="ml-2 text-sm text-gray-500">
+                            ({descricao.categoria})
+                          </span>
+                        </>
+                      )}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleConfirmDelete(descricao)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-1">
+                      {itemEditando?.id === descricao.id ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleSalvarEdicao}
+                            className="text-green-600 hover:text-green-700"
+                            title="Salvar alterações"
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleCancelarEdicao}
+                            className="text-gray-600 hover:text-gray-700"
+                            title="Cancelar edição"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleIniciarEdicao(descricao)}
+                            className="text-orange-600 hover:text-orange-700"
+                            title="Editar nome da descrição"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleConfirmDelete(descricao)}
+                            className="text-red-600 hover:text-red-700"
+                            title="Excluir descrição"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
