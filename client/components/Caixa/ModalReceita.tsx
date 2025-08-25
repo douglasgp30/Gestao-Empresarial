@@ -924,9 +924,9 @@ export function ModalReceita() {
                     <UserPlus className="h-4 w-4" />
                   </Button>
 
-                  <ModalCadastroCliente
+                  <ModalClienteSimples
                     isOpen={isModalClienteOpen}
-                    onOpenChange={setIsModalClienteOpen}
+                    onClose={() => setIsModalClienteOpen(false)}
                     onClienteAdicionado={(cliente) => {
                       console.log("[ModalReceita] Cliente adicionado, atualizando formulário:", cliente);
 
