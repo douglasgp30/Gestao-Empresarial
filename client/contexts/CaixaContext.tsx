@@ -1190,6 +1190,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       setIsExcluindo(true);
       setError(null);
+      excludingRef.current = true; // Evitar recarregamentos durante exclusão
 
       console.log("[CaixaContext] Excluindo lançamento via API:", {
         id,
@@ -1197,54 +1198,72 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         totalLancamentos: lancamentos.length,
       });
 
-      // Fazer a chamada para a API para excluir do banco de dados
-      const response = await fetch(`/api/caixa/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // Timeout para evitar requests que ficam pendentes
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos
 
-      if (!response.ok) {
-        let errorMessage = `Erro ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorData.error || errorMessage;
-        } catch {
-          try {
-            const errorText = await response.text();
-            errorMessage = errorText || errorMessage;
-          } catch {
-            // Se não conseguir ler nada, usar mensagem padrão
-          }
-        }
-        throw new Error(`Erro na API: ${errorMessage}`);
-      }
-
-      console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
-
-      // Remover da lista local após sucesso na API
-      // Garantir comparação segura de IDs convertendo ambos para string
-      setLancamentos((prev) => {
-        const antes = prev.length;
-        const depois = prev.filter((l) => l.id?.toString() !== id?.toString());
-        console.log("[CaixaContext] Estado atualizado após exclusão:", {
-          idExcluido: id,
-          lancamentosAntes: antes,
-          lancamentosDepois: depois.length,
-          removido: antes - depois.length === 1,
+      try {
+        // Fazer a chamada para a API para excluir do banco de dados
+        const response = await fetch(`/api/caixa/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
         });
-        return depois;
-      });
 
-      // REMOVIDO: setTimeout e carregarDados() que causavam loop infinito
-      console.log("[CaixaContext] Exclusão concluída com sucesso");
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          let errorMessage = `Erro ${response.status}`;
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorData.error || errorMessage;
+          } catch {
+            try {
+              const errorText = await response.text();
+              errorMessage = errorText || errorMessage;
+            } catch {
+              // Se não conseguir ler nada, usar mensagem padrão
+            }
+          }
+          throw new Error(`Erro na API: ${errorMessage}`);
+        }
+
+        console.log("[CaixaContext] Lançamento excluído com sucesso da API:", id);
+
+        // Remover da lista local imediatamente após sucesso na API
+        setLancamentos((prev) => {
+          const lancamentosAtualizados = prev.filter((l) => l.id?.toString() !== id?.toString());
+          console.log("[CaixaContext] Estado atualizado após exclusão:", {
+            idExcluido: id,
+            lancamentosAntes: prev.length,
+            lancamentosDepois: lancamentosAtualizados.length,
+            removido: prev.length - lancamentosAtualizados.length === 1,
+          });
+          return lancamentosAtualizados;
+        });
+
+        console.log("[CaixaContext] Exclusão concluída com sucesso");
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === 'AbortError') {
+          throw new Error('Timeout: A operação demorou muito para responder');
+        }
+        throw fetchError;
+      }
     } catch (error) {
-      console.error("Erro ao excluir lançamento:", error);
+      console.error("❌ Erro ao excluir lançamento:", error);
       setError("Erro ao excluir lançamento");
       throw error;
     } finally {
       setIsExcluindo(false);
+      excludingRef.current = false; // Permitir recarregamentos novamente
+
+      // Pequeno delay antes de permitir novos recarregamentos para evitar conflitos
+      setTimeout(() => {
+        excludingRef.current = false;
+      }, 1000);
     }
   };
 
