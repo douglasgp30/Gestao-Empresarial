@@ -44,7 +44,7 @@ export function FiltrosCaixaCompacto() {
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
   // Memoizar filtros para evitar re-renders desnecessários
-  const filtrosMemoizados = useMemo(() => filtros, [filtrosDependencias]);
+  const filtrosMemoizados = useMemo(() => filtros, [filtros]);
 
   // Atualizar filtros locais quando os filtros do contexto mudarem
   useEffect(() => {
