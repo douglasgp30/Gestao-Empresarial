@@ -915,14 +915,8 @@ export function ModalReceita() {
                     isOpen={isModalClienteOpen}
                     onClose={() => setIsModalClienteOpen(false)}
                     onClienteAdicionado={(cliente) => {
-                      console.log("[ModalReceita] Cliente adicionado, atualizando formulário:", cliente);
-
-                      // Garantir que o cliente seja selecionado corretamente
-                      setFormData((prev) => {
-                        console.log("[ModalReceita] Atualizando formData - cliente anterior:", prev.cliente);
-                        console.log("[ModalReceita] Atualizando formData - novo cliente:", cliente.id);
-                        return { ...prev, cliente: cliente.id };
-                      });
+                      // Selecionar o cliente recém-criado
+                      setFormData((prev) => ({ ...prev, cliente: cliente.id }));
 
                       // Toast de confirmação
                       toast({
@@ -930,8 +924,6 @@ export function ModalReceita() {
                         description: `Cliente "${cliente.nome}" foi cadastrado e selecionado no formulário.`,
                         variant: "default",
                       });
-
-                      console.log("[ModalReceita] Callback de cliente concluído, modal deve permanecer aberto");
                     }}
                   />
                 </div>
