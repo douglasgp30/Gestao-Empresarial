@@ -523,10 +523,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
           if (responseContaReceber.ok) {
             const contaCriada = await responseContaReceber.json();
-            console.log(
-              "✅ Conta a receber criada automaticamente para boleto:",
-              contaCriada,
-            );
+            // Conta a receber criada automaticamente para boleto
 
             toast({
               title: "Boleto registrado com sucesso!",
