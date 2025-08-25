@@ -157,7 +157,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const campanhasServidor = await response.json();
         console.log(
-          "����� [CaixaContext] Campanhas carregadas do servidor:",
+          "���� [CaixaContext] Campanhas carregadas do servidor:",
           campanhasServidor.length,
         );
         setCampanhas(campanhasServidor || []);
@@ -676,34 +676,29 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     [filtros, isCarregando],
   );
 
-  // Carregar dados na inicialização - versão simplificada
+  // Carregamento inicial simples e único
   useEffect(() => {
-    if (typeof window === "undefined") {
-      console.log("[CaixaContext] Servidor - pulando carregamento inicial");
-      return;
-    }
+    if (typeof window === "undefined") return;
 
-    // Carregar apenas uma vez na inicialização
     let mounted = true;
     const loadInitialData = async () => {
       if (!mounted) return;
 
       try {
         setIsLoading(true);
-        console.log("[CaixaContext] Carregamento inicial executado");
+        console.log("📦 [CaixaContext] Carregamento inicial único");
 
-        // Carregar campanhas
+        // Carregar apenas campanhas (lançamentos serão carregados sob demanda)
         await carregarCampanhasSafe();
 
-        // Carregar lançamentos
-        try {
-          await carregarLancamentosDoBanco();
-        } catch (error) {
-          console.warn(
-            "Erro ao carregar do banco, usando localStorage:",
-            error,
-          );
-          await carregarLancamentosLocalStorage();
+        // Carregar lançamentos apenas se não há filtros específicos
+        if (mounted) {
+          try {
+            await carregarLancamentosDoBanco();
+          } catch (error) {
+            console.warn("Usando localStorage como fallback:", error);
+            await carregarLancamentosLocalStorage();
+          }
         }
       } catch (error) {
         console.error("Erro no carregamento inicial:", error);
@@ -715,13 +710,14 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    const timeout = setTimeout(loadInitialData, 300);
+    // Carregamento com delay mínimo
+    const timeout = setTimeout(loadInitialData, 100);
 
     return () => {
       mounted = false;
       clearTimeout(timeout);
     };
-  }, []);
+  }, []); // Array vazio - executa apenas uma vez
 
   // Memoizar string das dependências para evitar loops
   const filtrosDependencias = useMemo(() => {
