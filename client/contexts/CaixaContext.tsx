@@ -719,6 +719,23 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, []); // Array vazio - executa apenas uma vez
 
+  // Função manual para recarregar apenas quando necessário
+  const recarregarManual = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      console.log("📦 [CaixaContext] Recarregamento manual solicitado");
+      await carregarLancamentosDoBanco();
+    } catch (error) {
+      console.warn(
+        "Erro no recarregamento manual, usando localStorage:",
+        error,
+      );
+      await carregarLancamentosLocalStorage();
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   // Função para atualizar filtros e recarregar dados apenas quando necessário
   const atualizarFiltros = useCallback(
     (novosFiltros: any) => {
