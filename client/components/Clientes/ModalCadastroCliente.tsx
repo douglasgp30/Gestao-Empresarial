@@ -213,7 +213,7 @@ export default function ModalCadastroCliente({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           className="max-w-2xl max-h-[90vh] overflow-y-auto"
-          zIndex="z-60"
+          zIndex="z-[60]"
         >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -267,7 +267,7 @@ export default function ModalCadastroCliente({
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
         className="max-w-2xl max-h-[90vh] overflow-y-auto"
-        zIndex="z-60"
+        zIndex="z-[60]"
       >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
