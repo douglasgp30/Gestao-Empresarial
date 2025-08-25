@@ -62,12 +62,7 @@ export function ModalReceita() {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
 
-  React.useEffect(() => {
-    console.log("[ModalReceita] Estado dos modais:", {
-      isOpen,
-      isModalClienteOpen
-    });
-  }, [isOpen, isModalClienteOpen]);
+  // Estados dos modais gerenciados sem logs para produção
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
