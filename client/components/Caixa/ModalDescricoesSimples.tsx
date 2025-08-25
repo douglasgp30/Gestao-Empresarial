@@ -335,6 +335,25 @@ export default function ModalDescricoesSimples() {
 
       // Status 204 (No Content) indica sucesso na exclusão
       console.log("✅ Excluído com sucesso");
+
+      // Recarregar dados da API para sincronizar
+      try {
+        console.log("🔄 Sincronizando dados após exclusão...");
+        const response = await fetch('/api/descricoes-e-categorias');
+        if (response.ok) {
+          const data = await response.json();
+          console.log("📦 Dados atualizados recebidos da API:", data.data?.length || 0);
+
+          // Atualizar localStorage com dados atualizados
+          if (data.data) {
+            localStorage.setItem('descricoes_e_categorias', JSON.stringify(data.data));
+          }
+        }
+      } catch (syncError) {
+        console.warn("⚠️ Erro ao sincronizar dados, usando recarregamento local:", syncError);
+      }
+
+      // Recarregar do contexto (agora com dados atualizados)
       await recarregarDescricoesECategorias();
       setShowConfirm(false);
       setItemToDelete(null);
