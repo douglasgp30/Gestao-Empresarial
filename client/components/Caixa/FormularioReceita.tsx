@@ -159,8 +159,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     carregarDescricoes();
   }, [formData.categoria]);
 
-  // Verificar se forma de pagamento é cartão - usar utilitário padronizado
-  const isCartao = React.useMemo(() => {
+  // Verificar se forma de pagamento é cartão - memoização estabilizada
+  const isCartao = useMemo(() => {
     if (!formData.formaPagamento || formasPagamento.length === 0) {
       return false;
     }
@@ -170,10 +170,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     );
 
     return isFormaPagamentoCartao(forma);
-  }, [formData.formaPagamento, formasPagamento]);
+  }, [formData.formaPagamento, formasPagamento.length]);
 
-  // Verificar se forma de pagamento é boleto - usar utilitário padronizado
-  const isBoleto = React.useMemo(() => {
+  // Verificar se forma de pagamento é boleto - memoização estabilizada
+  const isBoleto = useMemo(() => {
     if (!formData.formaPagamento || formasPagamento.length === 0) {
       return false;
     }
@@ -183,7 +183,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     );
 
     return isFormaPagamentoBoleto(forma);
-  }, [formData.formaPagamento, formasPagamento]);
+  }, [formData.formaPagamento, formasPagamento.length]);
 
   // Calcular campos automaticamente usando os hooks de moeda
   const valorCalculado = valorInput.numericValue;
