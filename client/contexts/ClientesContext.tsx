@@ -119,6 +119,29 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     inicializar();
   }, [carregarClientesAPI]);
 
+  // Listener para forçar recarregamento quando cliente é criado
+  useEffect(() => {
+    const handleClienteCriado = async (event: CustomEvent) => {
+      console.log("[ClientesContext] Evento cliente-criado recebido:", event.detail);
+
+      // For��ar recarregamento após um breve delay
+      setTimeout(async () => {
+        try {
+          await recarregarClientes();
+          console.log("[ClientesContext] Clientes recarregados após criação");
+        } catch (error) {
+          console.error("[ClientesContext] Erro ao recarregar após criação:", error);
+        }
+      }, 500);
+    };
+
+    window.addEventListener('cliente-criado', handleClienteCriado as EventListener);
+
+    return () => {
+      window.removeEventListener('cliente-criado', handleClienteCriado as EventListener);
+    };
+  }, [recarregarClientes]);
+
   // Salvar no localStorage sempre que clientes mudarem (backup)
   useEffect(() => {
     if (!isLoading && clientes.length > 0) {
