@@ -113,28 +113,126 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   }, [clientes, isLoading, salvarClientesNoLocalStorage]);
 
-  const adicionarCliente = (
+  const adicionarCliente = async (
     novoCliente: Omit<Cliente, "id" | "dataCriacao">,
-  ): Cliente => {
-    const cliente: Cliente = {
-      ...novoCliente,
-      id: Date.now().toString(),
-      dataCriacao: new Date(),
-    };
-    setClientes((prev) => [...prev, cliente]);
-    return cliente;
+  ): Promise<Cliente> => {
+    try {
+      console.log("[ClientesContext] Adicionando cliente:", novoCliente);
+
+      // Preparar dados para a API (mapeamento de campos)
+      const dadosAPI = {
+        nome: novoCliente.nome,
+        telefone: novoCliente.telefonePrincipal, // API espera 'telefone'
+        email: novoCliente.email || null,
+        endereco: novoCliente.complemento || undefined, // API espera 'endereco'
+        observacoes: undefined, // Campo opcional da API
+      };
+
+      const response = await fetch("/api/clientes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dadosAPI),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Erro ${response.status}`);
+      }
+
+      const clienteAPI = await response.json();
+      console.log("[ClientesContext] Cliente criado na API:", clienteAPI);
+
+      // Converter resposta da API para formato esperado
+      const cliente: Cliente = {
+        id: clienteAPI.id.toString(),
+        nome: clienteAPI.nome,
+        cpf: clienteAPI.cpf || undefined,
+        telefonePrincipal: clienteAPI.telefone,
+        telefoneSecundario: undefined,
+        email: clienteAPI.email || undefined,
+        cep: undefined,
+        logradouro: undefined,
+        complemento: clienteAPI.endereco || undefined,
+        dataCriacao: new Date(clienteAPI.dataCriacao),
+      };
+
+      // Atualizar estado local
+      setClientes((prev) => [...prev, cliente]);
+
+      return cliente;
+    } catch (error) {
+      console.error("[ClientesContext] Erro ao adicionar cliente:", error);
+
+      // Fallback: salvar apenas localmente
+      const cliente: Cliente = {
+        ...novoCliente,
+        id: `temp_${Date.now()}`,
+        dataCriacao: new Date(),
+      };
+      setClientes((prev) => [...prev, cliente]);
+
+      throw error; // Re-throw para o componente lidar com o erro
+    }
   };
 
-  const editarCliente = (id: string, dadosAtualizados: Partial<Cliente>) => {
-    setClientes((prev) =>
-      prev.map((cliente) =>
-        cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
-      ),
-    );
+  const editarCliente = async (id: string, dadosAtualizados: Partial<Cliente>): Promise<void> => {
+    try {
+      console.log("[ClientesContext] Editando cliente:", id, dadosAtualizados);
+
+      // Preparar dados para a API
+      const dadosAPI = {
+        nome: dadosAtualizados.nome,
+        telefone: dadosAtualizados.telefonePrincipal,
+        email: dadosAtualizados.email || null,
+        endereco: dadosAtualizados.complemento || undefined,
+      };
+
+      const response = await fetch(`/api/clientes/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dadosAPI),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Erro ${response.status}`);
+      }
+
+      // Atualizar estado local
+      setClientes((prev) =>
+        prev.map((cliente) =>
+          cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
+        ),
+      );
+    } catch (error) {
+      console.error("[ClientesContext] Erro ao editar cliente:", error);
+      throw error;
+    }
   };
 
-  const excluirCliente = (id: string) => {
-    setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+  const excluirCliente = async (id: string): Promise<void> => {
+    try {
+      console.log("[ClientesContext] Excluindo cliente:", id);
+
+      const response = await fetch(`/api/clientes/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Erro ${response.status}`);
+      }
+
+      // Atualizar estado local
+      setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+    } catch (error) {
+      console.error("[ClientesContext] Erro ao excluir cliente:", error);
+      throw error;
+    }
   };
 
   const buscarCliente = (id: string): Cliente | undefined => {
