@@ -50,11 +50,21 @@ export function ModalReceita() {
     getDescricoes,
     adicionarDescricaoECategoria,
   } = useEntidades();
+  const clientesContext = useClientes();
   const {
     clientes,
     adicionarCliente,
     isLoading: clientesLoading,
-  } = useClientes();
+  } = clientesContext;
+
+  // Debug do contexto de clientes
+  React.useEffect(() => {
+    console.log("[ModalReceita] Contexto de clientes:", {
+      clientes: clientes?.length || 0,
+      isLoading: clientesLoading,
+      hasAdicionarCliente: !!adicionarCliente
+    });
+  }, [clientes, clientesLoading, adicionarCliente]);
 
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
@@ -930,7 +940,7 @@ export function ModalReceita() {
                       </Button>
                     }
                     onClienteAdicionado={(cliente) => {
-                      console.log("[ModalReceita] Cliente adicionado, atualizando formul��rio:", cliente);
+                      console.log("[ModalReceita] Cliente adicionado, atualizando formulário:", cliente);
 
                       // Garantir que o cliente seja selecionado corretamente
                       setFormData((prev) => {
