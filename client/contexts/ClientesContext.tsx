@@ -104,24 +104,20 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Definir recarregarClientes antes dos useEffects que a usam
+  // ATENÇÃO: NÃO ADICIONAR clientes.length como dependência aqui pois causa PISCAR na tela!
+  // Isso criaria um ciclo: recarregar → atualizar clientes → length muda → recriar função → re-renderizar
   const recarregarClientes = useCallback(async () => {
     console.log("[ClientesContext] 🔄 Iniciando recarregamento manual dos clientes...");
     setIsLoading(true);
     try {
-      const clientesAntes = clientes.length;
       await carregarClientesAPI();
-
-      // Log do resultado
-      setTimeout(() => {
-        console.log(`[ClientesContext] ✅ Recarregamento concluído: ${clientesAntes} → ${clientes.length} clientes`);
-      }, 100);
+      console.log("[ClientesContext] ✅ Recarregamento concluído");
     } catch (error) {
       console.error("[ClientesContext] ❌ Erro ao recarregar clientes:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [carregarClientesAPI, clientes.length]);
+  }, [carregarClientesAPI]); // SOMENTE carregarClientesAPI como dependência
 
   // Carregar dados na inicialização
   useEffect(() => {
