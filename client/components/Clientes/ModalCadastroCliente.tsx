@@ -181,12 +181,16 @@ export default function ModalCadastroCliente({
       });
       setErrors({});
 
-      // Callback para informar que cliente foi adicionado
+      // Callback para informar que cliente foi adicionado ANTES de fechar
       if (onClienteAdicionado) {
+        console.log("[ModalCadastroCliente] Chamando callback com cliente:", novoCliente);
         onClienteAdicionado(novoCliente);
       }
 
-      setOpen(false);
+      // Fechar o modal APÓS callback para evitar interferência
+      setTimeout(() => {
+        setOpen(false);
+      }, 100);
 
       alert("Cliente cadastrado com sucesso!");
     } catch (error) {
