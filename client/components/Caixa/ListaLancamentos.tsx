@@ -374,10 +374,12 @@ export default function ListaLancamentos() {
   const handleExcluir = async (id: string) => {
     try {
       await excluirLancamento(id);
+      // Fechar o modal sempre após a operação (sucesso ou falha com fallback)
       setLancamentoParaExcluir(null);
     } catch (error) {
       console.error("Erro ao excluir lançamento:", error);
-      // O erro já é tratado no contexto, aqui apenas mantemos o modal aberto
+      // Fechar o modal mesmo em caso de erro para evitar congelamento
+      setLancamentoParaExcluir(null);
     }
   };
 
