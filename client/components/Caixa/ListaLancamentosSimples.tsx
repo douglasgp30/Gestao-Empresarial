@@ -359,9 +359,7 @@ export function ListaLancamentosSimples() {
   };
 
   const handleExcluir = async () => {
-    if (!lancamentoParaExcluir || excluindo) return;
-
-    setExcluindo(true);
+    if (!lancamentoParaExcluir || isExcluindo) return;
 
     try {
       console.log(
@@ -380,7 +378,7 @@ export function ListaLancamentosSimples() {
 
       setLancamentoParaExcluir(null);
     } catch (error) {
-      console.error("❌ Erro ao excluir lançamento:", error);
+      console.error("�� Erro ao excluir lançamento:", error);
 
       const errorMessage =
         error instanceof Error ? error.message : "Erro desconhecido";
@@ -392,8 +390,7 @@ export function ListaLancamentosSimples() {
           : "Erro ao excluir lançamento. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
-      setExcluindo(false);
+      // Em caso de erro, não fechar modal para permitir retry
     }
   };
 
