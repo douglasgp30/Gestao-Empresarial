@@ -189,32 +189,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // CARREGAMENTO INICIAL FORÇADO E ÚNICO
+  // CARREGAMENTO INICIAL IMEDIATO E ÚNICO
   const inicializado = useRef(false);
   useEffect(() => {
     if (inicializado.current) return;
     inicializado.current = true;
-    
-    console.log("🚀 [CaixaContext] INICIALIZAÇÃO ÚNICA E FORÇADA");
-    
-    const inicializar = () => {
-      setIsLoading(true);
-      try {
-        // FORÇAR carregamento dos dados
-        carregarCampanhasLocalStorage();
-        carregarLancamentosLocalStorage();
-        console.log("✅ [CaixaContext] Dados carregados na inicialização");
-      } catch (error) {
-        console.error("Erro na inicialização:", error);
-        // Se falhar, criar dados básicos
-        criarDadosBasicos();
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
-    // Executar IMEDIATAMENTE
-    inicializar();
+    console.log("🚀 [CaixaContext] INICIALIZAÇÃO IMEDIATA");
+
+    try {
+      // FORÇAR carregamento IMEDIATO dos dados
+      carregarCampanhasLocalStorage();
+      carregarLancamentosLocalStorage();
+      console.log("✅ [CaixaContext] Dados carregados imediatamente");
+    } catch (error) {
+      console.error("Erro na inicialização:", error);
+      // Se falhar, criar dados básicos
+      criarDadosBasicos();
+    }
   }, [carregarCampanhasLocalStorage, carregarLancamentosLocalStorage, criarDadosBasicos]);
 
   // Função manual para recarregar dados
