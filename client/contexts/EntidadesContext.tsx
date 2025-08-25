@@ -21,7 +21,6 @@ import {
 import { FORMAS_PAGAMENTO_PADRAO } from "../lib/dadosBasicos";
 import { normalizeString } from "../lib/stringUtils";
 import { useFuncionarios } from "./FuncionariosContext";
-import { criarDadosBasicosDescricoes } from "../lib/dadosBasicosDescricoes";
 
 interface EntidadesContextType {
   // Tabela unificada de descrições e categorias
@@ -132,6 +131,128 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const inicializado = useRef(false);
 
+  // === FUNÇÃO PARA CRIAR DADOS BÁSICOS ===
+  const criarDadosBasicos = useCallback(() => {
+    console.log("🔧 [EntidadesContext] Criando dados básicos...");
+
+    // Descrições e categorias padrão
+    const dadosBasicos: DescricaoECategoria[] = [
+      // Categorias de Receita
+      { id: "cat_receita_1", tipoItem: "categoria", tipo: "receita", categoria: "Serviços", nome: "Serviços", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "cat_receita_2", tipoItem: "categoria", tipo: "receita", categoria: "Produtos", nome: "Produtos", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "cat_receita_3", tipoItem: "categoria", tipo: "receita", categoria: "Consultoria", nome: "Consultoria", ativo: true, dataCriacao: new Date().toISOString() },
+      
+      // Descrições de Receita
+      { id: "desc_receita_1", tipoItem: "descricao", tipo: "receita", categoria: "Serviços", nome: "Manutenção", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "desc_receita_2", tipoItem: "descricao", tipo: "receita", categoria: "Serviços", nome: "Instalação", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "desc_receita_3", tipoItem: "descricao", tipo: "receita", categoria: "Serviços", nome: "Reparo", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "desc_receita_4", tipoItem: "descricao", tipo: "receita", categoria: "Consultoria", nome: "Consultoria Técnica", ativo: true, dataCriacao: new Date().toISOString() },
+      
+      // Categorias de Despesa
+      { id: "cat_despesa_1", tipoItem: "categoria", tipo: "despesa", categoria: "Operacional", nome: "Operacional", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "cat_despesa_2", tipoItem: "categoria", tipo: "despesa", categoria: "Administrativo", nome: "Administrativo", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "cat_despesa_3", tipoItem: "categoria", tipo: "despesa", categoria: "Financeiro", nome: "Financeiro", ativo: true, dataCriacao: new Date().toISOString() },
+      
+      // Descrições de Despesa
+      { id: "desc_despesa_1", tipoItem: "descricao", tipo: "despesa", categoria: "Operacional", nome: "Combustível", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "desc_despesa_2", tipoItem: "descricao", tipo: "despesa", categoria: "Operacional", nome: "Material", ativo: true, dataCriacao: new Date().toISOString() },
+      { id: "desc_despesa_3", tipoItem: "descricao", tipo: "despesa", categoria: "Administrativo", nome: "Escritório", ativo: true, dataCriacao: new Date().toISOString() },
+    ];
+
+    // Localizações geográficas padrão
+    const localizacoesPadrao: LocalizacaoGeografica[] = [
+      // Cidades
+      { id: 1, tipoItem: "cidade", nome: "Goiânia", cidade: "Goiânia", ativo: true, dataCriacao: new Date() },
+      { id: 2, tipoItem: "cidade", nome: "Aparecida de Goiânia", cidade: "Aparecida de Goiânia", ativo: true, dataCriacao: new Date() },
+      { id: 3, tipoItem: "cidade", nome: "Anápolis", cidade: "Anápolis", ativo: true, dataCriacao: new Date() },
+      
+      // Setores de Goiânia
+      { id: 4, tipoItem: "setor", nome: "Setor Central", cidade: "Goiânia", ativo: true, dataCriacao: new Date() },
+      { id: 5, tipoItem: "setor", nome: "Setor Oeste", cidade: "Goiânia", ativo: true, dataCriacao: new Date() },
+      { id: 6, tipoItem: "setor", nome: "Setor Sul", cidade: "Goiânia", ativo: true, dataCriacao: new Date() },
+      
+      // Setores de Aparecida
+      { id: 7, tipoItem: "setor", nome: "Centro", cidade: "Aparecida de Goiânia", ativo: true, dataCriacao: new Date() },
+      { id: 8, tipoItem: "setor", nome: "Cidade Jardim", cidade: "Aparecida de Goiânia", ativo: true, dataCriacao: new Date() },
+    ];
+
+    // Salvar no localStorage se não existir
+    const descricoesExistentes = localStorage.getItem("descricoes_e_categorias");
+    if (!descricoesExistentes) {
+      localStorage.setItem("descricoes_e_categorias", JSON.stringify(dadosBasicos));
+      console.log("✅ [EntidadesContext] Descrições e categorias padrão criadas");
+    }
+
+    const localizacoesExistentes = localStorage.getItem("localizacoes_geograficas");
+    if (!localizacoesExistentes) {
+      localStorage.setItem("localizacoes_geograficas", JSON.stringify(localizacoesPadrao));
+      console.log("✅ [EntidadesContext] Localizações geográficas padrão criadas");
+    }
+
+    const formasExistentes = localStorage.getItem("formas_pagamento");
+    if (!formasExistentes) {
+      localStorage.setItem("formas_pagamento", JSON.stringify(FORMAS_PAGAMENTO_PADRAO));
+      console.log("✅ [EntidadesContext] Formas de pagamento padrão criadas");
+    }
+
+    // Carregar os dados criados
+    setDescricoesECategorias(dadosBasicos);
+    setLocalizacoesGeograficas(localizacoesPadrao);
+    setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
+  }, []);
+
+  // === CARREGAMENTO DOS DADOS ===
+  const carregarDados = useCallback(async () => {
+    try {
+      console.log("📂 [EntidadesContext] Carregando dados do localStorage...");
+      setIsLoading(true);
+      setError(null);
+
+      // Carregar descrições e categorias
+      const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
+      if (descricoesStorage) {
+        const parsed = JSON.parse(descricoesStorage);
+        const arrayParsed = Array.isArray(parsed) ? parsed : [];
+        setDescricoesECategorias(arrayParsed);
+        console.log(`📂 [EntidadesContext] ${arrayParsed.length} descrições/categorias carregadas`);
+      } else {
+        console.log("📂 [EntidadesContext] Descrições não encontradas, criando dados básicos");
+        criarDadosBasicos();
+        return; // Sair aqui pois criarDadosBasicos já carrega tudo
+      }
+
+      // Carregar formas de pagamento
+      const formasStorage = localStorage.getItem("formas_pagamento");
+      if (formasStorage) {
+        const formasParsed = JSON.parse(formasStorage);
+        setFormasPagamento(formasParsed);
+        console.log(`📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`);
+      } else {
+        setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
+        localStorage.setItem("formas_pagamento", JSON.stringify(FORMAS_PAGAMENTO_PADRAO));
+      }
+
+      // Carregar localizações geográficas
+      const localizacoesStorage = localStorage.getItem("localizacoes_geograficas");
+      if (localizacoesStorage) {
+        const localizacoesParsed = JSON.parse(localizacoesStorage);
+        setLocalizacoesGeograficas(localizacoesParsed);
+        console.log(`📂 [EntidadesContext] ${localizacoesParsed.length} localizações carregadas`);
+      } else {
+        setLocalizacoesGeograficas([]);
+      }
+
+      console.log("✅ [EntidadesContext] Carregamento concluído");
+    } catch (error) {
+      console.error("Erro ao carregar dados do EntidadesContext:", error);
+      setError("Erro ao carregar dados");
+      // Em caso de erro, criar dados básicos
+      criarDadosBasicos();
+    } finally {
+      setIsLoading(false);
+    }
+  }, [criarDadosBasicos]);
+
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
     (tipo?: "receita" | "despesa") => {
@@ -238,73 +359,21 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, [funcionariosDoContexto]);
 
-  // === CARREGAMENTO MANUAL APENAS - SEM LOOPS ===
-  const carregarDados = useCallback(async () => {
-    try {
-      console.log("🚨 [EntidadesContext] Carregamento MANUAL de dados...");
-      setIsLoading(true);
-      setError(null);
-
-      // Carregar apenas do localStorage para evitar piscar
-      const descricoesStorage =
-        localStorage.getItem("descricoes_e_categorias") ||
-        localStorage.getItem("categorias_receita");
-      
-      if (descricoesStorage) {
-        const parsed = JSON.parse(descricoesStorage);
-        const arrayParsed = Array.isArray(parsed) ? parsed : [];
-        setDescricoesECategorias(arrayParsed);
-        console.log(`📁 [EntidadesContext] Carregadas do localStorage: ${arrayParsed.length} descrições/categorias`);
-      } else {
-        // Criar dados básicos se não existirem
-        const dadosBasicos = criarDadosBasicosDescricoes();
-        setDescricoesECategorias(dadosBasicos);
-        localStorage.setItem("descricoes_e_categorias", JSON.stringify(dadosBasicos));
-        console.log(`📁 [EntidadesContext] Dados básicos criados: ${dadosBasicos.length} items`);
-      }
-
-      // Carregar formas de pagamento
-      const formasStorage = localStorage.getItem("formas_pagamento");
-      if (formasStorage) {
-        const formasParsed = JSON.parse(formasStorage);
-        setFormasPagamento(formasParsed);
-      } else {
-        setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
-        localStorage.setItem("formas_pagamento", JSON.stringify(FORMAS_PAGAMENTO_PADRAO));
-      }
-
-      // Carregar localizações geográficas
-      const localizacoesStorage = localStorage.getItem("localizacoes_geograficas");
-      if (localizacoesStorage) {
-        const localizacoesParsed = JSON.parse(localizacoesStorage);
-        setLocalizacoesGeograficas(localizacoesParsed);
-      } else {
-        setLocalizacoesGeograficas([]);
-      }
-
-      console.log("✅ [EntidadesContext] Carregamento MANUAL concluído");
-    } catch (error) {
-      console.error("Erro ao carregar dados do EntidadesContext:", error);
-      setError("Erro ao carregar dados");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // === CARREGAMENTO INICIAL ÚNICA VEZ - SEM LOOPS ===
+  // === CARREGAMENTO INICIAL FORÇADO E ÚNICO ===
   useEffect(() => {
-    if (inicializado.current || typeof window === "undefined") return;
+    if (inicializado.current) return;
     inicializado.current = true;
 
-    console.log("🚨 [EntidadesContext] CARREGAMENTO INICIAL ÚNICO E CONTROLADO");
+    console.log("🚀 [EntidadesContext] INICIALIZAÇÃO ÚNICA E FORÇADA");
     
     const inicializar = async () => {
-      // NÃO carregar automaticamente para evitar piscar
-      console.log("✅ [EntidadesContext] Inicialização SEM carregamento automático");
+      // FORÇAR carregamento imediato
+      await carregarDados();
     };
 
-    setTimeout(inicializar, 100);
-  }, []);
+    // Executar IMEDIATAMENTE
+    inicializar();
+  }, [carregarDados]);
 
   // === FUNÇÕES PARA DESCRIÇÕES E CATEGORIAS ===
   const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
@@ -433,19 +502,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   );
 
   const sincronizarLocalizacoes = useCallback(async () => {
-    try {
-      console.log("[EntidadesContext] Sincronização MANUAL de localizações...");
-      
-      const response = await fetch("/api/localizacoes-geograficas");
-      if (response.ok) {
-        const dadosAPI = await response.json();
-        setLocalizacoesGeograficas(dadosAPI);
-        localStorage.setItem("localizacoes_geograficas", JSON.stringify(dadosAPI));
-        console.log("[EntidadesContext] Localizações sincronizadas:", dadosAPI.length);
-      }
-    } catch (error) {
-      console.error("Erro ao sincronizar localizações:", error);
-    }
+    console.log("📦 [EntidadesContext] Sincronização manual de localizações...");
+    // Função stub - não faz nada pois estamos só com localStorage
+    return Promise.resolve();
   }, []);
 
   const atualizarLocalizacaoGeografica = useCallback(
