@@ -1039,9 +1039,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   setTimeout(async () => {
                     try {
                       await recarregarClientes();
-                      console.log("[FormularioReceita] ✅ Lista de clientes recarregada após criação");
+                      console.log(
+                        "[FormularioReceita] ✅ Lista de clientes recarregada após criação",
+                      );
                     } catch (error) {
-                      console.error("[FormularioReceita] Erro ao recarregar clientes:", error);
+                      console.error(
+                        "[FormularioReceita] Erro ao recarregar clientes:",
+                        error,
+                      );
                     }
                   }, 500); // Delay único de 500ms
 

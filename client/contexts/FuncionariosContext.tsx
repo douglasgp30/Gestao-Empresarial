@@ -203,7 +203,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Evitar múltiplos carregamentos
     if (jaCarregou) {
-      console.log("[FuncionariosContext] ⚠️ Carregamento já executado, ignorando");
+      console.log(
+        "[FuncionariosContext] ⚠️ Carregamento já executado, ignorando",
+      );
       return;
     }
 

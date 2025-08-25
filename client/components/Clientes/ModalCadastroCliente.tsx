@@ -190,9 +190,11 @@ export default function ModalCadastroCliente({
 
       // Forçar recarregamento dos clientes para garantir sincronização
       setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('cliente-criado', {
-          detail: { cliente: novoCliente }
-        }));
+        window.dispatchEvent(
+          new CustomEvent("cliente-criado", {
+            detail: { cliente: novoCliente },
+          }),
+        );
       }, 100);
 
       alert("Cliente cadastrado com sucesso!");
@@ -267,12 +269,16 @@ export default function ModalCadastroCliente({
                 className={errors.telefonePrincipal ? "border-red-500" : ""}
               />
               {errors.telefonePrincipal && (
-                <p className="text-sm text-red-500">{errors.telefonePrincipal}</p>
+                <p className="text-sm text-red-500">
+                  {errors.telefonePrincipal}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefoneSecundario">Telefone Secundário (Opcional)</Label>
+              <Label htmlFor="telefoneSecundario">
+                Telefone Secundário (Opcional)
+              </Label>
               <Input
                 id="telefoneSecundario"
                 value={formData.telefoneSecundario}

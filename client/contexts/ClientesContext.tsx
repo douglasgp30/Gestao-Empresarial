@@ -110,13 +110,18 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
   // ATENÇÃO: NÃO ADICIONAR clientes.length como dependência aqui pois causa PISCAR na tela!
   // Isso criaria um ciclo: recarregar → atualizar clientes → length muda → recriar função → re-renderizar
   const recarregarClientes = useCallback(async () => {
-    console.log("[ClientesContext] 🔄 Iniciando recarregamento manual dos clientes...");
+    console.log(
+      "[ClientesContext] 🔄 Iniciando recarregamento manual dos clientes...",
+    );
     setIsLoading(true);
     try {
       await carregarClientesAPI();
       console.log("[ClientesContext] ✅ Recarregamento concluído");
     } catch (error) {
-      console.error("[ClientesContext] ��� Erro ao recarregar clientes:", error);
+      console.error(
+        "[ClientesContext] ��� Erro ao recarregar clientes:",
+        error,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -150,7 +155,10 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
   // Listener para forçar recarregamento quando cliente é criado
   useEffect(() => {
     const handleClienteCriado = async (event: CustomEvent) => {
-      console.log("[ClientesContext] Evento cliente-criado recebido:", event.detail);
+      console.log(
+        "[ClientesContext] Evento cliente-criado recebido:",
+        event.detail,
+      );
 
       // Forçar recarregamento após um breve delay
       setTimeout(async () => {
@@ -158,15 +166,24 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
           await recarregarClientes();
           console.log("[ClientesContext] Clientes recarregados após criação");
         } catch (error) {
-          console.error("[ClientesContext] Erro ao recarregar após criação:", error);
+          console.error(
+            "[ClientesContext] Erro ao recarregar após criação:",
+            error,
+          );
         }
       }, 500);
     };
 
-    window.addEventListener('cliente-criado', handleClienteCriado as EventListener);
+    window.addEventListener(
+      "cliente-criado",
+      handleClienteCriado as EventListener,
+    );
 
     return () => {
-      window.removeEventListener('cliente-criado', handleClienteCriado as EventListener);
+      window.removeEventListener(
+        "cliente-criado",
+        handleClienteCriado as EventListener,
+      );
     };
   }, [recarregarClientes]);
 
@@ -225,17 +242,25 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       // Atualizar estado local imediatamente
       setClientes((prev) => {
         const novosClientes = [...prev, cliente];
-        console.log("[ClientesContext] 📝 Estado local atualizado, total de clientes:", novosClientes.length);
+        console.log(
+          "[ClientesContext] 📝 Estado local atualizado, total de clientes:",
+          novosClientes.length,
+        );
         return novosClientes;
       });
 
       // Forçar recarregamento após criar para garantir sincronização
       setTimeout(async () => {
         try {
-          console.log("[ClientesContext] 🔄 Forçando recarregamento após criação...");
+          console.log(
+            "[ClientesContext] 🔄 Forçando recarregamento após criação...",
+          );
           await carregarClientesAPI();
         } catch (error) {
-          console.warn("[ClientesContext] ⚠️ Erro no recarregamento pós-criação:", error);
+          console.warn(
+            "[ClientesContext] ⚠️ Erro no recarregamento pós-criação:",
+            error,
+          );
         }
       }, 200);
 
