@@ -188,7 +188,10 @@ export default function ModalCadastroCliente({
 
       // Callback para informar que cliente foi adicionado ANTES de fechar
       if (onClienteAdicionado) {
-        console.log("[ModalCadastroCliente] Chamando callback com cliente:", novoCliente);
+        console.log(
+          "[ModalCadastroCliente] Chamando callback com cliente:",
+          novoCliente,
+        );
         onClienteAdicionado(novoCliente);
       }
 
@@ -205,7 +208,6 @@ export default function ModalCadastroCliente({
       );
     }
   };
-
 
   // Sempre usar a versão completa do modal
 
@@ -275,12 +277,16 @@ export default function ModalCadastroCliente({
                 className={errors.telefonePrincipal ? "border-red-500" : ""}
               />
               {errors.telefonePrincipal && (
-                <p className="text-sm text-red-500">{errors.telefonePrincipal}</p>
+                <p className="text-sm text-red-500">
+                  {errors.telefonePrincipal}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefoneSecundario">Telefone Secundário (Opcional)</Label>
+              <Label htmlFor="telefoneSecundario">
+                Telefone Secundário (Opcional)
+              </Label>
               <Input
                 id="telefoneSecundario"
                 value={formData.telefoneSecundario}

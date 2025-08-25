@@ -17,22 +17,24 @@ console.log("\n2. Simulando criação de nova receita:");
 const novaReceita = {
   id: `teste-${Date.now()}`,
   tipo: "receita",
-  valor: 100.00,
-  valorLiquido: 90.00,
-  comissao: 10.00,
+  valor: 100.0,
+  valorLiquido: 90.0,
+  comissao: 10.0,
   categoria: "Teste",
   descricao: { nome: "Teste de salvamento" },
   formaPagamento: { id: "1", nome: "Dinheiro" },
   data: new Date(),
   dataHora: new Date(),
   dataCriacao: new Date(),
-  funcionarioId: "1"
+  funcionarioId: "1",
 };
 
 // 3. Tentar salvar no localStorage
 console.log("3. Salvando no localStorage:");
 try {
-  const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+  const lancamentosExistentes = JSON.parse(
+    localStorage.getItem("lancamentos_caixa") || "[]",
+  );
   const novosLancamentos = [...lancamentosExistentes, novaReceita];
   localStorage.setItem("lancamentos_caixa", JSON.stringify(novosLancamentos));
   console.log("   ✅ Receita salva com sucesso");
@@ -47,7 +49,7 @@ const lancamentosDepois = localStorage.getItem("lancamentos_caixa");
 if (lancamentosDepois) {
   const dados = JSON.parse(lancamentosDepois);
   console.log(`   - ${dados.length} lançamentos encontrados`);
-  const receitaTeste = dados.find(l => l.id === novaReceita.id);
+  const receitaTeste = dados.find((l) => l.id === novaReceita.id);
   if (receitaTeste) {
     console.log("   ✅ Receita de teste encontrada:", receitaTeste);
   } else {

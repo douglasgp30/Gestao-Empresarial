@@ -300,15 +300,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value = useMemo(() => ({
-    user,
-    login,
-    logout,
-    isLoading,
-    isAuthenticated: !!user,
-    precisaConfigurarPrimeiroAcesso,
-    criarPrimeiroAdministrador,
-  }), [user, login, logout, isLoading, precisaConfigurarPrimeiroAcesso, criarPrimeiroAdministrador]);
+  const value = useMemo(
+    () => ({
+      user,
+      login,
+      logout,
+      isLoading,
+      isAuthenticated: !!user,
+      precisaConfigurarPrimeiroAcesso,
+      criarPrimeiroAdministrador,
+    }),
+    [
+      user,
+      login,
+      logout,
+      isLoading,
+      precisaConfigurarPrimeiroAcesso,
+      criarPrimeiroAdministrador,
+    ],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

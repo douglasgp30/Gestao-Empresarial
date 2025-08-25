@@ -1012,7 +1012,6 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               >
                 <UserPlus className="h-4 w-4" />
               </Button>
-
             </div>
             {isBoleto && !formData.cliente && (
               <p className="text-xs text-red-500">
@@ -1368,7 +1367,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             // Selecionar o cliente recém-criado
-            setFormData((prev) => ({ ...prev, cliente: cliente.id?.toString() }));
+            setFormData((prev) => ({
+              ...prev,
+              cliente: cliente.id?.toString(),
+            }));
 
             // Marcar que cliente foi recém-adicionado
             setClienteRecemAdicionado(true);

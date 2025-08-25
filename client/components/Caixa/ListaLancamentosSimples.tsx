@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { useCaixa } from "../../contexts/CaixaContext";
 import { useEntidades } from "../../contexts/EntidadesContext";
-import { extractCategoriaNome, extractSetorNome, extractSetorCidade, normalizeComissao } from "../../lib/normalizeLancamento";
+import {
+  extractCategoriaNome,
+  extractSetorNome,
+  extractSetorCidade,
+  normalizeComissao,
+} from "../../lib/normalizeLancamento";
 import { formatDate } from "../../lib/dateUtils";
 import { Button } from "../ui/button";
 import {
@@ -81,7 +86,14 @@ const defaultColumns: ColumnConfig[] = [
 ];
 
 export function ListaLancamentosSimples() {
-  const { lancamentosFiltrados: lancamentos, excluirLancamento, isLoading, error, isExcluindo, campanhas } = useCaixa();
+  const {
+    lancamentosFiltrados: lancamentos,
+    excluirLancamento,
+    isLoading,
+    error,
+    isExcluindo,
+    campanhas,
+  } = useCaixa();
   const { formasPagamento, setores, getTecnicos } = useEntidades();
 
   // Obter lista de técnicos
@@ -222,7 +234,9 @@ export function ListaLancamentosSimples() {
         );
 
       case "comissao":
-        return lancamento.comissao != null ? formatarMoeda(lancamento.comissao) : "-";
+        return lancamento.comissao != null
+          ? formatarMoeda(lancamento.comissao)
+          : "-";
 
       case "imposto":
         return lancamento.imposto ? formatarMoeda(lancamento.imposto) : "-";
@@ -237,7 +251,7 @@ export function ListaLancamentosSimples() {
           const found = (formasPagamento || []).find(
             (f) =>
               f.id?.toString() === fp.toString() ||
-              (f.nome && f.nome.toString() === fp.toString())
+              (f.nome && f.nome.toString() === fp.toString()),
           );
           if (found) return found.nome;
           // se for número não reconhecido, mostrar "N/A"
@@ -262,12 +276,14 @@ export function ListaLancamentosSimples() {
         // se for string ou id, tentar mapear usando contexto
         const tr = lancamento.tecnicoResponsavel;
         if (typeof tr === "string" && tr.trim() !== "") {
-          const encontrado = tecnicosLista.find(t =>
-            t.id?.toString() === tr.toString() ||
-            t.nome?.toString() === tr.toString() ||
-            t.nomeCompleto?.toString() === tr.toString()
+          const encontrado = tecnicosLista.find(
+            (t) =>
+              t.id?.toString() === tr.toString() ||
+              t.nome?.toString() === tr.toString() ||
+              t.nomeCompleto?.toString() === tr.toString(),
           );
-          if (encontrado) return (encontrado.nome || encontrado.nomeCompleto || tr);
+          if (encontrado)
+            return encontrado.nome || encontrado.nomeCompleto || tr;
           // evitar exibir id numérico - mostrar N/A
           if (/^\d+$/.test(tr.trim())) return "N/A";
           return tr;
@@ -285,10 +301,14 @@ export function ListaLancamentosSimples() {
         if (setorNome) return setorNome;
 
         // tentar mapear usando setores do contexto
-        if (typeof lancamento.setor === "string" && lancamento.setor.trim() !== "") {
-          const encontrado = (setores || []).find(s =>
-            s.id?.toString() === lancamento.setor.toString() ||
-            s.nome?.toString() === lancamento.setor.toString()
+        if (
+          typeof lancamento.setor === "string" &&
+          lancamento.setor.trim() !== ""
+        ) {
+          const encontrado = (setores || []).find(
+            (s) =>
+              s.id?.toString() === lancamento.setor.toString() ||
+              s.nome?.toString() === lancamento.setor.toString(),
           );
           if (encontrado) return encontrado.nome;
 
@@ -309,15 +329,20 @@ export function ListaLancamentosSimples() {
         if (cidade) return cidade;
 
         // tentar mapear usando setores do contexto
-        if (typeof lancamento.setor === "string" && lancamento.setor.trim() !== "") {
-          const encontrado = (setores || []).find(s =>
-            s.id?.toString() === lancamento.setor.toString() ||
-            s.nome?.toString() === lancamento.setor.toString()
+        if (
+          typeof lancamento.setor === "string" &&
+          lancamento.setor.trim() !== ""
+        ) {
+          const encontrado = (setores || []).find(
+            (s) =>
+              s.id?.toString() === lancamento.setor.toString() ||
+              s.nome?.toString() === lancamento.setor.toString(),
           );
           if (encontrado) {
-            const cidadeNome = typeof encontrado.cidade === "object"
-              ? encontrado.cidade?.nome
-              : encontrado.cidade;
+            const cidadeNome =
+              typeof encontrado.cidade === "object"
+                ? encontrado.cidade?.nome
+                : encontrado.cidade;
             return cidadeNome || "-";
           }
         }
@@ -328,14 +353,19 @@ export function ListaLancamentosSimples() {
       case "campanha": {
         // Suporta tanto string quanto objeto com nome
         let campanha = "-";
-        if (typeof lancamento.campanha === "string" && lancamento.campanha.trim() !== "") {
+        if (
+          typeof lancamento.campanha === "string" &&
+          lancamento.campanha.trim() !== ""
+        ) {
           // procurar em campanhas do contexto
-          const found = (campanhas || []).find(c =>
-            c.id?.toString() === lancamento.campanha.toString() ||
-            c.nome?.toString() === lancamento.campanha.toString()
+          const found = (campanhas || []).find(
+            (c) =>
+              c.id?.toString() === lancamento.campanha.toString() ||
+              c.nome?.toString() === lancamento.campanha.toString(),
           );
           if (found) campanha = found.nome;
-          else if (!/^\d+$/.test(lancamento.campanha.trim())) campanha = lancamento.campanha;
+          else if (!/^\d+$/.test(lancamento.campanha.trim()))
+            campanha = lancamento.campanha;
           else campanha = "N/A";
         } else if (
           typeof lancamento.campanha === "object" &&
@@ -571,11 +601,15 @@ export function ListaLancamentosSimples() {
                             </span>
                           </div>
                           <p className="font-medium text-sm">
-                            {lancamento.descricao?.nome || lancamento.descricao || "N/A"}
+                            {lancamento.descricao?.nome ||
+                              lancamento.descricao ||
+                              "N/A"}
                           </p>
                           {/* Mostrar comissão se existir */}
                           {(() => {
-                            const comissao = normalizeComissao(lancamento.comissao);
+                            const comissao = normalizeComissao(
+                              lancamento.comissao,
+                            );
                             return comissao != null && comissao > 0 ? (
                               <p className="text-xs text-muted-foreground">
                                 Comissão: {formatarMoeda(comissao)}

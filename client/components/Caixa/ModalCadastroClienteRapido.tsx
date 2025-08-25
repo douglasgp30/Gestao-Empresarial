@@ -60,7 +60,7 @@ export function ModalCadastroClienteRapido({
       // Criar cliente simplificado com ID temporário
       const clienteTemporario = {
         id: `temp-${Date.now()}`,
-        nome: formData.nome
+        nome: formData.nome,
       };
 
       // Retornar cliente com ID para compatibilidade com outros modals

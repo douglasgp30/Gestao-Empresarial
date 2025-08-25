@@ -15,9 +15,11 @@ class LoadingController {
     // Verificar throttle - não permitir carregamento muito frequente
     const lastLoadTime = this.loadTimes.get(loadType);
     const now = Date.now();
-    
-    if (lastLoadTime && (now - lastLoadTime) < this.THROTTLE_TIME) {
-      console.log(`⏰ [LoadingControl] ${loadType} throttled por ${this.THROTTLE_TIME - (now - lastLoadTime)}ms`);
+
+    if (lastLoadTime && now - lastLoadTime < this.THROTTLE_TIME) {
+      console.log(
+        `⏰ [LoadingControl] ${loadType} throttled por ${this.THROTTLE_TIME - (now - lastLoadTime)}ms`,
+      );
       return false;
     }
 
@@ -59,7 +61,10 @@ class LoadingController {
 export const loadingController = new LoadingController();
 
 // Função helper para usar com useEffect
-export function useLoadingControl(loadType: string, loadFunction: () => Promise<void>) {
+export function useLoadingControl(
+  loadType: string,
+  loadFunction: () => Promise<void>,
+) {
   return async () => {
     if (!loadingController.startLoad(loadType)) {
       return; // Não carregar se já está carregando ou em throttle
@@ -77,9 +82,9 @@ export function useLoadingControl(loadType: string, loadFunction: () => Promise<
 
 // Tipos de carregamento padronizados
 export const LoadTypes = {
-  CAIXA_LANCAMENTOS: 'caixa_lancamentos',
-  CAIXA_CAMPANHAS: 'caixa_campanhas',
-  CLIENTES: 'clientes',
-  FUNCIONARIOS: 'funcionarios',
-  CAIXA_INICIAL: 'caixa_inicial',
+  CAIXA_LANCAMENTOS: "caixa_lancamentos",
+  CAIXA_CAMPANHAS: "caixa_campanhas",
+  CLIENTES: "clientes",
+  FUNCIONARIOS: "funcionarios",
+  CAIXA_INICIAL: "caixa_inicial",
 } as const;

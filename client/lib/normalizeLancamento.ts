@@ -40,7 +40,9 @@ export function extractSetorNome(rawSetor: any) {
 
 export function extractSetorCidade(rawSetor: any, fallbackCidade?: any) {
   const norm = normalizeSetorValue(rawSetor);
-  return norm?.cidade || (typeof fallbackCidade === "string" ? fallbackCidade : "");
+  return (
+    norm?.cidade || (typeof fallbackCidade === "string" ? fallbackCidade : "")
+  );
 }
 
 export function extractCategoriaNome(lanc: any) {
@@ -50,8 +52,14 @@ export function extractCategoriaNome(lanc: any) {
   if (c && typeof c === "string" && c.trim() !== "") return c;
   if (c && typeof c === "object" && (c.nome || c.name)) return c.nome || c.name;
   // Possível campo unified descricoes_e_categorias
-  if (lanc.descricaoECategoria && lanc.descricaoECategoria.categoria) return lanc.descricaoECategoria.categoria;
-  if (lanc.descricao && typeof lanc.descricao === "object" && lanc.descricao.categoria) return lanc.descricao.categoria;
+  if (lanc.descricaoECategoria && lanc.descricaoECategoria.categoria)
+    return lanc.descricaoECategoria.categoria;
+  if (
+    lanc.descricao &&
+    typeof lanc.descricao === "object" &&
+    lanc.descricao.categoria
+  )
+    return lanc.descricao.categoria;
   // fallback
   return "";
 }

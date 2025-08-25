@@ -339,14 +339,17 @@ export function ModalReceita() {
         valorLiquidoCalculado,
         valorQueEntrouCalculado,
         impostoCalculado,
-        comissaoCalculada
+        comissaoCalculada,
       });
 
       // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
       if (isBoleto) {
         codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
-        console.log("📋 [ModalReceita] Código de serviço gerado para boleto:", codigoServico);
+        console.log(
+          "📋 [ModalReceita] Código de serviço gerado para boleto:",
+          codigoServico,
+        );
       }
 
       // Buscar objetos completos para criar snapshots
@@ -388,11 +391,17 @@ export function ModalReceita() {
         sistemaOrigem: isBoleto ? "caixa_boleto" : undefined,
       };
 
-      console.log("📤 [ModalReceita] Dados que serão enviados para adicionarLancamento:", dadosParaSalvar);
+      console.log(
+        "📤 [ModalReceita] Dados que serão enviados para adicionarLancamento:",
+        dadosParaSalvar,
+      );
 
       const lancamentoCaixa = await adicionarLancamento(dadosParaSalvar);
 
-      console.log("✅ [ModalReceita] Lançamento retornado pelo contexto:", lancamentoCaixa);
+      console.log(
+        "✅ [ModalReceita] Lançamento retornado pelo contexto:",
+        lancamentoCaixa,
+      );
 
       // Se for boleto, criar conta a receber automaticamente
       if (isBoleto && dataVencimentoBoleto && codigoServico) {
@@ -521,7 +530,9 @@ export function ModalReceita() {
 
       // Aguardar um pouco para garantir que o contexto seja atualizado
       setTimeout(() => {
-        console.log("✅ [ModalReceita] Modal fechado, contexto deve estar atualizado");
+        console.log(
+          "✅ [ModalReceita] Modal fechado, contexto deve estar atualizado",
+        );
       }, 500);
 
       console.log("[ModalReceita] Lançamento salvo, modal fechado");
@@ -532,7 +543,8 @@ export function ModalReceita() {
 
       toast({
         title: "Erro",
-        description: "Erro ao lançar receita. Verifique o console para mais detalhes.",
+        description:
+          "Erro ao lançar receita. Verifique o console para mais detalhes.",
         variant: "destructive",
       });
     } finally {
@@ -567,7 +579,9 @@ export function ModalReceita() {
 
         // Só permitir fechar se for uma ação intencional do usuário
         if (!open) {
-          console.log("[ModalReceita] Modal sendo fechado, resetando formulário");
+          console.log(
+            "[ModalReceita] Modal sendo fechado, resetando formulário",
+          );
           resetForm();
         }
 
@@ -940,10 +954,13 @@ export function ModalReceita() {
                     </SelectTrigger>
                     <SelectContent>
                       {clientes.map((cliente) => (
-                      <SelectItem key={cliente.id} value={cliente.id?.toString()}>
-                        {cliente.nome}
-                      </SelectItem>
-                    ))}
+                        <SelectItem
+                          key={cliente.id}
+                          value={cliente.id?.toString()}
+                        >
+                          {cliente.nome}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
 
@@ -956,7 +973,6 @@ export function ModalReceita() {
                   >
                     <UserPlus className="h-4 w-4" />
                   </Button>
-
                 </div>
                 {isBoleto && !formData.cliente && (
                   <p className="text-xs text-red-500">
@@ -1247,7 +1263,10 @@ export function ModalReceita() {
           onOpenChange={setIsModalClienteOpen}
           onClienteAdicionado={(cliente) => {
             // Selecionar o cliente recém-criado
-            setFormData((prev) => ({ ...prev, cliente: cliente.id?.toString() }));
+            setFormData((prev) => ({
+              ...prev,
+              cliente: cliente.id?.toString(),
+            }));
 
             // Toast de confirmação
             toast({

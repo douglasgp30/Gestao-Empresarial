@@ -54,16 +54,21 @@ export function FiltrosCaixaCompacto() {
 
   const aplicarFiltros = useCallback(() => {
     console.log("🔍 [FiltrosCaixaCompacto] Aplicando filtros:", filtrosLocal);
-    
+
     // Normalizar filtros - transformar "todos"/"todas" para undefined
     const filtrosNormalizados = { ...filtrosLocal };
     Object.keys(filtrosNormalizados).forEach((key) => {
-      const value = filtrosNormalizados[key as keyof typeof filtrosNormalizados];
-      if (typeof value === "string" && (value === "todos" || value === "todas")) {
-        filtrosNormalizados[key as keyof typeof filtrosNormalizados] = undefined as any;
+      const value =
+        filtrosNormalizados[key as keyof typeof filtrosNormalizados];
+      if (
+        typeof value === "string" &&
+        (value === "todos" || value === "todas")
+      ) {
+        filtrosNormalizados[key as keyof typeof filtrosNormalizados] =
+          undefined as any;
       }
     });
-    
+
     setFiltros(filtrosNormalizados);
     toast({
       title: "Filtros aplicados",
@@ -72,9 +77,12 @@ export function FiltrosCaixaCompacto() {
   }, [filtrosLocal, setFiltros]);
 
   // Handler genérico para evitar functions inline
-  const handleFieldChange = useCallback((field: string) => (value: any) => {
-    setFiltrosLocal(prev => ({ ...prev, [field]: value }));
-  }, []);
+  const handleFieldChange = useCallback(
+    (field: string) => (value: any) => {
+      setFiltrosLocal((prev) => ({ ...prev, [field]: value }));
+    },
+    [],
+  );
 
   const limparFiltros = useCallback(() => {
     const filtrosLimpos = {
@@ -163,7 +171,7 @@ export function FiltrosCaixaCompacto() {
                 </label>
                 <Select
                   value={filtrosLocal.tipo}
-                  onValueChange={handleFieldChange('tipo')}
+                  onValueChange={handleFieldChange("tipo")}
                 >
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />

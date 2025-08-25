@@ -315,17 +315,29 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(`metaMes_${mesAtual}`, valor.toString());
   };
 
-  const value = useMemo(() => ({
-    stats,
-    contas: contasContext?.contas || [],
-    contasVencendo,
-    isLoading,
-    // Meta do Mês
-    metaMes,
-    totalMetaMes,
-    restanteParaMeta,
-    setMetaMes: handleSetMetaMes,
-  }), [stats, contasContext?.contas, contasVencendo, isLoading, metaMes, totalMetaMes, restanteParaMeta, handleSetMetaMes]);
+  const value = useMemo(
+    () => ({
+      stats,
+      contas: contasContext?.contas || [],
+      contasVencendo,
+      isLoading,
+      // Meta do Mês
+      metaMes,
+      totalMetaMes,
+      restanteParaMeta,
+      setMetaMes: handleSetMetaMes,
+    }),
+    [
+      stats,
+      contasContext?.contas,
+      contasVencendo,
+      isLoading,
+      metaMes,
+      totalMetaMes,
+      restanteParaMeta,
+      handleSetMetaMes,
+    ],
+  );
 
   return (
     <DashboardContext.Provider value={value}>

@@ -74,8 +74,24 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [filtros, setFiltros] = useState(() => {
     // MUDANÇA: Filtrar por período mais amplo (último mês) para garantir que receitas recém-criadas apareçam
     const agora = new Date();
-    const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1, 0, 0, 0, 0);
-    const fimMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 0, 23, 59, 59, 999);
+    const inicioMes = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      1,
+      0,
+      0,
+      0,
+      0,
+    );
+    const fimMes = new Date(
+      agora.getFullYear(),
+      agora.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
 
     return {
       dataInicio: inicioMes,
@@ -96,12 +112,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   // Função para criar dados básicos se não existirem
   const criarDadosBasicos = useCallback(() => {
     console.log("🔧 [CaixaContext] Criando dados básicos...");
-    
+
     // Campanhas padrão
     const campanhasPadrao: Campanha[] = [
-      { id: "1", nome: "Campanha Principal", descricao: "Campanha principal da empresa" },
-      { id: "2", nome: "Sem Campanha", descricao: "Lançamentos sem campanha específica" },
-      { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" }
+      {
+        id: "1",
+        nome: "Campanha Principal",
+        descricao: "Campanha principal da empresa",
+      },
+      {
+        id: "2",
+        nome: "Sem Campanha",
+        descricao: "Lançamentos sem campanha específica",
+      },
+      { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" },
     ];
 
     // Verificar se campanhas existem
@@ -116,9 +140,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       {
         id: "1",
         tipo: "receita",
-        valor: 500.00,
-        valorLiquido: 450.00,
-        comissao: 50.00,
+        valor: 500.0,
+        valorLiquido: 450.0,
+        comissao: 50.0,
         descricao: { nome: "Serviço de manutenção" },
         categoria: "Serviços",
         formaPagamento: { id: "1", nome: "Dinheiro" },
@@ -128,14 +152,17 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         data: new Date(),
         dataHora: new Date(),
         dataCriacao: new Date(),
-        funcionarioId: "1"
-      }
+        funcionarioId: "1",
+      },
     ];
 
     // Verificar se lançamentos existem
     const lancamentosExistentes = localStorage.getItem("lancamentos_caixa");
     if (!lancamentosExistentes) {
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosPadrao));
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(lancamentosPadrao),
+      );
       console.log("✅ [CaixaContext] Lançamentos padrão criados");
     }
 
@@ -149,18 +176,30 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       console.log("📊 [CaixaContext] Carregando campanhas do localStorage");
       const campanhasStorage = localStorage.getItem("campanhas");
-      
+
       if (campanhasStorage) {
         const campanhas = JSON.parse(campanhasStorage);
         setCampanhas(campanhas || []);
-        console.log(`📊 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`);
+        console.log(
+          `📊 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`,
+        );
       } else {
         // Se não existir, criar dados básicos
-        console.log("📊 [CaixaContext] Campanhas não encontradas, criando dados básicos");
+        console.log(
+          "📊 [CaixaContext] Campanhas não encontradas, criando dados básicos",
+        );
         const campanhasPadrao: Campanha[] = [
-          { id: "1", nome: "Campanha Principal", descricao: "Campanha principal da empresa" },
-          { id: "2", nome: "Sem Campanha", descricao: "Lançamentos sem campanha específica" },
-          { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" }
+          {
+            id: "1",
+            nome: "Campanha Principal",
+            descricao: "Campanha principal da empresa",
+          },
+          {
+            id: "2",
+            nome: "Sem Campanha",
+            descricao: "Lançamentos sem campanha específica",
+          },
+          { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" },
         ];
         setCampanhas(campanhasPadrao);
         localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
@@ -182,45 +221,58 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         setTimeout(() => {
           try {
             const lancamentosParsed = JSON.parse(lancamentosStorage);
-            const lancamentosFormatados = lancamentosParsed.map((lancamento: any) => {
-      // Datas
-      const data = new Date(lancamento.data);
-      const dataHora = lancamento.dataHora ? new Date(lancamento.dataHora) : data;
-      const dataCriacao = lancamento.dataCriacao
-        ? new Date(lancamento.dataCriacao)
-        : new Date();
+            const lancamentosFormatados = lancamentosParsed.map(
+              (lancamento: any) => {
+                // Datas
+                const data = new Date(lancamento.data);
+                const dataHora = lancamento.dataHora
+                  ? new Date(lancamento.dataHora)
+                  : data;
+                const dataCriacao = lancamento.dataCriacao
+                  ? new Date(lancamento.dataCriacao)
+                  : new Date();
 
-      // Normalizar setor e cidade
-      const setorNorm = normalizeSetorValue(lancamento.setor);
-      const cidadeFromSetor = setorNorm?.cidade;
+                // Normalizar setor e cidade
+                const setorNorm = normalizeSetorValue(lancamento.setor);
+                const cidadeFromSetor = setorNorm?.cidade;
 
-      // Normalizar categoria
-      const categoriaNome =
-        extractCategoriaNome(lancamento) || (lancamento.categoria || undefined);
+                // Normalizar categoria
+                const categoriaNome =
+                  extractCategoriaNome(lancamento) ||
+                  lancamento.categoria ||
+                  undefined;
 
-      // Normalizar comissao
-      const comissao = normalizeComissao(lancamento.comissao);
+                // Normalizar comissao
+                const comissao = normalizeComissao(lancamento.comissao);
 
-      return {
-        ...lancamento,
-        data,
-        dataHora,
-        dataCriacao,
-        setor: setorNorm ? { ...setorNorm } : lancamento.setor,
-        cidade: lancamento.cidade || cidadeFromSetor || undefined,
-        categoria: categoriaNome,
-        comissao,
-      };
-    });
+                return {
+                  ...lancamento,
+                  data,
+                  dataHora,
+                  dataCriacao,
+                  setor: setorNorm ? { ...setorNorm } : lancamento.setor,
+                  cidade: lancamento.cidade || cidadeFromSetor || undefined,
+                  categoria: categoriaNome,
+                  comissao,
+                };
+              },
+            );
             setLancamentos(lancamentosFormatados);
-            console.log(`📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`);
+            console.log(
+              `📦 [CaixaContext] ${lancamentosFormatados.length} lançamentos carregados do localStorage`,
+            );
           } catch (error) {
-            console.error("Erro ao processar lançamentos do localStorage:", error);
+            console.error(
+              "Erro ao processar lançamentos do localStorage:",
+              error,
+            );
             setLancamentos([]);
           }
         }, 0);
       } else {
-        console.log("📦 [CaixaContext] Nenhum lançamento encontrado no localStorage");
+        console.log(
+          "📦 [CaixaContext] Nenhum lançamento encontrado no localStorage",
+        );
         setLancamentos([]);
       }
     } catch (error) {
@@ -240,7 +292,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     try {
       // Executar migração automática SEMPRE (até funcionar corretamente)
       try {
-        console.log("[CaixaContext] Executando migração FORÇADA de dados legados...");
+        console.log(
+          "[CaixaContext] Executando migração FORÇADA de dados legados...",
+        );
 
         // Migração manual inline para garantir que funcione
         const lancamentosRaw = localStorage.getItem("lancamentos_caixa");
@@ -253,14 +307,17 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
               let migrado = { ...l };
 
               // Migrar forma de pagamento
-              if (typeof l.formaPagamento === "string" && /^\d+$/.test(l.formaPagamento)) {
+              if (
+                typeof l.formaPagamento === "string" &&
+                /^\d+$/.test(l.formaPagamento)
+              ) {
                 const formasMap: any = {
                   "1": { id: 1, nome: "Dinheiro" },
                   "2": { id: 2, nome: "PIX" },
                   "3": { id: 3, nome: "Cartão de Débito" },
                   "4": { id: 4, nome: "Cartão de Crédito" },
                   "5": { id: 5, nome: "Transferência" },
-                  "6": { id: 6, nome: "Boleto" }
+                  "6": { id: 6, nome: "Boleto" },
                 };
                 if (formasMap[l.formaPagamento]) {
                   migrado.formaPagamento = formasMap[l.formaPagamento];
@@ -272,14 +329,18 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
             });
 
             if (houveAlteracao) {
-              localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosMigrados));
-              console.log("[CaixaContext] Migração inline concluída - dados atualizados");
+              localStorage.setItem(
+                "lancamentos_caixa",
+                JSON.stringify(lancamentosMigrados),
+              );
+              console.log(
+                "[CaixaContext] Migração inline concluída - dados atualizados",
+              );
             }
           } catch (e) {
             console.warn("[CaixaContext] Erro na migração inline:", e);
           }
         }
-
       } catch (e) {
         console.warn("[CaixaContext] Erro ao executar migração:", e);
       }
@@ -322,12 +383,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     if (!lancamento.id) erros.push("ID é obrigatório");
     if (!lancamento.tipo) erros.push("Tipo é obrigatório");
-    if (!lancamento.valor || typeof lancamento.valor !== "number") erros.push("Valor deve ser um número válido");
+    if (!lancamento.valor || typeof lancamento.valor !== "number")
+      erros.push("Valor deve ser um número válido");
     if (!lancamento.data) erros.push("Data é obrigatória");
 
     // Verificações específicas para receitas
-    if (lancamento.tipo === "receita" && lancamento.tecnicoResponsavel && !lancamento.comissao) {
-      console.warn(`⚠️ [${contexto}] Receita com técnico mas sem comissão:`, lancamento.id);
+    if (
+      lancamento.tipo === "receita" &&
+      lancamento.tecnicoResponsavel &&
+      !lancamento.comissao
+    ) {
+      console.warn(
+        `⚠️ [${contexto}] Receita com técnico mas sem comissão:`,
+        lancamento.id,
+      );
     }
 
     if (erros.length > 0) {
@@ -339,7 +408,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   // Adicionar lançamento
-  const adicionarLancamento = async (novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">) => {
+  const adicionarLancamento = async (
+    novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
+  ) => {
     try {
       setError(null);
       console.log("➕ [CaixaContext] Adicionando lançamento:", novoLancamento);
@@ -361,23 +432,37 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       validarLancamento(lancamentoCompleto, "adicionarLancamento");
 
       // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
+      const lancamentosExistentes = JSON.parse(
+        localStorage.getItem("lancamentos_caixa") || "[]",
+      );
 
       // Adicionar novo lançamento
       const novosLancamentos = [...lancamentosExistentes, lancamentoCompleto];
 
       // Salvar no localStorage
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(novosLancamentos));
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(novosLancamentos),
+      );
 
       // Atualizar estado IMEDIATAMENTE
       setLancamentos((prev) => {
         const novoArray = [...prev, lancamentoCompleto];
-        console.log("🔄 [CaixaContext] Estado atualizado - total de lançamentos:", novoArray.length);
+        console.log(
+          "🔄 [CaixaContext] Estado atualizado - total de lançamentos:",
+          novoArray.length,
+        );
         return novoArray;
       });
 
-      console.log("✅ [CaixaContext] Lançamento adicionado com sucesso:", novoId);
-      console.log("📊 [CaixaContext] Dados salvos no localStorage - Tamanho:", novosLancamentos.length);
+      console.log(
+        "✅ [CaixaContext] Lançamento adicionado com sucesso:",
+        novoId,
+      );
+      console.log(
+        "📊 [CaixaContext] Dados salvos no localStorage - Tamanho:",
+        novosLancamentos.length,
+      );
 
       // NOVO: Retornar o lançamento criado para confirmação
       return lancamentoCompleto;
@@ -387,59 +472,85 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const editarLancamento = async (id: string, dadosAtualizados: Partial<LancamentoCaixa>) => {
+  const editarLancamento = async (
+    id: string,
+    dadosAtualizados: Partial<LancamentoCaixa>,
+  ) => {
     try {
       setError(null);
-      console.log("✏️ [CaixaContext] Editando lançamento:", id, dadosAtualizados);
+      console.log(
+        "✏️ [CaixaContext] Editando lançamento:",
+        id,
+        dadosAtualizados,
+      );
 
       if (!id || id.toString().trim() === "") {
         throw new Error("ID do lançamento é obrigatório para edição");
       }
 
-      const lancamentosExistentes = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
-      const lancamentosAtualizados = lancamentosExistentes.map((lancamento: any) => {
-        if (lancamento.id?.toString() === id?.toString()) {
-          // ✅ CORREÇÃO: Preservar campos importantes e adicionar dados atualizados
-          const lancamentoAtualizado = {
-            ...lancamento,
-            ...dadosAtualizados,
-            id: lancamento.id,
-            dataCriacao: lancamento.dataCriacao,
-            dataHora: lancamento.dataHora || new Date(),
-            funcionarioId: lancamento.funcionarioId
-          };
+      const lancamentosExistentes = JSON.parse(
+        localStorage.getItem("lancamentos_caixa") || "[]",
+      );
+      const lancamentosAtualizados = lancamentosExistentes.map(
+        (lancamento: any) => {
+          if (lancamento.id?.toString() === id?.toString()) {
+            // ✅ CORREÇÃO: Preservar campos importantes e adicionar dados atualizados
+            const lancamentoAtualizado = {
+              ...lancamento,
+              ...dadosAtualizados,
+              id: lancamento.id,
+              dataCriacao: lancamento.dataCriacao,
+              dataHora: lancamento.dataHora || new Date(),
+              funcionarioId: lancamento.funcionarioId,
+            };
 
-          // ✅ VALIDAR dados atualizados
-          try {
-            validarLancamento(lancamentoAtualizado, "editarLancamento");
-          } catch (validationError) {
-            console.warn("⚠️ [CaixaContext] Validação falhou na edição:", validationError.message);
-            // Continuar mesmo com aviso, mas logar o problema
+            // ✅ VALIDAR dados atualizados
+            try {
+              validarLancamento(lancamentoAtualizado, "editarLancamento");
+            } catch (validationError) {
+              console.warn(
+                "⚠️ [CaixaContext] Validação falhou na edição:",
+                validationError.message,
+              );
+              // Continuar mesmo com aviso, mas logar o problema
+            }
+
+            console.log(
+              "📝 [CaixaContext] Lançamento atualizado:",
+              lancamentoAtualizado,
+            );
+            return lancamentoAtualizado;
           }
-
-          console.log("📝 [CaixaContext] Lançamento atualizado:", lancamentoAtualizado);
-          return lancamentoAtualizado;
-        }
-        return lancamento;
-      });
+          return lancamento;
+        },
+      );
 
       // Salvar no localStorage
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(lancamentosAtualizados),
+      );
 
       // ✅ CORREÇÃO: Atualizar estado diretamente sem usar carregarLancamentosLocalStorage (evita async)
-      setLancamentos(lancamentosAtualizados.map((lancamento: any) => {
-        // Normalizar dados como no carregamento inicial
-        const data = new Date(lancamento.data);
-        const dataHora = lancamento.dataHora ? new Date(lancamento.dataHora) : data;
-        const dataCriacao = lancamento.dataCriacao ? new Date(lancamento.dataCriacao) : new Date();
+      setLancamentos(
+        lancamentosAtualizados.map((lancamento: any) => {
+          // Normalizar dados como no carregamento inicial
+          const data = new Date(lancamento.data);
+          const dataHora = lancamento.dataHora
+            ? new Date(lancamento.dataHora)
+            : data;
+          const dataCriacao = lancamento.dataCriacao
+            ? new Date(lancamento.dataCriacao)
+            : new Date();
 
-        return {
-          ...lancamento,
-          data,
-          dataHora,
-          dataCriacao,
-        };
-      }));
+          return {
+            ...lancamento,
+            data,
+            dataHora,
+            dataCriacao,
+          };
+        }),
+      );
 
       console.log("✅ [CaixaContext] Lançamento editado com sucesso:", id);
     } catch (error) {
@@ -449,47 +560,61 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const excluirLancamento = useCallback(async (id: string) => {
-    // ✅ CORREÇÃO: Verificação mais robusta para evitar exclusões múltiplas
-    if (isExcluindo) {
-      console.warn("🚫 [CaixaContext] Tentativa de exclusão ignorada - operação já em andamento");
-      return;
-    }
+  const excluirLancamento = useCallback(
+    async (id: string) => {
+      // ✅ CORREÇÃO: Verificação mais robusta para evitar exclusões múltiplas
+      if (isExcluindo) {
+        console.warn(
+          "🚫 [CaixaContext] Tentativa de exclusão ignorada - operação já em andamento",
+        );
+        return;
+      }
 
-    if (!id || id.toString().trim() === "") {
-      throw new Error("ID do lançamento é obrigatório");
-    }
+      if (!id || id.toString().trim() === "") {
+        throw new Error("ID do lançamento é obrigatório");
+      }
 
-    try {
-      setIsExcluindo(true);
-      setError(null);
-      console.log("🗑️ [CaixaContext] Iniciando exclusão do lançamento:", id);
+      try {
+        setIsExcluindo(true);
+        setError(null);
+        console.log("🗑️ [CaixaContext] Iniciando exclusão do lançamento:", id);
 
-      // ✅ CORREÇÃO: Abordagem mais segura - primeiro carregar, depois filtrar e salvar
-      const lancamentosAtuais = JSON.parse(localStorage.getItem("lancamentos_caixa") || "[]");
-      const lancamentosAtualizados = lancamentosAtuais.filter((l: any) => l.id?.toString() !== id?.toString());
+        // ✅ CORREÇÃO: Abordagem mais segura - primeiro carregar, depois filtrar e salvar
+        const lancamentosAtuais = JSON.parse(
+          localStorage.getItem("lancamentos_caixa") || "[]",
+        );
+        const lancamentosAtualizados = lancamentosAtuais.filter(
+          (l: any) => l.id?.toString() !== id?.toString(),
+        );
 
-      console.log(`📊 [CaixaContext] Lançamentos antes: ${lancamentosAtuais.length}, depois: ${lancamentosAtualizados.length}`);
+        console.log(
+          `📊 [CaixaContext] Lançamentos antes: ${lancamentosAtuais.length}, depois: ${lancamentosAtualizados.length}`,
+        );
 
-      // Salvar no localStorage de forma síncrona para garantir consistência
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(lancamentosAtualizados));
+        // Salvar no localStorage de forma síncrona para garantir consistência
+        localStorage.setItem(
+          "lancamentos_caixa",
+          JSON.stringify(lancamentosAtualizados),
+        );
 
-      // Atualizar estado React de forma síncrona
-      setLancamentos(lancamentosAtualizados);
+        // Atualizar estado React de forma síncrona
+        setLancamentos(lancamentosAtualizados);
 
-      console.log("✅ [CaixaContext] Lançamento excluído com sucesso");
-    } catch (error: any) {
-      console.error("❌ [CaixaContext] Erro ao excluir lançamento:", error);
-      setError(`Erro ao excluir lançamento: ${error.message}`);
-      throw error;
-    } finally {
-      // ✅ CORREÇÃO: Sempre garantir que isExcluindo seja resetado
-      setTimeout(() => {
-        setIsExcluindo(false);
-        console.log("🔓 [CaixaContext] Flag isExcluindo resetada");
-      }, 100);
-    }
-  }, [isExcluindo]);
+        console.log("✅ [CaixaContext] Lançamento excluído com sucesso");
+      } catch (error: any) {
+        console.error("❌ [CaixaContext] Erro ao excluir lançamento:", error);
+        setError(`Erro ao excluir lançamento: ${error.message}`);
+        throw error;
+      } finally {
+        // ✅ CORREÇÃO: Sempre garantir que isExcluindo seja resetado
+        setTimeout(() => {
+          setIsExcluindo(false);
+          console.log("🔓 [CaixaContext] Flag isExcluindo resetada");
+        }, 100);
+      }
+    },
+    [isExcluindo],
+  );
 
   // Adicionar campanha
   const adicionarCampanha = async (novaCampanha: Omit<Campanha, "id">) => {
@@ -501,9 +626,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const campanha: Campanha = { ...novaCampanha, id: novoId };
 
       // Carregar campanhas existentes
-      const campanhasExistentes = JSON.parse(localStorage.getItem("campanhas") || "[]");
+      const campanhasExistentes = JSON.parse(
+        localStorage.getItem("campanhas") || "[]",
+      );
       const novasCampanhas = [...campanhasExistentes, campanha];
-      
+
       // Salvar no localStorage
       localStorage.setItem("campanhas", JSON.stringify(novasCampanhas));
       setCampanhas(novasCampanhas);
@@ -517,7 +644,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // Helper para verificar se é boleto
   const isBoleto = (lancamento: any) => {
-    if (typeof lancamento.formaPagamento === "object" && lancamento.formaPagamento?.nome) {
+    if (
+      typeof lancamento.formaPagamento === "object" &&
+      lancamento.formaPagamento?.nome
+    ) {
       const nome = lancamento.formaPagamento.nome.toLowerCase();
       return nome.includes("boleto") || nome.includes("bancario");
     }
@@ -540,29 +670,48 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       if (filtros.dataFim && data > filtros.dataFim) return false;
 
       // 2) Tipo
-      if (isFilterActive(filtros.tipo) && filtros.tipo !== "todos" && l.tipo !== filtros.tipo) return false;
+      if (
+        isFilterActive(filtros.tipo) &&
+        filtros.tipo !== "todos" &&
+        l.tipo !== filtros.tipo
+      )
+        return false;
 
       // 3) Forma de pagamento (com suporte a id/string/obj)
       if (isFilterActive(filtros.formaPagamento)) {
-        const fpId = typeof l.formaPagamento === "object" ? String(l.formaPagamento?.id) : String(l.formaPagamento || "");
+        const fpId =
+          typeof l.formaPagamento === "object"
+            ? String(l.formaPagamento?.id)
+            : String(l.formaPagamento || "");
         if (fpId !== String(filtros.formaPagamento)) return false;
       }
 
       // 4) Técnico (id ou nome)
       if (isFilterActive(filtros.tecnico)) {
-        const tecnicoId = (l.tecnicoResponsavel?.id ?? l.funcionario?.id ?? l.tecnicoResponsavel ?? l.funcionario) || "";
+        const tecnicoId =
+          (l.tecnicoResponsavel?.id ??
+            l.funcionario?.id ??
+            l.tecnicoResponsavel ??
+            l.funcionario) ||
+          "";
         if (String(tecnicoId) !== String(filtros.tecnico)) return false;
       }
 
       // 5) Campanha
       if (isFilterActive(filtros.campanha)) {
-        const camp = typeof l.campanha === "object" ? String(l.campanha?.id) : String(l.campanha || "");
+        const camp =
+          typeof l.campanha === "object"
+            ? String(l.campanha?.id)
+            : String(l.campanha || "");
         if (camp !== String(filtros.campanha)) return false;
       }
 
       // 6) Setor
       if (isFilterActive(filtros.setor)) {
-        const setorId = typeof l.setor === "object" ? String(l.setor?.id || l.setor?.nome) : String(l.setor || "");
+        const setorId =
+          typeof l.setor === "object"
+            ? String(l.setor?.id || l.setor?.nome)
+            : String(l.setor || "");
         if (setorId !== String(filtros.setor)) return false;
       }
 
@@ -574,18 +723,28 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
       // 8) Cliente
       if (isFilterActive(filtros.cliente)) {
-        const cli = typeof l.cliente === "object" ? String(l.cliente?.id) : String(l.cliente || "");
+        const cli =
+          typeof l.cliente === "object"
+            ? String(l.cliente?.id)
+            : String(l.cliente || "");
         if (cli !== String(filtros.cliente)) return false;
       }
 
       // 9) Cidade (tentar localizar no setor)
       if (isFilterActive(filtros.cidade)) {
         const cidadeValor =
-          (l.setor && (typeof l.setor === "object" ? (l.setor.cidade?.nome || l.setor.cidade) : undefined)) ||
-          (l.localizacao && (typeof l.localizacao === "object" ? (l.localizacao.cidade?.nome || l.localizacao.cidade) : l.localizacao)) ||
+          (l.setor &&
+            (typeof l.setor === "object"
+              ? l.setor.cidade?.nome || l.setor.cidade
+              : undefined)) ||
+          (l.localizacao &&
+            (typeof l.localizacao === "object"
+              ? l.localizacao.cidade?.nome || l.localizacao.cidade
+              : l.localizacao)) ||
           l.cidade ||
           "";
-        if (cidadeValor && String(cidadeValor) !== String(filtros.cidade)) return false;
+        if (cidadeValor && String(cidadeValor) !== String(filtros.cidade))
+          return false;
       }
 
       // 10) Número da nota (match parcial)
@@ -613,7 +772,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       return total + valorParaEmpresaCalculado;
     }, 0);
 
-    const receitaLiquida = receitasNaoBoleto.reduce((total, l) => total + (l.valorLiquido || l.valor), 0);
+    const receitaLiquida = receitasNaoBoleto.reduce(
+      (total, l) => total + (l.valorLiquido || l.valor),
+      0,
+    );
 
     const receitasParaEmpresa = receitasNaoBoleto.reduce((total, l) => {
       if (l.valorParaEmpresa !== undefined) {
@@ -626,8 +788,12 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }, 0);
 
     const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
-    const despesas = lancamentos.filter((l) => l.tipo === "despesa").reduce((total, l) => total + l.valor, 0);
-    const comissoes = receitasNaoBoleto.filter((l) => l.comissao).reduce((total, l) => total + (l.comissao || 0), 0);
+    const despesas = lancamentos
+      .filter((l) => l.tipo === "despesa")
+      .reduce((total, l) => total + l.valor, 0);
+    const comissoes = receitasNaoBoleto
+      .filter((l) => l.comissao)
+      .reduce((total, l) => total + (l.comissao || 0), 0);
 
     return {
       receitas: receitasParaEmpresa,
@@ -641,32 +807,35 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   }, [lancamentos]);
 
-  const value = useMemo(() => ({
-    lancamentos,
-    lancamentosFiltrados,
-    campanhas,
-    filtros,
-    totais,
-    adicionarLancamento,
-    editarLancamento,
-    excluirLancamento,
-    adicionarCampanha,
-    setFiltros: atualizarFiltros,
-    carregarDados,
-    isLoading,
-    isExcluindo,
-    error,
-  }), [
-    lancamentos,
-    lancamentosFiltrados,
-    campanhas,
-    filtros,
-    totais,
-    excluirLancamento,
-    isLoading,
-    isExcluindo,
-    error,
-  ]);
+  const value = useMemo(
+    () => ({
+      lancamentos,
+      lancamentosFiltrados,
+      campanhas,
+      filtros,
+      totais,
+      adicionarLancamento,
+      editarLancamento,
+      excluirLancamento,
+      adicionarCampanha,
+      setFiltros: atualizarFiltros,
+      carregarDados,
+      isLoading,
+      isExcluindo,
+      error,
+    }),
+    [
+      lancamentos,
+      lancamentosFiltrados,
+      campanhas,
+      filtros,
+      totais,
+      excluirLancamento,
+      isLoading,
+      isExcluindo,
+      error,
+    ],
+  );
 
   return (
     <CaixaContext.Provider value={value}>{children}</CaixaContext.Provider>
