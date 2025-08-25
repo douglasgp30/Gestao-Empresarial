@@ -11,7 +11,6 @@ import React, {
 import { Funcionario } from "@shared/types";
 import { useAuth } from "./AuthContext";
 import { funcionariosApi } from "../lib/apiService";
-import { loadingController, LoadTypes } from "../lib/loadingControl";
 
 interface FuncionariosContextType {
   funcionarios: Funcionario[];
@@ -145,14 +144,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     status: "todos" as "ativo" | "inativo" | "todos",
   });
 
-  // Função para carregar funcionários da API
+  // CARREGAMENTO MANUAL APENAS - SEM LOOPS
   const carregarFuncionarios = useCallback(async () => {
-    if (!loadingController.startLoad(LoadTypes.FUNCIONARIOS)) {
-      return;
-    }
-
     try {
-      console.log("[FuncionariosContext] Carregando funcionários da API...");
+      console.log("[FuncionariosContext] Carregamento MANUAL de funcionários...");
       
       const response = await funcionariosApi.listar();
       if (response.error) {
@@ -178,7 +173,7 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         }));
 
         setFuncionarios(funcionariosFormatados);
-        console.log(`[FuncionariosContext] ${funcionariosFormatados.length} funcionários carregados da API`);
+        console.log(`[FuncionariosContext] ${funcionariosFormatados.length} funcionários carregados MANUALMENTE`);
         
         // Backup no localStorage
         try {
@@ -193,12 +188,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.warn("[FuncionariosContext] Erro na API, usando localStorage:", error);
       carregarFuncionariosLocalStorage();
-    } finally {
-      loadingController.finishLoad(LoadTypes.FUNCIONARIOS);
     }
   }, []);
 
-  // Função para carregar do localStorage
   const carregarFuncionariosLocalStorage = useCallback(() => {
     try {
       console.log("[FuncionariosContext] Carregando do localStorage...");
@@ -226,17 +218,19 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Carregamento inicial ÚNICO
+  // CARREGAMENTO INICIAL ÚNICA VEZ - SEM LOOPS
   useEffect(() => {
     if (inicializado.current || typeof window === "undefined") return;
     inicializado.current = true;
 
-    console.log("[FuncionariosContext] Carregamento inicial ÚNICO");
+    console.log("🚨 [FuncionariosContext] CARREGAMENTO INICIAL ÚNICO E CONTROLADO");
     
     const inicializarFuncionarios = async () => {
       setIsLoading(true);
       try {
-        await carregarFuncionarios();
+        // Carregar apenas do localStorage para evitar piscar
+        carregarFuncionariosLocalStorage();
+        console.log("✅ [FuncionariosContext] Inicialização SEM carregamento automático da API");
       } catch (error) {
         console.error("Erro ao inicializar funcionários:", error);
       } finally {
@@ -244,11 +238,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    // Delay mínimo para evitar conflitos
-    setTimeout(inicializarFuncionarios, 200);
+    setTimeout(inicializarFuncionarios, 100);
   }, []);
 
-  // Função para salvar funcionarios no localStorage
   const salvarFuncionariosNoLocalStorage = useCallback((funcionarios: Funcionario[]) => {
     try {
       localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
