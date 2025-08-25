@@ -349,7 +349,7 @@ export function ModalReceita() {
         observacoes: formData.observacoes || undefined,
         numeroNota: formData.numeroNota || undefined,
 
-        // Campos de integra��ão para boletos
+        // Campos de integração para boletos
         codigoServico: codigoServico,
         sistemaOrigem: isBoleto ? "caixa_boleto" : undefined,
       });
@@ -896,6 +896,21 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
+
+                  {/* Botão de teste direto */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      console.log("[ModalReceita] Botão de teste clicado diretamente");
+                      alert("Botão funciona!");
+                    }}
+                    className="bg-red-100"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
+
                   <ModalCadastroCliente
                     trigger={
                       <Button
