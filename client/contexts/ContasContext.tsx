@@ -626,7 +626,27 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
     getCategorias,
     getDescricoes,
     adicionarFornecedor,
-  }), [contas, filtros, setFiltros, atualizarFiltros, carregando, erro, adicionarConta, atualizarConta, excluirConta, marcarComoPago, forcarRecarregamento, clientes, fornecedores, formasPagamento, categorias, descricoes, getCategorias, getDescricoes, adicionarFornecedor]);
+  }), [
+    contas,
+    filtros,
+    setFiltros,
+    atualizarFiltros,
+    carregando,
+    erro,
+    adicionarConta,
+    atualizarConta,
+    excluirConta,
+    marcarComoPago,
+    forcarRecarregamento,
+    clientes,
+    fornecedores,
+    formasPagamento,
+    categorias,
+    descricoes,
+    getCategorias,
+    getDescricoes,
+    adicionarFornecedor,
+  ]);
 
   return (
     <ContasContext.Provider value={value}>{children}</ContasContext.Provider>
