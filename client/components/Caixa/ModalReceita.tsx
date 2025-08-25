@@ -906,15 +906,7 @@ export function ModalReceita() {
                     variant="outline"
                     size="icon"
                     title="Adicionar Cliente"
-                    onClick={() => {
-                      console.log("[ModalReceita] Estado antes:", isModalClienteOpen);
-                      setIsModalClienteOpen(true);
-                      console.log("[ModalReceita] Abrindo modal de cliente via state");
-                      // Debug: mostrar alerta para confirmar que o clique funciona
-                      setTimeout(() => {
-                        console.log("[ModalReceita] Estado após timeout:", isModalClienteOpen);
-                      }, 100);
-                    }}
+                    onClick={() => setIsModalClienteOpen(true)}
                   >
                     <UserPlus className="h-4 w-4" />
                   </Button>
