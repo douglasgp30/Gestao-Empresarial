@@ -185,14 +185,13 @@ export default function Clientes() {
                   : "Nenhum cliente cadastrado ainda"}
               </p>
               {!termoPesquisa && (
-                <ModalCadastroCliente
-                  trigger={
-                    <Button className="mt-4">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Cadastrar Primeiro Cliente
-                    </Button>
-                  }
-                />
+                <Button
+                  className="mt-4"
+                  onClick={() => setIsModalClienteOpen(true)}
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Cadastrar Primeiro Cliente
+                </Button>
               )}
             </div>
           ) : (
