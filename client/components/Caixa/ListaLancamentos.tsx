@@ -692,7 +692,12 @@ export default function ListaLancamentos() {
       {/* Dialog de confirmação de exclusão */}
       <AlertDialog
         open={!!lancamentoParaExcluir}
-        onOpenChange={() => setLancamentoParaExcluir(null)}
+        onOpenChange={(open) => {
+          // Só permitir fechar se não estiver excluindo
+          if (!open && !isExcluindo) {
+            setLancamentoParaExcluir(null);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
