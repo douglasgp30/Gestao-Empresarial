@@ -10,7 +10,9 @@ import { Cliente } from "@shared/types";
 
 interface ClientesContextType {
   clientes: Cliente[];
-  adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => Promise<Cliente>;
+  adicionarCliente: (
+    cliente: Omit<Cliente, "id" | "dataCriacao">,
+  ) => Promise<Cliente>;
   editarCliente: (id: string, cliente: Partial<Cliente>) => Promise<void>;
   excluirCliente: (id: string) => Promise<void>;
   buscarCliente: (id: string) => Cliente | undefined;
@@ -57,7 +59,10 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       setClientes(clientesFormatados);
       return clientesFormatados;
     } catch (error) {
-      console.error("[ClientesContext] Erro ao carregar clientes da API:", error);
+      console.error(
+        "[ClientesContext] Erro ao carregar clientes da API:",
+        error,
+      );
       // Em caso de erro, carregar do localStorage como fallback
       return carregarClientesLocalStorage();
     }
@@ -66,7 +71,9 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
   // Função para carregar clientes do localStorage (fallback)
   const carregarClientesLocalStorage = useCallback((): Cliente[] => {
     try {
-      console.log("[ClientesContext] Carregando clientes do localStorage como fallback...");
+      console.log(
+        "[ClientesContext] Carregando clientes do localStorage como fallback...",
+      );
       const clientes = localStorage.getItem("clientes");
       if (clientes) {
         const parsedClientes = JSON.parse(clientes);
@@ -77,7 +84,10 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       }
       return [];
     } catch (error) {
-      console.warn("[ClientesContext] Erro ao carregar clientes do localStorage:", error);
+      console.warn(
+        "[ClientesContext] Erro ao carregar clientes do localStorage:",
+        error,
+      );
       return [];
     }
   }, []);
@@ -87,7 +97,10 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem("clientes", JSON.stringify(clientes));
     } catch (error) {
-      console.warn("[ClientesContext] Erro ao salvar clientes no localStorage:", error);
+      console.warn(
+        "[ClientesContext] Erro ao salvar clientes no localStorage:",
+        error,
+      );
     }
   }, []);
 
@@ -177,7 +190,10 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const editarCliente = async (id: string, dadosAtualizados: Partial<Cliente>): Promise<void> => {
+  const editarCliente = async (
+    id: string,
+    dadosAtualizados: Partial<Cliente>,
+  ): Promise<void> => {
     try {
       console.log("[ClientesContext] Editando cliente:", id, dadosAtualizados);
 
@@ -263,16 +279,26 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
 
       // Pesquisar por telefone
       if (cliente.telefonePrincipal.includes(termo)) return true;
-      if (cliente.telefoneSecundario && cliente.telefoneSecundario.includes(termo)) return true;
+      if (
+        cliente.telefoneSecundario &&
+        cliente.telefoneSecundario.includes(termo)
+      )
+        return true;
 
       // Pesquisar por email
       if (cliente.email && cliente.email.toLowerCase().includes(termoLower))
         return true;
 
       // Pesquisar por endereço
-      if (cliente.complemento && cliente.complemento.toLowerCase().includes(termoLower))
+      if (
+        cliente.complemento &&
+        cliente.complemento.toLowerCase().includes(termoLower)
+      )
         return true;
-      if (cliente.logradouro && cliente.logradouro.toLowerCase().includes(termoLower))
+      if (
+        cliente.logradouro &&
+        cliente.logradouro.toLowerCase().includes(termoLower)
+      )
         return true;
       if (cliente.cep && cliente.cep.includes(termo)) return true;
 

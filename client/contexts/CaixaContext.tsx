@@ -1189,7 +1189,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.error("❌ Erro ao excluir:", error);
 
       // Se for erro de rede, tentar fallback local
-      if (error.message?.includes("fetch") || error.message?.includes("Failed")) {
+      if (
+        error.message?.includes("fetch") ||
+        error.message?.includes("Failed")
+      ) {
         console.warn("🔄 Erro de rede, removendo localmente como fallback");
         setLancamentos((prev) =>
           prev.filter((l) => l.id?.toString() !== id?.toString()),

@@ -611,20 +611,28 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
       // Tentar buscar dados atualizados da API primeiro
       try {
-        const response = await fetch('/api/descricoes-e-categorias');
+        const response = await fetch("/api/descricoes-e-categorias");
         if (response.ok) {
           const data = await response.json();
           if (data.data && Array.isArray(data.data)) {
-            console.log(`🌐 [EntidadesContext] Dados da API: ${data.data.length} itens`);
+            console.log(
+              `🌐 [EntidadesContext] Dados da API: ${data.data.length} itens`,
+            );
             setDescricoesECategorias(data.data);
 
             // Atualizar localStorage para cache
-            localStorage.setItem('descricoes_e_categorias', JSON.stringify(data.data));
+            localStorage.setItem(
+              "descricoes_e_categorias",
+              JSON.stringify(data.data),
+            );
             return;
           }
         }
       } catch (apiError) {
-        console.warn("⚠️ [EntidadesContext] API não disponível, usando localStorage:", apiError);
+        console.warn(
+          "⚠️ [EntidadesContext] API não disponível, usando localStorage:",
+          apiError,
+        );
       }
 
       // Fallback para localStorage se API falhar
@@ -642,10 +650,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         setDescricoesECategorias([]);
       }
     } catch (error) {
-      console.error(
-        "Erro ao recarregar descrições e categorias:",
-        error,
-      );
+      console.error("Erro ao recarregar descrições e categorias:", error);
       setDescricoesECategorias([]);
     }
   }, []);

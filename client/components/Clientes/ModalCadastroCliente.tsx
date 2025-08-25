@@ -84,7 +84,9 @@ export default function ModalCadastroCliente({
 
     setIsBuscandoCep(true);
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const response = await fetch(
+        `https://viacep.com.br/ws/${cepLimpo}/json/`,
+      );
       const data = await response.json();
 
       if (!data.erro) {
@@ -134,7 +136,8 @@ export default function ModalCadastroCliente({
       formData.cidade
     ) {
       if (!formData.complemento.trim()) {
-        newErrors.complemento = "Complemento é obrigatório quando endereço é preenchido";
+        newErrors.complemento =
+          "Complemento é obrigatório quando endereço é preenchido";
       }
     }
 
@@ -191,7 +194,9 @@ export default function ModalCadastroCliente({
       alert("Cliente cadastrado com sucesso!");
     } catch (error) {
       console.error("[ModalCadastroCliente] Erro ao cadastrar cliente:", error);
-      alert(`Erro ao cadastrar cliente: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+      alert(
+        `Erro ao cadastrar cliente: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+      );
     }
   };
 
@@ -216,7 +221,9 @@ export default function ModalCadastroCliente({
             <Input
               id="nome"
               value={formData.nome}
-              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, nome: e.target.value })
+              }
               placeholder="Nome completo do cliente"
               className={errors.nome ? "border-red-500" : ""}
             />
@@ -360,7 +367,7 @@ export default function ModalCadastroCliente({
             {/* Complemento */}
             <div className="space-y-2">
               <Label htmlFor="complemento">
-                Complemento 
+                Complemento
                 {(formData.endereco.rua || formData.endereco.cidade) && " *"}
               </Label>
               <Input

@@ -1025,10 +1025,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
                   // Focar no campo de observações após um breve delay para permitir edições
                   setTimeout(() => {
-                    const observacoesField = document.getElementById("observacoes");
+                    const observacoesField =
+                      document.getElementById("observacoes");
                     if (observacoesField) {
                       observacoesField.focus();
-                      observacoesField.scrollIntoView({ behavior: "smooth", block: "center" });
+                      observacoesField.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      });
                     }
                     // Reset flag após o foco
                     setClienteRecemAdicionado(false);
@@ -1047,11 +1051,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span className="text-sm font-medium text-green-800">
-                    Cliente selecionado: {clientes.find(c => c.id === formData.cliente)?.nome}
+                    Cliente selecionado:{" "}
+                    {clientes.find((c) => c.id === formData.cliente)?.nome}
                   </span>
                 </div>
                 <p className="text-xs text-green-600 mt-1">
-                  ✓ Você pode continuar editando os campos e adicionar observações antes de finalizar o lançamento
+                  ✓ Você pode continuar editando os campos e adicionar
+                  observações antes de finalizar o lançamento
                 </p>
               </div>
             )}
@@ -1377,9 +1383,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             {isSubmitting
               ? "Lançando..."
               : formData.cliente
-                ? `Lançar Receita para ${clientes.find(c => c.id === formData.cliente)?.nome || 'Cliente Selecionado'}`
-                : "Lançar Receita"
-            }
+                ? `Lançar Receita para ${clientes.find((c) => c.id === formData.cliente)?.nome || "Cliente Selecionado"}`
+                : "Lançar Receita"}
           </Button>
         </form>
       </CardContent>
