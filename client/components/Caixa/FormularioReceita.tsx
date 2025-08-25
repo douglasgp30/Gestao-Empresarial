@@ -1040,6 +1040,20 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 Cliente é obrigatório quando a forma de pagamento for boleto
               </p>
             )}
+
+            {formData.cliente && (
+              <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-green-800">
+                    Cliente selecionado: {clientes.find(c => c.id === formData.cliente)?.nome}
+                  </span>
+                </div>
+                <p className="text-xs text-green-600 mt-1">
+                  ✓ Você pode continuar editando os campos e adicionar observações antes de finalizar o lançamento
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Data de Vencimento do Boleto - só aparece para boletos */}
