@@ -777,7 +777,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               addNewFields={[
                 {
                   key: "nome",
-                  label: "Nome da Descrição",
+                  label: "Nome da Descriç��o",
                   required: true,
                 },
               ]}
@@ -1374,7 +1374,12 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Lançando..." : "Lançar Receita"}
+            {isSubmitting
+              ? "Lançando..."
+              : formData.cliente
+                ? `Lançar Receita para ${clientes.find(c => c.id === formData.cliente)?.nome || 'Cliente Selecionado'}`
+                : "Lançar Receita"
+            }
           </Button>
         </form>
       </CardContent>
