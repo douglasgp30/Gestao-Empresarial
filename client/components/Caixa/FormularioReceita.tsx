@@ -27,6 +27,7 @@ import { TrendingUp, UserPlus } from "lucide-react";
 import { useEnterAsTab } from "../../hooks/use-enter-as-tab";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
+import ModalClienteSimples from "../Clientes/ModalClienteSimples";
 import {
   isFormaPagamentoCartao,
   isFormaPagamentoBoleto,
