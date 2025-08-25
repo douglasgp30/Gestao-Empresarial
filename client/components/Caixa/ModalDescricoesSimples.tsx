@@ -128,6 +128,20 @@ export default function ModalDescricoesSimples() {
     );
   }, [descricoesECategorias]);
 
+  // Função para contar quantas descrições uma categoria possui
+  const contarDescricoesDaCategoria = (nomeCategoria: string, tipo: string) => {
+    if (!Array.isArray(descricoesECategorias)) {
+      return 0;
+    }
+    return descricoesECategorias.filter(
+      (item) =>
+        item.tipoItem === "descricao" &&
+        item.ativo &&
+        item.tipo === tipo &&
+        item.categoria === nomeCategoria,
+    ).length;
+  };
+
   const handleAdicionarDescricao = async () => {
     if (!formDescricao.nome.trim()) {
       toast.error("Nome da descrição é obrigatório");
