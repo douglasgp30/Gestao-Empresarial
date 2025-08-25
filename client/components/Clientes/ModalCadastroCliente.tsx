@@ -122,18 +122,18 @@ export default function ModalCadastroCliente({
       newErrors.nome = "Nome é obrigatório";
     }
 
-    if (!formData.telefone1.trim()) {
-      newErrors.telefone1 = "Pelo menos um telefone é obrigatório";
+    if (!formData.telefonePrincipal.trim()) {
+      newErrors.telefonePrincipal = "Telefone principal é obrigatório";
     }
 
     // Se preencheu endereço, complemento é obrigatório
     if (
-      formData.endereco.rua ||
-      formData.endereco.numero ||
-      formData.endereco.bairro ||
-      formData.endereco.cidade
+      formData.logradouro ||
+      formData.numero ||
+      formData.bairro ||
+      formData.cidade
     ) {
-      if (!formData.endereco.complemento.trim()) {
+      if (!formData.complemento.trim()) {
         newErrors.complemento = "Complemento é obrigatório quando endereço é preenchido";
       }
     }
