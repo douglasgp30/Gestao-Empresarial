@@ -202,7 +202,9 @@ export default function ModalCadastroCliente({
     }
   };
 
-  console.log("[ModalCadastroCliente] Renderizando componente, trigger:", !!trigger, "open:", open);
+  React.useEffect(() => {
+    console.log("[ModalCadastroCliente] Renderizando componente, trigger:", !!trigger, "open:", open);
+  }, [trigger, open]);
 
   return (
     <Dialog open={open} onOpenChange={(newOpen) => {
