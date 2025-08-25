@@ -210,7 +210,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   }, [carregarCampanhasLocalStorage, carregarLancamentosLocalStorage, criarDadosBasicos]);
 
   // Função manual para recarregar dados
-  const carregarDados = useCallback(async () => {
+  const carregarDados = async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -222,13 +222,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [carregarLancamentosLocalStorage]);
+  };
 
   // Função para atualizar filtros SEM recarregamento automático
-  const atualizarFiltros = useCallback((novosFiltros: any) => {
+  const atualizarFiltros = (novosFiltros: any) => {
     setFiltros(novosFiltros);
     console.log("📅 [CaixaContext] Filtros atualizados");
-  }, []);
+  };
 
   // Adicionar lançamento
   const adicionarLancamento = async (novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">) => {
@@ -418,8 +418,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     campanhas,
     filtros,
     totais,
-    atualizarFiltros,
-    carregarDados,
     isLoading,
     isExcluindo,
     error,
