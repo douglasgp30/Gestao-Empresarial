@@ -1362,6 +1362,41 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 : "Lançar Receita"}
           </Button>
         </form>
+
+        {/* Modal de Cliente fora do form para evitar aninhamento */}
+        <ModalClienteSimples
+          isOpen={isModalClienteOpen}
+          onClose={() => setIsModalClienteOpen(false)}
+          onClienteAdicionado={(cliente) => {
+            // Selecionar o cliente recém-criado
+            setFormData((prev) => ({ ...prev, cliente: cliente.id }));
+
+            // Marcar que cliente foi recém-adicionado
+            setClienteRecemAdicionado(true);
+
+            // Feedback positivo ao usuário
+            toast({
+              title: "Cliente Adicionado com Sucesso! ✅",
+              description: `Cliente "${cliente.nome}" foi cadastrado e selecionado. Você pode continuar editando o lançamento.`,
+              variant: "default",
+              duration: 4000,
+            });
+
+            // Focar no campo de observações após um breve delay para permitir edições
+            setTimeout(() => {
+              const observacoesField = document.getElementById("observacoes");
+              if (observacoesField) {
+                observacoesField.focus();
+                observacoesField.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+              }
+              // Reset flag após o foco
+              setClienteRecemAdicionado(false);
+            }, 500);
+          }}
+        />
       </CardContent>
     </Card>
   );
