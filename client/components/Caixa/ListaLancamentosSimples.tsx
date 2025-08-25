@@ -102,7 +102,7 @@ export function ListaLancamentosSimples() {
     }).format(valor);
   };
 
-  // Função para renderizar o conteúdo de cada célula
+  // Fun��ão para renderizar o conteúdo de cada célula
   const renderCellContent = (
     lancamento: LancamentoCaixa,
     columnKey: string,
@@ -378,7 +378,7 @@ export function ListaLancamentosSimples() {
 
       setLancamentoParaExcluir(null);
     } catch (error) {
-      console.error("�� Erro ao excluir lançamento:", error);
+      console.error("❌ Erro ao excluir lançamento:", error);
 
       const errorMessage =
         error instanceof Error ? error.message : "Erro desconhecido";
@@ -619,7 +619,7 @@ export function ListaLancamentosSimples() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              {excluindo ? (
+              {isExcluindo ? (
                 <>
                   <div className="animate-spin h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full"></div>
                   Excluindo...
@@ -629,21 +629,21 @@ export function ListaLancamentosSimples() {
               )}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {excluindo
+              {isExcluindo
                 ? "Aguarde, excluindo o lançamento do sistema..."
                 : "Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={excluindo}>
-              {excluindo ? "Aguarde..." : "Cancelar"}
+            <AlertDialogCancel disabled={isExcluindo}>
+              {isExcluindo ? "Aguarde..." : "Cancelar"}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleExcluir}
-              disabled={excluindo}
+              disabled={isExcluindo}
               className="bg-red-600 hover:bg-red-700 disabled:opacity-50"
             >
-              {excluindo ? (
+              {isExcluindo ? (
                 <>
                   <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
                   Excluindo...
