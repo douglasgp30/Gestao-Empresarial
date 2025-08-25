@@ -206,6 +206,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     console.log("🚀 [CaixaContext] INICIALIZAÇÃO IMEDIATA");
 
     try {
+      // Executar migração automática se necessário
+      try {
+        if (typeof window !== 'undefined' && window.migracaoCaixa) {
+          if (window.migracaoCaixa.verificar && window.migracaoCaixa.verificar()) {
+            console.log("[CaixaContext] Executando migração automática de dados legados...");
+            window.migracaoCaixa.backup && window.migracaoCaixa.backup();
+            window.migracaoCaixa.executar && window.migracaoCaixa.executar();
+            console.log("[CaixaContext] Migração automática concluída.");
+          }
+        }
+      } catch (e) {
+        console.warn("[CaixaContext] Erro ao executar migração automática:", e);
+      }
+
       // FORÇAR carregamento IMEDIATO dos dados
       carregarCampanhasLocalStorage();
       carregarLancamentosLocalStorage();
