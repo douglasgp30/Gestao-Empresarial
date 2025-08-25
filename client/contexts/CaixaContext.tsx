@@ -69,7 +69,7 @@ const CaixaContext = createContext<CaixaContextType | undefined>(undefined);
 export function CaixaProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
 
-  // Estado para controlar requisições concorrentes
+  // Refs para controlar carregamentos
   const campanhasLoadingRef = useRef(false);
   const lancamentosLoadingRef = useRef(false);
   const [lancamentos, setLancamentos] = useState<LancamentoCaixa[]>([]);
