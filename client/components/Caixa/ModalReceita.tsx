@@ -102,7 +102,7 @@ export function ModalReceita() {
       "[ModalReceita] Debug - Categoria selecionada:",
       formData.categoria,
     );
-    console.log("[ModalReceita] Debug - Descrições filtradas:", descricoes);
+    console.log("[ModalReceita] Debug - Descri��ões filtradas:", descricoes);
     return descricoes;
   }, [formData.categoria, getDescricoes]);
 
@@ -513,11 +513,15 @@ export function ModalReceita() {
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
-        setIsOpen(open);
+        console.log("[ModalReceita] Dialog onOpenChange chamado:", open);
+
+        // Só permitir fechar se for uma ação intencional do usuário
         if (!open) {
-          // Ao fechar o dialog, sempre resetar o formulário
+          console.log("[ModalReceita] Modal sendo fechado, resetando formulário");
           resetForm();
         }
+
+        setIsOpen(open);
       }}
     >
       <DialogTrigger asChild>
