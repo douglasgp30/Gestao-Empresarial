@@ -5,14 +5,15 @@ import React, {
   useEffect,
   useCallback,
   ReactNode,
+  useMemo,
+  useRef,
 } from "react";
 import { Cliente } from "@shared/types";
+import { loadingController, LoadTypes } from "../lib/loadingControl";
 
 interface ClientesContextType {
   clientes: Cliente[];
-  adicionarCliente: (
-    cliente: Omit<Cliente, "id" | "dataCriacao">,
-  ) => Promise<Cliente>;
+  adicionarCliente: (cliente: Omit<Cliente, "id" | "dataCriacao">) => Promise<Cliente>;
   editarCliente: (id: string, cliente: Partial<Cliente>) => Promise<void>;
   excluirCliente: (id: string) => Promise<void>;
   buscarCliente: (id: string) => Cliente | undefined;
@@ -21,28 +22,39 @@ interface ClientesContextType {
   isLoading: boolean;
 }
 
-const ClientesContext = createContext<ClientesContextType | undefined>(
-  undefined,
-);
+const ClientesContext = createContext<ClientesContextType | undefined>(undefined);
 
 export function ClientesProvider({ children }: { children: ReactNode }) {
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const inicializado = useRef(false);
 
-  // Carregar clientes da API
+  // Função para carregar clientes da API
   const carregarClientesAPI = useCallback(async () => {
+    if (!loadingController.startLoad(LoadTypes.CLIENTES)) {
+      return [];
+    }
+
     try {
       console.log("[ClientesContext] Carregando clientes da API...");
-      const response = await fetch("/api/clientes");
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch("/api/clientes", {
+        signal: controller.signal,
+        headers: { "Cache-Control": "no-cache" },
+      });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`Erro ${response.status}: ${response.statusText}`);
       }
 
       const clientesAPI = await response.json();
-      console.log("[ClientesContext] Clientes carregados da API:", clientesAPI);
+      console.log("[ClientesContext] Clientes carregados da API:", clientesAPI.length);
 
-      // Converter dados da API para o formato esperado
       const clientesFormatados: Cliente[] = clientesAPI.map((c: any) => ({
         id: c.id.toString(),
         nome: c.nome,
@@ -57,55 +69,53 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       }));
 
       setClientes(clientesFormatados);
+      
+      // Backup no localStorage
+      try {
+        localStorage.setItem("clientes", JSON.stringify(clientesFormatados));
+      } catch (storageError) {
+        console.warn("[ClientesContext] Erro ao salvar no localStorage:", storageError);
+      }
+
       return clientesFormatados;
     } catch (error) {
-      console.error(
-        "[ClientesContext] Erro ao carregar clientes da API:",
-        error,
-      );
-      // Em caso de erro, carregar do localStorage como fallback
+      console.error("[ClientesContext] Erro ao carregar clientes da API:", error);
       return carregarClientesLocalStorage();
+    } finally {
+      loadingController.finishLoad(LoadTypes.CLIENTES);
     }
   }, []);
 
   // Função para carregar clientes do localStorage (fallback)
   const carregarClientesLocalStorage = useCallback((): Cliente[] => {
     try {
-      console.log(
-        "[ClientesContext] Carregando clientes do localStorage como fallback...",
-      );
+      console.log("[ClientesContext] Carregando clientes do localStorage como fallback...");
       const clientes = localStorage.getItem("clientes");
       if (clientes) {
         const parsedClientes = JSON.parse(clientes);
-        return parsedClientes.map((c: any) => ({
+        const clientesFormatados = parsedClientes.map((c: any) => ({
           ...c,
           dataCriacao: new Date(c.dataCriacao),
         }));
+        setClientes(clientesFormatados);
+        return clientesFormatados;
       }
+      setClientes([]);
       return [];
     } catch (error) {
-      console.warn(
-        "[ClientesContext] Erro ao carregar clientes do localStorage:",
-        error,
-      );
+      console.warn("[ClientesContext] Erro ao carregar clientes do localStorage:", error);
+      setClientes([]);
       return [];
     }
   }, []);
 
-  // Salvar no localStorage como backup
-  const salvarClientesNoLocalStorage = useCallback((clientes: Cliente[]) => {
-    try {
-      localStorage.setItem("clientes", JSON.stringify(clientes));
-    } catch (error) {
-      console.warn(
-        "[ClientesContext] Erro ao salvar clientes no localStorage:",
-        error,
-      );
-    }
-  }, []);
-
-  // Carregar dados na inicialização
+  // Carregamento inicial ÚNICO
   useEffect(() => {
+    if (inicializado.current || typeof window === "undefined") return;
+    inicializado.current = true;
+
+    console.log("[ClientesContext] Carregamento inicial ÚNICO");
+    
     const inicializar = async () => {
       setIsLoading(true);
       try {
@@ -116,36 +126,26 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     };
-    inicializar();
-  }, [carregarClientesAPI]);
 
-  // Salvar no localStorage sempre que clientes mudarem (backup)
-  useEffect(() => {
-    if (!isLoading && clientes.length > 0) {
-      salvarClientesNoLocalStorage(clientes);
-    }
-  }, [clientes, isLoading, salvarClientesNoLocalStorage]);
+    // Delay mínimo para evitar conflitos
+    setTimeout(inicializar, 150);
+  }, []);
 
-  const adicionarCliente = async (
-    novoCliente: Omit<Cliente, "id" | "dataCriacao">,
-  ): Promise<Cliente> => {
+  const adicionarCliente = async (novoCliente: Omit<Cliente, "id" | "dataCriacao">): Promise<Cliente> => {
     try {
       console.log("[ClientesContext] Adicionando cliente:", novoCliente);
 
-      // Preparar dados para a API (mapeamento de campos)
       const dadosAPI = {
         nome: novoCliente.nome,
-        telefone: novoCliente.telefonePrincipal, // API espera 'telefone'
+        telefone: novoCliente.telefonePrincipal,
         email: novoCliente.email || null,
-        endereco: novoCliente.complemento || undefined, // API espera 'endereco'
-        observacoes: undefined, // Campo opcional da API
+        endereco: novoCliente.complemento || undefined,
+        observacoes: undefined,
       };
 
       const response = await fetch("/api/clientes", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dadosAPI),
       });
 
@@ -157,7 +157,6 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       const clienteAPI = await response.json();
       console.log("[ClientesContext] Cliente criado na API:", clienteAPI);
 
-      // Converter resposta da API para formato esperado
       const cliente: Cliente = {
         id: clienteAPI.id.toString(),
         nome: clienteAPI.nome,
@@ -171,8 +170,13 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
         dataCriacao: new Date(clienteAPI.dataCriacao),
       };
 
-      // Atualizar estado local
       setClientes((prev) => [...prev, cliente]);
+
+      // Atualizar localStorage
+      try {
+        const clientesAtuais = [...clientes, cliente];
+        localStorage.setItem("clientes", JSON.stringify(clientesAtuais));
+      } catch {}
 
       return cliente;
     } catch (error) {
@@ -186,18 +190,14 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
       };
       setClientes((prev) => [...prev, cliente]);
 
-      throw error; // Re-throw para o componente lidar com o erro
+      throw error;
     }
   };
 
-  const editarCliente = async (
-    id: string,
-    dadosAtualizados: Partial<Cliente>,
-  ): Promise<void> => {
+  const editarCliente = async (id: string, dadosAtualizados: Partial<Cliente>): Promise<void> => {
     try {
       console.log("[ClientesContext] Editando cliente:", id, dadosAtualizados);
 
-      // Preparar dados para a API
       const dadosAPI = {
         nome: dadosAtualizados.nome,
         telefone: dadosAtualizados.telefonePrincipal,
@@ -207,9 +207,7 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
 
       const response = await fetch(`/api/clientes/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dadosAPI),
       });
 
@@ -218,12 +216,19 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
         throw new Error(errorData.error || `Erro ${response.status}`);
       }
 
-      // Atualizar estado local
       setClientes((prev) =>
         prev.map((cliente) =>
           cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
         ),
       );
+
+      // Atualizar localStorage
+      try {
+        const clientesAtualizados = clientes.map((cliente) =>
+          cliente.id === id ? { ...cliente, ...dadosAtualizados } : cliente,
+        );
+        localStorage.setItem("clientes", JSON.stringify(clientesAtualizados));
+      } catch {}
     } catch (error) {
       console.error("[ClientesContext] Erro ao editar cliente:", error);
       throw error;
@@ -243,8 +248,13 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
         throw new Error(errorData.error || `Erro ${response.status}`);
       }
 
-      // Atualizar estado local
       setClientes((prev) => prev.filter((cliente) => cliente.id !== id));
+
+      // Atualizar localStorage
+      try {
+        const clientesAtualizados = clientes.filter((cliente) => cliente.id !== id);
+        localStorage.setItem("clientes", JSON.stringify(clientesAtualizados));
+      } catch {}
     } catch (error) {
       console.error("[ClientesContext] Erro ao excluir cliente:", error);
       throw error;
@@ -262,51 +272,28 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     }
   }, [carregarClientesAPI]);
 
-  const buscarCliente = (id: string): Cliente | undefined => {
+  const buscarCliente = useCallback((id: string): Cliente | undefined => {
     return clientes.find((cliente) => cliente.id === id);
-  };
+  }, [clientes]);
 
-  const filtrarClientes = (termo: string): Cliente[] => {
+  const filtrarClientes = useCallback((termo: string): Cliente[] => {
     if (!termo.trim()) return clientes;
 
     const termoLower = termo.toLowerCase();
     return clientes.filter((cliente) => {
-      // Pesquisar por nome
       if (cliente.nome.toLowerCase().includes(termoLower)) return true;
-
-      // Pesquisar por CPF
       if (cliente.cpf && cliente.cpf.includes(termo)) return true;
-
-      // Pesquisar por telefone
       if (cliente.telefonePrincipal.includes(termo)) return true;
-      if (
-        cliente.telefoneSecundario &&
-        cliente.telefoneSecundario.includes(termo)
-      )
-        return true;
-
-      // Pesquisar por email
-      if (cliente.email && cliente.email.toLowerCase().includes(termoLower))
-        return true;
-
-      // Pesquisar por endereço
-      if (
-        cliente.complemento &&
-        cliente.complemento.toLowerCase().includes(termoLower)
-      )
-        return true;
-      if (
-        cliente.logradouro &&
-        cliente.logradouro.toLowerCase().includes(termoLower)
-      )
-        return true;
+      if (cliente.telefoneSecundario && cliente.telefoneSecundario.includes(termo)) return true;
+      if (cliente.email && cliente.email.toLowerCase().includes(termoLower)) return true;
+      if (cliente.complemento && cliente.complemento.toLowerCase().includes(termoLower)) return true;
+      if (cliente.logradouro && cliente.logradouro.toLowerCase().includes(termoLower)) return true;
       if (cliente.cep && cliente.cep.includes(termo)) return true;
-
       return false;
     });
-  };
+  }, [clientes]);
 
-  const value = {
+  const value = useMemo(() => ({
     clientes,
     adicionarCliente,
     editarCliente,
@@ -315,7 +302,7 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
     filtrarClientes,
     recarregarClientes,
     isLoading,
-  };
+  }), [clientes, buscarCliente, filtrarClientes, recarregarClientes, isLoading]);
 
   return (
     <ClientesContext.Provider value={value}>
