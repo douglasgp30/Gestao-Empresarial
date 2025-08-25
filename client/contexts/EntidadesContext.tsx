@@ -904,7 +904,6 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       carregamentoExecutado = true;
 
       // Carregar dados sempre no mount, sem verificações
-      console.log("[EntidadesContext] FORÇANDO carregamento inicial...");
 
       // Cache invalidação removida - usando localStorage
       await carregarDados();
