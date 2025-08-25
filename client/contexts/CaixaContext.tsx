@@ -341,7 +341,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     return migrado;
   };
 
-  // Função para carregar lançamentos do banco de dados
+  // Função para carregar lan��amentos do banco de dados
   const carregarLancamentosDoBanco = async () => {
     // Evitar múltiplas requisições simultâneas
     if (lancamentosLoadingRef.current) {
@@ -758,23 +758,6 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     },
     [filtros.dataInicio, filtros.dataFim, recarregarManual],
   );
-
-  // Função manual para recarregar apenas quando necessário
-  const recarregarManual = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      console.log("📦 [CaixaContext] Recarregamento manual solicitado");
-      await carregarLancamentosDoBanco();
-    } catch (error) {
-      console.warn(
-        "Erro no recarregamento manual, usando localStorage:",
-        error,
-      );
-      await carregarLancamentosLocalStorage();
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
   // REMOVIDO: useEffect automático que causava loops infinitos
   // O recarregamento agora é feito apenas manualmente ou na inicialização
