@@ -77,19 +77,31 @@ export default function Configuracoes() {
 
   // Carregar configurações salvas ao inicializar
   useEffect(() => {
+    console.log("📂 [Configurações] Carregando configurações salvas...");
     const savedConfigs = localStorage.getItem("userConfigs");
+
     if (savedConfigs) {
       try {
         const configs = JSON.parse(savedConfigs);
+        console.log("📄 [Configurações] Configurações encontradas:", configs);
+
         setPercentualComissao(configs.percentualComissao || 15);
         setPercentualImposto(configs.percentualImposto || 6);
         setTempoSessao(configs.tempoSessao || 60);
+
         // Carregamento explícito para evitar problemas de persistência
-        setAbrirSiteNotaFiscal(configs.abrirSiteNotaFiscal === true || configs.abrirSiteNotaFiscal === "true");
+        const abrirSiteValue = configs.abrirSiteNotaFiscal === true || configs.abrirSiteNotaFiscal === "true";
+        console.log("🔧 [Configurações] Configuração abrir site NF:", configs.abrirSiteNotaFiscal, "->", abrirSiteValue);
+        setAbrirSiteNotaFiscal(abrirSiteValue);
+
         setUrlSiteNotaFiscal(configs.urlSiteNotaFiscal || "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733");
+
+        console.log("✅ [Configurações] Configurações carregadas com sucesso");
       } catch (error) {
-        console.error("Erro ao carregar configurações:", error);
+        console.error("❌ [Configurações] Erro ao carregar configurações:", error);
       }
+    } else {
+      console.log("📭 [Configurações] Nenhuma configuração salva encontrada, usando valores padrão");
     }
 
     // Carregar tema salvo
