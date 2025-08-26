@@ -367,39 +367,41 @@
   touch-action: manipulation;
 }
 
-/* Checkbox nativo - estilo baseado exatamente na imagem de referência */
+/* Estilo geral dos checkboxes - CSS refinado fornecido pelo usuário */
 input[type="checkbox"] {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #1f2937;
-  border-radius: 0;
-  background: white;
-  cursor: pointer;
-  transition: all 0.15s ease-in-out;
-  position: relative;
-  vertical-align: middle;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 18px;          /* tamanho ajustado */
+    height: 18px;
+    border: 2px solid #333;  /* borda fina */
+    border-radius: 3px;      /* leve arredondamento */
+    background: white;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-right: 8px; /* espaço entre o texto */
 }
 
-input[type="checkbox"]:hover {
-  background: #f9fafb;
-}
-
+/* Quando marcado */
 input[type="checkbox"]:checked {
-  background: white;
-  border-color: #1f2937;
+    background: white;
+    border-color: #333;
 }
 
 input[type="checkbox"]:checked::after {
-  content: "✓";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #1f2937;
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1;
+    content: "✔";
+    position: absolute;
+    top: -2px;
+    left: 2px;
+    font-size: 16px;
+    color: #000; /* cor do check */
+}
+
+/* Efeito de hover */
+input[type="checkbox"]:hover {
+    border-color: #000;
 }
 
 /* Tema escuro */
@@ -410,7 +412,7 @@ input[type="checkbox"]:checked::after {
   }
 
   input[type="checkbox"]:hover {
-    background: #1f2937;
+    border-color: #f3f4f6;
   }
 
   input[type="checkbox"]:checked {
@@ -419,8 +421,27 @@ input[type="checkbox"]:checked::after {
   }
 
   input[type="checkbox"]:checked::after {
-    color: #d1d5db;
+    color: #f3f4f6;
   }
+}
+
+/* Força tema escuro quando classe dark está presente */
+.dark input[type="checkbox"] {
+  border-color: #d1d5db;
+  background: #111827;
+}
+
+.dark input[type="checkbox"]:hover {
+  border-color: #f3f4f6;
+}
+
+.dark input[type="checkbox"]:checked {
+  background: #111827;
+  border-color: #d1d5db;
+}
+
+.dark input[type="checkbox"]:checked::after {
+  color: #f3f4f6;
 }
 
 /* Classes auxiliares para melhor alinhamento de checkboxes */
