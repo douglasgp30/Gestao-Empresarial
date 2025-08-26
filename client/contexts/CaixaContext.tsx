@@ -109,66 +109,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // Função para criar dados básicos se não existirem
+  // 🚫 REMOVIDO: Criação automática de dados fictícios conforme solicitado pelo usuário
   const criarDadosBasicos = useCallback(() => {
-    console.log("🔧 [CaixaContext] Criando dados básicos...");
+    console.log("✅ [CaixaContext] Sistema vazio - Nenhum dado fictício será criado");
 
-    // Campanhas padrão
-    const campanhasPadrao: Campanha[] = [
-      {
-        id: "1",
-        nome: "Campanha Principal",
-        descricao: "Campanha principal da empresa",
-      },
-      {
-        id: "2",
-        nome: "Sem Campanha",
-        descricao: "Lançamentos sem campanha específica",
-      },
-      { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" },
-    ];
-
-    // Verificar se campanhas existem
-    const campanhasExistentes = localStorage.getItem("campanhas");
-    if (!campanhasExistentes) {
-      localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
-      console.log("✅ [CaixaContext] Campanhas padrão criadas");
-    }
-
-    // Lançamentos de exemplo
-    const lancamentosPadrao: LancamentoCaixa[] = [
-      {
-        id: "1",
-        tipo: "receita",
-        valor: 500.0,
-        valorLiquido: 450.0,
-        comissao: 50.0,
-        descricao: { nome: "Serviço de manutenção" },
-        categoria: "Serviços",
-        formaPagamento: { id: "1", nome: "Dinheiro" },
-        tecnicoResponsavel: { id: "1", nome: "Técnico Padrão" },
-        cliente: { id: "1", nome: "Cliente Exemplo" },
-        campanha: { id: "1", nome: "Campanha Principal" },
-        data: new Date(),
-        dataHora: new Date(),
-        dataCriacao: new Date(),
-        funcionarioId: "1",
-      },
-    ];
-
-    // Verificar se lançamentos existem
-    const lancamentosExistentes = localStorage.getItem("lancamentos_caixa");
-    if (!lancamentosExistentes) {
-      localStorage.setItem(
-        "lancamentos_caixa",
-        JSON.stringify(lancamentosPadrao),
-      );
-      console.log("✅ [CaixaContext] Lançamentos padrão criados");
-    }
-
-    // Carregar dados criados
-    setCampanhas(campanhasPadrao);
-    setLancamentos(lancamentosPadrao);
+    // Apenas inicializar arrays vazios - usuário deve criar seus próprios dados
+    setCampanhas([]);
+    setLancamentos([]);
   }, []);
 
   // Carregar campanhas do localStorage ou criar padrão
