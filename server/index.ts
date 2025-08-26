@@ -354,7 +354,16 @@ export function createServer(): Express {
   // Migração para sistema unificado
   app.post("/api/migrate/unified-descriptions", runMigration);
   app.get("/api/migrate/check", checkMigration);
-  app.post("/api/seed/unified-data", seedUnifiedData);
+
+  // ❌ ENDPOINT DESABILITADO - Criação automática de dados não permitida
+  app.post("/api/seed/unified-data", (req, res) => {
+    console.log("[Server] ❌ Endpoint de seed unified-data desabilitado por solicitação do usuário");
+    res.status(403).json({
+      success: false,
+      error: "Criação automática de dados foi desabilitada. Apenas o usuário deve cadastrar dados.",
+      timestamp: new Date().toISOString(),
+    });
+  });
 
   // Limpeza de dados
   app.delete("/api/clean/categories", cleanCategories);
