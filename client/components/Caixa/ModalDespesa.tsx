@@ -23,6 +23,7 @@ import {
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
+import { useCurrencyInput } from "../../hooks/use-currency-input";
 
 export function ModalDespesa() {
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
@@ -56,6 +57,9 @@ export function ModalDespesa() {
     setorId: "",
     observacoes: "",
   });
+
+  // Hook para formatação de moeda
+  const valorInput = useCurrencyInput();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -100,6 +104,7 @@ export function ModalDespesa() {
       setorId: "",
       observacoes: "",
     });
+    valorInput.reset();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,7 +113,7 @@ export function ModalDespesa() {
     // Validações robustas
     const erros = [];
 
-    if (!formData.valor || parseFloat(formData.valor) <= 0) {
+    if (valorInput.numericValue <= 0) {
       erros.push("Valor deve ser maior que zero");
     }
 
@@ -139,7 +144,7 @@ export function ModalDespesa() {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "despesa",
-        valor: parseFloat(formData.valor),
+        valor: valorInput.numericValue,
         categoria: formData.categoria,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
@@ -224,14 +229,9 @@ export function ModalDespesa() {
                 <Label htmlFor="valor">Valor (R$) *</Label>
                 <Input
                   id="valor"
-                  type="number"
-                  step="0.01"
-                  placeholder="0,00"
-                  value={formData.valor}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, valor: e.target.value }))
-                  }
+                  {...valorInput.inputProps}
                   required
+                  className="h-9"
                 />
               </div>
             </div>
@@ -390,7 +390,7 @@ export function ModalDespesa() {
             </div>
 
             {/* Resumo financeiro */}
-            {formData.valor && (
+            {valorInput.numericValue > 0 && (
               <div className="p-4 bg-red-50 rounded-lg">
                 <h4 className="font-medium text-red-800 mb-2">
                   Resumo da Despesa
@@ -398,7 +398,7 @@ export function ModalDespesa() {
                 <div className="text-sm">
                   <span className="text-gray-600">Valor a ser debitado:</span>
                   <div className="font-medium text-red-600 text-lg">
-                    R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                    {valorInput.displayValue}
                   </div>
                 </div>
               </div>
