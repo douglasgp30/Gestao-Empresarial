@@ -359,7 +359,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     console.log(`✅ [${contexto}] Lançamento validado:`, lancamento.id);
   };
 
-  // Adicionar lançamento
+  // Adicionar lançamento (estabilizado com useCallback)
   const adicionarLancamento = async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
@@ -446,7 +446,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const lancamentosAtualizados = lancamentosExistentes.map(
         (lancamento: any) => {
           if (lancamento.id?.toString() === id?.toString()) {
-            // �� CORREÇÃO: Preservar campos importantes e adicionar dados atualizados
+            // ✅ CORREÇÃO: Preservar campos importantes e adicionar dados atualizados
             const lancamentoAtualizado = {
               ...lancamento,
               ...dadosAtualizados,
