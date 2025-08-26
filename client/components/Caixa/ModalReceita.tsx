@@ -628,61 +628,58 @@ export function ModalReceita() {
           <div>
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Linha 1: Data, Valor, Forma de Pagamento e Valor Recebido (se cartão) */}
-              <div className="flex items-start gap-3 justify-between">
-                {/* Campos principais compactos à esquerda */}
-                <div className="flex gap-2">
-                  <div className="space-y-1 w-[130px]">
-                    <Label htmlFor="data" className="text-xs font-medium">Data *</Label>
-                    <Input
-                      id="data"
-                      type="date"
-                      value={formData.data}
-                      onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, data: e.target.value }))
-                      }
-                      required
-                      className="h-9 text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-1 w-[120px]">
-                    <Label htmlFor="valor" className="text-xs font-medium">Valor *</Label>
-                    <Input
-                      id="valor"
-                      {...valorInput.inputProps}
-                      required
-                      className="h-9 text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-1 w-[140px]">
-                    <Label htmlFor="formaPagamento" className="text-xs font-medium">Forma de Pagamento *</Label>
-                    <Select
-                      value={formData.formaPagamento}
-                      onValueChange={(value) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          formaPagamento: value,
-                        }))
-                      }
-                    >
-                      <SelectTrigger className="h-9 text-xs">
-                        <SelectValue placeholder="Selecione a forma" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {formasPagamento.map((forma) => (
-                          <SelectItem key={forma.id} value={forma.id.toString()}>
-                            {forma.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="flex items-start gap-2">
+                <div className="space-y-1 w-[140px]">
+                  <Label htmlFor="data" className="text-xs font-medium">Data *</Label>
+                  <Input
+                    id="data"
+                    type="date"
+                    value={formData.data}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, data: e.target.value }))
+                    }
+                    required
+                    className="h-9 text-xs"
+                  />
                 </div>
 
-                {/* Campo Valor Recebido para Cartão - à direita */}
+                <div className="space-y-1 w-[120px]">
+                  <Label htmlFor="valor" className="text-xs font-medium">Valor *</Label>
+                  <Input
+                    id="valor"
+                    {...valorInput.inputProps}
+                    required
+                    className="h-9 text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1 w-[150px]">
+                  <Label htmlFor="formaPagamento" className="text-xs font-medium">Forma de Pagamento *</Label>
+                  <Select
+                    value={formData.formaPagamento}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        formaPagamento: value,
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="h-9 text-xs">
+                      <SelectValue placeholder="Selecione a forma" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {formasPagamento.map((forma) => (
+                        <SelectItem key={forma.id} value={forma.id.toString()}>
+                          {forma.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Campo Valor Recebido para Cartão - na sequência */}
                 {isFormaPagamentoCartao && (
-                  <div className="space-y-1 bg-yellow-50 rounded border border-yellow-200 p-2 w-[160px]">
+                  <div className="space-y-1 bg-yellow-50 rounded border border-yellow-200 p-2 w-[150px]">
                     <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700">
                       Valor Recebido *
                     </Label>
