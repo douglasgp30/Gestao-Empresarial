@@ -417,7 +417,7 @@ export function ModalReceita() {
       const lancamentoCaixa = await adicionarLancamento(dadosParaSalvar);
 
       console.log(
-        "��� [ModalReceita] Lançamento retornado pelo contexto:",
+        "✅ [ModalReceita] Lançamento retornado pelo contexto:",
         lancamentoCaixa,
       );
 
