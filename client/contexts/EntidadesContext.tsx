@@ -18,7 +18,7 @@ import {
   Fornecedor,
   LocalizacaoGeografica,
 } from "@shared/types";
-import { FORMAS_PAGAMENTO_PADRAO } from "../lib/dadosBasicos";
+// 🚫 REMOVIDO: Importação de dados padrão removida conforme solicitação do usuário
 import { normalizeString } from "../lib/stringUtils";
 import { useFuncionarios } from "./FuncionariosContext";
 
@@ -493,7 +493,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   );
 
   const excluirFormaPagamento = useCallback(async (id: string) => {
-    console.log("📦 [EntidadesContext] STUB: excluirFormaPagamento", id);
+    console.log("��� [EntidadesContext] STUB: excluirFormaPagamento", id);
     return Promise.resolve();
   }, []);
 
