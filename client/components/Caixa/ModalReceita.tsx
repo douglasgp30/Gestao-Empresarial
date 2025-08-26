@@ -326,7 +326,7 @@ export function ModalReceita() {
       toast({
         title: "Erro",
         description:
-          "Preencha todos os campos obrigatórios: Valor, Categoria, Descri��ão, Forma de Pagamento, Técnico, Campanha, Cidade e Setor",
+          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
         variant: "destructive",
       });
       return;
