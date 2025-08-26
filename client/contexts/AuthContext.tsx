@@ -75,32 +75,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const inicializarSistema = async () => {
+      console.log("🚀 [AuthContext] Iniciando sistema...");
+
       try {
         // Verificar se existe pelo menos um administrador
+        console.log("🔍 [AuthContext] Etapa 1: Verificando administradores...");
         const existeAdmin = verificarSeExisteAdministrador();
 
         if (!existeAdmin) {
+          console.log("⚠️ [AuthContext] Nenhum admin encontrado - ativando tela de primeiro acesso");
           setPrecisaConfigurarPrimeiroAcesso(true);
           setIsLoading(false);
           return;
         }
 
+        console.log("✅ [AuthContext] Admin encontrado - continuando inicialização...");
+
         // Verificar se os dados básicos já foram configurados
-        const primeiroAcessoCompleto = localStorage.getItem(
-          "primeiro_acesso_completo",
-        );
-        const dadosBasicosExistem = localStorage.getItem(
-          "descricoes_e_categorias",
-        );
+        console.log("🔍 [AuthContext] Etapa 2: Verificando dados básicos...");
+        const primeiroAcessoCompleto = localStorage.getItem("primeiro_acesso_completo");
+        const dadosBasicosExistem = localStorage.getItem("descricoes_e_categorias");
+
+        console.log("📋 [AuthContext] primeiro_acesso_completo:", primeiroAcessoCompleto);
+        console.log("📋 [AuthContext] descricoes_e_categorias:", dadosBasicosExistem ? "EXISTE" : "NÃO EXISTE");
 
         // Se existe admin mas não há dados básicos, configurar
         if (!dadosBasicosExistem || primeiroAcessoCompleto !== "true") {
-          console.log(
-            "🔧 [AuthContext] Configurando dados básicos iniciais...",
-          );
+          console.log("🔧 [AuthContext] Configurando dados básicos iniciais...");
           await configurarDadosBasicosIniciais();
           localStorage.setItem("primeiro_acesso_completo", "true");
           console.log("✅ [AuthContext] Dados básicos configurados");
+        } else {
+          console.log("✅ [AuthContext] Dados básicos já configurados");
         }
 
         // Check if user is already logged in (localStorage)
