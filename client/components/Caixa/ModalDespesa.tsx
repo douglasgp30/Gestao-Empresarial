@@ -63,7 +63,7 @@ export function ModalDespesa() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Usar useMemo para memoizar arrays e evitar re-renderizações desnecessárias
+  // Usar useMemo para memoizar arrays e evitar re-renderizações desnecessárias - igual ao ModalReceita
   const categoriasDespesa = useMemo(() => {
     const categorias = getCategorias("despesa");
     return categorias.map((cat) => cat.nome).sort();
@@ -73,7 +73,7 @@ export function ModalDespesa() {
     return getDescricoes("despesa");
   }, [getDescricoes]);
 
-  // Filtrar descrições pela categoria selecionada
+  // Filtrar descrições pela categoria selecionada - igual ao ModalReceita
   const descricoesFiltradas = useMemo(() => {
     if (!formData.categoria) return [];
     return getDescricoes("despesa", formData.categoria);
