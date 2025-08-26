@@ -389,7 +389,7 @@ export function ModalReceita() {
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         setor: formData.setorId || undefined, // Usar ID do setor
-        localizacaoId: formData.setorId ? parseInt(formData.setorId) : undefined, // ID da localizaç��o geográfica
+        localizacaoId: formData.setorId ? parseInt(formData.setorId) : undefined, // ID da localização geográfica
         campanha: formData.campanha || undefined,
 
         // Incluir snapshot do cliente para preservar dados históricos
@@ -999,9 +999,6 @@ export function ModalReceita() {
 
 
                   <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
-                    <h4 className="text-sm font-semibold text-blue-800 mb-2">
-                      🔄 Integração Automática Caixa + Contas a Receber
-                    </h4>
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
                         1. Lança receita bruta no Caixa (não soma no saldo)
