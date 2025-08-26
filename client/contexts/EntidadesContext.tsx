@@ -160,7 +160,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         );
       } else {
         console.log(
-          "📂 [EntidadesContext] Descrições não encontradas, criando dados básicos",
+          "���� [EntidadesContext] Descrições não encontradas, criando dados básicos",
         );
         criarDadosBasicos();
         return; // Sair aqui pois criarDadosBasicos já carrega tudo
@@ -636,6 +636,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setores,
       isLoading,
       error,
+      carregarDados,
+      recarregarDescricoesECategorias,
     ],
   );
 
