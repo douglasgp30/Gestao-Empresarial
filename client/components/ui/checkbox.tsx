@@ -17,7 +17,7 @@ const Checkbox = React.forwardRef<
     {...props}
   >
     {/* Bolinha que sempre existe e se move */}
-    <div className="absolute h-3 w-3 rounded-full transition-all duration-200 data-[state=checked]:translate-x-3.5 data-[state=unchecked]:translate-x-0.5 data-[state=checked]:bg-white data-[state=unchecked]:bg-gray-600"
+    <div className="absolute h-2.5 w-2.5 rounded-full transition-all duration-200 data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5 data-[state=checked]:bg-white data-[state=unchecked]:bg-gray-600"
          data-state={props.checked ? 'checked' : 'unchecked'} />
 
     {/* Indicator invisível mas necessário para funcionalidade */}
