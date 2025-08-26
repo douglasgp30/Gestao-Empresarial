@@ -805,7 +805,7 @@ export function ModalReceita() {
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
                   <Label htmlFor="tecnicoResponsavel" className="text-xs font-medium">
-                    Técnico Responsável <span className="text-red-500">*</span>
+                    Técnico Responsável
                   </Label>
                   <Select
                     value={formData.tecnicoResponsavel}
@@ -860,7 +860,7 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="campanha" className="text-xs font-medium">Campanha <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="campanha" className="text-xs font-medium">Campanha</Label>
                   <Select
                     value={formData.campanha}
                     onValueChange={(value) =>
@@ -898,7 +898,7 @@ export function ModalReceita() {
               {/* Cidade e Setor */}
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
-                  <Label htmlFor="cidade" className="text-xs font-medium">Cidade <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="cidade" className="text-xs font-medium">Cidade</Label>
                   <Select
                     value={formData.cidadeId || ""}
                     onValueChange={(value) =>
@@ -925,7 +925,7 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="setor" className="text-xs font-medium">Setor <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="setor" className="text-xs font-medium">Setor</Label>
                   <Select
                     value={formData.setorId || ""}
                     onValueChange={(value) => {
