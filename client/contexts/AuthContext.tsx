@@ -366,23 +366,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     try {
-      // Salvar o administrador no localStorage
+      // 1. Salvar o administrador no servidor (fonte de verdade principal)
+      console.log("🌐 [AuthContext] Salvando funcionário no servidor...");
+      try {
+        const funcionarioParaServidor = {
+          nome: admin.nomeCompleto,
+          ehTecnico: admin.ehTecnico || false,
+          percentualComissao: admin.percentualComissao || 0,
+          email: admin.email || "",
+          telefone: admin.telefone || "",
+          cargo: admin.cargo || "Administrador",
+          salario: admin.salario || 0,
+          temAcessoSistema: true,
+          tipoAcesso: "Administrador",
+          login: admin.login,
+          senha: admin.senha,
+          permissoes: JSON.stringify(admin.permissoes || {})
+        };
+
+        const response = await fetch('/api/funcionarios', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(funcionarioParaServidor)
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(`Servidor retornou erro: ${error.error || response.statusText}`);
+        }
+
+        const funcionarioSalvo = await response.json();
+        console.log("✅ [AuthContext] Funcionário salvo no servidor com ID:", funcionarioSalvo.id);
+
+        // Atualizar o admin com o ID real do servidor
+        admin.id = funcionarioSalvo.id;
+      } catch (serverError) {
+        console.warn("⚠️ [AuthContext] Falha ao salvar no servidor, continuando com localStorage:", serverError);
+      }
+
+      // 2. Salvar o administrador no localStorage (para compatibilidade)
       console.log("💾 [AuthContext] Salvando funcionário no localStorage...");
       const funcionarios = [admin];
       localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
-      console.log("✅ [AuthContext] Funcionário salvo com sucesso");
+      console.log("✅ [AuthContext] Funcionário salvo no localStorage");
 
-      // Configurar dados básicos iniciais do sistema
+      // 3. Configurar dados básicos iniciais do sistema
       console.log("🔧 [AuthContext] Configurando dados básicos iniciais...");
       await configurarDadosBasicosIniciais();
       console.log("✅ [AuthContext] Dados básicos configurados");
 
-      // Atualizar o estado
+      // 4. Atualizar o estado
       console.log("🔄 [AuthContext] Atualizando estado do componente...");
       setPrecisaConfigurarPrimeiroAcesso(false);
       console.log("✅ [AuthContext] Estado atualizado - primeiro acesso finalizado");
 
-      // Fazer login automático
+      // 5. Fazer login automático
       console.log("🔑 [AuthContext] Fazendo login automático...");
       const authUser: AuthUser = {
         id: admin.id,
@@ -396,15 +436,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem("auth_user", JSON.stringify(authUser));
       console.log("✅ [AuthContext] Login automático realizado");
 
-      // Marcar que o primeiro acesso foi concluído
+      // 6. Marcar que o primeiro acesso foi concluído
       console.log("🏁 [AuthContext] Marcando primeiro acesso como concluído...");
       localStorage.setItem("primeiro_acesso_completo", "true");
       console.log("✅ [AuthContext] Flag de primeiro acesso definida");
 
       console.log("🎉 [AuthContext] Primeiro administrador criado e sistema configurado com sucesso!");
 
-      // Verificar se tudo foi salvo corretamente
-      const verificacao = verificarSeExisteAdministrador();
+      // 7. Verificar se tudo foi salvo corretamente
+      const verificacao = await verificarSeExisteAdministrador();
       console.log("🔍 [AuthContext] Verificação pós-criação:", verificacao ? "SUCESSO" : "FALHA");
 
     } catch (error) {
