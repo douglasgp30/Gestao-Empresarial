@@ -174,11 +174,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           `📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`,
         );
       } else {
-        setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
-        localStorage.setItem(
-          "formas_pagamento",
-          JSON.stringify(FORMAS_PAGAMENTO_PADRAO),
-        );
+        // 🚫 REMOVIDO: Não criar formas de pagamento padrão
+        console.log("✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado");
+        setFormasPagamento([]);
       }
 
       // Carregar localizações geográficas
@@ -349,11 +347,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           `📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`,
         );
       } else {
-        setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
-        localStorage.setItem(
-          "formas_pagamento",
-          JSON.stringify(FORMAS_PAGAMENTO_PADRAO),
-        );
+        // 🚫 REMOVIDO: Não criar formas de pagamento padrão
+        console.log("✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado");
+        setFormasPagamento([]);
       }
 
       // Carregar localizações geográficas
