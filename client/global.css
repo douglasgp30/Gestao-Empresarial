@@ -422,3 +422,35 @@ input[type="checkbox"]:checked::after {
     color: #d1d5db;
   }
 }
+
+/* Classes auxiliares para melhor alinhamento de checkboxes */
+.checkbox-label-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-label-container input[type="checkbox"],
+.checkbox-label-container [role="checkbox"] {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Força tema escuro quando classe dark está presente */
+.dark input[type="checkbox"] {
+  border-color: #d1d5db;
+  background: #111827;
+}
+
+.dark input[type="checkbox"]:hover {
+  background: #1f2937;
+}
+
+.dark input[type="checkbox"]:checked {
+  background: #111827;
+  border-color: #d1d5db;
+}
+
+.dark input[type="checkbox"]:checked::after {
+  color: #d1d5db;
+}
