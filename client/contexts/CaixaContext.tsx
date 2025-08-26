@@ -127,29 +127,27 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.log("📊 [CaixaContext] Carregando campanhas...");
       console.log("📊 [CaixaContext] User definido:", !!user, user);
 
-      // Tentar carregar da API primeiro se usuário autenticado
-      if (user) {
-        try {
-          console.log("📊 [CaixaContext] Chamando campanhasApi.listar()...");
-          const response = await campanhasApi.listar();
-          console.log("📊 [CaixaContext] Resposta da API:", response);
+      // Tentar carregar da API primeiro (sempre)
+      try {
+        console.log("📊 [CaixaContext] Chamando campanhasApi.listar()...");
+        const response = await campanhasApi.listar();
+        console.log("📊 [CaixaContext] Resposta da API:", response);
 
-          if (!response.error && Array.isArray(response.data)) {
-            const campanhasFromApi = response.data;
-            console.log("📊 [CaixaContext] Campanhas da API:", campanhasFromApi);
-            // Salvar no localStorage para cache
-            localStorage.setItem("campanhas", JSON.stringify(campanhasFromApi));
-            setCampanhas(campanhasFromApi);
-            console.log(
-              `📊 [CaixaContext] ${campanhasFromApi.length} campanhas carregadas da API e salvas no localStorage`,
-            );
-            return;
-          } else {
-            console.log("📊 [CaixaContext] API retornou erro ou dados inválidos:", response.error);
-          }
-        } catch (apiError) {
-          console.warn("📊 [CaixaContext] Erro ao carregar campanhas da API, usando localStorage", apiError);
+        if (!response.error && Array.isArray(response.data)) {
+          const campanhasFromApi = response.data;
+          console.log("📊 [CaixaContext] Campanhas da API:", campanhasFromApi);
+          // Salvar no localStorage para cache
+          localStorage.setItem("campanhas", JSON.stringify(campanhasFromApi));
+          setCampanhas(campanhasFromApi);
+          console.log(
+            `📊 [CaixaContext] ${campanhasFromApi.length} campanhas carregadas da API e salvas no localStorage`,
+          );
+          return;
+        } else {
+          console.log("📊 [CaixaContext] API retornou erro ou dados inválidos:", response.error);
         }
+      } catch (apiError) {
+        console.warn("📊 [CaixaContext] Erro ao carregar campanhas da API, usando localStorage", apiError);
       }
 
       // Fallback para localStorage
@@ -537,7 +535,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       if (!id || id.toString().trim() === "") {
-        throw new Error("ID do lançamento é obrigatório");
+        throw new Error("ID do lan��amento é obrigatório");
       }
 
       try {
