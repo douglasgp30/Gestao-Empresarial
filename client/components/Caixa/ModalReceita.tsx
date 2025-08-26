@@ -959,11 +959,6 @@ export function ModalReceita() {
                     <UserPlus className="h-4 w-4" />
                   </Button>
                 </div>
-                {isBoleto && !formData.cliente && (
-                  <p className="text-xs text-red-500">
-                    Cliente é obrigatório quando a forma de pagamento for boleto
-                  </p>
-                )}
               </div>
 
               {/* Data de Vencimento do Boleto - só aparece para boletos */}
@@ -998,15 +993,10 @@ export function ModalReceita() {
                     required
                   />
 
-                  {!dataVencimentoBoleto && (
-                    <p className="text-xs text-red-600 font-medium">
-                      ⚠️ Data de vencimento é obrigatória para boletos
-                    </p>
-                  )}
 
                   <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
                     <h4 className="text-sm font-semibold text-blue-800 mb-2">
-                      �� Integração Automática Caixa + Contas a Receber
+                      🔄 Integração Automática Caixa + Contas a Receber
                     </h4>
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
