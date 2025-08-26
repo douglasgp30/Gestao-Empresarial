@@ -92,6 +92,9 @@ export function ModalReceita() {
     null,
   );
 
+  // Hook para formatação de moeda
+  const valorInput = useCurrencyInput();
+
   // ✅ CORREÇÃO: useMemo estabilizado removendo dependência que pode causar re-renders
   const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
@@ -1032,7 +1035,7 @@ export function ModalReceita() {
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
                         • <strong>Agora:</strong> Lança receita bruta no Caixa
-                        (n��o soma no saldo)
+                        (não soma no saldo)
                       </li>
                       <li>
                         • <strong>Agora:</strong> Cria automaticamente conta a
