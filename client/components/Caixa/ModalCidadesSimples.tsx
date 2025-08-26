@@ -850,7 +850,10 @@ Trindade
                       <Label htmlFor="setoresTexto">Digite os setores (um por linha)</Label>
                       <Textarea
                         id="setoresTexto"
-                        placeholder="Aeroporto&#10;Bueno&#10;Campinas&#10;..."
+                        placeholder={`Aeroporto
+Bueno
+Campinas
+...`}
                         value={setoresTexto}
                         onChange={(e) => setSetoresTexto(e.target.value)}
                         rows={6}
