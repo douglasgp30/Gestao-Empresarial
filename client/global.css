@@ -469,7 +469,7 @@ form input[type="checkbox"]:checked {
   background-color: white !important;
 }
 
-/* Classes auxiliares para melhor alinhamento de checkboxes */
+/* Classes auxiliares para melhor alinhamento de switches */
 .checkbox-label-container {
   display: flex;
   align-items: center;
@@ -478,7 +478,7 @@ form input[type="checkbox"]:checked {
 
 .checkbox-label-container input[type="checkbox"],
 .checkbox-label-container [role="checkbox"] {
-  margin-right: 6px !important;
+  margin-right: 8px !important;
   flex-shrink: 0;
 }
 
