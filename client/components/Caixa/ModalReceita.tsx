@@ -284,7 +284,7 @@ export function ModalReceita() {
     e.preventDefault();
 
     if (
-      !formData.valor ||
+      valorInput.numericValue <= 0 ||
       !formData.categoria ||
       !formData.descricao ||
       !formData.formaPagamento
