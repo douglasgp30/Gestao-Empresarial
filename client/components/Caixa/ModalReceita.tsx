@@ -31,6 +31,12 @@ import { useCurrencyInput } from "../../hooks/use-currency-input";
 import { getFormaPagamentoDisplayName } from "../../lib/formaPagamentoDisplay";
 
 export function ModalReceita() {
+  // Log de mount/unmount para debug
+  React.useEffect(() => {
+    console.log("🟢 [ModalReceita] COMPONENTE MONTADO");
+    return () => console.log("🔴 [ModalReceita] COMPONENTE DESMONTADO");
+  }, []);
+
   const {
     adicionarLancamento,
     campanhas,

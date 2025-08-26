@@ -27,6 +27,12 @@ import { useCurrencyInput } from "../../hooks/use-currency-input";
 import { getFormaPagamentoDisplayName } from "../../lib/formaPagamentoDisplay";
 
 export function ModalDespesa() {
+  // Log de mount/unmount para debug
+  React.useEffect(() => {
+    console.log("🟢 [ModalDespesa] COMPONENTE MONTADO");
+    return () => console.log("🔴 [ModalDespesa] COMPONENTE DESMONTADO");
+  }, []);
+
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
   const {
     descricoes,
