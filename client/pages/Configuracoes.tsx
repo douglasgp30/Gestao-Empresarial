@@ -30,7 +30,6 @@ import ResetarSistema from "../components/Debug/ResetarSistema";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
 import { TesteBasico } from "../components/Debug/TesteBasico";
 import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
-import { TesteCategoriasDescricoes } from "../components/Debug/TesteCategoriasDescricoes";
 import {
   Settings,
   Building2,
@@ -851,7 +850,7 @@ export default function Configuracoes() {
                       <ul className="text-sm text-yellow-700 mt-1 space-y-1">
                         <li>• Execute backups regularmente</li>
                         <li>• Mantenha backups em local seguro</li>
-                        <li>• Teste a restaura��ão periodicamente</li>
+                        <li>• Teste a restauração periodicamente</li>
                         <li>• Considere backups em mídia externa</li>
                       </ul>
                     </div>
@@ -921,7 +920,6 @@ export default function Configuracoes() {
 
         <TabsContent value="debug" className="space-y-6">
           <DebugPrimeiroAcesso />
-          <TesteCategoriasDescricoes />
         </TabsContent>
       </Tabs>
     </div>
