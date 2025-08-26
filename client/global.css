@@ -413,74 +413,24 @@ input[type="checkbox"]:hover {
     filter: brightness(0.9) !important;
 }
 
-/* CSS ultra-específico para garantir sobrescrita total */
+/* CSS específico para switches em qualquer contexto */
 body input[type="checkbox"],
 div input[type="checkbox"],
 form input[type="checkbox"],
-.checkbox input[type="checkbox"],
-[role="checkbox"] input[type="checkbox"] {
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-    width: 16px !important;
+.checkbox input[type="checkbox"] {
+    width: 28px !important;
     height: 16px !important;
-    min-width: 16px !important;
-    min-height: 16px !important;
-    max-width: 16px !important;
-    max-height: 16px !important;
-    border: 1.5px solid #333 !important;
-    border-radius: 3px !important;
-    background-color: #fff !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    margin: 0 6px 0 0 !important;
-    padding: 0 !important;
-    vertical-align: middle !important;
+    border-radius: 16px !important;
+    background-color: #ddd !important;
+    border: none !important;
     position: relative !important;
-    cursor: pointer !important;
-    display: inline-block !important;
+    margin-right: 8px !important;
 }
 
-body input[type="checkbox"]:checked::after,
-div input[type="checkbox"]:checked::after,
-form input[type="checkbox"]:checked::after {
-    content: "✔" !important;
-    position: absolute !important;
-    top: -3px !important;
-    left: 1px !important;
-    font-size: 14px !important;
-    color: #0f5132 !important;
-    font-weight: bold !important;
-    line-height: 1 !important;
-    z-index: 1 !important;
-}
-
-/* Força estilos para elementos Radix */
-[data-radix-checkbox-root] {
-    width: 16px !important;
-    height: 16px !important;
-    border: 1.5px solid #333 !important;
-    border-radius: 3px !important;
-    background-color: #fff !important;
-    margin-right: 6px !important;
-}
-
-[data-radix-checkbox-indicator] {
-    color: #0f5132 !important;
-    font-size: 14px !important;
-    font-weight: bold !important;
-}
-
-/* Força para qualquer button com role checkbox */
-button[role="checkbox"] {
-    width: 16px !important;
-    height: 16px !important;
-    border: 1.5px solid #333 !important;
-    border-radius: 3px !important;
-    background-color: #fff !important;
-    margin-right: 6px !important;
-    padding: 0 !important;
+body input[type="checkbox"]:checked,
+div input[type="checkbox"]:checked,
+form input[type="checkbox"]:checked {
+    background-color: #007bff !important;
 }
 
 /* Tema escuro */
