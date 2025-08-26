@@ -141,16 +141,22 @@ export default function Configuracoes() {
     updateBackupConfig(localBackupConfig);
 
     // Salvar configurações de usuários no localStorage
-    localStorage.setItem(
-      "userConfigs",
-      JSON.stringify({
-        percentualComissao,
-        percentualImposto,
-        tempoSessao,
-        abrirSiteNotaFiscal,
-        urlSiteNotaFiscal,
-      }),
-    );
+    const configsToSave = {
+      percentualComissao,
+      percentualImposto,
+      tempoSessao,
+      abrirSiteNotaFiscal,
+      urlSiteNotaFiscal,
+    };
+
+    console.log("💾 [Configurações] Salvando configurações:", configsToSave);
+
+    try {
+      localStorage.setItem("userConfigs", JSON.stringify(configsToSave));
+      console.log("✅ [Configurações] Configurações salvas com sucesso");
+    } catch (error) {
+      console.error("❌ [Configurações] Erro ao salvar configurações:", error);
+    }
 
     setSavedMessage(true);
     setTimeout(() => setSavedMessage(false), 3000);
