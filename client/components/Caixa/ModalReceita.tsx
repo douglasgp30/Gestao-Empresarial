@@ -630,7 +630,7 @@ export function ModalReceita() {
               {/* Linha 1: Data, Valor, Forma de Pagamento e Valor Recebido (se cartão) */}
               <div className="flex items-start gap-2">
                 <div className="space-y-1 w-[140px]">
-                  <Label htmlFor="data" className="text-xs font-medium">Data *</Label>
+                  <Label htmlFor="data" className="text-xs font-medium">Data <span className="text-red-500">*</span></Label>
                   <Input
                     id="data"
                     type="date"
@@ -644,7 +644,7 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1 w-[120px]">
-                  <Label htmlFor="valor" className="text-xs font-medium">Valor *</Label>
+                  <Label htmlFor="valor" className="text-xs font-medium">Valor <span className="text-red-500">*</span></Label>
                   <Input
                     id="valor"
                     {...valorInput.inputProps}
@@ -654,7 +654,7 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1 w-[150px]">
-                  <Label htmlFor="formaPagamento" className="text-xs font-medium">Forma de Pagamento *</Label>
+                  <Label htmlFor="formaPagamento" className="text-xs font-medium">Forma de Pagamento <span className="text-red-500">*</span></Label>
                   <Select
                     value={formData.formaPagamento}
                     onValueChange={(value) =>
@@ -682,7 +682,7 @@ export function ModalReceita() {
                   <div className="relative w-[160px]">
                     <div className="space-y-1">
                       <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700">
-                        Valor Recebido *
+                        Valor Recebido <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="valorQueEntrou"
@@ -701,7 +701,7 @@ export function ModalReceita() {
               {/* Categoria e Descrição */}
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
-                  <Label htmlFor="categoria" className="text-xs font-medium">Categoria *</Label>
+                  <Label htmlFor="categoria" className="text-xs font-medium">Categoria <span className="text-red-500">*</span></Label>
                   <Select
                     value={formData.categoria}
                     onValueChange={(value) => {
@@ -727,7 +727,7 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="descricao" className="text-xs font-medium">Descrição do Serviço *</Label>
+                  <Label htmlFor="descricao" className="text-xs font-medium">Descrição do Serviço <span className="text-red-500">*</span></Label>
                   <Select
                     value={formData.descricaoId}
                     onValueChange={(value) => {
@@ -921,7 +921,7 @@ export function ModalReceita() {
                   htmlFor="cliente"
                   className={`text-xs font-medium ${isBoleto ? "text-red-600 font-semibold" : ""}`}
                 >
-                  Cliente {isBoleto && "*"}
+                  Cliente {isBoleto && <span className="text-red-500">*</span>}
                 </Label>
                 <div className="flex gap-2">
                   <Select
@@ -975,7 +975,7 @@ export function ModalReceita() {
                       htmlFor="dataVencimentoBoleto"
                       className="text-blue-800 font-semibold"
                     >
-                      Data de Vencimento do Boleto *
+                      Data de Vencimento do Boleto <span className="text-red-500">*</span>
                     </Label>
                   </div>
 
@@ -1060,7 +1060,7 @@ export function ModalReceita() {
                   {formData.temNotaFiscal && (
                     <div className="flex items-center gap-2 flex-1">
                       <Label htmlFor="numeroNotaObrigatorio" className="text-sm font-medium text-blue-800 whitespace-nowrap">
-                        Nº da NF *
+                        Nº da NF <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="numeroNotaObrigatorio"
