@@ -205,6 +205,32 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, [criarDadosBasicos]);
 
+  // === FUNÇÃO ESPECÍFICA PARA RECARREGAR DESCRIÇÕES E CATEGORIAS ===
+  const recarregarDescricoesECategorias = useCallback(async () => {
+    try {
+      console.log("🔄 [EntidadesContext] Recarregando descrições e categorias...");
+      setError(null);
+
+      // Carregar descrições e categorias do localStorage
+      const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
+      if (descricoesStorage) {
+        const parsed = JSON.parse(descricoesStorage);
+        const arrayParsed = Array.isArray(parsed) ? parsed : [];
+        setDescricoesECategorias(arrayParsed);
+        console.log(
+          `🔄 [EntidadesContext] ${arrayParsed.length} descrições/categorias recarregadas`,
+        );
+      } else {
+        console.log("🔄 [EntidadesContext] Nenhuma descrição encontrada no localStorage");
+        setDescricoesECategorias([]);
+      }
+    } catch (error) {
+      console.error("❌ [EntidadesContext] Erro ao recarregar descrições e categorias:", error);
+      setError("Erro ao recarregar descrições e categorias");
+      throw error;
+    }
+  }, []);
+
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
     (tipo?: "receita" | "despesa") => {
