@@ -71,10 +71,10 @@ export function obterDadosBasicosIniciais(): DadosBasicosIniciais {
       },
       {
         id: "6",
-        nome: "Transferência Bancária",
+        nome: "Transferência",
         ativo: true,
         tipo: "transferencia",
-        descricao: "Transferência bancária TED/DOC",
+        descricao: "Transferência bancária TED/DOC/PIX",
       },
     ],
 
