@@ -67,7 +67,7 @@ export function obterDadosBasicosIniciais(): DadosBasicosIniciais {
         nome: "Boleto Bancário",
         ativo: true,
         tipo: "boleto",
-        descricao: "Pagamento via boleto bancário",
+        descricao: "Pagamento via boleto banc��rio",
       },
       {
         id: "6",
@@ -168,29 +168,16 @@ export function obterDadosBasicosIniciais(): DadosBasicosIniciais {
 export async function configurarDadosBasicosIniciais(): Promise<boolean> {
   try {
     console.log(
-      "🚫 [dadosBasicosIniciais] FUNÇÃO DESABILITADA - Conforme solicitação do usuário, nenhum dado será criado automaticamente",
-    );
+    "🚫 [dadosBasicosIniciais] FUNÇÃO COMPLETAMENTE DESABILITADA - Conforme solicitação do usuário, NENHUM dado será criado automaticamente",
+  );
 
-    // 🚫 REMOVIDO: Toda criação automática de dados conforme solicitação do usuário
-    // O sistema deve iniciar completamente vazio
+  // 🚫 REMOVIDO: TODA criação automática de dados conforme solicitação do usuário
+  // O sistema deve iniciar COMPLETAMENTE VAZIO - usuário vai cadastrar tudo manualmente
 
-    // APENAS criar formas de pagamento se não existirem (usuário pediu para manter)
-    const formasPagamentoExistentes = localStorage.getItem("formas_pagamento");
-    if (!formasPagamentoExistentes) {
-      const dadosBasicos = obterDadosBasicosIniciais();
-      localStorage.setItem(
-        "formas_pagamento",
-        JSON.stringify(dadosBasicos.formasPagamento),
-      );
-      console.log(
-        "✅ [dadosBasicosIniciais] Apenas formas de pagamento criadas conforme solicitado",
-      );
-    }
-
-    console.log(
-      "✅ [dadosBasicosIniciais] Sistema vazio configurado conforme solicitado!",
-    );
-    return true;
+  console.log(
+    "✅ [dadosBasicosIniciais] Sistema totalmente vazio conforme solicitado!",
+  );
+  return true;
   } catch (error) {
     console.error("❌ Erro ao configurar sistema vazio:", error);
     return false;
