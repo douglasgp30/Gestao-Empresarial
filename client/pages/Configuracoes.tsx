@@ -30,6 +30,7 @@ import ResetarSistema from "../components/Debug/ResetarSistema";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
 import { TesteBasico } from "../components/Debug/TesteBasico";
 import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
+import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
   Building2,
@@ -242,7 +243,7 @@ export default function Configuracoes() {
       )}
 
       <Tabs defaultValue="empresa" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="empresa">
             <Building2 className="h-4 w-4 mr-2" />
             Empresa
@@ -274,6 +275,10 @@ export default function Configuracoes() {
           <TabsTrigger value="debug">
             <Settings className="h-4 w-4 mr-2" />
             Debug
+          </TabsTrigger>
+          <TabsTrigger value="localizacoes">
+            <Building2 className="h-4 w-4 mr-2" />
+            Localizações
           </TabsTrigger>
         </TabsList>
 
@@ -619,7 +624,7 @@ export default function Configuracoes() {
         <TabsContent value="sistema" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Configurações do Sistema</CardTitle>
+              <CardTitle>Configura��ões do Sistema</CardTitle>
               <CardDescription>
                 Parâmetros gerais e configurações avançadas
               </CardDescription>
@@ -920,6 +925,10 @@ export default function Configuracoes() {
 
         <TabsContent value="debug" className="space-y-6">
           <DebugPrimeiroAcesso />
+        </TabsContent>
+
+        <TabsContent value="localizacoes" className="space-y-6">
+          <GerenciadorCidadesSetores />
         </TabsContent>
       </Tabs>
     </div>
