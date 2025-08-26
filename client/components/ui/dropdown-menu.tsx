@@ -103,10 +103,15 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
+    <span className="absolute left-2 flex h-4 w-7 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        <span className="text-sm font-normal">✔</span>
+        <div className="h-3 w-5 rounded-full bg-blue-500 relative">
+          <div className="absolute h-2 w-2 rounded-full bg-white top-0.5 right-0.5"></div>
+        </div>
       </DropdownMenuPrimitive.ItemIndicator>
+      <div className="h-3 w-5 rounded-full bg-gray-300 data-[state=checked]:hidden">
+        <div className="absolute h-2 w-2 rounded-full bg-gray-600 top-0.5 left-0.5"></div>
+      </div>
     </span>
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
