@@ -16,6 +16,7 @@ import {
   normalizeComissao,
   isFilterActive,
 } from "../lib/normalizeLancamento";
+import { campanhasApi } from "../lib/apiService";
 
 interface CaixaContextType {
   lancamentos: LancamentoCaixa[];
@@ -120,12 +121,32 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     setLancamentos([]);
   }, []);
 
-  // Carregar campanhas do localStorage ou criar padrão
-  const carregarCampanhasLocalStorage = useCallback(() => {
+  // Carregar campanhas da API ou localStorage
+  const carregarCampanhas = useCallback(async () => {
     try {
-      console.log("📊 [CaixaContext] Carregando campanhas do localStorage");
-      const campanhasStorage = localStorage.getItem("campanhas");
+      console.log("📊 [CaixaContext] Carregando campanhas...");
 
+      // Tentar carregar da API primeiro se usuário autenticado
+      if (user) {
+        try {
+          const response = await campanhasApi.listar();
+          if (!response.error && Array.isArray(response.data)) {
+            const campanhasFromApi = response.data;
+            // Salvar no localStorage para cache
+            localStorage.setItem("campanhas", JSON.stringify(campanhasFromApi));
+            setCampanhas(campanhasFromApi);
+            console.log(
+              `📊 [CaixaContext] ${campanhasFromApi.length} campanhas carregadas da API`,
+            );
+            return;
+          }
+        } catch (apiError) {
+          console.warn("📊 [CaixaContext] Erro ao carregar campanhas da API, usando localStorage", apiError);
+        }
+      }
+
+      // Fallback para localStorage
+      const campanhasStorage = localStorage.getItem("campanhas");
       if (campanhasStorage) {
         const campanhas = JSON.parse(campanhasStorage);
         setCampanhas(campanhas || []);
@@ -133,17 +154,16 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           `📊 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`,
         );
       } else {
-        // 🚫 REMOVIDO: Não criar dados automáticos - sistema deve ficar vazio
         console.log(
-          "✅ [CaixaContext] Campanhas não encontradas - sistema vazio conforme solicitado",
+          "✅ [CaixaContext] Nenhuma campanha encontrada",
         );
         setCampanhas([]);
       }
     } catch (error) {
-      console.error("Erro ao carregar campanhas do localStorage:", error);
+      console.error("Erro ao carregar campanhas:", error);
       setCampanhas([]);
     }
-  }, []);
+  }, [user]);
 
   const carregarLancamentosLocalStorage = useCallback(() => {
     try {
@@ -296,6 +316,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
       console.log("🔄 [CaixaContext] Recarregamento manual solicitado");
+      await carregarCampanhas(); // Recarregar campanhas também
       carregarLancamentosLocalStorage();
     } catch (error) {
       console.error("Erro ao recarregar dados:", error);
