@@ -71,8 +71,10 @@ export function ModalReceita() {
     descricaoId: "", // Adicionar campo para o ID da descrição
     formaPagamento: "",
     tecnicoResponsavel: "",
-    cidade: "",
-    setor: "",
+    cidade: "", // Nome da cidade (para compatibilidade)
+    cidadeId: "", // ID da cidade (novo)
+    setor: "", // ID do setor (já era usado)
+    setorId: "", // ID do setor (explícito)
     campanha: "",
     cliente: "",
     observacoes: "",
@@ -399,7 +401,7 @@ export function ModalReceita() {
       const lancamentoCaixa = await adicionarLancamento(dadosParaSalvar);
 
       console.log(
-        "✅ [ModalReceita] Lançamento retornado pelo contexto:",
+        "��� [ModalReceita] Lançamento retornado pelo contexto:",
         lancamentoCaixa,
       );
 
@@ -875,7 +877,7 @@ export function ModalReceita() {
                       setFormData((prev) => ({
                         ...prev,
                         cidadeId: value,
-                        cidade: cidadesDisponiveis.find(c => c.id.toString() === value)?.nome || "",
+                        cidade: getCidades().find(c => c.id.toString() === value)?.nome || "",
                         setor: "", // Limpar setor quando cidade muda
                         setorId: "", // Limpar ID do setor quando cidade muda
                       }))
@@ -885,7 +887,7 @@ export function ModalReceita() {
                       <SelectValue placeholder="Selecione a cidade" />
                     </SelectTrigger>
                     <SelectContent>
-                      {cidadesDisponiveis.map((cidade) => (
+                      {getCidades().map((cidade) => (
                         <SelectItem key={cidade.id} value={cidade.id.toString()}>
                           {cidade.nome}
                         </SelectItem>
