@@ -433,34 +433,40 @@ form input[type="checkbox"]:checked {
     background-color: #007bff !important;
 }
 
-/* Tema escuro */
+/* Tema escuro para switches */
 @media (prefers-color-scheme: dark) {
   input[type="checkbox"] {
-    border-color: #d1d5db !important;
-    background-color: #111827 !important;
+    background-color: #374151 !important; /* cinza mais escuro quando desligado */
   }
 
-  input[type="checkbox"]:hover {
-    border-color: #f3f4f6 !important;
+  input[type="checkbox"]::before {
+    background-color: #9ca3af !important; /* bolinha mais clara quando desligado */
   }
 
-  input[type="checkbox"]:checked::after {
-    color: #4ade80 !important; /* verde mais claro para tema escuro */
+  input[type="checkbox"]:checked {
+    background-color: #3b82f6 !important; /* azul ligeiramente diferente para tema escuro */
+  }
+
+  input[type="checkbox"]:checked::before {
+    background-color: white !important; /* bolinha continua branca quando ligado */
   }
 }
 
 /* Força tema escuro quando classe dark está presente */
 .dark input[type="checkbox"] {
-  border-color: #d1d5db !important;
-  background-color: #111827 !important;
+  background-color: #374151 !important;
 }
 
-.dark input[type="checkbox"]:hover {
-  border-color: #f3f4f6 !important;
+.dark input[type="checkbox"]::before {
+  background-color: #9ca3af !important;
 }
 
-.dark input[type="checkbox"]:checked::after {
-  color: #4ade80 !important; /* verde mais claro para tema escuro */
+.dark input[type="checkbox"]:checked {
+  background-color: #3b82f6 !important;
+}
+
+.dark input[type="checkbox"]:checked::before {
+  background-color: white !important;
 }
 
 /* Classes auxiliares para melhor alinhamento de checkboxes */
