@@ -267,8 +267,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
                   "2": { id: 2, nome: "PIX" },
                   "3": { id: 3, nome: "Cartão de Débito" },
                   "4": { id: 4, nome: "Cartão de Crédito" },
-                  "5": { id: 5, nome: "Transferência" },
-                  "6": { id: 6, nome: "Boleto" },
+                  "5": { id: 5, nome: "Boleto Bancário" }, // CORRIGIDO: era "Transferência"
+                  "6": { id: 6, nome: "Transferência Bancária" }, // CORRIGIDO: era "Boleto"
                 };
                 if (formasMap[l.formaPagamento]) {
                   migrado.formaPagamento = formasMap[l.formaPagamento];
