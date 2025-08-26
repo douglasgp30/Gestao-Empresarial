@@ -355,7 +355,7 @@ export function ModalReceita() {
         comissaoCalculada,
       });
 
-      // Gerar código único do serviço se for boleto
+      // Gerar código único do servi��o se for boleto
       let codigoServico = undefined;
       if (isBoleto) {
         codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
@@ -701,7 +701,7 @@ export function ModalReceita() {
                         required
                       />
                     </div>
-                    <p className="text-xs text-yellow-600 mt-2">
+                    <p className="text-xs text-yellow-600 mt-3">
                       Valor líquido, após taxas
                     </p>
                   </div>
