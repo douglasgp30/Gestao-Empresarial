@@ -413,7 +413,7 @@ export function ModalReceita() {
       const lancamentoCaixa = await adicionarLancamento(dadosParaSalvar);
 
       console.log(
-        "��� [ModalReceita] Lançamento retornado pelo contexto:",
+        "���� [ModalReceita] Lançamento retornado pelo contexto:",
         lancamentoCaixa,
       );
 
@@ -679,7 +679,7 @@ export function ModalReceita() {
 
                 {/* Campo Valor Recebido para Cartão - na sequência */}
                 {isFormaPagamentoCartao && (
-                  <div className="space-y-1 bg-yellow-50 rounded border border-yellow-200 p-1.5 w-[150px]">
+                  <div className="space-y-1 bg-yellow-50 rounded border border-yellow-200 p-2 w-[160px]">
                     <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700">
                       Valor Recebido *
                     </Label>
@@ -701,8 +701,8 @@ export function ModalReceita() {
                         required
                       />
                     </div>
-                    <p className="text-[9px] text-yellow-600 mt-0.5">
-                      Valor após taxas
+                    <p className="text-xs text-yellow-600">
+                      Valor líquido, após taxas da operadora.
                     </p>
                   </div>
                 )}
