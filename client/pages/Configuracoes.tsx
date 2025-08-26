@@ -605,6 +605,74 @@ export default function Configuracoes() {
                   </p>
                 </div>
 
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Configurações de Nota Fiscal</h3>
+
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <Switch
+                        id="abrir-site-nf"
+                        checked={abrirSiteNotaFiscal}
+                        onCheckedChange={setAbrirSiteNotaFiscal}
+                      />
+                      <div>
+                        <Label htmlFor="abrir-site-nf" className="font-medium">
+                          Abrir automaticamente site de emissão de NF
+                        </Label>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {abrirSiteNotaFiscal
+                            ? "Site será aberto automaticamente ao marcar nota fiscal"
+                            : "Site não será aberto automaticamente"}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant={abrirSiteNotaFiscal ? "default" : "secondary"}>
+                      {abrirSiteNotaFiscal ? "Ativo" : "Desativo"}
+                    </Badge>
+                  </div>
+
+                  {abrirSiteNotaFiscal && (
+                    <div className="space-y-2">
+                      <Label htmlFor="urlSiteNotaFiscal">
+                        URL do Site de Emissão de Nota Fiscal <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="urlSiteNotaFiscal"
+                        type="url"
+                        value={urlSiteNotaFiscal}
+                        onChange={(e) => setUrlSiteNotaFiscal(e.target.value)}
+                        placeholder="https://exemplo.gov.br/nota-fiscal"
+                        className={
+                          validationErrors.urlSiteNotaFiscal ? "border-red-500" : ""
+                        }
+                      />
+                      {validationErrors.urlSiteNotaFiscal && (
+                        <p className="text-sm text-red-500">
+                          {validationErrors.urlSiteNotaFiscal}
+                        </p>
+                      )}
+                      <p className="text-sm text-muted-foreground">
+                        URL do sistema de emissão de nota fiscal do seu estado/município
+                      </p>
+                      <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                        <h4 className="text-sm font-medium text-blue-800 mb-1">
+                          💡 Exemplos por estado:
+                        </h4>
+                        <ul className="text-xs text-blue-700 space-y-1">
+                          <li>• <strong>Goiás:</strong> https://www6.goiania.go.gov.br/sistemas/saces/</li>
+                          <li>• <strong>São Paulo:</strong> https://nfe.fazenda.sp.gov.br/</li>
+                          <li>• <strong>Rio de Janeiro:</strong> https://www.nfse.rj.gov.br/</li>
+                          <li>• Consulte o site da prefeitura/estado para encontrar a URL correta</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+
                 <div className="space-y-2">
                   <Label htmlFor="tempoSessao">
                     Tempo de Sessão Automática (minutos)
