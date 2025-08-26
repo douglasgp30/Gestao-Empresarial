@@ -8,9 +8,9 @@ Todos os botões de marcação (checkboxes) do sistema foram transformados em **
 
 ### Tamanho e Formato
 - **Largura**: 28px
-- **Altura**: 12px (reduzida para visual mais proporcional)
-- **Formato**: Totalmente arredondado (border-radius: 12px)
-- **Bolinha**: 10px de diâmetro
+- **Altura**: 8px (bem reduzida para visual oval, não circular)
+- **Formato**: Oval arredondado (border-radius: 8px)
+- **Bolinha**: 6px de diâmetro
 
 ### Cores
 
