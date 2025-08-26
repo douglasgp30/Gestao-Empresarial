@@ -404,7 +404,7 @@ input[type="checkbox"]:checked {
 }
 
 input[type="checkbox"]:checked::before {
-    left: 16px !important;          /* move bolinha para direita */
+    left: 18px !important;          /* move bolinha para direita na nova altura */
     background-color: white !important; /* bolinha branca quando ligado */
 }
 
