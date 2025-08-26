@@ -179,6 +179,7 @@ export function ModalDespesa() {
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
+        console.log("[ModalDespesa] Dialog onOpenChange chamado:", open);
         setIsOpen(open);
         if (!open) {
           // Ao fechar o dialog, sempre resetar o formulário
@@ -195,7 +196,7 @@ export function ModalDespesa() {
           Despesas
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent forceMount className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600">
             <TrendingDown className="h-5 w-5" />

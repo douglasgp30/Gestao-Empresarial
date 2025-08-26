@@ -586,13 +586,11 @@ export function ModalReceita() {
   // Timeout de segurança para forçar loading=false
   React.useEffect(() => {
     const timer = setTimeout(() => {
-      if (!loadingForced) {
-        setLoadingForced(true);
-      }
+      setLoadingForced(true);
     }, 3000); // 3 segundos máximo
 
     return () => clearTimeout(timer);
-  }, [loadingForced]);
+  }, []); // SEM DEPENDÊNCIAS para evitar loop
 
   // Loading com timeout de segurança
   const isLoading =
@@ -624,7 +622,7 @@ export function ModalReceita() {
           Receitas
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4">
+      <DialogContent forceMount className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-green-600 text-xl font-bold">
             <TrendingUp className="h-5 w-5" />
