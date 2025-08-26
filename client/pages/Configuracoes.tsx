@@ -146,6 +146,8 @@ export default function Configuracoes() {
         percentualComissao,
         percentualImposto,
         tempoSessao,
+        abrirSiteNotaFiscal,
+        urlSiteNotaFiscal,
       }),
     );
 
