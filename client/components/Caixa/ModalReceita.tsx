@@ -351,7 +351,7 @@ export function ModalReceita() {
     try {
       console.log("🚀 [ModalReceita] INICIANDO SALVAMENTO DE RECEITA");
       console.log("📊 [ModalReceita] Estado do formulário:", formData);
-      console.log("��� [ModalReceita] Valores calculados:", {
+      console.log("🐛 [ModalReceita] Valores calculados:", {
         valorCalculado,
         valorLiquidoCalculado,
         valorQueEntrouCalculado,
