@@ -46,9 +46,12 @@ export function ModalDespesa() {
     valor: "",
     categoria: "",
     descricao: "",
+    descricaoId: "",
     formaPagamento: "",
     cidade: "",
+    cidadeId: "",
     setor: "",
+    setorId: "",
     observacoes: "",
   });
 
@@ -70,15 +73,16 @@ export function ModalDespesa() {
     return getDescricoes("despesa", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
-  // Filtrar setores pela cidade selecionada
+  // Filtrar setores pela cidade selecionada (usando ID da cidade)
   const setoresFiltrados = React.useMemo(() => {
-    if (!formData.cidade) return [];
-    return (Array.isArray(setores) ? setores : []).filter((setor) => {
-      const nomeCidadeSetor =
-        typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade;
-      return nomeCidadeSetor === formData.cidade;
-    });
-  }, [formData.cidade, setores]);
+    if (!formData.cidadeId) return [];
+
+    // Buscar o nome da cidade pelo ID
+    const cidadeSelecionada = getCidades().find(c => c.id.toString() === formData.cidadeId);
+    if (!cidadeSelecionada) return [];
+
+    return getSetores(cidadeSelecionada.nome).filter(setor => setor.ativo);
+  }, [formData.cidadeId, getCidades, getSetores]);
 
   const resetForm = () => {
     setFormData({
@@ -86,9 +90,12 @@ export function ModalDespesa() {
       valor: "",
       categoria: "",
       descricao: "",
+      descricaoId: "",
       formaPagamento: "",
       cidade: "",
+      cidadeId: "",
       setor: "",
+      setorId: "",
       observacoes: "",
     });
   };
@@ -131,9 +138,11 @@ export function ModalDespesa() {
         data: new Date(formData.data),
         tipo: "despesa",
         valor: parseFloat(formData.valor),
+        categoria: formData.categoria,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
-        setor: formData.setor || undefined,
+        setor: formData.setorId || undefined, // Usar ID do setor
+        localizacaoId: formData.setorId ? parseInt(formData.setorId) : undefined, // ID da localização geográfica
         observacoes: formData.observacoes || undefined,
       });
 
