@@ -96,16 +96,15 @@ export function ModalReceita() {
   const valorInput = useCurrencyInput();
   const valorRecebidoInput = useCurrencyInput();
 
-  // ✅ CORREÇÃO: useMemo estabilizado removendo dependência que pode causar re-renders
+  // ✅ CORREÇÃO: useMemo com dependências corretas para evitar dados obsoletos
   const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
-    console.log("[ModalReceita] Debug - Categorias de receita:", categorias);
     return categorias.map((cat) => cat.nome).sort();
-  }, []); // Remover dependência getCategorias que pode ser instável
+  }, [getCategorias]); // Incluir dependência para dados atualizados
 
   const descricoesReceita = React.useMemo(() => {
     return getDescricoes("receita");
-  }, []); // Remover dependência getDescricoes que pode ser instável
+  }, [getDescricoes]); // Incluir dependência para dados atualizados
 
   // Filtrar descrições pela categoria selecionada
   const descricoesFiltradas = React.useMemo(() => {
