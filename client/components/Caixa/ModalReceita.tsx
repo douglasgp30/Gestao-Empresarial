@@ -685,24 +685,12 @@ export function ModalReceita() {
                       <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700">
                         Valor Recebido *
                       </Label>
-                      <div className="relative">
-                        <span className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
-                        <Input
-                          id="valorQueEntrou"
-                          type="number"
-                          step="0.01"
-                          placeholder="0,00"
-                          value={formData.valorQueEntrou}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              valorQueEntrou: e.target.value,
-                            }))
-                          }
-                          className="bg-yellow-50 border-yellow-300 pl-5 h-9 text-xs"
-                          required
-                        />
-                      </div>
+                      <Input
+                        id="valorQueEntrou"
+                        {...valorRecebidoInput.inputProps}
+                        className="bg-yellow-50 border-yellow-300 h-9 text-xs"
+                        required
+                      />
                     </div>
                     <p className="text-xs text-yellow-600 mt-1 bg-yellow-50 p-1 rounded border border-yellow-200">
                       Valor líquido, após taxas
