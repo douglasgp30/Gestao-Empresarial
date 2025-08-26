@@ -631,7 +631,7 @@ export function ModalReceita() {
               <div className="flex items-start gap-3 justify-between">
                 {/* Campos principais compactos à esquerda */}
                 <div className="flex gap-2">
-                  <div className="space-y-1 w-[110px]">
+                  <div className="space-y-1 w-[130px]">
                     <Label htmlFor="data" className="text-xs font-medium">Data *</Label>
                     <Input
                       id="data"
@@ -645,26 +645,14 @@ export function ModalReceita() {
                     />
                   </div>
 
-                  <div className="space-y-1 w-[90px]">
+                  <div className="space-y-1 w-[120px]">
                     <Label htmlFor="valor" className="text-xs font-medium">Valor *</Label>
-                    <div className="relative">
-                      <span className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
-                      <Input
-                        id="valor"
-                        type="number"
-                        step="0.01"
-                        placeholder="0,00"
-                        value={formData.valor}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            valor: e.target.value,
-                          }))
-                        }
-                        required
-                        className="h-9 pl-5 text-xs"
-                      />
-                    </div>
+                    <Input
+                      id="valor"
+                      {...valorInput.inputProps}
+                      required
+                      className="h-9 text-xs"
+                    />
                   </div>
 
                   <div className="space-y-1 w-[140px]">
