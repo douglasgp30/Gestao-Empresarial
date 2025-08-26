@@ -28,6 +28,7 @@ import { TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 import { isFormaPagamentoBoleto } from "../../lib/stringUtils";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
+import { getFormaPagamentoDisplayName } from "../../lib/formaPagamentoDisplay";
 
 export function ModalReceita() {
   const {
@@ -482,7 +483,7 @@ export function ModalReceita() {
               "❌ [ModalReceita] Erro ao fazer parse da resposta:",
               parseError,
             );
-            // Fornecer informações mais detalhadas do erro
+            // Fornecer informaç��es mais detalhadas do erro
             responseData = {
               error: "Erro ao processar resposta do servidor",
               details: parseError.message,
