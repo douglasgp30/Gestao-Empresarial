@@ -111,9 +111,46 @@ export function CheckboxForcedTest() {
         </div>
         
         <div className="text-xs text-gray-500 p-2 bg-gray-50 rounded">
-          Se ainda não funcionar, pode ser que o framework tenha especificidade CSS muito alta.
-          Neste caso, seria necessário usar estilos inline ou styled-components.
+          <strong>Se ainda não funcionar:</strong><br/>
+          1. Verifique se algum framework está sobrescrevendo (Bootstrap, Material UI, etc.)<br/>
+          2. Use o utilitário <code>forceCheckboxStyle()</code> do console<br/>
+          3. Como último recurso: estilos inline ou styled-components
         </div>
+
+        <button
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              // Força estilos via JavaScript
+              const style = document.createElement('style');
+              style.innerHTML = `
+                input[type="checkbox"] {
+                  -webkit-appearance: none !important;
+                  width: 16px !important;
+                  height: 16px !important;
+                  border: 1.5px solid #333 !important;
+                  border-radius: 3px !important;
+                  background: white !important;
+                  margin-right: 6px !important;
+                  position: relative !important;
+                }
+                input[type="checkbox"]:checked::after {
+                  content: "✔" !important;
+                  position: absolute !important;
+                  top: -3px !important;
+                  left: 1px !important;
+                  font-size: 14px !important;
+                  color: #0f5132 !important;
+                  font-weight: bold !important;
+                }
+              `;
+              document.head.appendChild(style);
+              alert('CSS forçado aplicado via JavaScript!');
+            }
+          }}
+          className="w-full px-3 py-2 text-xs bg-red-100 hover:bg-red-200 border border-red-300 rounded text-red-800"
+        >
+          🚨 EMERGÊNCIA: Forçar CSS via JavaScript
+        </button>
       </CardContent>
     </Card>
   );
