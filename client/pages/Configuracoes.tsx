@@ -68,6 +68,8 @@ export default function Configuracoes() {
   const [percentualComissao, setPercentualComissao] = useState(15);
   const [percentualImposto, setPercentualImposto] = useState(6);
   const [tempoSessao, setTempoSessao] = useState(60);
+  const [abrirSiteNotaFiscal, setAbrirSiteNotaFiscal] = useState(true);
+  const [urlSiteNotaFiscal, setUrlSiteNotaFiscal] = useState("https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733");
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
