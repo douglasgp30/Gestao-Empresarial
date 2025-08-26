@@ -10,5 +10,5 @@ export function garantirDadosBasicos() {
   return true;
 }
 
-// Executar automaticamente na importação
-garantirDadosBasicos();
+// 🚫 REMOVIDO: Execução automática desabilitada conforme solicitação do usuário
+// garantirDadosBasicos();
