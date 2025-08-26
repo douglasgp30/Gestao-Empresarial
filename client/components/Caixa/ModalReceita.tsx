@@ -66,7 +66,6 @@ export function ModalReceita() {
   React.useEffect(() => {
     console.log("[ModalReceita] Debug - Técnicos carregados:", tecnicos);
     console.log("[ModalReceita] Debug - Campanhas carregadas:", campanhas);
-    console.log("[ModalReceita] Debug - Funcionários do contexto:", funcionariosDoContexto);
 
     // Verificar localStorage para debug
     const funcionariosLS = localStorage.getItem("funcionarios");
