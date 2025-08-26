@@ -1031,40 +1031,36 @@ export function ModalReceita() {
               )}
 
               {/* Nota Fiscal */}
-              <div className="space-y-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="nota-fiscal"
-                    checked={formData.temNotaFiscal}
-                    onCheckedChange={(checked) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        temNotaFiscal: checked,
-                      }));
-                      if (!checked) {
-                        setFormData((prev) => ({ ...prev, numeroNota: "" }));
-                        setNotaFiscalEmitida(false);
-                      } else {
-                        // Abrir automaticamente quando marca
-                        emitirNotaFiscal();
-                      }
-                    }}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                  <Label htmlFor="nota-fiscal" className="font-medium text-sm text-blue-800">
-                    Há nota fiscal para esta receita?
-                  </Label>
-                </div>
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="nota-fiscal"
+                      checked={formData.temNotaFiscal}
+                      onCheckedChange={(checked) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          temNotaFiscal: checked,
+                        }));
+                        if (!checked) {
+                          setFormData((prev) => ({ ...prev, numeroNota: "" }));
+                          setNotaFiscalEmitida(false);
+                        } else {
+                          // Abrir automaticamente quando marca
+                          emitirNotaFiscal();
+                        }
+                      }}
+                      className="data-[state=checked]:bg-blue-600"
+                    />
+                    <Label htmlFor="nota-fiscal" className="font-medium text-sm text-blue-800">
+                      Há nota fiscal para esta receita?
+                    </Label>
+                  </div>
 
-                {formData.temNotaFiscal && (
-                  <div className="space-y-2 pl-6">
-                    <div className="text-xs text-blue-600 mb-2">
-                      ℹ️ O site da nota fiscal foi aberto automaticamente. Após emitir, preencha o número abaixo.
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label htmlFor="numeroNotaObrigatorio" className="text-sm font-medium">
-                        Número da Nota Fiscal *
+                  {formData.temNotaFiscal && (
+                    <div className="flex items-center gap-2 flex-1">
+                      <Label htmlFor="numeroNotaObrigatorio" className="text-sm font-medium text-blue-800 whitespace-nowrap">
+                        Nº da NF *
                       </Label>
                       <Input
                         id="numeroNotaObrigatorio"
@@ -1077,18 +1073,26 @@ export function ModalReceita() {
                           }))
                         }
                         required={formData.temNotaFiscal}
-                        className={`h-9 bg-white ${
+                        className={`h-9 bg-white w-24 ${
                           formData.temNotaFiscal && !formData.numeroNota
                             ? "border-red-500"
                             : "border-blue-300"
                         }`}
                       />
-                      {formData.temNotaFiscal && !formData.numeroNota && (
-                        <p className="text-xs text-red-500">
-                          Número da nota fiscal é obrigatório
-                        </p>
-                      )}
                     </div>
+                  )}
+                </div>
+
+                {formData.temNotaFiscal && (
+                  <div className="mt-2">
+                    <div className="text-xs text-blue-600">
+                      ℹ️ O site da nota fiscal foi aberto automaticamente.
+                    </div>
+                    {formData.temNotaFiscal && !formData.numeroNota && (
+                      <p className="text-xs text-red-500 mt-1">
+                        Número da nota fiscal é obrigatório
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
