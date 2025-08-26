@@ -374,9 +374,9 @@ input[type="checkbox"] {
     appearance: none !important;
 
     width: 28px !important;        /* largura do switch */
-    height: 12px !important;       /* altura do switch - diminuída para ficar proporcional */
+    height: 8px !important;        /* altura bem pequena para visual oval */
     border: none !important;
-    border-radius: 12px !important; /* totalmente arredondado proporcional à altura */
+    border-radius: 8px !important; /* arredondado mas não circular */
     cursor: pointer !important;
     position: relative !important;
     margin-right: 8px !important;
