@@ -216,8 +216,26 @@ export function ModalReceita() {
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = React.useCallback(() => {
-    const urlNotaFiscal =
-      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733";
+    // Verificar configurações do usuário
+    const savedConfigs = localStorage.getItem("userConfigs");
+    let abrirAutomaticamente = true; // padrão
+    let urlNotaFiscal = "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733"; // padrão
+
+    if (savedConfigs) {
+      try {
+        const configs = JSON.parse(savedConfigs);
+        abrirAutomaticamente = configs.abrirSiteNotaFiscal !== false;
+        urlNotaFiscal = configs.urlSiteNotaFiscal || urlNotaFiscal;
+      } catch (error) {
+        console.error("Erro ao carregar configurações de nota fiscal:", error);
+      }
+    }
+
+    // Só abrir se estiver habilitado nas configurações
+    if (!abrirAutomaticamente) {
+      return;
+    }
+
     const janelaNotaFiscal = window.open(
       urlNotaFiscal,
       "_blank",
@@ -296,7 +314,7 @@ export function ModalReceita() {
       toast({
         title: "Erro",
         description:
-          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição, Forma de Pagamento, Técnico, Campanha, Cidade e Setor",
+          "Preencha todos os campos obrigatórios: Valor, Categoria, Descri��ão, Forma de Pagamento, Técnico, Campanha, Cidade e Setor",
         variant: "destructive",
       });
       return;
