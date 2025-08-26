@@ -389,7 +389,7 @@ export function ModalReceita() {
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         setor: formData.setorId || undefined, // Usar ID do setor
-        localizacaoId: formData.setorId ? parseInt(formData.setorId) : undefined, // ID da localização geográfica
+        localizacaoId: formData.setorId ? parseInt(formData.setorId) : undefined, // ID da localizaç��o geográfica
         campanha: formData.campanha || undefined,
 
         // Incluir snapshot do cliente para preservar dados históricos
@@ -1004,20 +1004,13 @@ export function ModalReceita() {
                     </h4>
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
-                        • <strong>Agora:</strong> Lança receita bruta no Caixa
-                        (não soma no saldo)
+                        1. Lança receita bruta no Caixa (não soma no saldo)
                       </li>
                       <li>
-                        • <strong>Agora:</strong> Cria automaticamente conta a
-                        receber
+                        2. Cria automaticamente conta a receber
                       </li>
                       <li>
-                        • <strong>Quando pago:</strong> Marque como pago em
-                        Contas a Receber
-                      </li>
-                      <li>
-                        • <strong>Automático:</strong> Sistema lança receita
-                        real no Caixa
+                        3. Quando for marcado como pago em Contas a Receber, o sistema lança a receita real no Caixa no dia em que foi pago
                       </li>
                     </ul>
                   </div>
