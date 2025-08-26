@@ -102,7 +102,7 @@ const ContextMenuCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
       <ContextMenuPrimitive.ItemIndicator>
-        <Check className="h-3 w-3 stroke-[3] font-bold" />
+        <span className="text-sm font-normal">✔</span>
       </ContextMenuPrimitive.ItemIndicator>
     </span>
     {children}
