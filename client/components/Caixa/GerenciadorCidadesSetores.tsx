@@ -289,15 +289,15 @@ export function GerenciadorCidadesSetores() {
               Gerenciar Cidades e Setores
             </span>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => setShowDebug(!showDebug)}
               >
                 {showDebug ? "Ocultar" : "Debug"}
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={carregarDados}
                 disabled={loading}
@@ -306,6 +306,10 @@ export function GerenciadorCidadesSetores() {
               </Button>
             </div>
           </CardTitle>
+          <div className="text-sm text-green-600 flex items-center gap-1">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            Todos os dados são salvos automaticamente no banco de dados
+          </div>
         </CardHeader>
         
         {showDebug && debugInfo && (
