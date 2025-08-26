@@ -1006,7 +1006,7 @@ export function ModalReceita() {
                         2. Cria automaticamente conta a receber
                       </li>
                       <li>
-                        3. Quando for marcado como pago em Contas a Receber, o sistema lança a receita real no Caixa no dia em que foi pago
+                        3. Ao marcar como pago, o sistema lança a receita real no Caixa na data do pagamento.
                       </li>
                     </ul>
                   </div>
