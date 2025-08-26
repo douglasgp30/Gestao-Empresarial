@@ -367,73 +367,26 @@
   touch-action: manipulation;
 }
 
-/* Estilos específicos para checkbox - formato compacto e moderno */
-[role="checkbox"] {
-  border-radius: 3px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-[role="checkbox"]:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transform: scale(1.05) !important;
-}
-
-button[role="checkbox"] {
-  border-radius: 3px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-button[role="checkbox"]:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transform: scale(1.05) !important;
-}
-
-/* Força arredondamento suave em todos os checkboxes do Radix */
-[data-radix-collection-item][role="checkbox"] {
-  border-radius: 3px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-[data-radix-collection-item][role="checkbox"]:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transform: scale(1.05) !important;
-}
-
-/* Melhorias específicas para o estado checked */
-[role="checkbox"][data-state="checked"] {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
-  border-width: 1px !important;
-  transform: scale(1.05) !important;
-}
-
-/* Estilo especial para inputs checkbox nativos (caso ainda existam) */
+/* Estilos simples e limpos para checkboxes - baseado na imagem de referência */
 input[type="checkbox"] {
   appearance: none;
-  width: 14px;
-  height: 14px;
-  border: 1px solid hsl(var(--border));
-  border-radius: 3px;
-  background: hsl(var(--background));
+  width: 16px;
+  height: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 2px;
+  background: white;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s ease-in-out;
   position: relative;
 }
 
 input[type="checkbox"]:hover {
-  border-color: hsl(var(--primary));
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transform: scale(1.05);
+  border-color: #9ca3af;
 }
 
 input[type="checkbox"]:checked {
-  background: hsl(var(--primary));
-  border-color: hsl(var(--primary));
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transform: scale(1.05);
+  background: white;
+  border-color: #9ca3af;
 }
 
 input[type="checkbox"]:checked::after {
