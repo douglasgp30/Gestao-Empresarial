@@ -231,6 +231,7 @@ export function createServer(): Express {
   // Rotas de Funcionários
   app.get("/api/funcionarios", getFuncionarios);
   app.get("/api/tecnicos", getTecnicos);
+  app.get("/api/auth/verificar-admin", verificarExistenciaAdministradores);
   app.post("/api/funcionarios", createFuncionario);
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
