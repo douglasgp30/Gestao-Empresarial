@@ -391,8 +391,8 @@ input[type="checkbox"]::before {
     position: absolute !important;
     top: 1px !important;
     left: 1px !important;
-    width: 10px !important;
-    height: 10px !important;
+    width: 8px !important;
+    height: 8px !important;
     border-radius: 50% !important;
     background-color: #666 !important; /* bolinha escura quando desligado */
     transition: all 0.2s ease !important;
