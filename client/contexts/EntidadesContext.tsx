@@ -607,10 +607,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   const sincronizarLocalizacoes = useCallback(async () => {
     console.log(
-      "📦 [EntidadesContext] Sincronização manual de localizações...",
+      "📦 [EntidadesContext] Sincronizando localizações do banco...",
     );
-    // Função stub - não faz nada pois estamos só com localStorage
-    return Promise.resolve();
+    try {
+      const response = await fetch("/api/localizacoes-geograficas");
+      if (response.ok) {
+        const localizacoes = await response.json();
+        setLocalizacoesGeograficas(localizacoes);
+        console.log(
+          `🔄 [EntidadesContext] ${localizacoes.length} localizações sincronizadas`,
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao sincronizar localizações:", error);
+    }
   }, []);
 
   const atualizarLocalizacaoGeografica = useCallback(
