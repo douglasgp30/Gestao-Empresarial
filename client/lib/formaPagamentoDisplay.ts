@@ -9,32 +9,42 @@ import { normalizeString } from "./stringUtils";
  */
 export function getFormaPagamentoDisplayName(fp: any): string {
   if (!fp) return "-";
-  
+
   const nomeRaw = typeof fp === "object" ? fp.nome || "" : String(fp || "");
   const n = normalizeString(nomeRaw);
 
-  // Mapeamento normalizado para exibição
+  // Mapeamento exato conforme solicitado pelo usuário:
+  // Pix, Boleto, Dinheiro, C/ Débito, C/ Crédito, Transferência
+
   if (n.includes("transferencia")) {
-    // Interno pode ser 'Transferência Bancária' no DB; mostrar mais curto no UI
     return "Transferência";
   }
 
-  // Manter Boleto como "Boleto Bancário" 
   if (n.includes("boleto")) {
-    return "Boleto Bancário";
+    return "Boleto";
   }
 
-  // Cartões mantém como estão
-  if (n.includes("cartao")) {
-    if (typeof fp === "object" && fp.nome) return fp.nome;
-    return nomeRaw;
+  if (n.includes("cartao") && n.includes("debito")) {
+    return "C/ Débito";
   }
 
-  // PIX, Dinheiro, etc. mantém originais
+  if (n.includes("cartao") && n.includes("credito")) {
+    return "C/ Crédito";
+  }
+
+  if (n.includes("pix")) {
+    return "Pix";
+  }
+
+  if (n.includes("dinheiro")) {
+    return "Dinheiro";
+  }
+
+  // Se não encontrar mapeamento específico, usar o nome original
   if (typeof fp === "object" && fp.nome) return fp.nome;
-  
+
   // Se for ID numérico -> mostrar "N/A"
   if (/^\d+$/.test(nomeRaw.trim())) return "N/A";
-  
+
   return nomeRaw;
 }
