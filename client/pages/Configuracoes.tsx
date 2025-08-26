@@ -923,6 +923,10 @@ export default function Configuracoes() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="debug" className="space-y-6">
+          <DebugPrimeiroAcesso />
+        </TabsContent>
       </Tabs>
     </div>
   );
