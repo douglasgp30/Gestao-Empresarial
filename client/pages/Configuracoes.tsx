@@ -177,6 +177,8 @@ export default function Configuracoes() {
     setPercentualComissao(15);
     setPercentualImposto(6);
     setTempoSessao(60);
+    setAbrirSiteNotaFiscal(true);
+    setUrlSiteNotaFiscal("https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733");
     setValidationErrors({});
 
     // Resetar tema para claro
