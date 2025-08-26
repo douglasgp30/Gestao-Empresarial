@@ -96,6 +96,64 @@ export const getTecnicos: RequestHandler = async (req, res) => {
   }
 };
 
+export const verificarExistenciaAdministradores: RequestHandler = async (req, res) => {
+  try {
+    console.log("[Auth] Verificando existência de administradores no banco...");
+
+    // Buscar funcionários com acesso de administrador
+    const administradores = await prisma.funcionario.findMany({
+      where: {
+        AND: [
+          { temAcessoSistema: true },
+          { tipoAcesso: "Administrador" },
+          { login: { not: null } },
+          { login: { not: "" } }
+        ]
+      },
+      select: {
+        id: true,
+        nome: true,
+        login: true,
+        tipoAcesso: true,
+        temAcessoSistema: true,
+        dataCriacao: true
+      },
+      orderBy: { dataCriacao: "asc" }
+    });
+
+    const existeAdmin = administradores.length > 0;
+
+    console.log(`[Auth] Encontrados ${administradores.length} administradores no banco`);
+    if (administradores.length > 0) {
+      console.log("[Auth] Administradores encontrados:", administradores.map(a => ({
+        nome: a.nome,
+        login: a.login,
+        tipoAcesso: a.tipoAcesso
+      })));
+    }
+
+    res.json({
+      existeAdministrador: existeAdmin,
+      totalAdministradores: administradores.length,
+      administradores: administradores.map(admin => ({
+        id: admin.id,
+        nome: admin.nome,
+        login: admin.login,
+        tipoAcesso: admin.tipoAcesso,
+        dataCriacao: admin.dataCriacao
+      })),
+      precisaConfigurarPrimeiroAcesso: !existeAdmin
+    });
+  } catch (error) {
+    console.error("[Auth] Erro ao verificar administradores:", error);
+    res.status(500).json({
+      error: "Erro interno do servidor",
+      existeAdministrador: false,
+      precisaConfigurarPrimeiroAcesso: true
+    });
+  }
+};
+
 export const createFuncionario: RequestHandler = middlewareAuditoria(
   "Funcionario",
   "create",
