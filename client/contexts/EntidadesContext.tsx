@@ -217,18 +217,31 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
           // Salvar no localStorage para cache
           try {
-            localStorage.setItem("formas_pagamento", JSON.stringify(formasServidor));
-            console.log("💾 [EntidadesContext] Formas de pagamento sincronizadas no localStorage");
+            localStorage.setItem(
+              "formas_pagamento",
+              JSON.stringify(formasServidor),
+            );
+            console.log(
+              "💾 [EntidadesContext] Formas de pagamento sincronizadas no localStorage",
+            );
           } catch (storageError) {
-            console.warn("⚠️ [EntidadesContext] Erro ao salvar formas de pagamento no localStorage:", storageError);
+            console.warn(
+              "⚠️ [EntidadesContext] Erro ao salvar formas de pagamento no localStorage:",
+              storageError,
+            );
           }
 
           return;
         } else {
-          console.warn("⚠️ [EntidadesContext] Servidor retornou erro para formas de pagamento, usando localStorage como fallback");
+          console.warn(
+            "⚠️ [EntidadesContext] Servidor retornou erro para formas de pagamento, usando localStorage como fallback",
+          );
         }
       } catch (fetchError) {
-        console.warn("⚠️ [EntidadesContext] Erro ao conectar com servidor para formas de pagamento, usando localStorage como fallback:", fetchError);
+        console.warn(
+          "⚠️ [EntidadesContext] Erro ao conectar com servidor para formas de pagamento, usando localStorage como fallback:",
+          fetchError,
+        );
       }
 
       // Fallback: carregar do localStorage se servidor falhar
@@ -277,18 +290,31 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
           // Salvar no localStorage para cache
           try {
-            localStorage.setItem("descricoes_e_categorias", JSON.stringify(dadosServidor));
-            console.log("💾 [EntidadesContext] Dados sincronizados no localStorage");
+            localStorage.setItem(
+              "descricoes_e_categorias",
+              JSON.stringify(dadosServidor),
+            );
+            console.log(
+              "💾 [EntidadesContext] Dados sincronizados no localStorage",
+            );
           } catch (storageError) {
-            console.warn("⚠️ [EntidadesContext] Erro ao salvar no localStorage:", storageError);
+            console.warn(
+              "⚠️ [EntidadesContext] Erro ao salvar no localStorage:",
+              storageError,
+            );
           }
 
           return;
         } else {
-          console.warn("⚠️ [EntidadesContext] Servidor retornou erro, usando localStorage como fallback");
+          console.warn(
+            "⚠️ [EntidadesContext] Servidor retornou erro, usando localStorage como fallback",
+          );
         }
       } catch (fetchError) {
-        console.warn("⚠️ [EntidadesContext] Erro ao conectar com servidor, usando localStorage como fallback:", fetchError);
+        console.warn(
+          "⚠️ [EntidadesContext] Erro ao conectar com servidor, usando localStorage como fallback:",
+          fetchError,
+        );
       }
 
       // Fallback: carregar do localStorage se servidor falhar
@@ -435,7 +461,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         console.log("📂 [EntidadesContext] Carregando dados...");
 
         // Carregar descrições e categorias
-        const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
+        const descricoesStorage = localStorage.getItem(
+          "descricoes_e_categorias",
+        );
         if (descricoesStorage) {
           const parsed = JSON.parse(descricoesStorage);
           const arrayParsed = Array.isArray(parsed) ? parsed : [];
@@ -463,11 +491,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
               `🌐 [EntidadesContext] ${localizacoes.length} localizações carregadas do banco`,
             );
           } else {
-            console.warn("⚠️ [EntidadesContext] Erro ao buscar localizações do banco");
+            console.warn(
+              "⚠️ [EntidadesContext] Erro ao buscar localizações do banco",
+            );
             setLocalizacoesGeograficas([]);
           }
         } catch (fetchError) {
-          console.warn("⚠️ [EntidadesContext] Erro de conexão ao buscar localizações:", fetchError);
+          console.warn(
+            "⚠️ [EntidadesContext] Erro de conexão ao buscar localizações:",
+            fetchError,
+          );
           setLocalizacoesGeograficas([]);
         }
 
@@ -647,9 +680,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   );
 
   const sincronizarLocalizacoes = useCallback(async () => {
-    console.log(
-      "📦 [EntidadesContext] Sincronizando localizações do banco...",
-    );
+    console.log("📦 [EntidadesContext] Sincronizando localizações do banco...");
     try {
       const response = await fetch("/api/localizacoes-geograficas");
       if (response.ok) {

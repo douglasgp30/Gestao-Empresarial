@@ -141,7 +141,10 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           return;
         }
       } catch (apiError) {
-        console.warn("📊 [CaixaContext] Erro ao carregar campanhas da API, usando localStorage", apiError);
+        console.warn(
+          "📊 [CaixaContext] Erro ao carregar campanhas da API, usando localStorage",
+          apiError,
+        );
       }
 
       // Fallback para localStorage
@@ -360,69 +363,73 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   // Adicionar lançamento (estabilizado com useCallback)
-  const adicionarLancamento = useCallback(async (
-    novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
-  ) => {
-    try {
-      setError(null);
-      console.log("➕ [CaixaContext] Adicionando lançamento:", novoLancamento);
-
-      // Gerar ID único
-      const novoId = Date.now().toString();
-
-      // Criar lançamento completo
-      const lancamentoCompleto: LancamentoCaixa = {
-        ...novoLancamento,
-        id: novoId,
-        funcionarioId: user?.id || "1",
-        data: novoLancamento.data || new Date(),
-        dataHora: novoLancamento.dataHora || new Date(),
-        dataCriacao: new Date(),
-      };
-
-      // ✅ VALIDAR antes de salvar
-      validarLancamento(lancamentoCompleto, "adicionarLancamento");
-
-      // Carregar lançamentos existentes
-      const lancamentosExistentes = JSON.parse(
-        localStorage.getItem("lancamentos_caixa") || "[]",
-      );
-
-      // Adicionar novo lançamento
-      const novosLancamentos = [...lancamentosExistentes, lancamentoCompleto];
-
-      // Salvar no localStorage
-      localStorage.setItem(
-        "lancamentos_caixa",
-        JSON.stringify(novosLancamentos),
-      );
-
-      // Atualizar estado IMEDIATAMENTE
-      setLancamentos((prev) => {
-        const novoArray = [...prev, lancamentoCompleto];
+  const adicionarLancamento = useCallback(
+    async (novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">) => {
+      try {
+        setError(null);
         console.log(
-          "🔄 [CaixaContext] Estado atualizado - total de lançamentos:",
-          novoArray.length,
+          "➕ [CaixaContext] Adicionando lançamento:",
+          novoLancamento,
         );
-        return novoArray;
-      });
 
-      console.log(
-        "✅ [CaixaContext] Lan��amento adicionado com sucesso:",
-        novoId,
-      );
-      console.log(
-        "📊 [CaixaContext] Dados salvos no localStorage - Tamanho:",
-        novosLancamentos.length,
-      );
+        // Gerar ID único
+        const novoId = Date.now().toString();
 
-      // NOVO: Retornar o lançamento criado para confirmação
-      return lancamentoCompleto;
-    } catch (error) {
-      console.error("❌ [CaixaContext] Erro ao adicionar lançamento:", error);
-      throw error;
-    }
-  }, [user]);
+        // Criar lançamento completo
+        const lancamentoCompleto: LancamentoCaixa = {
+          ...novoLancamento,
+          id: novoId,
+          funcionarioId: user?.id || "1",
+          data: novoLancamento.data || new Date(),
+          dataHora: novoLancamento.dataHora || new Date(),
+          dataCriacao: new Date(),
+        };
+
+        // ✅ VALIDAR antes de salvar
+        validarLancamento(lancamentoCompleto, "adicionarLancamento");
+
+        // Carregar lançamentos existentes
+        const lancamentosExistentes = JSON.parse(
+          localStorage.getItem("lancamentos_caixa") || "[]",
+        );
+
+        // Adicionar novo lançamento
+        const novosLancamentos = [...lancamentosExistentes, lancamentoCompleto];
+
+        // Salvar no localStorage
+        localStorage.setItem(
+          "lancamentos_caixa",
+          JSON.stringify(novosLancamentos),
+        );
+
+        // Atualizar estado IMEDIATAMENTE
+        setLancamentos((prev) => {
+          const novoArray = [...prev, lancamentoCompleto];
+          console.log(
+            "🔄 [CaixaContext] Estado atualizado - total de lançamentos:",
+            novoArray.length,
+          );
+          return novoArray;
+        });
+
+        console.log(
+          "✅ [CaixaContext] Lan��amento adicionado com sucesso:",
+          novoId,
+        );
+        console.log(
+          "📊 [CaixaContext] Dados salvos no localStorage - Tamanho:",
+          novosLancamentos.length,
+        );
+
+        // NOVO: Retornar o lançamento criado para confirmação
+        return lancamentoCompleto;
+      } catch (error) {
+        console.error("❌ [CaixaContext] Erro ao adicionar lançamento:", error);
+        throw error;
+      }
+    },
+    [user],
+  );
 
   const editarLancamento = async (
     id: string,

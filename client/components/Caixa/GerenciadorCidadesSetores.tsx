@@ -6,12 +6,7 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "../ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   Select,
   SelectContent,
@@ -29,13 +24,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { 
-  Plus, 
-  Trash2, 
-  MapPin, 
-  Building, 
+import {
+  Plus,
+  Trash2,
+  MapPin,
+  Building,
   AlertTriangle,
-  Loader2 
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -58,12 +53,12 @@ export function GerenciadorCidadesSetores() {
   const [cidades, setCidades] = useState<Cidade[]>([]);
   const [setores, setSetores] = useState<Setor[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Estados para cadastro em massa
   const [cidadesTexto, setCidadesTexto] = useState("");
   const [setoresTexto, setSetoresTexto] = useState("");
   const [cidadeSelecionada, setCidadeSelecionada] = useState("");
-  
+
   // Estados para exclusão
   const [itemParaExcluir, setItemParaExcluir] = useState<{
     id: number;
@@ -82,13 +77,13 @@ export function GerenciadorCidadesSetores() {
     try {
       const [cidadesResponse, setoresResponse] = await Promise.all([
         fetch("/api/localizacoes-geograficas?tipoItem=cidade"),
-        fetch("/api/localizacoes-geograficas?tipoItem=setor")
+        fetch("/api/localizacoes-geograficas?tipoItem=setor"),
       ]);
 
       if (cidadesResponse.ok && setoresResponse.ok) {
         const cidadesData = await cidadesResponse.json();
         const setoresData = await setoresResponse.json();
-        
+
         setCidades(cidadesData.data || []);
         setSetores(setoresData.data || []);
       }
@@ -115,14 +110,18 @@ export function GerenciadorCidadesSetores() {
 
   // Limpar todos os dados
   const limparTodosDados = async () => {
-    if (!window.confirm("⚠️ ATENÇÃO: Isso vai apagar TODAS as cidades e setores! Tem certeza?")) {
+    if (
+      !window.confirm(
+        "⚠️ ATENÇÃO: Isso vai apagar TODAS as cidades e setores! Tem certeza?",
+      )
+    ) {
       return;
     }
 
     setLoading(true);
     try {
       const response = await fetch("/api/debug/localizacoes", {
-        method: "DELETE"
+        method: "DELETE",
       });
 
       if (response.ok) {
@@ -150,8 +149,8 @@ export function GerenciadorCidadesSetores() {
 
     const cidadesLista = cidadesTexto
       .split("\n")
-      .map(c => c.trim())
-      .filter(c => c.length > 0);
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0);
 
     if (cidadesLista.length === 0) {
       toast.error("Nenhuma cidade válida encontrada");
@@ -166,14 +165,14 @@ export function GerenciadorCidadesSetores() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cidades: cidadesLista
+          cidades: cidadesLista,
         }),
       });
 
       if (response.ok) {
         const result = await response.json();
         toast.success(result.message);
-        
+
         if (result.resultados.erros.length > 0) {
           console.warn("Erros no cadastro:", result.resultados.erros);
         }
@@ -186,7 +185,9 @@ export function GerenciadorCidadesSetores() {
       }
     } catch (error) {
       console.error("Erro ao cadastrar cidades:", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao cadastrar cidades");
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao cadastrar cidades",
+      );
     } finally {
       setLoading(false);
     }
@@ -201,8 +202,8 @@ export function GerenciadorCidadesSetores() {
 
     const setoresLista = setoresTexto
       .split("\n")
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
 
     if (setoresLista.length === 0) {
       toast.error("Nenhum setor válido encontrado");
@@ -218,14 +219,14 @@ export function GerenciadorCidadesSetores() {
         },
         body: JSON.stringify({
           cidadeId: parseInt(cidadeSelecionada),
-          setores: setoresLista
+          setores: setoresLista,
         }),
       });
 
       if (response.ok) {
         const result = await response.json();
         toast.success(result.message);
-        
+
         if (result.resultados.erros.length > 0) {
           console.warn("Erros no cadastro:", result.resultados.erros);
         }
@@ -239,7 +240,9 @@ export function GerenciadorCidadesSetores() {
       }
     } catch (error) {
       console.error("Erro ao cadastrar setores:", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao cadastrar setores");
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao cadastrar setores",
+      );
     } finally {
       setLoading(false);
     }
@@ -251,9 +254,12 @@ export function GerenciadorCidadesSetores() {
 
     setLoading(true);
     try {
-      const response = await fetch(`/api/localizacoes/${itemParaExcluir.id}/com-protecao`, {
-        method: "DELETE"
-      });
+      const response = await fetch(
+        `/api/localizacoes/${itemParaExcluir.id}/com-protecao`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -302,7 +308,11 @@ export function GerenciadorCidadesSetores() {
                 onClick={carregarDados}
                 disabled={loading}
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Atualizar"}
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Atualizar"
+                )}
               </Button>
             </div>
           </CardTitle>
@@ -311,11 +321,13 @@ export function GerenciadorCidadesSetores() {
             Todos os dados são salvos automaticamente no banco de dados
           </div>
         </CardHeader>
-        
+
         {showDebug && debugInfo && (
           <CardContent className="border-t">
             <div className="space-y-3">
-              <h4 className="font-semibold text-red-600">⚠️ Debug - Dados Existentes</h4>
+              <h4 className="font-semibold text-red-600">
+                ⚠️ Debug - Dados Existentes
+              </h4>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <strong>Cidades:</strong> {cidades.length}
@@ -324,11 +336,12 @@ export function GerenciadorCidadesSetores() {
                   <strong>Setores:</strong> {setores.length}
                 </div>
                 <div>
-                  <strong>Lançamentos com localização:</strong> {debugInfo.lancamentosComLocalizacao}
+                  <strong>Lançamentos com localização:</strong>{" "}
+                  {debugInfo.lancamentosComLocalizacao}
                 </div>
               </div>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 size="sm"
                 onClick={limparTodosDados}
                 disabled={loading}
@@ -360,7 +373,9 @@ export function GerenciadorCidadesSetores() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="cidades">Digite as cidades (uma por linha):</Label>
+                  <Label htmlFor="cidades">
+                    Digite as cidades (uma por linha):
+                  </Label>
                   <Textarea
                     id="cidades"
                     placeholder="São Paulo&#10;Rio de Janeiro&#10;Belo Horizonte"
@@ -369,7 +384,7 @@ export function GerenciadorCidadesSetores() {
                     rows={6}
                   />
                 </div>
-                <Button 
+                <Button
                   onClick={cadastrarCidades}
                   disabled={loading || !cidadesTexto.trim()}
                   className="w-full"
@@ -391,21 +406,31 @@ export function GerenciadorCidadesSetores() {
               <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="cidade-setor">Selecione a cidade:</Label>
-                  <Select value={cidadeSelecionada} onValueChange={setCidadeSelecionada}>
+                  <Select
+                    value={cidadeSelecionada}
+                    onValueChange={setCidadeSelecionada}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Escolha uma cidade" />
                     </SelectTrigger>
                     <SelectContent>
-                      {cidades.filter(c => c.ativo).map((cidade) => (
-                        <SelectItem key={cidade.id} value={cidade.id.toString()}>
-                          {cidade.nome}
-                        </SelectItem>
-                      ))}
+                      {cidades
+                        .filter((c) => c.ativo)
+                        .map((cidade) => (
+                          <SelectItem
+                            key={cidade.id}
+                            value={cidade.id.toString()}
+                          >
+                            {cidade.nome}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="setores">Digite os setores (um por linha):</Label>
+                  <Label htmlFor="setores">
+                    Digite os setores (um por linha):
+                  </Label>
                   <Textarea
                     id="setores"
                     placeholder="Centro&#10;Vila Nova&#10;Jardim América"
@@ -414,9 +439,11 @@ export function GerenciadorCidadesSetores() {
                     rows={6}
                   />
                 </div>
-                <Button 
+                <Button
                   onClick={cadastrarSetores}
-                  disabled={loading || !setoresTexto.trim() || !cidadeSelecionada}
+                  disabled={
+                    loading || !setoresTexto.trim() || !cidadeSelecionada
+                  }
                   className="w-full"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -441,13 +468,17 @@ export function GerenciadorCidadesSetores() {
               ) : (
                 <div className="space-y-2">
                   {cidades.map((cidade) => (
-                    <div key={cidade.id} className="flex items-center justify-between p-3 border rounded">
+                    <div
+                      key={cidade.id}
+                      className="flex items-center justify-between p-3 border rounded"
+                    >
                       <div className="flex items-center gap-3">
                         <Building className="w-4 h-4" />
                         <div>
                           <span className="font-medium">{cidade.nome}</span>
                           <div className="text-xs text-muted-foreground">
-                            ID: {cidade.id} • {cidade.ativo ? "Ativa" : "Inativa"}
+                            ID: {cidade.id} •{" "}
+                            {cidade.ativo ? "Ativa" : "Inativa"}
                           </div>
                         </div>
                       </div>
@@ -462,7 +493,7 @@ export function GerenciadorCidadesSetores() {
                             setItemParaExcluir({
                               id: cidade.id,
                               nome: cidade.nome,
-                              tipo: "cidade"
+                              tipo: "cidade",
                             });
                             setShowConfirmDelete(true);
                           }}
@@ -492,13 +523,17 @@ export function GerenciadorCidadesSetores() {
               ) : (
                 <div className="space-y-2">
                   {setores.map((setor) => (
-                    <div key={setor.id} className="flex items-center justify-between p-3 border rounded">
+                    <div
+                      key={setor.id}
+                      className="flex items-center justify-between p-3 border rounded"
+                    >
                       <div className="flex items-center gap-3">
                         <MapPin className="w-4 h-4" />
                         <div>
                           <span className="font-medium">{setor.nome}</span>
                           <div className="text-xs text-muted-foreground">
-                            ID: {setor.id} • {setor.cidade} • {setor.ativo ? "Ativo" : "Inativo"}
+                            ID: {setor.id} • {setor.cidade} •{" "}
+                            {setor.ativo ? "Ativo" : "Inativo"}
                           </div>
                         </div>
                       </div>
@@ -514,7 +549,7 @@ export function GerenciadorCidadesSetores() {
                             setItemParaExcluir({
                               id: setor.id,
                               nome: setor.nome,
-                              tipo: "setor"
+                              tipo: "setor",
                             });
                             setShowConfirmDelete(true);
                           }}
@@ -540,9 +575,13 @@ export function GerenciadorCidadesSetores() {
               Confirmar Exclusão
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir {itemParaExcluir?.tipo === "cidade" ? "a cidade" : "o setor"} "{itemParaExcluir?.nome}"?
+              Tem certeza que deseja excluir{" "}
+              {itemParaExcluir?.tipo === "cidade" ? "a cidade" : "o setor"} "
+              {itemParaExcluir?.nome}"?
               <br />
-              <strong className="text-red-600">Esta ação não pode ser desfeita.</strong>
+              <strong className="text-red-600">
+                Esta ação não pode ser desfeita.
+              </strong>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

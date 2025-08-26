@@ -316,8 +316,8 @@ export default function ModalDescricoesSimples() {
       toast.success(
         `${itemToDelete.tipo === "categoria" ? "Categoria" : "Descrição"} "${itemToDelete.nome}" excluída com sucesso`,
         {
-          description: "Todas as dependências foram removidas automaticamente."
-        }
+          description: "Todas as dependências foram removidas automaticamente.",
+        },
       );
 
       // Limpar estado
@@ -496,21 +496,25 @@ export default function ModalDescricoesSimples() {
         // Mostrar erro de forma adequada baseado no tipo
         if (isDependencyError) {
           // Para erros de dependência, oferecer exclusão forçada
-          toast.error(`Não é possível excluir ${itemToDelete.tipo === "categoria" ? "categoria" : "descrição"}`, {
-            duration: 15000,
-            description: errorMessage,
-            action: {
-              label: "Excluir Mesmo Assim",
-              onClick: () => handleForceDelete(),
+          toast.error(
+            `Não é possível excluir ${itemToDelete.tipo === "categoria" ? "categoria" : "descrição"}`,
+            {
+              duration: 15000,
+              description: errorMessage,
+              action: {
+                label: "Excluir Mesmo Assim",
+                onClick: () => handleForceDelete(),
+              },
             },
-          });
+          );
 
           // Se for categoria, permitir ver dependências (separado para evitar confusão)
           if (itemToDelete.tipo === "categoria") {
             setTimeout(() => {
               toast.info("Ver dependências", {
                 duration: 8000,
-                description: "Clique para visualizar as descrições vinculadas a esta categoria",
+                description:
+                  "Clique para visualizar as descrições vinculadas a esta categoria",
                 action: {
                   label: "Ver Dependências",
                   onClick: () => {

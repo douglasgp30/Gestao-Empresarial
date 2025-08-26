@@ -24,7 +24,10 @@ import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
-import { getFormaPagamentoDisplayName, ordenarFormasPagamento } from "../../lib/formaPagamentoDisplay";
+import {
+  getFormaPagamentoDisplayName,
+  ordenarFormasPagamento,
+} from "../../lib/formaPagamentoDisplay";
 
 export function ModalDespesa() {
   // Log de mount/unmount para debug
@@ -90,10 +93,12 @@ export function ModalDespesa() {
     if (!formData.cidadeId) return [];
 
     // Buscar o nome da cidade pelo ID
-    const cidadeSelecionada = getCidades().find(c => c.id.toString() === formData.cidadeId);
+    const cidadeSelecionada = getCidades().find(
+      (c) => c.id.toString() === formData.cidadeId,
+    );
     if (!cidadeSelecionada) return [];
 
-    return getSetores(cidadeSelecionada.nome).filter(setor => setor.ativo);
+    return getSetores(cidadeSelecionada.nome).filter((setor) => setor.ativo);
   }, [formData.cidadeId, getCidades, getSetores]);
 
   const resetForm = () => {
@@ -155,7 +160,9 @@ export function ModalDespesa() {
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
         setor: formData.setorId || undefined, // Usar ID do setor
-        localizacaoId: formData.setorId ? parseInt(formData.setorId) : undefined, // ID da localização geográfica
+        localizacaoId: formData.setorId
+          ? parseInt(formData.setorId)
+          : undefined, // ID da localização geográfica
         observacoes: formData.observacoes || undefined,
       });
 
@@ -202,7 +209,10 @@ export function ModalDespesa() {
           Despesas
         </Button>
       </DialogTrigger>
-      <DialogContent forceMount className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        forceMount
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600">
             <TrendingDown className="h-5 w-5" />
@@ -307,10 +317,12 @@ export function ModalDespesa() {
                   setFormData((prev) => ({ ...prev, formaPagamento: value }))
                 }
                 placeholder="Selecione a forma"
-                options={ordenarFormasPagamento(formasPagamento).map((forma) => ({
-                  value: forma.id.toString(),
-                  label: getFormaPagamentoDisplayName(forma),
-                }))}
+                options={ordenarFormasPagamento(formasPagamento).map(
+                  (forma) => ({
+                    value: forma.id.toString(),
+                    label: getFormaPagamentoDisplayName(forma),
+                  }),
+                )}
                 onAddNew={async (nomeForma) => {
                   await adicionarFormaPagamento({
                     nome: nomeForma,
@@ -329,7 +341,9 @@ export function ModalDespesa() {
                     setFormData((prev) => ({
                       ...prev,
                       cidadeId: value,
-                      cidade: getCidades().find(c => c.id.toString() === value)?.nome || "",
+                      cidade:
+                        getCidades().find((c) => c.id.toString() === value)
+                          ?.nome || "",
                       setor: "", // Limpar setor quando cidade muda
                       setorId: "", // Limpar ID do setor quando cidade muda
                     }))
@@ -353,7 +367,9 @@ export function ModalDespesa() {
                 <Select
                   value={formData.setorId || ""}
                   onValueChange={(value) => {
-                    const setorSelecionado = setoresFiltrados.find(s => s.id.toString() === value);
+                    const setorSelecionado = setoresFiltrados.find(
+                      (s) => s.id.toString() === value,
+                    );
                     setFormData((prev) => ({
                       ...prev,
                       setorId: value,

@@ -96,7 +96,10 @@ export const getTecnicos: RequestHandler = async (req, res) => {
   }
 };
 
-export const verificarExistenciaAdministradores: RequestHandler = async (req, res) => {
+export const verificarExistenciaAdministradores: RequestHandler = async (
+  req,
+  res,
+) => {
   try {
     console.log("[Auth] Verificando existência de administradores no banco...");
 
@@ -107,8 +110,8 @@ export const verificarExistenciaAdministradores: RequestHandler = async (req, re
           { temAcessoSistema: true },
           { tipoAcesso: "Administrador" },
           { login: { not: null } },
-          { login: { not: "" } }
-        ]
+          { login: { not: "" } },
+        ],
       },
       select: {
         id: true,
@@ -116,40 +119,45 @@ export const verificarExistenciaAdministradores: RequestHandler = async (req, re
         login: true,
         tipoAcesso: true,
         temAcessoSistema: true,
-        dataCriacao: true
+        dataCriacao: true,
       },
-      orderBy: { dataCriacao: "asc" }
+      orderBy: { dataCriacao: "asc" },
     });
 
     const existeAdmin = administradores.length > 0;
 
-    console.log(`[Auth] Encontrados ${administradores.length} administradores no banco`);
+    console.log(
+      `[Auth] Encontrados ${administradores.length} administradores no banco`,
+    );
     if (administradores.length > 0) {
-      console.log("[Auth] Administradores encontrados:", administradores.map(a => ({
-        nome: a.nome,
-        login: a.login,
-        tipoAcesso: a.tipoAcesso
-      })));
+      console.log(
+        "[Auth] Administradores encontrados:",
+        administradores.map((a) => ({
+          nome: a.nome,
+          login: a.login,
+          tipoAcesso: a.tipoAcesso,
+        })),
+      );
     }
 
     res.json({
       existeAdministrador: existeAdmin,
       totalAdministradores: administradores.length,
-      administradores: administradores.map(admin => ({
+      administradores: administradores.map((admin) => ({
         id: admin.id,
         nome: admin.nome,
         login: admin.login,
         tipoAcesso: admin.tipoAcesso,
-        dataCriacao: admin.dataCriacao
+        dataCriacao: admin.dataCriacao,
       })),
-      precisaConfigurarPrimeiroAcesso: !existeAdmin
+      precisaConfigurarPrimeiroAcesso: !existeAdmin,
     });
   } catch (error) {
     console.error("[Auth] Erro ao verificar administradores:", error);
     res.status(500).json({
       error: "Erro interno do servidor",
       existeAdministrador: false,
-      precisaConfigurarPrimeiroAcesso: true
+      precisaConfigurarPrimeiroAcesso: true,
     });
   }
 };

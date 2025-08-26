@@ -29,15 +29,23 @@ const verificarSeExisteAdministradorLocal = (): boolean => {
 
   try {
     const funcionariosStorage = localStorage.getItem("funcionarios");
-    console.log("📋 [AuthContext] funcionariosStorage:", funcionariosStorage ? "EXISTE" : "NÃO EXISTE");
+    console.log(
+      "📋 [AuthContext] funcionariosStorage:",
+      funcionariosStorage ? "EXISTE" : "NÃO EXISTE",
+    );
 
     if (!funcionariosStorage) {
-      console.log("❌ [AuthContext] Nenhum funcionário encontrado no localStorage");
+      console.log(
+        "❌ [AuthContext] Nenhum funcionário encontrado no localStorage",
+      );
       return false;
     }
 
     const funcionarios = JSON.parse(funcionariosStorage);
-    console.log("👥 [AuthContext] Total de funcionários encontrados:", funcionarios.length);
+    console.log(
+      "👥 [AuthContext] Total de funcionários encontrados:",
+      funcionarios.length,
+    );
 
     // Log detalhado de cada funcionário
     funcionarios.forEach((f: Funcionario, index: number) => {
@@ -46,23 +54,31 @@ const verificarSeExisteAdministradorLocal = (): boolean => {
         login: f.login,
         ativo: f.ativo,
         permissaoAcesso: f.permissaoAcesso,
-        tipoAcesso: f.tipoAcesso
+        tipoAcesso: f.tipoAcesso,
       });
     });
 
     const administradores = funcionarios.filter(
       (f: Funcionario) =>
-        f.permissaoAcesso && f.ativo && f.tipoAcesso === "Administrador"
+        f.permissaoAcesso && f.ativo && f.tipoAcesso === "Administrador",
     );
 
-    console.log("👑 [AuthContext] Administradores válidos encontrados:", administradores.length);
+    console.log(
+      "👑 [AuthContext] Administradores válidos encontrados:",
+      administradores.length,
+    );
 
     const existeAdmin = administradores.length > 0;
-    console.log(`✅ [AuthContext] Resultado localStorage: ${existeAdmin ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`);
+    console.log(
+      `✅ [AuthContext] Resultado localStorage: ${existeAdmin ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`,
+    );
 
     return existeAdmin;
   } catch (error) {
-    console.error("❌ [AuthContext] Erro ao verificar administradores no localStorage:", error);
+    console.error(
+      "❌ [AuthContext] Erro ao verificar administradores no localStorage:",
+      error,
+    );
     return false;
   }
 };
@@ -72,7 +88,7 @@ const verificarSeExisteAdministradorServidor = async (): Promise<boolean> => {
   console.log("🌐 [AuthContext] Verificando administrador no servidor...");
 
   try {
-    const response = await fetch('/api/auth/verificar-admin');
+    const response = await fetch("/api/auth/verificar-admin");
     if (!response.ok) {
       console.warn("⚠️ [AuthContext] Servidor retornou erro:", response.status);
       return false;
@@ -82,18 +98,25 @@ const verificarSeExisteAdministradorServidor = async (): Promise<boolean> => {
     console.log("📡 [AuthContext] Resposta do servidor:", data);
 
     const existeAdmin = data.existeAdministrador || false;
-    console.log(`✅ [AuthContext] Resultado servidor: ${existeAdmin ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`);
+    console.log(
+      `✅ [AuthContext] Resultado servidor: ${existeAdmin ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`,
+    );
 
     return existeAdmin;
   } catch (error) {
-    console.error("❌ [AuthContext] Erro ao verificar administradores no servidor:", error);
+    console.error(
+      "❌ [AuthContext] Erro ao verificar administradores no servidor:",
+      error,
+    );
     return false;
   }
 };
 
 // Função híbrida que verifica servidor primeiro, depois localStorage
 const verificarSeExisteAdministrador = async (): Promise<boolean> => {
-  console.log("🔍 [AuthContext] Iniciando verificação híbrida de administradores...");
+  console.log(
+    "🔍 [AuthContext] Iniciando verificação híbrida de administradores...",
+  );
 
   // Primeira tentativa: verificar no servidor
   try {
@@ -102,15 +125,22 @@ const verificarSeExisteAdministrador = async (): Promise<boolean> => {
       console.log("✅ [AuthContext] Admin confirmado pelo servidor");
       return true;
     }
-    console.log("ℹ️ [AuthContext] Servidor não encontrou admin, verificando localStorage...");
+    console.log(
+      "ℹ️ [AuthContext] Servidor não encontrou admin, verificando localStorage...",
+    );
   } catch (error) {
-    console.warn("⚠️ [AuthContext] Falha na verificação do servidor, usando localStorage como fallback:", error);
+    console.warn(
+      "⚠️ [AuthContext] Falha na verificação do servidor, usando localStorage como fallback:",
+      error,
+    );
   }
 
   // Fallback: verificar no localStorage
   const existeAdminLocal = verificarSeExisteAdministradorLocal();
 
-  console.log(`🏁 [AuthContext] Resultado final: ${existeAdminLocal ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`);
+  console.log(
+    `🏁 [AuthContext] Resultado final: ${existeAdminLocal ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`,
+  );
   return existeAdminLocal;
 };
 
@@ -130,25 +160,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const existeAdmin = await verificarSeExisteAdministrador();
 
         if (!existeAdmin) {
-          console.log("⚠️ [AuthContext] Nenhum admin encontrado - ativando tela de primeiro acesso");
+          console.log(
+            "⚠️ [AuthContext] Nenhum admin encontrado - ativando tela de primeiro acesso",
+          );
           setPrecisaConfigurarPrimeiroAcesso(true);
           setIsLoading(false);
           return;
         }
 
-        console.log("✅ [AuthContext] Admin encontrado - continuando inicialização...");
+        console.log(
+          "✅ [AuthContext] Admin encontrado - continuando inicialização...",
+        );
 
         // Verificar se os dados básicos já foram configurados
         console.log("🔍 [AuthContext] Etapa 2: Verificando dados básicos...");
-        const primeiroAcessoCompleto = localStorage.getItem("primeiro_acesso_completo");
-        const dadosBasicosExistem = localStorage.getItem("descricoes_e_categorias");
+        const primeiroAcessoCompleto = localStorage.getItem(
+          "primeiro_acesso_completo",
+        );
+        const dadosBasicosExistem = localStorage.getItem(
+          "descricoes_e_categorias",
+        );
 
-        console.log("📋 [AuthContext] primeiro_acesso_completo:", primeiroAcessoCompleto);
-        console.log("📋 [AuthContext] descricoes_e_categorias:", dadosBasicosExistem ? "EXISTE" : "NÃO EXISTE");
+        console.log(
+          "📋 [AuthContext] primeiro_acesso_completo:",
+          primeiroAcessoCompleto,
+        );
+        console.log(
+          "📋 [AuthContext] descricoes_e_categorias:",
+          dadosBasicosExistem ? "EXISTE" : "NÃO EXISTE",
+        );
 
         // Se existe admin mas não há dados básicos, configurar
         if (!dadosBasicosExistem || primeiroAcessoCompleto !== "true") {
-          console.log("🔧 [AuthContext] Configurando dados básicos iniciais...");
+          console.log(
+            "🔧 [AuthContext] Configurando dados básicos iniciais...",
+          );
           await configurarDadosBasicosIniciais();
           localStorage.setItem("primeiro_acesso_completo", "true");
           console.log("✅ [AuthContext] Dados básicos configurados");
@@ -159,18 +205,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Check if user is already logged in (localStorage)
         console.log("🔍 [AuthContext] Etapa 3: Verificando usuário logado...");
         const savedUser = localStorage.getItem("auth_user");
-        console.log("📋 [AuthContext] auth_user:", savedUser ? "EXISTE" : "NÃO EXISTE");
+        console.log(
+          "📋 [AuthContext] auth_user:",
+          savedUser ? "EXISTE" : "NÃO EXISTE",
+        );
 
         if (savedUser) {
           try {
             const parsedUser = JSON.parse(savedUser);
-            console.log("👤 [AuthContext] Usuário logado encontrado:", parsedUser.nomeCompleto);
+            console.log(
+              "👤 [AuthContext] Usuário logado encontrado:",
+              parsedUser.nomeCompleto,
+            );
             setUser(parsedUser);
 
             // Verificar backup automático para usuários já logados (refresh da página)
             performAutomaticBackupIfNeeded();
           } catch (error) {
-            console.error("❌ [AuthContext] Erro ao parsear usuário logado:", error);
+            console.error(
+              "❌ [AuthContext] Erro ao parsear usuário logado:",
+              error,
+            );
             localStorage.removeItem("auth_user");
           }
         } else {
@@ -179,7 +234,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         console.log("✅ [AuthContext] Inicialização concluída com sucesso");
       } catch (error) {
-        console.error("❌ [AuthContext] Erro na inicialização do sistema:", error);
+        console.error(
+          "❌ [AuthContext] Erro na inicialização do sistema:",
+          error,
+        );
       } finally {
         setIsLoading(false);
       }
@@ -356,13 +414,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const criarPrimeiroAdministrador = async (admin: Funcionario) => {
-    console.log("🚀 [AuthContext] Iniciando criação do primeiro administrador...");
+    console.log(
+      "🚀 [AuthContext] Iniciando criação do primeiro administrador...",
+    );
     console.log("👤 [AuthContext] Dados do admin:", {
       nome: admin.nomeCompleto,
       login: admin.login,
       ativo: admin.ativo,
       permissaoAcesso: admin.permissaoAcesso,
-      tipoAcesso: admin.tipoAcesso
+      tipoAcesso: admin.tipoAcesso,
     });
 
     try {
@@ -381,29 +441,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           tipoAcesso: "Administrador",
           login: admin.login,
           senha: admin.senha,
-          permissoes: JSON.stringify(admin.permissoes || {})
+          permissoes: JSON.stringify(admin.permissoes || {}),
         };
 
-        const response = await fetch('/api/funcionarios', {
-          method: 'POST',
+        const response = await fetch("/api/funcionarios", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(funcionarioParaServidor)
+          body: JSON.stringify(funcionarioParaServidor),
         });
 
         if (!response.ok) {
           const error = await response.json();
-          throw new Error(`Servidor retornou erro: ${error.error || response.statusText}`);
+          throw new Error(
+            `Servidor retornou erro: ${error.error || response.statusText}`,
+          );
         }
 
         const funcionarioSalvo = await response.json();
-        console.log("✅ [AuthContext] Funcionário salvo no servidor com ID:", funcionarioSalvo.id);
+        console.log(
+          "✅ [AuthContext] Funcionário salvo no servidor com ID:",
+          funcionarioSalvo.id,
+        );
 
         // Atualizar o admin com o ID real do servidor
         admin.id = funcionarioSalvo.id;
       } catch (serverError) {
-        console.warn("⚠️ [AuthContext] Falha ao salvar no servidor, continuando com localStorage:", serverError);
+        console.warn(
+          "⚠️ [AuthContext] Falha ao salvar no servidor, continuando com localStorage:",
+          serverError,
+        );
       }
 
       // 2. Salvar o administrador no localStorage (para compatibilidade)
@@ -420,7 +488,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // 4. Atualizar o estado
       console.log("🔄 [AuthContext] Atualizando estado do componente...");
       setPrecisaConfigurarPrimeiroAcesso(false);
-      console.log("✅ [AuthContext] Estado atualizado - primeiro acesso finalizado");
+      console.log(
+        "✅ [AuthContext] Estado atualizado - primeiro acesso finalizado",
+      );
 
       // 5. Fazer login automático
       console.log("🔑 [AuthContext] Fazendo login automático...");
@@ -437,18 +507,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("✅ [AuthContext] Login automático realizado");
 
       // 6. Marcar que o primeiro acesso foi concluído
-      console.log("🏁 [AuthContext] Marcando primeiro acesso como concluído...");
+      console.log(
+        "🏁 [AuthContext] Marcando primeiro acesso como concluído...",
+      );
       localStorage.setItem("primeiro_acesso_completo", "true");
       console.log("✅ [AuthContext] Flag de primeiro acesso definida");
 
-      console.log("🎉 [AuthContext] Primeiro administrador criado e sistema configurado com sucesso!");
+      console.log(
+        "🎉 [AuthContext] Primeiro administrador criado e sistema configurado com sucesso!",
+      );
 
       // 7. Verificar se tudo foi salvo corretamente
       const verificacao = await verificarSeExisteAdministrador();
-      console.log("🔍 [AuthContext] Verificação pós-criação:", verificacao ? "SUCESSO" : "FALHA");
-
+      console.log(
+        "🔍 [AuthContext] Verificação pós-criação:",
+        verificacao ? "SUCESSO" : "FALHA",
+      );
     } catch (error) {
-      console.error("❌ [AuthContext] Erro ao criar primeiro administrador:", error);
+      console.error(
+        "❌ [AuthContext] Erro ao criar primeiro administrador:",
+        error,
+      );
       throw error;
     }
   };

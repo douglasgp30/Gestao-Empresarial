@@ -62,23 +62,27 @@ export function ordenarFormasPagamento(formas: any[]): any[] {
     "dinheiro",
     "cartao.*debito",
     "cartao.*credito",
-    "transferencia"
+    "transferencia",
   ];
 
   return formas.sort((a, b) => {
-    const nomeA = normalizeString(typeof a === "object" ? a.nome || "" : String(a || ""));
-    const nomeB = normalizeString(typeof b === "object" ? b.nome || "" : String(b || ""));
+    const nomeA = normalizeString(
+      typeof a === "object" ? a.nome || "" : String(a || ""),
+    );
+    const nomeB = normalizeString(
+      typeof b === "object" ? b.nome || "" : String(b || ""),
+    );
 
     // Encontrar posição de cada forma na ordem desejada
-    const posA = ordem.findIndex(pattern =>
+    const posA = ordem.findIndex((pattern) =>
       pattern.includes(".*")
         ? new RegExp(pattern).test(nomeA)
-        : nomeA.includes(pattern)
+        : nomeA.includes(pattern),
     );
-    const posB = ordem.findIndex(pattern =>
+    const posB = ordem.findIndex((pattern) =>
       pattern.includes(".*")
         ? new RegExp(pattern).test(nomeB)
-        : nomeB.includes(pattern)
+        : nomeB.includes(pattern),
     );
 
     // Se ambos encontrados, ordenar pela posição

@@ -271,13 +271,18 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
             error: errorMessage,
           };
 
-          console.log("🔴 Enviando erro de dependência de descrições:", response);
+          console.log(
+            "🔴 Enviando erro de dependência de descrições:",
+            response,
+          );
           return res.status(400).json(response);
         }
       }
     } else {
       // Exclusão forçada - remover dependências primeiro
-      console.log("⚠️ [Delete] Exclusão forçada ativada - removendo dependências");
+      console.log(
+        "⚠️ [Delete] Exclusão forçada ativada - removendo dependências",
+      );
 
       // Se houver lançamentos vinculados, remover a vinculação (tornar NULL)
       const lancamentosCount = await prisma.lancamentoCaixa.count({
@@ -289,7 +294,9 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
           where: { descricaoECategoriaId: item.id },
           data: { descricaoECategoriaId: null },
         });
-        console.log(`🔗 [Delete] ${lancamentosCount} lançamentos desvinculados`);
+        console.log(
+          `🔗 [Delete] ${lancamentosCount} lançamentos desvinculados`,
+        );
       }
 
       // Se for categoria, desativar todas as descrições vinculadas
@@ -311,7 +318,9 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
             },
             data: { ativo: false },
           });
-          console.log(`📝 [Delete] ${descricoesCount} descrições vinculadas desativadas`);
+          console.log(
+            `📝 [Delete] ${descricoesCount} descrições vinculadas desativadas`,
+          );
         }
       }
     }
@@ -322,7 +331,9 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
       data: { ativo: false },
     });
 
-    console.log(`✅ [Delete] Item ${item.nome} (${item.tipoItem}) desativado com sucesso`);
+    console.log(
+      `✅ [Delete] Item ${item.nome} (${item.tipoItem}) desativado com sucesso`,
+    );
 
     // Status 204 não deve retornar JSON
     res.status(204).send();

@@ -28,7 +28,10 @@ import { TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 import { isFormaPagamentoBoleto } from "../../lib/stringUtils";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
-import { getFormaPagamentoDisplayName, ordenarFormasPagamento } from "../../lib/formaPagamentoDisplay";
+import {
+  getFormaPagamentoDisplayName,
+  ordenarFormasPagamento,
+} from "../../lib/formaPagamentoDisplay";
 
 export function ModalReceita() {
   // Log de mount/unmount para debug
@@ -68,7 +71,6 @@ export function ModalReceita() {
 
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
-
 
   const [isOpen, setIsOpen] = useState(false);
   const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
@@ -124,10 +126,12 @@ export function ModalReceita() {
     if (!formData.cidadeId) return [];
 
     // Buscar o nome da cidade pelo ID
-    const cidadeSelecionada = getCidades().find(c => c.id.toString() === formData.cidadeId);
+    const cidadeSelecionada = getCidades().find(
+      (c) => c.id.toString() === formData.cidadeId,
+    );
     if (!cidadeSelecionada) return [];
 
-    return getSetores(cidadeSelecionada.nome).filter(setor => setor.ativo);
+    return getSetores(cidadeSelecionada.nome).filter((setor) => setor.ativo);
   }, [formData.cidadeId, getCidades, getSetores]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
@@ -220,7 +224,8 @@ export function ModalReceita() {
     // Verificar configurações do usuário
     const savedConfigs = localStorage.getItem("userConfigs");
     let abrirAutomaticamente = true; // padrão
-    let urlNotaFiscal = "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733"; // padrão
+    let urlNotaFiscal =
+      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733"; // padrão
 
     if (savedConfigs) {
       try {
@@ -404,7 +409,9 @@ export function ModalReceita() {
         formaPagamento: formData.formaPagamento,
         tecnicoResponsavel: formData.tecnicoResponsavel || undefined,
         setor: formData.setorId || undefined, // Usar ID do setor
-        localizacaoId: formData.setorId ? parseInt(formData.setorId) : undefined, // ID da localização geográfica
+        localizacaoId: formData.setorId
+          ? parseInt(formData.setorId)
+          : undefined, // ID da localização geográfica
         campanha: formData.campanha || undefined,
 
         // Incluir snapshot do cliente para preservar dados históricos
@@ -628,7 +635,10 @@ export function ModalReceita() {
           Receitas
         </Button>
       </DialogTrigger>
-      <DialogContent forceMount className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4">
+      <DialogContent
+        forceMount
+        className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-green-600 text-xl font-bold">
             <TrendingUp className="h-5 w-5" />
@@ -647,7 +657,9 @@ export function ModalReceita() {
               {/* Linha 1: Data, Valor, Forma de Pagamento e Valor Recebido (se cartão) */}
               <div className="flex items-start gap-2">
                 <div className="space-y-1 w-[140px]">
-                  <Label htmlFor="data" className="text-xs font-medium">Data <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="data" className="text-xs font-medium">
+                    Data <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="data"
                     type="date"
@@ -661,7 +673,9 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1 w-[120px]">
-                  <Label htmlFor="valor" className="text-xs font-medium">Valor <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="valor" className="text-xs font-medium">
+                    Valor <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="valor"
                     {...valorInput.inputProps}
@@ -671,7 +685,12 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1 w-[150px]">
-                  <Label htmlFor="formaPagamento" className="text-xs font-medium">Forma de Pagamento <span className="text-red-500">*</span></Label>
+                  <Label
+                    htmlFor="formaPagamento"
+                    className="text-xs font-medium"
+                  >
+                    Forma de Pagamento <span className="text-red-500">*</span>
+                  </Label>
                   <Select
                     value={formData.formaPagamento}
                     onValueChange={(value) =>
@@ -698,7 +717,10 @@ export function ModalReceita() {
                 {isFormaPagamentoCartao && (
                   <div className="relative w-[160px]">
                     <div className="space-y-1">
-                      <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700">
+                      <Label
+                        htmlFor="valorQueEntrou"
+                        className="text-xs font-medium text-yellow-700"
+                      >
                         Valor Recebido <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -718,7 +740,9 @@ export function ModalReceita() {
               {/* Categoria e Descrição */}
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
-                  <Label htmlFor="categoria" className="text-xs font-medium">Categoria <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="categoria" className="text-xs font-medium">
+                    Categoria <span className="text-red-500">*</span>
+                  </Label>
                   <Select
                     value={formData.categoria}
                     onValueChange={(value) => {
@@ -744,7 +768,9 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="descricao" className="text-xs font-medium">Descrição do Serviço <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="descricao" className="text-xs font-medium">
+                    Descrição do Serviço <span className="text-red-500">*</span>
+                  </Label>
                   <Select
                     value={formData.descricaoId}
                     onValueChange={(value) => {
@@ -791,7 +817,10 @@ export function ModalReceita() {
               {/* Técnico e Campanha */}
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
-                  <Label htmlFor="tecnicoResponsavel" className="text-xs font-medium">
+                  <Label
+                    htmlFor="tecnicoResponsavel"
+                    className="text-xs font-medium"
+                  >
                     Técnico Responsável
                   </Label>
                   <Select
@@ -809,7 +838,9 @@ export function ModalReceita() {
                     <SelectContent>
                       {tecnicos.length === 0 ? (
                         <div className="px-2 py-1 text-sm text-gray-500">
-                          <div className="font-medium">Nenhum técnico encontrado</div>
+                          <div className="font-medium">
+                            Nenhum técnico encontrado
+                          </div>
                           <div className="text-xs mt-1 space-y-1">
                             <div>1. Vá em "Funcionários" no menu</div>
                             <div>2. Cadastre um funcionário</div>
@@ -852,7 +883,9 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="campanha" className="text-xs font-medium">Campanha</Label>
+                  <Label htmlFor="campanha" className="text-xs font-medium">
+                    Campanha
+                  </Label>
                   <Select
                     value={formData.campanha}
                     onValueChange={(value) =>
@@ -863,16 +896,14 @@ export function ModalReceita() {
                       <SelectValue placeholder="Selecione a campanha" />
                     </SelectTrigger>
                     <SelectContent>
-                      {campanhas.map(
-                        (campanha) => (
-                          <SelectItem
-                            key={campanha.id}
-                            value={campanha.id.toString()}
-                          >
-                            {campanha.nome}
-                          </SelectItem>
-                        ),
-                      )}
+                      {campanhas.map((campanha) => (
+                        <SelectItem
+                          key={campanha.id}
+                          value={campanha.id.toString()}
+                        >
+                          {campanha.nome}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -881,14 +912,18 @@ export function ModalReceita() {
               {/* Cidade e Setor */}
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
-                  <Label htmlFor="cidade" className="text-xs font-medium">Cidade</Label>
+                  <Label htmlFor="cidade" className="text-xs font-medium">
+                    Cidade
+                  </Label>
                   <Select
                     value={formData.cidadeId || ""}
                     onValueChange={(value) =>
                       setFormData((prev) => ({
                         ...prev,
                         cidadeId: value,
-                        cidade: getCidades().find(c => c.id.toString() === value)?.nome || "",
+                        cidade:
+                          getCidades().find((c) => c.id.toString() === value)
+                            ?.nome || "",
                         setor: "", // Limpar setor quando cidade muda
                         setorId: "", // Limpar ID do setor quando cidade muda
                       }))
@@ -899,7 +934,10 @@ export function ModalReceita() {
                     </SelectTrigger>
                     <SelectContent>
                       {getCidades().map((cidade) => (
-                        <SelectItem key={cidade.id} value={cidade.id.toString()}>
+                        <SelectItem
+                          key={cidade.id}
+                          value={cidade.id.toString()}
+                        >
                           {cidade.nome}
                         </SelectItem>
                       ))}
@@ -908,11 +946,15 @@ export function ModalReceita() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="setor" className="text-xs font-medium">Setor</Label>
+                  <Label htmlFor="setor" className="text-xs font-medium">
+                    Setor
+                  </Label>
                   <Select
                     value={formData.setorId || ""}
                     onValueChange={(value) => {
-                      const setorSelecionado = setoresFiltrados.find(s => s.id.toString() === value);
+                      const setorSelecionado = setoresFiltrados.find(
+                        (s) => s.id.toString() === value,
+                      );
                       setFormData((prev) => ({
                         ...prev,
                         setorId: value,
@@ -995,7 +1037,8 @@ export function ModalReceita() {
                       htmlFor="dataVencimentoBoleto"
                       className="text-blue-800 font-semibold whitespace-nowrap"
                     >
-                      Data de Vencimento do Boleto <span className="text-red-500">*</span>
+                      Data de Vencimento do Boleto{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="dataVencimentoBoleto"
@@ -1017,17 +1060,15 @@ export function ModalReceita() {
                     />
                   </div>
 
-
                   <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
                         1. Lança receita bruta no Caixa (não soma no saldo)
                       </li>
+                      <li>2. Cria automaticamente conta a receber</li>
                       <li>
-                        2. Cria automaticamente conta a receber
-                      </li>
-                      <li>
-                        3. Ao marcar como pago, o sistema lança a receita real no Caixa na data do pagamento.
+                        3. Ao marcar como pago, o sistema lança a receita real
+                        no Caixa na data do pagamento.
                       </li>
                     </ul>
                   </div>
@@ -1056,14 +1097,20 @@ export function ModalReceita() {
                       }}
                       className="data-[state=checked]:bg-blue-600"
                     />
-                    <Label htmlFor="nota-fiscal" className="font-medium text-sm text-blue-800">
+                    <Label
+                      htmlFor="nota-fiscal"
+                      className="font-medium text-sm text-blue-800"
+                    >
                       Há nota fiscal para esta receita?
                     </Label>
                   </div>
 
                   {formData.temNotaFiscal && (
                     <div className="flex items-center gap-2 flex-1">
-                      <Label htmlFor="numeroNotaObrigatorio" className="text-sm font-medium text-blue-800 whitespace-nowrap">
+                      <Label
+                        htmlFor="numeroNotaObrigatorio"
+                        className="text-sm font-medium text-blue-800 whitespace-nowrap"
+                      >
                         Nº da NF <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -1086,12 +1133,13 @@ export function ModalReceita() {
                     </div>
                   )}
                 </div>
-
               </div>
 
               {/* Observações */}
               <div className="space-y-1">
-                <Label htmlFor="observacoes" className="text-xs font-medium">Observações do Serviço</Label>
+                <Label htmlFor="observacoes" className="text-xs font-medium">
+                  Observações do Serviço
+                </Label>
                 <Textarea
                   id="observacoes"
                   placeholder="Observações sobre o serviço prestado..."

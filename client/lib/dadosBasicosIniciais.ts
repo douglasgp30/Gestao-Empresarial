@@ -168,16 +168,16 @@ export function obterDadosBasicosIniciais(): DadosBasicosIniciais {
 export async function configurarDadosBasicosIniciais(): Promise<boolean> {
   try {
     console.log(
-    "🚫 [dadosBasicosIniciais] FUNÇÃO COMPLETAMENTE DESABILITADA - Conforme solicitação do usuário, NENHUM dado será criado automaticamente",
-  );
+      "🚫 [dadosBasicosIniciais] FUNÇÃO COMPLETAMENTE DESABILITADA - Conforme solicitação do usuário, NENHUM dado será criado automaticamente",
+    );
 
-  // 🚫 REMOVIDO: TODA criação automática de dados conforme solicitação do usuário
-  // O sistema deve iniciar COMPLETAMENTE VAZIO - usuário vai cadastrar tudo manualmente
+    // 🚫 REMOVIDO: TODA criação automática de dados conforme solicitação do usuário
+    // O sistema deve iniciar COMPLETAMENTE VAZIO - usuário vai cadastrar tudo manualmente
 
-  console.log(
-    "✅ [dadosBasicosIniciais] Sistema totalmente vazio conforme solicitado!",
-  );
-  return true;
+    console.log(
+      "✅ [dadosBasicosIniciais] Sistema totalmente vazio conforme solicitado!",
+    );
+    return true;
   } catch (error) {
     console.error("❌ Erro ao configurar sistema vazio:", error);
     return false;

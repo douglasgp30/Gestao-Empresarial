@@ -8,7 +8,7 @@ export const verificarLocalizacoes: RequestHandler = async (req, res) => {
 
     // Contar total por tipo
     const estatisticas = await prisma.localizacaoGeografica.groupBy({
-      by: ['tipoItem'],
+      by: ["tipoItem"],
       _count: {
         id: true,
       },
@@ -24,7 +24,7 @@ export const verificarLocalizacoes: RequestHandler = async (req, res) => {
         dataCriacao: true,
       },
       take: 10,
-      orderBy: { dataCriacao: "desc" }
+      orderBy: { dataCriacao: "desc" },
     });
 
     const exemplosSetores = await prisma.localizacaoGeografica.findMany({
@@ -37,16 +37,16 @@ export const verificarLocalizacoes: RequestHandler = async (req, res) => {
         dataCriacao: true,
       },
       take: 10,
-      orderBy: { dataCriacao: "desc" }
+      orderBy: { dataCriacao: "desc" },
     });
 
     // Verificar lançamentos que usam localizações
     const lancamentosComLocalizacao = await prisma.lancamentoCaixa.count({
       where: {
         localizacaoId: {
-          not: null
-        }
-      }
+          not: null,
+        },
+      },
     });
 
     res.json({
@@ -76,48 +76,56 @@ export const limparTodasLocalizacoes: RequestHandler = async (req, res) => {
     const lancamentosAtualizados = await prisma.lancamentoCaixa.updateMany({
       where: {
         localizacaoId: {
-          not: null
-        }
+          not: null,
+        },
       },
       data: {
-        localizacaoId: null
-      }
+        localizacaoId: null,
+      },
     });
 
-    console.log(`[CleanLoc] ${lancamentosAtualizados.count} lançamentos desvinculados`);
+    console.log(
+      `[CleanLoc] ${lancamentosAtualizados.count} lançamentos desvinculados`,
+    );
 
     // Remover vínculos de agendamentos
     const agendamentosAtualizados = await prisma.agendamento.updateMany({
       where: {
         localizacaoId: {
-          not: null
-        }
+          not: null,
+        },
       },
       data: {
-        localizacaoId: null
-      }
+        localizacaoId: null,
+      },
     });
 
-    console.log(`[CleanLoc] ${agendamentosAtualizados.count} agendamentos desvinculados`);
+    console.log(
+      `[CleanLoc] ${agendamentosAtualizados.count} agendamentos desvinculados`,
+    );
 
     // Remover vínculos de contas
     const contasAtualizadas = await prisma.contaLancamento.updateMany({
       where: {
         localizacaoId: {
-          not: null
-        }
+          not: null,
+        },
       },
       data: {
-        localizacaoId: null
-      }
+        localizacaoId: null,
+      },
     });
 
     console.log(`[CleanLoc] ${contasAtualizadas.count} contas desvinculadas`);
 
     // Agora deletar todas as localizações
-    const localizacoesRemovidas = await prisma.localizacaoGeografica.deleteMany({});
+    const localizacoesRemovidas = await prisma.localizacaoGeografica.deleteMany(
+      {},
+    );
 
-    console.log(`[CleanLoc] ${localizacoesRemovidas.count} localizações removidas`);
+    console.log(
+      `[CleanLoc] ${localizacoesRemovidas.count} localizações removidas`,
+    );
 
     res.json({
       success: true,

@@ -16,10 +16,13 @@ const CadastroMassaSetoresSchema = z.object({
 // POST /api/localizacoes/cadastro-massa/cidades
 export const cadastrarCidadesEmMassa: RequestHandler = async (req, res) => {
   try {
-    console.log("[CadastroMassa] Recebidos dados para cadastro de cidades:", req.body);
-    
+    console.log(
+      "[CadastroMassa] Recebidos dados para cadastro de cidades:",
+      req.body,
+    );
+
     const { cidades } = CadastroMassaCidadesSchema.parse(req.body);
-    
+
     console.log(`[CadastroMassa] Processando ${cidades.length} cidades...`);
 
     const resultados = {
@@ -61,9 +64,14 @@ export const cadastrarCidadesEmMassa: RequestHandler = async (req, res) => {
           nome: novaCidade.nome,
         });
 
-        console.log(`[CadastroMassa] Cidade criada: ${novaCidade.nome} (ID: ${novaCidade.id})`);
+        console.log(
+          `[CadastroMassa] Cidade criada: ${novaCidade.nome} (ID: ${novaCidade.id})`,
+        );
       } catch (error) {
-        console.error(`[CadastroMassa] Erro ao criar cidade ${nomeCidade}:`, error);
+        console.error(
+          `[CadastroMassa] Erro ao criar cidade ${nomeCidade}:`,
+          error,
+        );
         resultados.erros.push({
           nome: nomeCidade.trim(),
           erro: error.message,
@@ -98,10 +106,13 @@ export const cadastrarCidadesEmMassa: RequestHandler = async (req, res) => {
 // POST /api/localizacoes/cadastro-massa/setores
 export const cadastrarSetoresEmMassa: RequestHandler = async (req, res) => {
   try {
-    console.log("[CadastroMassa] Recebidos dados para cadastro de setores:", req.body);
-    
+    console.log(
+      "[CadastroMassa] Recebidos dados para cadastro de setores:",
+      req.body,
+    );
+
     const { cidadeId, setores } = CadastroMassaSetoresSchema.parse(req.body);
-    
+
     // Verificar se a cidade existe
     const cidade = await prisma.localizacaoGeografica.findUnique({
       where: {
@@ -119,11 +130,14 @@ export const cadastrarSetoresEmMassa: RequestHandler = async (req, res) => {
     if (!cidade.ativo) {
       return res.status(400).json({
         success: false,
-        error: "A cidade está inativa. Ative a cidade antes de adicionar setores.",
+        error:
+          "A cidade está inativa. Ative a cidade antes de adicionar setores.",
       });
     }
 
-    console.log(`[CadastroMassa] Processando ${setores.length} setores para cidade ${cidade.nome}...`);
+    console.log(
+      `[CadastroMassa] Processando ${setores.length} setores para cidade ${cidade.nome}...`,
+    );
 
     const resultados = {
       criados: [],
@@ -167,9 +181,14 @@ export const cadastrarSetoresEmMassa: RequestHandler = async (req, res) => {
           cidade: novoSetor.cidade,
         });
 
-        console.log(`[CadastroMassa] Setor criado: ${novoSetor.nome} em ${cidade.nome} (ID: ${novoSetor.id})`);
+        console.log(
+          `[CadastroMassa] Setor criado: ${novoSetor.nome} em ${cidade.nome} (ID: ${novoSetor.id})`,
+        );
       } catch (error) {
-        console.error(`[CadastroMassa] Erro ao criar setor ${nomeSetor}:`, error);
+        console.error(
+          `[CadastroMassa] Erro ao criar setor ${nomeSetor}:`,
+          error,
+        );
         resultados.erros.push({
           nome: nomeSetor.trim(),
           erro: error.message,
@@ -209,7 +228,7 @@ export const cadastrarSetoresEmMassa: RequestHandler = async (req, res) => {
 export const excluirComProtecao: RequestHandler = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    
+
     // Buscar o item
     const item = await prisma.localizacaoGeografica.findUnique({
       where: { id },
@@ -222,7 +241,9 @@ export const excluirComProtecao: RequestHandler = async (req, res) => {
       });
     }
 
-    console.log(`[ExclusaoProtegida] Tentando excluir ${item.tipoItem}: ${item.nome}`);
+    console.log(
+      `[ExclusaoProtegida] Tentando excluir ${item.tipoItem}: ${item.nome}`,
+    );
 
     // Se for cidade, verificar se tem setores
     if (item.tipoItem === "cidade") {
@@ -287,7 +308,9 @@ export const excluirComProtecao: RequestHandler = async (req, res) => {
       where: { id },
     });
 
-    console.log(`[ExclusaoProtegida] ${item.tipoItem} "${item.nome}" excluído com sucesso`);
+    console.log(
+      `[ExclusaoProtegida] ${item.tipoItem} "${item.nome}" excluído com sucesso`,
+    );
 
     res.json({
       success: true,

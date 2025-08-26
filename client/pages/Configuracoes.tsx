@@ -69,7 +69,9 @@ export default function Configuracoes() {
   const [percentualImposto, setPercentualImposto] = useState(6);
   const [tempoSessao, setTempoSessao] = useState(60);
   const [abrirSiteNotaFiscal, setAbrirSiteNotaFiscal] = useState(true);
-  const [urlSiteNotaFiscal, setUrlSiteNotaFiscal] = useState("https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733");
+  const [urlSiteNotaFiscal, setUrlSiteNotaFiscal] = useState(
+    "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733",
+  );
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -90,18 +92,33 @@ export default function Configuracoes() {
         setTempoSessao(configs.tempoSessao || 60);
 
         // Carregamento explícito para evitar problemas de persistência
-        const abrirSiteValue = configs.abrirSiteNotaFiscal === true || configs.abrirSiteNotaFiscal === "true";
-        console.log("🔧 [Configurações] Configuração abrir site NF:", configs.abrirSiteNotaFiscal, "->", abrirSiteValue);
+        const abrirSiteValue =
+          configs.abrirSiteNotaFiscal === true ||
+          configs.abrirSiteNotaFiscal === "true";
+        console.log(
+          "🔧 [Configurações] Configuração abrir site NF:",
+          configs.abrirSiteNotaFiscal,
+          "->",
+          abrirSiteValue,
+        );
         setAbrirSiteNotaFiscal(abrirSiteValue);
 
-        setUrlSiteNotaFiscal(configs.urlSiteNotaFiscal || "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733");
+        setUrlSiteNotaFiscal(
+          configs.urlSiteNotaFiscal ||
+            "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733",
+        );
 
         console.log("✅ [Configurações] Configurações carregadas com sucesso");
       } catch (error) {
-        console.error("❌ [Configurações] Erro ao carregar configurações:", error);
+        console.error(
+          "❌ [Configurações] Erro ao carregar configurações:",
+          error,
+        );
       }
     } else {
-      console.log("📭 [Configurações] Nenhuma configuração salva encontrada, usando valores padrão");
+      console.log(
+        "📭 [Configurações] Nenhuma configuração salva encontrada, usando valores padrão",
+      );
     }
 
     // Carregar tema salvo
@@ -133,7 +150,8 @@ export default function Configuracoes() {
     }
 
     if (abrirSiteNotaFiscal && !urlSiteNotaFiscal.trim()) {
-      errors.urlSiteNotaFiscal = "URL do site de nota fiscal é obrigatória quando a opção está ativada";
+      errors.urlSiteNotaFiscal =
+        "URL do site de nota fiscal é obrigatória quando a opção está ativada";
     }
 
     if (urlSiteNotaFiscal.trim() && !urlSiteNotaFiscal.startsWith("http")) {
@@ -197,7 +215,9 @@ export default function Configuracoes() {
     setPercentualImposto(6);
     setTempoSessao(60);
     setAbrirSiteNotaFiscal(true);
-    setUrlSiteNotaFiscal("https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733");
+    setUrlSiteNotaFiscal(
+      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733",
+    );
     setValidationErrors({});
 
     // Resetar tema para claro
@@ -627,7 +647,9 @@ export default function Configuracoes() {
                 <Separator />
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Configurações de Nota Fiscal</h3>
+                  <h3 className="text-lg font-medium">
+                    Configurações de Nota Fiscal
+                  </h3>
 
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
@@ -647,7 +669,9 @@ export default function Configuracoes() {
                         </p>
                       </div>
                     </div>
-                    <Badge variant={abrirSiteNotaFiscal ? "default" : "secondary"}>
+                    <Badge
+                      variant={abrirSiteNotaFiscal ? "default" : "secondary"}
+                    >
                       {abrirSiteNotaFiscal ? "Ativo" : "Desativo"}
                     </Badge>
                   </div>
@@ -655,7 +679,8 @@ export default function Configuracoes() {
                   {abrirSiteNotaFiscal && (
                     <div className="space-y-2">
                       <Label htmlFor="urlSiteNotaFiscal">
-                        URL do Site de Emissão de Nota Fiscal <span className="text-red-500">*</span>
+                        URL do Site de Emissão de Nota Fiscal{" "}
+                        <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="urlSiteNotaFiscal"
@@ -664,7 +689,9 @@ export default function Configuracoes() {
                         onChange={(e) => setUrlSiteNotaFiscal(e.target.value)}
                         placeholder="https://exemplo.gov.br/nota-fiscal"
                         className={
-                          validationErrors.urlSiteNotaFiscal ? "border-red-500" : ""
+                          validationErrors.urlSiteNotaFiscal
+                            ? "border-red-500"
+                            : ""
                         }
                       />
                       {validationErrors.urlSiteNotaFiscal && (
@@ -673,7 +700,8 @@ export default function Configuracoes() {
                         </p>
                       )}
                       <p className="text-sm text-muted-foreground">
-                        URL do sistema de emissão de nota fiscal do seu estado/município
+                        URL do sistema de emissão de nota fiscal do seu
+                        estado/município
                       </p>
                     </div>
                   )}

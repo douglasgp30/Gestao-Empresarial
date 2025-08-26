@@ -5,12 +5,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   MapPin,
   Plus,
@@ -79,16 +74,16 @@ export default function ModalCidadesSimples() {
 
   // Filtrar dados usando memoização
   const cidades = useMemo(() => {
-    return getCidades().filter(c => c.ativo);
+    return getCidades().filter((c) => c.ativo);
   }, [getCidades]);
 
   const setores = useMemo(() => {
-    return getSetores().filter(s => s.ativo);
+    return getSetores().filter((s) => s.ativo);
   }, [getSetores]);
 
   // Função para contar quantos setores uma cidade possui
   const contarSetoresDaCidade = (nomeCidade: string) => {
-    return setores.filter(s => s.cidade === nomeCidade).length;
+    return setores.filter((s) => s.cidade === nomeCidade).length;
   };
 
   const handleAdicionarCidade = async () => {
@@ -164,7 +159,9 @@ export default function ModalCidadesSimples() {
     setIsSaving(true);
     try {
       // Buscar nome da cidade pelo ID
-      const cidadeSelecionada = cidades.find(c => c.id.toString() === formSetor.cidadeId);
+      const cidadeSelecionada = cidades.find(
+        (c) => c.id.toString() === formSetor.cidadeId,
+      );
       if (!cidadeSelecionada) {
         throw new Error("Cidade selecionada não encontrada");
       }
@@ -231,8 +228,8 @@ export default function ModalCidadesSimples() {
 
     const cidadesLista = cidadesTexto
       .split("\n")
-      .map(c => c.trim())
-      .filter(c => c.length > 0);
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0);
 
     if (cidadesLista.length === 0) {
       toast.error("Nenhuma cidade válida encontrada");
@@ -249,7 +246,7 @@ export default function ModalCidadesSimples() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cidades: cidadesLista
+          cidades: cidadesLista,
         }),
       });
 
@@ -271,7 +268,9 @@ export default function ModalCidadesSimples() {
       await sincronizarLocalizacoes();
     } catch (error) {
       console.error("❌ Erro ao cadastrar cidades:", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao cadastrar cidades");
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao cadastrar cidades",
+      );
     } finally {
       setIsSaving(false);
     }
@@ -286,8 +285,8 @@ export default function ModalCidadesSimples() {
 
     const setoresLista = setoresTexto
       .split("\n")
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
 
     if (setoresLista.length === 0) {
       toast.error("Nenhum setor válido encontrado");
@@ -296,7 +295,12 @@ export default function ModalCidadesSimples() {
 
     setIsSaving(true);
     try {
-      console.log("➕ Cadastrando setores em massa:", setoresLista, "para cidade ID:", cidadeSelecionadaMassa);
+      console.log(
+        "➕ Cadastrando setores em massa:",
+        setoresLista,
+        "para cidade ID:",
+        cidadeSelecionadaMassa,
+      );
 
       const response = await fetch("/api/localizacoes/cadastro-massa/setores", {
         method: "POST",
@@ -305,7 +309,7 @@ export default function ModalCidadesSimples() {
         },
         body: JSON.stringify({
           cidadeId: parseInt(cidadeSelecionadaMassa),
-          setores: setoresLista
+          setores: setoresLista,
         }),
       });
 
@@ -328,7 +332,9 @@ export default function ModalCidadesSimples() {
       await sincronizarLocalizacoes();
     } catch (error) {
       console.error("❌ Erro ao cadastrar setores:", error);
-      toast.error(error instanceof Error ? error.message : "Erro ao cadastrar setores");
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao cadastrar setores",
+      );
     } finally {
       setIsSaving(false);
     }
@@ -441,7 +447,8 @@ export default function ModalCidadesSimples() {
         } catch (jsonError) {
           console.log("🔍 Erro ao processar resposta:", jsonError);
           if (response.status === 400) {
-            errorMessage = "Não foi possível excluir o item. Verifique se não há dependências vinculadas.";
+            errorMessage =
+              "Não foi possível excluir o item. Verifique se não há dependências vinculadas.";
           }
         }
 
@@ -464,7 +471,9 @@ export default function ModalCidadesSimples() {
       console.error("❌ Erro inesperado no handleDelete:", error);
       setShowConfirm(false);
       setItemToDelete(null);
-      toast.error("Erro inesperado ao excluir item. Verifique sua conexão e tente novamente.");
+      toast.error(
+        "Erro inesperado ao excluir item. Verifique sua conexão e tente novamente.",
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -508,7 +517,10 @@ export default function ModalCidadesSimples() {
         <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
           <Tabs defaultValue="individual" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="individual" className="flex items-center gap-2">
+              <TabsTrigger
+                value="individual"
+                className="flex items-center gap-2"
+              >
                 <Plus className="h-4 w-4" />
                 Individual
               </TabsTrigger>
@@ -558,7 +570,9 @@ export default function ModalCidadesSimples() {
                             <div className="flex items-center gap-2 flex-1">
                               <Input
                                 value={nomeEditando}
-                                onChange={(e) => setNomeEditando(e.target.value)}
+                                onChange={(e) =>
+                                  setNomeEditando(e.target.value)
+                                }
                                 className="flex-1"
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") {
@@ -574,7 +588,9 @@ export default function ModalCidadesSimples() {
                             <>
                               <span className="font-medium">{cidade.nome}</span>
                               {(() => {
-                                const numSetores = contarSetoresDaCidade(cidade.nome);
+                                const numSetores = contarSetoresDaCidade(
+                                  cidade.nome,
+                                );
                                 return (
                                   <span
                                     className={`px-2 py-1 text-xs rounded-full ${
@@ -705,7 +721,9 @@ export default function ModalCidadesSimples() {
                             <div className="flex items-center gap-2 flex-1">
                               <Input
                                 value={nomeEditando}
-                                onChange={(e) => setNomeEditando(e.target.value)}
+                                onChange={(e) =>
+                                  setNomeEditando(e.target.value)
+                                }
                                 className="flex-1"
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") {
@@ -793,7 +811,9 @@ export default function ModalCidadesSimples() {
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="cidadesTexto">Digite as cidades (uma por linha)</Label>
+                      <Label htmlFor="cidadesTexto">
+                        Digite as cidades (uma por linha)
+                      </Label>
                       <Textarea
                         id="cidadesTexto"
                         placeholder={`Aparecida de Goiânia
@@ -831,11 +851,15 @@ Trindade
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="cidadeSelecionadaMassa">Selecione a cidade</Label>
+                      <Label htmlFor="cidadeSelecionadaMassa">
+                        Selecione a cidade
+                      </Label>
                       <select
                         id="cidadeSelecionadaMassa"
                         value={cidadeSelecionadaMassa}
-                        onChange={(e) => setCidadeSelecionadaMassa(e.target.value)}
+                        onChange={(e) =>
+                          setCidadeSelecionadaMassa(e.target.value)
+                        }
                         className="w-full p-2 border rounded mt-2"
                       >
                         <option value="">Selecione uma cidade</option>
@@ -847,7 +871,9 @@ Trindade
                       </select>
                     </div>
                     <div>
-                      <Label htmlFor="setoresTexto">Digite os setores (um por linha)</Label>
+                      <Label htmlFor="setoresTexto">
+                        Digite os setores (um por linha)
+                      </Label>
                       <Textarea
                         id="setoresTexto"
                         placeholder={`Aeroporto
@@ -863,13 +889,16 @@ Campinas
                       <p className="text-sm text-gray-600 mt-1">
                         {cidadeSelecionadaMassa
                           ? "Digite um setor por linha. Duplicatas serão ignoradas."
-                          : "Selecione uma cidade primeiro."
-                        }
+                          : "Selecione uma cidade primeiro."}
                       </p>
                     </div>
                     <Button
                       onClick={handleCadastrarSetoresMassa}
-                      disabled={isSaving || !setoresTexto.trim() || !cidadeSelecionadaMassa}
+                      disabled={
+                        isSaving ||
+                        !setoresTexto.trim() ||
+                        !cidadeSelecionadaMassa
+                      }
                       className="w-full"
                     >
                       {isSaving ? "Cadastrando..." : "Cadastrar Setores"}

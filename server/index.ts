@@ -188,10 +188,13 @@ export function createServer(): Express {
 
   // ❌ ENDPOINT DESABILITADO - Criação automática de dados não permitida
   app.post("/api/seed-basic-data", async (req, res) => {
-    console.log("[Server] ❌ Endpoint de seed desabilitado por solicitação do usuário");
+    console.log(
+      "[Server] ❌ Endpoint de seed desabilitado por solicitação do usuário",
+    );
     res.status(403).json({
       success: false,
-      error: "Criação automática de dados foi desabilitada. Apenas o usuário deve cadastrar dados.",
+      error:
+        "Criação automática de dados foi desabilitada. Apenas o usuário deve cadastrar dados.",
       timestamp: new Date().toISOString(),
     });
   });
@@ -377,10 +380,13 @@ export function createServer(): Express {
 
   // ❌ ENDPOINT DESABILITADO - Criação automática de dados não permitida
   app.post("/api/seed/unified-data", (req, res) => {
-    console.log("[Server] ❌ Endpoint de seed unified-data desabilitado por solicitação do usuário");
+    console.log(
+      "[Server] ❌ Endpoint de seed unified-data desabilitado por solicitação do usuário",
+    );
     res.status(403).json({
       success: false,
-      error: "Criação automática de dados foi desabilitada. Apenas o usuário deve cadastrar dados.",
+      error:
+        "Criação automática de dados foi desabilitada. Apenas o usuário deve cadastrar dados.",
       timestamp: new Date().toISOString(),
     });
   });
