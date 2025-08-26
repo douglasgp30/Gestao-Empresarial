@@ -205,6 +205,10 @@ export default function ModalDescricoesSimples() {
       const result = await response.json();
       console.log("✅ Descrição criada:", result);
 
+      // A API retorna {data: {...}}, então acessamos result.data
+      const descricaoCriada = result.data || result;
+      console.log("✅ Dados da descrição criada:", descricaoCriada);
+
       toast.success("Descrição adicionada com sucesso");
       setFormDescricao({ nome: "", categoria: "" });
 
