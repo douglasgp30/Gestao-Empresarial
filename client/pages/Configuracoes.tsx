@@ -25,6 +25,7 @@ import { Switch } from "../components/ui/switch";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import SistemaBackup from "../components/Backup/SistemaBackup";
 import { CleanFakeData } from "../components/Debug/CleanFakeData";
+import LimpezaCompleta from "../components/Debug/LimpezaCompleta";
 import ResetarSistema from "../components/Debug/ResetarSistema";
 import { TesteBoleto } from "../components/Debug/TesteBoleto";
 import { TesteRapidoBoleto } from "../components/Debug/TesteRapidoBoleto";
