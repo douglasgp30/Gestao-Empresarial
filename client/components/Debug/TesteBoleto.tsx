@@ -108,7 +108,7 @@ export function TesteBoleto() {
     // Testar casos específicos
     const casos = [
       { nome: "Boleto Bancário", esperado: true },
-      { nome: "Transferência Bancária", esperado: false },
+      { nome: "Transferência", esperado: false },
       { nome: "Boleto", esperado: true },
       { nome: "Pagamento Bancário", esperado: true }, // Este deveria ser true
       { nome: "Cartão de Crédito", esperado: false },

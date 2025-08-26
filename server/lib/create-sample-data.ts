@@ -10,7 +10,7 @@ async function createSampleData() {
       { nome: "Cartão de Débito" },
       { nome: "Cartão de Crédito" },
       { nome: "PIX" },
-      { nome: "Transferência Bancária" },
+      { nome: "Transferência" },
     ];
 
     for (const method of paymentMethods) {

@@ -158,7 +158,7 @@ export async function seedAccountsData() {
         }),
         prisma.formaPagamento.create({
           data: {
-            nome: "Transferência Bancária",
+            nome: "Transferência",
           },
         }),
       ]);
