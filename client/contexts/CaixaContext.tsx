@@ -111,7 +111,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
   // 🚫 REMOVIDO: Criação automática de dados fictícios conforme solicitado pelo usuário
   const criarDadosBasicos = useCallback(() => {
-    console.log("✅ [CaixaContext] Sistema vazio - Nenhum dado fictício será criado");
+    console.log(
+      "✅ [CaixaContext] Sistema vazio - Nenhum dado fictício será criado",
+    );
 
     // Apenas inicializar arrays vazios - usuário deve criar seus próprios dados
     setCampanhas([]);
@@ -132,7 +134,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         );
       } else {
         // 🚫 REMOVIDO: Não criar dados automáticos - sistema deve ficar vazio
-        console.log("✅ [CaixaContext] Campanhas não encontradas - sistema vazio conforme solicitado");
+        console.log(
+          "✅ [CaixaContext] Campanhas não encontradas - sistema vazio conforme solicitado",
+        );
         setCampanhas([]);
       }
     } catch (error) {

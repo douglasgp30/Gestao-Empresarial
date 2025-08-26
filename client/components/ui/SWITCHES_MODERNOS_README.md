@@ -7,6 +7,7 @@ Todos os botões de marcação (checkboxes) do sistema foram transformados em **
 ## 🎨 Especificações Visuais
 
 ### Tamanho e Formato
+
 - **Largura**: 28px
 - **Altura**: 12px (reduzida para visual mais proporcional)
 - **Formato**: Totalmente arredondado (border-radius: 12px)
@@ -15,38 +16,44 @@ Todos os botões de marcação (checkboxes) do sistema foram transformados em **
 ### Cores
 
 #### Estado Desligado
+
 - **Fundo**: #ddd (cinza claro)
 - **Bolinha**: #666 (cinza escuro)
 - **Posição**: Esquerda
 
-#### Estado Ligado  
+#### Estado Ligado
+
 - **Fundo**: #007bff (azul)
 - **Bolinha**: white (branca)
 - **Posição**: Direita
 
 ### Tema Escuro
+
 - **Desligado**: Fundo #374151, bolinha #9ca3af
 - **Ligado**: Fundo #3b82f6, bolinha branca
 
 ## 🔧 Implementação Técnica
 
 ### 1. Checkboxes Nativos (HTML)
+
 ```css
 input[type="checkbox"] {
-    width: 28px !important;
-    height: 12px !important;
-    border-radius: 12px !important;
-    background-color: #ddd !important;
+  width: 28px !important;
+  height: 12px !important;
+  border-radius: 12px !important;
+  background-color: #ddd !important;
 }
 ```
 
 ### 2. Componente Checkbox (Radix)
+
 ```tsx
 // Agora funciona como switch mas mantém API de checkbox
 <Checkbox checked={value} onCheckedChange={setValue} />
 ```
 
 ### 3. Componente Switch
+
 ```tsx
 // Switch nativo mantido para casos específicos
 <Switch checked={value} onCheckedChange={setValue} />
@@ -55,24 +62,28 @@ input[type="checkbox"] {
 ## 📦 Componentes Afetados
 
 ### ✅ Transformados em Switches
+
 - `input[type="checkbox"]` (HTML nativo)
 - `<Checkbox />` (Radix UI)
 - `<Switch />` (atualizado)
 
 ### ✅ Mantidos com Indicadores Simples
+
 - `DropdownMenuCheckboxItem` (ponto azul ●)
-- `ContextMenuCheckboxItem` (ponto azul ●)  
+- `ContextMenuCheckboxItem` (ponto azul ●)
 - `MenubarCheckboxItem` (ponto azul ●)
 
 ## 🔄 Migração e Compatibilidade
 
 ### ✅ Funcionalidade Mantida
+
 - **API**: Exatamente a mesma (checked, onCheckedChange, etc.)
 - **Banco de dados**: Salva valores boolean normalmente
 - **Formulários**: Funcionam igual antes
 - **Validação**: Sem alterações necessárias
 
 ### ✅ Uso em Todo o Sistema
+
 ```tsx
 // Antes (funcionava assim)
 <input type="checkbox" checked={value} onChange={handleChange} />
@@ -107,8 +118,9 @@ function TestePage() {
 ## 📱 Módulos do Sistema
 
 Todos os módulos agora usam switches automaticamente:
+
 - ✅ Caixa
-- ✅ Contas  
+- ✅ Contas
 - ✅ Agendamentos
 - ✅ Funcionários
 - ✅ Clientes

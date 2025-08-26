@@ -7,36 +7,38 @@ interface SwitchCSSPuroProps {
   id?: string;
 }
 
-export function SwitchCSSPuro({ checked, onChange, disabled = false, id }: SwitchCSSPuroProps) {
+export function SwitchCSSPuro({
+  checked,
+  onChange,
+  disabled = false,
+  id,
+}: SwitchCSSPuroProps) {
   const switchStyle: React.CSSProperties = {
-    position: 'relative',
-    display: 'inline-block',
-    width: '40px',
-    height: '20px',
-    backgroundColor: checked ? '#007bff' : '#ccc',
-    borderRadius: '20px',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    transition: 'background-color 0.2s',
+    position: "relative",
+    display: "inline-block",
+    width: "40px",
+    height: "20px",
+    backgroundColor: checked ? "#007bff" : "#ccc",
+    borderRadius: "20px",
+    cursor: disabled ? "not-allowed" : "pointer",
+    transition: "background-color 0.2s",
     opacity: disabled ? 0.5 : 1,
   };
 
   const thumbStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: '2px',
-    left: checked ? '22px' : '2px',
-    width: '16px',
-    height: '16px',
-    backgroundColor: 'white',
-    borderRadius: '50%',
-    transition: 'left 0.2s',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+    position: "absolute",
+    top: "2px",
+    left: checked ? "22px" : "2px",
+    width: "16px",
+    height: "16px",
+    backgroundColor: "white",
+    borderRadius: "50%",
+    transition: "left 0.2s",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
   };
 
   return (
-    <div
-      style={switchStyle}
-      onClick={() => !disabled && onChange(!checked)}
-    >
+    <div style={switchStyle} onClick={() => !disabled && onChange(!checked)}>
       <div style={thumbStyle} />
     </div>
   );
@@ -88,12 +90,16 @@ const SwitchStyles = `
 `;
 
 // Componente com CSS via style tag
-export function SwitchComCSS({ checked, onChange, disabled = false }: SwitchCSSPuroProps) {
+export function SwitchComCSS({
+  checked,
+  onChange,
+  disabled = false,
+}: SwitchCSSPuroProps) {
   React.useEffect(() => {
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = SwitchStyles;
     document.head.appendChild(style);
-    
+
     return () => {
       if (style.parentNode) {
         style.parentNode.removeChild(style);
@@ -103,7 +109,7 @@ export function SwitchComCSS({ checked, onChange, disabled = false }: SwitchCSSP
 
   return (
     <div
-      className={`switch-simples ${checked ? 'on' : 'off'}`}
+      className={`switch-simples ${checked ? "on" : "off"}`}
       onClick={() => !disabled && onChange(!checked)}
     >
       <div className="thumb" />

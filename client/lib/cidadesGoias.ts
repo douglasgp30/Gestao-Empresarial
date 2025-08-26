@@ -5,7 +5,7 @@
 
 export const cidadesGoias = [
   "Aparecida de Goiânia",
-  "Senador Canedo", 
+  "Senador Canedo",
   "Trindade",
   "Abadia de Goiás",
   "Aragoiania",
@@ -168,11 +168,15 @@ export const cidadesGoias = [
  */
 export const garantirCidadesGoias = () => {
   try {
-    const localizacoesExistentes = localStorage.getItem("localizacoes_geograficas");
-    
+    const localizacoesExistentes = localStorage.getItem(
+      "localizacoes_geograficas",
+    );
+
     if (!localizacoesExistentes) {
-      console.log("🏙️ [CidadesGoias] Criando localizações geográficas iniciais...");
-      
+      console.log(
+        "🏙️ [CidadesGoias] Criando localizações geográficas iniciais...",
+      );
+
       const localizacoesGoias = cidadesGoias.map((cidade, index) => ({
         id: index + 1,
         nome: cidade,
@@ -180,14 +184,21 @@ export const garantirCidadesGoias = () => {
         ativo: true,
         dataCriacao: new Date(),
       }));
-      
-      localStorage.setItem("localizacoes_geograficas", JSON.stringify(localizacoesGoias));
-      console.log(`✅ [CidadesGoias] ${cidadesGoias.length} cidades de Goiás salvas!`);
-      
+
+      localStorage.setItem(
+        "localizacoes_geograficas",
+        JSON.stringify(localizacoesGoias),
+      );
+      console.log(
+        `✅ [CidadesGoias] ${cidadesGoias.length} cidades de Goiás salvas!`,
+      );
+
       return localizacoesGoias;
     } else {
       const localizacoesParsed = JSON.parse(localizacoesExistentes);
-      console.log(`🏙️ [CidadesGoias] ${localizacoesParsed.length} localizações já existem no sistema`);
+      console.log(
+        `🏙️ [CidadesGoias] ${localizacoesParsed.length} localizações já existem no sistema`,
+      );
       return localizacoesParsed;
     }
   } catch (error) {
@@ -203,11 +214,12 @@ export const verificarCidadeExiste = (nomeCidade: string): boolean => {
   try {
     const localizacoes = localStorage.getItem("localizacoes_geograficas");
     if (!localizacoes) return false;
-    
+
     const localizacoesParsed = JSON.parse(localizacoes);
-    return localizacoesParsed.some((loc: any) => 
-      loc.nome.toLowerCase() === nomeCidade.toLowerCase() && 
-      loc.tipoItem === "cidade"
+    return localizacoesParsed.some(
+      (loc: any) =>
+        loc.nome.toLowerCase() === nomeCidade.toLowerCase() &&
+        loc.tipoItem === "cidade",
     );
   } catch (error) {
     console.error("❌ [CidadesGoias] Erro ao verificar cidade:", error);

@@ -1,7 +1,9 @@
 // 🚫 ARQUIVO DESABILITADO - Conforme solicitação do usuário para não modificar dados automaticamente
 
 export const migrarDadosAntigos = () => {
-  console.log("🚫 [migrarDadosAntigos] FUNÇÃO DESABILITADA - Conforme solicitação do usuário para não modificar dados automaticamente");
+  console.log(
+    "🚫 [migrarDadosAntigos] FUNÇÃO DESABILITADA - Conforme solicitação do usuário para não modificar dados automaticamente",
+  );
   return false;
 };
 

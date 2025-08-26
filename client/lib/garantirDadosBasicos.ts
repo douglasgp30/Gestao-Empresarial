@@ -1,7 +1,9 @@
 // 🚫 FUNÇÃO DESABILITADA - Conforme solicitação do usuário para não criar dados automáticos
 
 export function garantirDadosBasicos() {
-  console.log("🚫 [GarantirDados] FUNÇÃO DESABILITADA - Conforme solicitação do usuário, nenhum dado será criado automaticamente");
+  console.log(
+    "🚫 [GarantirDados] FUNÇÃO DESABILITADA - Conforme solicitação do usuário, nenhum dado será criado automaticamente",
+  );
 
   // 🚫 REMOVIDO: Toda criação automática de dados conforme solicitação do usuário
   // O sistema deve iniciar completamente vazio

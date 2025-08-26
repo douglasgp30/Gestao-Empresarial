@@ -167,7 +167,9 @@ export function obterDadosBasicosIniciais(): DadosBasicosIniciais {
 
 export async function configurarDadosBasicosIniciais(): Promise<boolean> {
   try {
-    console.log("🚫 [dadosBasicosIniciais] FUNÇÃO DESABILITADA - Conforme solicitação do usuário, nenhum dado será criado automaticamente");
+    console.log(
+      "🚫 [dadosBasicosIniciais] FUNÇÃO DESABILITADA - Conforme solicitação do usuário, nenhum dado será criado automaticamente",
+    );
 
     // 🚫 REMOVIDO: Toda criação automática de dados conforme solicitação do usuário
     // O sistema deve iniciar completamente vazio
@@ -180,10 +182,14 @@ export async function configurarDadosBasicosIniciais(): Promise<boolean> {
         "formas_pagamento",
         JSON.stringify(dadosBasicos.formasPagamento),
       );
-      console.log("✅ [dadosBasicosIniciais] Apenas formas de pagamento criadas conforme solicitado");
+      console.log(
+        "✅ [dadosBasicosIniciais] Apenas formas de pagamento criadas conforme solicitado",
+      );
     }
 
-    console.log("✅ [dadosBasicosIniciais] Sistema vazio configurado conforme solicitado!");
+    console.log(
+      "✅ [dadosBasicosIniciais] Sistema vazio configurado conforme solicitado!",
+    );
     return true;
   } catch (error) {
     console.error("❌ Erro ao configurar sistema vazio:", error);

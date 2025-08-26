@@ -134,7 +134,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // �� REMOVIDO: Criação automática de dados fictícios conforme solicitado pelo usuário
   const criarDadosBasicos = useCallback(() => {
-    console.log("✅ [EntidadesContext] Sistema vazio - Nenhum dado fictício será criado");
+    console.log(
+      "✅ [EntidadesContext] Sistema vazio - Nenhum dado fictício será criado",
+    );
 
     // Apenas inicializar arrays vazios - usuário deve criar seus próprios dados
     setDescricoesECategorias([]);
@@ -176,7 +178,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         );
       } else {
         // 🚫 REMOVIDO: Não criar formas de pagamento padrão
-        console.log("✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado");
+        console.log(
+          "✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado",
+        );
         setFormasPagamento([]);
       }
 
@@ -208,7 +212,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   // === FUNÇÃO ESPECÍFICA PARA RECARREGAR DESCRIÇÕES E CATEGORIAS ===
   const recarregarDescricoesECategorias = useCallback(async () => {
     try {
-      console.log("🔄 [EntidadesContext] Recarregando descrições e categorias...");
+      console.log(
+        "🔄 [EntidadesContext] Recarregando descrições e categorias...",
+      );
       setError(null);
 
       // Carregar descrições e categorias do localStorage
@@ -221,11 +227,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           `🔄 [EntidadesContext] ${arrayParsed.length} descrições/categorias recarregadas`,
         );
       } else {
-        console.log("🔄 [EntidadesContext] Nenhuma descrição encontrada no localStorage");
+        console.log(
+          "🔄 [EntidadesContext] Nenhuma descrição encontrada no localStorage",
+        );
         setDescricoesECategorias([]);
       }
     } catch (error) {
-      console.error("❌ [EntidadesContext] Erro ao recarregar descrições e categorias:", error);
+      console.error(
+        "❌ [EntidadesContext] Erro ao recarregar descrições e categorias:",
+        error,
+      );
       setError("Erro ao recarregar descrições e categorias");
       throw error;
     }
@@ -375,7 +386,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         );
       } else {
         // 🚫 REMOVIDO: Não criar formas de pagamento padrão
-        console.log("✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado");
+        console.log(
+          "✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado",
+        );
         setFormasPagamento([]);
       }
 

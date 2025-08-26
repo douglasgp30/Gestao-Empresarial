@@ -34,32 +34,32 @@ const LimpezaCompleta = () => {
       const chavesParaLimpar = [
         // Dados principais
         "lancamentos_caixa",
-        "campanhas", 
+        "campanhas",
         "clientes",
         "agendamentos",
         "lembretes_agendamentos",
         "contas_pagar",
         "contas_receber",
         "fornecedores",
-        
+
         // Categorias e descrições
         "descricoes_e_categorias",
-        "categorias_receita", 
+        "categorias_receita",
         "categorias_despesa",
-        
+
         // Localizações (cidades de Goiás serão preservadas)
         // "localizacoes_geograficas", // REMOVIDO - preservar cidades conforme solicitado
-        
+
         // Funcionários (exceto o admin atual será recriado)
         "funcionarios",
-        
+
         // Estados de filtros
         "filtros_caixa",
         "filtros_contas",
-        "filtros_agendamentos", 
+        "filtros_agendamentos",
         "filtros_funcionarios",
         "filtros_clientes",
-        
+
         // Backups e caches
         "contas-backup",
         "ultimo_backup",
@@ -68,10 +68,14 @@ const LimpezaCompleta = () => {
 
       // Metas mensais (todas as chaves que começam com metaMes_)
       const todasAsChaves = Object.keys(localStorage);
-      const chavesMetas = todasAsChaves.filter(chave => chave.startsWith("metaMes_"));
+      const chavesMetas = todasAsChaves.filter((chave) =>
+        chave.startsWith("metaMes_"),
+      );
       chavesParaLimpar.push(...chavesMetas);
 
-      console.log(`🧹 [LimpezaCompleta] ${chavesParaLimpar.length} tipos de dados serão limpos`);
+      console.log(
+        `🧹 [LimpezaCompleta] ${chavesParaLimpar.length} tipos de dados serão limpos`,
+      );
 
       // Remover todas as chaves identificadas
       chavesParaLimpar.forEach((chave) => {
@@ -88,7 +92,8 @@ const LimpezaCompleta = () => {
       console.log("🎉 [LimpezaCompleta] LIMPEZA COMPLETA CONCLUÍDA!");
 
       toast.success("LIMPEZA COMPLETA REALIZADA! 🧹", {
-        description: "Dados removidos com sucesso! Preservadas: formas de pagamento e cidades de Goiás. Recarregando sistema...",
+        description:
+          "Dados removidos com sucesso! Preservadas: formas de pagamento e cidades de Goiás. Recarregando sistema...",
         duration: 3000,
       });
 
@@ -96,7 +101,6 @@ const LimpezaCompleta = () => {
       setTimeout(() => {
         window.location.reload();
       }, 3000);
-
     } catch (error) {
       console.error("❌ [LimpezaCompleta] Erro durante a limpeza:", error);
       toast.error("Erro durante a limpeza dos dados. Tente novamente.");
@@ -113,7 +117,8 @@ const LimpezaCompleta = () => {
           <span>Limpeza Completa de Dados</span>
         </CardTitle>
         <CardDescription className="text-orange-600">
-          Remove TODOS os dados lançados (fictícios ou reais), mas mantém formas de pagamento
+          Remove TODOS os dados lançados (fictícios ou reais), mas mantém formas
+          de pagamento
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -169,7 +174,8 @@ const LimpezaCompleta = () => {
                   Tem certeza de que deseja APAGAR todos os dados lançados?
                 </div>
                 <div className="font-medium text-orange-700">
-                  Esta ação removerá TODOS os lançamentos, clientes, campanhas, agendamentos, etc.
+                  Esta ação removerá TODOS os lançamentos, clientes, campanhas,
+                  agendamentos, etc.
                 </div>
                 <div className="font-medium text-green-700">
                   As FORMAS DE PAGAMENTO e CIDADES DE GOIÁS serão mantidas.

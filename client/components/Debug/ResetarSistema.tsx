@@ -95,7 +95,8 @@ const ResetarSistema = () => {
           <span>Resetar Sistema</span>
         </CardTitle>
         <CardDescription>
-          Apagar todos os dados e voltar ao estado inicial (preservando formas de pagamento)
+          Apagar todos os dados e voltar ao estado inicial (preservando formas
+          de pagamento)
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -107,7 +108,9 @@ const ResetarSistema = () => {
             <li>• Todos os funcionários serão removidos</li>
             <li>• Todos os lançamentos de caixa serão perdidos</li>
             <li>• Todas as contas e agendamentos serão apagados</li>
-            <li>• Configurações serão resetadas (exceto formas de pagamento)</li>
+            <li>
+              • Configurações serão resetadas (exceto formas de pagamento)
+            </li>
             <li>• O sistema voltará à tela de primeiro acesso</li>
           </ul>
         </div>

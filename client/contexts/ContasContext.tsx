@@ -254,7 +254,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           setFormasPagamento(formasParsed || []);
         } else {
           // 🚫 REMOVIDO: Não criar dados padrão - sistema deve ficar vazio
-          console.log("✅ [ContasContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado");
+          console.log(
+            "✅ [ContasContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado",
+          );
           setFormasPagamento([]);
         }
       } catch (error) {

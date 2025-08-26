@@ -70,27 +70,30 @@ interface CheckboxFinalSimplesProps {
   className?: string;
 }
 
-export function CheckboxFinalSimples({ 
-  checked, 
-  onChange, 
-  disabled = false, 
+export function CheckboxFinalSimples({
+  checked,
+  onChange,
+  disabled = false,
   id,
-  className = ""
+  className = "",
 }: CheckboxFinalSimplesProps) {
-  
   // Injetar CSS na primeira renderização
   React.useEffect(() => {
-    const existingStyle = document.getElementById('checkbox-final-simples-style');
+    const existingStyle = document.getElementById(
+      "checkbox-final-simples-style",
+    );
     if (!existingStyle) {
-      const style = document.createElement('style');
-      style.id = 'checkbox-final-simples-style';
+      const style = document.createElement("style");
+      style.id = "checkbox-final-simples-style";
       style.textContent = checkboxCSS;
       document.head.appendChild(style);
     }
   }, []);
 
   return (
-    <label className={`checkbox-final-simples ${disabled ? 'disabled' : ''} ${className}`}>
+    <label
+      className={`checkbox-final-simples ${disabled ? "disabled" : ""} ${className}`}
+    >
       <input
         type="checkbox"
         id={id}
@@ -110,41 +113,63 @@ export function TesteCheckboxSimples() {
   const [checked3, setChecked3] = React.useState(false);
 
   return (
-    <div style={{ padding: '20px', backgroundColor: 'white', border: '1px solid #ccc', borderRadius: '8px', margin: '20px' }}>
-      <h3 style={{ marginBottom: '20px' }}>🎯 SWITCHES SIMPLES QUE FUNCIONAM</h3>
-      
-      <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center' }}>
-        <CheckboxFinalSimples 
-          checked={checked1} 
-          onChange={setChecked1}
-        />
-        <span>Switch 1 - {checked1 ? 'LIGADO' : 'DESLIGADO'}</span>
+    <div
+      style={{
+        padding: "20px",
+        backgroundColor: "white",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        margin: "20px",
+      }}
+    >
+      <h3 style={{ marginBottom: "20px" }}>
+        🎯 SWITCHES SIMPLES QUE FUNCIONAM
+      </h3>
+
+      <div
+        style={{ marginBottom: "15px", display: "flex", alignItems: "center" }}
+      >
+        <CheckboxFinalSimples checked={checked1} onChange={setChecked1} />
+        <span>Switch 1 - {checked1 ? "LIGADO" : "DESLIGADO"}</span>
       </div>
 
-      <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center' }}>
-        <CheckboxFinalSimples 
-          checked={checked2} 
-          onChange={setChecked2}
-        />
-        <span>Switch 2 - {checked2 ? 'LIGADO' : 'DESLIGADO'}</span>
+      <div
+        style={{ marginBottom: "15px", display: "flex", alignItems: "center" }}
+      >
+        <CheckboxFinalSimples checked={checked2} onChange={setChecked2} />
+        <span>Switch 2 - {checked2 ? "LIGADO" : "DESLIGADO"}</span>
       </div>
 
-      <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center' }}>
-        <CheckboxFinalSimples 
-          checked={checked3} 
+      <div
+        style={{ marginBottom: "15px", display: "flex", alignItems: "center" }}
+      >
+        <CheckboxFinalSimples
+          checked={checked3}
           onChange={setChecked3}
           disabled
         />
         <span>Switch 3 - DESABILITADO</span>
       </div>
 
-      <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#d4edda', border: '1px solid #c3e6cb', borderRadius: '4px' }}>
-        <strong>✅ FUNCIONAMENTO GARANTIDO:</strong><br/>
-        • CSS embutido (não depende de framework)<br/>
-        • Visual limpo e moderno<br/>
-        • Tamanho adequado (36x18px)<br/>
-        • Funcionalidade completa<br/>
-        • Sem bugs ou problemas
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "10px",
+          backgroundColor: "#d4edda",
+          border: "1px solid #c3e6cb",
+          borderRadius: "4px",
+        }}
+      >
+        <strong>✅ FUNCIONAMENTO GARANTIDO:</strong>
+        <br />
+        • CSS embutido (não depende de framework)
+        <br />
+        • Visual limpo e moderno
+        <br />
+        • Tamanho adequado (36x18px)
+        <br />
+        • Funcionalidade completa
+        <br />• Sem bugs ou problemas
       </div>
     </div>
   );

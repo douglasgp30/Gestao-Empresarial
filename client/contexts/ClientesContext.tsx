@@ -35,7 +35,9 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
   // 🚨 CRIAR DADOS BÁSICOS SE NÃO EXISTIREM
   // 🚫 REMOVIDO: Criação automática de clientes fictícios conforme solicitado pelo usuário
   const criarClientesBasicos = useCallback(() => {
-    console.log("✅ [ClientesContext] Sistema vazio - Nenhum cliente fictício será criado");
+    console.log(
+      "✅ [ClientesContext] Sistema vazio - Nenhum cliente fictício será criado",
+    );
 
     // Apenas inicializar array vazio - usuário deve criar seus próprios clientes
     setClientes([]);
