@@ -403,41 +403,31 @@ input[type="checkbox"]:hover {
 /* Tema escuro */
 @media (prefers-color-scheme: dark) {
   input[type="checkbox"] {
-    border-color: #d1d5db;
-    background: #111827;
+    border-color: #d1d5db !important;
+    background-color: #111827 !important;
   }
 
   input[type="checkbox"]:hover {
-    border-color: #f3f4f6;
-  }
-
-  input[type="checkbox"]:checked {
-    background: #111827;
-    border-color: #d1d5db;
+    border-color: #f3f4f6 !important;
   }
 
   input[type="checkbox"]:checked::after {
-    color: #f3f4f6;
+    color: #4ade80 !important; /* verde mais claro para tema escuro */
   }
 }
 
 /* Força tema escuro quando classe dark está presente */
 .dark input[type="checkbox"] {
-  border-color: #d1d5db;
-  background: #111827;
+  border-color: #d1d5db !important;
+  background-color: #111827 !important;
 }
 
 .dark input[type="checkbox"]:hover {
-  border-color: #f3f4f6;
-}
-
-.dark input[type="checkbox"]:checked {
-  background: #111827;
-  border-color: #d1d5db;
+  border-color: #f3f4f6 !important;
 }
 
 .dark input[type="checkbox"]:checked::after {
-  color: #f3f4f6;
+  color: #4ade80 !important; /* verde mais claro para tema escuro */
 }
 
 /* Classes auxiliares para melhor alinhamento de checkboxes */
