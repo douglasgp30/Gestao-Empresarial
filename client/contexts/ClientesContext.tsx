@@ -33,36 +33,12 @@ export function ClientesProvider({ children }: { children: ReactNode }) {
   const inicializado = useRef(false);
 
   // 🚨 CRIAR DADOS BÁSICOS SE NÃO EXISTIREM
+  // 🚫 REMOVIDO: Criação automática de clientes fictícios conforme solicitado pelo usuário
   const criarClientesBasicos = useCallback(() => {
-    console.log("🔧 [ClientesContext] Criando clientes básicos...");
+    console.log("✅ [ClientesContext] Sistema vazio - Nenhum cliente fictício será criado");
 
-    const clientesPadrao: Cliente[] = [
-      {
-        id: "1",
-        nome: "Cliente Exemplo",
-        telefonePrincipal: "(62) 99999-9999",
-        email: "cliente@exemplo.com",
-        complemento: "Centro, Goiânia",
-        dataCriacao: new Date(),
-      },
-      {
-        id: "2",
-        nome: "Empresa ABC",
-        telefonePrincipal: "(62) 88888-8888",
-        email: "contato@abc.com",
-        complemento: "Setor Oeste, Goiânia",
-        dataCriacao: new Date(),
-      },
-    ];
-
-    // Verificar se clientes existem
-    const clientesExistentes = localStorage.getItem("clientes");
-    if (!clientesExistentes) {
-      localStorage.setItem("clientes", JSON.stringify(clientesPadrao));
-      console.log("✅ [ClientesContext] Clientes básicos criados");
-    }
-
-    setClientes(clientesPadrao);
+    // Apenas inicializar array vazio - usuário deve criar seus próprios clientes
+    setClientes([]);
   }, []);
 
   // 🚨 CARREGAR APENAS DO LOCALSTORAGE - ZERO APIS
