@@ -76,6 +76,11 @@ import {
   excluirSetor,
 } from "./routes/cidades-goias";
 
+import {
+  verificarLocalizacoes,
+  limparTodasLocalizacoes,
+} from "./routes/clean-localizacoes";
+
 export function createServer(): Express {
   const app = express();
 
@@ -350,6 +355,10 @@ export function createServer(): Express {
   app.get("/api/cidades-goias/:nomeCidade/setores", listarSetoresPorCidade);
   app.post("/api/cidades-goias/:nomeCidade/setores", criarSetor);
   app.delete("/api/cidades-goias/setores/:id", excluirSetor);
+
+  // Rotas de limpeza de localizações (debug)
+  app.get("/api/debug/localizacoes", verificarLocalizacoes);
+  app.delete("/api/debug/localizacoes", limparTodasLocalizacoes);
 
   // Migração para sistema unificado
   app.post("/api/migrate/unified-descriptions", runMigration);
