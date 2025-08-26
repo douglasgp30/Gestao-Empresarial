@@ -174,8 +174,8 @@ export function ModalReceita() {
   }, [valorInput.numericValue]);
 
   const valorQueEntrouCalculado = React.useMemo(() => {
-    return parseFloat(formData.valorQueEntrou) || valorCalculado;
-  }, [formData.valorQueEntrou, valorCalculado]);
+    return valorRecebidoInput.numericValue || valorCalculado;
+  }, [valorRecebidoInput.numericValue, valorCalculado]);
 
   // Calcular imposto apenas se tem nota fiscal
   const impostoCalculado = React.useMemo(() => {
