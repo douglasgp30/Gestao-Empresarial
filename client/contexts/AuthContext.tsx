@@ -309,18 +309,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const criarPrimeiroAdministrador = async (admin: Funcionario) => {
+    console.log("🚀 [AuthContext] Iniciando criação do primeiro administrador...");
+    console.log("👤 [AuthContext] Dados do admin:", {
+      nome: admin.nomeCompleto,
+      login: admin.login,
+      ativo: admin.ativo,
+      permissaoAcesso: admin.permissaoAcesso,
+      tipoAcesso: admin.tipoAcesso
+    });
+
     try {
       // Salvar o administrador no localStorage
+      console.log("💾 [AuthContext] Salvando funcionário no localStorage...");
       const funcionarios = [admin];
       localStorage.setItem("funcionarios", JSON.stringify(funcionarios));
+      console.log("✅ [AuthContext] Funcionário salvo com sucesso");
 
       // Configurar dados básicos iniciais do sistema
+      console.log("🔧 [AuthContext] Configurando dados básicos iniciais...");
       await configurarDadosBasicosIniciais();
+      console.log("✅ [AuthContext] Dados básicos configurados");
 
       // Atualizar o estado
+      console.log("🔄 [AuthContext] Atualizando estado do componente...");
       setPrecisaConfigurarPrimeiroAcesso(false);
+      console.log("✅ [AuthContext] Estado atualizado - primeiro acesso finalizado");
 
       // Fazer login automático
+      console.log("🔑 [AuthContext] Fazendo login automático...");
       const authUser: AuthUser = {
         id: admin.id,
         nomeCompleto: admin.nomeCompleto,
@@ -331,13 +347,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(authUser);
       localStorage.setItem("auth_user", JSON.stringify(authUser));
+      console.log("✅ [AuthContext] Login automático realizado");
 
       // Marcar que o primeiro acesso foi concluído
+      console.log("🏁 [AuthContext] Marcando primeiro acesso como concluído...");
       localStorage.setItem("primeiro_acesso_completo", "true");
+      console.log("✅ [AuthContext] Flag de primeiro acesso definida");
 
-      console.log("🎉 Primeiro administrador criado e sistema configurado!");
+      console.log("🎉 [AuthContext] Primeiro administrador criado e sistema configurado com sucesso!");
+
+      // Verificar se tudo foi salvo corretamente
+      const verificacao = verificarSeExisteAdministrador();
+      console.log("🔍 [AuthContext] Verificação pós-criação:", verificacao ? "SUCESSO" : "FALHA");
+
     } catch (error) {
-      console.error("Erro ao criar primeiro administrador:", error);
+      console.error("❌ [AuthContext] Erro ao criar primeiro administrador:", error);
       throw error;
     }
   };
