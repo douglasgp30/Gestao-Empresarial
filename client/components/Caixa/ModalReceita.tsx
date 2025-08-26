@@ -169,8 +169,8 @@ export function ModalReceita() {
 
   // Memoizar cálculos automaticamente para evitar re-computação desnecessária
   const valorCalculado = React.useMemo(() => {
-    return parseFloat(formData.valor) || 0;
-  }, [formData.valor]);
+    return valorInput.numericValue || 0;
+  }, [valorInput.numericValue]);
 
   const valorQueEntrouCalculado = React.useMemo(() => {
     return parseFloat(formData.valorQueEntrou) || valorCalculado;
