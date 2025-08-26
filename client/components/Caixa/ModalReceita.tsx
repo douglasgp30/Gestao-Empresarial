@@ -820,7 +820,10 @@ export function ModalReceita() {
                     <SelectContent>
                       {tecnicos.length === 0 ? (
                         <div className="px-2 py-1 text-sm text-gray-500">
-                          Nenhum técnico cadastrado
+                          <div className="font-medium">Nenhum técnico encontrado</div>
+                          <div className="text-xs mt-1">
+                            Cadastre funcionários em "Funcionários" e marque o tipo como "Técnico"
+                          </div>
                         </div>
                       ) : (
                         tecnicos
