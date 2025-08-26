@@ -81,6 +81,12 @@ import {
   limparTodasLocalizacoes,
 } from "./routes/clean-localizacoes";
 
+import {
+  cadastrarCidadesEmMassa,
+  cadastrarSetoresEmMassa,
+  excluirComProtecao,
+} from "./routes/cadastro-massa-localizacoes";
+
 export function createServer(): Express {
   const app = express();
 
@@ -359,6 +365,11 @@ export function createServer(): Express {
   // Rotas de limpeza de localizações (debug)
   app.get("/api/debug/localizacoes", verificarLocalizacoes);
   app.delete("/api/debug/localizacoes", limparTodasLocalizacoes);
+
+  // Rotas de cadastro em massa de localizações
+  app.post("/api/localizacoes/cadastro-massa/cidades", cadastrarCidadesEmMassa);
+  app.post("/api/localizacoes/cadastro-massa/setores", cadastrarSetoresEmMassa);
+  app.delete("/api/localizacoes/:id/com-protecao", excluirComProtecao);
 
   // Migração para sistema unificado
   app.post("/api/migrate/unified-descriptions", runMigration);
