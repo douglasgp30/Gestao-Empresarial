@@ -626,9 +626,9 @@ export function ModalReceita() {
           <div className="text-center py-6">Carregando dados...</div>
         ) : (
           <div>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {/* Linha 1: Data, Valor, Forma de Pagamento e Valor Recebido (se cartão) */}
-              <div className="flex items-start gap-2">
+              <div className="flex items-end gap-2">
                 <div className="space-y-1 w-[140px]">
                   <Label htmlFor="data" className="text-xs font-medium">Data *</Label>
                   <Input
@@ -679,7 +679,7 @@ export function ModalReceita() {
 
                 {/* Campo Valor Recebido para Cartão - na sequência */}
                 {isFormaPagamentoCartao && (
-                  <div className="space-y-1 bg-yellow-50 rounded border border-yellow-200 p-2 w-[150px]">
+                  <div className="space-y-1 bg-yellow-50 rounded border border-yellow-200 p-1.5 w-[150px]">
                     <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700">
                       Valor Recebido *
                     </Label>
@@ -701,15 +701,15 @@ export function ModalReceita() {
                         required
                       />
                     </div>
-                    <p className="text-[10px] text-yellow-600">
-                      <strong>Importante:</strong> Valor líquido após taxas da operadora.
+                    <p className="text-[9px] text-yellow-600 mt-0.5">
+                      Valor após taxas
                     </p>
                   </div>
                 )}
               </div>
 
               {/* Categoria e Descrição */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
                   <Label htmlFor="categoria" className="text-xs font-medium">Categoria *</Label>
                   <Select
@@ -782,7 +782,7 @@ export function ModalReceita() {
               </div>
 
               {/* Técnico e Campanha */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
                   <Label htmlFor="tecnicoResponsavel" className="text-xs font-medium">
                     Técnico Responsável
@@ -864,7 +864,7 @@ export function ModalReceita() {
               </div>
 
               {/* Cidade e Setor */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
                   <Label htmlFor="cidade" className="text-xs font-medium">Cidade</Label>
                   <Select
