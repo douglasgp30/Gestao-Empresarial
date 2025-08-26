@@ -683,7 +683,7 @@ export function ModalReceita() {
                     <SelectContent>
                       {formasPagamento.map((forma) => (
                         <SelectItem key={forma.id} value={forma.id.toString()}>
-                          {forma.nome}
+                          {getFormaPagamentoDisplayName(forma)}
                         </SelectItem>
                       ))}
                     </SelectContent>
