@@ -94,6 +94,7 @@ export function ModalReceita() {
 
   // Hook para formatação de moeda
   const valorInput = useCurrencyInput();
+  const valorRecebidoInput = useCurrencyInput();
 
   // ✅ CORREÇÃO: useMemo estabilizado removendo dependência que pode causar re-renders
   const categoriasReceita = React.useMemo(() => {
