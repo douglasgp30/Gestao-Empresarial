@@ -374,9 +374,9 @@ input[type="checkbox"] {
     appearance: none !important;
 
     width: 28px !important;        /* largura do switch */
-    height: 8px !important;        /* altura bem pequena para visual oval */
+    height: 12px !important;       /* altura do switch - diminuída para ficar proporcional */
     border: none !important;
-    border-radius: 8px !important; /* arredondado mas não circular */
+    border-radius: 12px !important; /* totalmente arredondado proporcional à altura */
     cursor: pointer !important;
     position: relative !important;
     margin-right: 8px !important;
@@ -391,8 +391,8 @@ input[type="checkbox"]::before {
     position: absolute !important;
     top: 1px !important;
     left: 1px !important;
-    width: 6px !important;
-    height: 6px !important;
+    width: 10px !important;
+    height: 10px !important;
     border-radius: 50% !important;
     background-color: #666 !important; /* bolinha escura quando desligado */
     transition: all 0.2s ease !important;
@@ -404,7 +404,7 @@ input[type="checkbox"]:checked {
 }
 
 input[type="checkbox"]:checked::before {
-    left: 20px !important;          /* move bolinha para direita */
+    left: 16px !important;          /* move bolinha para direita */
     background-color: white !important; /* bolinha branca quando ligado */
 }
 
@@ -419,8 +419,8 @@ div input[type="checkbox"],
 form input[type="checkbox"],
 .checkbox input[type="checkbox"] {
     width: 28px !important;
-    height: 8px !important;
-    border-radius: 8px !important;
+    height: 12px !important;
+    border-radius: 12px !important;
     background-color: #ddd !important;
     border: none !important;
     position: relative !important;
@@ -431,43 +431,6 @@ body input[type="checkbox"]:checked,
 div input[type="checkbox"]:checked,
 form input[type="checkbox"]:checked {
     background-color: #007bff !important;
-}
-
-/* CSS ultra-específico para garantir switches ovais */
-* input[type="checkbox"] {
-    width: 28px !important;
-    height: 8px !important;
-    border-radius: 8px !important;
-    background-color: #ddd !important;
-    border: none !important;
-    margin-right: 8px !important;
-    position: relative !important;
-    cursor: pointer !important;
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-}
-
-* input[type="checkbox"]:checked {
-    background-color: #007bff !important;
-}
-
-/* Bolinha com tamanho específico */
-* input[type="checkbox"]::before {
-    content: "" !important;
-    position: absolute !important;
-    top: 1px !important;
-    left: 1px !important;
-    width: 6px !important;
-    height: 6px !important;
-    border-radius: 50% !important;
-    background-color: #666 !important;
-    transition: all 0.2s ease !important;
-}
-
-* input[type="checkbox"]:checked::before {
-    left: 20px !important;
-    background-color: white !important;
 }
 
 /* Tema escuro para switches */

@@ -11,13 +11,13 @@ const Checkbox = React.forwardRef<
     ref={ref}
     className={cn(
       // Checkbox transformado em switch moderno - igual ao Switch
-      "peer relative inline-flex h-2 w-7 shrink-0 cursor-pointer items-center rounded-full border-0 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#007bff] data-[state=unchecked]:bg-[#ddd] mr-2",
+      "peer relative inline-flex h-3 w-7 shrink-0 cursor-pointer items-center rounded-full border-0 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#007bff] data-[state=unchecked]:bg-[#ddd] mr-2",
       className,
     )}
     {...props}
   >
     {/* Bolinha que sempre existe e se move */}
-    <div className="absolute h-1.5 w-1.5 rounded-full transition-all duration-200 data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0.5 data-[state=checked]:bg-white data-[state=unchecked]:bg-gray-600"
+    <div className="absolute h-2.5 w-2.5 rounded-full transition-all duration-200 data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0.5 data-[state=checked]:bg-white data-[state=unchecked]:bg-gray-600"
          data-state={props.checked ? 'checked' : 'unchecked'} />
 
     {/* Indicator invisível mas necessário para funcionalidade */}
