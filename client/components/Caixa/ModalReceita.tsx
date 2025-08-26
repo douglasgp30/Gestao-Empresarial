@@ -507,7 +507,7 @@ export function ModalReceita() {
               title: "Atenção",
               description: isClienteError
                 ? "Receita lançada no Caixa, mas o cliente selecionado não foi encontrado. Verifique se o cliente existe no cadastro."
-                : "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o m��dulo Contas.",
+                : "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
               variant: "destructive",
             });
           }
