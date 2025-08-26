@@ -433,6 +433,43 @@ form input[type="checkbox"]:checked {
     background-color: #007bff !important;
 }
 
+/* CSS ultra-específico para garantir switches ovais */
+* input[type="checkbox"] {
+    width: 28px !important;
+    height: 8px !important;
+    border-radius: 8px !important;
+    background-color: #ddd !important;
+    border: none !important;
+    margin-right: 8px !important;
+    position: relative !important;
+    cursor: pointer !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+* input[type="checkbox"]:checked {
+    background-color: #007bff !important;
+}
+
+/* Bolinha com tamanho específico */
+* input[type="checkbox"]::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 1px !important;
+    left: 1px !important;
+    width: 6px !important;
+    height: 6px !important;
+    border-radius: 50% !important;
+    background-color: #666 !important;
+    transition: all 0.2s ease !important;
+}
+
+* input[type="checkbox"]:checked::before {
+    left: 20px !important;
+    background-color: white !important;
+}
+
 /* Tema escuro para switches */
 @media (prefers-color-scheme: dark) {
   input[type="checkbox"] {
