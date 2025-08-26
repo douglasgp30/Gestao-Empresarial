@@ -119,6 +119,14 @@ export default function Configuracoes() {
       errors.tempoSessao = "Tempo de sessão deve estar entre 5 e 480 minutos";
     }
 
+    if (abrirSiteNotaFiscal && !urlSiteNotaFiscal.trim()) {
+      errors.urlSiteNotaFiscal = "URL do site de nota fiscal é obrigatória quando a opção está ativada";
+    }
+
+    if (urlSiteNotaFiscal.trim() && !urlSiteNotaFiscal.startsWith("http")) {
+      errors.urlSiteNotaFiscal = "URL deve começar com http:// ou https://";
+    }
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
