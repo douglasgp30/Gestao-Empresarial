@@ -31,6 +31,7 @@ import { TesteBoleto } from "../components/Debug/TesteBoleto";
 import { TesteRapidoBoleto } from "../components/Debug/TesteRapidoBoleto";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
 import { TesteBasico } from "../components/Debug/TesteBasico";
+import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
 import {
   Settings,
   Building2,
@@ -243,7 +244,7 @@ export default function Configuracoes() {
       )}
 
       <Tabs defaultValue="empresa" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="empresa">
             <Building2 className="h-4 w-4 mr-2" />
             Empresa
@@ -271,6 +272,10 @@ export default function Configuracoes() {
           <TabsTrigger value="auditoria">
             <Shield className="h-4 w-4 mr-2" />
             Auditoria
+          </TabsTrigger>
+          <TabsTrigger value="debug">
+            <Settings className="h-4 w-4 mr-2" />
+            Debug
           </TabsTrigger>
         </TabsList>
 
