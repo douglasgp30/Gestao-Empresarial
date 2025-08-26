@@ -131,26 +131,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           `📊 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`,
         );
       } else {
-        // Se não existir, criar dados básicos
-        console.log(
-          "📊 [CaixaContext] Campanhas não encontradas, criando dados básicos",
-        );
-        const campanhasPadrao: Campanha[] = [
-          {
-            id: "1",
-            nome: "Campanha Principal",
-            descricao: "Campanha principal da empresa",
-          },
-          {
-            id: "2",
-            nome: "Sem Campanha",
-            descricao: "Lançamentos sem campanha específica",
-          },
-          { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" },
-        ];
-        setCampanhas(campanhasPadrao);
-        localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
-        console.log("✅ [CaixaContext] Campanhas padrão criadas e salvas");
+        // 🚫 REMOVIDO: Não criar dados automáticos - sistema deve ficar vazio
+        console.log("✅ [CaixaContext] Campanhas não encontradas - sistema vazio conforme solicitado");
+        setCampanhas([]);
       }
     } catch (error) {
       console.error("Erro ao carregar campanhas do localStorage:", error);
