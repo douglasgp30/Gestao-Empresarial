@@ -800,7 +800,7 @@ export default function ModalDescricoesSimples() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-2 mb-4">
+              <div className="grid grid-cols-12 gap-2 mb-4">
                 <select
                   value={formDescricao.categoria}
                   onChange={(e) =>
@@ -809,7 +809,7 @@ export default function ModalDescricoesSimples() {
                       categoria: e.target.value,
                     })
                   }
-                  className="p-2 border rounded"
+                  className="col-span-4 p-2 border rounded text-sm"
                 >
                   <option value="">Selecione uma categoria</option>
                   {(tipoAtivo === "receita"
@@ -827,16 +827,17 @@ export default function ModalDescricoesSimples() {
                   onChange={(e) =>
                     setFormDescricao({ ...formDescricao, nome: e.target.value })
                   }
+                  className="col-span-5 text-sm"
                 />
+                <Button
+                  onClick={handleAdicionarDescricao}
+                  disabled={isSaving}
+                  className="col-span-3 text-sm"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar
+                </Button>
               </div>
-              <Button
-                onClick={handleAdicionarDescricao}
-                disabled={isSaving}
-                className="mb-4"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Adicionar Descrição
-              </Button>
 
               <div className="space-y-2">
                 {(tipoAtivo === "receita"
