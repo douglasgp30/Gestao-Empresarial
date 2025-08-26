@@ -169,20 +169,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
 
       // Carregar formas de pagamento
-      const formasStorage = localStorage.getItem("formas_pagamento");
-      if (formasStorage) {
-        const formasParsed = JSON.parse(formasStorage);
-        setFormasPagamento(formasParsed);
-        console.log(
-          `📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`,
-        );
-      } else {
-        // 🚫 REMOVIDO: Não criar formas de pagamento padrão
-        console.log(
-          "✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado",
-        );
-        setFormasPagamento([]);
-      }
+      await carregarFormasPagamentoDaAPI();
 
       // Carregar localizações geográficas
       const localizacoesStorage = localStorage.getItem(
