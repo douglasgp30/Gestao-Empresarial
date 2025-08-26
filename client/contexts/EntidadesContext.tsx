@@ -450,20 +450,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           setDescricoesECategorias([]);
         }
 
-        // Carregar formas de pagamento
-        const formasStorage = localStorage.getItem("formas_pagamento");
-        if (formasStorage) {
-          const formasParsed = JSON.parse(formasStorage);
-          setFormasPagamento(formasParsed);
-          console.log(
-            `📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`,
-          );
-        } else {
-          console.log(
-            "✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio",
-          );
-          setFormasPagamento([]);
-        }
+        // Carregar formas de pagamento DA API
+        await carregarFormasPagamentoDaAPI();
 
         // Carregar localizações geográficas DO BANCO
         try {
