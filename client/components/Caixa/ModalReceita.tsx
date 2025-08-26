@@ -679,11 +679,11 @@ export function ModalReceita() {
 
                 {/* Campo Valor Recebido para Cartão - na sequência */}
                 {isFormaPagamentoCartao && (
-                  <div className="space-y-1 bg-yellow-50 rounded border border-yellow-200 p-2 w-[160px]">
-                    <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700">
+                  <div className="bg-yellow-50 rounded border border-yellow-200 p-2 w-[160px]">
+                    <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700 block mb-1">
                       Valor Recebido *
                     </Label>
-                    <div className="relative">
+                    <div className="relative mb-2">
                       <span className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
                       <Input
                         id="valorQueEntrou"
