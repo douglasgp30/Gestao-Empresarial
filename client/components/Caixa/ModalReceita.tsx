@@ -109,14 +109,8 @@ export function ModalReceita() {
   // Filtrar descrições pela categoria selecionada
   const descricoesFiltradas = React.useMemo(() => {
     if (!formData.categoria) return [];
-    const descricoes = getDescricoes("receita", formData.categoria);
-    console.log(
-      "[ModalReceita] Debug - Categoria selecionada:",
-      formData.categoria,
-    );
-    console.log("[ModalReceita] Debug - Descrições filtradas:", descricoes);
-    return descricoes;
-  }, [formData.categoria]); // Remover getDescricoes da dependência para evitar re-renders
+    return getDescricoes("receita", formData.categoria);
+  }, [formData.categoria, getDescricoes]); // Incluir dependência getDescricoes
 
   // Filtrar setores pela cidade selecionada (usando ID da cidade)
   const setoresFiltrados = React.useMemo(() => {
@@ -552,7 +546,7 @@ export function ModalReceita() {
       toast({
         title: "Sucesso",
         description: isBoleto
-          ? `Boleto registrado com sucesso! Receita lançada no Caixa e conta a receber criada automaticamente. Vencimento: ${dataVencimentoBoleto?.toLocaleDateString("pt-BR")}`
+          ? `Boleto registrado com sucesso! Receita lan��ada no Caixa e conta a receber criada automaticamente. Vencimento: ${dataVencimentoBoleto?.toLocaleDateString("pt-BR")}`
           : "Receita lançada com sucesso!",
         variant: "default",
       });
