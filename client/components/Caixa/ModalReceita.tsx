@@ -823,8 +823,13 @@ export function ModalReceita() {
                       {tecnicos.length === 0 ? (
                         <div className="px-2 py-1 text-sm text-gray-500">
                           <div className="font-medium">Nenhum técnico encontrado</div>
-                          <div className="text-xs mt-1">
-                            Cadastre funcionários em "Funcionários" e marque o tipo como "Técnico"
+                          <div className="text-xs mt-1 space-y-1">
+                            <div>1. Vá em "Funcionários" no menu</div>
+                            <div>2. Cadastre um funcionário</div>
+                            <div>3. Marque o tipo como "Técnico"</div>
+                            <div className="text-blue-600 mt-2">
+                              Campo opcional para este lançamento
+                            </div>
                           </div>
                         </div>
                       ) : (
@@ -875,7 +880,7 @@ export function ModalReceita() {
                         <div className="px-2 py-1 text-sm text-gray-500">
                           <div className="font-medium">Nenhuma campanha encontrada</div>
                           <div className="text-xs mt-1">
-                            As campanhas serão criadas automaticamente conforme você as usar nos lançamentos
+                            As campanhas ser��o criadas automaticamente conforme você as usar nos lançamentos
                           </div>
                         </div>
                       ) : (
