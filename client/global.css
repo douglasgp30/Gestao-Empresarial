@@ -367,41 +367,37 @@
   touch-action: manipulation;
 }
 
-/* Estilo geral dos checkboxes - CSS refinado fornecido pelo usuário */
+/* Força a estilização dos checkboxes */
 input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    width: 18px;          /* tamanho ajustado */
-    height: 18px;
-    border: 2px solid #333;  /* borda fina */
-    border-radius: 3px;      /* leve arredondamento */
-    background: white;
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
-    vertical-align: middle;
-    margin-right: 8px; /* espaço entre o texto */
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+
+    width: 16px !important;       /* tamanho menor */
+    height: 16px !important;
+    border: 1.5px solid #333 !important; /* borda mais fina */
+    border-radius: 3px !important;
+    cursor: pointer !important;
+    position: relative !important;
+    margin-right: 6px !important; /* espaço para o texto */
+    background-color: #fff !important;
+    vertical-align: middle !important;
 }
 
 /* Quando marcado */
-input[type="checkbox"]:checked {
-    background: white;
-    border-color: #333;
-}
-
 input[type="checkbox"]:checked::after {
-    content: "✔";
-    position: absolute;
-    top: -2px;
-    left: 2px;
-    font-size: 16px;
-    color: #000; /* cor do check */
+    content: "✔" !important;
+    position: absolute !important;
+    top: -3px !important;
+    left: 1px !important;
+    font-size: 14px !important;
+    color: #0f5132 !important; /* verde discreto */
+    font-weight: bold !important;
 }
 
-/* Efeito de hover */
+/* Hover */
 input[type="checkbox"]:hover {
-    border-color: #000;
+    border-color: #000 !important;
 }
 
 /* Tema escuro */
