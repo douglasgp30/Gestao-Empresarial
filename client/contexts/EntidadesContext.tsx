@@ -384,65 +384,73 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
     console.log("🚀 [EntidadesContext] INICIALIZAÇÃO IMEDIATA");
 
-    // FORÇAR carregamento SÍNCRONO e imediato
-    try {
-      console.log("📂 [EntidadesContext] Carregando dados do localStorage...");
+    // FORÇAR carregamento SÍNCRONO e imediato, mas também buscar do banco
+    const carregamentoCompleto = async () => {
+      try {
+        console.log("📂 [EntidadesContext] Carregando dados...");
 
-      // Carregar descrições e categorias
-      const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
-      if (descricoesStorage) {
-        const parsed = JSON.parse(descricoesStorage);
-        const arrayParsed = Array.isArray(parsed) ? parsed : [];
-        setDescricoesECategorias(arrayParsed);
-        console.log(
-          `📂 [EntidadesContext] ${arrayParsed.length} descrições/categorias carregadas`,
-        );
-      } else {
-        console.log(
-          "📂 [EntidadesContext] Descrições não encontradas, criando dados básicos",
-        );
-        criarDadosBasicos();
-        return; // Sair aqui pois criarDadosBasicos já carrega tudo
-      }
+        // Carregar descrições e categorias
+        const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
+        if (descricoesStorage) {
+          const parsed = JSON.parse(descricoesStorage);
+          const arrayParsed = Array.isArray(parsed) ? parsed : [];
+          setDescricoesECategorias(arrayParsed);
+          console.log(
+            `📂 [EntidadesContext] ${arrayParsed.length} descrições/categorias carregadas`,
+          );
+        } else {
+          console.log(
+            "📂 [EntidadesContext] Descrições não encontradas, sistema vazio",
+          );
+          setDescricoesECategorias([]);
+        }
 
-      // Carregar formas de pagamento
-      const formasStorage = localStorage.getItem("formas_pagamento");
-      if (formasStorage) {
-        const formasParsed = JSON.parse(formasStorage);
-        setFormasPagamento(formasParsed);
-        console.log(
-          `📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`,
-        );
-      } else {
-        // 🚫 REMOVIDO: Não criar formas de pagamento padrão
-        console.log(
-          "✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado",
-        );
+        // Carregar formas de pagamento
+        const formasStorage = localStorage.getItem("formas_pagamento");
+        if (formasStorage) {
+          const formasParsed = JSON.parse(formasStorage);
+          setFormasPagamento(formasParsed);
+          console.log(
+            `📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`,
+          );
+        } else {
+          console.log(
+            "✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio",
+          );
+          setFormasPagamento([]);
+        }
+
+        // Carregar localizações geográficas DO BANCO
+        try {
+          const response = await fetch("/api/localizacoes-geograficas");
+          if (response.ok) {
+            const localizacoes = await response.json();
+            setLocalizacoesGeograficas(localizacoes);
+            console.log(
+              `🌐 [EntidadesContext] ${localizacoes.length} localizações carregadas do banco`,
+            );
+          } else {
+            console.warn("⚠️ [EntidadesContext] Erro ao buscar localizações do banco");
+            setLocalizacoesGeograficas([]);
+          }
+        } catch (fetchError) {
+          console.warn("⚠️ [EntidadesContext] Erro de conexão ao buscar localizações:", fetchError);
+          setLocalizacoesGeograficas([]);
+        }
+
+        console.log("✅ [EntidadesContext] Carregamento imediato concluído");
+      } catch (error) {
+        console.error("Erro ao carregar dados do EntidadesContext:", error);
+        setError("Erro ao carregar dados");
+        // Sistema vazio em caso de erro
+        setDescricoesECategorias([]);
+        setLocalizacoesGeograficas([]);
         setFormasPagamento([]);
       }
+    };
 
-      // Carregar localizações geográficas
-      const localizacoesStorage = localStorage.getItem(
-        "localizacoes_geograficas",
-      );
-      if (localizacoesStorage) {
-        const localizacoesParsed = JSON.parse(localizacoesStorage);
-        setLocalizacoesGeograficas(localizacoesParsed);
-        console.log(
-          `📂 [EntidadesContext] ${localizacoesParsed.length} localizações carregadas`,
-        );
-      } else {
-        setLocalizacoesGeograficas([]);
-      }
-
-      console.log("✅ [EntidadesContext] Carregamento imediato concluído");
-    } catch (error) {
-      console.error("Erro ao carregar dados do EntidadesContext:", error);
-      setError("Erro ao carregar dados");
-      // Em caso de erro, criar dados básicos
-      criarDadosBasicos();
-    }
-  }, [criarDadosBasicos]);
+    carregamentoCompleto();
+  }, []);
 
   // === FUNÇÕES PARA DESCRIÇÕES E CATEGORIAS ===
   const criarDescricaoOuCategoria = useCallback(async (novoItem: any) => {
