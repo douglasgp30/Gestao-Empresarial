@@ -268,6 +268,10 @@ export default function ModalDescricoesSimples() {
       const result = await response.json();
       console.log("✅ Categoria criada:", result);
 
+      // A API retorna {data: {...}}, então acessamos result.data
+      const categoriaCriada = result.data || result;
+      console.log("✅ Dados da categoria criada:", categoriaCriada);
+
       toast.success("Categoria adicionada com sucesso");
       setFormCategoria({ nome: "" });
 
