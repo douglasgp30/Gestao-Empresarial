@@ -452,11 +452,20 @@ export default function ModalDescricoesSimples() {
 
         // Mostrar erro de forma adequada baseado no tipo
         if (isDependencyError) {
-          // Para erros de dependência de categoria, permitir visualizar dependências
+          // Para erros de dependência, oferecer exclusão forçada
+          toast.error(`Não é possível excluir ${itemToDelete.tipo === "categoria" ? "categoria" : "descrição"}`, {
+            duration: 15000,
+            description: errorMessage,
+            action: {
+              label: "Excluir Mesmo Assim",
+              onClick: () => handleForceDelete(),
+            },
+          });
+
+          // Se for categoria, também permitir ver dependências
           if (itemToDelete.tipo === "categoria") {
-            toast.error("Não é possível excluir esta categoria", {
-              duration: 12000,
-              description: errorMessage,
+            toast.info("Você também pode visualizar as dependências", {
+              duration: 8000,
               action: {
                 label: "Ver Dependências",
                 onClick: () => {
