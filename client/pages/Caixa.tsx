@@ -43,7 +43,6 @@ export default function Caixa() {
           <ModalCampanhasSimples />
           <ModalDescricoesSimples />
           <ModalCidadesSimples />
-          <ModalGerenciarCidades />
         </div>
 
         {/* Totais alinhados à direita */}
