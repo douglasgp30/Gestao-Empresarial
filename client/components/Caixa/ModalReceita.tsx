@@ -606,13 +606,13 @@ export function ModalReceita() {
           Receitas
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-green-600 text-lg sm:text-xl">
-            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+          <DialogTitle className="flex items-center gap-2 text-green-600 text-xl font-bold">
+            <TrendingUp className="h-5 w-5" />
             Lançar Receita
           </DialogTitle>
-          <DialogDescription className="text-sm">
+          <DialogDescription className="text-gray-600">
             Registre uma nova entrada no caixa
           </DialogDescription>
         </DialogHeader>
@@ -621,11 +621,11 @@ export function ModalReceita() {
           <div className="text-center py-6">Carregando dados...</div>
         ) : (
           <div>
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              {/* Campos básicos */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="data">Data *</Label>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Linha 1: Data, Valor, Forma de Pagamento */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="data" className="text-sm font-medium">Data *</Label>
                   <Input
                     id="data"
                     type="date"
@@ -634,31 +634,101 @@ export function ModalReceita() {
                       setFormData((prev) => ({ ...prev, data: e.target.value }))
                     }
                     required
+                    className="h-9"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="valor">Valor (R$) *</Label>
-                  <Input
-                    id="valor"
-                    type="number"
-                    step="0.01"
-                    placeholder="0,00"
-                    value={formData.valor}
-                    onChange={(e) =>
+                <div className="space-y-1">
+                  <Label htmlFor="valor" className="text-sm font-medium">Valor *</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                    <Input
+                      id="valor"
+                      type="number"
+                      step="0.01"
+                      placeholder="0,00"
+                      value={formData.valor}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          valor: e.target.value,
+                        }))
+                      }
+                      required
+                      className="h-9 pl-8"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="formaPagamento" className="text-sm font-medium">Forma de Pagamento *</Label>
+                  <Select
+                    value={formData.formaPagamento}
+                    onValueChange={(value) =>
                       setFormData((prev) => ({
                         ...prev,
-                        valor: e.target.value,
+                        formaPagamento: value,
                       }))
                     }
-                    required
-                  />
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="Selecione a forma" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {formasPagamento.map((forma) => (
+                        <SelectItem key={forma.id} value={forma.id.toString()}>
+                          {forma.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="categoria">Categoria *</Label>
+              {/* Campo Valor Recebido para Cartão */}
+              {isFormaPagamentoCartao && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <div className="text-xs text-yellow-800 mb-2 font-medium">
+                    Isso aqui só é exibido caso a forma de pagamento seja cartão
+                  </div>
+                  <div className="space-y-1">
+                    <Label
+                      htmlFor="valorQueEntrou"
+                      className="text-sm font-medium text-yellow-700"
+                    >
+                      Valor Recebido *
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <div className="relative w-32">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                        <Input
+                          id="valorQueEntrou"
+                          type="number"
+                          step="0.01"
+                          placeholder="0,00"
+                          value={formData.valorQueEntrou}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              valorQueEntrou: e.target.value,
+                            }))
+                          }
+                          className="bg-white border-yellow-300 pl-8 h-9"
+                          required
+                        />
+                      </div>
+                      <p className="text-xs text-yellow-600 flex-1">
+                        <strong>Importante:</strong> Valor líquido após taxas da operadora.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Categoria e Descrição */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="categoria" className="text-sm font-medium">Categoria *</Label>
                   <Select
                     value={formData.categoria}
                     onValueChange={(value) => {
@@ -670,7 +740,7 @@ export function ModalReceita() {
                       }));
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9">
                       <SelectValue placeholder="Selecione a categoria" />
                     </SelectTrigger>
                     <SelectContent>
@@ -683,12 +753,12 @@ export function ModalReceita() {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="descricao">Descrição do Serviço *</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="descricao" className="text-sm font-medium">Descrição do Serviço *</Label>
                   <Select
                     value={formData.descricaoId}
                     onValueChange={(value) => {
-                      // Buscar a descriç��o selecionada para salvar o nome e ID
+                      // Buscar a descrição selecionada para salvar o nome e ID
                       const descricaoSelecionada = descricoesFiltradas.find(
                         (d) => d.id?.toString() === value,
                       );
@@ -700,11 +770,11 @@ export function ModalReceita() {
                     }}
                     disabled={!formData.categoria}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9">
                       <SelectValue
                         placeholder={
                           formData.categoria
-                            ? "Selecione a descrição"
+                            ? "Primeiro selecione uma categoria"
                             : "Primeiro selecione uma categoria"
                         }
                       />
@@ -728,74 +798,10 @@ export function ModalReceita() {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="formaPagamento">Forma de Pagamento *</Label>
-                  <Select
-                    value={formData.formaPagamento}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        formaPagamento: value,
-                      }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a forma" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {formasPagamento.map((forma) => (
-                        <SelectItem key={forma.id} value={forma.id.toString()}>
-                          {forma.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Campo Valor Recebido para Cartão - logo após forma de pagamento */}
-                {isFormaPagamentoCartao && (
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="valorQueEntrou"
-                      className="text-sm font-medium text-yellow-700"
-                    >
-                      Valor Recebido *
-                    </Label>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="relative w-full sm:w-40">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-                          R$
-                        </span>
-                        <Input
-                          id="valorQueEntrou"
-                          type="number"
-                          step="0.01"
-                          placeholder="0,00"
-                          value={formData.valorQueEntrou}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              valorQueEntrou: e.target.value,
-                            }))
-                          }
-                          className="bg-yellow-50 border-yellow-300 pl-8"
-                          required
-                        />
-                      </div>
-                      <p className="text-xs text-yellow-600 sm:flex-1">
-                        <strong>Importante:</strong> Valor líquido após taxas da
-                        operadora.
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Técnico e Campanha na mesma linha */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="tecnicoResponsavel">
+              {/* Técnico e Campanha */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="tecnicoResponsavel" className="text-sm font-medium">
                     Técnico Responsável
                   </Label>
                   <Select
@@ -807,7 +813,7 @@ export function ModalReceita() {
                       }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9">
                       <SelectValue placeholder="Selecione o técnico" />
                     </SelectTrigger>
                     <SelectContent>
@@ -836,7 +842,7 @@ export function ModalReceita() {
                                 {tecnico.nome || tecnico.nomeCompleto}
                                 {percentual > 0 && (
                                   <span className="text-xs text-gray-500 ml-2">
-                                    ({percentual}% comiss��o)
+                                    ({percentual}% comissão)
                                   </span>
                                 )}
                               </SelectItem>
@@ -847,15 +853,15 @@ export function ModalReceita() {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="campanha">Campanha</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="campanha" className="text-sm font-medium">Campanha</Label>
                   <Select
                     value={formData.campanha}
                     onValueChange={(value) =>
                       setFormData((prev) => ({ ...prev, campanha: value }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9">
                       <SelectValue placeholder="Selecione a campanha" />
                     </SelectTrigger>
                     <SelectContent>
@@ -874,10 +880,10 @@ export function ModalReceita() {
                 </div>
               </div>
 
-              {/* Cidade e Setor na mesma linha */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cidade">Cidade</Label>
+              {/* Cidade e Setor */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="cidade" className="text-sm font-medium">Cidade</Label>
                   <Select
                     value={formData.cidadeId || ""}
                     onValueChange={(value) =>
@@ -890,7 +896,7 @@ export function ModalReceita() {
                       }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9">
                       <SelectValue placeholder="Selecione a cidade" />
                     </SelectTrigger>
                     <SelectContent>
@@ -903,8 +909,8 @@ export function ModalReceita() {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="setor">Setor</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="setor" className="text-sm font-medium">Setor</Label>
                   <Select
                     value={formData.setorId || ""}
                     onValueChange={(value) => {
@@ -916,11 +922,11 @@ export function ModalReceita() {
                       }));
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9">
                       <SelectValue
                         placeholder={
                           formData.cidadeId
-                            ? "Selecione o setor"
+                            ? "Primeiro selecione uma cidade"
                             : "Primeiro selecione uma cidade"
                         }
                       />
@@ -937,10 +943,10 @@ export function ModalReceita() {
               </div>
 
               {/* Cliente */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label
                   htmlFor="cliente"
-                  className={isBoleto ? "text-red-600 font-semibold" : ""}
+                  className={`text-sm font-medium ${isBoleto ? "text-red-600 font-semibold" : ""}`}
                 >
                   Cliente {isBoleto && "*"}
                 </Label>
@@ -953,15 +959,9 @@ export function ModalReceita() {
                     required={isBoleto}
                   >
                     <SelectTrigger
-                      className={`flex-1 ${isBoleto && !formData.cliente ? "border-red-500" : ""}`}
+                      className={`flex-1 h-9 ${isBoleto && !formData.cliente ? "border-red-500" : ""}`}
                     >
-                      <SelectValue
-                        placeholder={
-                          isBoleto
-                            ? "Selecione um cliente (obrigatório para boleto)"
-                            : "Selecione um cliente"
-                        }
-                      />
+                      <SelectValue placeholder="Selecione um cliente" />
                     </SelectTrigger>
                     <SelectContent>
                       {clientes.map((cliente) => (
@@ -981,6 +981,7 @@ export function ModalReceita() {
                     size="icon"
                     title="Adicionar Cliente"
                     onClick={() => setIsModalClienteOpen(true)}
+                    className="h-9 w-9"
                   >
                     <UserPlus className="h-4 w-4" />
                   </Button>
@@ -1057,7 +1058,7 @@ export function ModalReceita() {
               )}
 
               {/* Nota Fiscal */}
-              <div className="space-y-3 p-3 bg-blue-50 rounded-lg border">
+              <div className="space-y-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="nota-fiscal"
@@ -1077,23 +1078,19 @@ export function ModalReceita() {
                     }}
                     className="data-[state=checked]:bg-blue-600"
                   />
-                  <Label htmlFor="nota-fiscal" className="font-medium text-sm">
+                  <Label htmlFor="nota-fiscal" className="font-medium text-sm text-blue-800">
                     Há nota fiscal para esta receita?
                   </Label>
                 </div>
 
                 {formData.temNotaFiscal && (
-                  <div className="space-y-3 pl-6">
-                    <div className="text-xs text-blue-600">
-                      ℹ️ O site da nota fiscal foi aberto automaticamente. Após
-                      emitir, preencha o número abaixo.
+                  <div className="space-y-2 pl-6">
+                    <div className="text-xs text-blue-600 mb-2">
+                      ℹ️ O site da nota fiscal foi aberto automaticamente. Após emitir, preencha o número abaixo.
                     </div>
 
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="numeroNotaObrigatorio"
-                        className="text-sm"
-                      >
+                    <div className="space-y-1">
+                      <Label htmlFor="numeroNotaObrigatorio" className="text-sm font-medium">
                         Número da Nota Fiscal *
                       </Label>
                       <Input
@@ -1107,11 +1104,11 @@ export function ModalReceita() {
                           }))
                         }
                         required={formData.temNotaFiscal}
-                        className={
+                        className={`h-9 bg-white ${
                           formData.temNotaFiscal && !formData.numeroNota
                             ? "border-red-500"
-                            : ""
-                        }
+                            : "border-blue-300"
+                        }`}
                       />
                       {formData.temNotaFiscal && !formData.numeroNota && (
                         <p className="text-xs text-red-500">
@@ -1123,9 +1120,9 @@ export function ModalReceita() {
                 )}
               </div>
 
-              {/* Observações - Campo no final */}
-              <div className="space-y-2">
-                <Label htmlFor="observacoes">Observações do Serviço</Label>
+              {/* Observações */}
+              <div className="space-y-1">
+                <Label htmlFor="observacoes" className="text-sm font-medium">Observa��ões do Serviço</Label>
                 <Textarea
                   id="observacoes"
                   placeholder="Observações sobre o serviço prestado..."
@@ -1136,7 +1133,8 @@ export function ModalReceita() {
                       observacoes: e.target.value,
                     }))
                   }
-                  rows={3}
+                  rows={2}
+                  className="resize-none"
                 />
               </div>
 
@@ -1244,7 +1242,7 @@ export function ModalReceita() {
                 </div>
               )}
 
-              <div className="flex gap-2 pt-4">
+              <div className="flex gap-3 pt-4">
                 <Button
                   type="button"
                   variant="outline"
@@ -1252,13 +1250,13 @@ export function ModalReceita() {
                     resetForm();
                     setIsOpen(false);
                   }}
-                  className="flex-1"
+                  className="flex-1 h-10"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
-                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  className="flex-1 bg-green-600 hover:bg-green-700 h-10 font-medium"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Lançando..." : "Lançar Receita"}
