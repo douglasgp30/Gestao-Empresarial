@@ -110,20 +110,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         // Check if user is already logged in (localStorage)
+        console.log("🔍 [AuthContext] Etapa 3: Verificando usuário logado...");
         const savedUser = localStorage.getItem("auth_user");
+        console.log("📋 [AuthContext] auth_user:", savedUser ? "EXISTE" : "NÃO EXISTE");
+
         if (savedUser) {
           try {
             const parsedUser = JSON.parse(savedUser);
+            console.log("👤 [AuthContext] Usuário logado encontrado:", parsedUser.nomeCompleto);
             setUser(parsedUser);
 
             // Verificar backup automático para usuários já logados (refresh da página)
             performAutomaticBackupIfNeeded();
           } catch (error) {
+            console.error("❌ [AuthContext] Erro ao parsear usuário logado:", error);
             localStorage.removeItem("auth_user");
           }
+        } else {
+          console.log("ℹ️ [AuthContext] Nenhum usuário logado encontrado");
         }
+
+        console.log("✅ [AuthContext] Inicialização concluída com sucesso");
       } catch (error) {
-        console.error("Erro na inicialização do sistema:", error);
+        console.error("❌ [AuthContext] Erro na inicialização do sistema:", error);
       } finally {
         setIsLoading(false);
       }
