@@ -125,47 +125,35 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const carregarCampanhas = useCallback(async () => {
     try {
       console.log("📊 [CaixaContext] Carregando campanhas...");
-      console.log("📊 [CaixaContext] User definido:", !!user, user);
 
       // Tentar carregar da API primeiro (sempre)
       try {
-        console.log("📊 [CaixaContext] Chamando campanhasApi.listar()...");
         const response = await campanhasApi.listar();
-        console.log("📊 [CaixaContext] Resposta da API:", response);
 
         if (!response.error && Array.isArray(response.data)) {
           const campanhasFromApi = response.data;
-          console.log("📊 [CaixaContext] Campanhas da API:", campanhasFromApi);
           // Salvar no localStorage para cache
           localStorage.setItem("campanhas", JSON.stringify(campanhasFromApi));
           setCampanhas(campanhasFromApi);
           console.log(
-            `📊 [CaixaContext] ${campanhasFromApi.length} campanhas carregadas da API e salvas no localStorage`,
+            `📊 [CaixaContext] ${campanhasFromApi.length} campanhas carregadas da API`,
           );
           return;
-        } else {
-          console.log("📊 [CaixaContext] API retornou erro ou dados inválidos:", response.error);
         }
       } catch (apiError) {
         console.warn("📊 [CaixaContext] Erro ao carregar campanhas da API, usando localStorage", apiError);
       }
 
       // Fallback para localStorage
-      console.log("📊 [CaixaContext] Carregando do localStorage...");
       const campanhasStorage = localStorage.getItem("campanhas");
-      console.log("📊 [CaixaContext] localStorage campanhas:", campanhasStorage);
 
       if (campanhasStorage) {
         const campanhas = JSON.parse(campanhasStorage);
-        console.log("📊 [CaixaContext] Campanhas parseadas do localStorage:", campanhas);
         setCampanhas(campanhas || []);
         console.log(
           `📊 [CaixaContext] ${campanhas?.length || 0} campanhas carregadas do localStorage`,
         );
       } else {
-        console.log(
-          "✅ [CaixaContext] Nenhuma campanha encontrada no localStorage",
-        );
         setCampanhas([]);
       }
     } catch (error) {
