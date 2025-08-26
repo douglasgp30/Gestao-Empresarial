@@ -685,7 +685,7 @@ export function ModalReceita() {
                       <SelectValue placeholder="Selecione a forma" />
                     </SelectTrigger>
                     <SelectContent>
-                      {formasPagamento.map((forma) => (
+                      {ordenarFormasPagamento(formasPagamento).map((forma) => (
                         <SelectItem key={forma.id} value={forma.id.toString()}>
                           {getFormaPagamentoDisplayName(forma)}
                         </SelectItem>
