@@ -48,6 +48,9 @@ export function ModalReceita() {
     getCategorias,
     getDescricoes,
     adicionarDescricaoECategoria,
+    // Funções para localização geográfica
+    getCidades,
+    getSetores,
   } = useEntidades();
   const {
     clientes,
