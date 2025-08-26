@@ -253,21 +253,9 @@ export function ContasProvider({ children }: { children: React.ReactNode }) {
           const formasParsed = JSON.parse(formasStorage);
           setFormasPagamento(formasParsed || []);
         } else {
-          // Dados padrão se não houver no localStorage
-          setFormasPagamento([
-            { id: 1, nome: "Dinheiro", descricao: "Pagamento em dinheiro" },
-            { id: 2, nome: "PIX", descricao: "Pagamento via PIX" },
-            {
-              id: 3,
-              nome: "Cartao de Debito",
-              descricao: "Pagamento com cartao de debito",
-            },
-            {
-              id: 4,
-              nome: "Cartao de Credito",
-              descricao: "Pagamento com cartao de credito",
-            },
-          ] as FormaPagamento[]);
+          // 🚫 REMOVIDO: Não criar dados padrão - sistema deve ficar vazio
+          console.log("✅ [ContasContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado");
+          setFormasPagamento([]);
         }
       } catch (error) {
         console.warn("Erro ao carregar formas de pagamento:", error);
