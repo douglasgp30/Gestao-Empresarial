@@ -307,7 +307,7 @@ export function ModalDespesa() {
                   setFormData((prev) => ({ ...prev, formaPagamento: value }))
                 }
                 placeholder="Selecione a forma"
-                options={formasPagamento.map((forma) => ({
+                options={ordenarFormasPagamento(formasPagamento).map((forma) => ({
                   value: forma.id.toString(),
                   label: getFormaPagamentoDisplayName(forma),
                 }))}
