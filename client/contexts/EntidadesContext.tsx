@@ -196,6 +196,64 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     }
   }, [criarDadosBasicos]);
 
+  // === FUNÇÃO ESPECÍFICA PARA CARREGAR FORMAS DE PAGAMENTO DA API ===
+  const carregarFormasPagamentoDaAPI = useCallback(async () => {
+    try {
+      console.log(
+        "🔄 [EntidadesContext] Carregando formas de pagamento da API...",
+      );
+
+      try {
+        // Primeiro tentar buscar do servidor
+        const response = await fetch("/api/formas-pagamento");
+        if (response.ok) {
+          const formasServidor = await response.json();
+
+          console.log(
+            `🌐 [EntidadesContext] ${formasServidor.length} formas de pagamento carregadas da API`,
+          );
+
+          setFormasPagamento(formasServidor);
+
+          // Salvar no localStorage para cache
+          try {
+            localStorage.setItem("formas_pagamento", JSON.stringify(formasServidor));
+            console.log("💾 [EntidadesContext] Formas de pagamento sincronizadas no localStorage");
+          } catch (storageError) {
+            console.warn("⚠️ [EntidadesContext] Erro ao salvar formas de pagamento no localStorage:", storageError);
+          }
+
+          return;
+        } else {
+          console.warn("⚠️ [EntidadesContext] Servidor retornou erro para formas de pagamento, usando localStorage como fallback");
+        }
+      } catch (fetchError) {
+        console.warn("⚠️ [EntidadesContext] Erro ao conectar com servidor para formas de pagamento, usando localStorage como fallback:", fetchError);
+      }
+
+      // Fallback: carregar do localStorage se servidor falhar
+      const formasStorage = localStorage.getItem("formas_pagamento");
+      if (formasStorage) {
+        const formasParsed = JSON.parse(formasStorage);
+        setFormasPagamento(formasParsed);
+        console.log(
+          `💾 [EntidadesContext] ${formasParsed.length} formas de pagamento recarregadas do localStorage (fallback)`,
+        );
+      } else {
+        console.log(
+          "📭 [EntidadesContext] Nenhuma forma de pagamento encontrada no localStorage",
+        );
+        setFormasPagamento([]);
+      }
+    } catch (error) {
+      console.error(
+        "❌ [EntidadesContext] Erro ao carregar formas de pagamento:",
+        error,
+      );
+      setFormasPagamento([]);
+    }
+  }, []);
+
   // === FUNÇÃO ESPECÍFICA PARA RECARREGAR DESCRIÇÕES E CATEGORIAS ===
   const recarregarDescricoesECategorias = useCallback(async () => {
     try {
