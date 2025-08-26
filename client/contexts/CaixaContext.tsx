@@ -360,7 +360,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   };
 
   // Adicionar lançamento (estabilizado com useCallback)
-  const adicionarLancamento = async (
+  const adicionarLancamento = useCallback(async (
     novoLancamento: Omit<LancamentoCaixa, "id" | "funcionarioId">,
   ) => {
     try {
@@ -408,7 +408,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       });
 
       console.log(
-        "✅ [CaixaContext] Lançamento adicionado com sucesso:",
+        "✅ [CaixaContext] Lan��amento adicionado com sucesso:",
         novoId,
       );
       console.log(
@@ -422,7 +422,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.error("❌ [CaixaContext] Erro ao adicionar lançamento:", error);
       throw error;
     }
-  };
+  }, [user]);
 
   const editarLancamento = async (
     id: string,
