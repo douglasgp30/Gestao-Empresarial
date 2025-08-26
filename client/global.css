@@ -443,6 +443,33 @@ form input[type="checkbox"]:checked::after {
     z-index: 1 !important;
 }
 
+/* Força estilos para elementos Radix */
+[data-radix-checkbox-root] {
+    width: 16px !important;
+    height: 16px !important;
+    border: 1.5px solid #333 !important;
+    border-radius: 3px !important;
+    background-color: #fff !important;
+    margin-right: 6px !important;
+}
+
+[data-radix-checkbox-indicator] {
+    color: #0f5132 !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+}
+
+/* Força para qualquer button com role checkbox */
+button[role="checkbox"] {
+    width: 16px !important;
+    height: 16px !important;
+    border: 1.5px solid #333 !important;
+    border-radius: 3px !important;
+    background-color: #fff !important;
+    margin-right: 6px !important;
+    padding: 0 !important;
+}
+
 /* Tema escuro */
 @media (prefers-color-scheme: dark) {
   input[type="checkbox"] {
