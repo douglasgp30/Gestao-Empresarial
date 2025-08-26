@@ -37,6 +37,8 @@ export function ModalDespesa() {
     // Unified data source
     getCategorias,
     getDescricoes,
+    getCidades,
+    getSetores,
     adicionarDescricaoECategoria,
   } = useEntidades();
 
@@ -315,12 +317,14 @@ export function ModalDespesa() {
               <div className="space-y-2">
                 <Label htmlFor="cidade">Cidade</Label>
                 <Select
-                  value={formData.cidade}
+                  value={formData.cidadeId || ""}
                   onValueChange={(value) =>
                     setFormData((prev) => ({
                       ...prev,
-                      cidade: value,
+                      cidadeId: value,
+                      cidade: getCidades().find(c => c.id.toString() === value)?.nome || "",
                       setor: "", // Limpar setor quando cidade muda
+                      setorId: "", // Limpar ID do setor quando cidade muda
                     }))
                   }
                 >
@@ -328,16 +332,11 @@ export function ModalDespesa() {
                     <SelectValue placeholder="Selecione a cidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(Array.isArray(cidades) ? cidades : []).map(
-                      (cidade, index) => (
-                        <SelectItem
-                          key={`cidade-${index}-${cidade}`}
-                          value={cidade}
-                        >
-                          {cidade}
-                        </SelectItem>
-                      ),
-                    )}
+                    {getCidades().map((cidade) => (
+                      <SelectItem key={cidade.id} value={cidade.id.toString()}>
+                        {cidade.nome}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -345,15 +344,20 @@ export function ModalDespesa() {
               <div className="space-y-2">
                 <Label htmlFor="setor">Setor</Label>
                 <Select
-                  value={formData.setor}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, setor: value }))
-                  }
+                  value={formData.setorId || ""}
+                  onValueChange={(value) => {
+                    const setorSelecionado = setoresFiltrados.find(s => s.id.toString() === value);
+                    setFormData((prev) => ({
+                      ...prev,
+                      setorId: value,
+                      setor: setorSelecionado?.id.toString() || "", // Usar ID para compatibilidade
+                    }));
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue
                       placeholder={
-                        formData.cidade
+                        formData.cidadeId
                           ? "Selecione o setor"
                           : "Primeiro selecione uma cidade"
                       }
