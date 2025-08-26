@@ -32,7 +32,6 @@ export function ModalDespesa() {
     formasPagamento,
     setores,
     cidades,
-    adicionarDescricao,
     adicionarFormaPagamento,
     isLoading: entidadesLoading,
     // Unified data source
