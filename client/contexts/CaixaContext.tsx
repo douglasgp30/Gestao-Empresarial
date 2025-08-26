@@ -72,7 +72,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isExcluindo, setIsExcluindo] = useState(false);
   const [filtros, setFiltros] = useState(() => {
-    // MUDANÇA: Filtrar por período mais amplo (último mês) para garantir que receitas recém-criadas apareçam
+    // MUDAN��A: Filtrar por período mais amplo (último mês) para garantir que receitas recém-criadas apareçam
     const agora = new Date();
     const inicioMes = new Date(
       agora.getFullYear(),
@@ -350,7 +350,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       carregarLancamentosLocalStorage();
       console.log("✅ [CaixaContext] Dados carregados imediatamente");
     } catch (error) {
-      console.error("Erro na inicialização:", error);
+      console.error("Erro na inicializaç��o:", error);
       // Se falhar, criar dados básicos
       criarDadosBasicos();
     }
@@ -371,11 +371,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Função para atualizar filtros SEM recarregamento automático
-  const atualizarFiltros = (novosFiltros: any) => {
+  // Função para atualizar filtros SEM recarregamento automático - estabilizada com useCallback
+  const atualizarFiltros = useCallback((novosFiltros: any) => {
     setFiltros(novosFiltros);
     console.log("📅 [CaixaContext] Filtros atualizados");
-  };
+  }, []);
 
   // ✅ FUNÇÃO DE VALIDAÇÃO para evitar regressões
   const validarLancamento = (lancamento: any, contexto: string) => {
@@ -757,8 +757,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     });
   }, [lancamentos, filtros]);
 
+  // ✅ OTIMIZAÇÃO: Cálculo de totais otimizado para evitar recriação desnecessária
   const totais = useMemo(() => {
-    const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
+    // Cache das funções de filtro para evitar recriação
+    const isReceitaCache = (l: any) => l.tipo === "receita";
+    const isDespesaCache = (l: any) => l.tipo === "despesa";
+
+    const receitasCompletas = lancamentos.filter(isReceitaCache);
     const receitasBoleto = receitasCompletas.filter(isBoleto);
     const receitasNaoBoleto = receitasCompletas.filter((l) => !isBoleto(l));
 
@@ -789,7 +794,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
     const despesas = lancamentos
-      .filter((l) => l.tipo === "despesa")
+      .filter(isDespesaCache)
       .reduce((total, l) => total + l.valor, 0);
     const comissoes = receitasNaoBoleto
       .filter((l) => l.comissao)
@@ -805,8 +810,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       saldo: receitasParaEmpresa - despesas,
       comissoes,
     };
-  }, [lancamentos]);
+  }, [lancamentos.length]); // Usar length em vez do array completo para melhor performance
 
+  // ✅ OTIMIZAÇÃO: Value do contexto otimizado para estabilidade
   const value = useMemo(
     () => ({
       lancamentos,
@@ -825,12 +831,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       error,
     }),
     [
-      lancamentos,
-      lancamentosFiltrados,
-      campanhas,
+      lancamentos.length, // Usar length para melhor performance
+      lancamentosFiltrados.length, // Usar length para melhor performance
+      campanhas.length, // Usar length para melhor performance
       filtros,
       totais,
       excluirLancamento,
+      atualizarFiltros, // Adicionar dependência do atualizarFiltros
       isLoading,
       isExcluindo,
       error,
