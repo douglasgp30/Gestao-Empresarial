@@ -84,10 +84,12 @@ export function CheckboxShowcase() {
         </div>
 
         <div className="text-xs text-gray-500 mt-4 p-2 bg-gray-50 rounded dark:bg-gray-800">
-          ✅ Design baseado na imagem de referência<br/>
+          ✅ Design pequeno e moderno<br/>
+          ✅ Tamanho refinado (18px)<br/>
+          ✅ Check ✔ centralizado e simples<br/>
+          ✅ Bordas proporcionais (2px)<br/>
           ✅ Funciona em tema claro e escuro<br/>
-          ✅ Tamanho padronizado (16px)<br/>
-          ✅ Alinhamento correto com textos
+          ✅ Alinhamento perfeito com textos
         </div>
       </CardContent>
     </Card>
