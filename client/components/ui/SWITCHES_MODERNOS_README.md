@@ -34,8 +34,8 @@ Todos os botões de marcação (checkboxes) do sistema foram transformados em **
 ```css
 input[type="checkbox"] {
     width: 28px !important;
-    height: 16px !important;
-    border-radius: 16px !important;
+    height: 12px !important;
+    border-radius: 12px !important;
     background-color: #ddd !important;
 }
 ```
