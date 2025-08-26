@@ -24,7 +24,7 @@ import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
-import { getFormaPagamentoDisplayName } from "../../lib/formaPagamentoDisplay";
+import { getFormaPagamentoDisplayName, ordenarFormasPagamento } from "../../lib/formaPagamentoDisplay";
 
 export function ModalDespesa() {
   // Log de mount/unmount para debug
