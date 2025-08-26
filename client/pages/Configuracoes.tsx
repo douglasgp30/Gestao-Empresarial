@@ -32,6 +32,7 @@ import { TesteRapidoBoleto } from "../components/Debug/TesteRapidoBoleto";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
 import { TesteBasico } from "../components/Debug/TesteBasico";
 import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
+import { TesteCategoriasDescricoes } from "../components/Debug/TesteCategoriasDescricoes";
 import {
   Settings,
   Building2,
@@ -926,6 +927,7 @@ export default function Configuracoes() {
 
         <TabsContent value="debug" className="space-y-6">
           <DebugPrimeiroAcesso />
+          <TesteCategoriasDescricoes />
         </TabsContent>
       </Tabs>
     </div>
