@@ -73,7 +73,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [metaMes, setMetaMesState] = useState<number>(() => {
     const mesAtual = new Date().toISOString().slice(0, 7); // YYYY-MM
     const storedMeta = localStorage.getItem(`metaMes_${mesAtual}`);
-    return storedMeta ? parseFloat(storedMeta) : 10000; // Meta padrão de R$ 10.000
+    return storedMeta ? parseFloat(storedMeta) : 0; // 🚫 REMOVIDO: Meta padrão removida - usuário deve definir própria meta
   });
 
   const setMetaMes = useCallback((valor: number) => {
