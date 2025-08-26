@@ -11,7 +11,7 @@ export async function seedBasicData() {
       { nome: "Cartão de Débito" },
       { nome: "Cartão de Crédito" },
       { nome: "Boleto Bancário" },
-      { nome: "Transferência" },
+      { nome: "Transferência Bancária" },
     ];
 
     for (const forma of formasPagamento) {
