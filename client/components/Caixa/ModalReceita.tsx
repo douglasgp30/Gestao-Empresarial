@@ -86,12 +86,12 @@ export function ModalReceita() {
     null,
   );
 
-  // Usar useMemo ao invés de useCallback para evitar re-renderizações desnecessárias
+  // ✅ CORREÇÃO: useMemo estabilizado removendo dependência que pode causar re-renders
   const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
     console.log("[ModalReceita] Debug - Categorias de receita:", categorias);
     return categorias.map((cat) => cat.nome).sort();
-  }, [getCategorias]);
+  }, []); // Remover dependência getCategorias que pode ser instável
 
   const descricoesReceita = React.useMemo(() => {
     return getDescricoes("receita");
@@ -265,7 +265,7 @@ export function ModalReceita() {
     setDataVencimentoBoleto(null);
   };
 
-  // Função removida - o contexto já atualiza automaticamente após adicionar lançamento
+  // Fun��ão removida - o contexto já atualiza automaticamente após adicionar lançamento
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
