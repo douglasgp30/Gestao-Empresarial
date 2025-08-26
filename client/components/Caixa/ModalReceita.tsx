@@ -27,6 +27,7 @@ import SelectWithAdd from "../ui/select-with-add";
 import { TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 import { isFormaPagamentoBoleto } from "../../lib/stringUtils";
+import { useCurrencyInput } from "../../hooks/use-currency-input";
 
 export function ModalReceita() {
   const {
@@ -1031,7 +1032,7 @@ export function ModalReceita() {
                     <ul className="text-xs text-blue-700 space-y-1">
                       <li>
                         • <strong>Agora:</strong> Lança receita bruta no Caixa
-                        (não soma no saldo)
+                        (n��o soma no saldo)
                       </li>
                       <li>
                         • <strong>Agora:</strong> Cria automaticamente conta a
