@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -11,19 +10,26 @@ const Checkbox = React.forwardRef<
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
-      // Forçando estilo para sobrescrever framework - tamanho menor e alinhado
-      "peer !h-4 !w-4 shrink-0 !border-[1.5px] !border-[#333] !rounded-[3px] !bg-white !mr-1.5 hover:!border-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:!bg-white data-[state=checked]:!border-[#333] dark:!border-gray-300 dark:!bg-gray-900 dark:hover:!border-gray-100 dark:data-[state=checked]:!bg-gray-900 dark:data-[state=checked]:!border-gray-300",
+      // Checkbox transformado em switch moderno
+      "peer inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full border-0 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#007bff] data-[state=unchecked]:bg-[#ddd] mr-2",
       className,
     )}
     {...props}
   >
     <CheckboxPrimitive.Indicator
       className={cn(
-        "flex items-center justify-center !text-[#0f5132] dark:!text-green-400",
+        "flex items-center justify-center pointer-events-none block h-3 w-3 rounded-full transition-transform duration-200 data-[state=checked]:translate-x-3.5 translate-x-0.5 bg-white data-[state=unchecked]:bg-gray-600",
       )}
     >
-      <span className="!text-sm !font-bold leading-none !-mt-0.5 !-ml-0.5">✔</span>
+      {/* Bolinha do switch - sem ícone de check */}
     </CheckboxPrimitive.Indicator>
+    {/* Bolinha para estado unchecked */}
+    <div 
+      className={cn(
+        "absolute h-3 w-3 rounded-full transition-transform duration-200 bg-gray-600 translate-x-0.5",
+        "peer-data-[state=checked]:opacity-0 peer-data-[state=unchecked]:opacity-100"
+      )}
+    />
   </CheckboxPrimitive.Root>
 ));
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
