@@ -300,7 +300,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       // FORÇAR carregamento IMEDIATO dos dados
-      carregarCampanhasLocalStorage();
+      carregarCampanhas();
       carregarLancamentosLocalStorage();
       console.log("✅ [CaixaContext] Dados carregados imediatamente");
     } catch (error) {
