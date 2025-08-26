@@ -17,7 +17,7 @@ export function SwitchSystemTest() {
       <CardHeader>
         <CardTitle className="text-lg">🔄 Sistema de Switches Modernos</CardTitle>
         <p className="text-sm text-gray-600">
-          Todos os botões de marcação agora são switches arredondados pequenos
+          Switches modernos com altura reduzida para visual mais proporcional
         </p>
       </CardHeader>
       <CardContent className="space-y-8">
