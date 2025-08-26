@@ -317,11 +317,7 @@ export function ModalReceita() {
       valorInput.numericValue <= 0 ||
       !formData.categoria ||
       !formData.descricao ||
-      !formData.formaPagamento ||
-      !formData.tecnicoResponsavel ||
-      !formData.campanha ||
-      !formData.cidadeId ||
-      !formData.setorId
+      !formData.formaPagamento
     ) {
       toast({
         title: "Erro",
