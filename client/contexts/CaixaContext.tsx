@@ -125,6 +125,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const carregarCampanhas = useCallback(async () => {
     try {
       console.log("📊 [CaixaContext] Carregando campanhas...");
+      console.log("📊 [CaixaContext] User definido:", !!user, user);
 
       // Tentar carregar da API primeiro se usuário autenticado
       if (user) {

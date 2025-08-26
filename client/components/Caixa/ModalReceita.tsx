@@ -62,6 +62,11 @@ export function ModalReceita() {
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
 
+  // DEBUG: Logs temporários para debugar campanhas
+  console.log("🐛 [ModalReceita] Campanhas no contexto:", campanhas);
+  console.log("🐛 [ModalReceita] Tipo das campanhas:", typeof campanhas, Array.isArray(campanhas));
+  console.log("🐛 [ModalReceita] Quantidade de campanhas:", campanhas?.length || 0);
+
 
   const [isOpen, setIsOpen] = useState(false);
   const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
@@ -1149,7 +1154,7 @@ export function ModalReceita() {
                     )}
                     <div>
                       <span className="text-gray-600">
-                        Comissão:
+                        Comiss��o:
                         {formData.tecnicoResponsavel &&
                           comissaoCalculada > 0 && (
                             <span className="ml-1 text-xs">
