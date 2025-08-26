@@ -879,8 +879,12 @@ export function ModalReceita() {
                       {(!Array.isArray(campanhas) || campanhas.length === 0) ? (
                         <div className="px-2 py-1 text-sm text-gray-500">
                           <div className="font-medium">Nenhuma campanha encontrada</div>
-                          <div className="text-xs mt-1">
-                            As campanhas ser��o criadas automaticamente conforme você as usar nos lançamentos
+                          <div className="text-xs mt-1 space-y-1">
+                            <div>Campanhas são criadas automaticamente</div>
+                            <div>quando você faz o primeiro lançamento</div>
+                            <div className="text-blue-600 mt-2">
+                              Campo opcional para este lançamento
+                            </div>
                           </div>
                         </div>
                       ) : (
