@@ -25,17 +25,44 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Função para verificar se existe pelo menos um usuário com acesso ao sistema
 const verificarSeExisteAdministrador = (): boolean => {
+  console.log("🔍 [AuthContext] Verificando se existe administrador...");
+
   try {
     const funcionariosStorage = localStorage.getItem("funcionarios");
-    if (!funcionariosStorage) return false;
+    console.log("📋 [AuthContext] funcionariosStorage:", funcionariosStorage ? "EXISTE" : "NÃO EXISTE");
+
+    if (!funcionariosStorage) {
+      console.log("❌ [AuthContext] Nenhum funcionário encontrado no localStorage");
+      return false;
+    }
 
     const funcionarios = JSON.parse(funcionariosStorage);
-    return funcionarios.some(
+    console.log("👥 [AuthContext] Total de funcionários encontrados:", funcionarios.length);
+
+    // Log detalhado de cada funcionário
+    funcionarios.forEach((f: Funcionario, index: number) => {
+      console.log(`👤 [AuthContext] Funcionário ${index + 1}:`, {
+        nome: f.nomeCompleto,
+        login: f.login,
+        ativo: f.ativo,
+        permissaoAcesso: f.permissaoAcesso,
+        tipoAcesso: f.tipoAcesso
+      });
+    });
+
+    const administradores = funcionarios.filter(
       (f: Funcionario) =>
-        f.permissaoAcesso && f.ativo && f.tipoAcesso === "Administrador",
+        f.permissaoAcesso && f.ativo && f.tipoAcesso === "Administrador"
     );
+
+    console.log("👑 [AuthContext] Administradores válidos encontrados:", administradores.length);
+
+    const existeAdmin = administradores.length > 0;
+    console.log(`✅ [AuthContext] Resultado: ${existeAdmin ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`);
+
+    return existeAdmin;
   } catch (error) {
-    console.warn("Erro ao verificar administradores:", error);
+    console.error("❌ [AuthContext] Erro ao verificar administradores:", error);
     return false;
   }
 };
