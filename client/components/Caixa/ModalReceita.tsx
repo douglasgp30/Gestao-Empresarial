@@ -114,7 +114,7 @@ export function ModalReceita() {
       "[ModalReceita] Debug - Categoria selecionada:",
       formData.categoria,
     );
-    console.log("[ModalReceita] Debug - Descri��ões filtradas:", descricoes);
+    console.log("[ModalReceita] Debug - Descrições filtradas:", descricoes);
     return descricoes;
   }, [formData.categoria]); // Remover getDescricoes da dependência para evitar re-renders
 
