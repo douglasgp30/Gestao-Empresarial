@@ -390,7 +390,7 @@ input[type="checkbox"]::before {
     content: "" !important;
     position: absolute !important;
     top: 1px !important;
-    left: 2px !important;
+    left: 1px !important;
     width: 10px !important;
     height: 10px !important;
     border-radius: 50% !important;
