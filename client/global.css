@@ -4,50 +4,50 @@
 
 @layer base {
   :root {
-    /* Base colors - Tema Claro Moderno */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Tema Claro Harmonioso - Cores balanceadas e elegantes */
+    --background: 220 14% 96%;
+    --foreground: 220 9% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 9% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --popover-foreground: 220 9% 15%;
+    --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 98%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 98%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 98%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 220 14% 93%;
+    --secondary-foreground: 220 9% 20%;
+    --muted: 220 14% 93%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 14% 93%;
+    --accent-foreground: 220 9% 20%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 220 13% 87%;
+    --input: 220 13% 87%;
+    --ring: 221 83% 53%;
     --radius: 0.5rem;
 
-    /* Sidebar Moderna e Clara */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 221.2 83.2% 53.3%;
+    /* Sidebar Elegante - Cinza azulado sutil */
+    --sidebar-background: 220 17% 94%;
+    --sidebar-foreground: 220 9% 20%;
+    --sidebar-primary: 221 83% 53%;
     --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 96%;
-    --sidebar-accent-foreground: 222.2 84% 4.9%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 221.2 83.2% 53.3%;
+    --sidebar-accent: 220 20% 88%;
+    --sidebar-accent-foreground: 220 9% 15%;
+    --sidebar-border: 220 13% 85%;
+    --sidebar-ring: 221 83% 53%;
 
-    /* Cores vibrantes e modernas */
-    --success: 142 71% 45%;
-    --success-foreground: 355 100% 97%;
-    --warning: 46 93% 64%;
-    --warning-foreground: 0 0% 9%;
-    --info: 204 100% 63%;
-    --info-foreground: 0 0% 9%;
+    /* Cores vibrantes harmoniosas */
+    --success: 142 76% 36%;
+    --success-foreground: 138 100% 94%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 12%;
+    --info: 199 89% 48%;
+    --info-foreground: 210 40% 98%;
 
-    /* Gradientes elegantes */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(221 83% 45%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(210 40% 94%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(210 40% 94%) 100%);
+    /* Gradientes suaves */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(221 83% 45%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(220 14% 93%) 0%, hsl(220 14% 89%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(220 14% 93%) 0%, hsl(220 20% 90%) 100%);
   }
 
   .dark {
