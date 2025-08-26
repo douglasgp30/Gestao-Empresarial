@@ -28,7 +28,7 @@ import { TrendingUp, UserPlus } from "lucide-react";
 import ModalCadastroCliente from "../Clientes/ModalCadastroCliente";
 import { isFormaPagamentoBoleto } from "../../lib/stringUtils";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
-import { getFormaPagamentoDisplayName } from "../../lib/formaPagamentoDisplay";
+import { getFormaPagamentoDisplayName, ordenarFormasPagamento } from "../../lib/formaPagamentoDisplay";
 
 export function ModalReceita() {
   // Log de mount/unmount para debug
