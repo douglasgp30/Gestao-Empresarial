@@ -197,9 +197,9 @@ export function ModalReceita() {
     return 0;
   }, [formData.tecnicoResponsavel, tecnicos, valorLiquidoCalculado]);
 
-  // Remover useEffect que causa piscar da tela - valores calculados serão mostrados apenas no resumo
+  // ✅ CORREÇÃO: Removido useEffect que causava piscar - valores calculados são mostrados apenas no resumo
 
-  // Remover useEffect que causa piscar ao resetar valorQueEntrou
+  // ✅ CORREÇÃO: Removido useEffect que causava piscar ao resetar valorQueEntrou - valores são controlados diretamente
 
   // Ref para gerenciar cleanup do interval
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
