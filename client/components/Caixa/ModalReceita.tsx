@@ -683,7 +683,7 @@ export function ModalReceita() {
                     <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700 block mb-1">
                       Valor Recebido *
                     </Label>
-                    <div className="relative mb-2">
+                    <div className="relative">
                       <span className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
                       <Input
                         id="valorQueEntrou"
@@ -701,7 +701,7 @@ export function ModalReceita() {
                         required
                       />
                     </div>
-                    <p className="text-xs text-yellow-600">
+                    <p className="text-xs text-yellow-600 mt-2">
                       Valor líquido, após taxas
                     </p>
                   </div>
