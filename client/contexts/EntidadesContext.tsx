@@ -213,22 +213,51 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const recarregarDescricoesECategorias = useCallback(async () => {
     try {
       console.log(
-        "🔄 [EntidadesContext] Recarregando descrições e categorias...",
+        "🔄 [EntidadesContext] Recarregando descrições e categorias do servidor...",
       );
       setError(null);
 
-      // Carregar descrições e categorias do localStorage
+      try {
+        // Primeiro tentar buscar do servidor
+        const response = await fetch("/api/descricoes-e-categorias");
+        if (response.ok) {
+          const result = await response.json();
+          const dadosServidor = result.data || result || [];
+
+          console.log(
+            `🌐 [EntidadesContext] ${dadosServidor.length} descrições/categorias carregadas do servidor`,
+          );
+
+          setDescricoesECategorias(dadosServidor);
+
+          // Salvar no localStorage para cache
+          try {
+            localStorage.setItem("descricoes_e_categorias", JSON.stringify(dadosServidor));
+            console.log("💾 [EntidadesContext] Dados sincronizados no localStorage");
+          } catch (storageError) {
+            console.warn("⚠️ [EntidadesContext] Erro ao salvar no localStorage:", storageError);
+          }
+
+          return;
+        } else {
+          console.warn("⚠️ [EntidadesContext] Servidor retornou erro, usando localStorage como fallback");
+        }
+      } catch (fetchError) {
+        console.warn("⚠️ [EntidadesContext] Erro ao conectar com servidor, usando localStorage como fallback:", fetchError);
+      }
+
+      // Fallback: carregar do localStorage se servidor falhar
       const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
       if (descricoesStorage) {
         const parsed = JSON.parse(descricoesStorage);
         const arrayParsed = Array.isArray(parsed) ? parsed : [];
         setDescricoesECategorias(arrayParsed);
         console.log(
-          `🔄 [EntidadesContext] ${arrayParsed.length} descrições/categorias recarregadas`,
+          `💾 [EntidadesContext] ${arrayParsed.length} descrições/categorias recarregadas do localStorage (fallback)`,
         );
       } else {
         console.log(
-          "🔄 [EntidadesContext] Nenhuma descrição encontrada no localStorage",
+          "📭 [EntidadesContext] Nenhuma descrição encontrada no localStorage",
         );
         setDescricoesECategorias([]);
       }
