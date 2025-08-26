@@ -59,7 +59,7 @@ export function ModalReceita() {
     isLoading: clientesLoading,
   } = useClientes();
 
-  // Carregar técnicos usando a função que verifica localStorage
+  // Carregar técnicos usando a funç��o que verifica localStorage
   const tecnicos = getTecnicos();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -580,7 +580,7 @@ export function ModalReceita() {
       if (!loadingForced) {
         setLoadingForced(true);
       }
-    }, 3000); // 3 segundos m��ximo
+    }, 3000); // 3 segundos máximo
 
     return () => clearTimeout(timer);
   }, [loadingForced]);
