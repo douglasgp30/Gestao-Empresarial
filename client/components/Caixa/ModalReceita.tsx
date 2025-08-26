@@ -59,7 +59,7 @@ export function ModalReceita() {
     isLoading: clientesLoading,
   } = useClientes();
 
-  // Carregar técnicos usando a funç��o que verifica localStorage
+  // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
 
   const [isOpen, setIsOpen] = useState(false);
