@@ -624,7 +624,7 @@ export function ModalReceita() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Linha 1: Data, Valor, Forma de Pagamento e Valor Recebido (se cartão) */}
               <div className={`grid gap-2 ${isFormaPagamentoCartao ? 'grid-cols-4' : 'grid-cols-3'}`}>
-                <div className="space-y-1">
+                <div className="space-y-1 max-w-[120px]">
                   <Label htmlFor="data" className="text-xs font-medium">Data *</Label>
                   <Input
                     id="data"
@@ -634,14 +634,14 @@ export function ModalReceita() {
                       setFormData((prev) => ({ ...prev, data: e.target.value }))
                     }
                     required
-                    className="h-9 text-sm"
+                    className="h-9 text-xs"
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1 max-w-[100px]">
                   <Label htmlFor="valor" className="text-xs font-medium">Valor *</Label>
                   <div className="relative">
-                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
+                    <span className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
                     <Input
                       id="valor"
                       type="number"
@@ -655,7 +655,7 @@ export function ModalReceita() {
                         }))
                       }
                       required
-                      className="h-9 pl-6 text-sm"
+                      className="h-9 pl-5 text-xs"
                     />
                   </div>
                 </div>
@@ -671,7 +671,7 @@ export function ModalReceita() {
                       }))
                     }
                   >
-                    <SelectTrigger className="h-9 text-sm">
+                    <SelectTrigger className="h-9 text-xs">
                       <SelectValue placeholder="Selecione a forma" />
                     </SelectTrigger>
                     <SelectContent>
@@ -690,11 +690,8 @@ export function ModalReceita() {
                     <Label htmlFor="valorQueEntrou" className="text-xs font-medium text-yellow-700">
                       Valor Recebido *
                     </Label>
-                    <div className="text-[10px] text-yellow-700 mb-1">
-                      Isso aqui só é exibido caso a forma de pagamento seja cartão
-                    </div>
                     <div className="relative">
-                      <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
+                      <span className="absolute left-1 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
                       <Input
                         id="valorQueEntrou"
                         type="number"
@@ -707,7 +704,7 @@ export function ModalReceita() {
                             valorQueEntrou: e.target.value,
                           }))
                         }
-                        className="bg-white border-yellow-300 pl-6 h-9 text-sm"
+                        className="bg-white border-yellow-300 pl-5 h-9 text-xs"
                         required
                       />
                     </div>
