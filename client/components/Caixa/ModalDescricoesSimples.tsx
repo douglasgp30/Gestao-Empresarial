@@ -486,7 +486,7 @@ export default function ModalDescricoesSimples() {
           }
         }
 
-        console.log("🔍 Final error message:", errorMessage);
+        console.log("�� Final error message:", errorMessage);
         console.log("🔍 Is dependency error:", isDependencyError);
 
         // Fechar modal de confirmação
@@ -505,38 +505,31 @@ export default function ModalDescricoesSimples() {
             },
           });
 
-          // Se for categoria, também permitir ver dependências
+          // Se for categoria, permitir ver dependências (separado para evitar confusão)
           if (itemToDelete.tipo === "categoria") {
-            toast.info("Você também pode visualizar as dependências", {
-              duration: 8000,
-              action: {
-                label: "Ver Dependências",
-                onClick: () => {
-                  // Encontrar a categoria no array para passar os dados corretos
-                  const categoria = descricoesECategorias.find(
-                    (item) => item.id === itemToDelete.id,
-                  );
-                  if (categoria) {
-                    setCategoriaParaDependencias({
-                      id: categoria.id,
-                      nome: categoria.nome,
-                      tipo: categoria.tipo,
-                    });
-                    setShowDependencies(true);
-                  }
+            setTimeout(() => {
+              toast.info("Ver dependências", {
+                duration: 8000,
+                description: "Clique para visualizar as descrições vinculadas a esta categoria",
+                action: {
+                  label: "Ver Dependências",
+                  onClick: () => {
+                    // Encontrar a categoria no array para passar os dados corretos
+                    const categoria = descricoesECategorias.find(
+                      (item) => item.id === itemToDelete.id,
+                    );
+                    if (categoria) {
+                      setCategoriaParaDependencias({
+                        id: categoria.id,
+                        nome: categoria.nome,
+                        tipo: categoria.tipo,
+                      });
+                      setShowDependencies(true);
+                    }
+                  },
                 },
-              },
-            });
-          } else {
-            // Para descrições, apenas mostrar o erro detalhado
-            toast.error("Não é possível excluir esta descrição", {
-              duration: 10000,
-              description: errorMessage,
-              action: {
-                label: "Entendi",
-                onClick: () => console.log("Toast dismissed"),
-              },
-            });
+              });
+            }, 500);
           }
         } else {
           // Para outros erros, mostrar mensagem simples
