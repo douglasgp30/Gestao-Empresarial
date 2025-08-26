@@ -62,17 +62,6 @@ export function ModalReceita() {
   // Carregar técnicos usando a função que verifica localStorage
   const tecnicos = getTecnicos();
 
-  // Debug logs para verificar dados
-  React.useEffect(() => {
-    console.log("[ModalReceita] Debug - Técnicos carregados:", tecnicos);
-    console.log("[ModalReceita] Debug - Campanhas carregadas:", campanhas);
-
-    // Verificar localStorage para debug
-    const funcionariosLS = localStorage.getItem("funcionarios");
-    const campanhasLS = localStorage.getItem("campanhas");
-    console.log("[ModalReceita] Debug - Funcionários no localStorage:", funcionariosLS ? JSON.parse(funcionariosLS) : null);
-    console.log("[ModalReceita] Debug - Campanhas no localStorage:", campanhasLS ? JSON.parse(campanhasLS) : null);
-  }, [tecnicos, campanhas]);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isModalClienteOpen, setIsModalClienteOpen] = useState(false);
