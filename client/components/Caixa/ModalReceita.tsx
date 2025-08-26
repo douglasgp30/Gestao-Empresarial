@@ -1066,13 +1066,6 @@ export function ModalReceita() {
                   )}
                 </div>
 
-                {formData.temNotaFiscal && (
-                  <div className="mt-2">
-                    <div className="text-xs text-blue-600">
-                      ℹ️ O site da nota fiscal foi aberto automaticamente.
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Observações */}
