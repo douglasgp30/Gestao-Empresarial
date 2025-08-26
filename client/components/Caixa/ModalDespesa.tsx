@@ -24,6 +24,7 @@ import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
 import { useCurrencyInput } from "../../hooks/use-currency-input";
+import { getFormaPagamentoDisplayName } from "../../lib/formaPagamentoDisplay";
 
 export function ModalDespesa() {
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
@@ -301,7 +302,7 @@ export function ModalDespesa() {
                 placeholder="Selecione a forma"
                 options={formasPagamento.map((forma) => ({
                   value: forma.id.toString(),
-                  label: forma.nome,
+                  label: getFormaPagamentoDisplayName(forma),
                 }))}
                 onAddNew={async (nomeForma) => {
                   await adicionarFormaPagamento({
