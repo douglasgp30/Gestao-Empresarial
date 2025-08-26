@@ -172,7 +172,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       console.error("Erro ao carregar campanhas:", error);
       setCampanhas([]);
     }
-  }, [user]);
+  }, []); // Removido dependência do user
 
   const carregarLancamentosLocalStorage = useCallback(() => {
     try {
@@ -535,7 +535,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       if (!id || id.toString().trim() === "") {
-        throw new Error("ID do lan��amento é obrigatório");
+        throw new Error("ID do lançamento é obrigatório");
       }
 
       try {
