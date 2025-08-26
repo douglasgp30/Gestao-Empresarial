@@ -88,7 +88,7 @@ const LimpezaCompleta = () => {
       console.log("🎉 [LimpezaCompleta] LIMPEZA COMPLETA CONCLUÍDA!");
 
       toast.success("LIMPEZA COMPLETA REALIZADA! 🧹", {
-        description: "Todos os dados foram removidos (exceto formas de pagamento). Recarregando sistema...",
+        description: "Dados removidos com sucesso! Preservadas: formas de pagamento e cidades de Goiás. Recarregando sistema...",
         duration: 3000,
       });
 
