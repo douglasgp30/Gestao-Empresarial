@@ -294,6 +294,49 @@ export default function ModalDescricoesSimples() {
     }
   };
 
+  const handleForceDelete = async () => {
+    if (!itemToDelete || isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      console.log("⚠️ Exclusão forçada:", itemToDelete.nome);
+
+      const response = await fetch(
+        `/api/descricoes-e-categorias/${itemToDelete.id}?force=true`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Erro ao excluir item");
+      }
+
+      toast.success(
+        `${itemToDelete.tipo === "categoria" ? "Categoria" : "Descrição"} "${itemToDelete.nome}" excluída com sucesso`,
+        {
+          description: "Todas as dependências foram removidas automaticamente."
+        }
+      );
+
+      // Limpar estado
+      setItemToDelete(null);
+      setShowConfirm(false);
+
+      // Sincronizar dados após exclusão
+      console.log("🔄 Sincronizando dados após exclusão forçada...");
+      await recarregarDescricoesECategorias();
+    } catch (error) {
+      console.error("❌ Erro na exclusão forçada:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao excluir item",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const handleConfirmDelete = (item: any) => {
     setItemToDelete({
       id: item.id,
