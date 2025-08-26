@@ -107,7 +107,7 @@ export function ModalReceita() {
     );
     console.log("[ModalReceita] Debug - Descri��ões filtradas:", descricoes);
     return descricoes;
-  }, [formData.categoria, getDescricoes]);
+  }, [formData.categoria]); // Remover getDescricoes da dependência para evitar re-renders
 
   // Filtrar setores pela cidade selecionada
   const setoresFiltrados = React.useMemo(() => {
@@ -827,7 +827,7 @@ export function ModalReceita() {
                                 {tecnico.nome || tecnico.nomeCompleto}
                                 {percentual > 0 && (
                                   <span className="text-xs text-gray-500 ml-2">
-                                    ({percentual}% comissão)
+                                    ({percentual}% comiss��o)
                                   </span>
                                 )}
                               </SelectItem>
