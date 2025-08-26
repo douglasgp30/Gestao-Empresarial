@@ -556,7 +556,7 @@ export function ModalReceita() {
       console.log("[ModalReceita] Lançamento salvo, modal fechado");
     } catch (error) {
       console.error("❌ [ModalReceita] ERRO AO LANÇAR RECEITA:", error);
-      console.error("��� [ModalReceita] Stack trace:", error.stack);
+      console.error("🔍 [ModalReceita] Stack trace:", error.stack);
       console.error("❌ [ModalReceita] Dados que causaram erro:", formData);
 
       toast({
