@@ -79,7 +79,7 @@ export function ModalDespesa() {
     return getDescricoes("despesa", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
-  // Filtrar setores pela cidade selecionada (usando ID da cidade)
+  // Filtrar setores pela cidade selecionada (usando ID da cidade) - igual ao ModalReceita
   const setoresFiltrados = React.useMemo(() => {
     if (!formData.cidadeId) return [];
 
