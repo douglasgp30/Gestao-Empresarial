@@ -27,8 +27,6 @@ import SistemaBackup from "../components/Backup/SistemaBackup";
 import { CleanFakeData } from "../components/Debug/CleanFakeData";
 import LimpezaCompleta from "../components/Debug/LimpezaCompleta";
 import ResetarSistema from "../components/Debug/ResetarSistema";
-import { TesteBoleto } from "../components/Debug/TesteBoleto";
-import { TesteRapidoBoleto } from "../components/Debug/TesteRapidoBoleto";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
 import { TesteBasico } from "../components/Debug/TesteBasico";
 import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
@@ -853,7 +851,7 @@ export default function Configuracoes() {
                       <ul className="text-sm text-yellow-700 mt-1 space-y-1">
                         <li>• Execute backups regularmente</li>
                         <li>• Mantenha backups em local seguro</li>
-                        <li>• Teste a restauração periodicamente</li>
+                        <li>• Teste a restaura��ão periodicamente</li>
                         <li>• Considere backups em mídia externa</li>
                       </ul>
                     </div>
@@ -882,10 +880,6 @@ export default function Configuracoes() {
           <TesteBasico />
 
           <DiagnosticoLoop />
-
-          <TesteRapidoBoleto />
-
-          <TesteBoleto />
 
           <CleanFakeData />
 
