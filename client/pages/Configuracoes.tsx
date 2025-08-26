@@ -84,7 +84,8 @@ export default function Configuracoes() {
         setPercentualComissao(configs.percentualComissao || 15);
         setPercentualImposto(configs.percentualImposto || 6);
         setTempoSessao(configs.tempoSessao || 60);
-        setAbrirSiteNotaFiscal(configs.abrirSiteNotaFiscal !== false); // padrão true
+        // Carregamento explícito para evitar problemas de persistência
+        setAbrirSiteNotaFiscal(configs.abrirSiteNotaFiscal === true || configs.abrirSiteNotaFiscal === "true");
         setUrlSiteNotaFiscal(configs.urlSiteNotaFiscal || "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733");
       } catch (error) {
         console.error("Erro ao carregar configurações:", error);
