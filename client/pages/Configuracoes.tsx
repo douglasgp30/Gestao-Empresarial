@@ -25,6 +25,7 @@ import { Switch } from "../components/ui/switch";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import SistemaBackup from "../components/Backup/SistemaBackup";
 import { CleanFakeData } from "../components/Debug/CleanFakeData";
+import LimpezaCompleta from "../components/Debug/LimpezaCompleta";
 import ResetarSistema from "../components/Debug/ResetarSistema";
 import { TesteBoleto } from "../components/Debug/TesteBoleto";
 import { TesteRapidoBoleto } from "../components/Debug/TesteRapidoBoleto";
@@ -173,7 +174,7 @@ export default function Configuracoes() {
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validar tamanho do arquivo (máximo 2MB)
+      // Validar tamanho do arquivo (m��ximo 2MB)
       if (file.size > 2 * 1024 * 1024) {
         alert("O arquivo deve ter no máximo 2MB.");
         return;
@@ -881,6 +882,8 @@ export default function Configuracoes() {
           <TesteBoleto />
 
           <CleanFakeData />
+
+          <LimpezaCompleta />
 
           <ResetarSistema />
         </TabsContent>

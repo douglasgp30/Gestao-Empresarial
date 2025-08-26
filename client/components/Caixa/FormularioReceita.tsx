@@ -67,10 +67,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos com memoização estabilizada - usar getTecnicos como dependência
+  // Carregar técnicos com memoização estabilizada - sem dependência para evitar re-renders
   const tecnicos = useMemo(() => {
     return getTecnicos();
-  }, [getTecnicos]); // Usar getTecnicos corretamente
+  }, []); // Remover dependência instável que causa re-renders desnecessários
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -172,7 +172,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     );
 
     return isFormaPagamentoCartao(forma);
-  }, [formData.formaPagamento, formasPagamento.length]);
+  }, [formData.formaPagamento, formasPagamento]); // Usar array diretamente
 
   // Verificar se forma de pagamento é boleto - memoização estabilizada
   const isBoleto = useMemo(() => {
@@ -185,7 +185,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     );
 
     return isFormaPagamentoBoleto(forma);
-  }, [formData.formaPagamento, formasPagamento.length]);
+  }, [formData.formaPagamento, formasPagamento]); // Usar array diretamente
 
   // Calcular campos automaticamente usando os hooks de moeda
   const valorCalculado = valorInput.numericValue;
@@ -247,7 +247,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   }, [
     formData.tecnicoResponsavel,
     valorLiquidoCalculado,
-    tecnicos.length, // Usar length para estabilizar
+    tecnicos, // Usar array diretamente para maior estabilidade
   ]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
@@ -255,7 +255,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return valorLiquidoCalculado - comissaoCalculada;
   }, [valorLiquidoCalculado, comissaoCalculada]);
 
-  // Remover useEffect que causa piscar da tela
+  // ✅ CORREÇÃO: Removido useEffect que causava piscar - valores são calculados diretamente com useMemo
 
   // Função para emitir nota fiscal
   const emitirNotaFiscal = () => {

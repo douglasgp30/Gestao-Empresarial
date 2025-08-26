@@ -529,7 +529,7 @@ export function ListaLancamentosSimples() {
       <CardContent>
         {lancamentos.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            Nenhum lançamento encontrado para o per����odo selecionado.
+            Nenhum lançamento encontrado para o período selecionado.
           </div>
         ) : (
           <>

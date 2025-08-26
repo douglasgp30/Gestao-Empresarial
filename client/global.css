@@ -2,152 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mobile optimizations */
 @layer base {
-  /* Prevent zoom on inputs on iOS */
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="tel"],
-  input[type="url"],
-  input[type="number"],
-  input[type="date"],
-  input[type="time"],
-  select,
-  textarea {
-    font-size: 16px;
-  }
-
-  /* Improve touch targets */
-  button,
-  [role="button"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Better mobile scrolling */
-  * {
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Prevent unwanted zooming */
-  @media screen and (max-width: 768px) {
-    html {
-      -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
-    }
-  }
-
-  /* Custom breakpoint for very small screens */
-  @media (min-width: 480px) {
-    .xs\:inline {
-      display: inline;
-    }
-    .xs\:hidden {
-      display: none;
-    }
-    .xs\:grid-cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-}
-
-@layer base {
-  /**
-   * Tailwind CSS theme
-   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
-   * A different format will require also updating the theme in tailwind.config.ts.
-  */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 220 13% 18%;
-
+    /* Tema Claro Equilibrado - Neutro e Moderno */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 27%;
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
-
+    --card-foreground: 215 25% 27%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 13% 18%;
-
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 13% 46%;
-
-    --accent: 220 14% 96%;
-    --accent-foreground: 220 13% 18%;
-
+    --popover-foreground: 215 25% 27%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 20% 95%;
+    --secondary-foreground: 215 25% 27%;
+    --muted: 210 20% 95%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 20% 95%;
+    --accent-foreground: 215 25% 27%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 45 93% 47%;
-    --warning-foreground: 0 0% 100%;
-
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
-
+    --destructive-foreground: 210 40% 98%;
+    --border: 210 20% 89%;
+    --input: 210 20% 89%;
+    --ring: 221 83% 53%;
     --radius: 0.5rem;
 
-    --sidebar-background: 220 30% 18%;
-    --sidebar-foreground: 220 9% 46%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 30% 25%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 30% 25%;
-    --sidebar-ring: 217 91% 60%;
+    /* Sidebar Azul Escuro Elegante */
+    --sidebar-background: 215 28% 17%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 215 28% 23%;
+    --sidebar-accent-foreground: 213 31% 91%;
+    --sidebar-border: 215 28% 20%;
+    --sidebar-ring: 221 83% 53%;
+
+    /* Cores vibrantes e harmoniosas */
+    --success: 142 76% 36%;
+    --success-foreground: 138 100% 94%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 12%;
+    --info: 199 89% 48%;
+    --info-foreground: 210 40% 98%;
+
+    /* Gradientes azuis elegantes */
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(221 83% 53%) 0%,
+      hsl(221 83% 45%) 100%
+    );
+    --gradient-secondary: linear-gradient(
+      135deg,
+      hsl(214 32% 91%) 0%,
+      hsl(214 32% 87%) 100%
+    );
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(214 32% 91%) 0%,
+      hsl(214 32% 89%) 100%
+    );
   }
 
   .dark {
-    --background: 220 30% 7%;
-    --foreground: 220 9% 95%;
-
-    --card: 220 30% 9%;
-    --card-foreground: 220 9% 95%;
-
-    --popover: 220 30% 9%;
-    --popover-foreground: 220 9% 95%;
-
+    /* Tema Escuro Azul Harmonioso */
+    --background: 215 25% 11%;
+    --foreground: 213 31% 91%;
+    --card: 215 25% 13%;
+    --card-foreground: 213 31% 91%;
+    --popover: 215 25% 13%;
+    --popover-foreground: 213 31% 91%;
     --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 30% 15%;
-    --secondary-foreground: 220 9% 95%;
-
-    --muted: 220 30% 15%;
-    --muted-foreground: 220 9% 65%;
-
-    --accent: 220 30% 15%;
-    --accent-foreground: 220 9% 95%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 45 93% 47%;
-    --warning-foreground: 0 0% 100%;
-
-    --border: 220 30% 15%;
-    --input: 220 30% 15%;
+    --primary-foreground: 215 25% 11%;
+    --secondary: 215 25% 16%;
+    --secondary-foreground: 213 31% 91%;
+    --muted: 215 25% 16%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 215 25% 16%;
+    --accent-foreground: 213 31% 91%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 25% 18%;
+    --input: 215 25% 18%;
     --ring: 217 91% 60%;
 
-    --sidebar-background: 220 30% 5%;
-    --sidebar-foreground: 220 9% 65%;
+    /* Sidebar Azul Escuro Profundo */
+    --sidebar-background: 215 32% 8%;
+    --sidebar-foreground: 213 31% 91%;
     --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 30% 12%;
-    --sidebar-accent-foreground: 220 9% 95%;
-    --sidebar-border: 220 30% 12%;
+    --sidebar-primary-foreground: 215 32% 8%;
+    --sidebar-accent: 215 32% 12%;
+    --sidebar-accent-foreground: 213 31% 91%;
+    --sidebar-border: 215 32% 10%;
     --sidebar-ring: 217 91% 60%;
+
+    /* Cores vibrantes dark mode harmoniosas */
+    --success: 142 71% 45%;
+    --success-foreground: 138 100% 94%;
+    --warning: 46 93% 64%;
+    --warning-foreground: 48 96% 12%;
+    --info: 199 89% 58%;
+    --info-foreground: 210 40% 98%;
+
+    /* Gradientes azuis dark mode */
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(217 91% 60%) 0%,
+      hsl(217 91% 50%) 100%
+    );
+    --gradient-secondary: linear-gradient(
+      135deg,
+      hsl(215 25% 16%) 0%,
+      hsl(215 25% 20%) 100%
+    );
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(215 25% 16%) 0%,
+      hsl(215 25% 20%) 100%
+    );
   }
 }
 
@@ -155,295 +125,496 @@
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+
+  /* Melhorias tipográficas */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl;
+  }
+  h2 {
+    @apply text-3xl;
+  }
+  h3 {
+    @apply text-2xl;
+  }
+  h4 {
+    @apply text-xl;
+  }
+  h5 {
+    @apply text-lg;
+  }
+  h6 {
+    @apply text-base;
+  }
+
+  /* Scrollbar moderna */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
   }
 }
 
-/* Estilos para o filtro de data Google Ads */
-.filtro-data-google-ads .rdp {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-/* Estilos básicos para o DayPicker */
-.rdp {
-  --rdp-cell-size: 36px;
-  --rdp-accent-color: hsl(var(--primary));
-  --rdp-background-color: hsl(var(--background));
-}
-
-.rdp-months {
-  display: flex;
-  gap: 1rem;
-}
-
-.rdp-month {
-  width: 100%;
-}
-
-.rdp-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.rdp-head_cell,
-.rdp-cell {
-  width: var(--rdp-cell-size);
-  height: var(--rdp-cell-size);
-  text-align: center;
-}
-
-.rdp-head_cell {
-  font-weight: 500;
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
-}
-
-.rdp-day {
-  width: var(--rdp-cell-size);
-  height: var(--rdp-cell-size);
-  border: none;
-  background: none;
-  font-size: 0.875rem;
-  cursor: pointer;
-  border-radius: 0.375rem;
-  transition: all 0.2s;
-}
-
-.rdp-day:hover {
-  background-color: hsl(var(--accent));
-}
-
-.rdp-day_selected {
-  background-color: var(--rdp-accent-color);
-  color: hsl(var(--primary-foreground));
-}
-
-.rdp-day_today {
-  font-weight: 600;
-  color: var(--rdp-accent-color);
-}
-
-.rdp-day_outside {
-  color: hsl(var(--muted-foreground));
-  opacity: 0.5;
-}
-
-.rdp-day_disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.rdp-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.rdp-nav_button {
-  background: none;
-  border: 1px solid hsl(var(--border));
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rdp-nav_button:hover {
-  background-color: hsl(var(--accent));
-}
-
-.rdp-caption_label {
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-.filtro-data-google-ads .rdp-months {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.filtro-data-google-ads .rdp-month {
-  min-width: 280px;
-}
-
-.filtro-data-google-ads .rdp-caption {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.filtro-data-google-ads .rdp-day_selected {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-.filtro-data-google-ads .rdp-day_range_middle {
-  background-color: hsl(var(--primary) / 0.1);
-  color: hsl(var(--foreground));
-}
-
-.filtro-data-google-ads .rdp-day_range_start,
-.filtro-data-google-ads .rdp-day_range_end {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-@media (max-width: 640px) {
-  .filtro-data-google-ads .rdp-months {
-    flex-direction: column;
-    align-items: center;
+/* Animações modernas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-
-  .filtro-data-google-ads .rdp-month {
-    min-width: 250px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Melhorias para clicabilidade dos componentes de data */
-.rdp-day_disabled {
-  pointer-events: none !important;
-}
-
-.rdp-day_outside {
-  pointer-events: none !important;
-}
-
-.rdp-day {
-  position: relative;
-  cursor: pointer;
-  pointer-events: auto;
-  touch-action: manipulation;
-}
-
-/* Melhorar touch targets para mobile */
-@media (max-width: 768px) {
-  .rdp-day {
-    min-height: 44px !important;
-    min-width: 44px !important;
-    width: 44px;
-    height: 44px;
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
   }
-
-  .rdp-cell {
-    min-height: 44px !important;
-    min-width: 44px !important;
-    width: 44px;
-    height: 44px;
-  }
-
-  /* Melhorar feedback visual no touch */
-  .rdp-day:active {
-    transform: scale(0.95);
-    transition: transform 0.1s ease-in-out;
-  }
-
-  /* Otimizar área clicável */
-  .rdp-day:before {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    z-index: -1;
+  to {
+    transform: translateX(0);
   }
 }
 
-/* Garantir z-index adequado para popovers */
-[data-radix-popover-content] {
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  53%,
+  100% {
+    transform: translateY(0);
+  }
+  40%,
+  43% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Classes de animação */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* Modais e overlays modernos */
+[data-radix-portal] {
   z-index: 50;
 }
 
+[data-radix-popover-content],
+[data-radix-dropdown-menu-content],
+[data-radix-select-content] {
+  z-index: 50;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
 .rdp-nav_button {
   pointer-events: auto;
   touch-action: manipulation;
 }
 
-/* Estilos específicos para checkbox - formato compacto e moderno */
-[role="checkbox"] {
-  border-radius: 3px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-[role="checkbox"]:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transform: scale(1.05) !important;
-}
-
-button[role="checkbox"] {
-  border-radius: 3px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-button[role="checkbox"]:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transform: scale(1.05) !important;
-}
-
-/* Força arredondamento suave em todos os checkboxes do Radix */
-[data-radix-collection-item][role="checkbox"] {
-  border-radius: 3px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-[data-radix-collection-item][role="checkbox"]:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transform: scale(1.05) !important;
-}
-
-/* Melhorias específicas para o estado checked */
-[role="checkbox"][data-state="checked"] {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
-  border-width: 1px !important;
-  transform: scale(1.05) !important;
-}
-
-/* Estilo especial para inputs checkbox nativos (caso ainda existam) */
-input[type="checkbox"] {
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  border: 1px solid hsl(var(--border));
-  border-radius: 3px;
-  background: hsl(var(--background));
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+/* Botões modernos com gradiente e efeitos */
+.btn-gradient {
+  background: var(--gradient-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  overflow: hidden;
 }
 
-input[type="checkbox"]:hover {
-  border-color: hsl(var(--primary));
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transform: scale(1.05);
-}
-
-input[type="checkbox"]:checked {
-  background: hsl(var(--primary));
-  border-color: hsl(var(--primary));
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transform: scale(1.05);
-}
-
-input[type="checkbox"]:checked::after {
-  content: "✓";
+.btn-gradient::before {
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
   transform: translate(-50%, -50%);
-  color: hsl(var(--primary-foreground));
-  font-size: 9px;
-  font-weight: bold;
-  line-height: 1;
+  transition:
+    width 0.6s,
+    height 0.6s;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.btn-gradient:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Cards com design moderno e glassmorphism */
+.card-modern {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-modern::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--primary)) 50%,
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-modern:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.card-modern:hover::before {
+  opacity: 1;
+}
+
+/* Sidebar moderna e elegante */
+.sidebar {
+  background: hsl(var(--sidebar-background));
+  color: hsl(var(--sidebar-foreground));
+  border-right: 1px solid hsl(var(--sidebar-border));
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: calc(var(--radius));
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.sidebar-item:hover {
+  background: hsl(var(--sidebar-accent));
+  color: hsl(var(--sidebar-accent-foreground));
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-item:hover::before {
+  left: 100%;
+}
+
+.sidebar-item.active {
+  background: hsl(var(--sidebar-primary));
+  color: hsl(var(--sidebar-primary-foreground));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transform: translateX(2px);
+}
+
+/* Inputs modernos */
+.input-modern {
+  transition: all 0.2s ease;
+  border: 2px solid hsl(var(--border));
+}
+
+.input-modern:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+  transform: scale(1.01);
+}
+
+/* Status badges coloridos */
+.badge-success {
+  background: hsl(var(--success) / 0.1);
+  color: hsl(var(--success));
+  border: 1px solid hsl(var(--success) / 0.2);
+}
+
+.badge-warning {
+  background: hsl(var(--warning) / 0.1);
+  color: hsl(var(--warning));
+  border: 1px solid hsl(var(--warning) / 0.2);
+}
+
+.badge-info {
+  background: hsl(var(--info) / 0.1);
+  color: hsl(var(--info));
+  border: 1px solid hsl(var(--info) / 0.2);
+}
+
+.badge-destructive {
+  background: hsl(var(--destructive) / 0.1);
+  color: hsl(var(--destructive));
+  border: 1px solid hsl(var(--destructive) / 0.2);
+}
+
+/* Glassmorphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* SWITCHES PEQUENOS - APENAS PARA INPUT CHECKBOX NATIVO */
+input[type="checkbox"] {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+
+  width: 32px !important;
+  height: 16px !important;
+  border-radius: 16px !important;
+  background-color: #d1d5db !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: relative !important;
+  margin-right: 8px !important;
+  transition: all 0.2s ease !important;
+  vertical-align: middle !important;
+}
+
+input[type="checkbox"]:checked {
+  background-color: hsl(var(--primary)) !important;
+}
+
+input[type="checkbox"]::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background-color: white !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+input[type="checkbox"]:checked::before {
+  left: 18px !important;
+}
+
+input[type="checkbox"]:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+input[type="checkbox"]:hover:not(:disabled) {
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Tema escuro para switches */
+.dark input[type="checkbox"] {
+  background-color: #374151 !important;
+}
+
+.dark input[type="checkbox"]:checked {
+  background-color: hsl(var(--primary)) !important;
+}
+
+/* Classes auxiliares modernas */
+.checkbox-label-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.checkbox-label-container:hover {
+  transform: translateX(2px);
+}
+
+.checkbox-label-container input[type="checkbox"],
+.checkbox-label-container [role="checkbox"] {
+  margin-right: 8px !important;
+  flex-shrink: 0;
+}
+
+/* Responsividade moderna */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none;
+  }
+
+  .mobile-full {
+    width: 100%;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Cores vibrantes para badges e status */
+.text-emerald-500 {
+  color: #10b981;
+}
+.text-blue-500 {
+  color: #3b82f6;
+}
+.text-purple-500 {
+  color: #8b5cf6;
+}
+.text-pink-500 {
+  color: #ec4899;
+}
+.text-orange-500 {
+  color: #f97316;
+}
+.text-teal-500 {
+  color: #14b8a6;
+}
+.text-indigo-500 {
+  color: #6366f1;
+}
+.text-rose-500 {
+  color: #f43f5e;
+}
+
+.bg-emerald-50 {
+  background-color: #ecfdf5;
+}
+.bg-blue-50 {
+  background-color: #eff6ff;
+}
+.bg-purple-50 {
+  background-color: #faf5ff;
+}
+.bg-pink-50 {
+  background-color: #fdf2f8;
+}
+.bg-orange-50 {
+  background-color: #fff7ed;
+}
+.bg-teal-50 {
+  background-color: #f0fdfa;
+}
+.bg-indigo-50 {
+  background-color: #eef2ff;
+}
+.bg-rose-50 {
+  background-color: #fff1f2;
+}
+
+/* Dark mode colors */
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+.dark .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+.dark .bg-purple-50 {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+.dark .bg-pink-50 {
+  background-color: rgba(236, 72, 153, 0.1);
+}
+.dark .bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.1);
+}
+.dark .bg-teal-50 {
+  background-color: rgba(20, 184, 166, 0.1);
+}
+.dark .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.1);
+}
+.dark .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.1);
 }

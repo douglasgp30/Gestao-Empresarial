@@ -1,30 +1,85 @@
 import * as React from "react";
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+interface CheckboxProps {
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  disabled?: boolean;
+  className?: string;
+  id?: string;
+  defaultChecked?: boolean;
+}
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <CheckboxPrimitive.Root
-    ref={ref}
-    className={cn(
-      "peer h-3.5 w-3.5 shrink-0 rounded border border-input bg-background shadow-sm ring-offset-background transition-all duration-200 hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary data-[state=checked]:shadow-md data-[state=checked]:scale-105",
-      className,
-    )}
-    {...props}
-  >
-    <CheckboxPrimitive.Indicator
-      className={cn(
-        "flex items-center justify-center text-current transition-transform duration-200",
-      )}
-    >
-      <Check className="h-2.5 w-2.5 stroke-[3]" />
-    </CheckboxPrimitive.Indicator>
-  </CheckboxPrimitive.Root>
-));
-Checkbox.displayName = CheckboxPrimitive.Root.displayName;
+const Checkbox = React.forwardRef<HTMLDivElement, CheckboxProps>(
+  (
+    {
+      checked,
+      onCheckedChange,
+      disabled = false,
+      className = "",
+      id,
+      defaultChecked,
+      ...props
+    },
+    ref,
+  ) => {
+    const [internalChecked, setInternalChecked] = React.useState(
+      defaultChecked || false,
+    );
+
+    // Se é controlado (tem checked prop), usa o valor externo, senão usa interno
+    const isChecked = checked !== undefined ? checked : internalChecked;
+
+    const handleChange = (newChecked: boolean) => {
+      if (checked === undefined) {
+        setInternalChecked(newChecked);
+      }
+      onCheckedChange?.(newChecked);
+    };
+
+    const handleClick = () => {
+      if (!disabled) {
+        handleChange(!isChecked);
+      }
+    };
+
+    return (
+      <div
+        ref={ref}
+        id={id}
+        onClick={handleClick}
+        className={className}
+        style={{
+          width: "32px",
+          height: "16px",
+          backgroundColor: isChecked ? "#007bff" : "#d1d5db",
+          borderRadius: "16px",
+          position: "relative",
+          cursor: disabled ? "not-allowed" : "pointer",
+          transition: "background-color 0.2s",
+          opacity: disabled ? 0.5 : 1,
+          marginRight: "8px",
+          display: "inline-block",
+        }}
+        {...props}
+      >
+        <div
+          style={{
+            width: "12px",
+            height: "12px",
+            backgroundColor: "white",
+            borderRadius: "50%",
+            position: "absolute",
+            top: "2px",
+            left: isChecked ? "18px" : "2px",
+            transition: "left 0.2s",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+          }}
+        />
+      </div>
+    );
+  },
+);
+
+Checkbox.displayName = "Checkbox";
 
 export { Checkbox };

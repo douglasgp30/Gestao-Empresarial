@@ -56,12 +56,13 @@ import "./lib/clearOldFilters"; // Executar limpeza de filtros antigos
 import { executarAjusteAutomatico } from "./lib/ajustarPermissoesAdmin";
 import "./lib/testePermissoesPonto"; // Teste automático em desenvolvimento
 import "./lib/debugFuncionarios"; // Debug de funcionários em desenvolvimento
-import "./lib/limparLocalStorageCaixa"; // Disponibilizar função de limpeza globalmente
-import "./lib/migrateLancamentosCaixa"; // Disponibilizar funções de migração globalmente
-import "./lib/debugCaixa"; // Funções de debug do caixa
-import "./lib/migrarDadosAntigos"; // Migração automática de dados antigos
-import "./lib/migrarCaixaParaBanco"; // Migração para banco de dados
-import "./lib/garantirDadosBasicos"; // Garantir dados básicos sempre presentes
+// 🚫 IMPORTAÇÕES DESABILITADAS - Conforme solicitação do usuário para não modificar dados automaticamente
+// import "./lib/limparLocalStorageCaixa";
+// import "./lib/migrateLancamentosCaixa";
+// import "./lib/debugCaixa";
+// import "./lib/migrarDadosAntigos";
+// import "./lib/migrarCaixaParaBanco";
+// import "./lib/garantirDadosBasicos";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ConfigProvider } from "./contexts/ConfigContext";

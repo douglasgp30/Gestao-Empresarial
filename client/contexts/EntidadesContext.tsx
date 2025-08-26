@@ -18,7 +18,7 @@ import {
   Fornecedor,
   LocalizacaoGeografica,
 } from "@shared/types";
-import { FORMAS_PAGAMENTO_PADRAO } from "../lib/dadosBasicos";
+// 🚫 REMOVIDO: Importação de dados padrão removida conforme solicitação do usuário
 import { normalizeString } from "../lib/stringUtils";
 import { useFuncionarios } from "./FuncionariosContext";
 
@@ -81,6 +81,7 @@ interface EntidadesContextType {
   isLoading: boolean;
   error: string | null;
   carregarDados: () => Promise<void>;
+  recarregarDescricoesECategorias: () => Promise<void>;
 }
 
 const EntidadesContext = createContext<EntidadesContextType | undefined>(
@@ -131,251 +132,16 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const inicializado = useRef(false);
 
-  // === FUNÇÃO PARA CRIAR DADOS BÁSICOS ===
+  // �� REMOVIDO: Criação automática de dados fictícios conforme solicitado pelo usuário
   const criarDadosBasicos = useCallback(() => {
-    console.log("🔧 [EntidadesContext] Criando dados básicos...");
-
-    // Descrições e categorias padrão
-    const dadosBasicos: DescricaoECategoria[] = [
-      // Categorias de Receita
-      {
-        id: "cat_receita_1",
-        tipoItem: "categoria",
-        tipo: "receita",
-        categoria: "Serviços",
-        nome: "Serviços",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "cat_receita_2",
-        tipoItem: "categoria",
-        tipo: "receita",
-        categoria: "Produtos",
-        nome: "Produtos",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "cat_receita_3",
-        tipoItem: "categoria",
-        tipo: "receita",
-        categoria: "Consultoria",
-        nome: "Consultoria",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-
-      // Descrições de Receita
-      {
-        id: "desc_receita_1",
-        tipoItem: "descricao",
-        tipo: "receita",
-        categoria: "Serviços",
-        nome: "Manutenção",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "desc_receita_2",
-        tipoItem: "descricao",
-        tipo: "receita",
-        categoria: "Serviços",
-        nome: "Instalação",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "desc_receita_3",
-        tipoItem: "descricao",
-        tipo: "receita",
-        categoria: "Serviços",
-        nome: "Reparo",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "desc_receita_4",
-        tipoItem: "descricao",
-        tipo: "receita",
-        categoria: "Consultoria",
-        nome: "Consultoria Técnica",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-
-      // Categorias de Despesa
-      {
-        id: "cat_despesa_1",
-        tipoItem: "categoria",
-        tipo: "despesa",
-        categoria: "Operacional",
-        nome: "Operacional",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "cat_despesa_2",
-        tipoItem: "categoria",
-        tipo: "despesa",
-        categoria: "Administrativo",
-        nome: "Administrativo",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "cat_despesa_3",
-        tipoItem: "categoria",
-        tipo: "despesa",
-        categoria: "Financeiro",
-        nome: "Financeiro",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-
-      // Descrições de Despesa
-      {
-        id: "desc_despesa_1",
-        tipoItem: "descricao",
-        tipo: "despesa",
-        categoria: "Operacional",
-        nome: "Combustível",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "desc_despesa_2",
-        tipoItem: "descricao",
-        tipo: "despesa",
-        categoria: "Operacional",
-        nome: "Material",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-      {
-        id: "desc_despesa_3",
-        tipoItem: "descricao",
-        tipo: "despesa",
-        categoria: "Administrativo",
-        nome: "Escritório",
-        ativo: true,
-        dataCriacao: new Date().toISOString(),
-      },
-    ];
-
-    // Localizações geográficas padrão
-    const localizacoesPadrao: LocalizacaoGeografica[] = [
-      // Cidades
-      {
-        id: 1,
-        tipoItem: "cidade",
-        nome: "Goiânia",
-        cidade: "Goiânia",
-        ativo: true,
-        dataCriacao: new Date(),
-      },
-      {
-        id: 2,
-        tipoItem: "cidade",
-        nome: "Aparecida de Goiânia",
-        cidade: "Aparecida de Goiânia",
-        ativo: true,
-        dataCriacao: new Date(),
-      },
-      {
-        id: 3,
-        tipoItem: "cidade",
-        nome: "Anápolis",
-        cidade: "Anápolis",
-        ativo: true,
-        dataCriacao: new Date(),
-      },
-
-      // Setores de Goiânia
-      {
-        id: 4,
-        tipoItem: "setor",
-        nome: "Setor Central",
-        cidade: "Goiânia",
-        ativo: true,
-        dataCriacao: new Date(),
-      },
-      {
-        id: 5,
-        tipoItem: "setor",
-        nome: "Setor Oeste",
-        cidade: "Goiânia",
-        ativo: true,
-        dataCriacao: new Date(),
-      },
-      {
-        id: 6,
-        tipoItem: "setor",
-        nome: "Setor Sul",
-        cidade: "Goiânia",
-        ativo: true,
-        dataCriacao: new Date(),
-      },
-
-      // Setores de Aparecida
-      {
-        id: 7,
-        tipoItem: "setor",
-        nome: "Centro",
-        cidade: "Aparecida de Goiânia",
-        ativo: true,
-        dataCriacao: new Date(),
-      },
-      {
-        id: 8,
-        tipoItem: "setor",
-        nome: "Cidade Jardim",
-        cidade: "Aparecida de Goiânia",
-        ativo: true,
-        dataCriacao: new Date(),
-      },
-    ];
-
-    // Salvar no localStorage se não existir
-    const descricoesExistentes = localStorage.getItem(
-      "descricoes_e_categorias",
+    console.log(
+      "✅ [EntidadesContext] Sistema vazio - Nenhum dado fictício será criado",
     );
-    if (!descricoesExistentes) {
-      localStorage.setItem(
-        "descricoes_e_categorias",
-        JSON.stringify(dadosBasicos),
-      );
-      console.log(
-        "✅ [EntidadesContext] Descrições e categorias padrão criadas",
-      );
-    }
 
-    const localizacoesExistentes = localStorage.getItem(
-      "localizacoes_geograficas",
-    );
-    if (!localizacoesExistentes) {
-      localStorage.setItem(
-        "localizacoes_geograficas",
-        JSON.stringify(localizacoesPadrao),
-      );
-      console.log(
-        "✅ [EntidadesContext] Localizações geográficas padrão criadas",
-      );
-    }
-
-    const formasExistentes = localStorage.getItem("formas_pagamento");
-    if (!formasExistentes) {
-      localStorage.setItem(
-        "formas_pagamento",
-        JSON.stringify(FORMAS_PAGAMENTO_PADRAO),
-      );
-      console.log("✅ [EntidadesContext] Formas de pagamento padrão criadas");
-    }
-
-    // Carregar os dados criados
-    setDescricoesECategorias(dadosBasicos);
-    setLocalizacoesGeograficas(localizacoesPadrao);
-    setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
+    // Apenas inicializar arrays vazios - usuário deve criar seus próprios dados
+    setDescricoesECategorias([]);
+    setLocalizacoesGeograficas([]);
+    setFormasPagamento([]);
   }, []);
 
   // === CARREGAMENTO DOS DADOS ===
@@ -396,7 +162,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         );
       } else {
         console.log(
-          "📂 [EntidadesContext] Descrições não encontradas, criando dados básicos",
+          "���� [EntidadesContext] Descrições não encontradas, criando dados básicos",
         );
         criarDadosBasicos();
         return; // Sair aqui pois criarDadosBasicos já carrega tudo
@@ -411,11 +177,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           `📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`,
         );
       } else {
-        setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
-        localStorage.setItem(
-          "formas_pagamento",
-          JSON.stringify(FORMAS_PAGAMENTO_PADRAO),
+        // 🚫 REMOVIDO: Não criar formas de pagamento padrão
+        console.log(
+          "✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado",
         );
+        setFormasPagamento([]);
       }
 
       // Carregar localizações geográficas
@@ -442,6 +208,39 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
   }, [criarDadosBasicos]);
+
+  // === FUNÇÃO ESPECÍFICA PARA RECARREGAR DESCRIÇÕES E CATEGORIAS ===
+  const recarregarDescricoesECategorias = useCallback(async () => {
+    try {
+      console.log(
+        "🔄 [EntidadesContext] Recarregando descrições e categorias...",
+      );
+      setError(null);
+
+      // Carregar descrições e categorias do localStorage
+      const descricoesStorage = localStorage.getItem("descricoes_e_categorias");
+      if (descricoesStorage) {
+        const parsed = JSON.parse(descricoesStorage);
+        const arrayParsed = Array.isArray(parsed) ? parsed : [];
+        setDescricoesECategorias(arrayParsed);
+        console.log(
+          `🔄 [EntidadesContext] ${arrayParsed.length} descrições/categorias recarregadas`,
+        );
+      } else {
+        console.log(
+          "🔄 [EntidadesContext] Nenhuma descrição encontrada no localStorage",
+        );
+        setDescricoesECategorias([]);
+      }
+    } catch (error) {
+      console.error(
+        "❌ [EntidadesContext] Erro ao recarregar descrições e categorias:",
+        error,
+      );
+      setError("Erro ao recarregar descrições e categorias");
+      throw error;
+    }
+  }, []);
 
   // === FUNÇÕES PARA TABELA UNIFICADA (MEMOIZADAS) ===
   const getCategorias = useCallback(
@@ -586,11 +385,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           `📂 [EntidadesContext] ${formasParsed.length} formas de pagamento carregadas`,
         );
       } else {
-        setFormasPagamento(FORMAS_PAGAMENTO_PADRAO);
-        localStorage.setItem(
-          "formas_pagamento",
-          JSON.stringify(FORMAS_PAGAMENTO_PADRAO),
+        // 🚫 REMOVIDO: Não criar formas de pagamento padrão
+        console.log(
+          "✅ [EntidadesContext] Formas de pagamento não encontradas - sistema vazio conforme solicitado",
         );
+        setFormasPagamento([]);
       }
 
       // Carregar localizações geográficas
@@ -734,7 +533,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   );
 
   const excluirFormaPagamento = useCallback(async (id: string) => {
-    console.log("📦 [EntidadesContext] STUB: excluirFormaPagamento", id);
+    console.log("��� [EntidadesContext] STUB: excluirFormaPagamento", id);
     return Promise.resolve();
   }, []);
 
@@ -834,6 +633,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       isLoading,
       error,
       carregarDados,
+      recarregarDescricoesECategorias,
     }),
     [
       descricoesECategorias,
@@ -849,6 +649,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       setores,
       isLoading,
       error,
+      carregarDados,
+      recarregarDescricoesECategorias,
     ],
   );
 

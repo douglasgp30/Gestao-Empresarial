@@ -10,10 +10,10 @@ export const limparLocalStorageCaixa = () => {
   const chavesParaLimpar = [
     "lancamentos_caixa",
     "campanhas",
-    "formas_pagamento",
+    // "formas_pagamento", // PRESERVADO - manter formas de pagamento
     "descricoes_e_categorias",
     "categorias_receita",
-    "localizacoes_geograficas",
+    // "localizacoes_geograficas", // PRESERVADO - manter cidades de Goiás
     "cidades_goias",
     "funcionarios",
     "clientes",

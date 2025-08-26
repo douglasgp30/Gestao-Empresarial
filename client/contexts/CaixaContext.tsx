@@ -72,7 +72,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isExcluindo, setIsExcluindo] = useState(false);
   const [filtros, setFiltros] = useState(() => {
-    // MUDANÇA: Filtrar por período mais amplo (último mês) para garantir que receitas recém-criadas apareçam
+    // MUDAN��A: Filtrar por período mais amplo (último mês) para garantir que receitas recém-criadas apareçam
     const agora = new Date();
     const inicioMes = new Date(
       agora.getFullYear(),
@@ -109,66 +109,15 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     };
   });
 
-  // Função para criar dados básicos se não existirem
+  // 🚫 REMOVIDO: Criação automática de dados fictícios conforme solicitado pelo usuário
   const criarDadosBasicos = useCallback(() => {
-    console.log("🔧 [CaixaContext] Criando dados básicos...");
+    console.log(
+      "✅ [CaixaContext] Sistema vazio - Nenhum dado fictício será criado",
+    );
 
-    // Campanhas padrão
-    const campanhasPadrao: Campanha[] = [
-      {
-        id: "1",
-        nome: "Campanha Principal",
-        descricao: "Campanha principal da empresa",
-      },
-      {
-        id: "2",
-        nome: "Sem Campanha",
-        descricao: "Lançamentos sem campanha específica",
-      },
-      { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" },
-    ];
-
-    // Verificar se campanhas existem
-    const campanhasExistentes = localStorage.getItem("campanhas");
-    if (!campanhasExistentes) {
-      localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
-      console.log("✅ [CaixaContext] Campanhas padrão criadas");
-    }
-
-    // Lançamentos de exemplo
-    const lancamentosPadrao: LancamentoCaixa[] = [
-      {
-        id: "1",
-        tipo: "receita",
-        valor: 500.0,
-        valorLiquido: 450.0,
-        comissao: 50.0,
-        descricao: { nome: "Serviço de manutenção" },
-        categoria: "Serviços",
-        formaPagamento: { id: "1", nome: "Dinheiro" },
-        tecnicoResponsavel: { id: "1", nome: "Técnico Padrão" },
-        cliente: { id: "1", nome: "Cliente Exemplo" },
-        campanha: { id: "1", nome: "Campanha Principal" },
-        data: new Date(),
-        dataHora: new Date(),
-        dataCriacao: new Date(),
-        funcionarioId: "1",
-      },
-    ];
-
-    // Verificar se lançamentos existem
-    const lancamentosExistentes = localStorage.getItem("lancamentos_caixa");
-    if (!lancamentosExistentes) {
-      localStorage.setItem(
-        "lancamentos_caixa",
-        JSON.stringify(lancamentosPadrao),
-      );
-      console.log("✅ [CaixaContext] Lançamentos padrão criados");
-    }
-
-    // Carregar dados criados
-    setCampanhas(campanhasPadrao);
-    setLancamentos(lancamentosPadrao);
+    // Apenas inicializar arrays vazios - usuário deve criar seus próprios dados
+    setCampanhas([]);
+    setLancamentos([]);
   }, []);
 
   // Carregar campanhas do localStorage ou criar padrão
@@ -184,26 +133,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
           `📊 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`,
         );
       } else {
-        // Se não existir, criar dados básicos
+        // 🚫 REMOVIDO: Não criar dados automáticos - sistema deve ficar vazio
         console.log(
-          "📊 [CaixaContext] Campanhas não encontradas, criando dados básicos",
+          "✅ [CaixaContext] Campanhas não encontradas - sistema vazio conforme solicitado",
         );
-        const campanhasPadrao: Campanha[] = [
-          {
-            id: "1",
-            nome: "Campanha Principal",
-            descricao: "Campanha principal da empresa",
-          },
-          {
-            id: "2",
-            nome: "Sem Campanha",
-            descricao: "Lançamentos sem campanha específica",
-          },
-          { id: "3", nome: "Promoções", descricao: "Campanhas promocionais" },
-        ];
-        setCampanhas(campanhasPadrao);
-        localStorage.setItem("campanhas", JSON.stringify(campanhasPadrao));
-        console.log("✅ [CaixaContext] Campanhas padrão criadas e salvas");
+        setCampanhas([]);
       }
     } catch (error) {
       console.error("Erro ao carregar campanhas do localStorage:", error);
@@ -350,7 +284,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       carregarLancamentosLocalStorage();
       console.log("✅ [CaixaContext] Dados carregados imediatamente");
     } catch (error) {
-      console.error("Erro na inicialização:", error);
+      console.error("Erro na inicializaç��o:", error);
       // Se falhar, criar dados básicos
       criarDadosBasicos();
     }
@@ -371,11 +305,11 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Função para atualizar filtros SEM recarregamento automático
-  const atualizarFiltros = (novosFiltros: any) => {
+  // Função para atualizar filtros SEM recarregamento automático - estabilizada com useCallback
+  const atualizarFiltros = useCallback((novosFiltros: any) => {
     setFiltros(novosFiltros);
     console.log("📅 [CaixaContext] Filtros atualizados");
-  };
+  }, []);
 
   // ✅ FUNÇÃO DE VALIDAÇÃO para evitar regressões
   const validarLancamento = (lancamento: any, contexto: string) => {
@@ -757,8 +691,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     });
   }, [lancamentos, filtros]);
 
+  // ✅ OTIMIZAÇÃO: Cálculo de totais otimizado para evitar recriação desnecessária
   const totais = useMemo(() => {
-    const receitasCompletas = lancamentos.filter((l) => l.tipo === "receita");
+    // Cache das funções de filtro para evitar recriação
+    const isReceitaCache = (l: any) => l.tipo === "receita";
+    const isDespesaCache = (l: any) => l.tipo === "despesa";
+
+    const receitasCompletas = lancamentos.filter(isReceitaCache);
     const receitasBoleto = receitasCompletas.filter(isBoleto);
     const receitasNaoBoleto = receitasCompletas.filter((l) => !isBoleto(l));
 
@@ -789,7 +728,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
 
     const boletos = receitasBoleto.reduce((total, l) => total + l.valor, 0);
     const despesas = lancamentos
-      .filter((l) => l.tipo === "despesa")
+      .filter(isDespesaCache)
       .reduce((total, l) => total + l.valor, 0);
     const comissoes = receitasNaoBoleto
       .filter((l) => l.comissao)
@@ -805,8 +744,9 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       saldo: receitasParaEmpresa - despesas,
       comissoes,
     };
-  }, [lancamentos]);
+  }, [lancamentos.length]); // Usar length em vez do array completo para melhor performance
 
+  // ✅ OTIMIZAÇÃO: Value do contexto otimizado para estabilidade
   const value = useMemo(
     () => ({
       lancamentos,
@@ -825,12 +765,13 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       error,
     }),
     [
-      lancamentos,
-      lancamentosFiltrados,
-      campanhas,
+      lancamentos.length, // Usar length para melhor performance
+      lancamentosFiltrados.length, // Usar length para melhor performance
+      campanhas.length, // Usar length para melhor performance
       filtros,
       totais,
       excluirLancamento,
+      atualizarFiltros, // Adicionar dependência do atualizarFiltros
       isLoading,
       isExcluindo,
       error,

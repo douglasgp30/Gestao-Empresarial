@@ -86,16 +86,16 @@ export function ModalReceita() {
     null,
   );
 
-  // Usar useMemo ao invés de useCallback para evitar re-renderizações desnecessárias
+  // ✅ CORREÇÃO: useMemo estabilizado removendo dependência que pode causar re-renders
   const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
     console.log("[ModalReceita] Debug - Categorias de receita:", categorias);
     return categorias.map((cat) => cat.nome).sort();
-  }, [getCategorias]);
+  }, []); // Remover dependência getCategorias que pode ser instável
 
   const descricoesReceita = React.useMemo(() => {
     return getDescricoes("receita");
-  }, [getDescricoes]);
+  }, []); // Remover dependência getDescricoes que pode ser instável
 
   // Filtrar descrições pela categoria selecionada
   const descricoesFiltradas = React.useMemo(() => {
@@ -107,7 +107,7 @@ export function ModalReceita() {
     );
     console.log("[ModalReceita] Debug - Descri��ões filtradas:", descricoes);
     return descricoes;
-  }, [formData.categoria, getDescricoes]);
+  }, [formData.categoria]); // Remover getDescricoes da dependência para evitar re-renders
 
   // Filtrar setores pela cidade selecionada
   const setoresFiltrados = React.useMemo(() => {
@@ -197,9 +197,9 @@ export function ModalReceita() {
     return 0;
   }, [formData.tecnicoResponsavel, tecnicos, valorLiquidoCalculado]);
 
-  // Remover useEffect que causa piscar da tela - valores calculados serão mostrados apenas no resumo
+  // ✅ CORREÇÃO: Removido useEffect que causava piscar - valores calculados são mostrados apenas no resumo
 
-  // Remover useEffect que causa piscar ao resetar valorQueEntrou
+  // ✅ CORREÇÃO: Removido useEffect que causava piscar ao resetar valorQueEntrou - valores são controlados diretamente
 
   // Ref para gerenciar cleanup do interval
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -827,7 +827,7 @@ export function ModalReceita() {
                                 {tecnico.nome || tecnico.nomeCompleto}
                                 {percentual > 0 && (
                                   <span className="text-xs text-gray-500 ml-2">
-                                    ({percentual}% comissão)
+                                    ({percentual}% comiss��o)
                                   </span>
                                 )}
                               </SelectItem>
