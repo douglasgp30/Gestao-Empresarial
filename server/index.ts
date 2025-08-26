@@ -175,24 +175,14 @@ export function createServer(): Express {
     }
   });
 
-  // Endpoint para criar dados básicos
+  // ❌ ENDPOINT DESABILITADO - Criação automática de dados não permitida
   app.post("/api/seed-basic-data", async (req, res) => {
-    try {
-      console.log("[Server] Iniciando seed de dados básicos...");
-      await seedBasicData();
-      res.json({
-        success: true,
-        message: "Dados básicos criados com sucesso!",
-        timestamp: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("[Server] Erro ao criar dados básicos:", error);
-      res.status(500).json({
-        success: false,
-        error: error.message,
-        timestamp: new Date().toISOString(),
-      });
-    }
+    console.log("[Server] ❌ Endpoint de seed desabilitado por solicitação do usuário");
+    res.status(403).json({
+      success: false,
+      error: "Criação automática de dados foi desabilitada. Apenas o usuário deve cadastrar dados.",
+      timestamp: new Date().toISOString(),
+    });
   });
 
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
