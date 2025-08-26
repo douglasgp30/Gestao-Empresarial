@@ -796,7 +796,7 @@ export default function ModalCidadesSimples() {
                       <Label htmlFor="cidadesTexto">Digite as cidades (uma por linha)</Label>
                       <Textarea
                         id="cidadesTexto"
-                        placeholder="Aparecida de Goiânia\nSenador Canedo\nTrindade\n..."
+                        placeholder="Aparecida de Goiânia&#10;Senador Canedo&#10;Trindade&#10;..."
                         value={cidadesTexto}
                         onChange={(e) => setCidadesTexto(e.target.value)}
                         rows={6}
