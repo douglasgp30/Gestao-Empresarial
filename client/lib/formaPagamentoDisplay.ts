@@ -48,3 +48,49 @@ export function getFormaPagamentoDisplayName(fp: any): string {
 
   return nomeRaw;
 }
+
+/**
+ * Ordena as formas de pagamento na ordem específica solicitada:
+ * 1. Pix, 2. Boleto, 3. Dinheiro, 4. C/ Débito, 5. C/ Crédito, 6. Transferência
+ */
+export function ordenarFormasPagamento(formas: any[]): any[] {
+  if (!Array.isArray(formas)) return [];
+
+  const ordem = [
+    "pix",
+    "boleto",
+    "dinheiro",
+    "cartao.*debito",
+    "cartao.*credito",
+    "transferencia"
+  ];
+
+  return formas.sort((a, b) => {
+    const nomeA = normalizeString(typeof a === "object" ? a.nome || "" : String(a || ""));
+    const nomeB = normalizeString(typeof b === "object" ? b.nome || "" : String(b || ""));
+
+    // Encontrar posição de cada forma na ordem desejada
+    const posA = ordem.findIndex(pattern =>
+      pattern.includes(".*")
+        ? new RegExp(pattern).test(nomeA)
+        : nomeA.includes(pattern)
+    );
+    const posB = ordem.findIndex(pattern =>
+      pattern.includes(".*")
+        ? new RegExp(pattern).test(nomeB)
+        : nomeB.includes(pattern)
+    );
+
+    // Se ambos encontrados, ordenar pela posição
+    if (posA !== -1 && posB !== -1) {
+      return posA - posB;
+    }
+
+    // Se só um encontrado, colocar o encontrado primeiro
+    if (posA !== -1) return -1;
+    if (posB !== -1) return 1;
+
+    // Se nenhum encontrado, ordenar alfabeticamente
+    return nomeA.localeCompare(nomeB);
+  });
+}
