@@ -95,7 +95,7 @@ export function ModalReceita() {
 
   const descricoesReceita = React.useMemo(() => {
     return getDescricoes("receita");
-  }, [getDescricoes]);
+  }, []); // Remover dependência getDescricoes que pode ser instável
 
   // Filtrar descrições pela categoria selecionada
   const descricoesFiltradas = React.useMemo(() => {
@@ -265,7 +265,7 @@ export function ModalReceita() {
     setDataVencimentoBoleto(null);
   };
 
-  // Fun��ão removida - o contexto já atualiza automaticamente após adicionar lançamento
+  // Função removida - o contexto já atualiza automaticamente após adicionar lançamento
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
