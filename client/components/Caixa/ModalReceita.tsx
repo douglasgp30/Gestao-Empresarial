@@ -111,15 +111,16 @@ export function ModalReceita() {
     return descricoes;
   }, [formData.categoria]); // Remover getDescricoes da dependência para evitar re-renders
 
-  // Filtrar setores pela cidade selecionada
+  // Filtrar setores pela cidade selecionada (usando ID da cidade)
   const setoresFiltrados = React.useMemo(() => {
-    if (!formData.cidade) return [];
-    return (Array.isArray(setores) ? setores : []).filter((setor) => {
-      const nomeCidadeSetor =
-        typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade;
-      return nomeCidadeSetor === formData.cidade;
-    });
-  }, [formData.cidade, setores]);
+    if (!formData.cidadeId) return [];
+
+    // Buscar o nome da cidade pelo ID
+    const cidadeSelecionada = getCidades().find(c => c.id.toString() === formData.cidadeId);
+    if (!cidadeSelecionada) return [];
+
+    return getSetores(cidadeSelecionada.nome).filter(setor => setor.ativo);
+  }, [formData.cidadeId, getCidades, getSetores]);
 
   // Verificar se forma de pagamento é cartão - usar useMemo para estabilizar
   const isFormaPagamentoCartao = React.useMemo(() => {
