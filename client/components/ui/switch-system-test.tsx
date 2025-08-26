@@ -158,8 +158,8 @@ export function SwitchSystemTest() {
         </div>
 
         <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800 border border-blue-200">
-          <strong>✅ Especificações Implementadas:</strong><br/>
-          • <strong>Tamanho:</strong> 28x16px (pequeno e proporcional)<br/>
+          <strong>��� Especificações Implementadas:</strong><br/>
+          • <strong>Tamanho:</strong> 28x12px (altura reduzida, mais proporcional)<br/>
           • <strong>Design:</strong> Totalmente arredondado<br/>
           • <strong>Desligado:</strong> Fundo cinza (#ddd) + bolinha escura (#666)<br/>
           • <strong>Ligado:</strong> Fundo azul (#007bff) + bolinha branca<br/>
