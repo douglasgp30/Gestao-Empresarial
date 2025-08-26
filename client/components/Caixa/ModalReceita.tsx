@@ -69,7 +69,6 @@ export function ModalReceita() {
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
     valor: "",
-    valorQueEntrou: "",
     categoria: "",
     descricao: "",
     descricaoId: "", // Adicionar campo para o ID da descrição
@@ -258,7 +257,6 @@ export function ModalReceita() {
     setFormData({
       data: new Date().toISOString().split("T")[0],
       valor: "",
-      valorQueEntrou: "",
       categoria: "",
       descricao: "",
       descricaoId: "",
