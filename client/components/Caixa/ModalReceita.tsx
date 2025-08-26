@@ -538,7 +538,7 @@ export function ModalReceita() {
       console.log("[ModalReceita] Lançamento salvo, modal fechado");
     } catch (error) {
       console.error("❌ [ModalReceita] ERRO AO LANÇAR RECEITA:", error);
-      console.error("❌ [ModalReceita] Stack trace:", error.stack);
+      console.error("��� [ModalReceita] Stack trace:", error.stack);
       console.error("❌ [ModalReceita] Dados que causaram erro:", formData);
 
       toast({
@@ -870,12 +870,14 @@ export function ModalReceita() {
                 <div className="space-y-2">
                   <Label htmlFor="cidade">Cidade</Label>
                   <Select
-                    value={formData.cidade}
+                    value={formData.cidadeId || ""}
                     onValueChange={(value) =>
                       setFormData((prev) => ({
                         ...prev,
-                        cidade: value,
+                        cidadeId: value,
+                        cidade: cidadesDisponiveis.find(c => c.id.toString() === value)?.nome || "",
                         setor: "", // Limpar setor quando cidade muda
+                        setorId: "", // Limpar ID do setor quando cidade muda
                       }))
                     }
                   >
@@ -883,16 +885,11 @@ export function ModalReceita() {
                       <SelectValue placeholder="Selecione a cidade" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Array.isArray(cidades) ? cidades : []).map(
-                        (cidade, index) => (
-                          <SelectItem
-                            key={`cidade-${index}-${cidade}`}
-                            value={cidade}
-                          >
-                            {cidade}
-                          </SelectItem>
-                        ),
-                      )}
+                      {cidadesDisponiveis.map((cidade) => (
+                        <SelectItem key={cidade.id} value={cidade.id.toString()}>
+                          {cidade.nome}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -900,15 +897,20 @@ export function ModalReceita() {
                 <div className="space-y-2">
                   <Label htmlFor="setor">Setor</Label>
                   <Select
-                    value={formData.setor}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({ ...prev, setor: value }))
-                    }
+                    value={formData.setorId || ""}
+                    onValueChange={(value) => {
+                      const setorSelecionado = setoresFiltrados.find(s => s.id.toString() === value);
+                      setFormData((prev) => ({
+                        ...prev,
+                        setorId: value,
+                        setor: setorSelecionado?.id.toString() || "", // Usar ID para compatibilidade
+                      }));
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue
                         placeholder={
-                          formData.cidade
+                          formData.cidadeId
                             ? "Selecione o setor"
                             : "Primeiro selecione uma cidade"
                         }
