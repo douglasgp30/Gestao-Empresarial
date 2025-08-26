@@ -453,7 +453,7 @@ input[type="checkbox"]:hover {
 
 .checkbox-label-container input[type="checkbox"],
 .checkbox-label-container [role="checkbox"] {
-  margin: 0;
+  margin-right: 8px;
   flex-shrink: 0;
 }
 
