@@ -367,37 +367,50 @@
   touch-action: manipulation;
 }
 
-/* Força a estilização dos checkboxes */
+/* Transformar checkboxes nativos em switches modernos */
 input[type="checkbox"] {
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
     appearance: none !important;
 
-    width: 16px !important;       /* tamanho menor */
-    height: 16px !important;
-    border: 1.5px solid #333 !important; /* borda mais fina */
-    border-radius: 3px !important;
+    width: 28px !important;        /* largura do switch */
+    height: 16px !important;       /* altura do switch */
+    border: none !important;
+    border-radius: 16px !important; /* totalmente arredondado */
     cursor: pointer !important;
     position: relative !important;
-    margin-right: 6px !important; /* espaço para o texto */
-    background-color: #fff !important;
+    margin-right: 8px !important;
+    background-color: #ddd !important; /* cinza quando desligado */
     vertical-align: middle !important;
+    transition: background-color 0.2s ease !important;
 }
 
-/* Quando marcado */
-input[type="checkbox"]:checked::after {
-    content: "✔" !important;
+/* Bolinha do switch (sempre visível) */
+input[type="checkbox"]::before {
+    content: "" !important;
     position: absolute !important;
-    top: -3px !important;
-    left: 1px !important;
-    font-size: 14px !important;
-    color: #0f5132 !important; /* verde discreto */
-    font-weight: bold !important;
+    top: 1px !important;
+    left: 2px !important;
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    background-color: #666 !important; /* bolinha escura quando desligado */
+    transition: all 0.2s ease !important;
+}
+
+/* Quando marcado (ligado) */
+input[type="checkbox"]:checked {
+    background-color: #007bff !important; /* azul quando ligado */
+}
+
+input[type="checkbox"]:checked::before {
+    left: 14px !important;          /* move bolinha para direita */
+    background-color: white !important; /* bolinha branca quando ligado */
 }
 
 /* Hover */
 input[type="checkbox"]:hover {
-    border-color: #000 !important;
+    filter: brightness(0.9) !important;
 }
 
 /* CSS ultra-específico para garantir sobrescrita total */
