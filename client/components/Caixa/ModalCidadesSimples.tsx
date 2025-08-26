@@ -847,7 +847,7 @@ export default function ModalCidadesSimples() {
                       <Label htmlFor="setoresTexto">Digite os setores (um por linha)</Label>
                       <Textarea
                         id="setoresTexto"
-                        placeholder="Aeroporto\nBueno\nCampinas\n..."
+                        placeholder="Aeroporto&#10;Bueno&#10;Campinas&#10;..."
                         value={setoresTexto}
                         onChange={(e) => setSetoresTexto(e.target.value)}
                         rows={6}
