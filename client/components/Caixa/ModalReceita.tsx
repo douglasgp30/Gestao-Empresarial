@@ -88,7 +88,7 @@ export function ModalReceita() {
     null,
   );
 
-  // ✅ CORRE��ÃO: useMemo estabilizado removendo dependência que pode causar re-renders
+  // ✅ CORREÇÃO: useMemo estabilizado removendo dependência que pode causar re-renders
   const categoriasReceita = React.useMemo(() => {
     const categorias = getCategorias("receita");
     console.log("[ModalReceita] Debug - Categorias de receita:", categorias);
@@ -257,7 +257,9 @@ export function ModalReceita() {
       formaPagamento: "",
       tecnicoResponsavel: "",
       cidade: "",
+      cidadeId: "",
       setor: "",
+      setorId: "",
       campanha: "",
       cliente: "",
       observacoes: "",
