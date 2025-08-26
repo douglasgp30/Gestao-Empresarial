@@ -227,13 +227,6 @@ export const deleteLocalizacaoGeografica: RequestHandler = async (req, res) => {
       });
     }
 
-    // Cidades de Goiás são pré-cadastradas e não devem ser excluídas
-    if (item.tipoItem === "cidade") {
-      return res.status(400).json({
-        error: `Não é possível excluir a cidade "${item.nome}". As cidades são pré-cadastradas no sistema. Use a função ativar/desativar para controlar quais cidades aparecem nas opções.`,
-      });
-    }
-
     // Verificar se há lançamentos vinculados
     const lancamentosVinculados = await prisma.lancamentoCaixa.findMany({
       where: {
@@ -246,6 +239,24 @@ export const deleteLocalizacaoGeografica: RequestHandler = async (req, res) => {
       return res.status(400).json({
         error: `Não é possível excluir ${item.tipoItem === "cidade" ? "a cidade" : "o setor"} "${item.nome}" pois existem lançamentos vinculados`,
       });
+    }
+
+    // Para cidades, verificar se há setores vinculados
+    if (item.tipoItem === "cidade") {
+      const setoresVinculados = await prisma.localizacaoGeografica.findMany({
+        where: {
+          tipoItem: "setor",
+          cidade: item.nome,
+          ativo: true,
+        },
+        take: 1, // Só precisamos saber se existe pelo menos um
+      });
+
+      if (setoresVinculados.length > 0) {
+        return res.status(400).json({
+          error: `Não é possível excluir a cidade "${item.nome}" pois existem setores cadastrados nela`,
+        });
+      }
     }
 
     // Soft delete

@@ -23,20 +23,32 @@ import {
 import { toast } from "../ui/use-toast";
 import SelectWithAdd from "../ui/select-with-add";
 import { TrendingDown } from "lucide-react";
+import { useCurrencyInput } from "../../hooks/use-currency-input";
+import {
+  getFormaPagamentoDisplayName,
+  ordenarFormasPagamento,
+} from "../../lib/formaPagamentoDisplay";
 
 export function ModalDespesa() {
+  // Log de mount/unmount para debug
+  React.useEffect(() => {
+    console.log("🟢 [ModalDespesa] COMPONENTE MONTADO");
+    return () => console.log("🔴 [ModalDespesa] COMPONENTE DESMONTADO");
+  }, []);
+
   const { adicionarLancamento, isLoading: caixaLoading } = useCaixa();
   const {
     descricoes,
     formasPagamento,
     setores,
     cidades,
-    adicionarDescricao,
     adicionarFormaPagamento,
     isLoading: entidadesLoading,
     // Unified data source
     getCategorias,
     getDescricoes,
+    getCidades,
+    getSetores,
     adicionarDescricaoECategoria,
   } = useEntidades();
 
@@ -46,15 +58,21 @@ export function ModalDespesa() {
     valor: "",
     categoria: "",
     descricao: "",
+    descricaoId: "",
     formaPagamento: "",
     cidade: "",
+    cidadeId: "",
     setor: "",
+    setorId: "",
     observacoes: "",
   });
 
+  // Hook para formatação de moeda
+  const valorInput = useCurrencyInput();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Usar useMemo para memoizar arrays e evitar re-renderizações desnecessárias
+  // Usar useMemo para memoizar arrays e evitar re-renderizações desnecessárias - igual ao ModalReceita
   const categoriasDespesa = useMemo(() => {
     const categorias = getCategorias("despesa");
     return categorias.map((cat) => cat.nome).sort();
@@ -64,21 +82,24 @@ export function ModalDespesa() {
     return getDescricoes("despesa");
   }, [getDescricoes]);
 
-  // Filtrar descrições pela categoria selecionada
+  // Filtrar descrições pela categoria selecionada - igual ao ModalReceita
   const descricoesFiltradas = useMemo(() => {
     if (!formData.categoria) return [];
     return getDescricoes("despesa", formData.categoria);
   }, [formData.categoria, getDescricoes]);
 
-  // Filtrar setores pela cidade selecionada
+  // Filtrar setores pela cidade selecionada (usando ID da cidade) - igual ao ModalReceita
   const setoresFiltrados = React.useMemo(() => {
-    if (!formData.cidade) return [];
-    return (Array.isArray(setores) ? setores : []).filter((setor) => {
-      const nomeCidadeSetor =
-        typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade;
-      return nomeCidadeSetor === formData.cidade;
-    });
-  }, [formData.cidade, setores]);
+    if (!formData.cidadeId) return [];
+
+    // Buscar o nome da cidade pelo ID
+    const cidadeSelecionada = getCidades().find(
+      (c) => c.id.toString() === formData.cidadeId,
+    );
+    if (!cidadeSelecionada) return [];
+
+    return getSetores(cidadeSelecionada.nome).filter((setor) => setor.ativo);
+  }, [formData.cidadeId, getCidades, getSetores]);
 
   const resetForm = () => {
     setFormData({
@@ -86,11 +107,15 @@ export function ModalDespesa() {
       valor: "",
       categoria: "",
       descricao: "",
+      descricaoId: "",
       formaPagamento: "",
       cidade: "",
+      cidadeId: "",
       setor: "",
+      setorId: "",
       observacoes: "",
     });
+    valorInput.reset();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,7 +124,7 @@ export function ModalDespesa() {
     // Validações robustas
     const erros = [];
 
-    if (!formData.valor || parseFloat(formData.valor) <= 0) {
+    if (valorInput.numericValue <= 0) {
       erros.push("Valor deve ser maior que zero");
     }
 
@@ -130,10 +155,14 @@ export function ModalDespesa() {
       await adicionarLancamento({
         data: new Date(formData.data),
         tipo: "despesa",
-        valor: parseFloat(formData.valor),
+        valor: valorInput.numericValue,
+        categoria: formData.categoria,
         descricao: formData.descricao,
         formaPagamento: formData.formaPagamento,
-        setor: formData.setor || undefined,
+        setor: formData.setorId || undefined, // Usar ID do setor
+        localizacaoId: formData.setorId
+          ? parseInt(formData.setorId)
+          : undefined, // ID da localização geográfica
         observacoes: formData.observacoes || undefined,
       });
 
@@ -163,6 +192,7 @@ export function ModalDespesa() {
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
+        console.log("[ModalDespesa] Dialog onOpenChange chamado:", open);
         setIsOpen(open);
         if (!open) {
           // Ao fechar o dialog, sempre resetar o formulário
@@ -179,7 +209,10 @@ export function ModalDespesa() {
           Despesas
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        forceMount
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600">
             <TrendingDown className="h-5 w-5" />
@@ -213,14 +246,9 @@ export function ModalDespesa() {
                 <Label htmlFor="valor">Valor (R$) *</Label>
                 <Input
                   id="valor"
-                  type="number"
-                  step="0.01"
-                  placeholder="0,00"
-                  value={formData.valor}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, valor: e.target.value }))
-                  }
+                  {...valorInput.inputProps}
                   required
+                  className="h-9"
                 />
               </div>
             </div>
@@ -289,10 +317,12 @@ export function ModalDespesa() {
                   setFormData((prev) => ({ ...prev, formaPagamento: value }))
                 }
                 placeholder="Selecione a forma"
-                options={formasPagamento.map((forma) => ({
-                  value: forma.id.toString(),
-                  label: forma.nome,
-                }))}
+                options={ordenarFormasPagamento(formasPagamento).map(
+                  (forma) => ({
+                    value: forma.id.toString(),
+                    label: getFormaPagamentoDisplayName(forma),
+                  }),
+                )}
                 onAddNew={async (nomeForma) => {
                   await adicionarFormaPagamento({
                     nome: nomeForma,
@@ -306,12 +336,16 @@ export function ModalDespesa() {
               <div className="space-y-2">
                 <Label htmlFor="cidade">Cidade</Label>
                 <Select
-                  value={formData.cidade}
+                  value={formData.cidadeId || ""}
                   onValueChange={(value) =>
                     setFormData((prev) => ({
                       ...prev,
-                      cidade: value,
+                      cidadeId: value,
+                      cidade:
+                        getCidades().find((c) => c.id.toString() === value)
+                          ?.nome || "",
                       setor: "", // Limpar setor quando cidade muda
+                      setorId: "", // Limpar ID do setor quando cidade muda
                     }))
                   }
                 >
@@ -319,16 +353,11 @@ export function ModalDespesa() {
                     <SelectValue placeholder="Selecione a cidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    {(Array.isArray(cidades) ? cidades : []).map(
-                      (cidade, index) => (
-                        <SelectItem
-                          key={`cidade-${index}-${cidade}`}
-                          value={cidade}
-                        >
-                          {cidade}
-                        </SelectItem>
-                      ),
-                    )}
+                    {getCidades().map((cidade) => (
+                      <SelectItem key={cidade.id} value={cidade.id.toString()}>
+                        {cidade.nome}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -336,15 +365,22 @@ export function ModalDespesa() {
               <div className="space-y-2">
                 <Label htmlFor="setor">Setor</Label>
                 <Select
-                  value={formData.setor}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, setor: value }))
-                  }
+                  value={formData.setorId || ""}
+                  onValueChange={(value) => {
+                    const setorSelecionado = setoresFiltrados.find(
+                      (s) => s.id.toString() === value,
+                    );
+                    setFormData((prev) => ({
+                      ...prev,
+                      setorId: value,
+                      setor: setorSelecionado?.id.toString() || "", // Usar ID para compatibilidade
+                    }));
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue
                       placeholder={
-                        formData.cidade
+                        formData.cidadeId
                           ? "Selecione o setor"
                           : "Primeiro selecione uma cidade"
                       }
@@ -377,7 +413,7 @@ export function ModalDespesa() {
             </div>
 
             {/* Resumo financeiro */}
-            {formData.valor && (
+            {valorInput.numericValue > 0 && (
               <div className="p-4 bg-red-50 rounded-lg">
                 <h4 className="font-medium text-red-800 mb-2">
                   Resumo da Despesa
@@ -385,7 +421,7 @@ export function ModalDespesa() {
                 <div className="text-sm">
                   <span className="text-gray-600">Valor a ser debitado:</span>
                   <div className="font-medium text-red-600 text-lg">
-                    R$ {parseFloat(formData.valor || "0").toFixed(2)}
+                    {valorInput.displayValue}
                   </div>
                 </div>
               </div>

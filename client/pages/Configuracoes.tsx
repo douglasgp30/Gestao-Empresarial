@@ -27,10 +27,10 @@ import SistemaBackup from "../components/Backup/SistemaBackup";
 import { CleanFakeData } from "../components/Debug/CleanFakeData";
 import LimpezaCompleta from "../components/Debug/LimpezaCompleta";
 import ResetarSistema from "../components/Debug/ResetarSistema";
-import { TesteBoleto } from "../components/Debug/TesteBoleto";
-import { TesteRapidoBoleto } from "../components/Debug/TesteRapidoBoleto";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
 import { TesteBasico } from "../components/Debug/TesteBasico";
+import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
+import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
   Building2,
@@ -68,6 +68,10 @@ export default function Configuracoes() {
   const [percentualComissao, setPercentualComissao] = useState(15);
   const [percentualImposto, setPercentualImposto] = useState(6);
   const [tempoSessao, setTempoSessao] = useState(60);
+  const [abrirSiteNotaFiscal, setAbrirSiteNotaFiscal] = useState(true);
+  const [urlSiteNotaFiscal, setUrlSiteNotaFiscal] = useState(
+    "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733",
+  );
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -75,16 +79,46 @@ export default function Configuracoes() {
 
   // Carregar configurações salvas ao inicializar
   useEffect(() => {
+    console.log("📂 [Configurações] Carregando configurações salvas...");
     const savedConfigs = localStorage.getItem("userConfigs");
+
     if (savedConfigs) {
       try {
         const configs = JSON.parse(savedConfigs);
+        console.log("📄 [Configurações] Configurações encontradas:", configs);
+
         setPercentualComissao(configs.percentualComissao || 15);
         setPercentualImposto(configs.percentualImposto || 6);
         setTempoSessao(configs.tempoSessao || 60);
+
+        // Carregamento explícito para evitar problemas de persistência
+        const abrirSiteValue =
+          configs.abrirSiteNotaFiscal === true ||
+          configs.abrirSiteNotaFiscal === "true";
+        console.log(
+          "🔧 [Configurações] Configuração abrir site NF:",
+          configs.abrirSiteNotaFiscal,
+          "->",
+          abrirSiteValue,
+        );
+        setAbrirSiteNotaFiscal(abrirSiteValue);
+
+        setUrlSiteNotaFiscal(
+          configs.urlSiteNotaFiscal ||
+            "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733",
+        );
+
+        console.log("✅ [Configurações] Configurações carregadas com sucesso");
       } catch (error) {
-        console.error("Erro ao carregar configurações:", error);
+        console.error(
+          "❌ [Configurações] Erro ao carregar configurações:",
+          error,
+        );
       }
+    } else {
+      console.log(
+        "📭 [Configurações] Nenhuma configuração salva encontrada, usando valores padrão",
+      );
     }
 
     // Carregar tema salvo
@@ -115,6 +149,15 @@ export default function Configuracoes() {
       errors.tempoSessao = "Tempo de sessão deve estar entre 5 e 480 minutos";
     }
 
+    if (abrirSiteNotaFiscal && !urlSiteNotaFiscal.trim()) {
+      errors.urlSiteNotaFiscal =
+        "URL do site de nota fiscal é obrigatória quando a opção está ativada";
+    }
+
+    if (urlSiteNotaFiscal.trim() && !urlSiteNotaFiscal.startsWith("http")) {
+      errors.urlSiteNotaFiscal = "URL deve começar com http:// ou https://";
+    }
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -128,14 +171,22 @@ export default function Configuracoes() {
     updateBackupConfig(localBackupConfig);
 
     // Salvar configurações de usuários no localStorage
-    localStorage.setItem(
-      "userConfigs",
-      JSON.stringify({
-        percentualComissao,
-        percentualImposto,
-        tempoSessao,
-      }),
-    );
+    const configsToSave = {
+      percentualComissao,
+      percentualImposto,
+      tempoSessao,
+      abrirSiteNotaFiscal,
+      urlSiteNotaFiscal,
+    };
+
+    console.log("💾 [Configurações] Salvando configurações:", configsToSave);
+
+    try {
+      localStorage.setItem("userConfigs", JSON.stringify(configsToSave));
+      console.log("✅ [Configurações] Configurações salvas com sucesso");
+    } catch (error) {
+      console.error("❌ [Configurações] Erro ao salvar configurações:", error);
+    }
 
     setSavedMessage(true);
     setTimeout(() => setSavedMessage(false), 3000);
@@ -163,6 +214,10 @@ export default function Configuracoes() {
     setPercentualComissao(15);
     setPercentualImposto(6);
     setTempoSessao(60);
+    setAbrirSiteNotaFiscal(true);
+    setUrlSiteNotaFiscal(
+      "https://www6.goiania.go.gov.br/sistemas/saces/asp/saces00000f5.asp?sigla=snfse&c=1&aid=efeb5319b1b9661f1a8a5aee6848c7db68773380001&dth=20250812101733",
+    );
     setValidationErrors({});
 
     // Resetar tema para claro
@@ -243,7 +298,7 @@ export default function Configuracoes() {
       )}
 
       <Tabs defaultValue="empresa" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="empresa">
             <Building2 className="h-4 w-4 mr-2" />
             Empresa
@@ -271,6 +326,14 @@ export default function Configuracoes() {
           <TabsTrigger value="auditoria">
             <Shield className="h-4 w-4 mr-2" />
             Auditoria
+          </TabsTrigger>
+          <TabsTrigger value="debug">
+            <Settings className="h-4 w-4 mr-2" />
+            Debug
+          </TabsTrigger>
+          <TabsTrigger value="localizacoes">
+            <Building2 className="h-4 w-4 mr-2" />
+            Localizações
           </TabsTrigger>
         </TabsList>
 
@@ -581,6 +644,71 @@ export default function Configuracoes() {
                   </p>
                 </div>
 
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">
+                    Configurações de Nota Fiscal
+                  </h3>
+
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <Switch
+                        id="abrir-site-nf"
+                        checked={abrirSiteNotaFiscal}
+                        onCheckedChange={setAbrirSiteNotaFiscal}
+                      />
+                      <div>
+                        <Label htmlFor="abrir-site-nf" className="font-medium">
+                          Abrir automaticamente site de emissão de NF
+                        </Label>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {abrirSiteNotaFiscal
+                            ? "Site será aberto automaticamente ao marcar nota fiscal"
+                            : "Site não será aberto automaticamente"}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge
+                      variant={abrirSiteNotaFiscal ? "default" : "secondary"}
+                    >
+                      {abrirSiteNotaFiscal ? "Ativo" : "Desativo"}
+                    </Badge>
+                  </div>
+
+                  {abrirSiteNotaFiscal && (
+                    <div className="space-y-2">
+                      <Label htmlFor="urlSiteNotaFiscal">
+                        URL do Site de Emissão de Nota Fiscal{" "}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="urlSiteNotaFiscal"
+                        type="url"
+                        value={urlSiteNotaFiscal}
+                        onChange={(e) => setUrlSiteNotaFiscal(e.target.value)}
+                        placeholder="https://exemplo.gov.br/nota-fiscal"
+                        className={
+                          validationErrors.urlSiteNotaFiscal
+                            ? "border-red-500"
+                            : ""
+                        }
+                      />
+                      {validationErrors.urlSiteNotaFiscal && (
+                        <p className="text-sm text-red-500">
+                          {validationErrors.urlSiteNotaFiscal}
+                        </p>
+                      )}
+                      <p className="text-sm text-muted-foreground">
+                        URL do sistema de emissão de nota fiscal do seu
+                        estado/município
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+
                 <div className="space-y-2">
                   <Label htmlFor="tempoSessao">
                     Tempo de Sessão Automática (minutos)
@@ -616,7 +744,7 @@ export default function Configuracoes() {
         <TabsContent value="sistema" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Configurações do Sistema</CardTitle>
+              <CardTitle>Configura��ões do Sistema</CardTitle>
               <CardDescription>
                 Parâmetros gerais e configurações avançadas
               </CardDescription>
@@ -877,10 +1005,6 @@ export default function Configuracoes() {
 
           <DiagnosticoLoop />
 
-          <TesteRapidoBoleto />
-
-          <TesteBoleto />
-
           <CleanFakeData />
 
           <LimpezaCompleta />
@@ -917,6 +1041,14 @@ export default function Configuracoes() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="debug" className="space-y-6">
+          <DebugPrimeiroAcesso />
+        </TabsContent>
+
+        <TabsContent value="localizacoes" className="space-y-6">
+          <GerenciadorCidadesSetores />
         </TabsContent>
       </Tabs>
     </div>

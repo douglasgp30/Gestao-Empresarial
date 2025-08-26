@@ -205,6 +205,10 @@ export default function ModalDescricoesSimples() {
       const result = await response.json();
       console.log("✅ Descrição criada:", result);
 
+      // A API retorna {data: {...}}, então acessamos result.data
+      const descricaoCriada = result.data || result;
+      console.log("✅ Dados da descrição criada:", descricaoCriada);
+
       toast.success("Descrição adicionada com sucesso");
       setFormDescricao({ nome: "", categoria: "" });
 
@@ -268,6 +272,10 @@ export default function ModalDescricoesSimples() {
       const result = await response.json();
       console.log("✅ Categoria criada:", result);
 
+      // A API retorna {data: {...}}, então acessamos result.data
+      const categoriaCriada = result.data || result;
+      console.log("✅ Dados da categoria criada:", categoriaCriada);
+
       toast.success("Categoria adicionada com sucesso");
       setFormCategoria({ nome: "" });
 
@@ -283,6 +291,49 @@ export default function ModalDescricoesSimples() {
       );
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleForceDelete = async () => {
+    if (!itemToDelete || isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      console.log("⚠️ Exclusão forçada:", itemToDelete.nome);
+
+      const response = await fetch(
+        `/api/descricoes-e-categorias/${itemToDelete.id}?force=true`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Erro ao excluir item");
+      }
+
+      toast.success(
+        `${itemToDelete.tipo === "categoria" ? "Categoria" : "Descrição"} "${itemToDelete.nome}" excluída com sucesso`,
+        {
+          description: "Todas as dependências foram removidas automaticamente.",
+        },
+      );
+
+      // Limpar estado
+      setItemToDelete(null);
+      setShowConfirm(false);
+
+      // Sincronizar dados após exclusão
+      console.log("🔄 Sincronizando dados após exclusão forçada...");
+      await recarregarDescricoesECategorias();
+    } catch (error) {
+      console.error("❌ Erro na exclusão forçada:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao excluir item",
+      );
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -435,7 +486,7 @@ export default function ModalDescricoesSimples() {
           }
         }
 
-        console.log("🔍 Final error message:", errorMessage);
+        console.log("�� Final error message:", errorMessage);
         console.log("🔍 Is dependency error:", isDependencyError);
 
         // Fechar modal de confirmação
@@ -444,39 +495,45 @@ export default function ModalDescricoesSimples() {
 
         // Mostrar erro de forma adequada baseado no tipo
         if (isDependencyError) {
-          // Para erros de dependência de categoria, permitir visualizar dependências
+          // Para erros de dependência, oferecer exclusão forçada
+          toast.error(
+            `Não é possível excluir ${itemToDelete.tipo === "categoria" ? "categoria" : "descrição"}`,
+            {
+              duration: 15000,
+              description: errorMessage,
+              action: {
+                label: "Excluir Mesmo Assim",
+                onClick: () => handleForceDelete(),
+              },
+            },
+          );
+
+          // Se for categoria, permitir ver dependências (separado para evitar confusão)
           if (itemToDelete.tipo === "categoria") {
-            toast.error("Não é possível excluir esta categoria", {
-              duration: 12000,
-              description: errorMessage,
-              action: {
-                label: "Ver Dependências",
-                onClick: () => {
-                  // Encontrar a categoria no array para passar os dados corretos
-                  const categoria = descricoesECategorias.find(
-                    (item) => item.id === itemToDelete.id,
-                  );
-                  if (categoria) {
-                    setCategoriaParaDependencias({
-                      id: categoria.id,
-                      nome: categoria.nome,
-                      tipo: categoria.tipo,
-                    });
-                    setShowDependencies(true);
-                  }
+            setTimeout(() => {
+              toast.info("Ver dependências", {
+                duration: 8000,
+                description:
+                  "Clique para visualizar as descrições vinculadas a esta categoria",
+                action: {
+                  label: "Ver Dependências",
+                  onClick: () => {
+                    // Encontrar a categoria no array para passar os dados corretos
+                    const categoria = descricoesECategorias.find(
+                      (item) => item.id === itemToDelete.id,
+                    );
+                    if (categoria) {
+                      setCategoriaParaDependencias({
+                        id: categoria.id,
+                        nome: categoria.nome,
+                        tipo: categoria.tipo,
+                      });
+                      setShowDependencies(true);
+                    }
+                  },
                 },
-              },
-            });
-          } else {
-            // Para descrições, apenas mostrar o erro detalhado
-            toast.error("Não é possível excluir esta descrição", {
-              duration: 10000,
-              description: errorMessage,
-              action: {
-                label: "Entendi",
-                onClick: () => console.log("Toast dismissed"),
-              },
-            });
+              });
+            }, 500);
           }
         } else {
           // Para outros erros, mostrar mensagem simples
@@ -747,7 +804,7 @@ export default function ModalDescricoesSimples() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-2 mb-4">
+              <div className="grid grid-cols-12 gap-2 mb-4">
                 <select
                   value={formDescricao.categoria}
                   onChange={(e) =>
@@ -756,7 +813,7 @@ export default function ModalDescricoesSimples() {
                       categoria: e.target.value,
                     })
                   }
-                  className="p-2 border rounded"
+                  className="col-span-4 p-2 border rounded text-sm"
                 >
                   <option value="">Selecione uma categoria</option>
                   {(tipoAtivo === "receita"
@@ -774,16 +831,17 @@ export default function ModalDescricoesSimples() {
                   onChange={(e) =>
                     setFormDescricao({ ...formDescricao, nome: e.target.value })
                   }
+                  className="col-span-5 text-sm"
                 />
+                <Button
+                  onClick={handleAdicionarDescricao}
+                  disabled={isSaving}
+                  className="col-span-3 text-sm"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar
+                </Button>
               </div>
-              <Button
-                onClick={handleAdicionarDescricao}
-                disabled={isSaving}
-                className="mb-4"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Adicionar Descrição
-              </Button>
 
               <div className="space-y-2">
                 {(tipoAtivo === "receita"

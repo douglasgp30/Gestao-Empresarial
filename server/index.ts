@@ -35,6 +35,7 @@ import {
   createFuncionario,
   updateFuncionario,
   deleteFuncionario,
+  verificarExistenciaAdministradores,
 } from "./routes/funcionarios";
 
 import {
@@ -74,6 +75,17 @@ import {
   criarSetor,
   excluirSetor,
 } from "./routes/cidades-goias";
+
+import {
+  verificarLocalizacoes,
+  limparTodasLocalizacoes,
+} from "./routes/clean-localizacoes";
+
+import {
+  cadastrarCidadesEmMassa,
+  cadastrarSetoresEmMassa,
+  excluirComProtecao,
+} from "./routes/cadastro-massa-localizacoes";
 
 export function createServer(): Express {
   const app = express();
@@ -174,24 +186,17 @@ export function createServer(): Express {
     }
   });
 
-  // Endpoint para criar dados básicos
+  // ❌ ENDPOINT DESABILITADO - Criação automática de dados não permitida
   app.post("/api/seed-basic-data", async (req, res) => {
-    try {
-      console.log("[Server] Iniciando seed de dados básicos...");
-      await seedBasicData();
-      res.json({
-        success: true,
-        message: "Dados básicos criados com sucesso!",
-        timestamp: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("[Server] Erro ao criar dados básicos:", error);
-      res.status(500).json({
-        success: false,
-        error: error.message,
-        timestamp: new Date().toISOString(),
-      });
-    }
+    console.log(
+      "[Server] ❌ Endpoint de seed desabilitado por solicitação do usuário",
+    );
+    res.status(403).json({
+      success: false,
+      error:
+        "Criação automática de dados foi desabilitada. Apenas o usuário deve cadastrar dados.",
+      timestamp: new Date().toISOString(),
+    });
   });
 
   // Limpeza de dados fictícios - rota especial sem middleware de body parsing extra
@@ -230,6 +235,7 @@ export function createServer(): Express {
   // Rotas de Funcionários
   app.get("/api/funcionarios", getFuncionarios);
   app.get("/api/tecnicos", getTecnicos);
+  app.get("/api/auth/verificar-admin", verificarExistenciaAdministradores);
   app.post("/api/funcionarios", createFuncionario);
   app.put("/api/funcionarios/:id", updateFuncionario);
   app.delete("/api/funcionarios/:id", deleteFuncionario);
@@ -359,10 +365,31 @@ export function createServer(): Express {
   app.post("/api/cidades-goias/:nomeCidade/setores", criarSetor);
   app.delete("/api/cidades-goias/setores/:id", excluirSetor);
 
+  // Rotas de limpeza de localizações (debug)
+  app.get("/api/debug/localizacoes", verificarLocalizacoes);
+  app.delete("/api/debug/localizacoes", limparTodasLocalizacoes);
+
+  // Rotas de cadastro em massa de localizações
+  app.post("/api/localizacoes/cadastro-massa/cidades", cadastrarCidadesEmMassa);
+  app.post("/api/localizacoes/cadastro-massa/setores", cadastrarSetoresEmMassa);
+  app.delete("/api/localizacoes/:id/com-protecao", excluirComProtecao);
+
   // Migração para sistema unificado
   app.post("/api/migrate/unified-descriptions", runMigration);
   app.get("/api/migrate/check", checkMigration);
-  app.post("/api/seed/unified-data", seedUnifiedData);
+
+  // ❌ ENDPOINT DESABILITADO - Criação automática de dados não permitida
+  app.post("/api/seed/unified-data", (req, res) => {
+    console.log(
+      "[Server] ❌ Endpoint de seed unified-data desabilitado por solicitação do usuário",
+    );
+    res.status(403).json({
+      success: false,
+      error:
+        "Criação automática de dados foi desabilitada. Apenas o usuário deve cadastrar dados.",
+      timestamp: new Date().toISOString(),
+    });
+  });
 
   // Limpeza de dados
   app.delete("/api/clean/categories", cleanCategories);
