@@ -2,152 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mobile optimizations */
 @layer base {
-  /* Prevent zoom on inputs on iOS */
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="tel"],
-  input[type="url"],
-  input[type="number"],
-  input[type="date"],
-  input[type="time"],
-  select,
-  textarea {
-    font-size: 16px;
-  }
-
-  /* Improve touch targets */
-  button,
-  [role="button"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Better mobile scrolling */
-  * {
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Prevent unwanted zooming */
-  @media screen and (max-width: 768px) {
-    html {
-      -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
-    }
-  }
-
-  /* Custom breakpoint for very small screens */
-  @media (min-width: 480px) {
-    .xs\:inline {
-      display: inline;
-    }
-    .xs\:hidden {
-      display: none;
-    }
-    .xs\:grid-cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-}
-
-@layer base {
-  /**
-   * Tailwind CSS theme
-   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
-   * A different format will require also updating the theme in tailwind.config.ts.
-  */
   :root {
     --background: 0 0% 100%;
-    --foreground: 220 13% 18%;
-
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
-
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 13% 18%;
-
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 13% 46%;
-
-    --accent: 220 14% 96%;
-    --accent-foreground: 220 13% 18%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 45 93% 47%;
-    --warning-foreground: 0 0% 100%;
-
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 60%;
-
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
-
-    --sidebar-background: 220 30% 18%;
-    --sidebar-foreground: 220 9% 46%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 30% 25%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 30% 25%;
-    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
-    --background: 220 30% 7%;
-    --foreground: 220 9% 95%;
-
-    --card: 220 30% 9%;
-    --card-foreground: 220 9% 95%;
-
-    --popover: 220 30% 9%;
-    --popover-foreground: 220 9% 95%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 30% 15%;
-    --secondary-foreground: 220 9% 95%;
-
-    --muted: 220 30% 15%;
-    --muted-foreground: 220 9% 65%;
-
-    --accent: 220 30% 15%;
-    --accent-foreground: 220 9% 95%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 45 93% 47%;
-    --warning-foreground: 0 0% 100%;
-
-    --border: 220 30% 15%;
-    --input: 220 30% 15%;
-    --ring: 217 91% 60%;
-
-    --sidebar-background: 220 30% 5%;
-    --sidebar-foreground: 220 9% 65%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 30% 12%;
-    --sidebar-accent-foreground: 220 9% 95%;
-    --sidebar-border: 220 30% 12%;
-    --sidebar-ring: 217 91% 60%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
   }
 }
 
@@ -155,348 +53,65 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
   }
 }
 
-/* Estilos para o filtro de data Google Ads */
-.filtro-data-google-ads .rdp {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-/* Estilos básicos para o DayPicker */
-.rdp {
-  --rdp-cell-size: 36px;
-  --rdp-accent-color: hsl(var(--primary));
-  --rdp-background-color: hsl(var(--background));
-}
-
-.rdp-months {
-  display: flex;
-  gap: 1rem;
-}
-
-.rdp-month {
-  width: 100%;
-}
-
-.rdp-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.rdp-head_cell,
-.rdp-cell {
-  width: var(--rdp-cell-size);
-  height: var(--rdp-cell-size);
-  text-align: center;
-}
-
-.rdp-head_cell {
-  font-weight: 500;
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
-}
-
-.rdp-day {
-  width: var(--rdp-cell-size);
-  height: var(--rdp-cell-size);
-  border: none;
-  background: none;
-  font-size: 0.875rem;
-  cursor: pointer;
-  border-radius: 0.375rem;
-  transition: all 0.2s;
-}
-
-.rdp-day:hover {
-  background-color: hsl(var(--accent));
-}
-
-.rdp-day_selected {
-  background-color: var(--rdp-accent-color);
-  color: hsl(var(--primary-foreground));
-}
-
-.rdp-day_today {
-  font-weight: 600;
-  color: var(--rdp-accent-color);
-}
-
-.rdp-day_outside {
-  color: hsl(var(--muted-foreground));
-  opacity: 0.5;
-}
-
-.rdp-day_disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.rdp-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.rdp-nav_button {
-  background: none;
-  border: 1px solid hsl(var(--border));
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rdp-nav_button:hover {
-  background-color: hsl(var(--accent));
-}
-
-.rdp-caption_label {
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-.filtro-data-google-ads .rdp-months {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.filtro-data-google-ads .rdp-month {
-  min-width: 280px;
-}
-
-.filtro-data-google-ads .rdp-caption {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.filtro-data-google-ads .rdp-day_selected {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-.filtro-data-google-ads .rdp-day_range_middle {
-  background-color: hsl(var(--primary) / 0.1);
-  color: hsl(var(--foreground));
-}
-
-.filtro-data-google-ads .rdp-day_range_start,
-.filtro-data-google-ads .rdp-day_range_end {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-@media (max-width: 640px) {
-  .filtro-data-google-ads .rdp-months {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .filtro-data-google-ads .rdp-month {
-    min-width: 250px;
-  }
-}
-
-/* Melhorias para clicabilidade dos componentes de data */
-.rdp-day_disabled {
-  pointer-events: none !important;
-}
-
-.rdp-day_outside {
-  pointer-events: none !important;
-}
-
-.rdp-day {
-  position: relative;
-  cursor: pointer;
-  pointer-events: auto;
-  touch-action: manipulation;
-}
-
-/* Melhorar touch targets para mobile */
-@media (max-width: 768px) {
-  .rdp-day {
-    min-height: 44px !important;
-    min-width: 44px !important;
-    width: 44px;
-    height: 44px;
-  }
-
-  .rdp-cell {
-    min-height: 44px !important;
-    min-width: 44px !important;
-    width: 44px;
-    height: 44px;
-  }
-
-  /* Melhorar feedback visual no touch */
-  .rdp-day:active {
-    transform: scale(0.95);
-    transition: transform 0.1s ease-in-out;
-  }
-
-  /* Otimizar área clicável */
-  .rdp-day:before {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    z-index: -1;
-  }
-}
-
-/* Garantir z-index adequado para popovers */
-[data-radix-popover-content] {
-  z-index: 50;
-}
-
 .rdp-nav_button {
   pointer-events: auto;
   touch-action: manipulation;
 }
 
-/* Transformar checkboxes nativos em switches modernos */
+/* Checkboxes nativos pequenos e simples */
 input[type="checkbox"] {
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-
-    width: 28px !important;        /* largura do switch */
-    height: 10px !important;       /* altura do círculo externo diminuída */
-    border: none !important;
-    border-radius: 10px !important; /* menos redondo */
-    cursor: pointer !important;
-    position: relative !important;
-    margin-right: 8px !important;
-    background-color: #ddd !important; /* cinza quando desligado */
-    vertical-align: middle !important;
-    transition: background-color 0.2s ease !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  
+  width: 32px !important;
+  height: 16px !important;
+  border-radius: 16px !important;
+  background-color: #d1d5db !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: relative !important;
+  margin-right: 8px !important;
+  transition: background-color 0.2s !important;
+  vertical-align: middle !important;
 }
 
-/* Bolinha do switch (sempre visível) */
-input[type="checkbox"]::before {
-    content: "" !important;
-    position: absolute !important;
-    top: 1px !important;
-    left: 1px !important;
-    width: 8px !important;
-    height: 8px !important;
-    border-radius: 50% !important;
-    background-color: #666 !important; /* bolinha escura quando desligado */
-    transition: all 0.2s ease !important;
-}
-
-/* Quando marcado (ligado) */
 input[type="checkbox"]:checked {
-    background-color: #007bff !important; /* azul quando ligado */
+  background-color: #007bff !important;
+}
+
+input[type="checkbox"]::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 50% !important;
+  background-color: white !important;
+  transition: left 0.2s !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
 }
 
 input[type="checkbox"]:checked::before {
-    left: 18px !important;          /* move bolinha para direita na nova altura */
-    background-color: white !important; /* bolinha branca quando ligado */
+  left: 18px !important;
 }
 
-/* Hover */
-input[type="checkbox"]:hover {
-    filter: brightness(0.9) !important;
+input[type="checkbox"]:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
 }
 
-/* CSS específico para switches em qualquer contexto */
-body input[type="checkbox"],
-div input[type="checkbox"],
-form input[type="checkbox"],
-.checkbox input[type="checkbox"] {
-    width: 28px !important;
-    height: 10px !important;
-    border-radius: 10px !important;
-    background-color: #ddd !important;
-    border: none !important;
-    position: relative !important;
-    margin-right: 8px !important;
-}
-
-body input[type="checkbox"]:checked,
-div input[type="checkbox"]:checked,
-form input[type="checkbox"]:checked {
-    background-color: #007bff !important;
-}
-
-/* Tema escuro para switches */
-@media (prefers-color-scheme: dark) {
-  input[type="checkbox"] {
-    background-color: #374151 !important; /* cinza mais escuro quando desligado */
-  }
-
-  input[type="checkbox"]::before {
-    background-color: #9ca3af !important; /* bolinha mais clara quando desligado */
-  }
-
-  input[type="checkbox"]:checked {
-    background-color: #3b82f6 !important; /* azul ligeiramente diferente para tema escuro */
-  }
-
-  input[type="checkbox"]:checked::before {
-    background-color: white !important; /* bolinha continua branca quando ligado */
-  }
-}
-
-/* Força tema escuro quando classe dark está presente */
+/* Tema escuro */
 .dark input[type="checkbox"] {
   background-color: #374151 !important;
 }
 
-.dark input[type="checkbox"]::before {
-  background-color: #9ca3af !important;
-}
-
 .dark input[type="checkbox"]:checked {
   background-color: #3b82f6 !important;
-}
-
-.dark input[type="checkbox"]:checked::before {
-  background-color: white !important;
-}
-
-/* Classes auxiliares para melhor alinhamento de switches */
-.checkbox-label-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.checkbox-label-container input[type="checkbox"],
-.checkbox-label-container [role="checkbox"] {
-  margin-right: 8px !important;
-  flex-shrink: 0;
-}
-
-/* Força tema escuro quando classe dark está presente */
-.dark input[type="checkbox"] {
-  border-color: #d1d5db;
-  background: #111827;
-}
-
-.dark input[type="checkbox"]:hover {
-  background: #1f2937;
-}
-
-.dark input[type="checkbox"]:checked {
-  background: #111827;
-  border-color: #d1d5db;
-}
-
-.dark input[type="checkbox"]:checked::after {
-  color: #d1d5db;
 }
