@@ -1,28 +1,72 @@
 import * as React from "react";
-import * as SwitchPrimitives from "@radix-ui/react-switch";
 
-import { cn } from "@/lib/utils";
+interface SwitchProps {
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  disabled?: boolean;
+  className?: string;
+  id?: string;
+  defaultChecked?: boolean;
+}
 
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>
->(({ className, ...props }, ref) => (
-  <SwitchPrimitives.Root
-    className={cn(
-      // Switch moderno, pequeno e arredondado conforme especificado
-      "peer inline-flex h-2.5 w-7 shrink-0 cursor-pointer items-center rounded-full border-0 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#007bff] data-[state=unchecked]:bg-[#ddd] mr-2",
-      className,
-    )}
-    {...props}
-    ref={ref}
-  >
-    <SwitchPrimitives.Thumb
-      className={cn(
-        "pointer-events-none block h-2 w-2 rounded-full transition-transform duration-200 data-[state=checked]:translate-x-4.5 data-[state=unchecked]:translate-x-0.5 data-[state=checked]:bg-white data-[state=unchecked]:bg-gray-600",
-      )}
-    />
-  </SwitchPrimitives.Root>
-));
-Switch.displayName = SwitchPrimitives.Root.displayName;
+const Switch = React.forwardRef<HTMLDivElement, SwitchProps>(
+  ({ checked, onCheckedChange, disabled = false, className = "", id, defaultChecked, ...props }, ref) => {
+    const [internalChecked, setInternalChecked] = React.useState(defaultChecked || false);
+    
+    // Se é controlado (tem checked prop), usa o valor externo, senão usa interno
+    const isChecked = checked !== undefined ? checked : internalChecked;
+    
+    const handleChange = (newChecked: boolean) => {
+      if (checked === undefined) {
+        setInternalChecked(newChecked);
+      }
+      onCheckedChange?.(newChecked);
+    };
+
+    const handleClick = () => {
+      if (!disabled) {
+        handleChange(!isChecked);
+      }
+    };
+
+    return (
+      <div
+        ref={ref}
+        id={id}
+        onClick={handleClick}
+        className={className}
+        style={{
+          width: '32px',
+          height: '16px',
+          backgroundColor: isChecked ? '#007bff' : '#d1d5db',
+          borderRadius: '16px',
+          position: 'relative',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          transition: 'background-color 0.2s',
+          opacity: disabled ? 0.5 : 1,
+          marginRight: '8px',
+          display: 'inline-block',
+        }}
+        {...props}
+      >
+        <div
+          style={{
+            width: '12px',
+            height: '12px',
+            backgroundColor: 'white',
+            borderRadius: '50%',
+            position: 'absolute',
+            top: '2px',
+            left: isChecked ? '18px' : '2px',
+            transition: 'left 0.2s',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
+          }}
+        />
+      </div>
+    );
+  }
+);
+
+Switch.displayName = "Switch";
 
 export { Switch };
