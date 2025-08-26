@@ -35,6 +35,7 @@ import {
   createFuncionario,
   updateFuncionario,
   deleteFuncionario,
+  verificarExistenciaAdministradores,
 } from "./routes/funcionarios";
 
 import {
