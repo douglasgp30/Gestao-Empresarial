@@ -47,8 +47,8 @@ const LimpezaCompleta = () => {
         "categorias_receita", 
         "categorias_despesa",
         
-        // Localizações
-        "localizacoes_geograficas",
+        // Localizações (cidades de Goiás serão preservadas)
+        // "localizacoes_geograficas", // REMOVIDO - preservar cidades conforme solicitado
         
         // Funcionários (exceto o admin atual será recriado)
         "funcionarios",
@@ -128,7 +128,7 @@ const LimpezaCompleta = () => {
             <li>• Todos os agendamentos</li>
             <li>• Todas as contas (a pagar e receber)</li>
             <li>• Todas as categorias e descrições</li>
-            <li>• Todas as localizações (cidades/setores)</li>
+            <li>• Setores temporários (cidades de Goiás serão mantidas)</li>
             <li>• Todos os fornecedores</li>
             <li>• Todas as metas configuradas</li>
           </ul>
@@ -140,6 +140,7 @@ const LimpezaCompleta = () => {
           </p>
           <ul className="text-sm text-green-700 space-y-1">
             <li>• Formas de pagamento (conforme solicitado)</li>
+            <li>• Cidades de Goiás e localizações geográficas</li>
             <li>• Usuário logado atual</li>
             <li>• Configurações da empresa</li>
             <li>• Configurações de backup</li>
@@ -171,7 +172,7 @@ const LimpezaCompleta = () => {
                   Esta ação removerá TODOS os lançamentos, clientes, campanhas, agendamentos, etc.
                 </div>
                 <div className="font-medium text-green-700">
-                  Apenas as FORMAS DE PAGAMENTO serão mantidas.
+                  As FORMAS DE PAGAMENTO e CIDADES DE GOIÁS serão mantidas.
                 </div>
                 <div className="text-sm text-gray-600">
                   O sistema será recarregado após a limpeza.
