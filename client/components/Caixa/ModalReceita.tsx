@@ -968,34 +968,33 @@ export function ModalReceita() {
               {/* Data de Vencimento do Boleto - só aparece para boletos */}
               {isBoleto && (
                 <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <Label
                       htmlFor="dataVencimentoBoleto"
-                      className="text-blue-800 font-semibold"
+                      className="text-blue-800 font-semibold whitespace-nowrap"
                     >
                       Data de Vencimento do Boleto <span className="text-red-500">*</span>
                     </Label>
-                  </div>
-
-                  <Input
-                    id="dataVencimentoBoleto"
-                    type="date"
-                    value={
-                      dataVencimentoBoleto
-                        ? dataVencimentoBoleto.toISOString().split("T")[0]
-                        : ""
-                    }
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        setDataVencimentoBoleto(new Date(e.target.value));
-                      } else {
-                        setDataVencimentoBoleto(null);
+                    <Input
+                      id="dataVencimentoBoleto"
+                      type="date"
+                      value={
+                        dataVencimentoBoleto
+                          ? dataVencimentoBoleto.toISOString().split("T")[0]
+                          : ""
                       }
-                    }}
-                    className="bg-blue-50 border-blue-300"
-                    required
-                  />
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setDataVencimentoBoleto(new Date(e.target.value));
+                        } else {
+                          setDataVencimentoBoleto(null);
+                        }
+                      }}
+                      className="bg-blue-50 border-blue-300 w-auto"
+                      required
+                    />
+                  </div>
 
 
                   <div className="bg-blue-100 p-3 rounded border-l-4 border-blue-400">
