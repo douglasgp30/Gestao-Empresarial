@@ -1088,11 +1088,6 @@ export function ModalReceita() {
                     <div className="text-xs text-blue-600">
                       ℹ️ O site da nota fiscal foi aberto automaticamente.
                     </div>
-                    {formData.temNotaFiscal && !formData.numeroNota && (
-                      <p className="text-xs text-red-500 mt-1">
-                        Número da nota fiscal é obrigatório
-                      </p>
-                    )}
                   </div>
                 )}
               </div>
