@@ -127,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         // Verificar se existe pelo menos um administrador
         console.log("🔍 [AuthContext] Etapa 1: Verificando administradores...");
-        const existeAdmin = verificarSeExisteAdministrador();
+        const existeAdmin = await verificarSeExisteAdministrador();
 
         if (!existeAdmin) {
           console.log("⚠️ [AuthContext] Nenhum admin encontrado - ativando tela de primeiro acesso");
@@ -405,7 +405,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Verificar se tudo foi salvo corretamente
       const verificacao = verificarSeExisteAdministrador();
-      console.log("🔍 [AuthContext] Verificação pós-cria��ão:", verificacao ? "SUCESSO" : "FALHA");
+      console.log("🔍 [AuthContext] Verificação pós-criação:", verificacao ? "SUCESSO" : "FALHA");
 
     } catch (error) {
       console.error("❌ [AuthContext] Erro ao criar primeiro administrador:", error);
