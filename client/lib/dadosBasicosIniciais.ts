@@ -167,60 +167,26 @@ export function obterDadosBasicosIniciais(): DadosBasicosIniciais {
 
 export async function configurarDadosBasicosIniciais(): Promise<boolean> {
   try {
-    const dadosBasicos = obterDadosBasicosIniciais();
+    console.log("🚫 [dadosBasicosIniciais] FUNÇÃO DESABILITADA - Conforme solicitação do usuário, nenhum dado será criado automaticamente");
 
-    // Salvar formas de pagamento
+    // 🚫 REMOVIDO: Toda criação automática de dados conforme solicitação do usuário
+    // O sistema deve iniciar completamente vazio
+
+    // APENAS criar formas de pagamento se não existirem (usuário pediu para manter)
     const formasPagamentoExistentes = localStorage.getItem("formas_pagamento");
     if (!formasPagamentoExistentes) {
+      const dadosBasicos = obterDadosBasicosIniciais();
       localStorage.setItem(
         "formas_pagamento",
         JSON.stringify(dadosBasicos.formasPagamento),
       );
-      console.log("✅ Formas de pagamento básicas configuradas");
+      console.log("✅ [dadosBasicosIniciais] Apenas formas de pagamento criadas conforme solicitado");
     }
 
-    // Salvar categorias (descrições e categorias unificadas)
-    const categoriasExistentes = localStorage.getItem(
-      "descricoes_e_categorias",
-    );
-    if (!categoriasExistentes) {
-      const categoriasFormatadas = {
-        categorias: dadosBasicos.categorias,
-        descricoes: [],
-        ultimaAtualizacao: new Date().toISOString(),
-      };
-      localStorage.setItem(
-        "descricoes_e_categorias",
-        JSON.stringify(categoriasFormatadas),
-      );
-      console.log("✅ Categorias básicas configuradas");
-    }
-
-    // Salvar campanhas básicas no localStorage como fallback
-    const campanhasExistentes = localStorage.getItem("campanhas");
-    if (!campanhasExistentes) {
-      const campanhasBasicas = [
-        { id: "campanha-basica-1", nome: "Promoção Padrão" },
-        { id: "campanha-basica-2", nome: "Sem Campanha" },
-      ];
-      localStorage.setItem("campanhas", JSON.stringify(campanhasBasicas));
-      console.log("✅ Campanhas básicas configuradas");
-    }
-
-    // Salvar configurações básicas
-    const configExistente = localStorage.getItem("configuracoes_sistema");
-    if (!configExistente) {
-      localStorage.setItem(
-        "configuracoes_sistema",
-        JSON.stringify(dadosBasicos.configuracoes),
-      );
-      console.log("✅ Configurações básicas do sistema aplicadas");
-    }
-
-    console.log("🎉 Dados básicos iniciais configurados com sucesso!");
+    console.log("✅ [dadosBasicosIniciais] Sistema vazio configurado conforme solicitado!");
     return true;
   } catch (error) {
-    console.error("❌ Erro ao configurar dados básicos iniciais:", error);
+    console.error("❌ Erro ao configurar sistema vazio:", error);
     return false;
   }
 }
