@@ -130,16 +130,22 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       // Tentar carregar da API primeiro se usuário autenticado
       if (user) {
         try {
+          console.log("📊 [CaixaContext] Chamando campanhasApi.listar()...");
           const response = await campanhasApi.listar();
+          console.log("📊 [CaixaContext] Resposta da API:", response);
+
           if (!response.error && Array.isArray(response.data)) {
             const campanhasFromApi = response.data;
+            console.log("📊 [CaixaContext] Campanhas da API:", campanhasFromApi);
             // Salvar no localStorage para cache
             localStorage.setItem("campanhas", JSON.stringify(campanhasFromApi));
             setCampanhas(campanhasFromApi);
             console.log(
-              `📊 [CaixaContext] ${campanhasFromApi.length} campanhas carregadas da API`,
+              `📊 [CaixaContext] ${campanhasFromApi.length} campanhas carregadas da API e salvas no localStorage`,
             );
             return;
+          } else {
+            console.log("📊 [CaixaContext] API retornou erro ou dados inválidos:", response.error);
           }
         } catch (apiError) {
           console.warn("📊 [CaixaContext] Erro ao carregar campanhas da API, usando localStorage", apiError);
@@ -569,7 +575,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         // ✅ CORREÇÃO: Sempre garantir que isExcluindo seja resetado
         setTimeout(() => {
           setIsExcluindo(false);
-          console.log("��� [CaixaContext] Flag isExcluindo resetada");
+          console.log("🔓 [CaixaContext] Flag isExcluindo resetada");
         }, 100);
       }
     },
