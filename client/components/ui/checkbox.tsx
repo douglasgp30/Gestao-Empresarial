@@ -11,8 +11,8 @@ const Checkbox = React.forwardRef<
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
-      // Seguindo exatamente o padrão CSS refinado fornecido pelo usuário
-      "peer h-[18px] w-[18px] shrink-0 border-2 border-[#333] rounded-[3px] bg-white mr-2 hover:border-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-white data-[state=checked]:border-[#333] dark:border-gray-300 dark:bg-gray-900 dark:hover:border-gray-100 dark:data-[state=checked]:bg-gray-900 dark:data-[state=checked]:border-gray-300",
+      // Forçando estilo para sobrescrever framework - tamanho menor e alinhado
+      "peer !h-4 !w-4 shrink-0 !border-[1.5px] !border-[#333] !rounded-[3px] !bg-white !mr-1.5 hover:!border-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:!bg-white data-[state=checked]:!border-[#333] dark:!border-gray-300 dark:!bg-gray-900 dark:hover:!border-gray-100 dark:data-[state=checked]:!bg-gray-900 dark:data-[state=checked]:!border-gray-300",
       className,
     )}
     {...props}
