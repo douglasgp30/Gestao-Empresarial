@@ -81,6 +81,7 @@ interface EntidadesContextType {
   isLoading: boolean;
   error: string | null;
   carregarDados: () => Promise<void>;
+  recarregarDescricoesECategorias: () => Promise<void>;
 }
 
 const EntidadesContext = createContext<EntidadesContextType | undefined>(
