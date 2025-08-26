@@ -656,17 +656,6 @@ export default function Configuracoes() {
                       <p className="text-sm text-muted-foreground">
                         URL do sistema de emissão de nota fiscal do seu estado/município
                       </p>
-                      <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                        <h4 className="text-sm font-medium text-blue-800 mb-1">
-                          💡 Exemplos por estado:
-                        </h4>
-                        <ul className="text-xs text-blue-700 space-y-1">
-                          <li>• <strong>Goiás:</strong> https://www6.goiania.go.gov.br/sistemas/saces/</li>
-                          <li>• <strong>São Paulo:</strong> https://nfe.fazenda.sp.gov.br/</li>
-                          <li>• <strong>Rio de Janeiro:</strong> https://www.nfse.rj.gov.br/</li>
-                          <li>• Consulte o site da prefeitura/estado para encontrar a URL correta</li>
-                        </ul>
-                      </div>
                     </div>
                   )}
                 </div>
