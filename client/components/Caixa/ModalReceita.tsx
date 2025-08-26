@@ -865,28 +865,15 @@ export function ModalReceita() {
                       <SelectValue placeholder="Selecione a campanha" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(!Array.isArray(campanhas) || campanhas.length === 0) ? (
-                        <div className="px-2 py-1 text-sm text-gray-500">
-                          <div className="font-medium">Nenhuma campanha encontrada</div>
-                          <div className="text-xs mt-1 space-y-1">
-                            <div>Campanhas devem ser criadas na tela</div>
-                            <div>de Campanhas, disponível no Caixa</div>
-                            <div className="text-blue-600 mt-2">
-                              Campo opcional para este lançamento
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        campanhas.map(
-                          (campanha) => (
-                            <SelectItem
-                              key={campanha.id}
-                              value={campanha.id.toString()}
-                            >
-                              {campanha.nome}
-                            </SelectItem>
-                          ),
-                        )
+                      {campanhas.map(
+                        (campanha) => (
+                          <SelectItem
+                            key={campanha.id}
+                            value={campanha.id.toString()}
+                          >
+                            {campanha.nome}
+                          </SelectItem>
+                        ),
                       )}
                     </SelectContent>
                   </Select>
