@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    /* Tema Claro Azul - Fresco e Moderno */
-    --background: 214 100% 97%;
+    /* Tema Claro Equilibrado - Neutro e Moderno */
+    --background: 210 20% 98%;
     --foreground: 215 25% 27%;
     --card: 0 0% 100%;
     --card-foreground: 215 25% 27%;
@@ -13,16 +13,16 @@
     --popover-foreground: 215 25% 27%;
     --primary: 221 83% 53%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 214 32% 91%;
+    --secondary: 210 20% 95%;
     --secondary-foreground: 215 25% 27%;
-    --muted: 214 32% 91%;
+    --muted: 210 20% 95%;
     --muted-foreground: 215 16% 47%;
-    --accent: 214 32% 91%;
+    --accent: 210 20% 95%;
     --accent-foreground: 215 25% 27%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 87%;
-    --input: 214 32% 87%;
+    --border: 210 20% 89%;
+    --input: 210 20% 89%;
     --ring: 221 83% 53%;
     --radius: 0.5rem;
 
