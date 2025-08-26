@@ -268,7 +268,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
                   "3": { id: 3, nome: "Cartão de Débito" },
                   "4": { id: 4, nome: "Cartão de Crédito" },
                   "5": { id: 5, nome: "Boleto Bancário" }, // CORRIGIDO: era "Transferência"
-                  "6": { id: 6, nome: "Transferência Bancária" }, // CORRIGIDO: era "Boleto"
+                  "6": { id: 6, nome: "Transferência Bancária" }, // CORRIGIDO: mantém nome interno
                 };
                 if (formasMap[l.formaPagamento]) {
                   migrado.formaPagamento = formasMap[l.formaPagamento];
@@ -446,7 +446,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       const lancamentosAtualizados = lancamentosExistentes.map(
         (lancamento: any) => {
           if (lancamento.id?.toString() === id?.toString()) {
-            // ✅ CORREÇÃO: Preservar campos importantes e adicionar dados atualizados
+            // �� CORREÇÃO: Preservar campos importantes e adicionar dados atualizados
             const lancamentoAtualizado = {
               ...lancamento,
               ...dadosAtualizados,
