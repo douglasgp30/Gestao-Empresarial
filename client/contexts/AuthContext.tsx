@@ -23,9 +23,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Função para verificar se existe pelo menos um usuário com acesso ao sistema
-const verificarSeExisteAdministrador = (): boolean => {
-  console.log("🔍 [AuthContext] Verificando se existe administrador...");
+// Função para verificar se existe pelo menos um usuário com acesso ao sistema (localStorage)
+const verificarSeExisteAdministradorLocal = (): boolean => {
+  console.log("🔍 [AuthContext] Verificando administrador no localStorage...");
 
   try {
     const funcionariosStorage = localStorage.getItem("funcionarios");
@@ -58,13 +58,60 @@ const verificarSeExisteAdministrador = (): boolean => {
     console.log("👑 [AuthContext] Administradores válidos encontrados:", administradores.length);
 
     const existeAdmin = administradores.length > 0;
-    console.log(`✅ [AuthContext] Resultado: ${existeAdmin ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`);
+    console.log(`✅ [AuthContext] Resultado localStorage: ${existeAdmin ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`);
 
     return existeAdmin;
   } catch (error) {
-    console.error("❌ [AuthContext] Erro ao verificar administradores:", error);
+    console.error("❌ [AuthContext] Erro ao verificar administradores no localStorage:", error);
     return false;
   }
+};
+
+// Função para verificar se existe administrador no servidor
+const verificarSeExisteAdministradorServidor = async (): Promise<boolean> => {
+  console.log("🌐 [AuthContext] Verificando administrador no servidor...");
+
+  try {
+    const response = await fetch('/api/auth/verificar-admin');
+    if (!response.ok) {
+      console.warn("⚠️ [AuthContext] Servidor retornou erro:", response.status);
+      return false;
+    }
+
+    const data = await response.json();
+    console.log("📡 [AuthContext] Resposta do servidor:", data);
+
+    const existeAdmin = data.existeAdministrador || false;
+    console.log(`✅ [AuthContext] Resultado servidor: ${existeAdmin ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`);
+
+    return existeAdmin;
+  } catch (error) {
+    console.error("❌ [AuthContext] Erro ao verificar administradores no servidor:", error);
+    return false;
+  }
+};
+
+// Função híbrida que verifica servidor primeiro, depois localStorage
+const verificarSeExisteAdministrador = async (): Promise<boolean> => {
+  console.log("🔍 [AuthContext] Iniciando verificação híbrida de administradores...");
+
+  // Primeira tentativa: verificar no servidor
+  try {
+    const existeAdminServidor = await verificarSeExisteAdministradorServidor();
+    if (existeAdminServidor) {
+      console.log("✅ [AuthContext] Admin confirmado pelo servidor");
+      return true;
+    }
+    console.log("ℹ️ [AuthContext] Servidor não encontrou admin, verificando localStorage...");
+  } catch (error) {
+    console.warn("⚠️ [AuthContext] Falha na verificação do servidor, usando localStorage como fallback:", error);
+  }
+
+  // Fallback: verificar no localStorage
+  const existeAdminLocal = verificarSeExisteAdministradorLocal();
+
+  console.log(`🏁 [AuthContext] Resultado final: ${existeAdminLocal ? "ADMIN ENCONTRADO" : "NENHUM ADMIN VÁLIDO"}`);
+  return existeAdminLocal;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -358,7 +405,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Verificar se tudo foi salvo corretamente
       const verificacao = verificarSeExisteAdministrador();
-      console.log("🔍 [AuthContext] Verificação pós-criação:", verificacao ? "SUCESSO" : "FALHA");
+      console.log("🔍 [AuthContext] Verificação pós-cria��ão:", verificacao ? "SUCESSO" : "FALHA");
 
     } catch (error) {
       console.error("❌ [AuthContext] Erro ao criar primeiro administrador:", error);
