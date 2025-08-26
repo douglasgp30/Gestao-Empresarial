@@ -4,6 +4,7 @@ import { ModalDespesa } from "../components/Caixa/ModalDespesa";
 import ModalCampanhasSimples from "../components/Caixa/ModalCampanhasSimples";
 import ModalDescricoesSimples from "../components/Caixa/ModalDescricoesSimples";
 import ModalGerenciarCidades from "../components/Caixa/ModalGerenciarCidades";
+import ModalCidadesSimples from "../components/Caixa/ModalCidadesSimples";
 import { FiltrosCaixaCompacto } from "../components/Caixa/FiltrosCaixaCompacto";
 import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSimples";
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
