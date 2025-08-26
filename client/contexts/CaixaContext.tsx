@@ -147,16 +147,20 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
       }
 
       // Fallback para localStorage
+      console.log("📊 [CaixaContext] Carregando do localStorage...");
       const campanhasStorage = localStorage.getItem("campanhas");
+      console.log("📊 [CaixaContext] localStorage campanhas:", campanhasStorage);
+
       if (campanhasStorage) {
         const campanhas = JSON.parse(campanhasStorage);
+        console.log("📊 [CaixaContext] Campanhas parseadas do localStorage:", campanhas);
         setCampanhas(campanhas || []);
         console.log(
-          `📊 [CaixaContext] ${campanhas.length} campanhas carregadas do localStorage`,
+          `📊 [CaixaContext] ${campanhas?.length || 0} campanhas carregadas do localStorage`,
         );
       } else {
         console.log(
-          "✅ [CaixaContext] Nenhuma campanha encontrada",
+          "✅ [CaixaContext] Nenhuma campanha encontrada no localStorage",
         );
         setCampanhas([]);
       }
@@ -565,7 +569,7 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
         // ✅ CORREÇÃO: Sempre garantir que isExcluindo seja resetado
         setTimeout(() => {
           setIsExcluindo(false);
-          console.log("🔓 [CaixaContext] Flag isExcluindo resetada");
+          console.log("��� [CaixaContext] Flag isExcluindo resetada");
         }, 100);
       }
     },
