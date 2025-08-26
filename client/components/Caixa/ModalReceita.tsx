@@ -355,7 +355,7 @@ export function ModalReceita() {
         comissaoCalculada,
       });
 
-      // Gerar código único do servi��o se for boleto
+      // Gerar código único do serviço se for boleto
       let codigoServico = undefined;
       if (isBoleto) {
         codigoServico = `SRV-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
@@ -628,7 +628,7 @@ export function ModalReceita() {
           <div>
             <form onSubmit={handleSubmit} className="space-y-3">
               {/* Linha 1: Data, Valor, Forma de Pagamento e Valor Recebido (se cartão) */}
-              <div className="flex items-end gap-2">
+              <div className="flex items-start gap-2">
                 <div className="space-y-1 w-[140px]">
                   <Label htmlFor="data" className="text-xs font-medium">Data *</Label>
                   <Input
