@@ -571,7 +571,7 @@ export function ModalReceita() {
       // Aguardar um pouco para garantir que o contexto seja atualizado
       setTimeout(() => {
         console.log(
-          "✅ [ModalReceita] Modal fechado, contexto deve estar atualizado",
+          "�� [ModalReceita] Modal fechado, contexto deve estar atualizado",
         );
       }, 500);
 
@@ -911,7 +911,7 @@ export function ModalReceita() {
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
                   <Label htmlFor="cidade" className="text-xs font-medium">
-                    Cidade
+                    Cidade <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.cidadeId || ""}
@@ -926,8 +926,9 @@ export function ModalReceita() {
                         setorId: "", // Limpar ID do setor quando cidade muda
                       }))
                     }
+                    required
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger className={`h-9 ${!formData.cidadeId ? "border-red-500" : ""}`}>
                       <SelectValue placeholder="Selecione a cidade" />
                     </SelectTrigger>
                     <SelectContent>
@@ -941,11 +942,16 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {!formData.cidadeId && (
+                    <p className="text-xs text-red-500">
+                      Cidade é obrigatória
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-1">
                   <Label htmlFor="setor" className="text-xs font-medium">
-                    Setor
+                    Setor <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.setorId || ""}
@@ -959,12 +965,14 @@ export function ModalReceita() {
                         setor: setorSelecionado?.id.toString() || "", // Usar ID para compatibilidade
                       }));
                     }}
+                    required
+                    disabled={!formData.cidadeId}
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger className={`h-9 ${!formData.setorId ? "border-red-500" : ""}`}>
                       <SelectValue
                         placeholder={
                           formData.cidadeId
-                            ? "Primeiro selecione uma cidade"
+                            ? "Selecione o setor"
                             : "Primeiro selecione uma cidade"
                         }
                       />
@@ -977,6 +985,11 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {!formData.setorId && formData.cidadeId && (
+                    <p className="text-xs text-red-500">
+                      Setor é obrigatório
+                    </p>
+                  )}
                 </div>
               </div>
 
