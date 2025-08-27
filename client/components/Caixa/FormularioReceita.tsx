@@ -785,7 +785,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               addNewFields={[
                 {
                   key: "nome",
-                  label: "Nome da Descriç��o",
+                  label: "Nome da Descrição",
                   required: true,
                 },
               ]}
