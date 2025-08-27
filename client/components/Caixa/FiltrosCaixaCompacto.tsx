@@ -50,7 +50,7 @@ export function FiltrosCaixaCompacto() {
   }, [filtros]);
 
   const aplicarFiltros = useCallback(() => {
-    console.log("🔍 [FiltrosCaixaCompacto] Aplicando filtros:", filtrosLocal);
+    console.log("���� [FiltrosCaixaCompacto] Aplicando filtros:", filtrosLocal);
 
     // Normalizar filtros - transformar "todos"/"todas" para undefined
     const filtrosNormalizados = { ...filtrosLocal };
@@ -291,12 +291,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.formaPagamento}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            formaPagamento: value,
-                          }))
-                        }
+                        onValueChange={handleFormaPagamentoChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
@@ -323,12 +318,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.tecnico}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            tecnico: value,
-                          }))
-                        }
+                        onValueChange={handleTecnicoChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
@@ -357,12 +347,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.cidade || "todas"}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            cidade: value,
-                          }))
-                        }
+                        onValueChange={handleCidadeChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
@@ -388,9 +373,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.setor}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({ ...prev, setor: value }))
-                        }
+                        onValueChange={handleSetorChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
@@ -425,13 +408,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.categoria || "todas"}
-                        onValueChange={(value) => {
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            categoria: value,
-                            descricao: "todas", // Limpar descrição quando categoria muda
-                          }));
-                        }}
+                        onValueChange={handleCategoriaChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
@@ -455,12 +432,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.descricao || "todas"}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            descricao: value,
-                          }))
-                        }
+                        onValueChange={handleDescricaoChange}
                         disabled={
                           isLoading || filtrosLocal.categoria === "todas"
                         }
@@ -495,12 +467,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.cliente || "todos"}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            cliente: value,
-                          }))
-                        }
+                        onValueChange={handleClienteChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
@@ -530,12 +497,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.campanha}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            campanha: value,
-                          }))
-                        }
+                        onValueChange={handleCampanhaChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
@@ -565,12 +527,7 @@ export function FiltrosCaixaCompacto() {
                       <Input
                         placeholder="Ex: 12345"
                         value={filtrosLocal.numeroNota || ""}
-                        onChange={(e) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            numeroNota: e.target.value,
-                          }))
-                        }
+                        onChange={handleNumeroNotaChange}
                         className="h-8 text-xs bg-white"
                         disabled={isLoading}
                       />
