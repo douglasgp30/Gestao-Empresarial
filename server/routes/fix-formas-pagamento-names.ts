@@ -8,45 +8,45 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
     // Mapeamento de nomes atuais para nomes corretos
     const correcoesNomes = [
       {
-        de: "PIX", 
+        de: "PIX",
         para: "Pix",
-        descricao: "PIX → Pix"
+        descricao: "PIX → Pix",
       },
       {
         de: "Pix",
-        para: "Pix", 
-        descricao: "Pix → Pix (já correto)"
+        para: "Pix",
+        descricao: "Pix → Pix (já correto)",
       },
       {
         de: "Boleto Bancário",
         para: "Boleto",
-        descricao: "Boleto Bancário → Boleto"
+        descricao: "Boleto Bancário → Boleto",
       },
       {
         de: "Dinheiro",
         para: "Dinheiro",
-        descricao: "Dinheiro → Dinheiro (já correto)"
+        descricao: "Dinheiro → Dinheiro (já correto)",
       },
       {
         de: "Cartão de Débito",
-        para: "C/ Débito", 
-        descricao: "Cartão de Débito → C/ Débito"
+        para: "C/ Débito",
+        descricao: "Cartão de Débito → C/ Débito",
       },
       {
         de: "Cartão de Crédito",
         para: "C/ Crédito",
-        descricao: "Cartão de Crédito → C/ Crédito"
+        descricao: "Cartão de Crédito → C/ Crédito",
       },
       {
         de: "Transferência Bancária",
         para: "Transferência",
-        descricao: "Transferência Bancária → Transferência"
+        descricao: "Transferência Bancária → Transferência",
       },
       {
         de: "Cheque",
         para: "Cheque",
-        descricao: "Cheque → Cheque (já correto)"
-      }
+        descricao: "Cheque → Cheque (já correto)",
+      },
     ];
 
     // Buscar todas as formas de pagamento atuais
@@ -55,7 +55,7 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
     });
 
     console.log(`📊 Encontradas ${formasAtuais.length} formas de pagamento:`);
-    formasAtuais.forEach(forma => {
+    formasAtuais.forEach((forma) => {
       console.log(`   ID ${forma.id}: "${forma.nome}"`);
     });
 
@@ -64,24 +64,24 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
 
     // Para cada forma atual, verificar se precisa de correção
     for (const forma of formasAtuais) {
-      const correcao = correcoesNomes.find(c => 
-        c.de.toLowerCase() === forma.nome.toLowerCase()
+      const correcao = correcoesNomes.find(
+        (c) => c.de.toLowerCase() === forma.nome.toLowerCase(),
       );
 
       if (correcao && correcao.de !== correcao.para) {
         console.log(`🔄 Atualizando: "${forma.nome}" → "${correcao.para}"`);
-        
-        if (req.query.confirm === 'true') {
+
+        if (req.query.confirm === "true") {
           await prisma.formaPagamento.update({
             where: { id: forma.id },
             data: { nome: correcao.para },
           });
-          
+
           resultados.push({
             id: forma.id,
             de: forma.nome,
             para: correcao.para,
-            status: "✅ Atualizado"
+            status: "✅ Atualizado",
           });
           atualizadas++;
         } else {
@@ -89,7 +89,7 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
             id: forma.id,
             de: forma.nome,
             para: correcao.para,
-            status: "📋 Será atualizado"
+            status: "📋 Será atualizado",
           });
         }
       } else if (correcao) {
@@ -98,7 +98,7 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
           id: forma.id,
           de: forma.nome,
           para: forma.nome,
-          status: "✅ Já correto"
+          status: "✅ Já correto",
         });
       } else {
         console.log(`⚠️ Nome não mapeado: "${forma.nome}"`);
@@ -106,32 +106,42 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
           id: forma.id,
           de: forma.nome,
           para: "❓ Não mapeado",
-          status: "⚠️ Nome não reconhecido"
+          status: "⚠️ Nome não reconhecido",
         });
       }
     }
 
-    if (req.query.confirm === 'true') {
+    if (req.query.confirm === "true") {
       console.log(`✅ Correção concluída! ${atualizadas} formas atualizadas.`);
-      
+
       // Verificar resultado final
       const formasFinais = await prisma.formaPagamento.findMany({
         orderBy: { nome: "asc" },
       });
-      
+
       res.json({
         success: true,
         message: `Correção concluída! ${atualizadas} formas de pagamento atualizadas.`,
         atualizadas,
         total: formasAtuais.length,
         resultados,
-        formasFinais: formasFinais.map(f => ({ id: f.id, nome: f.nome })),
-        nomesCorretos: ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência", "Cheque"]
+        formasFinais: formasFinais.map((f) => ({ id: f.id, nome: f.nome })),
+        nomesCorretos: [
+          "Pix",
+          "Boleto",
+          "Dinheiro",
+          "C/ Débito",
+          "C/ Crédito",
+          "Transferência",
+          "Cheque",
+        ],
       });
     } else {
       // Modo preview - mostrar o que seria alterado
-      const aSerAtualizadas = resultados.filter(r => r.status.includes("Será"));
-      
+      const aSerAtualizadas = resultados.filter((r) =>
+        r.status.includes("Será"),
+      );
+
       res.json({
         success: true,
         message: `Preview: ${aSerAtualizadas.length} formas seriam atualizadas. Use ?confirm=true para confirmar.`,
@@ -139,7 +149,15 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
         aSerAtualizadas: aSerAtualizadas.length,
         total: formasAtuais.length,
         resultados,
-        nomesEsperados: ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência", "Cheque"]
+        nomesEsperados: [
+          "Pix",
+          "Boleto",
+          "Dinheiro",
+          "C/ Débito",
+          "C/ Crédito",
+          "Transferência",
+          "Cheque",
+        ],
       });
     }
   } catch (error) {

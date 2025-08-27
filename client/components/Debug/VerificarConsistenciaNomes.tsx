@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { CheckCircle, AlertTriangle, CreditCard, RefreshCw } from "lucide-react";
+import {
+  CheckCircle,
+  AlertTriangle,
+  CreditCard,
+  RefreshCw,
+} from "lucide-react";
 import { useEntidades } from "../../contexts/EntidadesContext";
 
 export function VerificarConsistenciaNomes() {
@@ -11,7 +16,15 @@ export function VerificarConsistenciaNomes() {
 
   const { formasPagamento } = useEntidades();
 
-  const nomesCorretos = ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência", "Cheque"];
+  const nomesCorretos = [
+    "Pix",
+    "Boleto",
+    "Dinheiro",
+    "C/ Débito",
+    "C/ Crédito",
+    "Transferência",
+    "Cheque",
+  ];
 
   const buscarFormasAPI = async () => {
     setLoading(true);
@@ -35,10 +48,16 @@ export function VerificarConsistenciaNomes() {
 
   // Verificar se os nomes estão corretos
   const verificarNomes = (lista) => {
-    const nomesNaLista = lista.map(f => f.nome);
-    const todasCorretas = nomesCorretos.every(nome => nomesNaLista.includes(nome));
-    const nenhumaExtra = nomesNaLista.every(nome => nomesCorretos.includes(nome));
-    return todasCorretas && nenhumaExtra && lista.length === nomesCorretos.length;
+    const nomesNaLista = lista.map((f) => f.nome);
+    const todasCorretas = nomesCorretos.every((nome) =>
+      nomesNaLista.includes(nome),
+    );
+    const nenhumaExtra = nomesNaLista.every((nome) =>
+      nomesCorretos.includes(nome),
+    );
+    return (
+      todasCorretas && nenhumaExtra && lista.length === nomesCorretos.length
+    );
   };
 
   const apiCorreta = verificarNomes(formasAPI);
@@ -48,14 +67,17 @@ export function VerificarConsistenciaNomes() {
   const corrigirNomes = async () => {
     try {
       console.log("���� Aplicando correção dos nomes...");
-      const response = await fetch("/api/fix/formas-pagamento-names?confirm=true", {
-        method: "POST",
-      });
-      
+      const response = await fetch(
+        "/api/fix/formas-pagamento-names?confirm=true",
+        {
+          method: "POST",
+        },
+      );
+
       if (response.ok) {
         const resultado = await response.json();
         console.log("✅ Correção aplicada:", resultado);
-        
+
         // Recarregar dados
         await buscarFormasAPI();
         // Recarregar contexto
@@ -67,8 +89,8 @@ export function VerificarConsistenciaNomes() {
   };
 
   // Comparar listas
-  const nomesAPI = formasAPI.map(f => f.nome).sort();
-  const nomesContexto = (formasPagamento || []).map(f => f.nome).sort();
+  const nomesAPI = formasAPI.map((f) => f.nome).sort();
+  const nomesContexto = (formasPagamento || []).map((f) => f.nome).sort();
   const saoIguais = JSON.stringify(nomesAPI) === JSON.stringify(nomesContexto);
 
   return (
@@ -84,15 +106,19 @@ export function VerificarConsistenciaNomes() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Status Geral */}
-        <div className={`p-3 rounded border ${statusGeral ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
+        <div
+          className={`p-3 rounded border ${statusGeral ? "bg-green-50 border-green-200" : "bg-orange-50 border-orange-200"}`}
+        >
           <div className="flex items-center gap-2">
             {statusGeral ? (
               <CheckCircle className="h-4 w-4 text-green-600" />
             ) : (
               <AlertTriangle className="h-4 w-4 text-orange-600" />
             )}
-            <span className={`text-sm font-medium ${statusGeral ? 'text-green-800' : 'text-orange-800'}`}>
-              {statusGeral 
+            <span
+              className={`text-sm font-medium ${statusGeral ? "text-green-800" : "text-orange-800"}`}
+            >
+              {statusGeral
                 ? "✅ Nomes das formas de pagamento estão corretos e consistentes!"
                 : "⚠️ Nomes precisam de correção para ficar consistentes."}
             </span>
@@ -101,7 +127,9 @@ export function VerificarConsistenciaNomes() {
 
         {/* Nomes Esperados */}
         <div className="p-3 bg-blue-50 border border-blue-200 rounded">
-          <h4 className="font-medium text-blue-800 mb-1">📋 Nomes Corretos Esperados:</h4>
+          <h4 className="font-medium text-blue-800 mb-1">
+            📋 Nomes Corretos Esperados:
+          </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-1 text-sm text-blue-700">
             {nomesCorretos.map((nome, index) => (
               <div key={index} className="flex items-center gap-1">
@@ -158,7 +186,9 @@ export function VerificarConsistenciaNomes() {
         </div>
 
         {/* Verificação de Igualdade */}
-        <div className={`p-3 rounded border ${saoIguais ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+        <div
+          className={`p-3 rounded border ${saoIguais ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"}`}
+        >
           <div className="text-sm font-medium">
             {saoIguais ? (
               <span className="text-green-800">
@@ -179,12 +209,23 @@ export function VerificarConsistenciaNomes() {
 
         {/* Ações */}
         <div className="flex gap-2">
-          <Button onClick={buscarFormasAPI} size="sm" variant="outline" disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+          <Button
+            onClick={buscarFormasAPI}
+            size="sm"
+            variant="outline"
+            disabled={loading}
+          >
+            <RefreshCw
+              className={`h-4 w-4 mr-1 ${loading ? "animate-spin" : ""}`}
+            />
             Verificar API
           </Button>
-          
-          <Button onClick={() => window.location.reload()} size="sm" variant="outline">
+
+          <Button
+            onClick={() => window.location.reload()}
+            size="sm"
+            variant="outline"
+          >
             🔄 Recarregar
           </Button>
 
@@ -198,23 +239,27 @@ export function VerificarConsistenciaNomes() {
         {/* Detalhes se houver problemas */}
         {!statusGeral && (
           <div className="space-y-2">
-            <h4 className="font-medium text-orange-800">Problemas Encontrados:</h4>
-            
+            <h4 className="font-medium text-orange-800">
+              Problemas Encontrados:
+            </h4>
+
             {!apiCorreta && (
               <div className="p-2 bg-orange-50 border border-orange-200 rounded">
                 <div className="text-sm text-orange-700">
-                  <strong>API Backend:</strong> Nomes não coincidem com os esperados
+                  <strong>API Backend:</strong> Nomes não coincidem com os
+                  esperados
                 </div>
                 <div className="text-xs text-orange-600 mt-1">
                   Atual: {nomesAPI.join(", ")}
                 </div>
               </div>
             )}
-            
+
             {!contextoCorreto && (
               <div className="p-2 bg-orange-50 border border-orange-200 rounded">
                 <div className="text-sm text-orange-700">
-                  <strong>Contexto Frontend:</strong> Nomes não coincidem com os esperados
+                  <strong>Contexto Frontend:</strong> Nomes não coincidem com os
+                  esperados
                 </div>
                 <div className="text-xs text-orange-600 mt-1">
                   Atual: {nomesContexto.join(", ")}
@@ -227,9 +272,13 @@ export function VerificarConsistenciaNomes() {
         {/* Status Positivo */}
         {statusGeral && (
           <div className="p-3 bg-green-50 border border-green-200 rounded">
-            <h4 className="font-medium text-green-800 mb-1">✅ Verificação Completa:</h4>
+            <h4 className="font-medium text-green-800 mb-1">
+              ✅ Verificação Completa:
+            </h4>
             <div className="text-sm text-green-700 space-y-1">
-              <div>• Tela de Lançamento e Filtros Avançados mostram os mesmos nomes</div>
+              <div>
+                • Tela de Lançamento e Filtros Avançados mostram os mesmos nomes
+              </div>
               <div>• Todos os 7 nomes estão corretos conforme especificado</div>
               <div>• API e Contexto estão sincronizados</div>
               <div>• Filtragem deve funcionar corretamente</div>

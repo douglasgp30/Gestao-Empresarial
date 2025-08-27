@@ -9,7 +9,10 @@ import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSim
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
 import { AlertaMigracaoCaixa } from "../components/ui/alerta-migracao-caixa";
 import { DollarSign } from "lucide-react";
-import { migrarLancamentosParaBanco, migrarUmLancamento } from "../lib/migrarCaixaParaBanco";
+import {
+  migrarLancamentosParaBanco,
+  migrarUmLancamento,
+} from "../lib/migrarCaixaParaBanco";
 
 // Disponibilizar funções globalmente para o AlertaMigracaoCaixa
 if (typeof window !== "undefined") {

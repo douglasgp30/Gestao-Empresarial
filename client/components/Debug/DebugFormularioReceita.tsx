@@ -10,12 +10,15 @@ export function DebugFormularioReceita() {
   const [logs, setLogs] = useState<string[]>([]);
 
   const addLog = (message: string) => {
-    setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${message}`, ...prev.slice(0, 9)]);
+    setLogs((prev) => [
+      `[${new Date().toLocaleTimeString()}] ${message}`,
+      ...prev.slice(0, 9),
+    ]);
   };
 
   const testValidation = () => {
     addLog(`Testando validação do valor: ${valorInput.numericValue}`);
-    
+
     // Simular validação similar ao formulário
     const camposObrigatorios = {
       valor: valorInput.numericValue,
@@ -25,12 +28,13 @@ export function DebugFormularioReceita() {
 
     const camposFaltando = Object.entries(camposObrigatorios)
       .filter(([key, value]) => {
-        if (key === 'valor') {
+        if (key === "valor") {
           const invalid = !value || value <= 0;
           addLog(`Valor ${value} é inválido: ${invalid}`);
           return invalid;
         }
-        const invalid = !value || (typeof value === 'string' && value.trim() === "");
+        const invalid =
+          !value || (typeof value === "string" && value.trim() === "");
         addLog(`Campo ${key} com valor "${value}" é inválido: ${invalid}`);
         return invalid;
       })
@@ -54,13 +58,10 @@ export function DebugFormularioReceita() {
       <CardContent className="space-y-4">
         <div>
           <Label htmlFor="valor-debug">Teste do Campo Valor</Label>
-          <Input
-            id="valor-debug"
-            {...valorInput.inputProps}
-            className="mt-1"
-          />
+          <Input id="valor-debug" {...valorInput.inputProps} className="mt-1" />
           <div className="text-sm text-gray-600 mt-1">
-            Display: "{valorInput.displayValue}" | Numeric: {valorInput.numericValue} | Type: {typeof valorInput.numericValue}
+            Display: "{valorInput.displayValue}" | Numeric:{" "}
+            {valorInput.numericValue} | Type: {typeof valorInput.numericValue}
           </div>
         </div>
 
@@ -83,7 +84,10 @@ export function DebugFormularioReceita() {
               <p className="text-gray-500 text-sm">Nenhum log ainda</p>
             ) : (
               logs.map((log, index) => (
-                <div key={index} className="text-xs font-mono text-gray-700 mb-1">
+                <div
+                  key={index}
+                  className="text-xs font-mono text-gray-700 mb-1"
+                >
                   {log}
                 </div>
               ))
@@ -96,7 +100,10 @@ export function DebugFormularioReceita() {
           <ol className="text-sm text-yellow-700 mt-1 space-y-1">
             <li>1. Digite um valor no campo acima (ex: "1000")</li>
             <li>2. Clique em "Testar Input" para ver os valores internos</li>
-            <li>3. Clique em "Testar Validação" para simular a validação do formulário</li>
+            <li>
+              3. Clique em "Testar Validação" para simular a validação do
+              formulário
+            </li>
             <li>4. Verifique se há discrepâncias nos logs</li>
           </ol>
         </div>
@@ -106,7 +113,9 @@ export function DebugFormularioReceita() {
           <ul className="text-sm text-blue-700 mt-1 space-y-1">
             <li>✅ Removido pattern conflitante do input de moeda</li>
             <li>✅ Otimizado hook useEnterAsTab para melhor performance</li>
-            <li>✅ Memoização de técnico selecionado para reduzir re-renders</li>
+            <li>
+              ✅ Memoização de técnico selecionado para reduzir re-renders
+            </li>
             <li>✅ Validação de valor numérico mais específica</li>
           </ul>
         </div>

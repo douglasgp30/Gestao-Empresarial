@@ -48,14 +48,20 @@ export function FiltrosCaixaCompacto() {
   useEffect(() => {
     console.log("🔍 [FiltrosCaixaCompacto] Debug dos dados:");
     console.log("  - Campanhas:", campanhas?.length || 0, campanhas);
-    console.log("  - Formas Pagamento:", formasPagamento?.length || 0, formasPagamento);
+    console.log(
+      "  - Formas Pagamento:",
+      formasPagamento?.length || 0,
+      formasPagamento,
+    );
     console.log("  - Técnicos:", tecnicos?.length || 0, tecnicos);
     console.log("  - Clientes:", clientes?.length || 0, clientes);
   }, [campanhas, formasPagamento, tecnicos, clientes]);
 
   // Função para forçar recarregamento dos dados
   const recarregarDados = useCallback(() => {
-    console.log("🔄 [FiltrosCaixaCompacto] Forçando recarregamento dos dados...");
+    console.log(
+      "🔄 [FiltrosCaixaCompacto] Forçando recarregamento dos dados...",
+    );
     window.location.reload();
   }, []);
 
@@ -128,9 +134,12 @@ export function FiltrosCaixaCompacto() {
     setFiltrosLocal((prev) => ({ ...prev, campanha: value }));
   }, []);
 
-  const handleNumeroNotaChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFiltrosLocal((prev) => ({ ...prev, numeroNota: e.target.value }));
-  }, []);
+  const handleNumeroNotaChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFiltrosLocal((prev) => ({ ...prev, numeroNota: e.target.value }));
+    },
+    [],
+  );
 
   // Handler genérico para casos especiais
   const handleFieldChange = useCallback(
@@ -316,7 +325,7 @@ export function FiltrosCaixaCompacto() {
                   <X className="h-3 w-3" />
                 </Button>
                 {/* DEBUG: Botão para recarregar dados */}
-                {process.env.NODE_ENV === 'development' && (
+                {process.env.NODE_ENV === "development" && (
                   <Button
                     onClick={recarregarDados}
                     variant="outline"
@@ -351,7 +360,10 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
-                          {(Array.isArray(formasPagamento) ? formasPagamento : []).map((forma) => (
+                          {(Array.isArray(formasPagamento)
+                            ? formasPagamento
+                            : []
+                          ).map((forma) => (
                             <SelectItem
                               key={forma.id}
                               value={forma.id.toString()}
@@ -527,14 +539,16 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
-                          {(Array.isArray(clientes) ? clientes : []).map((cliente) => (
-                            <SelectItem
-                              key={cliente.id}
-                              value={cliente.id.toString()}
-                            >
-                              {cliente.nome}
-                            </SelectItem>
-                          ))}
+                          {(Array.isArray(clientes) ? clientes : []).map(
+                            (cliente) => (
+                              <SelectItem
+                                key={cliente.id}
+                                value={cliente.id.toString()}
+                              >
+                                {cliente.nome}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                     </div>

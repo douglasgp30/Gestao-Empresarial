@@ -27,7 +27,7 @@ export async function addCheque() {
     });
 
     console.log("📋 Formas de pagamento atuais:");
-    todasFormas.forEach(forma => {
+    todasFormas.forEach((forma) => {
       console.log(`   ID ${forma.id}: "${forma.nome}"`);
     });
 

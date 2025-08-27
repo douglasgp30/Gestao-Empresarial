@@ -197,9 +197,10 @@ export function ModalReceita() {
   // Memoizar técnico selecionado para otimizar performance
   const tecnicoSelecionado = React.useMemo(() => {
     if (!formData.tecnicoResponsavel) return null;
-    return tecnicos.find(
-      (t) => t.id.toString() === formData.tecnicoResponsavel,
-    ) || null;
+    return (
+      tecnicos.find((t) => t.id.toString() === formData.tecnicoResponsavel) ||
+      null
+    );
   }, [formData.tecnicoResponsavel, tecnicos]);
 
   // Calcular comissão baseada no percentual do técnico
@@ -211,7 +212,8 @@ export function ModalReceita() {
     // Usar percentualComissao ou percentualServico como fallback
     const percentual =
       tecnicoSelecionado.percentualComissao ||
-      tecnicoSelecionado.percentualServico || 0;
+      tecnicoSelecionado.percentualServico ||
+      0;
 
     if (percentual <= 0) {
       return 0;
@@ -847,7 +849,9 @@ export function ModalReceita() {
                     }
                     required
                   >
-                    <SelectTrigger className={`h-9 ${showValidationErrors && !formData.tecnicoResponsavel ? "border-red-500" : ""}`}>
+                    <SelectTrigger
+                      className={`h-9 ${showValidationErrors && !formData.tecnicoResponsavel ? "border-red-500" : ""}`}
+                    >
                       <SelectValue placeholder="Selecione o técnico" />
                     </SelectTrigger>
                     <SelectContent>
@@ -905,7 +909,9 @@ export function ModalReceita() {
                     }
                     required
                   >
-                    <SelectTrigger className={`h-9 ${showValidationErrors && !formData.campanha ? "border-red-500" : ""}`}>
+                    <SelectTrigger
+                      className={`h-9 ${showValidationErrors && !formData.campanha ? "border-red-500" : ""}`}
+                    >
                       <SelectValue placeholder="Selecione a campanha" />
                     </SelectTrigger>
                     <SelectContent>
@@ -948,7 +954,9 @@ export function ModalReceita() {
                     }
                     required
                   >
-                    <SelectTrigger className={`h-9 ${showValidationErrors && !formData.cidadeId ? "border-red-500" : ""}`}>
+                    <SelectTrigger
+                      className={`h-9 ${showValidationErrors && !formData.cidadeId ? "border-red-500" : ""}`}
+                    >
                       <SelectValue placeholder="Selecione a cidade" />
                     </SelectTrigger>
                     <SelectContent>
@@ -963,9 +971,7 @@ export function ModalReceita() {
                     </SelectContent>
                   </Select>
                   {showValidationErrors && !formData.cidadeId && (
-                    <p className="text-xs text-red-500">
-                      Cidade é obrigatória
-                    </p>
+                    <p className="text-xs text-red-500">Cidade é obrigatória</p>
                   )}
                 </div>
 
@@ -988,7 +994,9 @@ export function ModalReceita() {
                     required
                     disabled={!formData.cidadeId}
                   >
-                    <SelectTrigger className={`h-9 ${showValidationErrors && !formData.setorId ? "border-red-500" : ""}`}>
+                    <SelectTrigger
+                      className={`h-9 ${showValidationErrors && !formData.setorId ? "border-red-500" : ""}`}
+                    >
                       <SelectValue
                         placeholder={
                           formData.cidadeId
@@ -1005,11 +1013,13 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {showValidationErrors && !formData.setorId && formData.cidadeId && (
-                    <p className="text-xs text-red-500">
-                      Setor é obrigatório
-                    </p>
-                  )}
+                  {showValidationErrors &&
+                    !formData.setorId &&
+                    formData.cidadeId && (
+                      <p className="text-xs text-red-500">
+                        Setor é obrigatório
+                      </p>
+                    )}
                 </div>
               </div>
 

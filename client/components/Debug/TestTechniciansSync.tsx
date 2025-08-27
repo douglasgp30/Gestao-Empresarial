@@ -8,10 +8,14 @@ import { funcionariosApi } from "../../lib/apiService";
 export function TestTechniciansSync() {
   const [apiTechnicians, setApiTechnicians] = useState<any[]>([]);
   const [testResult, setTestResult] = useState<string>("");
-  
+
   // Get data from contexts
   const { funcionarios: funcionariosContext } = useFuncionarios();
-  const { funcionarios: funcionariosEntidades, getTecnicos, tecnicos } = useEntidades();
+  const {
+    funcionarios: funcionariosEntidades,
+    getTecnicos,
+    tecnicos,
+  } = useEntidades();
   const tecnicosFromFunction = getTecnicos();
 
   const loadApiTechnicians = async () => {
@@ -61,7 +65,8 @@ export function TestTechniciansSync() {
             <div className="space-y-1 text-sm">
               {apiTechnicians.map((tech) => (
                 <div key={tech.id} className="text-xs">
-                  ID: {tech.id}, Nome: {tech.nome}, Técnico: {tech.ehTecnico ? "✅" : "❌"}
+                  ID: {tech.id}, Nome: {tech.nome}, Técnico:{" "}
+                  {tech.ehTecnico ? "✅" : "❌"}
                 </div>
               ))}
             </div>
@@ -75,7 +80,8 @@ export function TestTechniciansSync() {
             <div className="space-y-1 text-sm">
               {funcionariosContext.map((func) => (
                 <div key={func.id} className="text-xs">
-                  ID: {func.id}, Nome: {func.nomeCompleto}, Técnico: {func.ehTecnico ? "✅" : "❌"}
+                  ID: {func.id}, Nome: {func.nomeCompleto}, Técnico:{" "}
+                  {func.ehTecnico ? "✅" : "❌"}
                 </div>
               ))}
             </div>
@@ -89,7 +95,8 @@ export function TestTechniciansSync() {
             <div className="space-y-1 text-sm">
               {funcionariosEntidades.map((func) => (
                 <div key={func.id} className="text-xs">
-                  ID: {func.id}, Nome: {func.nomeCompleto}, Técnico: {func.ehTecnico ? "✅" : "❌"}
+                  ID: {func.id}, Nome: {func.nomeCompleto}, Técnico:{" "}
+                  {func.ehTecnico ? "✅" : "❌"}
                 </div>
               ))}
             </div>
@@ -103,7 +110,8 @@ export function TestTechniciansSync() {
             <div className="space-y-1 text-sm">
               {tecnicos.map((tech) => (
                 <div key={tech.id} className="text-xs">
-                  ID: {tech.id}, Nome: {tech.nome || tech.nomeCompleto}, Técnico: {tech.ehTecnico ? "✅" : "❌"}
+                  ID: {tech.id}, Nome: {tech.nome || tech.nomeCompleto},
+                  Técnico: {tech.ehTecnico ? "✅" : "❌"}
                 </div>
               ))}
             </div>
@@ -117,7 +125,8 @@ export function TestTechniciansSync() {
             <div className="space-y-1 text-sm">
               {tecnicosFromFunction.map((tech) => (
                 <div key={tech.id} className="text-xs">
-                  ID: {tech.id}, Nome: {tech.nome || tech.nomeCompleto}, Técnico: {tech.ehTecnico ? "✅" : "❌"}
+                  ID: {tech.id}, Nome: {tech.nome || tech.nomeCompleto},
+                  Técnico: {tech.ehTecnico ? "✅" : "❌"}
                 </div>
               ))}
             </div>
@@ -133,7 +142,11 @@ export function TestTechniciansSync() {
         )}
 
         <div className="flex gap-2">
-          <Button onClick={loadApiTechnicians} variant="outline" className="flex-1">
+          <Button
+            onClick={loadApiTechnicians}
+            variant="outline"
+            className="flex-1"
+          >
             🔄 Reload API Data
           </Button>
           <Button onClick={reloadData} className="flex-1">
@@ -145,13 +158,27 @@ export function TestTechniciansSync() {
         <div className="mt-4 p-3 border rounded-lg bg-blue-50">
           <h4 className="font-semibold mb-2">🎯 Diagnosis:</h4>
           <div className="text-sm space-y-1">
-            <p><strong>Expected:</strong> All sources should show Marcelinho as a technician</p>
-            <p><strong>API Technicians:</strong> {apiTechnicians.length} found</p>
-            <p><strong>FuncionariosContext:</strong> {funcionariosContext.filter(f => f.ehTecnico).length} technicians found</p>
-            <p><strong>EntidadesContext getTecnicos():</strong> {tecnicosFromFunction.length} technicians found</p>
-            
+            <p>
+              <strong>Expected:</strong> All sources should show Marcelinho as a
+              technician
+            </p>
+            <p>
+              <strong>API Technicians:</strong> {apiTechnicians.length} found
+            </p>
+            <p>
+              <strong>FuncionariosContext:</strong>{" "}
+              {funcionariosContext.filter((f) => f.ehTecnico).length}{" "}
+              technicians found
+            </p>
+            <p>
+              <strong>EntidadesContext getTecnicos():</strong>{" "}
+              {tecnicosFromFunction.length} technicians found
+            </p>
+
             {tecnicosFromFunction.length === 0 && (
-              <p className="text-red-600 font-semibold">❌ This is why technicians don't appear in forms and filters!</p>
+              <p className="text-red-600 font-semibold">
+                ❌ This is why technicians don't appear in forms and filters!
+              </p>
             )}
           </div>
         </div>

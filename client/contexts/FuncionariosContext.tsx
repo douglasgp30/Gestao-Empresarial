@@ -260,7 +260,10 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
           "✅ [FuncionariosContext] Inicialização COM carregamento da API",
         );
       } catch (error) {
-        console.error("Erro ao inicializar funcionários da API, tentando localStorage:", error);
+        console.error(
+          "Erro ao inicializar funcionários da API, tentando localStorage:",
+          error,
+        );
         // Se falhar, carregar do localStorage como fallback
         carregarFuncionariosLocalStorage();
       } finally {
@@ -454,7 +457,9 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
       // Convert ID to number for API call
       const numericId = parseInt(id);
       if (isNaN(numericId)) {
-        console.log("[FuncionariosContext] ID não numérico, excluindo apenas do localStorage");
+        console.log(
+          "[FuncionariosContext] ID não numérico, excluindo apenas do localStorage",
+        );
         // Se o ID não é numérico, é um ID gerado localmente
         const funcionariosAtuais = carregarFuncionariosReais();
         const novosFuncionarios = funcionariosAtuais.filter((f) => f.id !== id);
@@ -463,13 +468,20 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         // Tentar excluir da API
         const response = await funcionariosApi.excluir(numericId);
         if (response.error) {
-          console.warn("[FuncionariosContext] Erro na API, tentando localStorage:", response.error);
+          console.warn(
+            "[FuncionariosContext] Erro na API, tentando localStorage:",
+            response.error,
+          );
           // Se falhar na API, tentar remover do localStorage
           const funcionariosAtuais = carregarFuncionariosReais();
-          const novosFuncionarios = funcionariosAtuais.filter((f) => f.id !== id);
+          const novosFuncionarios = funcionariosAtuais.filter(
+            (f) => f.id !== id,
+          );
           salvarFuncionariosNoLocalStorage(novosFuncionarios);
         } else {
-          console.log("[FuncionariosContext] Funcionário excluído via API com sucesso");
+          console.log(
+            "[FuncionariosContext] Funcionário excluído via API com sucesso",
+          );
         }
       }
 

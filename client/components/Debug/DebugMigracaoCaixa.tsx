@@ -46,15 +46,28 @@ export function DebugMigracaoCaixa() {
     const backup = localStorage.getItem("backup_antes_migracao_banco");
     if (backup) {
       const dadosBackup = JSON.parse(backup);
-      localStorage.setItem("lancamentos_caixa", JSON.stringify(dadosBackup.dados));
-      console.log("🔄 Backup restaurado:", dadosBackup.dados.length, "lançamentos");
+      localStorage.setItem(
+        "lancamentos_caixa",
+        JSON.stringify(dadosBackup.dados),
+      );
+      console.log(
+        "🔄 Backup restaurado:",
+        dadosBackup.dados.length,
+        "lançamentos",
+      );
       verificarDados();
-      alert(`Backup restaurado! ${dadosBackup.dados.length} lançamentos recuperados.`);
+      alert(
+        `Backup restaurado! ${dadosBackup.dados.length} lançamentos recuperados.`,
+      );
     }
   };
 
   const limparTodosDados = () => {
-    if (confirm("⚠️ Isso vai limpar TODOS os dados (localStorage e backup). Confirma?")) {
+    if (
+      confirm(
+        "⚠️ Isso vai limpar TODOS os dados (localStorage e backup). Confirma?",
+      )
+    ) {
       localStorage.removeItem("lancamentos_caixa");
       localStorage.removeItem("backup_antes_migracao_banco");
       localStorage.removeItem("migracao_caixa_verificada");
@@ -72,9 +85,11 @@ export function DebugMigracaoCaixa() {
     try {
       const resultado = await (window as any).migrarUmLancamento(0);
       console.log("🧪 Teste de migração:", resultado);
-      
+
       if (resultado.success) {
-        alert("✅ Teste de migração bem-sucedido! Verifique o console para detalhes.");
+        alert(
+          "✅ Teste de migração bem-sucedido! Verifique o console para detalhes.",
+        );
         verificarDadosBanco();
       } else {
         alert(`❌ Erro no teste: ${resultado.erro}`);
@@ -104,7 +119,11 @@ export function DebugMigracaoCaixa() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">localStorage</span>
-                <Badge variant={dadosLocalStorage.length > 0 ? "destructive" : "secondary"}>
+                <Badge
+                  variant={
+                    dadosLocalStorage.length > 0 ? "destructive" : "secondary"
+                  }
+                >
                   {dadosLocalStorage.length} lançamentos
                 </Badge>
               </div>
@@ -115,7 +134,9 @@ export function DebugMigracaoCaixa() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Banco de Dados</span>
-                <Badge variant={dadosBanco.length > 0 ? "default" : "secondary"}>
+                <Badge
+                  variant={dadosBanco.length > 0 ? "default" : "secondary"}
+                >
                   {dadosBanco.length} lançamentos
                 </Badge>
               </div>
@@ -136,9 +157,9 @@ export function DebugMigracaoCaixa() {
 
         {/* Ações */}
         <div className="flex flex-wrap gap-2">
-          <Button 
-            onClick={verificarDados} 
-            size="sm" 
+          <Button
+            onClick={verificarDados}
+            size="sm"
             variant="outline"
             className="flex items-center gap-2"
           >
@@ -146,9 +167,9 @@ export function DebugMigracaoCaixa() {
             Atualizar
           </Button>
 
-          <Button 
-            onClick={verificarDadosBanco} 
-            size="sm" 
+          <Button
+            onClick={verificarDadosBanco}
+            size="sm"
             variant="outline"
             loading={loading}
             className="flex items-center gap-2"
@@ -158,9 +179,9 @@ export function DebugMigracaoCaixa() {
           </Button>
 
           {dadosLocalStorage.length > 0 && (
-            <Button 
-              onClick={testarMigracao} 
-              size="sm" 
+            <Button
+              onClick={testarMigracao}
+              size="sm"
               className="flex items-center gap-2"
             >
               <Database className="h-4 w-4" />
@@ -169,9 +190,9 @@ export function DebugMigracaoCaixa() {
           )}
 
           {backupDisponivel && (
-            <Button 
-              onClick={restaurarBackup} 
-              size="sm" 
+            <Button
+              onClick={restaurarBackup}
+              size="sm"
               variant="secondary"
               className="flex items-center gap-2"
             >
@@ -180,9 +201,9 @@ export function DebugMigracaoCaixa() {
             </Button>
           )}
 
-          <Button 
-            onClick={limparTodosDados} 
-            size="sm" 
+          <Button
+            onClick={limparTodosDados}
+            size="sm"
             variant="destructive"
             className="flex items-center gap-2"
           >
@@ -198,7 +219,8 @@ export function DebugMigracaoCaixa() {
               <h4 className="font-medium mb-2">Dados no localStorage:</h4>
               <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-32">
                 {JSON.stringify(dadosLocalStorage.slice(0, 2), null, 2)}
-                {dadosLocalStorage.length > 2 && "\n... e mais " + (dadosLocalStorage.length - 2) + " itens"}
+                {dadosLocalStorage.length > 2 &&
+                  "\n... e mais " + (dadosLocalStorage.length - 2) + " itens"}
               </pre>
             </CardContent>
           </Card>
@@ -209,8 +231,9 @@ export function DebugMigracaoCaixa() {
           <div className="flex items-start gap-2 p-3 bg-orange-50 border border-orange-200 rounded">
             <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5" />
             <div className="text-sm text-orange-700">
-              <strong>Migração necessária:</strong> Há {dadosLocalStorage.length} lançamentos no localStorage 
-              que precisam ser migrados para o banco de dados.
+              <strong>Migração necessária:</strong> Há{" "}
+              {dadosLocalStorage.length} lançamentos no localStorage que
+              precisam ser migrados para o banco de dados.
             </div>
           </div>
         )}
@@ -219,8 +242,9 @@ export function DebugMigracaoCaixa() {
           <div className="flex items-start gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
             <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />
             <div className="text-sm text-yellow-700">
-              <strong>Duplicação possível:</strong> Há dados tanto no localStorage quanto no banco. 
-              Verifique se a migração já foi concluída.
+              <strong>Duplicação possível:</strong> Há dados tanto no
+              localStorage quanto no banco. Verifique se a migração já foi
+              concluída.
             </div>
           </div>
         )}

@@ -18,25 +18,29 @@ export function DebugPerformanceFiltros() {
   // Incrementar contador de renders
   useEffect(() => {
     const renderStart = performance.now();
-    setRenderCount(prev => prev + 1);
-    
+    setRenderCount((prev) => prev + 1);
+
     const renderTime = performance.now() - renderStart;
-    setPerformanceData(prev => ({
+    setPerformanceData((prev) => ({
       componentRenders: prev.componentRenders + 1,
       lastRenderTime: renderTime,
-      averageRenderTime: prev.averageRenderTime === 0 
-        ? renderTime 
-        : (prev.averageRenderTime + renderTime) / 2
+      averageRenderTime:
+        prev.averageRenderTime === 0
+          ? renderTime
+          : (prev.averageRenderTime + renderTime) / 2,
     }));
   });
 
   const addLog = (message: string) => {
-    setLogs(prev => [`[${new Date().toLocaleTimeString()}] ${message}`, ...prev.slice(0, 14)]);
+    setLogs((prev) => [
+      `[${new Date().toLocaleTimeString()}] ${message}`,
+      ...prev.slice(0, 14),
+    ]);
   };
 
   const testFilterPerformance = () => {
     const start = performance.now();
-    
+
     // Simular operações que podem causar travamento
     const simulateFilterChange = () => {
       // Simular múltiplas atualizações de estado
@@ -48,7 +52,7 @@ export function DebugPerformanceFiltros() {
     };
 
     simulateFilterChange();
-    
+
     const end = performance.now();
     addLog(`Teste de performance concluído em ${(end - start).toFixed(2)}ms`);
   };
@@ -62,23 +66,33 @@ export function DebugPerformanceFiltros() {
     };
 
     addLog("Iniciando monitoramento de eventos de mouse por 5 segundos...");
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener("mousemove", handleMouseMove);
 
     setTimeout(() => {
-      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener("mousemove", handleMouseMove);
       const endTime = performance.now();
       const duration = endTime - startTime;
-      addLog(`Eventos de mouse: ${mouseEventCount} em ${duration.toFixed(0)}ms`);
-      addLog(`Taxa: ${(mouseEventCount / (duration / 1000)).toFixed(1)} eventos/seg`);
+      addLog(
+        `Eventos de mouse: ${mouseEventCount} em ${duration.toFixed(0)}ms`,
+      );
+      addLog(
+        `Taxa: ${(mouseEventCount / (duration / 1000)).toFixed(1)} eventos/seg`,
+      );
     }, 5000);
   };
 
   const checkMemoryUsage = () => {
-    if ('memory' in performance) {
+    if ("memory" in performance) {
       const memory = (performance as any).memory;
-      addLog(`Memória JS usada: ${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`);
-      addLog(`Memória JS total: ${(memory.totalJSHeapSize / 1024 / 1024).toFixed(2)}MB`);
-      addLog(`Limite de memória: ${(memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB`);
+      addLog(
+        `Memória JS usada: ${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`,
+      );
+      addLog(
+        `Memória JS total: ${(memory.totalJSHeapSize / 1024 / 1024).toFixed(2)}MB`,
+      );
+      addLog(
+        `Limite de memória: ${(memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB`,
+      );
     } else {
       addLog("Informações de memória não disponíveis neste navegador");
     }
@@ -93,8 +107,12 @@ export function DebugPerformanceFiltros() {
         {/* Métricas de Performance */}
         <div className="grid grid-cols-3 gap-4">
           <div className="p-3 bg-blue-50 rounded">
-            <div className="text-2xl font-bold text-blue-600">{renderCount}</div>
-            <div className="text-xs text-blue-600">Renders deste componente</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {renderCount}
+            </div>
+            <div className="text-xs text-blue-600">
+              Renders deste componente
+            </div>
           </div>
           <div className="p-3 bg-green-50 rounded">
             <div className="text-2xl font-bold text-green-600">
@@ -134,7 +152,10 @@ export function DebugPerformanceFiltros() {
               <p className="text-gray-500 text-sm">Nenhum log ainda</p>
             ) : (
               logs.map((log, index) => (
-                <div key={index} className="text-xs font-mono text-gray-700 mb-1">
+                <div
+                  key={index}
+                  className="text-xs font-mono text-gray-700 mb-1"
+                >
                   {log}
                 </div>
               ))

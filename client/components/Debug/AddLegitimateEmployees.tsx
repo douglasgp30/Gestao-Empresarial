@@ -13,21 +13,20 @@ export function AddLegitimateEmployees() {
 
     try {
       console.log("🔧 Adicionando funcionários legítimos...");
-      
+
       const response = await apiService.post("/add-legitimate-employees");
-      
+
       if (response.error) {
         throw new Error(response.error);
       }
 
       setResult(response.data);
       console.log("✅ Funcionários adicionados com sucesso:", response.data);
-      
     } catch (error) {
       console.error("❌ Erro ao adicionar funcionários:", error);
       setResult({
         success: false,
-        error: error.message || "Erro desconhecido"
+        error: error.message || "Erro desconhecido",
       });
     } finally {
       setIsLoading(false);
@@ -41,15 +40,18 @@ export function AddLegitimateEmployees() {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-gray-600">
-          Este botão irá adicionar Douglas (Administrador) e Marcelinho (Técnico) ao sistema.
+          Este botão irá adicionar Douglas (Administrador) e Marcelinho
+          (Técnico) ao sistema.
         </p>
-        
-        <Button 
+
+        <Button
           onClick={handleAddEmployees}
           disabled={isLoading}
           className="w-full"
         >
-          {isLoading ? "🔄 Adicionando..." : "➕ Adicionar Douglas e Marcelinho"}
+          {isLoading
+            ? "🔄 Adicionando..."
+            : "➕ Adicionar Douglas e Marcelinho"}
         </Button>
 
         {result && (
@@ -59,14 +61,19 @@ export function AddLegitimateEmployees() {
                 <h4 className="font-semibold">✅ Sucesso!</h4>
                 <p>{result.message}</p>
                 <div className="mt-2">
-                  <p><strong>Total de funcionários:</strong> {result.data?.total}</p>
+                  <p>
+                    <strong>Total de funcionários:</strong> {result.data?.total}
+                  </p>
                   {result.data?.employees && (
                     <div className="mt-2">
-                      <p><strong>Funcionários:</strong></p>
+                      <p>
+                        <strong>Funcionários:</strong>
+                      </p>
                       <ul className="list-disc list-inside text-sm">
                         {result.data.employees.map((emp: any) => (
                           <li key={emp.id}>
-                            {emp.nome} (ID: {emp.id}, Login: {emp.login}, Tipo: {emp.tipoAcesso})
+                            {emp.nome} (ID: {emp.id}, Login: {emp.login}, Tipo:{" "}
+                            {emp.tipoAcesso})
                           </li>
                         ))}
                       </ul>

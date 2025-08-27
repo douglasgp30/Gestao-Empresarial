@@ -22,7 +22,7 @@ export const initBasicData: RequestHandler = async (req, res) => {
         prisma.funcionario.create({
           data: {
             nome: "Maria Técnica",
-            email: "maria.tecnica@empresa.com", 
+            email: "maria.tecnica@empresa.com",
             telefone: "(31) 99999-0002",
             tipoAcesso: "Técnico",
             ehTecnico: true,
@@ -33,7 +33,7 @@ export const initBasicData: RequestHandler = async (req, res) => {
           data: {
             nome: "Pedro Administrador",
             email: "pedro.admin@empresa.com",
-            telefone: "(31) 99999-0003", 
+            telefone: "(31) 99999-0003",
             tipoAcesso: "Administrador",
             ehTecnico: false,
             dataCriacao: new Date(),
@@ -44,7 +44,7 @@ export const initBasicData: RequestHandler = async (req, res) => {
             nome: "Ana Técnica",
             email: "ana.tecnica@empresa.com",
             telefone: "(31) 99999-0004",
-            tipoAcesso: "Técnico", 
+            tipoAcesso: "Técnico",
             ehTecnico: true,
             dataCriacao: new Date(),
           },

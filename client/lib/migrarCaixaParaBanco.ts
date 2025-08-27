@@ -175,7 +175,9 @@ export const migrarLancamentosParaBanco = async () => {
         // Marcar migração como verificada
         localStorage.setItem("migracao_caixa_verificada", "true");
 
-        console.log("✅ Migração concluída. Usuário deve recarregar a página manualmente para ver os dados migrados.");
+        console.log(
+          "✅ Migração concluída. Usuário deve recarregar a página manualmente para ver os dados migrados.",
+        );
       }
     }
 

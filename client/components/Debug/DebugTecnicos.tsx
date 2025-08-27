@@ -9,32 +9,33 @@ export function DebugTecnicos() {
   const { funcionarios } = useFuncionarios();
 
   const tecnicos = getTecnicos();
-  
+
   const handleDebugLocalStorage = () => {
     console.log("=== DEBUG TÉCNICOS ===");
-    
+
     // Verificar localStorage
     const funcionariosLS = localStorage.getItem("funcionarios");
     const funcionariosParsed = funcionariosLS ? JSON.parse(funcionariosLS) : [];
-    
+
     console.log("1. Funcionários no localStorage:", funcionariosParsed);
     console.log("2. Funcionários no contexto:", funcionarios);
     console.log("3. Técnicos retornados por getTecnicos():", tecnicos);
-    
+
     // Filtrar técnicos manualmente para verificar a lógica
     const tecnicosManual = funcionariosParsed.filter((f: any) => {
       const ehTecnicoPorCampo = f.ehTecnico === true;
-      const ehTecnicoPorTipo = f.tipoAcesso && f.tipoAcesso.toLowerCase().includes("técnico");
+      const ehTecnicoPorTipo =
+        f.tipoAcesso && f.tipoAcesso.toLowerCase().includes("técnico");
       console.log(`Funcionário ${f.nomeCompleto || f.nome}:`, {
         ehTecnico: f.ehTecnico,
         tipoAcesso: f.tipoAcesso,
         ehTecnicoPorCampo,
         ehTecnicoPorTipo,
-        consideradoTecnico: ehTecnicoPorCampo || ehTecnicoPorTipo
+        consideradoTecnico: ehTecnicoPorCampo || ehTecnicoPorTipo,
       });
       return ehTecnicoPorCampo || ehTecnicoPorTipo;
     });
-    
+
     console.log("4. Técnicos filtrados manualmente:", tecnicosManual);
     console.log("=== FIM DEBUG ===");
   };
@@ -59,7 +60,9 @@ export function DebugTecnicos() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <h3 className="font-medium mb-2">Técnicos encontrados: {tecnicos.length}</h3>
+          <h3 className="font-medium mb-2">
+            Técnicos encontrados: {tecnicos.length}
+          </h3>
           {tecnicos.length === 0 ? (
             <p className="text-red-600">Nenhum técnico encontrado!</p>
           ) : (
@@ -68,9 +71,12 @@ export function DebugTecnicos() {
                 <li key={index} className="p-2 bg-gray-50 rounded">
                   <strong>{tecnico.nome || tecnico.nomeCompleto}</strong>
                   <div className="text-sm text-gray-600">
-                    ID: {tecnico.id} | ehTecnico: {String(tecnico.ehTecnico)} | 
-                    tipoAcesso: {tecnico.tipoAcesso} | 
-                    percentual: {tecnico.percentualComissao || tecnico.percentualServico || 0}%
+                    ID: {tecnico.id} | ehTecnico: {String(tecnico.ehTecnico)} |
+                    tipoAcesso: {tecnico.tipoAcesso} | percentual:{" "}
+                    {tecnico.percentualComissao ||
+                      tecnico.percentualServico ||
+                      0}
+                    %
                   </div>
                 </li>
               ))}
@@ -79,10 +85,13 @@ export function DebugTecnicos() {
         </div>
 
         <div>
-          <h3 className="font-medium mb-2">Funcionários no contexto: {funcionarios.length}</h3>
+          <h3 className="font-medium mb-2">
+            Funcionários no contexto: {funcionarios.length}
+          </h3>
           {funcionarios.map((func, index) => (
             <div key={index} className="p-2 bg-blue-50 rounded text-sm">
-              {func.nomeCompleto} - ehTecnico: {String(func.ehTecnico)} - tipoAcesso: {func.tipoAcesso}
+              {func.nomeCompleto} - ehTecnico: {String(func.ehTecnico)} -
+              tipoAcesso: {func.tipoAcesso}
             </div>
           ))}
         </div>
@@ -100,9 +109,18 @@ export function DebugTecnicos() {
           <h4 className="font-medium text-yellow-800">Instruções de Debug:</h4>
           <ol className="text-sm text-yellow-700 mt-1 space-y-1">
             <li>1. Clique em "Debug Console" e veja o console do navegador</li>
-            <li>2. Verifique se o funcionário cadastrado tem ehTecnico: true OU tipoAcesso: "Técnico"</li>
-            <li>3. Se não tiver, vá em Funcionários e marque o checkbox "É Técnico"</li>
-            <li>4. Após cadastrar/editar, recarregue esta página para ver se aparece</li>
+            <li>
+              2. Verifique se o funcionário cadastrado tem ehTecnico: true OU
+              tipoAcesso: "Técnico"
+            </li>
+            <li>
+              3. Se não tiver, vá em Funcionários e marque o checkbox "É
+              Técnico"
+            </li>
+            <li>
+              4. Após cadastrar/editar, recarregue esta página para ver se
+              aparece
+            </li>
           </ol>
         </div>
       </CardContent>

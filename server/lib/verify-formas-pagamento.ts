@@ -9,18 +9,26 @@ async function verifyFormasPagamento() {
       orderBy: { id: "asc" },
     });
 
-    console.log(`📊 Total de registros na tabela FormaPagamento: ${todasFormas.length}`);
+    console.log(
+      `📊 Total de registros na tabela FormaPagamento: ${todasFormas.length}`,
+    );
     console.log("📋 Todas as formas de pagamento:");
-    todasFormas.forEach(forma => {
-      console.log(`   ID ${forma.id}: "${forma.nome}" (criado em: ${forma.dataCriacao})`);
+    todasFormas.forEach((forma) => {
+      console.log(
+        `   ID ${forma.id}: "${forma.nome}" (criado em: ${forma.dataCriacao})`,
+      );
     });
 
     // Aplicar a mesma lógica de deduplicação da API
     const formasUnicas = todasFormas.reduce((acc, forma) => {
-      const existing = acc.find(f => f.nome.toLowerCase() === forma.nome.toLowerCase());
+      const existing = acc.find(
+        (f) => f.nome.toLowerCase() === forma.nome.toLowerCase(),
+      );
       if (!existing || forma.id < existing.id) {
         // Remove o existente se houver e adiciona o atual (menor ID = mais antigo)
-        const filtered = acc.filter(f => f.nome.toLowerCase() !== forma.nome.toLowerCase());
+        const filtered = acc.filter(
+          (f) => f.nome.toLowerCase() !== forma.nome.toLowerCase(),
+        );
         filtered.push(forma);
         return filtered;
       }
@@ -29,21 +37,27 @@ async function verifyFormasPagamento() {
 
     console.log(`📊 Após deduplicação: ${formasUnicas.length} formas únicas`);
     console.log("📋 Formas únicas (como a API retorna):");
-    formasUnicas.forEach(forma => {
+    formasUnicas.forEach((forma) => {
       console.log(`   ID ${forma.id}: "${forma.nome}"`);
     });
 
     // Verificar se "Cheque" está presente
-    const chequeEncontrado = formasUnicas.find(f => f.nome.toLowerCase() === "cheque");
+    const chequeEncontrado = formasUnicas.find(
+      (f) => f.nome.toLowerCase() === "cheque",
+    );
     if (chequeEncontrado) {
       console.log(`✅ "Cheque" encontrado: ID ${chequeEncontrado.id}`);
     } else {
       console.log("��� 'Cheque' NÃO encontrado nas formas únicas");
-      
+
       // Verificar se existe na tabela bruta
-      const chequeRaw = todasFormas.find(f => f.nome.toLowerCase() === "cheque");
+      const chequeRaw = todasFormas.find(
+        (f) => f.nome.toLowerCase() === "cheque",
+      );
       if (chequeRaw) {
-        console.log(`⚠️ "Cheque" existe na tabela: ID ${chequeRaw.id}, mas foi removido na deduplicação`);
+        console.log(
+          `⚠️ "Cheque" existe na tabela: ID ${chequeRaw.id}, mas foi removido na deduplicação`,
+        );
       } else {
         console.log("❌ 'Cheque' NÃO existe na tabela");
       }
@@ -61,12 +75,13 @@ async function verifyFormasPagamento() {
     Object.entries(grupos).forEach(([nome, forms]) => {
       if (forms.length > 1) {
         console.log(`   ⚠️ "${nome}" tem ${forms.length} registros:`);
-        forms.forEach(f => console.log(`      ID ${f.id} (${f.dataCriacao})`));
+        forms.forEach((f) =>
+          console.log(`      ID ${f.id} (${f.dataCriacao})`),
+        );
       } else {
         console.log(`   ✅ "${nome}" é único (ID ${forms[0].id})`);
       }
     });
-
   } catch (error) {
     console.error("❌ Erro ao verificar formas de pagamento:", error);
     throw error;

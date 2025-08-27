@@ -52,10 +52,10 @@ const getDescricoesECategorias: RequestHandler = async (req, res) => {
 
     console.log(`[DescricoesECategorias] Encontrados ${items.length} itens`);
     console.log("[DescricoesECategorias] Resumo:", {
-      categorias: items.filter(i => i.tipoItem === "categoria").length,
-      descricoes: items.filter(i => i.tipoItem === "descricao").length,
-      receitas: items.filter(i => i.tipo === "receita").length,
-      despesas: items.filter(i => i.tipo === "despesa").length,
+      categorias: items.filter((i) => i.tipoItem === "categoria").length,
+      descricoes: items.filter((i) => i.tipoItem === "descricao").length,
+      receitas: items.filter((i) => i.tipo === "receita").length,
+      despesas: items.filter((i) => i.tipo === "despesa").length,
     });
 
     const response: ApiResponse<typeof items> = { data: items };

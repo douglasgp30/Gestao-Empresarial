@@ -31,7 +31,7 @@ export function TestEmployeeDeletion() {
     try {
       setTestResult(`🔄 Testing API deletion of employee ID ${id}...`);
       const response = await funcionariosApi.excluir(id);
-      
+
       if (response.error) {
         setTestResult(`❌ API deletion failed: ${response.error}`);
       } else {
@@ -63,11 +63,15 @@ export function TestEmployeeDeletion() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Context Employees */}
           <div className="border p-3 rounded">
-            <h4 className="font-semibold mb-2">Context Employees ({contextEmployees.length})</h4>
+            <h4 className="font-semibold mb-2">
+              Context Employees ({contextEmployees.length})
+            </h4>
             <div className="space-y-1 text-sm">
               {contextEmployees.map((emp) => (
                 <div key={emp.id} className="flex justify-between items-center">
-                  <span>{emp.nomeCompleto} (ID: {emp.id})</span>
+                  <span>
+                    {emp.nomeCompleto} (ID: {emp.id})
+                  </span>
                   <Button
                     size="sm"
                     variant="outline"
@@ -96,7 +100,9 @@ export function TestEmployeeDeletion() {
             <div className="space-y-1 text-sm">
               {apiEmployees.map((emp) => (
                 <div key={emp.id} className="flex justify-between items-center">
-                  <span>{emp.nome} (ID: {emp.id})</span>
+                  <span>
+                    {emp.nome} (ID: {emp.id})
+                  </span>
                   <Button
                     size="sm"
                     variant="outline"

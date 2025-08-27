@@ -211,10 +211,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
           // Dedupliar formas de pagamento por nome (case insensitive) - extra safety
           const formasUnicas = formasServidor.reduce((acc, forma) => {
-            const existing = acc.find(f => f.nome.toLowerCase() === forma.nome.toLowerCase());
+            const existing = acc.find(
+              (f) => f.nome.toLowerCase() === forma.nome.toLowerCase(),
+            );
             if (!existing || forma.id < existing.id) {
               // Remove o existente se houver e adiciona o atual (menor ID = mais antigo)
-              const filtered = acc.filter(f => f.nome.toLowerCase() !== forma.nome.toLowerCase());
+              const filtered = acc.filter(
+                (f) => f.nome.toLowerCase() !== forma.nome.toLowerCase(),
+              );
               filtered.push(forma);
               return filtered;
             }
@@ -263,10 +267,14 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
         // Dedupliar formas de pagamento por nome (case insensitive)
         const formasUnicas = formasParsed.reduce((acc, forma) => {
-          const existing = acc.find(f => f.nome.toLowerCase() === forma.nome.toLowerCase());
+          const existing = acc.find(
+            (f) => f.nome.toLowerCase() === forma.nome.toLowerCase(),
+          );
           if (!existing || forma.id < existing.id) {
             // Remove o existente se houver e adiciona o atual (menor ID = mais antigo)
-            const filtered = acc.filter(f => f.nome.toLowerCase() !== forma.nome.toLowerCase());
+            const filtered = acc.filter(
+              (f) => f.nome.toLowerCase() !== forma.nome.toLowerCase(),
+            );
             filtered.push(forma);
             return filtered;
           }
@@ -431,13 +439,22 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   const getTecnicos = useCallback(() => {
     console.log("🔍 [EntidadesContext] getTecnicos called");
     console.log("  - tecnicos state:", tecnicos?.length || 0, tecnicos);
-    console.log("  - funcionarios state:", funcionarios?.length || 0, funcionarios);
-    console.log("  - funcionariosDoContexto:", funcionariosDoContexto?.length || 0, funcionariosDoContexto);
+    console.log(
+      "  - funcionarios state:",
+      funcionarios?.length || 0,
+      funcionarios,
+    );
+    console.log(
+      "  - funcionariosDoContexto:",
+      funcionariosDoContexto?.length || 0,
+      funcionariosDoContexto,
+    );
 
     // Use funcionariosDoContexto directly if it has data, fallback to local funcionarios
-    const sourceData = (funcionariosDoContexto && funcionariosDoContexto.length > 0)
-      ? funcionariosDoContexto
-      : funcionarios;
+    const sourceData =
+      funcionariosDoContexto && funcionariosDoContexto.length > 0
+        ? funcionariosDoContexto
+        : funcionarios;
 
     console.log("  - Using source data:", sourceData?.length || 0);
 
@@ -453,7 +470,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       return tipoNormalized === "tecnico";
     });
 
-    console.log("  - funcionariosTecnicos found:", funcionariosTecnicos?.length || 0, funcionariosTecnicos);
+    console.log(
+      "  - funcionariosTecnicos found:",
+      funcionariosTecnicos?.length || 0,
+      funcionariosTecnicos,
+    );
 
     const tecnicosCombinados = [...tecnicosEspecificos];
     funcionariosTecnicos.forEach((funcTecnico) => {
@@ -506,15 +527,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === SINCRONIZAÇÃO COM FUNCIONARIOS CONTEXT ===
   useEffect(() => {
-    console.log("🔄 [EntidadesContext] Sync effect triggered, funcionariosDoContexto:", funcionariosDoContexto?.length || 0);
+    console.log(
+      "🔄 [EntidadesContext] Sync effect triggered, funcionariosDoContexto:",
+      funcionariosDoContexto?.length || 0,
+    );
 
     if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
-      console.log("📋 [EntidadesContext] Funcionários do contexto:", funcionariosDoContexto);
+      console.log(
+        "📋 [EntidadesContext] Funcionários do contexto:",
+        funcionariosDoContexto,
+      );
       setFuncionarios(funcionariosDoContexto);
 
       const tecnicosFiltrados = funcionariosDoContexto.filter((f) => {
         const isTechnician = f.ehTecnico || f.tipoAcesso === "Técnico";
-        console.log(`  - ${f.nomeCompleto}: ehTecnico=${f.ehTecnico}, tipoAcesso=${f.tipoAcesso}, isTechnician=${isTechnician}`);
+        console.log(
+          `  - ${f.nomeCompleto}: ehTecnico=${f.ehTecnico}, tipoAcesso=${f.tipoAcesso}, isTechnician=${isTechnician}`,
+        );
         return isTechnician;
       });
       setTecnicos(tecnicosFiltrados);
@@ -522,7 +551,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       console.log(
         `🔄 [EntidadesContext] Funcionários sincronizados: ${funcionariosDoContexto.length} total, ${tecnicosFiltrados.length} técnicos`,
       );
-      console.log("👥 [EntidadesContext] Técnicos encontrados:", tecnicosFiltrados.map(t => `${t.nomeCompleto} (ID: ${t.id})`));
+      console.log(
+        "👥 [EntidadesContext] Técnicos encontrados:",
+        tecnicosFiltrados.map((t) => `${t.nomeCompleto} (ID: ${t.id})`),
+      );
 
       // Backup no localStorage
       try {

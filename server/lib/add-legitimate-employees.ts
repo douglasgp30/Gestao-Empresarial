@@ -6,7 +6,7 @@ export async function addLegitimateEmployees() {
 
     // Check if Douglas already exists
     const existingDouglas = await prisma.funcionario.findFirst({
-      where: { nome: "Douglas" }
+      where: { nome: "Douglas" },
     });
 
     if (!existingDouglas) {
@@ -22,7 +22,7 @@ export async function addLegitimateEmployees() {
           email: "douglas@sistema.com",
           telefone: "",
           cargo: "Administrador",
-          salario: 5000.00,
+          salario: 5000.0,
           percentualComissao: 0,
           permissoes: JSON.stringify({
             acessarDashboard: true,
@@ -44,8 +44,8 @@ export async function addLegitimateEmployees() {
             criarAgendamento: true,
             editarAgendamento: true,
             excluirAgendamento: true,
-          })
-        }
+          }),
+        },
       });
       console.log(`✅ Douglas criado com ID: ${douglas.id}`);
     } else {
@@ -54,7 +54,7 @@ export async function addLegitimateEmployees() {
 
     // Check if Marcelinho already exists
     const existingMarcelinho = await prisma.funcionario.findFirst({
-      where: { nome: "Marcelinho" }
+      where: { nome: "Marcelinho" },
     });
 
     if (!existingMarcelinho) {
@@ -70,7 +70,7 @@ export async function addLegitimateEmployees() {
           email: "marcelinho@sistema.com",
           telefone: "",
           cargo: "Técnico",
-          salario: 2500.00,
+          salario: 2500.0,
           percentualComissao: 10,
           permissoes: JSON.stringify({
             acessarDashboard: true,
@@ -92,8 +92,8 @@ export async function addLegitimateEmployees() {
             criarAgendamento: true,
             editarAgendamento: true,
             excluirAgendamento: false,
-          })
-        }
+          }),
+        },
       });
       console.log(`✅ Marcelinho criado com ID: ${marcelinho.id}`);
     } else {
@@ -107,22 +107,23 @@ export async function addLegitimateEmployees() {
         nome: true,
         login: true,
         tipoAcesso: true,
-        ehTecnico: true
+        ehTecnico: true,
       },
-      orderBy: { nome: "asc" }
+      orderBy: { nome: "asc" },
     });
 
     console.log(`\n📊 Total de funcionários: ${allEmployees.length}`);
-    allEmployees.forEach(emp => {
-      console.log(`- ${emp.nome} (ID: ${emp.id}, Login: ${emp.login}, Tipo: ${emp.tipoAcesso}${emp.ehTecnico ? ', Técnico' : ''})`);
+    allEmployees.forEach((emp) => {
+      console.log(
+        `- ${emp.nome} (ID: ${emp.id}, Login: ${emp.login}, Tipo: ${emp.tipoAcesso}${emp.ehTecnico ? ", Técnico" : ""})`,
+      );
     });
 
     return {
       success: true,
       total: allEmployees.length,
-      employees: allEmployees
+      employees: allEmployees,
     };
-
   } catch (error) {
     console.error("❌ Erro ao adicionar funcionários legítimos:", error);
     throw error;

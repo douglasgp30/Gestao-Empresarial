@@ -14,7 +14,12 @@ export const useEnterAsTab = (
 
     const handleKeyDown = (event: KeyboardEvent) => {
       // Evitar processamento se não for Enter ou se estiver em um textarea
-      if (event.key !== "Enter" || event.shiftKey || event.ctrlKey || event.altKey) {
+      if (
+        event.key !== "Enter" ||
+        event.shiftKey ||
+        event.ctrlKey ||
+        event.altKey
+      ) {
         return;
       }
 
@@ -29,15 +34,19 @@ export const useEnterAsTab = (
       if (!form) return;
 
       // Usar uma seleção mais específica e eficiente de elementos focalizáveis
-      const focusableSelector = 'input:not([disabled]):not([readonly]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-      const focusableElements = Array.from(form.querySelectorAll(focusableSelector))
-        .filter((element: Element) => {
-          const htmlElement = element as HTMLElement;
-          return htmlElement.offsetParent !== null && // Verifica se está visível
-                 htmlElement.tabIndex !== -1 &&
-                 !htmlElement.hidden &&
-                 (htmlElement as any).type !== "submit";
-        }) as HTMLElement[];
+      const focusableSelector =
+        'input:not([disabled]):not([readonly]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      const focusableElements = Array.from(
+        form.querySelectorAll(focusableSelector),
+      ).filter((element: Element) => {
+        const htmlElement = element as HTMLElement;
+        return (
+          htmlElement.offsetParent !== null && // Verifica se está visível
+          htmlElement.tabIndex !== -1 &&
+          !htmlElement.hidden &&
+          (htmlElement as any).type !== "submit"
+        );
+      }) as HTMLElement[];
 
       const currentIndex = focusableElements.indexOf(target);
 

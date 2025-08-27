@@ -17,7 +17,7 @@ export const addTestUsers: RequestHandler = async (req, res) => {
       },
       {
         nome: "Maria Santos",
-        email: "maria.santos@empresa.com", 
+        email: "maria.santos@empresa.com",
         telefone: "(31) 99999-1002",
         tipoAcesso: "Técnico",
         ehTecnico: true,
@@ -36,7 +36,7 @@ export const addTestUsers: RequestHandler = async (req, res) => {
       {
         nome: "Ana Oliveira",
         email: "ana.oliveira@empresa.com",
-        telefone: "(31) 99999-1004", 
+        telefone: "(31) 99999-1004",
         tipoAcesso: "Técnico",
         ehTecnico: true,
         percentualComissao: 40,
@@ -78,7 +78,11 @@ export const addTestUsers: RequestHandler = async (req, res) => {
         created: createdUsers.length,
         totalFuncionarios,
         totalTecnicos,
-        newUsers: createdUsers.map(u => ({ id: u.id, nome: u.nome, ehTecnico: u.ehTecnico })),
+        newUsers: createdUsers.map((u) => ({
+          id: u.id,
+          nome: u.nome,
+          ehTecnico: u.ehTecnico,
+        })),
       },
     });
   } catch (error) {

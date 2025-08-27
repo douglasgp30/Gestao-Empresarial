@@ -6,11 +6,13 @@ import { Trash2 } from "lucide-react";
 export function LimparLocalStorage() {
   const limparLocalStorage = () => {
     // Limpar dados específicos dos funcionários e categorias/descrições
-    localStorage.removeItem('funcionarios');
-    localStorage.removeItem('descricoes_e_categorias');
-    
-    console.log("🧹 LocalStorage limpo: funcionarios e descricoes_e_categorias removidos");
-    
+    localStorage.removeItem("funcionarios");
+    localStorage.removeItem("descricoes_e_categorias");
+
+    console.log(
+      "🧹 LocalStorage limpo: funcionarios e descricoes_e_categorias removidos",
+    );
+
     // Recarregar a página para refletir as mudanças
     window.location.reload();
   };
@@ -26,12 +28,15 @@ export function LimparLocalStorage() {
       <CardContent className="space-y-4">
         <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
           <div className="text-sm text-yellow-800">
-            <strong>⚠️ Atenção:</strong> Este botão remove dados fictícios do localStorage para completar a limpeza do banco de dados.
+            <strong>⚠️ Atenção:</strong> Este botão remove dados fictícios do
+            localStorage para completar a limpeza do banco de dados.
           </div>
         </div>
 
         <div className="p-3 bg-red-50 border border-red-200 rounded">
-          <h4 className="font-medium text-red-800 mb-1">🗑️ O que será removido:</h4>
+          <h4 className="font-medium text-red-800 mb-1">
+            🗑️ O que será removido:
+          </h4>
           <div className="text-sm text-red-700 space-y-1">
             <div>• Cache de funcionários fictícios</div>
             <div>• Cache de descrições/categorias fictícias</div>
@@ -39,7 +44,7 @@ export function LimparLocalStorage() {
           </div>
         </div>
 
-        <Button 
+        <Button
           onClick={limparLocalStorage}
           variant="destructive"
           className="w-full"

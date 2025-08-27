@@ -229,9 +229,10 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   // Memoizar técnico selecionado para otimizar performance
   const tecnicoSelecionado = React.useMemo(() => {
     if (!formData.tecnicoResponsavel) return null;
-    return tecnicos.find(
-      (t) => t.id.toString() === formData.tecnicoResponsavel,
-    ) || null;
+    return (
+      tecnicos.find((t) => t.id.toString() === formData.tecnicoResponsavel) ||
+      null
+    );
   }, [formData.tecnicoResponsavel, tecnicos]);
 
   // Calcular comissão baseada no percentual do técnico sobre o valor líquido
@@ -243,7 +244,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     // Usar percentualComissao ou percentualServico como fallback
     const percentual =
       tecnicoSelecionado.percentualComissao ||
-      tecnicoSelecionado.percentualServico || 0;
+      tecnicoSelecionado.percentualServico ||
+      0;
 
     if (percentual <= 0) {
       return 0;
@@ -302,11 +304,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     const camposFaltando = Object.entries(camposObrigatorios)
       .filter(([key, value]) => {
         // Tratamento especial para números (como valor)
-        if (key === 'valor') {
+        if (key === "valor") {
           return !value || value <= 0;
         }
         // Tratamento padrão para strings
-        return !value || (typeof value === 'string' && value.trim() === "");
+        return !value || (typeof value === "string" && value.trim() === "");
       })
       .map(([key]) => {
         const nomes = {
@@ -879,7 +881,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Técnico e Campanha na mesma linha */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tecnicoResponsavel">Técnico Responsável <span className="text-red-500">*</span></Label>
+              <Label htmlFor="tecnicoResponsavel">
+                Técnico Responsável <span className="text-red-500">*</span>
+              </Label>
               <Select
                 value={formData.tecnicoResponsavel}
                 onValueChange={(value) =>
@@ -890,7 +894,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }
                 required
               >
-                <SelectTrigger className={showValidationErrors && !formData.tecnicoResponsavel ? "border-red-500" : ""}>
+                <SelectTrigger
+                  className={
+                    showValidationErrors && !formData.tecnicoResponsavel
+                      ? "border-red-500"
+                      : ""
+                  }
+                >
                   <SelectValue placeholder="Selecione o técnico" />
                 </SelectTrigger>
                 <SelectContent>
@@ -968,7 +978,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Cidade e Setor - agora separados e obrigatórios */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="cidade">Cidade <span className="text-red-500">*</span></Label>
+              <Label htmlFor="cidade">
+                Cidade <span className="text-red-500">*</span>
+              </Label>
               <Select
                 value={formData.cidade}
                 onValueChange={(value) =>
@@ -976,7 +988,13 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }
                 required
               >
-                <SelectTrigger className={showValidationErrors && !formData.cidade ? "border-red-500" : ""}>
+                <SelectTrigger
+                  className={
+                    showValidationErrors && !formData.cidade
+                      ? "border-red-500"
+                      : ""
+                  }
+                >
                   <SelectValue placeholder="Selecione a cidade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -988,9 +1006,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 </SelectContent>
               </Select>
               {showValidationErrors && !formData.cidade && (
-                <p className="text-xs text-red-500">
-                  Cidade é obrigatória
-                </p>
+                <p className="text-xs text-red-500">Cidade é obrigatória</p>
               )}
             </div>
 
@@ -999,13 +1015,20 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, setor: value }))
               }
-              placeholder={formData.cidade ? "Selecione o setor" : "Primeiro selecione uma cidade"}
+              placeholder={
+                formData.cidade
+                  ? "Selecione o setor"
+                  : "Primeiro selecione uma cidade"
+              }
               label="Setor <span className='text-red-500'>*</span>"
               required={true}
               disabled={!formData.cidade}
-              items={setores.filter(setor =>
-                !formData.cidade ||
-                (typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade) === formData.cidade
+              items={setores.filter(
+                (setor) =>
+                  !formData.cidade ||
+                  (typeof setor.cidade === "object"
+                    ? setor.cidade?.nome
+                    : setor.cidade) === formData.cidade,
               )}
               onAddNew={async (data) => {
                 await adicionarSetor({

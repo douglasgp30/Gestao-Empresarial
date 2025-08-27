@@ -55,11 +55,18 @@ export const getFuncionarios: RequestHandler = async (req, res) => {
       orderBy: { nome: "asc" },
     });
 
-    const tecnicos = funcionarios.filter(f => f.ehTecnico || f.tipoAcesso === "Técnico");
+    const tecnicos = funcionarios.filter(
+      (f) => f.ehTecnico || f.tipoAcesso === "Técnico",
+    );
 
-    console.log(`[Funcionarios] Encontrados ${funcionarios.length} funcionários`);
+    console.log(
+      `[Funcionarios] Encontrados ${funcionarios.length} funcionários`,
+    );
     console.log(`[Funcionarios] ${tecnicos.length} são técnicos`);
-    console.log("[Funcionarios] Técnicos:", tecnicos.map(t => `${t.nome} (ID: ${t.id})`));
+    console.log(
+      "[Funcionarios] Técnicos:",
+      tecnicos.map((t) => `${t.nome} (ID: ${t.id})`),
+    );
 
     res.json(funcionarios);
   } catch (error) {

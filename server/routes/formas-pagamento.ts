@@ -13,18 +13,27 @@ export const getFormasPagamento: RequestHandler = async (req, res) => {
     });
 
     // Dedupliar por nome, mantendo o registro mais antigo (menor ID)
-    const formasUnicas = formasPagamento.reduce((acc, forma) => {
-      const existing = acc.find(f => f.nome.toLowerCase() === forma.nome.toLowerCase());
-      if (!existing || forma.id < existing.id) {
-        // Remove o existente se houver e adiciona o atual (mais antigo)
-        const filtered = acc.filter(f => f.nome.toLowerCase() !== forma.nome.toLowerCase());
-        filtered.push(forma);
-        return filtered;
-      }
-      return acc;
-    }, [] as typeof formasPagamento);
+    const formasUnicas = formasPagamento.reduce(
+      (acc, forma) => {
+        const existing = acc.find(
+          (f) => f.nome.toLowerCase() === forma.nome.toLowerCase(),
+        );
+        if (!existing || forma.id < existing.id) {
+          // Remove o existente se houver e adiciona o atual (mais antigo)
+          const filtered = acc.filter(
+            (f) => f.nome.toLowerCase() !== forma.nome.toLowerCase(),
+          );
+          filtered.push(forma);
+          return filtered;
+        }
+        return acc;
+      },
+      [] as typeof formasPagamento,
+    );
 
-    console.log(`🔍 [FormasPagamento] Total: ${formasPagamento.length}, Únicas: ${formasUnicas.length}`);
+    console.log(
+      `🔍 [FormasPagamento] Total: ${formasPagamento.length}, Únicas: ${formasUnicas.length}`,
+    );
 
     res.json(formasUnicas);
   } catch (error) {
