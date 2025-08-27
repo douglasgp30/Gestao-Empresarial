@@ -544,7 +544,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             );
 
             toast({
-              title: "Atenção",
+              title: "Aten��ão",
               description:
                 "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
               variant: "destructive",
@@ -962,7 +962,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }
                 required
               >
-                <SelectTrigger className={!formData.cidade ? "border-red-500" : ""}>
+                <SelectTrigger className={showValidationErrors && !formData.cidade ? "border-red-500" : ""}>
                   <SelectValue placeholder="Selecione a cidade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -973,7 +973,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   ))}
                 </SelectContent>
               </Select>
-              {!formData.cidade && (
+              {showValidationErrors && !formData.cidade && (
                 <p className="text-xs text-red-500">
                   Cidade é obrigatória
                 </p>
