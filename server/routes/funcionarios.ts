@@ -54,13 +54,13 @@ export const getFuncionarios: RequestHandler = async (req, res) => {
       },
       orderBy: { nome: "asc" },
     });
-    console.log(
-      `[Funcionarios] Encontrados ${funcionarios.length} funcionários`,
-    );
-    console.log(
-      "[Funcionarios] IDs dos funcionários:",
-      funcionarios.map((f) => f.id),
-    );
+
+    const tecnicos = funcionarios.filter(f => f.ehTecnico || f.tipoAcesso === "Técnico");
+
+    console.log(`[Funcionarios] Encontrados ${funcionarios.length} funcionários`);
+    console.log(`[Funcionarios] ${tecnicos.length} são técnicos`);
+    console.log("[Funcionarios] Técnicos:", tecnicos.map(t => `${t.nome} (ID: ${t.id})`));
+
     res.json(funcionarios);
   } catch (error) {
     console.error("Erro ao buscar funcionários:", error);
