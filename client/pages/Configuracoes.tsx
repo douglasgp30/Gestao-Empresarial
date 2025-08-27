@@ -33,6 +33,7 @@ import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
 import { DebugTecnicos } from "../components/Debug/DebugTecnicos";
 import { DebugFormularioReceita } from "../components/Debug/DebugFormularioReceita";
 import { DebugPerformanceFiltros } from "../components/Debug/DebugPerformanceFiltros";
+import { DebugMigracaoCaixa } from "../components/Debug/DebugMigracaoCaixa";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
@@ -1051,6 +1052,7 @@ export default function Configuracoes() {
           <DebugTecnicos />
           <DebugFormularioReceita />
           <DebugPerformanceFiltros />
+          <DebugMigracaoCaixa />
         </TabsContent>
 
         <TabsContent value="localizacoes" className="space-y-6">
