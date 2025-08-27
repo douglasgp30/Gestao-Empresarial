@@ -160,7 +160,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     carregarDescricoes();
   }, [formData.categoria]);
 
-  // Verificar se forma de pagamento é cartão - memoizaç��o estabilizada
+  // Verificar se forma de pagamento é cartão - memoização estabilizada
   const isCartao = useMemo(() => {
     if (!formData.formaPagamento || formasPagamento.length === 0) {
       return false;
