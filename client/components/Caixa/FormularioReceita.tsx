@@ -94,7 +94,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const [clienteRecemAdicionado, setClienteRecemAdicionado] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
-  // Estados para categorias e descriç��es carregadas diretamente da API
+  // Estados para categorias e descrições carregadas diretamente da API
   const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
   const [descricoesFiltradas, setDescricoesFiltradas] = useState<any[]>([]);
   const [carregandoCategorias, setCarregandoCategorias] = useState(true);
