@@ -9,6 +9,7 @@ import { seedBasicData } from "./lib/seed-basic-data";
 import { initBasicData } from "./routes/init-data";
 import { addTestUsers } from "./routes/add-test-users";
 import { cleanDuplicateFormasPagamento } from "./routes/clean-formas-pagamento";
+import { fixFormasPagamentoNames } from "./routes/fix-formas-pagamento-names";
 
 // Importar rotas do banco de dados
 import {
@@ -404,6 +405,9 @@ export function createServer(): Express {
 
   // Limpeza de duplicatas
   app.post("/api/clean/formas-pagamento", cleanDuplicateFormasPagamento);
+
+  // Correção dos nomes das formas de pagamento
+  app.post("/api/fix/formas-pagamento-names", fixFormasPagamentoNames);
 
   return app;
 }
