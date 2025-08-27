@@ -254,13 +254,15 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     const inicializarFuncionarios = async () => {
       setIsLoading(true);
       try {
-        // Carregar apenas do localStorage para evitar piscar
-        carregarFuncionariosLocalStorage();
+        // Tentar carregar da API primeiro
+        await carregarFuncionarios();
         console.log(
-          "✅ [FuncionariosContext] Inicialização SEM carregamento automático da API",
+          "✅ [FuncionariosContext] Inicialização COM carregamento da API",
         );
       } catch (error) {
-        console.error("Erro ao inicializar funcionários:", error);
+        console.error("Erro ao inicializar funcionários da API, tentando localStorage:", error);
+        // Se falhar, carregar do localStorage como fallback
+        carregarFuncionariosLocalStorage();
       } finally {
         setIsLoading(false);
       }
