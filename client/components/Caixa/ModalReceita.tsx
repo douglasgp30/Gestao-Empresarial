@@ -311,12 +311,15 @@ export function ModalReceita() {
       valorInput.numericValue <= 0 ||
       !formData.categoria ||
       !formData.descricao ||
-      !formData.formaPagamento
+      !formData.formaPagamento ||
+      !formData.tecnicoResponsavel ||
+      !formData.cidadeId ||
+      !formData.setorId
     ) {
       toast({
         title: "Erro",
         description:
-          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
+          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição, Forma de Pagamento, Técnico Responsável, Cidade e Setor",
         variant: "destructive",
       });
       return;
