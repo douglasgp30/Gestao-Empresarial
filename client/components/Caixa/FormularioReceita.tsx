@@ -1178,7 +1178,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               <div className="space-y-3 pl-6">
                 <div className="text-xs text-blue-600">
                   ℹ️ O site da nota fiscal foi aberto automaticamente. Após
-                  emitir, preencha o n��mero abaixo.
+                  emitir, preencha o número abaixo.
                 </div>
 
                 <div className="space-y-2">
