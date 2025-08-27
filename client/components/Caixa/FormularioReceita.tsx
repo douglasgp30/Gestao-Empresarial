@@ -837,7 +837,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     required
                   />
                   <p className="text-xs text-yellow-700">
-                    ⚠��{" "}
+                    ⚠️{" "}
                     <strong>
                       Digite o valor que realmente entrou na conta após as taxas
                       da operadora do cartão
