@@ -38,6 +38,7 @@ import { DebugDadosFiltros } from "../components/Debug/DebugDadosFiltros";
 import { TesteDadosFiltros } from "../components/Debug/TesteDadosFiltros";
 import { VerificacaoFinalFiltros } from "../components/Debug/VerificacaoFinalFiltros";
 import { ResumoCorrecoesFiltros } from "../components/Debug/ResumoCorrecoesFiltros";
+import { VerificarFormasPagamento } from "../components/Debug/VerificarFormasPagamento";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
@@ -879,7 +880,7 @@ export default function Configuracoes() {
                     <Alert>
                       <AlertTriangle className="h-4 w-4" />
                       <AlertDescription>
-                        ⚠�� Local de backup não definido. Configure o local de
+                        ⚠️ Local de backup não definido. Configure o local de
                         backup para ativar o backup automático.
                       </AlertDescription>
                     </Alert>
@@ -1055,6 +1056,7 @@ export default function Configuracoes() {
           <DebugPrimeiroAcesso />
           <DebugTecnicos />
           <ResumoCorrecoesFiltros />
+          <VerificarFormasPagamento />
           <VerificacaoFinalFiltros />
           <TesteDadosFiltros />
           <DebugFormularioReceita />

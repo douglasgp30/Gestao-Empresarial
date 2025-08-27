@@ -209,11 +209,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         if (response.ok) {
           const formasServidor = await response.json();
 
+          // Dedupliar formas de pagamento por nome (case insensitive) - extra safety
+          const formasUnicas = formasServidor.reduce((acc, forma) => {
+            const existing = acc.find(f => f.nome.toLowerCase() === forma.nome.toLowerCase());
+            if (!existing || forma.id < existing.id) {
+              // Remove o existente se houver e adiciona o atual (menor ID = mais antigo)
+              const filtered = acc.filter(f => f.nome.toLowerCase() !== forma.nome.toLowerCase());
+              filtered.push(forma);
+              return filtered;
+            }
+            return acc;
+          }, []);
+
           console.log(
-            `🌐 [EntidadesContext] ${formasServidor.length} formas de pagamento carregadas da API`,
+            `🌐 [EntidadesContext] ${formasServidor.length} formas da API, ${formasUnicas.length} únicas após deduplicação`,
           );
 
-          setFormasPagamento(formasServidor);
+          setFormasPagamento(formasUnicas);
 
           // Salvar no localStorage para cache
           try {
@@ -248,9 +260,22 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       const formasStorage = localStorage.getItem("formas_pagamento");
       if (formasStorage) {
         const formasParsed = JSON.parse(formasStorage);
-        setFormasPagamento(formasParsed);
+
+        // Dedupliar formas de pagamento por nome (case insensitive)
+        const formasUnicas = formasParsed.reduce((acc, forma) => {
+          const existing = acc.find(f => f.nome.toLowerCase() === forma.nome.toLowerCase());
+          if (!existing || forma.id < existing.id) {
+            // Remove o existente se houver e adiciona o atual (menor ID = mais antigo)
+            const filtered = acc.filter(f => f.nome.toLowerCase() !== forma.nome.toLowerCase());
+            filtered.push(forma);
+            return filtered;
+          }
+          return acc;
+        }, []);
+
+        setFormasPagamento(formasUnicas);
         console.log(
-          `💾 [EntidadesContext] ${formasParsed.length} formas de pagamento recarregadas do localStorage (fallback)`,
+          `💾 [EntidadesContext] ${formasParsed.length} formas no localStorage, ${formasUnicas.length} únicas após deduplicação`,
         );
       } else {
         console.log(
