@@ -44,13 +44,10 @@ export function FiltrosCaixaCompacto() {
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
-  // Memoizar filtros para evitar re-renders desnecessários
-  const filtrosMemoizados = useMemo(() => filtros, [filtros]);
-
   // Atualizar filtros locais quando os filtros do contexto mudarem
   useEffect(() => {
-    setFiltrosLocal(filtrosMemoizados);
-  }, [filtrosMemoizados]);
+    setFiltrosLocal(filtros);
+  }, [filtros]);
 
   const aplicarFiltros = useCallback(() => {
     console.log("🔍 [FiltrosCaixaCompacto] Aplicando filtros:", filtrosLocal);
