@@ -1057,6 +1057,7 @@ export default function Configuracoes() {
         </TabsContent>
 
         <TabsContent value="debug" className="space-y-6">
+          <VerificarTecnicosCategorisDescricoes />
           <DebugPrimeiroAcesso />
           <DebugTecnicos />
           <ResumoCorrecaoNomes />
