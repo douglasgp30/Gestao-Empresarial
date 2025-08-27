@@ -262,10 +262,31 @@ export default function FiltroDataCaixaSimples() {
     setIsOpen(false);
   };
 
-  const toggleDropdown = () => {
+  const toggleDropdown = React.useCallback(() => {
     console.log("🖱️ Toggle dropdown, isOpen atual:", isOpen);
     setIsOpen(!isOpen);
-  };
+  }, [isOpen]);
+
+  // Handlers memoizados para mudanças de data
+  const handleDataInicioChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const [ano, mes, dia] = e.target.value.split("-").map(Number);
+    const novaData = new Date(ano, mes - 1, dia, 0, 0, 0, 0);
+    console.log("📅 Data início alterada:", e.target.value, "->", novaData);
+    setFiltros({
+      ...filtros,
+      dataInicio: novaData,
+    });
+  }, [filtros, setFiltros]);
+
+  const handleDataFimChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const [ano, mes, dia] = e.target.value.split("-").map(Number);
+    const novaData = new Date(ano, mes - 1, dia, 23, 59, 59, 999);
+    console.log("📅 Data fim alterada:", e.target.value, "->", novaData);
+    setFiltros({
+      ...filtros,
+      dataFim: novaData,
+    });
+  }, [filtros, setFiltros]);
 
   // Garantir que as datas existem, senão usar valores padrão
   const dataInicio = filtros?.dataInicio || new Date();
