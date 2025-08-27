@@ -226,35 +226,31 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return valorQueEntrouReal - descontoNotaFiscal - impostoCalculado;
   }, [valorQueEntrouReal, descontoNotaFiscal, impostoCalculado]);
 
+  // Memoizar técnico selecionado para otimizar performance
+  const tecnicoSelecionado = React.useMemo(() => {
+    if (!formData.tecnicoResponsavel) return null;
+    return tecnicos.find(
+      (t) => t.id.toString() === formData.tecnicoResponsavel,
+    ) || null;
+  }, [formData.tecnicoResponsavel, tecnicos]);
+
   // Calcular comissão baseada no percentual do técnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
-    if (!formData.tecnicoResponsavel || valorLiquidoCalculado <= 0) {
-      return 0;
-    }
-
-    const tecnico = tecnicos.find(
-      (t) => t.id.toString() === formData.tecnicoResponsavel,
-    );
-
-    if (!tecnico) {
+    if (!tecnicoSelecionado || valorLiquidoCalculado <= 0) {
       return 0;
     }
 
     // Usar percentualComissao ou percentualServico como fallback
     const percentual =
-      tecnico.percentualComissao || tecnico.percentualServico || 0;
+      tecnicoSelecionado.percentualComissao ||
+      tecnicoSelecionado.percentualServico || 0;
 
     if (percentual <= 0) {
       return 0;
     }
 
     return valorLiquidoCalculado * (percentual / 100);
-  }, [
-    formData.tecnicoResponsavel,
-    valorLiquidoCalculado,
-    // Não incluir tecnicos para evitar re-renderizações excessivas
-    // O técnico específico será buscado internamente quando necessário
-  ]);
+  }, [tecnicoSelecionado, valorLiquidoCalculado]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = React.useMemo(() => {
