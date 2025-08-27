@@ -451,6 +451,42 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
     return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
   }, [funcionarios, tecnicos]);
 
+  // === SINCRONIZAÇÃO DOS ESTADOS LEGADOS ===
+  // Sincronizar descrições e categorias legadas com a estrutura unificada
+  useEffect(() => {
+    if (Array.isArray(descricoesECategorias)) {
+      // Extrair descrições (tipoItem === "descricao")
+      const descricoesLegadas = descricoesECategorias
+        .filter((item) => item.tipoItem === "descricao" && item.ativo)
+        .map((item) => ({
+          id: item.id,
+          nome: item.nome,
+          tipo: item.tipo,
+          categoria: item.categoria,
+          ativo: item.ativo,
+          dataCriacao: item.dataCriacao,
+        }));
+
+      // Extrair categorias (tipoItem === "categoria")
+      const categoriasLegadas = descricoesECategorias
+        .filter((item) => item.tipoItem === "categoria" && item.ativo)
+        .map((item) => ({
+          id: item.id,
+          nome: item.nome,
+          tipo: item.tipo,
+          ativo: item.ativo,
+          dataCriacao: item.dataCriacao,
+        }));
+
+      setDescricoes(descricoesLegadas);
+      setCategorias(categoriasLegadas);
+
+      console.log(
+        `🔄 [EntidadesContext] Estados legados sincronizados: ${descricoesLegadas.length} descrições, ${categoriasLegadas.length} categorias`,
+      );
+    }
+  }, [descricoesECategorias]);
+
   // === SINCRONIZAÇÃO COM FUNCIONARIOS CONTEXT ===
   useEffect(() => {
     if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
@@ -460,6 +496,10 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         return f.ehTecnico || f.tipoAcesso === "Técnico";
       });
       setTecnicos(tecnicosFiltrados);
+
+      console.log(
+        `🔄 [EntidadesContext] Funcionários sincronizados: ${funcionariosDoContexto.length} total, ${tecnicosFiltrados.length} técnicos`,
+      );
 
       // Backup no localStorage
       try {
