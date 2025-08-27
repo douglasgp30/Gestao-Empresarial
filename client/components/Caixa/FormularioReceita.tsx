@@ -284,13 +284,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validaç��o completa dos campos obrigatórios
+    // Validação completa dos campos obrigatórios
     const camposObrigatorios = {
       data: formData.data,
       valor: valorInput.numericValue,
       categoria: formData.categoria,
       descricao: formData.descricao,
       formaPagamento: formData.formaPagamento,
+      tecnicoResponsavel: formData.tecnicoResponsavel,
+      cidade: formData.cidade,
+      setor: formData.setor,
     };
 
     const camposFaltando = Object.entries(camposObrigatorios)
@@ -302,6 +305,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           categoria: "Categoria",
           descricao: "Descrição",
           formaPagamento: "Forma de Pagamento",
+          tecnicoResponsavel: "Técnico Responsável",
+          cidade: "Cidade",
+          setor: "Setor",
         };
         return nomes[key as keyof typeof nomes];
       });
@@ -883,7 +889,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                       <div className="text-xs mt-1 space-y-1">
                         <div>1. Vá em "Funcionários" no menu</div>
                         <div>2. Cadastre um funcionário</div>
-                        <div>3. Marque o tipo como "Técnico"</div>
+                        <div>3. Marque o tipo como "T��cnico"</div>
                       </div>
                     </div>
                   ) : (
