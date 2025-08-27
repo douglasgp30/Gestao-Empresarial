@@ -13,42 +13,47 @@ export const useEnterAsTab = (
     if (!isEnabled || !formRef.current) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === "Enter" &&
-        !event.shiftKey &&
-        !event.ctrlKey &&
-        !event.altKey
-      ) {
-        const form = formRef.current;
-        if (!form) return;
+      // Evitar processamento se não for Enter ou se estiver em um textarea
+      if (event.key !== "Enter" || event.shiftKey || event.ctrlKey || event.altKey) {
+        return;
+      }
 
-        const formElements = Array.from(form.elements) as HTMLElement[];
-        const focusableElements = formElements.filter(
-          (element) =>
-            element.tabIndex !== -1 &&
-            !element.hasAttribute("disabled") &&
-            !element.hasAttribute("readonly") &&
-            (element as any).type !== "submit" &&
-            (element as any).type !== "button" &&
-            element.offsetParent !== null, // Verifica se o elemento está visível
-        );
+      const target = event.target as HTMLElement;
 
-        const currentIndex = focusableElements.indexOf(
-          document.activeElement as HTMLElement,
-        );
+      // Não aplicar Enter-as-Tab em textareas ou elementos que requerem quebra de linha
+      if (target.tagName === "TEXTAREA" || target.contentEditable === "true") {
+        return;
+      }
 
-        if (
-          currentIndex !== -1 &&
-          currentIndex < focusableElements.length - 1
-        ) {
-          event.preventDefault();
+      const form = formRef.current;
+      if (!form) return;
+
+      // Usar uma seleção mais específica e eficiente de elementos focalizáveis
+      const focusableSelector = 'input:not([disabled]):not([readonly]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      const focusableElements = Array.from(form.querySelectorAll(focusableSelector))
+        .filter((element: Element) => {
+          const htmlElement = element as HTMLElement;
+          return htmlElement.offsetParent !== null && // Verifica se está visível
+                 htmlElement.tabIndex !== -1 &&
+                 !htmlElement.hidden &&
+                 (htmlElement as any).type !== "submit";
+        }) as HTMLElement[];
+
+      const currentIndex = focusableElements.indexOf(target);
+
+      if (currentIndex !== -1 && currentIndex < focusableElements.length - 1) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Usar requestAnimationFrame para melhor performance
+        requestAnimationFrame(() => {
           focusableElements[currentIndex + 1].focus();
-        }
+        });
       }
     };
 
     const form = formRef.current;
-    form.addEventListener("keydown", handleKeyDown);
+    form.addEventListener("keydown", handleKeyDown, { passive: false });
 
     return () => {
       form.removeEventListener("keydown", handleKeyDown);
