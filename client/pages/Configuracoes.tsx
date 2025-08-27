@@ -36,6 +36,7 @@ import { DebugPerformanceFiltros } from "../components/Debug/DebugPerformanceFil
 import { DebugMigracaoCaixa } from "../components/Debug/DebugMigracaoCaixa";
 import { DebugDadosFiltros } from "../components/Debug/DebugDadosFiltros";
 import { TesteDadosFiltros } from "../components/Debug/TesteDadosFiltros";
+import { VerificacaoFinalFiltros } from "../components/Debug/VerificacaoFinalFiltros";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
@@ -191,7 +192,7 @@ export default function Configuracoes() {
       localStorage.setItem("userConfigs", JSON.stringify(configsToSave));
       console.log("✅ [Configurações] Configurações salvas com sucesso");
     } catch (error) {
-      console.error("❌ [Configura��ões] Erro ao salvar configurações:", error);
+      console.error("❌ [Configurações] Erro ao salvar configurações:", error);
     }
 
     setSavedMessage(true);
@@ -1055,6 +1056,7 @@ export default function Configuracoes() {
           <DebugFormularioReceita />
           <DebugPerformanceFiltros />
           <DebugMigracaoCaixa />
+          <VerificacaoFinalFiltros />
           <TesteDadosFiltros />
           <DebugDadosFiltros />
         </TabsContent>
