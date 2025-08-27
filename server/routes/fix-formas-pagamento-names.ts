@@ -126,7 +126,7 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
         total: formasAtuais.length,
         resultados,
         formasFinais: formasFinais.map(f => ({ id: f.id, nome: f.nome })),
-        nomesCorretos: ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência"]
+        nomesCorretos: ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência", "Cheque"]
       });
     } else {
       // Modo preview - mostrar o que seria alterado
