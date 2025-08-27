@@ -41,6 +41,11 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
         de: "Transferência Bancária",
         para: "Transferência",
         descricao: "Transferência Bancária → Transferência"
+      },
+      {
+        de: "Cheque",
+        para: "Cheque",
+        descricao: "Cheque → Cheque (já correto)"
       }
     ];
 
