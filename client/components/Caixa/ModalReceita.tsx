@@ -932,7 +932,7 @@ export function ModalReceita() {
                     }
                     required
                   >
-                    <SelectTrigger className={`h-9 ${!formData.cidadeId ? "border-red-500" : ""}`}>
+                    <SelectTrigger className={`h-9 ${showValidationErrors && !formData.cidadeId ? "border-red-500" : ""}`}>
                       <SelectValue placeholder="Selecione a cidade" />
                     </SelectTrigger>
                     <SelectContent>
@@ -946,7 +946,7 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {!formData.cidadeId && (
+                  {showValidationErrors && !formData.cidadeId && (
                     <p className="text-xs text-red-500">
                       Cidade é obrigatória
                     </p>
