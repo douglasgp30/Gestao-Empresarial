@@ -103,7 +103,7 @@ export default function FiltroDataCaixaSimples() {
     return format(date, "dd/MM/yyyy", { locale: ptBR });
   };
 
-  const aplicarPeriodo = (tipo: string) => {
+  const aplicarPeriodo = React.useCallback((tipo: string) => {
     console.log("🚀 Aplicando período:", tipo);
     const hoje = new Date();
     let inicio: Date;
@@ -260,7 +260,7 @@ export default function FiltroDataCaixaSimples() {
     });
 
     setIsOpen(false);
-  };
+  }, [filtros, setFiltros]);
 
   const toggleDropdown = React.useCallback(() => {
     console.log("🖱️ Toggle dropdown, isOpen atual:", isOpen);
