@@ -39,6 +39,12 @@ export function ResumoCorrecaoNomes() {
       para: "Transferência",
       status: "✅ Corrigido",
       observacao: "Nome simplificado"
+    },
+    {
+      de: "Cheque",
+      para: "Cheque",
+      status: "✅ Adicionado",
+      observacao: "Nova forma de pagamento incluída"
     }
   ];
 
