@@ -19,7 +19,7 @@ import {
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import FiltroDataCaixaSimples from "./FiltroDataCaixaSimples";
-import { Filter, ChevronDown, X, Search } from "lucide-react";
+import { Filter, ChevronDown, X, Search, RefreshCw } from "lucide-react";
 import { toast } from "../ui/use-toast";
 
 export function FiltrosCaixaCompacto() {
@@ -52,6 +52,12 @@ export function FiltrosCaixaCompacto() {
     console.log("  - Técnicos:", tecnicos?.length || 0, tecnicos);
     console.log("  - Clientes:", clientes?.length || 0, clientes);
   }, [campanhas, formasPagamento, tecnicos, clientes]);
+
+  // Função para forçar recarregamento dos dados
+  const recarregarDados = useCallback(() => {
+    console.log("🔄 [FiltrosCaixaCompacto] Forçando recarregamento dos dados...");
+    window.location.reload();
+  }, []);
 
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
@@ -284,9 +290,22 @@ export function FiltrosCaixaCompacto() {
                   variant="outline"
                   size="sm"
                   className="h-8 w-8 p-0"
+                  title="Limpar filtros"
                 >
                   <X className="h-3 w-3" />
                 </Button>
+                {/* DEBUG: Botão para recarregar dados */}
+                {process.env.NODE_ENV === 'development' && (
+                  <Button
+                    onClick={recarregarDados}
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    title="Recarregar dados (DEBUG)"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                  </Button>
+                )}
               </div>
             </div>
 
