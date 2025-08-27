@@ -328,42 +328,42 @@ export default function FiltroDataCaixaSimples() {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("hoje")}
+                onClick={handleHoje}
               >
                 Hoje
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("ontem")}
+                onClick={handleOntem}
               >
                 Ontem
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("esta-semana")}
+                onClick={handleEstaSemana}
               >
                 Esta semana
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("7-dias")}
+                onClick={handle7Dias}
               >
                 Últimos 7 dias
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("este-mes")}
+                onClick={handleEsteMes}
               >
                 Este mês
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("30-dias")}
+                onClick={handle30Dias}
               >
                 Últimos 30 dias
               </Button>
