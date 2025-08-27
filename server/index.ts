@@ -8,6 +8,7 @@ import { cleanCategories, listCategories } from "./routes/clean-categories";
 import { seedBasicData } from "./lib/seed-basic-data";
 import { initBasicData } from "./routes/init-data";
 import { addTestUsers } from "./routes/add-test-users";
+import { cleanDuplicateFormasPagamento } from "./routes/clean-formas-pagamento";
 
 // Importar rotas do banco de dados
 import {
@@ -400,6 +401,9 @@ export function createServer(): Express {
   // Inicialização de dados básicos
   app.post("/api/init/basic-data", initBasicData);
   app.post("/api/init/test-users", addTestUsers);
+
+  // Limpeza de duplicatas
+  app.post("/api/clean/formas-pagamento", cleanDuplicateFormasPagamento);
 
   return app;
 }
