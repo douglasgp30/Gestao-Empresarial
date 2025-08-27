@@ -502,7 +502,7 @@ export function ModalReceita() {
               "❌ [ModalReceita] Erro ao fazer parse da resposta:",
               parseError,
             );
-            // Fornecer informaç��es mais detalhadas do erro
+            // Fornecer informações mais detalhadas do erro
             responseData = {
               error: "Erro ao processar resposta do servidor",
               details: parseError.message,
