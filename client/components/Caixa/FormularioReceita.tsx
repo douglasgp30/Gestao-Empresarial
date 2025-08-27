@@ -312,6 +312,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       });
 
     if (camposFaltando.length > 0) {
+      setShowValidationErrors(true);
       toast({
         title: "Campos obrigatórios não preenchidos",
         description: `Preencha os seguintes campos: ${camposFaltando.join(", ")}`,
