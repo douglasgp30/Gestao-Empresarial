@@ -226,7 +226,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return valorQueEntrouReal - descontoNotaFiscal - impostoCalculado;
   }, [valorQueEntrouReal, descontoNotaFiscal, impostoCalculado]);
 
-  // Calcular comissão baseada no percentual do t��cnico sobre o valor líquido
+  // Calcular comissão baseada no percentual do técnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
     if (formData.tecnicoResponsavel && valorLiquidoCalculado > 0) {
       const tecnico = tecnicos.find(
