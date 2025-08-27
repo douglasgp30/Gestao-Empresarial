@@ -73,21 +73,21 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isExcluindo, setIsExcluindo] = useState(false);
   const [filtros, setFiltros] = useState(() => {
-    // MUDAN��A: Filtrar por período mais amplo (último mês) para garantir que receitas recém-criadas apareçam
+    // Filtro padrão: apenas o dia de hoje
     const agora = new Date();
-    const inicioMes = new Date(
+    const inicioHoje = new Date(
       agora.getFullYear(),
       agora.getMonth(),
-      1,
+      agora.getDate(),
       0,
       0,
       0,
       0,
     );
-    const fimMes = new Date(
+    const fimHoje = new Date(
       agora.getFullYear(),
-      agora.getMonth() + 1,
-      0,
+      agora.getMonth(),
+      agora.getDate(),
       23,
       59,
       59,
@@ -95,8 +95,8 @@ export function CaixaProvider({ children }: { children: ReactNode }) {
     );
 
     return {
-      dataInicio: inicioMes,
-      dataFim: fimMes,
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
       tipo: "todos" as "receita" | "despesa" | "todos",
       formaPagamento: "todas",
       tecnico: "todos",
