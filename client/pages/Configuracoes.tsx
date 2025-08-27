@@ -1050,6 +1050,7 @@ export default function Configuracoes() {
           <DebugPrimeiroAcesso />
           <DebugTecnicos />
           <DebugFormularioReceita />
+          <DebugPerformanceFiltros />
         </TabsContent>
 
         <TabsContent value="localizacoes" className="space-y-6">
