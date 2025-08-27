@@ -317,6 +317,7 @@ export function ModalReceita() {
       !formData.cidadeId ||
       !formData.setorId
     ) {
+      setShowValidationErrors(true);
       toast({
         title: "Erro",
         description:
