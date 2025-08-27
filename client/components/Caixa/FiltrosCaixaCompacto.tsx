@@ -32,12 +32,15 @@ export function FiltrosCaixaCompacto() {
 
   const {
     formasPagamento,
-    tecnicos,
+    getTecnicos,
     setores,
     descricoes,
     cidades,
     isLoading: entidadesLoading,
   } = useEntidades();
+
+  // Obter técnicos usando a mesma função do formulário
+  const tecnicos = getTecnicos();
 
   const { clientes, isLoading: clientesLoading } = useClientes();
 
