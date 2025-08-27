@@ -30,6 +30,7 @@ import ResetarSistema from "../components/Debug/ResetarSistema";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
 import { TesteBasico } from "../components/Debug/TesteBasico";
 import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
+import { DebugTecnicos } from "../components/Debug/DebugTecnicos";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
