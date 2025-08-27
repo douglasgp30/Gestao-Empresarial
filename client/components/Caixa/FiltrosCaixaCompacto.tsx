@@ -73,7 +73,48 @@ export function FiltrosCaixaCompacto() {
     });
   }, [filtrosLocal, setFiltros]);
 
-  // Handler genérico para evitar functions inline
+  // Handlers específicos memoizados para evitar re-renders
+  const handleFormaPagamentoChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, formaPagamento: value }));
+  }, []);
+
+  const handleTecnicoChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, tecnico: value }));
+  }, []);
+
+  const handleCidadeChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, cidade: value }));
+  }, []);
+
+  const handleSetorChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, setor: value }));
+  }, []);
+
+  const handleCategoriaChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({
+      ...prev,
+      categoria: value,
+      descricao: "todas", // Limpar descrição quando categoria muda
+    }));
+  }, []);
+
+  const handleDescricaoChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, descricao: value }));
+  }, []);
+
+  const handleClienteChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, cliente: value }));
+  }, []);
+
+  const handleCampanhaChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, campanha: value }));
+  }, []);
+
+  const handleNumeroNotaChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFiltrosLocal((prev) => ({ ...prev, numeroNota: e.target.value }));
+  }, []);
+
+  // Handler genérico para casos especiais
   const handleFieldChange = useCallback(
     (field: string) => (value: any) => {
       setFiltrosLocal((prev) => ({ ...prev, [field]: value }));
