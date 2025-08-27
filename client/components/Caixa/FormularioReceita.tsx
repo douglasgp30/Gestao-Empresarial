@@ -300,7 +300,14 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     };
 
     const camposFaltando = Object.entries(camposObrigatorios)
-      .filter(([key, value]) => !value || value.toString().trim() === "")
+      .filter(([key, value]) => {
+        // Tratamento especial para números (como valor)
+        if (key === 'valor') {
+          return !value || value <= 0;
+        }
+        // Tratamento padrão para strings
+        return !value || (typeof value === 'string' && value.trim() === "");
+      })
       .map(([key]) => {
         const nomes = {
           data: "Data",
