@@ -6,7 +6,7 @@ export async function addLegitimateEmployees() {
 
     // Check if Douglas already exists
     const existingDouglas = await prisma.funcionario.findFirst({
-      where: { nome: { contains: "Douglas", mode: "insensitive" } }
+      where: { nome: "Douglas" }
     });
 
     if (!existingDouglas) {
@@ -54,7 +54,7 @@ export async function addLegitimateEmployees() {
 
     // Check if Marcelinho already exists
     const existingMarcelinho = await prisma.funcionario.findFirst({
-      where: { nome: { contains: "Marcelinho", mode: "insensitive" } }
+      where: { nome: "Marcelinho" }
     });
 
     if (!existingMarcelinho) {
