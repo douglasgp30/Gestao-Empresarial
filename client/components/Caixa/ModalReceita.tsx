@@ -897,7 +897,7 @@ export function ModalReceita() {
                     }
                     required
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger className={`h-9 ${showValidationErrors && !formData.campanha ? "border-red-500" : ""}`}>
                       <SelectValue placeholder="Selecione a campanha" />
                     </SelectTrigger>
                     <SelectContent>
