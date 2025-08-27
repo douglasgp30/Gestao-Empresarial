@@ -6,6 +6,12 @@ import { runMigration, checkMigration } from "./routes/migrate";
 import { seedUnifiedData } from "./routes/seed-unified-data";
 import { cleanCategories, listCategories } from "./routes/clean-categories";
 import { seedBasicData } from "./lib/seed-basic-data";
+import { initBasicData } from "./routes/init-data";
+import { addTestUsers } from "./routes/add-test-users";
+import { cleanDuplicateFormasPagamento } from "./routes/clean-formas-pagamento";
+import { fixFormasPagamentoNames } from "./routes/fix-formas-pagamento-names";
+import { addLegitimateEmployeesRoute } from "./routes/add-legitimate-employees";
+import { reloadEmployeesContextRoute } from "./routes/reload-employees-context";
 
 // Importar rotas do banco de dados
 import {
@@ -394,6 +400,22 @@ export function createServer(): Express {
   // Limpeza de dados
   app.delete("/api/clean/categories", cleanCategories);
   app.get("/api/clean/categories", listCategories);
+
+  // Inicialização de dados básicos
+  app.post("/api/init/basic-data", initBasicData);
+  app.post("/api/init/test-users", addTestUsers);
+
+  // Limpeza de duplicatas
+  app.post("/api/clean/formas-pagamento", cleanDuplicateFormasPagamento);
+
+  // Correção dos nomes das formas de pagamento
+  app.post("/api/fix/formas-pagamento-names", fixFormasPagamentoNames);
+
+  // Adicionar funcionários legítimos (Douglas e Marcelinho)
+  app.post("/api/add-legitimate-employees", addLegitimateEmployeesRoute);
+
+  // Recarregar context de funcionários
+  app.post("/api/reload-employees-context", reloadEmployeesContextRoute);
 
   return app;
 }

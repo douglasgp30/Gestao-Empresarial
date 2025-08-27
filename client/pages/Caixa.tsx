@@ -9,6 +9,16 @@ import { ListaLancamentosSimples } from "../components/Caixa/ListaLancamentosSim
 import { TotaisCaixa } from "../components/Caixa/TotaisCaixa";
 import { AlertaMigracaoCaixa } from "../components/ui/alerta-migracao-caixa";
 import { DollarSign } from "lucide-react";
+import {
+  migrarLancamentosParaBanco,
+  migrarUmLancamento,
+} from "../lib/migrarCaixaParaBanco";
+
+// Disponibilizar funções globalmente para o AlertaMigracaoCaixa
+if (typeof window !== "undefined") {
+  (window as any).migrarLancamentosParaBanco = migrarLancamentosParaBanco;
+  (window as any).migrarUmLancamento = migrarUmLancamento;
+}
 
 export default function Caixa() {
   return (
@@ -16,7 +26,7 @@ export default function Caixa() {
       {/* Alerta de migração */}
       <AlertaMigracaoCaixa />
 
-      {/* Header com botões no topo direito */}
+      {/* Header com bot��es no topo direito */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         {/* Título */}
         <div>

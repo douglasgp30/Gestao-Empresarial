@@ -40,14 +40,14 @@ export function AlertaMigracaoCaixa() {
 
       if (resultado.success) {
         setResultadoMigracao(
-          `✅ Migração concluída! ${resultado.sucessos} lançamentos migrados.`,
+          `✅ Migração concluída! ${resultado.sucessos} lançamentos migrados. Use o botão "Atualizar" ou recarregue a página para ver os dados migrados.`,
         );
         localStorage.setItem("migracao_caixa_verificada", "true");
 
-        // Esconder alerta após 3 segundos se foi bem-sucedida
+        // Esconder alerta após 5 segundos para dar tempo do usuário ler
         setTimeout(() => {
           setMostrarAlerta(false);
-        }, 3000);
+        }, 8000);
       } else {
         setResultadoMigracao(`❌ Erro na migração: ${resultado.message}`);
       }
@@ -93,8 +93,17 @@ export function AlertaMigracaoCaixa() {
           </p>
 
           {resultadoMigracao && (
-            <div className="p-2 bg-white rounded border">
-              <code className="text-sm">{resultadoMigracao}</code>
+            <div className="p-2 bg-white rounded border space-y-2">
+              <code className="text-sm block">{resultadoMigracao}</code>
+              {resultadoMigracao.includes("✅") && (
+                <Button
+                  size="sm"
+                  onClick={() => window.location.reload()}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  🔄 Atualizar Página
+                </Button>
+              )}
             </div>
           )}
 

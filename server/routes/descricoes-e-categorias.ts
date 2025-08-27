@@ -21,6 +21,7 @@ interface ApiResponse<T> {
 // GET /api/descricoes-e-categorias - Listar todos os itens
 const getDescricoesECategorias: RequestHandler = async (req, res) => {
   try {
+    console.log("[DescricoesECategorias] Buscando itens...");
     const { tipo, tipoItem, ativo } = req.query;
 
     const where: any = {};
@@ -39,12 +40,22 @@ const getDescricoesECategorias: RequestHandler = async (req, res) => {
       where.ativo = true; // Por padrão, apenas itens ativos
     }
 
+    console.log("[DescricoesECategorias] Filtros aplicados:", where);
+
     const items = await prisma.descricaoECategoria.findMany({
       where,
       orderBy: [
         { tipoItem: "asc" }, // Categorias primeiro
         { nome: "asc" },
       ],
+    });
+
+    console.log(`[DescricoesECategorias] Encontrados ${items.length} itens`);
+    console.log("[DescricoesECategorias] Resumo:", {
+      categorias: items.filter((i) => i.tipoItem === "categoria").length,
+      descricoes: items.filter((i) => i.tipoItem === "descricao").length,
+      receitas: items.filter((i) => i.tipo === "receita").length,
+      despesas: items.filter((i) => i.tipo === "despesa").length,
     });
 
     const response: ApiResponse<typeof items> = { data: items };
@@ -340,7 +351,7 @@ const deleteDescricaoECategoria: RequestHandler = async (req, res) => {
   } catch (error) {
     console.error("🔴 Erro ao desativar item:", error);
     console.error("🔴 Error type:", typeof error);
-    console.error("🔴 Error details:", error);
+    console.error("���� Error details:", error);
 
     const response: ApiResponse<null> = {
       error: "Erro interno do servidor",

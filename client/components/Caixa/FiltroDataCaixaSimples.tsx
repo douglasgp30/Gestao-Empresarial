@@ -63,25 +63,28 @@ export default function FiltroDataCaixaSimples() {
     }
   }, [filtros?.dataInicio, filtros?.dataFim, setFiltros]);
 
-  // Fechar dropdown ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+  // Handler otimizado para click outside
+  const handleClickOutside = React.useCallback((event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen(false);
     }
+  }, []);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
+  // Fechar dropdown ao clicar fora - otimizado
+  useEffect(() => {
+    if (isOpen) {
+      // Usar passive: true para melhor performance
+      document.addEventListener("mousedown", handleClickOutside, {
+        passive: true,
+      });
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [isOpen, handleClickOutside]);
 
   // Função para formatar data para input com validação
   const formatDateForInput = (date: Date | null | undefined): string => {
@@ -102,169 +105,227 @@ export default function FiltroDataCaixaSimples() {
     return format(date, "dd/MM/yyyy", { locale: ptBR });
   };
 
-  const aplicarPeriodo = (tipo: string) => {
-    console.log("🚀 Aplicando período:", tipo);
-    const hoje = new Date();
-    let inicio: Date;
-    let fim: Date;
+  const aplicarPeriodo = React.useCallback(
+    (tipo: string) => {
+      console.log("🚀 Aplicando período:", tipo);
+      const hoje = new Date();
+      let inicio: Date;
+      let fim: Date;
 
-    // Normalizar hoje para evitar problemas de horário
-    const hojeNormalizado = new Date(
-      hoje.getFullYear(),
-      hoje.getMonth(),
-      hoje.getDate(),
-    );
+      // Normalizar hoje para evitar problemas de horário
+      const hojeNormalizado = new Date(
+        hoje.getFullYear(),
+        hoje.getMonth(),
+        hoje.getDate(),
+      );
 
-    switch (tipo) {
-      case "hoje":
-        inicio = new Date(
-          hojeNormalizado.getFullYear(),
-          hojeNormalizado.getMonth(),
-          hojeNormalizado.getDate(),
-          0,
-          0,
-          0,
-          0,
-        );
-        fim = new Date(
-          hojeNormalizado.getFullYear(),
-          hojeNormalizado.getMonth(),
-          hojeNormalizado.getDate(),
-          23,
-          59,
-          59,
-          999,
-        );
-        break;
-      case "ontem":
-        const ontem = new Date(hojeNormalizado);
-        ontem.setDate(ontem.getDate() - 1);
-        inicio = new Date(
-          ontem.getFullYear(),
-          ontem.getMonth(),
-          ontem.getDate(),
-          0,
-          0,
-          0,
-          0,
-        );
-        fim = new Date(
-          ontem.getFullYear(),
-          ontem.getMonth(),
-          ontem.getDate(),
-          23,
-          59,
-          59,
-          999,
-        );
-        break;
-      case "esta-semana":
-        const inicioSemana = startOfWeek(hojeNormalizado, { weekStartsOn: 0 }); // 0 = domingo
-        inicio = new Date(
-          inicioSemana.getFullYear(),
-          inicioSemana.getMonth(),
-          inicioSemana.getDate(),
-          0,
-          0,
-          0,
-          0,
-        );
-        fim = new Date(
-          hojeNormalizado.getFullYear(),
-          hojeNormalizado.getMonth(),
-          hojeNormalizado.getDate(),
-          23,
-          59,
-          59,
-          999,
-        );
-        break;
-      case "7-dias":
-        // Últimos 7 dias incluindo hoje (hoje + 6 dias anteriores = 7 dias total)
-        const seteDiasAtras = new Date(hojeNormalizado);
-        seteDiasAtras.setDate(seteDiasAtras.getDate() - 6);
-        inicio = new Date(
-          seteDiasAtras.getFullYear(),
-          seteDiasAtras.getMonth(),
-          seteDiasAtras.getDate(),
-          0,
-          0,
-          0,
-          0,
-        );
-        fim = new Date(
-          hojeNormalizado.getFullYear(),
-          hojeNormalizado.getMonth(),
-          hojeNormalizado.getDate(),
-          23,
-          59,
-          59,
-          999,
-        );
-        break;
-      case "este-mes":
-        inicio = new Date(
-          hojeNormalizado.getFullYear(),
-          hojeNormalizado.getMonth(),
-          1,
-          0,
-          0,
-          0,
-          0,
-        );
-        fim = new Date(
-          hojeNormalizado.getFullYear(),
-          hojeNormalizado.getMonth(),
-          hojeNormalizado.getDate(),
-          23,
-          59,
-          59,
-          999,
-        );
-        break;
-      case "30-dias":
-        // Últimos 30 dias incluindo hoje (hoje + 29 dias anteriores = 30 dias total)
-        const trintaDiasAtras = new Date(hojeNormalizado);
-        trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 29);
-        inicio = new Date(
-          trintaDiasAtras.getFullYear(),
-          trintaDiasAtras.getMonth(),
-          trintaDiasAtras.getDate(),
-          0,
-          0,
-          0,
-          0,
-        );
-        fim = new Date(
-          hojeNormalizado.getFullYear(),
-          hojeNormalizado.getMonth(),
-          hojeNormalizado.getDate(),
-          23,
-          59,
-          59,
-          999,
-        );
-        break;
-      default:
-        return;
-    }
+      switch (tipo) {
+        case "hoje":
+          inicio = new Date(
+            hojeNormalizado.getFullYear(),
+            hojeNormalizado.getMonth(),
+            hojeNormalizado.getDate(),
+            0,
+            0,
+            0,
+            0,
+          );
+          fim = new Date(
+            hojeNormalizado.getFullYear(),
+            hojeNormalizado.getMonth(),
+            hojeNormalizado.getDate(),
+            23,
+            59,
+            59,
+            999,
+          );
+          break;
+        case "ontem":
+          const ontem = new Date(hojeNormalizado);
+          ontem.setDate(ontem.getDate() - 1);
+          inicio = new Date(
+            ontem.getFullYear(),
+            ontem.getMonth(),
+            ontem.getDate(),
+            0,
+            0,
+            0,
+            0,
+          );
+          fim = new Date(
+            ontem.getFullYear(),
+            ontem.getMonth(),
+            ontem.getDate(),
+            23,
+            59,
+            59,
+            999,
+          );
+          break;
+        case "esta-semana":
+          const inicioSemana = startOfWeek(hojeNormalizado, {
+            weekStartsOn: 0,
+          }); // 0 = domingo
+          inicio = new Date(
+            inicioSemana.getFullYear(),
+            inicioSemana.getMonth(),
+            inicioSemana.getDate(),
+            0,
+            0,
+            0,
+            0,
+          );
+          fim = new Date(
+            hojeNormalizado.getFullYear(),
+            hojeNormalizado.getMonth(),
+            hojeNormalizado.getDate(),
+            23,
+            59,
+            59,
+            999,
+          );
+          break;
+        case "7-dias":
+          // Últimos 7 dias incluindo hoje (hoje + 6 dias anteriores = 7 dias total)
+          const seteDiasAtras = new Date(hojeNormalizado);
+          seteDiasAtras.setDate(seteDiasAtras.getDate() - 6);
+          inicio = new Date(
+            seteDiasAtras.getFullYear(),
+            seteDiasAtras.getMonth(),
+            seteDiasAtras.getDate(),
+            0,
+            0,
+            0,
+            0,
+          );
+          fim = new Date(
+            hojeNormalizado.getFullYear(),
+            hojeNormalizado.getMonth(),
+            hojeNormalizado.getDate(),
+            23,
+            59,
+            59,
+            999,
+          );
+          break;
+        case "este-mes":
+          inicio = new Date(
+            hojeNormalizado.getFullYear(),
+            hojeNormalizado.getMonth(),
+            1,
+            0,
+            0,
+            0,
+            0,
+          );
+          fim = new Date(
+            hojeNormalizado.getFullYear(),
+            hojeNormalizado.getMonth(),
+            hojeNormalizado.getDate(),
+            23,
+            59,
+            59,
+            999,
+          );
+          break;
+        case "30-dias":
+          // Últimos 30 dias incluindo hoje (hoje + 29 dias anteriores = 30 dias total)
+          const trintaDiasAtras = new Date(hojeNormalizado);
+          trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 29);
+          inicio = new Date(
+            trintaDiasAtras.getFullYear(),
+            trintaDiasAtras.getMonth(),
+            trintaDiasAtras.getDate(),
+            0,
+            0,
+            0,
+            0,
+          );
+          fim = new Date(
+            hojeNormalizado.getFullYear(),
+            hojeNormalizado.getMonth(),
+            hojeNormalizado.getDate(),
+            23,
+            59,
+            59,
+            999,
+          );
+          break;
+        default:
+          return;
+      }
 
-    console.log("🚀 Datas calculadas:", { inicio, fim });
+      console.log("🚀 Datas calculadas:", { inicio, fim });
 
-    // Aplicar diretamente
-    setFiltros({
-      ...filtros,
-      dataInicio: inicio,
-      dataFim: fim,
-    });
+      // Aplicar diretamente
+      setFiltros({
+        ...filtros,
+        dataInicio: inicio,
+        dataFim: fim,
+      });
 
-    setIsOpen(false);
-  };
+      setIsOpen(false);
+    },
+    [filtros, setFiltros],
+  );
 
-  const toggleDropdown = () => {
+  const toggleDropdown = React.useCallback(() => {
     console.log("🖱️ Toggle dropdown, isOpen atual:", isOpen);
     setIsOpen(!isOpen);
-  };
+  }, [isOpen]);
+
+  // Handlers memoizados para mudanças de data
+  const handleDataInicioChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const [ano, mes, dia] = e.target.value.split("-").map(Number);
+      const novaData = new Date(ano, mes - 1, dia, 0, 0, 0, 0);
+      console.log("📅 Data início alterada:", e.target.value, "->", novaData);
+      setFiltros({
+        ...filtros,
+        dataInicio: novaData,
+      });
+    },
+    [filtros, setFiltros],
+  );
+
+  const handleDataFimChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const [ano, mes, dia] = e.target.value.split("-").map(Number);
+      const novaData = new Date(ano, mes - 1, dia, 23, 59, 59, 999);
+      console.log("📅 Data fim alterada:", e.target.value, "->", novaData);
+      setFiltros({
+        ...filtros,
+        dataFim: novaData,
+      });
+    },
+    [filtros, setFiltros],
+  );
+
+  // Handlers específicos para cada período para evitar funções inline
+  const handleHoje = React.useCallback(
+    () => aplicarPeriodo("hoje"),
+    [aplicarPeriodo],
+  );
+  const handleOntem = React.useCallback(
+    () => aplicarPeriodo("ontem"),
+    [aplicarPeriodo],
+  );
+  const handleEstaSemana = React.useCallback(
+    () => aplicarPeriodo("esta-semana"),
+    [aplicarPeriodo],
+  );
+  const handle7Dias = React.useCallback(
+    () => aplicarPeriodo("7-dias"),
+    [aplicarPeriodo],
+  );
+  const handleEsteMes = React.useCallback(
+    () => aplicarPeriodo("este-mes"),
+    [aplicarPeriodo],
+  );
+  const handle30Dias = React.useCallback(
+    () => aplicarPeriodo("30-dias"),
+    [aplicarPeriodo],
+  );
 
   // Garantir que as datas existem, senão usar valores padrão
   const dataInicio = filtros?.dataInicio || new Date();
@@ -298,42 +359,42 @@ export default function FiltroDataCaixaSimples() {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("hoje")}
+                onClick={handleHoje}
               >
                 Hoje
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("ontem")}
+                onClick={handleOntem}
               >
                 Ontem
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("esta-semana")}
+                onClick={handleEstaSemana}
               >
                 Esta semana
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("7-dias")}
+                onClick={handle7Dias}
               >
                 Últimos 7 dias
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("este-mes")}
+                onClick={handleEsteMes}
               >
                 Este mês
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-sm"
-                onClick={() => aplicarPeriodo("30-dias")}
+                onClick={handle30Dias}
               >
                 Últimos 30 dias
               </Button>
@@ -345,31 +406,7 @@ export default function FiltroDataCaixaSimples() {
                     <Input
                       type="date"
                       value={formatDateForInput(dataInicio)}
-                      onChange={(e) => {
-                        // Usar parseFloat e depois criar data local para evitar problemas de timezone
-                        const [ano, mes, dia] = e.target.value
-                          .split("-")
-                          .map(Number);
-                        const novaData = new Date(
-                          ano,
-                          mes - 1,
-                          dia,
-                          0,
-                          0,
-                          0,
-                          0,
-                        );
-                        console.log(
-                          "📅 Data início alterada:",
-                          e.target.value,
-                          "->",
-                          novaData,
-                        );
-                        setFiltros({
-                          ...filtros,
-                          dataInicio: novaData,
-                        });
-                      }}
+                      onChange={handleDataInicioChange}
                       className="h-8 text-xs"
                     />
                   </div>
@@ -377,31 +414,7 @@ export default function FiltroDataCaixaSimples() {
                     <Input
                       type="date"
                       value={formatDateForInput(dataFim)}
-                      onChange={(e) => {
-                        // Usar parseFloat e depois criar data local para evitar problemas de timezone
-                        const [ano, mes, dia] = e.target.value
-                          .split("-")
-                          .map(Number);
-                        const novaData = new Date(
-                          ano,
-                          mes - 1,
-                          dia,
-                          23,
-                          59,
-                          59,
-                          999,
-                        );
-                        console.log(
-                          "📅 Data fim alterada:",
-                          e.target.value,
-                          "->",
-                          novaData,
-                        );
-                        setFiltros({
-                          ...filtros,
-                          dataFim: novaData,
-                        });
-                      }}
+                      onChange={handleDataFimChange}
                       className="h-8 text-xs"
                     />
                   </div>

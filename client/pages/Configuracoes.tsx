@@ -30,6 +30,20 @@ import ResetarSistema from "../components/Debug/ResetarSistema";
 import { DiagnosticoLoop } from "../components/Debug/DiagnosticoLoop";
 import { TesteBasico } from "../components/Debug/TesteBasico";
 import { DebugPrimeiroAcesso } from "../components/Debug/DebugPrimeiroAcesso";
+import { DebugTecnicos } from "../components/Debug/DebugTecnicos";
+import { DebugFormularioReceita } from "../components/Debug/DebugFormularioReceita";
+import { DebugPerformanceFiltros } from "../components/Debug/DebugPerformanceFiltros";
+import { DebugMigracaoCaixa } from "../components/Debug/DebugMigracaoCaixa";
+import { DebugDadosFiltros } from "../components/Debug/DebugDadosFiltros";
+import { TesteDadosFiltros } from "../components/Debug/TesteDadosFiltros";
+import { VerificacaoFinalFiltros } from "../components/Debug/VerificacaoFinalFiltros";
+import { ResumoCorrecoesFiltros } from "../components/Debug/ResumoCorrecoesFiltros";
+import { ResumoCorrecoesDuplicatas } from "../components/Debug/ResumoCorrecoesDuplicatas";
+import { VerificarFormasPagamento } from "../components/Debug/VerificarFormasPagamento";
+import { VerificarConsistenciaNomes } from "../components/Debug/VerificarConsistenciaNomes";
+import { ResumoCorrecaoNomes } from "../components/Debug/ResumoCorrecaoNomes";
+import { VerificarTecnicosCategorisDescricoes } from "../components/Debug/VerificarTecnicosCategorisDescricoes";
+import { LimparLocalStorage } from "../components/Debug/LimparLocalStorage";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
@@ -1044,7 +1058,21 @@ export default function Configuracoes() {
         </TabsContent>
 
         <TabsContent value="debug" className="space-y-6">
+          <LimparLocalStorage />
+          <VerificarTecnicosCategorisDescricoes />
           <DebugPrimeiroAcesso />
+          <DebugTecnicos />
+          <ResumoCorrecaoNomes />
+          <VerificarConsistenciaNomes />
+          <ResumoCorrecoesDuplicatas />
+          <VerificarFormasPagamento />
+          <ResumoCorrecoesFiltros />
+          <VerificacaoFinalFiltros />
+          <TesteDadosFiltros />
+          <DebugFormularioReceita />
+          <DebugPerformanceFiltros />
+          <DebugMigracaoCaixa />
+          <DebugDadosFiltros />
         </TabsContent>
 
         <TabsContent value="localizacoes" className="space-y-6">

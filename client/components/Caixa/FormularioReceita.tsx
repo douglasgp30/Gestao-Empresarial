@@ -67,10 +67,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos com memoização estabilizada - sem dependência para evitar re-renders
-  const tecnicos = useMemo(() => {
-    return getTecnicos();
-  }, []); // Remover dependência instável que causa re-renders desnecessários
+  // Carregar técnicos - atualiza quando a lista de funcionários muda
+  const tecnicos = getTecnicos();
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -94,8 +92,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     null,
   );
   const [clienteRecemAdicionado, setClienteRecemAdicionado] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
-  // Estados para categorias e descriç��es carregadas diretamente da API
+  // Estados para categorias e descrições carregadas diretamente da API
   const [categoriasReceita, setCategoriasReceita] = useState<string[]>([]);
   const [descricoesFiltradas, setDescricoesFiltradas] = useState<any[]>([]);
   const [carregandoCategorias, setCarregandoCategorias] = useState(true);
@@ -227,28 +226,33 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     return valorQueEntrouReal - descontoNotaFiscal - impostoCalculado;
   }, [valorQueEntrouReal, descontoNotaFiscal, impostoCalculado]);
 
-  // Calcular comissão baseada no percentual do t��cnico sobre o valor líquido
+  // Memoizar técnico selecionado para otimizar performance
+  const tecnicoSelecionado = React.useMemo(() => {
+    if (!formData.tecnicoResponsavel) return null;
+    return (
+      tecnicos.find((t) => t.id.toString() === formData.tecnicoResponsavel) ||
+      null
+    );
+  }, [formData.tecnicoResponsavel, tecnicos]);
+
+  // Calcular comissão baseada no percentual do técnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
-    if (formData.tecnicoResponsavel && valorLiquidoCalculado > 0) {
-      const tecnico = tecnicos.find(
-        (t) => t.id.toString() === formData.tecnicoResponsavel,
-      );
-      if (tecnico) {
-        // Usar percentualComissao ou percentualServico como fallback
-        const percentual =
-          tecnico.percentualComissao || tecnico.percentualServico || 0;
-        if (percentual > 0) {
-          const comissao = valorLiquidoCalculado * (percentual / 100);
-          return comissao;
-        }
-      }
+    if (!tecnicoSelecionado || valorLiquidoCalculado <= 0) {
+      return 0;
     }
-    return 0;
-  }, [
-    formData.tecnicoResponsavel,
-    valorLiquidoCalculado,
-    tecnicos, // Usar array diretamente para maior estabilidade
-  ]);
+
+    // Usar percentualComissao ou percentualServico como fallback
+    const percentual =
+      tecnicoSelecionado.percentualComissao ||
+      tecnicoSelecionado.percentualServico ||
+      0;
+
+    if (percentual <= 0) {
+      return 0;
+    }
+
+    return valorLiquidoCalculado * (percentual / 100);
+  }, [tecnicoSelecionado, valorLiquidoCalculado]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
   const valorParaEmpresa = React.useMemo(() => {
@@ -284,17 +288,28 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validaç��o completa dos campos obrigatórios
+    // Validação completa dos campos obrigatórios
     const camposObrigatorios = {
       data: formData.data,
       valor: valorInput.numericValue,
       categoria: formData.categoria,
       descricao: formData.descricao,
       formaPagamento: formData.formaPagamento,
+      tecnicoResponsavel: formData.tecnicoResponsavel,
+      campanha: formData.campanha,
+      cidade: formData.cidade,
+      setor: formData.setor,
     };
 
     const camposFaltando = Object.entries(camposObrigatorios)
-      .filter(([key, value]) => !value || value.toString().trim() === "")
+      .filter(([key, value]) => {
+        // Tratamento especial para números (como valor)
+        if (key === "valor") {
+          return !value || value <= 0;
+        }
+        // Tratamento padrão para strings
+        return !value || (typeof value === "string" && value.trim() === "");
+      })
       .map(([key]) => {
         const nomes = {
           data: "Data",
@@ -302,11 +317,16 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           categoria: "Categoria",
           descricao: "Descrição",
           formaPagamento: "Forma de Pagamento",
+          tecnicoResponsavel: "Técnico Responsável",
+          campanha: "Campanha",
+          cidade: "Cidade",
+          setor: "Setor",
         };
         return nomes[key as keyof typeof nomes];
       });
 
     if (camposFaltando.length > 0) {
+      setShowValidationErrors(true);
       toast({
         title: "Campos obrigatórios não preenchidos",
         description: `Preencha os seguintes campos: ${camposFaltando.join(", ")}`,
@@ -593,6 +613,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       setNotaFiscalEmitida(false);
       setDataVencimentoBoleto(null);
       setClienteRecemAdicionado(false);
+      setShowValidationErrors(false);
 
       onSuccess?.();
     } catch (error) {
@@ -663,7 +684,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 id="valor"
                 {...valorInput.inputProps}
                 placeholder="R$ 0,00"
-                required
+                aria-required="true"
               />
             </div>
           </div>
@@ -778,7 +799,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               addNewFields={[
                 {
                   key: "nome",
-                  label: "Nome da Descriç��o",
+                  label: "Nome da Descrição",
                   required: true,
                 },
               ]}
@@ -830,7 +851,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     required
                   />
                   <p className="text-xs text-yellow-700">
-                    ⚠��{" "}
+                    ⚠️{" "}
                     <strong>
                       Digite o valor que realmente entrou na conta após as taxas
                       da operadora do cartão
@@ -860,7 +881,9 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Técnico e Campanha na mesma linha */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tecnicoResponsavel">T��cnico Responsável</Label>
+              <Label htmlFor="tecnicoResponsavel">
+                Técnico Responsável <span className="text-red-500">*</span>
+              </Label>
               <Select
                 value={formData.tecnicoResponsavel}
                 onValueChange={(value) =>
@@ -869,14 +892,28 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     tecnicoResponsavel: value,
                   }))
                 }
+                required
               >
-                <SelectTrigger>
+                <SelectTrigger
+                  className={
+                    showValidationErrors && !formData.tecnicoResponsavel
+                      ? "border-red-500"
+                      : ""
+                  }
+                >
                   <SelectValue placeholder="Selecione o técnico" />
                 </SelectTrigger>
                 <SelectContent>
                   {tecnicos.length === 0 ? (
                     <div className="px-2 py-1 text-sm text-gray-500">
-                      Nenhum técnico cadastrado
+                      <div className="font-medium text-red-600">
+                        Nenhum técnico encontrado
+                      </div>
+                      <div className="text-xs mt-1 space-y-1">
+                        <div>1. Vá em "Funcionários" no menu</div>
+                        <div>2. Cadastre um funcionário</div>
+                        <div>3. Marque o tipo como "Técnico"</div>
+                      </div>
                     </div>
                   ) : (
                     tecnicos
@@ -904,6 +941,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   )}
                 </SelectContent>
               </Select>
+              {showValidationErrors && !formData.tecnicoResponsavel && (
+                <p className="text-xs text-red-500">
+                  Técnico responsável é obrigatório
+                </p>
+              )}
             </div>
 
             <SelectWithAdd
@@ -912,8 +954,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 setFormData((prev) => ({ ...prev, campanha: value }))
               }
               placeholder="Selecione a campanha"
-              label="Campanha"
-              required={false}
+              label="Campanha *"
+              required={true}
               items={campanhas}
               renderItem={(item) => item.nome}
               onAddNew={async (data) => {
@@ -933,40 +975,81 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
-          {/* Setor/Região (que inclui cidade) */}
-          <SelectWithAdd
-            value={formData.setor}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, setor: value }))
-            }
-            placeholder="Selecione o setor"
-            label="Setor/Região"
-            required={false}
-            items={setores}
-            onAddNew={async (data) => {
-              await adicionarSetor({
-                nome: data.nome,
-                cidade: data.cidade,
-              });
-            }}
-            addNewTitle="Novo Setor/Região"
-            addNewDescription="Adicione um novo setor ou região."
-            addNewFields={[
-              {
-                key: "nome",
-                label: "Nome do Setor",
-                required: true,
-              },
-              {
-                key: "cidade",
-                label: "Cidade",
-                required: true,
-              },
-            ]}
-            renderItem={(setor) =>
-              `${setor.nome} - ${typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade}`
-            }
-          />
+          {/* Cidade e Setor - agora separados e obrigatórios */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="cidade">
+                Cidade <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={formData.cidade}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, cidade: value, setor: "" }))
+                }
+                required
+              >
+                <SelectTrigger
+                  className={
+                    showValidationErrors && !formData.cidade
+                      ? "border-red-500"
+                      : ""
+                  }
+                >
+                  <SelectValue placeholder="Selecione a cidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cidades.map((cidade) => (
+                    <SelectItem key={cidade} value={cidade}>
+                      {cidade}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {showValidationErrors && !formData.cidade && (
+                <p className="text-xs text-red-500">Cidade é obrigatória</p>
+              )}
+            </div>
+
+            <SelectWithAdd
+              value={formData.setor}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, setor: value }))
+              }
+              placeholder={
+                formData.cidade
+                  ? "Selecione o setor"
+                  : "Primeiro selecione uma cidade"
+              }
+              label="Setor <span className='text-red-500'>*</span>"
+              required={true}
+              disabled={!formData.cidade}
+              items={setores.filter(
+                (setor) =>
+                  !formData.cidade ||
+                  (typeof setor.cidade === "object"
+                    ? setor.cidade?.nome
+                    : setor.cidade) === formData.cidade,
+              )}
+              onAddNew={async (data) => {
+                await adicionarSetor({
+                  nome: data.nome,
+                  cidade: formData.cidade,
+                });
+              }}
+              addNewTitle="Novo Setor/Região"
+              addNewDescription="Adicione um novo setor ou região."
+              addNewFields={[
+                {
+                  key: "nome",
+                  label: "Nome do Setor",
+                  required: true,
+                },
+              ]}
+              renderItem={(setor) =>
+                `${setor.nome} - ${typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade}`
+              }
+            />
+          </div>
 
           {/* Cliente */}
           <div className="space-y-2">
@@ -1070,7 +1153,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
               {!dataVencimentoBoleto && (
                 <p className="text-xs text-red-600 font-medium">
-                  ⚠�� Data de vencimento é obrigatória para boletos
+                  ⚠️ Data de vencimento é obrigatória para boletos
                 </p>
               )}
 
@@ -1130,7 +1213,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
               <div className="space-y-3 pl-6">
                 <div className="text-xs text-blue-600">
                   ℹ️ O site da nota fiscal foi aberto automaticamente. Após
-                  emitir, preencha o n��mero abaixo.
+                  emitir, preencha o número abaixo.
                 </div>
 
                 <div className="space-y-2">

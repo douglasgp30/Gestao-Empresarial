@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { TestTechniciansSync } from "../components/Debug/TestTechniciansSync";
+import { TechnicianFixSummary } from "../components/Debug/TechnicianFixSummary";
 
 export function TesteCaixa() {
   const [dados, setDados] = useState<any>(null);
@@ -59,7 +61,10 @@ export function TesteCaixa() {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="p-4 max-w-4xl mx-auto space-y-6">
+      <TechnicianFixSummary />
+      <TestTechniciansSync />
+
       <h1 className="text-2xl font-bold mb-4">🧪 Teste da API do Caixa</h1>
 
       <div className="space-y-4">

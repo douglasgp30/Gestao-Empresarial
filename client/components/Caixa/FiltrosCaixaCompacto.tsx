@@ -19,7 +19,7 @@ import {
 } from "../ui/collapsible";
 import { Badge } from "../ui/badge";
 import FiltroDataCaixaSimples from "./FiltroDataCaixaSimples";
-import { Filter, ChevronDown, X, Search } from "lucide-react";
+import { Filter, ChevronDown, X, Search, RefreshCw } from "lucide-react";
 import { toast } from "../ui/use-toast";
 
 export function FiltrosCaixaCompacto() {
@@ -32,28 +32,49 @@ export function FiltrosCaixaCompacto() {
 
   const {
     formasPagamento,
-    tecnicos,
+    getTecnicos,
     setores,
     descricoes,
     cidades,
     isLoading: entidadesLoading,
   } = useEntidades();
 
+  // Obter técnicos usando a mesma função do formulário
+  const tecnicos = getTecnicos();
+
   const { clientes, isLoading: clientesLoading } = useClientes();
+
+  // Debug dos dados carregados
+  useEffect(() => {
+    console.log("🔍 [FiltrosCaixaCompacto] Debug dos dados:");
+    console.log("  - Campanhas:", campanhas?.length || 0, campanhas);
+    console.log(
+      "  - Formas Pagamento:",
+      formasPagamento?.length || 0,
+      formasPagamento,
+    );
+    console.log("  - Técnicos:", tecnicos?.length || 0, tecnicos);
+    console.log("  - Clientes:", clientes?.length || 0, clientes);
+  }, [campanhas, formasPagamento, tecnicos, clientes]);
+
+  // Função para forçar recarregamento dos dados
+  const recarregarDados = useCallback(() => {
+    console.log(
+      "🔄 [FiltrosCaixaCompacto] Forçando recarregamento dos dados...",
+    );
+    window.location.reload();
+  }, []);
 
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
-  // Memoizar filtros para evitar re-renders desnecessários
-  const filtrosMemoizados = useMemo(() => filtros, [filtros]);
-
   // Atualizar filtros locais quando os filtros do contexto mudarem
   useEffect(() => {
-    setFiltrosLocal(filtrosMemoizados);
-  }, [filtrosMemoizados]);
+    setFiltrosLocal(filtros);
+  }, [filtros]);
 
   const aplicarFiltros = useCallback(() => {
-    console.log("🔍 [FiltrosCaixaCompacto] Aplicando filtros:", filtrosLocal);
+    console.log("���� [FiltrosCaixaCompacto] Aplicando filtros:", filtrosLocal);
 
     // Normalizar filtros - transformar "todos"/"todas" para undefined
     const filtrosNormalizados = { ...filtrosLocal };
@@ -76,7 +97,51 @@ export function FiltrosCaixaCompacto() {
     });
   }, [filtrosLocal, setFiltros]);
 
-  // Handler genérico para evitar functions inline
+  // Handlers específicos memoizados para evitar re-renders
+  const handleFormaPagamentoChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, formaPagamento: value }));
+  }, []);
+
+  const handleTecnicoChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, tecnico: value }));
+  }, []);
+
+  const handleCidadeChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, cidade: value }));
+  }, []);
+
+  const handleSetorChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, setor: value }));
+  }, []);
+
+  const handleCategoriaChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({
+      ...prev,
+      categoria: value,
+      descricao: "todas", // Limpar descrição quando categoria muda
+    }));
+  }, []);
+
+  const handleDescricaoChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, descricao: value }));
+  }, []);
+
+  const handleClienteChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, cliente: value }));
+  }, []);
+
+  const handleCampanhaChange = useCallback((value: string) => {
+    setFiltrosLocal((prev) => ({ ...prev, campanha: value }));
+  }, []);
+
+  const handleNumeroNotaChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFiltrosLocal((prev) => ({ ...prev, numeroNota: e.target.value }));
+    },
+    [],
+  );
+
+  // Handler genérico para casos especiais
   const handleFieldChange = useCallback(
     (field: string) => (value: any) => {
       setFiltrosLocal((prev) => ({ ...prev, [field]: value }));
@@ -85,9 +150,30 @@ export function FiltrosCaixaCompacto() {
   );
 
   const limparFiltros = useCallback(() => {
+    // Usar apenas o dia de hoje quando limpar filtros
+    const agora = new Date();
+    const inicioHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const fimHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
+
     const filtrosLimpos = {
-      dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-      dataFim: new Date(),
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
       tipo: "todos" as const,
       formaPagamento: "todas",
       tecnico: "todos",
@@ -174,7 +260,7 @@ export function FiltrosCaixaCompacto() {
                   onValueChange={handleFieldChange("tipo")}
                 >
                   <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
+                    <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
@@ -234,9 +320,22 @@ export function FiltrosCaixaCompacto() {
                   variant="outline"
                   size="sm"
                   className="h-8 w-8 p-0"
+                  title="Limpar filtros"
                 >
                   <X className="h-3 w-3" />
                 </Button>
+                {/* DEBUG: Botão para recarregar dados */}
+                {process.env.NODE_ENV === "development" && (
+                  <Button
+                    onClick={recarregarDados}
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    title="Recarregar dados (DEBUG)"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -253,20 +352,18 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.formaPagamento}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            formaPagamento: value,
-                          }))
-                        }
+                        onValueChange={handleFormaPagamentoChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todas" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
-                          {formasPagamento.map((forma) => (
+                          {(Array.isArray(formasPagamento)
+                            ? formasPagamento
+                            : []
+                          ).map((forma) => (
                             <SelectItem
                               key={forma.id}
                               value={forma.id.toString()}
@@ -285,16 +382,11 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.tecnico}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            tecnico: value,
-                          }))
-                        }
+                        onValueChange={handleTecnicoChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todos" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
@@ -319,16 +411,11 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.cidade || "todas"}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            cidade: value,
-                          }))
-                        }
+                        onValueChange={handleCidadeChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todas" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
@@ -350,13 +437,11 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.setor}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({ ...prev, setor: value }))
-                        }
+                        onValueChange={handleSetorChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todos" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
@@ -387,17 +472,11 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.categoria || "todas"}
-                        onValueChange={(value) => {
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            categoria: value,
-                            descricao: "todas", // Limpar descrição quando categoria muda
-                          }));
-                        }}
+                        onValueChange={handleCategoriaChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todas" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
@@ -417,12 +496,7 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.descricao || "todas"}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            descricao: value,
-                          }))
-                        }
+                        onValueChange={handleDescricaoChange}
                         disabled={
                           isLoading || filtrosLocal.categoria === "todas"
                         }
@@ -457,27 +531,24 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.cliente || "todos"}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            cliente: value,
-                          }))
-                        }
+                        onValueChange={handleClienteChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todos" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
-                          {clientes.map((cliente) => (
-                            <SelectItem
-                              key={cliente.id}
-                              value={cliente.id.toString()}
-                            >
-                              {cliente.nome}
-                            </SelectItem>
-                          ))}
+                          {(Array.isArray(clientes) ? clientes : []).map(
+                            (cliente) => (
+                              <SelectItem
+                                key={cliente.id}
+                                value={cliente.id.toString()}
+                              >
+                                {cliente.nome}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
@@ -492,16 +563,11 @@ export function FiltrosCaixaCompacto() {
                       </label>
                       <Select
                         value={filtrosLocal.campanha}
-                        onValueChange={(value) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            campanha: value,
-                          }))
-                        }
+                        onValueChange={handleCampanhaChange}
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todas" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
@@ -527,12 +593,7 @@ export function FiltrosCaixaCompacto() {
                       <Input
                         placeholder="Ex: 12345"
                         value={filtrosLocal.numeroNota || ""}
-                        onChange={(e) =>
-                          setFiltrosLocal((prev) => ({
-                            ...prev,
-                            numeroNota: e.target.value,
-                          }))
-                        }
+                        onChange={handleNumeroNotaChange}
                         className="h-8 text-xs bg-white"
                         disabled={isLoading}
                       />

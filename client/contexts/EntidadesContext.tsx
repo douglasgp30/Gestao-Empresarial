@@ -209,11 +209,27 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
         if (response.ok) {
           const formasServidor = await response.json();
 
+          // Dedupliar formas de pagamento por nome (case insensitive) - extra safety
+          const formasUnicas = formasServidor.reduce((acc, forma) => {
+            const existing = acc.find(
+              (f) => f.nome.toLowerCase() === forma.nome.toLowerCase(),
+            );
+            if (!existing || forma.id < existing.id) {
+              // Remove o existente se houver e adiciona o atual (menor ID = mais antigo)
+              const filtered = acc.filter(
+                (f) => f.nome.toLowerCase() !== forma.nome.toLowerCase(),
+              );
+              filtered.push(forma);
+              return filtered;
+            }
+            return acc;
+          }, []);
+
           console.log(
-            `🌐 [EntidadesContext] ${formasServidor.length} formas de pagamento carregadas da API`,
+            `🌐 [EntidadesContext] ${formasServidor.length} formas da API, ${formasUnicas.length} únicas após deduplicação`,
           );
 
-          setFormasPagamento(formasServidor);
+          setFormasPagamento(formasUnicas);
 
           // Salvar no localStorage para cache
           try {
@@ -248,9 +264,26 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       const formasStorage = localStorage.getItem("formas_pagamento");
       if (formasStorage) {
         const formasParsed = JSON.parse(formasStorage);
-        setFormasPagamento(formasParsed);
+
+        // Dedupliar formas de pagamento por nome (case insensitive)
+        const formasUnicas = formasParsed.reduce((acc, forma) => {
+          const existing = acc.find(
+            (f) => f.nome.toLowerCase() === forma.nome.toLowerCase(),
+          );
+          if (!existing || forma.id < existing.id) {
+            // Remove o existente se houver e adiciona o atual (menor ID = mais antigo)
+            const filtered = acc.filter(
+              (f) => f.nome.toLowerCase() !== forma.nome.toLowerCase(),
+            );
+            filtered.push(forma);
+            return filtered;
+          }
+          return acc;
+        }, []);
+
+        setFormasPagamento(formasUnicas);
         console.log(
-          `💾 [EntidadesContext] ${formasParsed.length} formas de pagamento recarregadas do localStorage (fallback)`,
+          `💾 [EntidadesContext] ${formasParsed.length} formas no localStorage, ${formasUnicas.length} únicas após deduplicação`,
         );
       } else {
         console.log(
@@ -404,8 +437,29 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   }, [getSetores]);
 
   const getTecnicos = useCallback(() => {
+    console.log("🔍 [EntidadesContext] getTecnicos called");
+    console.log("  - tecnicos state:", tecnicos?.length || 0, tecnicos);
+    console.log(
+      "  - funcionarios state:",
+      funcionarios?.length || 0,
+      funcionarios,
+    );
+    console.log(
+      "  - funcionariosDoContexto:",
+      funcionariosDoContexto?.length || 0,
+      funcionariosDoContexto,
+    );
+
+    // Use funcionariosDoContexto directly if it has data, fallback to local funcionarios
+    const sourceData =
+      funcionariosDoContexto && funcionariosDoContexto.length > 0
+        ? funcionariosDoContexto
+        : funcionarios;
+
+    console.log("  - Using source data:", sourceData?.length || 0);
+
     const tecnicosEspecificos = tecnicos || [];
-    const funcionariosTecnicos = (funcionarios || []).filter((func) => {
+    const funcionariosTecnicos = (sourceData || []).filter((func) => {
       if (func.ehTecnico) return true;
       const tipo = (func.tipoAcesso || "").toString();
       const tipoNormalized =
@@ -416,6 +470,12 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       return tipoNormalized === "tecnico";
     });
 
+    console.log(
+      "  - funcionariosTecnicos found:",
+      funcionariosTecnicos?.length || 0,
+      funcionariosTecnicos,
+    );
+
     const tecnicosCombinados = [...tecnicosEspecificos];
     funcionariosTecnicos.forEach((funcTecnico) => {
       if (!tecnicosCombinados.find((t) => t.id === funcTecnico.id)) {
@@ -423,18 +483,78 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
-  }, [funcionarios, tecnicos]);
+    const result = tecnicosCombinados.filter((t) => t.id && t.id !== 0);
+    console.log("  - final result:", result?.length || 0, result);
+
+    return result;
+  }, [funcionarios, tecnicos, funcionariosDoContexto]);
+
+  // === SINCRONIZAÇÃO DOS ESTADOS LEGADOS ===
+  // Sincronizar descrições e categorias legadas com a estrutura unificada
+  useEffect(() => {
+    if (Array.isArray(descricoesECategorias)) {
+      // Extrair descrições (tipoItem === "descricao")
+      const descricoesLegadas = descricoesECategorias
+        .filter((item) => item.tipoItem === "descricao" && item.ativo)
+        .map((item) => ({
+          id: item.id,
+          nome: item.nome,
+          tipo: item.tipo,
+          categoria: item.categoria,
+          ativo: item.ativo,
+          dataCriacao: item.dataCriacao,
+        }));
+
+      // Extrair categorias (tipoItem === "categoria")
+      const categoriasLegadas = descricoesECategorias
+        .filter((item) => item.tipoItem === "categoria" && item.ativo)
+        .map((item) => ({
+          id: item.id,
+          nome: item.nome,
+          tipo: item.tipo,
+          ativo: item.ativo,
+          dataCriacao: item.dataCriacao,
+        }));
+
+      setDescricoes(descricoesLegadas);
+      setCategorias(categoriasLegadas);
+
+      console.log(
+        `🔄 [EntidadesContext] Estados legados sincronizados: ${descricoesLegadas.length} descrições, ${categoriasLegadas.length} categorias`,
+      );
+    }
+  }, [descricoesECategorias]);
 
   // === SINCRONIZAÇÃO COM FUNCIONARIOS CONTEXT ===
   useEffect(() => {
+    console.log(
+      "🔄 [EntidadesContext] Sync effect triggered, funcionariosDoContexto:",
+      funcionariosDoContexto?.length || 0,
+    );
+
     if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
+      console.log(
+        "📋 [EntidadesContext] Funcionários do contexto:",
+        funcionariosDoContexto,
+      );
       setFuncionarios(funcionariosDoContexto);
 
       const tecnicosFiltrados = funcionariosDoContexto.filter((f) => {
-        return f.ehTecnico || f.tipoAcesso === "Técnico";
+        const isTechnician = f.ehTecnico || f.tipoAcesso === "Técnico";
+        console.log(
+          `  - ${f.nomeCompleto}: ehTecnico=${f.ehTecnico}, tipoAcesso=${f.tipoAcesso}, isTechnician=${isTechnician}`,
+        );
+        return isTechnician;
       });
       setTecnicos(tecnicosFiltrados);
+
+      console.log(
+        `🔄 [EntidadesContext] Funcionários sincronizados: ${funcionariosDoContexto.length} total, ${tecnicosFiltrados.length} técnicos`,
+      );
+      console.log(
+        "👥 [EntidadesContext] Técnicos encontrados:",
+        tecnicosFiltrados.map((t) => `${t.nomeCompleto} (ID: ${t.id})`),
+      );
 
       // Backup no localStorage
       try {
@@ -445,6 +565,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.warn("Erro ao salvar funcionários no localStorage:", error);
       }
+    } else {
+      console.log("⚠️ [EntidadesContext] Nenhum funcionário para sincronizar");
     }
   }, [funcionariosDoContexto]);
 
@@ -478,6 +600,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           setDescricoesECategorias([]);
         }
 
+        // Carregar descrições e categorias DA API
+        await recarregarDescricoesECategorias();
+
         // Carregar formas de pagamento DA API
         await carregarFormasPagamentoDaAPI();
 
@@ -498,7 +623,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           }
         } catch (fetchError) {
           console.warn(
-            "⚠️ [EntidadesContext] Erro de conexão ao buscar localizações:",
+            "���️ [EntidadesContext] Erro de conexão ao buscar localizações:",
             fetchError,
           );
           setLocalizacoesGeograficas([]);

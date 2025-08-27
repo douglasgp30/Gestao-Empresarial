@@ -100,6 +100,7 @@ export function ModalReceita() {
   const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(
     null,
   );
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   // Hook para formatação de moeda
   const valorInput = useCurrencyInput();
@@ -193,24 +194,33 @@ export function ModalReceita() {
     return valorQueEntrouCalculado - impostoCalculado;
   }, [valorQueEntrouCalculado, impostoCalculado]);
 
+  // Memoizar técnico selecionado para otimizar performance
+  const tecnicoSelecionado = React.useMemo(() => {
+    if (!formData.tecnicoResponsavel) return null;
+    return (
+      tecnicos.find((t) => t.id.toString() === formData.tecnicoResponsavel) ||
+      null
+    );
+  }, [formData.tecnicoResponsavel, tecnicos]);
+
   // Calcular comissão baseada no percentual do técnico
   const comissaoCalculada = React.useMemo(() => {
-    if (formData.tecnicoResponsavel) {
-      const tecnico = tecnicos.find(
-        (t) => t.id.toString() === formData.tecnicoResponsavel,
-      );
-
-      if (tecnico) {
-        // Usar percentualComissao ou percentualServico como fallback
-        const percentual =
-          tecnico.percentualComissao || tecnico.percentualServico || 0;
-        if (percentual > 0) {
-          return valorLiquidoCalculado * (percentual / 100);
-        }
-      }
+    if (!tecnicoSelecionado || valorLiquidoCalculado <= 0) {
+      return 0;
     }
-    return 0;
-  }, [formData.tecnicoResponsavel, tecnicos, valorLiquidoCalculado]);
+
+    // Usar percentualComissao ou percentualServico como fallback
+    const percentual =
+      tecnicoSelecionado.percentualComissao ||
+      tecnicoSelecionado.percentualServico ||
+      0;
+
+    if (percentual <= 0) {
+      return 0;
+    }
+
+    return valorLiquidoCalculado * (percentual / 100);
+  }, [tecnicoSelecionado, valorLiquidoCalculado]);
 
   // ✅ CORREÇÃO: Removido useEffect que causava piscar - valores calculados são mostrados apenas no resumo
 
@@ -298,6 +308,7 @@ export function ModalReceita() {
     });
     setNotaFiscalEmitida(false);
     setDataVencimentoBoleto(null);
+    setShowValidationErrors(false);
     valorInput.reset();
     valorRecebidoInput.reset();
   };
@@ -311,12 +322,17 @@ export function ModalReceita() {
       valorInput.numericValue <= 0 ||
       !formData.categoria ||
       !formData.descricao ||
-      !formData.formaPagamento
+      !formData.formaPagamento ||
+      !formData.tecnicoResponsavel ||
+      !formData.campanha ||
+      !formData.cidadeId ||
+      !formData.setorId
     ) {
+      setShowValidationErrors(true);
       toast({
         title: "Erro",
         description:
-          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição e Forma de Pagamento",
+          "Preencha todos os campos obrigatórios: Valor, Categoria, Descrição, Forma de Pagamento, Técnico Responsável, Campanha, Cidade e Setor",
         variant: "destructive",
       });
       return;
@@ -496,7 +512,7 @@ export function ModalReceita() {
               "❌ [ModalReceita] Erro ao fazer parse da resposta:",
               parseError,
             );
-            // Fornecer informaç��es mais detalhadas do erro
+            // Fornecer informações mais detalhadas do erro
             responseData = {
               error: "Erro ao processar resposta do servidor",
               details: parseError.message,
@@ -560,7 +576,7 @@ export function ModalReceita() {
       toast({
         title: "Sucesso",
         description: isBoleto
-          ? `Boleto registrado com sucesso! Receita lan��ada no Caixa e conta a receber criada automaticamente. Vencimento: ${dataVencimentoBoleto?.toLocaleDateString("pt-BR")}`
+          ? `Boleto registrado com sucesso! Receita lançada no Caixa e conta a receber criada automaticamente. Vencimento: ${dataVencimentoBoleto?.toLocaleDateString("pt-BR")}`
           : "Receita lançada com sucesso!",
         variant: "default",
       });
@@ -679,7 +695,7 @@ export function ModalReceita() {
                   <Input
                     id="valor"
                     {...valorInput.inputProps}
-                    required
+                    aria-required="true"
                     className="h-9 text-xs"
                   />
                 </div>
@@ -821,7 +837,7 @@ export function ModalReceita() {
                     htmlFor="tecnicoResponsavel"
                     className="text-xs font-medium"
                   >
-                    Técnico Responsável
+                    Técnico Responsável <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.tecnicoResponsavel}
@@ -831,23 +847,23 @@ export function ModalReceita() {
                         tecnicoResponsavel: value,
                       }))
                     }
+                    required
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger
+                      className={`h-9 ${showValidationErrors && !formData.tecnicoResponsavel ? "border-red-500" : ""}`}
+                    >
                       <SelectValue placeholder="Selecione o técnico" />
                     </SelectTrigger>
                     <SelectContent>
                       {tecnicos.length === 0 ? (
                         <div className="px-2 py-1 text-sm text-gray-500">
-                          <div className="font-medium">
+                          <div className="font-medium text-red-600">
                             Nenhum técnico encontrado
                           </div>
                           <div className="text-xs mt-1 space-y-1">
                             <div>1. Vá em "Funcionários" no menu</div>
                             <div>2. Cadastre um funcionário</div>
                             <div>3. Marque o tipo como "Técnico"</div>
-                            <div className="text-blue-600 mt-2">
-                              Campo opcional para este lançamento
-                            </div>
                           </div>
                         </div>
                       ) : (
@@ -884,15 +900,18 @@ export function ModalReceita() {
 
                 <div className="space-y-1">
                   <Label htmlFor="campanha" className="text-xs font-medium">
-                    Campanha
+                    Campanha <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.campanha}
                     onValueChange={(value) =>
                       setFormData((prev) => ({ ...prev, campanha: value }))
                     }
+                    required
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger
+                      className={`h-9 ${showValidationErrors && !formData.campanha ? "border-red-500" : ""}`}
+                    >
                       <SelectValue placeholder="Selecione a campanha" />
                     </SelectTrigger>
                     <SelectContent>
@@ -906,6 +925,11 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {showValidationErrors && !formData.campanha && (
+                    <p className="text-xs text-red-500">
+                      Campanha é obrigatória
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -913,7 +937,7 @@ export function ModalReceita() {
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <div className="space-y-1">
                   <Label htmlFor="cidade" className="text-xs font-medium">
-                    Cidade
+                    Cidade <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.cidadeId || ""}
@@ -928,8 +952,11 @@ export function ModalReceita() {
                         setorId: "", // Limpar ID do setor quando cidade muda
                       }))
                     }
+                    required
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger
+                      className={`h-9 ${showValidationErrors && !formData.cidadeId ? "border-red-500" : ""}`}
+                    >
                       <SelectValue placeholder="Selecione a cidade" />
                     </SelectTrigger>
                     <SelectContent>
@@ -943,11 +970,14 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {showValidationErrors && !formData.cidadeId && (
+                    <p className="text-xs text-red-500">Cidade é obrigatória</p>
+                  )}
                 </div>
 
                 <div className="space-y-1">
                   <Label htmlFor="setor" className="text-xs font-medium">
-                    Setor
+                    Setor <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.setorId || ""}
@@ -961,12 +991,16 @@ export function ModalReceita() {
                         setor: setorSelecionado?.id.toString() || "", // Usar ID para compatibilidade
                       }));
                     }}
+                    required
+                    disabled={!formData.cidadeId}
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger
+                      className={`h-9 ${showValidationErrors && !formData.setorId ? "border-red-500" : ""}`}
+                    >
                       <SelectValue
                         placeholder={
                           formData.cidadeId
-                            ? "Primeiro selecione uma cidade"
+                            ? "Selecione o setor"
                             : "Primeiro selecione uma cidade"
                         }
                       />
@@ -979,6 +1013,13 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {showValidationErrors &&
+                    !formData.setorId &&
+                    formData.cidadeId && (
+                      <p className="text-xs text-red-500">
+                        Setor é obrigatório
+                      </p>
+                    )}
                 </div>
               </div>
 

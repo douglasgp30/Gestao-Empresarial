@@ -7,11 +7,12 @@ export async function seedBasicData() {
     // 1. Criar formas de pagamento básicas
     const formasPagamento = [
       { nome: "Dinheiro" },
-      { nome: "PIX" },
-      { nome: "Cartão de Débito" },
-      { nome: "Cartão de Crédito" },
-      { nome: "Boleto Bancário" },
-      { nome: "Transferência Bancária" },
+      { nome: "Pix" },
+      { nome: "C/ Débito" },
+      { nome: "C/ Crédito" },
+      { nome: "Boleto" },
+      { nome: "Transferência" },
+      { nome: "Cheque" },
     ];
 
     for (const forma of formasPagamento) {

@@ -254,13 +254,18 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
     const inicializarFuncionarios = async () => {
       setIsLoading(true);
       try {
-        // Carregar apenas do localStorage para evitar piscar
-        carregarFuncionariosLocalStorage();
+        // Tentar carregar da API primeiro
+        await carregarFuncionarios();
         console.log(
-          "✅ [FuncionariosContext] Inicialização SEM carregamento automático da API",
+          "✅ [FuncionariosContext] Inicialização COM carregamento da API",
         );
       } catch (error) {
-        console.error("Erro ao inicializar funcionários:", error);
+        console.error(
+          "Erro ao inicializar funcionários da API, tentando localStorage:",
+          error,
+        );
+        // Se falhar, carregar do localStorage como fallback
+        carregarFuncionariosLocalStorage();
       } finally {
         setIsLoading(false);
       }
@@ -446,20 +451,37 @@ export function FuncionariosProvider({ children }: { children: ReactNode }) {
         id,
       );
 
-      const isLocalId = id.length > 10;
+      // Sempre tentar excluir via API primeiro
+      console.log("[FuncionariosContext] Tentando excluir funcionário via API");
 
-      if (isLocalId) {
+      // Convert ID to number for API call
+      const numericId = parseInt(id);
+      if (isNaN(numericId)) {
         console.log(
-          "[FuncionariosContext] Excluindo funcionário local (localStorage)",
+          "[FuncionariosContext] ID não numérico, excluindo apenas do localStorage",
         );
+        // Se o ID não é numérico, é um ID gerado localmente
         const funcionariosAtuais = carregarFuncionariosReais();
         const novosFuncionarios = funcionariosAtuais.filter((f) => f.id !== id);
         salvarFuncionariosNoLocalStorage(novosFuncionarios);
       } else {
-        console.log("[FuncionariosContext] Excluindo funcionário do servidor");
-        const response = await funcionariosApi.excluir(parseInt(id));
+        // Tentar excluir da API
+        const response = await funcionariosApi.excluir(numericId);
         if (response.error) {
-          throw new Error(response.error);
+          console.warn(
+            "[FuncionariosContext] Erro na API, tentando localStorage:",
+            response.error,
+          );
+          // Se falhar na API, tentar remover do localStorage
+          const funcionariosAtuais = carregarFuncionariosReais();
+          const novosFuncionarios = funcionariosAtuais.filter(
+            (f) => f.id !== id,
+          );
+          salvarFuncionariosNoLocalStorage(novosFuncionarios);
+        } else {
+          console.log(
+            "[FuncionariosContext] Funcionário excluído via API com sucesso",
+          );
         }
       }
 
