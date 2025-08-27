@@ -1046,6 +1046,7 @@ export default function Configuracoes() {
 
         <TabsContent value="debug" className="space-y-6">
           <DebugPrimeiroAcesso />
+          <DebugTecnicos />
         </TabsContent>
 
         <TabsContent value="localizacoes" className="space-y-6">
