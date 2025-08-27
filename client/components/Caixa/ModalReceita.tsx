@@ -646,7 +646,7 @@ export function ModalReceita() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-green-600 text-xl font-bold">
             <TrendingUp className="h-5 w-5" />
-            Lançar Receita
+            Lan��ar Receita
           </DialogTitle>
           <DialogDescription className="text-gray-600">
             Registre uma nova entrada no caixa
@@ -837,7 +837,7 @@ export function ModalReceita() {
                     }
                     required
                   >
-                    <SelectTrigger className={`h-9 ${!formData.tecnicoResponsavel ? "border-red-500" : ""}`}>
+                    <SelectTrigger className={`h-9 ${showValidationErrors && !formData.tecnicoResponsavel ? "border-red-500" : ""}`}>
                       <SelectValue placeholder="Selecione o técnico" />
                     </SelectTrigger>
                     <SelectContent>
