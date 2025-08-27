@@ -10,6 +10,7 @@ import { initBasicData } from "./routes/init-data";
 import { addTestUsers } from "./routes/add-test-users";
 import { cleanDuplicateFormasPagamento } from "./routes/clean-formas-pagamento";
 import { fixFormasPagamentoNames } from "./routes/fix-formas-pagamento-names";
+import { addLegitimateEmployeesRoute } from "./routes/add-legitimate-employees";
 
 // Importar rotas do banco de dados
 import {
@@ -408,6 +409,9 @@ export function createServer(): Express {
 
   // Correção dos nomes das formas de pagamento
   app.post("/api/fix/formas-pagamento-names", fixFormasPagamentoNames);
+
+  // Adicionar funcionários legítimos (Douglas e Marcelinho)
+  app.post("/api/add-legitimate-employees", addLegitimateEmployeesRoute);
 
   return app;
 }
