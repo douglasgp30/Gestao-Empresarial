@@ -506,17 +506,23 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
 
   // === SINCRONIZAÇÃO COM FUNCIONARIOS CONTEXT ===
   useEffect(() => {
+    console.log("🔄 [EntidadesContext] Sync effect triggered, funcionariosDoContexto:", funcionariosDoContexto?.length || 0);
+
     if (funcionariosDoContexto && funcionariosDoContexto.length > 0) {
+      console.log("📋 [EntidadesContext] Funcionários do contexto:", funcionariosDoContexto);
       setFuncionarios(funcionariosDoContexto);
 
       const tecnicosFiltrados = funcionariosDoContexto.filter((f) => {
-        return f.ehTecnico || f.tipoAcesso === "Técnico";
+        const isTechnician = f.ehTecnico || f.tipoAcesso === "Técnico";
+        console.log(`  - ${f.nomeCompleto}: ehTecnico=${f.ehTecnico}, tipoAcesso=${f.tipoAcesso}, isTechnician=${isTechnician}`);
+        return isTechnician;
       });
       setTecnicos(tecnicosFiltrados);
 
       console.log(
         `🔄 [EntidadesContext] Funcionários sincronizados: ${funcionariosDoContexto.length} total, ${tecnicosFiltrados.length} técnicos`,
       );
+      console.log("👥 [EntidadesContext] Técnicos encontrados:", tecnicosFiltrados.map(t => `${t.nomeCompleto} (ID: ${t.id})`));
 
       // Backup no localStorage
       try {
@@ -527,6 +533,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.warn("Erro ao salvar funcionários no localStorage:", error);
       }
+    } else {
+      console.log("⚠️ [EntidadesContext] Nenhum funcionário para sincronizar");
     }
   }, [funcionariosDoContexto]);
 
