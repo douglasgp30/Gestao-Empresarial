@@ -367,31 +367,7 @@ export default function FiltroDataCaixaSimples() {
                     <Input
                       type="date"
                       value={formatDateForInput(dataInicio)}
-                      onChange={(e) => {
-                        // Usar parseFloat e depois criar data local para evitar problemas de timezone
-                        const [ano, mes, dia] = e.target.value
-                          .split("-")
-                          .map(Number);
-                        const novaData = new Date(
-                          ano,
-                          mes - 1,
-                          dia,
-                          0,
-                          0,
-                          0,
-                          0,
-                        );
-                        console.log(
-                          "📅 Data início alterada:",
-                          e.target.value,
-                          "->",
-                          novaData,
-                        );
-                        setFiltros({
-                          ...filtros,
-                          dataInicio: novaData,
-                        });
-                      }}
+                      onChange={handleDataInicioChange}
                       className="h-8 text-xs"
                     />
                   </div>
