@@ -693,7 +693,7 @@ export function ModalReceita() {
                   <Input
                     id="valor"
                     {...valorInput.inputProps}
-                    required
+                    aria-required="true"
                     className="h-9 text-xs"
                   />
                 </div>
