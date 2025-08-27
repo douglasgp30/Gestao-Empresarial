@@ -111,7 +111,7 @@ export const useCurrencyInput = (initialValue: string = "") => {
       onKeyDown: handleKeyDown,
       placeholder: "R$ 0,00",
       inputMode: "numeric" as const,
-      pattern: "[0-9]*",
+      type: "text", // Usar text em vez de number para permitir formatação
       onFocus: (e: React.FocusEvent<HTMLInputElement>) =>
         e.currentTarget.select(),
     },
