@@ -682,7 +682,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 id="valor"
                 {...valorInput.inputProps}
                 placeholder="R$ 0,00"
-                required
+                aria-required="true"
               />
             </div>
           </div>
