@@ -110,7 +110,7 @@ export function ResumoCorrecaoNomes() {
         <div className="p-3 bg-blue-50 border border-blue-200 rounded">
           <h4 className="font-medium text-blue-800 mb-1">📋 Nomes Finais Padronizados:</h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-blue-700">
-            {["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência"].map((nome, index) => (
+            {["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência", "Cheque"].map((nome, index) => (
               <div key={index} className="flex items-center gap-2 p-2 bg-white rounded">
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                 <span className="font-medium">{nome}</span>
@@ -125,7 +125,7 @@ export function ResumoCorrecaoNomes() {
           <div className="text-sm text-yellow-700 space-y-1">
             <div>1. <strong>Filtros Avançados:</strong> Caixa → Filtros Avançados → Campo "Forma Pagamento"</div>
             <div>2. <strong>Formulário de Lançamento:</strong> Caixa → Lançar Receita → Campo "Forma de Pagamento"</div>
-            <div>3. <strong>Comparar:</strong> Ambos devem mostrar exatamente os mesmos 6 nomes</div>
+            <div>3. <strong>Comparar:</strong> Ambos devem mostrar exatamente os mesmos 7 nomes</div>
             <div>4. <strong>Testar Filtro:</strong> Selecionar uma forma e verificar se a busca funciona</div>
           </div>
         </div>
