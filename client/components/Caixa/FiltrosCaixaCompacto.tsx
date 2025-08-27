@@ -212,7 +212,7 @@ export function FiltrosCaixaCompacto() {
                   onValueChange={handleFieldChange("tipo")}
                 >
                   <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
+                    <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
@@ -295,7 +295,7 @@ export function FiltrosCaixaCompacto() {
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todas" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
@@ -322,7 +322,7 @@ export function FiltrosCaixaCompacto() {
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todos" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
@@ -351,7 +351,7 @@ export function FiltrosCaixaCompacto() {
                         disabled={isLoading}
                       >
                         <SelectTrigger className="h-8 text-xs bg-white">
-                          <SelectValue />
+                          <SelectValue placeholder="Todas" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
