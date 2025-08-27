@@ -821,7 +821,7 @@ export function ModalReceita() {
                     htmlFor="tecnicoResponsavel"
                     className="text-xs font-medium"
                   >
-                    Técnico Responsável
+                    Técnico Responsável <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.tecnicoResponsavel}
@@ -831,23 +831,21 @@ export function ModalReceita() {
                         tecnicoResponsavel: value,
                       }))
                     }
+                    required
                   >
-                    <SelectTrigger className="h-9">
+                    <SelectTrigger className={`h-9 ${!formData.tecnicoResponsavel ? "border-red-500" : ""}`}>
                       <SelectValue placeholder="Selecione o técnico" />
                     </SelectTrigger>
                     <SelectContent>
                       {tecnicos.length === 0 ? (
                         <div className="px-2 py-1 text-sm text-gray-500">
-                          <div className="font-medium">
+                          <div className="font-medium text-red-600">
                             Nenhum técnico encontrado
                           </div>
                           <div className="text-xs mt-1 space-y-1">
                             <div>1. Vá em "Funcionários" no menu</div>
                             <div>2. Cadastre um funcionário</div>
                             <div>3. Marque o tipo como "Técnico"</div>
-                            <div className="text-blue-600 mt-2">
-                              Campo opcional para este lançamento
-                            </div>
                           </div>
                         </div>
                       ) : (
