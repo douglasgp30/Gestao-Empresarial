@@ -41,6 +41,7 @@ import { ResumoCorrecoesFiltros } from "../components/Debug/ResumoCorrecoesFiltr
 import { ResumoCorrecoesDuplicatas } from "../components/Debug/ResumoCorrecoesDuplicatas";
 import { VerificarFormasPagamento } from "../components/Debug/VerificarFormasPagamento";
 import { VerificarConsistenciaNomes } from "../components/Debug/VerificarConsistenciaNomes";
+import { ResumoCorrecaoNomes } from "../components/Debug/ResumoCorrecaoNomes";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
@@ -1057,6 +1058,7 @@ export default function Configuracoes() {
         <TabsContent value="debug" className="space-y-6">
           <DebugPrimeiroAcesso />
           <DebugTecnicos />
+          <ResumoCorrecaoNomes />
           <VerificarConsistenciaNomes />
           <ResumoCorrecoesDuplicatas />
           <VerificarFormasPagamento />
