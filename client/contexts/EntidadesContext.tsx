@@ -543,6 +543,9 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           setDescricoesECategorias([]);
         }
 
+        // Carregar descrições e categorias DA API
+        await recarregarDescricoesECategorias();
+
         // Carregar formas de pagamento DA API
         await carregarFormasPagamentoDaAPI();
 
@@ -563,7 +566,7 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
           }
         } catch (fetchError) {
           console.warn(
-            "⚠️ [EntidadesContext] Erro de conexão ao buscar localizações:",
+            "���️ [EntidadesContext] Erro de conexão ao buscar localizações:",
             fetchError,
           );
           setLocalizacoesGeograficas([]);
