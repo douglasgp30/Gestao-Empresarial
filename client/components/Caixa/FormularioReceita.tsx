@@ -946,40 +946,68 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             />
           </div>
 
-          {/* Setor/Região (que inclui cidade) */}
-          <SelectWithAdd
-            value={formData.setor}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, setor: value }))
-            }
-            placeholder="Selecione o setor"
-            label="Setor/Região"
-            required={false}
-            items={setores}
-            onAddNew={async (data) => {
-              await adicionarSetor({
-                nome: data.nome,
-                cidade: data.cidade,
-              });
-            }}
-            addNewTitle="Novo Setor/Região"
-            addNewDescription="Adicione um novo setor ou região."
-            addNewFields={[
-              {
-                key: "nome",
-                label: "Nome do Setor",
-                required: true,
-              },
-              {
-                key: "cidade",
-                label: "Cidade",
-                required: true,
-              },
-            ]}
-            renderItem={(setor) =>
-              `${setor.nome} - ${typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade}`
-            }
-          />
+          {/* Cidade e Setor - agora separados e obrigatórios */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="cidade">Cidade <span className="text-red-500">*</span></Label>
+              <Select
+                value={formData.cidade}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, cidade: value, setor: "" }))
+                }
+                required
+              >
+                <SelectTrigger className={!formData.cidade ? "border-red-500" : ""}>
+                  <SelectValue placeholder="Selecione a cidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cidades.map((cidade) => (
+                    <SelectItem key={cidade} value={cidade}>
+                      {cidade}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!formData.cidade && (
+                <p className="text-xs text-red-500">
+                  Cidade é obrigatória
+                </p>
+              )}
+            </div>
+
+            <SelectWithAdd
+              value={formData.setor}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, setor: value }))
+              }
+              placeholder={formData.cidade ? "Selecione o setor" : "Primeiro selecione uma cidade"}
+              label="Setor <span className='text-red-500'>*</span>"
+              required={true}
+              disabled={!formData.cidade}
+              items={setores.filter(setor =>
+                !formData.cidade ||
+                (typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade) === formData.cidade
+              )}
+              onAddNew={async (data) => {
+                await adicionarSetor({
+                  nome: data.nome,
+                  cidade: formData.cidade,
+                });
+              }}
+              addNewTitle="Novo Setor/Região"
+              addNewDescription="Adicione um novo setor ou região."
+              addNewFields={[
+                {
+                  key: "nome",
+                  label: "Nome do Setor",
+                  required: true,
+                },
+              ]}
+              renderItem={(setor) =>
+                `${setor.nome} - ${typeof setor.cidade === "object" ? setor.cidade?.nome : setor.cidade}`
+              }
+            />
+          </div>
 
           {/* Cliente */}
           <div className="space-y-2">
