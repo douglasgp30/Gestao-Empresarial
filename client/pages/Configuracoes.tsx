@@ -43,6 +43,7 @@ import { VerificarFormasPagamento } from "../components/Debug/VerificarFormasPag
 import { VerificarConsistenciaNomes } from "../components/Debug/VerificarConsistenciaNomes";
 import { ResumoCorrecaoNomes } from "../components/Debug/ResumoCorrecaoNomes";
 import { VerificarTecnicosCategorisDescricoes } from "../components/Debug/VerificarTecnicosCategorisDescricoes";
+import { LimparLocalStorage } from "../components/Debug/LimparLocalStorage";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
