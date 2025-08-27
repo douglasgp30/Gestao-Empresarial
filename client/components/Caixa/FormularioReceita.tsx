@@ -876,7 +876,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 }
                 required
               >
-                <SelectTrigger className={!formData.tecnicoResponsavel ? "border-red-500" : ""}>
+                <SelectTrigger className={showValidationErrors && !formData.tecnicoResponsavel ? "border-red-500" : ""}>
                   <SelectValue placeholder="Selecione o técnico" />
                 </SelectTrigger>
                 <SelectContent>
