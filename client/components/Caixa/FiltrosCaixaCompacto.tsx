@@ -44,6 +44,15 @@ export function FiltrosCaixaCompacto() {
 
   const { clientes, isLoading: clientesLoading } = useClientes();
 
+  // Debug dos dados carregados
+  useEffect(() => {
+    console.log("🔍 [FiltrosCaixaCompacto] Debug dos dados:");
+    console.log("  - Campanhas:", campanhas?.length || 0, campanhas);
+    console.log("  - Formas Pagamento:", formasPagamento?.length || 0, formasPagamento);
+    console.log("  - Técnicos:", tecnicos?.length || 0, tecnicos);
+    console.log("  - Clientes:", clientes?.length || 0, clientes);
+  }, [campanhas, formasPagamento, tecnicos, clientes]);
+
   const [filtrosLocal, setFiltrosLocal] = useState(filtros);
   const [filtrosAvancadosAbertos, setFiltrosAvancadosAbertos] = useState(false);
 
@@ -302,7 +311,7 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todas">Todas</SelectItem>
-                          {formasPagamento.map((forma) => (
+                          {(Array.isArray(formasPagamento) ? formasPagamento : []).map((forma) => (
                             <SelectItem
                               key={forma.id}
                               value={forma.id.toString()}
@@ -478,7 +487,7 @@ export function FiltrosCaixaCompacto() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="todos">Todos</SelectItem>
-                          {clientes.map((cliente) => (
+                          {(Array.isArray(clientes) ? clientes : []).map((cliente) => (
                             <SelectItem
                               key={cliente.id}
                               value={cliente.id.toString()}
