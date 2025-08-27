@@ -429,8 +429,20 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
   }, [getSetores]);
 
   const getTecnicos = useCallback(() => {
+    console.log("🔍 [EntidadesContext] getTecnicos called");
+    console.log("  - tecnicos state:", tecnicos?.length || 0, tecnicos);
+    console.log("  - funcionarios state:", funcionarios?.length || 0, funcionarios);
+    console.log("  - funcionariosDoContexto:", funcionariosDoContexto?.length || 0, funcionariosDoContexto);
+
+    // Use funcionariosDoContexto directly if it has data, fallback to local funcionarios
+    const sourceData = (funcionariosDoContexto && funcionariosDoContexto.length > 0)
+      ? funcionariosDoContexto
+      : funcionarios;
+
+    console.log("  - Using source data:", sourceData?.length || 0);
+
     const tecnicosEspecificos = tecnicos || [];
-    const funcionariosTecnicos = (funcionarios || []).filter((func) => {
+    const funcionariosTecnicos = (sourceData || []).filter((func) => {
       if (func.ehTecnico) return true;
       const tipo = (func.tipoAcesso || "").toString();
       const tipoNormalized =
@@ -441,6 +453,8 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       return tipoNormalized === "tecnico";
     });
 
+    console.log("  - funcionariosTecnicos found:", funcionariosTecnicos?.length || 0, funcionariosTecnicos);
+
     const tecnicosCombinados = [...tecnicosEspecificos];
     funcionariosTecnicos.forEach((funcTecnico) => {
       if (!tecnicosCombinados.find((t) => t.id === funcTecnico.id)) {
@@ -448,8 +462,11 @@ export function EntidadesProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return tecnicosCombinados.filter((t) => t.id && t.id !== 0);
-  }, [funcionarios, tecnicos]);
+    const result = tecnicosCombinados.filter((t) => t.id && t.id !== 0);
+    console.log("  - final result:", result?.length || 0, result);
+
+    return result;
+  }, [funcionarios, tecnicos, funcionariosDoContexto]);
 
   // === SINCRONIZAÇÃO DOS ESTADOS LEGADOS ===
   // Sincronizar descrições e categorias legadas com a estrutura unificada
