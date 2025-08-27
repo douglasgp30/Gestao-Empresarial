@@ -42,6 +42,7 @@ import { ResumoCorrecoesDuplicatas } from "../components/Debug/ResumoCorrecoesDu
 import { VerificarFormasPagamento } from "../components/Debug/VerificarFormasPagamento";
 import { VerificarConsistenciaNomes } from "../components/Debug/VerificarConsistenciaNomes";
 import { ResumoCorrecaoNomes } from "../components/Debug/ResumoCorrecaoNomes";
+import { VerificarTecnicosCategorisDescricoes } from "../components/Debug/VerificarTecnicosCategorisDescricoes";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
