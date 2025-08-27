@@ -40,6 +40,7 @@ import { VerificacaoFinalFiltros } from "../components/Debug/VerificacaoFinalFil
 import { ResumoCorrecoesFiltros } from "../components/Debug/ResumoCorrecoesFiltros";
 import { ResumoCorrecoesDuplicatas } from "../components/Debug/ResumoCorrecoesDuplicatas";
 import { VerificarFormasPagamento } from "../components/Debug/VerificarFormasPagamento";
+import { VerificarConsistenciaNomes } from "../components/Debug/VerificarConsistenciaNomes";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
@@ -587,7 +588,7 @@ export default function Configuracoes() {
         <TabsContent value="usuarios" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Configurações de Usu��rios</CardTitle>
+              <CardTitle>Configurações de Usuários</CardTitle>
               <CardDescription>
                 Configurações relacionadas a funcionários e permissões
               </CardDescription>
@@ -1056,6 +1057,7 @@ export default function Configuracoes() {
         <TabsContent value="debug" className="space-y-6">
           <DebugPrimeiroAcesso />
           <DebugTecnicos />
+          <VerificarConsistenciaNomes />
           <ResumoCorrecoesDuplicatas />
           <VerificarFormasPagamento />
           <ResumoCorrecoesFiltros />
