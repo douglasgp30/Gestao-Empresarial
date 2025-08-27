@@ -228,25 +228,32 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
 
   // Calcular comissão baseada no percentual do técnico sobre o valor líquido
   const comissaoCalculada = React.useMemo(() => {
-    if (formData.tecnicoResponsavel && valorLiquidoCalculado > 0) {
-      const tecnico = tecnicos.find(
-        (t) => t.id.toString() === formData.tecnicoResponsavel,
-      );
-      if (tecnico) {
-        // Usar percentualComissao ou percentualServico como fallback
-        const percentual =
-          tecnico.percentualComissao || tecnico.percentualServico || 0;
-        if (percentual > 0) {
-          const comissao = valorLiquidoCalculado * (percentual / 100);
-          return comissao;
-        }
-      }
+    if (!formData.tecnicoResponsavel || valorLiquidoCalculado <= 0) {
+      return 0;
     }
-    return 0;
+
+    const tecnico = tecnicos.find(
+      (t) => t.id.toString() === formData.tecnicoResponsavel,
+    );
+
+    if (!tecnico) {
+      return 0;
+    }
+
+    // Usar percentualComissao ou percentualServico como fallback
+    const percentual =
+      tecnico.percentualComissao || tecnico.percentualServico || 0;
+
+    if (percentual <= 0) {
+      return 0;
+    }
+
+    return valorLiquidoCalculado * (percentual / 100);
   }, [
     formData.tecnicoResponsavel,
     valorLiquidoCalculado,
-    tecnicos, // Usar array diretamente para maior estabilidade
+    // Não incluir tecnicos para evitar re-renderizações excessivas
+    // O técnico específico será buscado internamente quando necessário
   ]);
 
   // Valor final para a empresa = valor líquido - comissão do técnico
