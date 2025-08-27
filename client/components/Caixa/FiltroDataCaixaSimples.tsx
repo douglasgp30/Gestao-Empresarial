@@ -63,25 +63,26 @@ export default function FiltroDataCaixaSimples() {
     }
   }, [filtros?.dataInicio, filtros?.dataFim, setFiltros]);
 
-  // Fechar dropdown ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+  // Handler otimizado para click outside
+  const handleClickOutside = React.useCallback((event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen(false);
     }
+  }, []);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
+  // Fechar dropdown ao clicar fora - otimizado
+  useEffect(() => {
+    if (isOpen) {
+      // Usar passive: true para melhor performance
+      document.addEventListener("mousedown", handleClickOutside, { passive: true });
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [isOpen, handleClickOutside]);
 
   // Função para formatar data para input com validação
   const formatDateForInput = (date: Date | null | undefined): string => {
