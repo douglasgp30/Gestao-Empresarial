@@ -230,7 +230,7 @@ export function VerificarConsistenciaNomes() {
             <h4 className="font-medium text-green-800 mb-1">✅ Verificação Completa:</h4>
             <div className="text-sm text-green-700 space-y-1">
               <div>• Tela de Lançamento e Filtros Avançados mostram os mesmos nomes</div>
-              <div>• Todos os 6 nomes estão corretos conforme especificado</div>
+              <div>• Todos os 7 nomes estão corretos conforme especificado</div>
               <div>• API e Contexto estão sincronizados</div>
               <div>• Filtragem deve funcionar corretamente</div>
             </div>
