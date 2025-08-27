@@ -100,6 +100,7 @@ export function ModalReceita() {
   const [dataVencimentoBoleto, setDataVencimentoBoleto] = useState<Date | null>(
     null,
   );
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   // Hook para formatação de moeda
   const valorInput = useCurrencyInput();
