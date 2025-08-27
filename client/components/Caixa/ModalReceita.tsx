@@ -299,6 +299,7 @@ export function ModalReceita() {
     });
     setNotaFiscalEmitida(false);
     setDataVencimentoBoleto(null);
+    setShowValidationErrors(false);
     valorInput.reset();
     valorRecebidoInput.reset();
   };
