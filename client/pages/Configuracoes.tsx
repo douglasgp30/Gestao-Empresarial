@@ -35,6 +35,7 @@ import { DebugFormularioReceita } from "../components/Debug/DebugFormularioRecei
 import { DebugPerformanceFiltros } from "../components/Debug/DebugPerformanceFiltros";
 import { DebugMigracaoCaixa } from "../components/Debug/DebugMigracaoCaixa";
 import { DebugDadosFiltros } from "../components/Debug/DebugDadosFiltros";
+import { TesteDadosFiltros } from "../components/Debug/TesteDadosFiltros";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
   Settings,
@@ -190,7 +191,7 @@ export default function Configuracoes() {
       localStorage.setItem("userConfigs", JSON.stringify(configsToSave));
       console.log("✅ [Configurações] Configurações salvas com sucesso");
     } catch (error) {
-      console.error("❌ [Configurações] Erro ao salvar configurações:", error);
+      console.error("❌ [Configura��ões] Erro ao salvar configurações:", error);
     }
 
     setSavedMessage(true);
@@ -978,7 +979,7 @@ export default function Configuracoes() {
                         Recomendações
                       </h4>
                       <ul className="text-sm text-yellow-700 mt-1 space-y-1">
-                        <li>��� Execute backups regularmente</li>
+                        <li>• Execute backups regularmente</li>
                         <li>• Mantenha backups em local seguro</li>
                         <li>• Teste a restauração periodicamente</li>
                         <li>• Considere backups em mídia externa</li>
@@ -1054,6 +1055,7 @@ export default function Configuracoes() {
           <DebugFormularioReceita />
           <DebugPerformanceFiltros />
           <DebugMigracaoCaixa />
+          <TesteDadosFiltros />
           <DebugDadosFiltros />
         </TabsContent>
 
