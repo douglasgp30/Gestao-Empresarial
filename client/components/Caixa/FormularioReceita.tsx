@@ -544,7 +544,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
             );
 
             toast({
-              title: "Aten��ão",
+              title: "Atenção",
               description:
                 "Receita lançada no Caixa, mas houve erro ao criar conta a receber automaticamente. Verifique o módulo Contas.",
               variant: "destructive",
@@ -917,7 +917,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   )}
                 </SelectContent>
               </Select>
-              {!formData.tecnicoResponsavel && (
+              {showValidationErrors && !formData.tecnicoResponsavel && (
                 <p className="text-xs text-red-500">
                   Técnico responsável é obrigatório
                 </p>
