@@ -648,7 +648,7 @@ export function ModalReceita() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-green-600 text-xl font-bold">
             <TrendingUp className="h-5 w-5" />
-            Lan��ar Receita
+            Lançar Receita
           </DialogTitle>
           <DialogDescription className="text-gray-600">
             Registre uma nova entrada no caixa
