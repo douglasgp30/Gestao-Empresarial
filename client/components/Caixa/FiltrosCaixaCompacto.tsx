@@ -141,9 +141,30 @@ export function FiltrosCaixaCompacto() {
   );
 
   const limparFiltros = useCallback(() => {
+    // Usar apenas o dia de hoje quando limpar filtros
+    const agora = new Date();
+    const inicioHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const fimHoje = new Date(
+      agora.getFullYear(),
+      agora.getMonth(),
+      agora.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
+
     const filtrosLimpos = {
-      dataInicio: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-      dataFim: new Date(),
+      dataInicio: inicioHoje,
+      dataFim: fimHoje,
       tipo: "todos" as const,
       formaPagamento: "todas",
       tecnico: "todos",
