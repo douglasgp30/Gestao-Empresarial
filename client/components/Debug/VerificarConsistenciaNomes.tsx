@@ -11,7 +11,7 @@ export function VerificarConsistenciaNomes() {
 
   const { formasPagamento } = useEntidades();
 
-  const nomesCorretos = ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência"];
+  const nomesCorretos = ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência", "Cheque"];
 
   const buscarFormasAPI = async () => {
     setLoading(true);
