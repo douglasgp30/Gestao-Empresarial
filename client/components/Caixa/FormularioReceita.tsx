@@ -932,8 +932,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                 setFormData((prev) => ({ ...prev, campanha: value }))
               }
               placeholder="Selecione a campanha"
-              label="Campanha"
-              required={false}
+              label="Campanha *"
+              required={true}
               items={campanhas}
               renderItem={(item) => item.nome}
               onAddNew={async (data) => {
@@ -1296,7 +1296,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <div className={isCartao ? "bg-yellow-100 p-2 rounded" : ""}>
                     <span className="text-gray-600">
                       {isCartao
-                        ? "💳 Valor Recebido (após taxas):"
+                        ? "💳 Valor Recebido (ap��s taxas):"
                         : "Valor Recebido:"}
                     </span>
                     <div
