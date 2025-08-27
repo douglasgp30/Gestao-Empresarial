@@ -38,15 +38,13 @@ export async function addCheque() {
   }
 }
 
-// Executar se chamado diretamente
-if (require.main === module) {
-  addCheque()
-    .then(() => {
-      console.log("🎉 Script concluído!");
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error("💥 Erro no script:", error);
-      process.exit(1);
-    });
-}
+// Executar diretamente
+addCheque()
+  .then(() => {
+    console.log("🎉 Script concluído!");
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error("💥 Erro no script:", error);
+    process.exit(1);
+  });
