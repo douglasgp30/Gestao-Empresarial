@@ -160,7 +160,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
     carregarDescricoes();
   }, [formData.categoria]);
 
-  // Verificar se forma de pagamento é cartão - memoização estabilizada
+  // Verificar se forma de pagamento é cartão - memoizaç��o estabilizada
   const isCartao = useMemo(() => {
     if (!formData.formaPagamento || formasPagamento.length === 0) {
       return false;
@@ -291,6 +291,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
       descricao: formData.descricao,
       formaPagamento: formData.formaPagamento,
       tecnicoResponsavel: formData.tecnicoResponsavel,
+      campanha: formData.campanha,
       cidade: formData.cidade,
       setor: formData.setor,
     };
@@ -305,6 +306,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           descricao: "Descrição",
           formaPagamento: "Forma de Pagamento",
           tecnicoResponsavel: "Técnico Responsável",
+          campanha: "Campanha",
           cidade: "Cidade",
           setor: "Setor",
         };
@@ -1296,7 +1298,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   <div className={isCartao ? "bg-yellow-100 p-2 rounded" : ""}>
                     <span className="text-gray-600">
                       {isCartao
-                        ? "💳 Valor Recebido (ap��s taxas):"
+                        ? "💳 Valor Recebido (após taxas):"
                         : "Valor Recebido:"}
                     </span>
                     <div
