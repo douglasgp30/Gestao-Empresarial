@@ -67,10 +67,8 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
   const valorQueEntrouInput = useCurrencyInput();
   const impostoInput = useCurrencyInput();
 
-  // Carregar técnicos com memoização estabilizada - sem dependência para evitar re-renders
-  const tecnicos = useMemo(() => {
-    return getTecnicos();
-  }, []); // Remover dependência instável que causa re-renders desnecessários
+  // Carregar técnicos - atualiza quando a lista de funcionários muda
+  const tecnicos = getTecnicos();
 
   const [formData, setFormData] = useState({
     data: new Date().toISOString().split("T")[0],
@@ -889,7 +887,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                       <div className="text-xs mt-1 space-y-1">
                         <div>1. Vá em "Funcionários" no menu</div>
                         <div>2. Cadastre um funcionário</div>
-                        <div>3. Marque o tipo como "T��cnico"</div>
+                        <div>3. Marque o tipo como "Técnico"</div>
                       </div>
                     </div>
                   ) : (
