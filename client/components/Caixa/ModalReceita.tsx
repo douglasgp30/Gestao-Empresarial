@@ -577,7 +577,7 @@ export function ModalReceita() {
       // Aguardar um pouco para garantir que o contexto seja atualizado
       setTimeout(() => {
         console.log(
-          "�� [ModalReceita] Modal fechado, contexto deve estar atualizado",
+          "✅ [ModalReceita] Modal fechado, contexto deve estar atualizado",
         );
       }, 500);
 
