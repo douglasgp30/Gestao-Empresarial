@@ -139,7 +139,7 @@ export const fixFormasPagamentoNames: RequestHandler = async (req, res) => {
         aSerAtualizadas: aSerAtualizadas.length,
         total: formasAtuais.length,
         resultados,
-        nomesEsperados: ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência"]
+        nomesEsperados: ["Pix", "Boleto", "Dinheiro", "C/ Débito", "C/ Crédito", "Transferência", "Cheque"]
       });
     }
   } catch (error) {
