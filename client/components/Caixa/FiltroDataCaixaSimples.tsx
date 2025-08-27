@@ -288,6 +288,14 @@ export default function FiltroDataCaixaSimples() {
     });
   }, [filtros, setFiltros]);
 
+  // Handlers específicos para cada período para evitar funções inline
+  const handleHoje = React.useCallback(() => aplicarPeriodo("hoje"), [aplicarPeriodo]);
+  const handleOntem = React.useCallback(() => aplicarPeriodo("ontem"), [aplicarPeriodo]);
+  const handleEstaSemana = React.useCallback(() => aplicarPeriodo("esta-semana"), [aplicarPeriodo]);
+  const handle7Dias = React.useCallback(() => aplicarPeriodo("7-dias"), [aplicarPeriodo]);
+  const handleEsteMes = React.useCallback(() => aplicarPeriodo("este-mes"), [aplicarPeriodo]);
+  const handle30Dias = React.useCallback(() => aplicarPeriodo("30-dias"), [aplicarPeriodo]);
+
   // Garantir que as datas existem, senão usar valores padrão
   const dataInicio = filtros?.dataInicio || new Date();
   const dataFim = filtros?.dataFim || new Date();
