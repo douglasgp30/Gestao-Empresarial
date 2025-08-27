@@ -566,7 +566,7 @@ export function ModalReceita() {
       toast({
         title: "Sucesso",
         description: isBoleto
-          ? `Boleto registrado com sucesso! Receita lan��ada no Caixa e conta a receber criada automaticamente. Vencimento: ${dataVencimentoBoleto?.toLocaleDateString("pt-BR")}`
+          ? `Boleto registrado com sucesso! Receita lançada no Caixa e conta a receber criada automaticamente. Vencimento: ${dataVencimentoBoleto?.toLocaleDateString("pt-BR")}`
           : "Receita lançada com sucesso!",
         variant: "default",
       });
