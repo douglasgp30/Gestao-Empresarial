@@ -38,6 +38,7 @@ import { DebugDadosFiltros } from "../components/Debug/DebugDadosFiltros";
 import { TesteDadosFiltros } from "../components/Debug/TesteDadosFiltros";
 import { VerificacaoFinalFiltros } from "../components/Debug/VerificacaoFinalFiltros";
 import { ResumoCorrecoesFiltros } from "../components/Debug/ResumoCorrecoesFiltros";
+import { ResumoCorrecoesDuplicatas } from "../components/Debug/ResumoCorrecoesDuplicatas";
 import { VerificarFormasPagamento } from "../components/Debug/VerificarFormasPagamento";
 import { GerenciadorCidadesSetores } from "../components/Caixa/GerenciadorCidadesSetores";
 import {
@@ -586,7 +587,7 @@ export default function Configuracoes() {
         <TabsContent value="usuarios" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Configurações de Usuários</CardTitle>
+              <CardTitle>Configurações de Usu��rios</CardTitle>
               <CardDescription>
                 Configurações relacionadas a funcionários e permissões
               </CardDescription>
@@ -1055,8 +1056,9 @@ export default function Configuracoes() {
         <TabsContent value="debug" className="space-y-6">
           <DebugPrimeiroAcesso />
           <DebugTecnicos />
-          <ResumoCorrecoesFiltros />
+          <ResumoCorrecoesDuplicatas />
           <VerificarFormasPagamento />
+          <ResumoCorrecoesFiltros />
           <VerificacaoFinalFiltros />
           <TesteDadosFiltros />
           <DebugFormularioReceita />
