@@ -172,8 +172,10 @@ export const migrarLancamentosParaBanco = async () => {
         localStorage.removeItem("lancamentos_caixa");
         console.log("🧹 localStorage limpo após migração bem-sucedida");
 
-        // Recarregar a página para buscar dados do banco
-        window.location.reload();
+        // Marcar migração como verificada
+        localStorage.setItem("migracao_caixa_verificada", "true");
+
+        console.log("✅ Migração concluída. Usuário deve recarregar a página manualmente para ver os dados migrados.");
       }
     }
 
