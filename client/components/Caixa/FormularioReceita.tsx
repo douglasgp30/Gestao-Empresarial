@@ -860,7 +860,7 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
           {/* Técnico e Campanha na mesma linha */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tecnicoResponsavel">T��cnico Responsável</Label>
+              <Label htmlFor="tecnicoResponsavel">Técnico Responsável <span className="text-red-500">*</span></Label>
               <Select
                 value={formData.tecnicoResponsavel}
                 onValueChange={(value) =>
@@ -869,14 +869,22 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                     tecnicoResponsavel: value,
                   }))
                 }
+                required
               >
-                <SelectTrigger>
+                <SelectTrigger className={!formData.tecnicoResponsavel ? "border-red-500" : ""}>
                   <SelectValue placeholder="Selecione o técnico" />
                 </SelectTrigger>
                 <SelectContent>
                   {tecnicos.length === 0 ? (
                     <div className="px-2 py-1 text-sm text-gray-500">
-                      Nenhum técnico cadastrado
+                      <div className="font-medium text-red-600">
+                        Nenhum técnico encontrado
+                      </div>
+                      <div className="text-xs mt-1 space-y-1">
+                        <div>1. Vá em "Funcionários" no menu</div>
+                        <div>2. Cadastre um funcionário</div>
+                        <div>3. Marque o tipo como "Técnico"</div>
+                      </div>
                     </div>
                   ) : (
                     tecnicos
@@ -904,6 +912,11 @@ export function FormularioReceita({ onSuccess }: FormularioReceitaProps) {
                   )}
                 </SelectContent>
               </Select>
+              {!formData.tecnicoResponsavel && (
+                <p className="text-xs text-red-500">
+                  Técnico responsável é obrigatório
+                </p>
+              )}
             </div>
 
             <SelectWithAdd
