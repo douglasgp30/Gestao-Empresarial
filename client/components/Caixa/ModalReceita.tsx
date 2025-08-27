@@ -194,24 +194,31 @@ export function ModalReceita() {
     return valorQueEntrouCalculado - impostoCalculado;
   }, [valorQueEntrouCalculado, impostoCalculado]);
 
+  // Memoizar técnico selecionado para otimizar performance
+  const tecnicoSelecionado = React.useMemo(() => {
+    if (!formData.tecnicoResponsavel) return null;
+    return tecnicos.find(
+      (t) => t.id.toString() === formData.tecnicoResponsavel,
+    ) || null;
+  }, [formData.tecnicoResponsavel, tecnicos]);
+
   // Calcular comissão baseada no percentual do técnico
   const comissaoCalculada = React.useMemo(() => {
-    if (formData.tecnicoResponsavel) {
-      const tecnico = tecnicos.find(
-        (t) => t.id.toString() === formData.tecnicoResponsavel,
-      );
-
-      if (tecnico) {
-        // Usar percentualComissao ou percentualServico como fallback
-        const percentual =
-          tecnico.percentualComissao || tecnico.percentualServico || 0;
-        if (percentual > 0) {
-          return valorLiquidoCalculado * (percentual / 100);
-        }
-      }
+    if (!tecnicoSelecionado || valorLiquidoCalculado <= 0) {
+      return 0;
     }
-    return 0;
-  }, [formData.tecnicoResponsavel, tecnicos, valorLiquidoCalculado]);
+
+    // Usar percentualComissao ou percentualServico como fallback
+    const percentual =
+      tecnicoSelecionado.percentualComissao ||
+      tecnicoSelecionado.percentualServico || 0;
+
+    if (percentual <= 0) {
+      return 0;
+    }
+
+    return valorLiquidoCalculado * (percentual / 100);
+  }, [tecnicoSelecionado, valorLiquidoCalculado]);
 
   // ✅ CORREÇÃO: Removido useEffect que causava piscar - valores calculados são mostrados apenas no resumo
 
