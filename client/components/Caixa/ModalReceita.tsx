@@ -888,13 +888,14 @@ export function ModalReceita() {
 
                 <div className="space-y-1">
                   <Label htmlFor="campanha" className="text-xs font-medium">
-                    Campanha
+                    Campanha <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.campanha}
                     onValueChange={(value) =>
                       setFormData((prev) => ({ ...prev, campanha: value }))
                     }
+                    required
                   >
                     <SelectTrigger className="h-9">
                       <SelectValue placeholder="Selecione a campanha" />
