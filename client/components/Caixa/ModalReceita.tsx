@@ -911,6 +911,11 @@ export function ModalReceita() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {showValidationErrors && !formData.campanha && (
+                    <p className="text-xs text-red-500">
+                      Campanha é obrigatória
+                    </p>
+                  )}
                 </div>
               </div>
 
