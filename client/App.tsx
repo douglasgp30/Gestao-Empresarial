@@ -230,6 +230,65 @@ function AppContent() {
 
   // Caso contrário, mostrar o app normal
   return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <ProtectedAppProviders
+                mostrarTour={mostrarTour}
+                fecharTour={fecharTour}
+                completarTour={completarTour}
+              >
+                <MainLayout />
+              </ProtectedAppProviders>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="caixa" element={<Caixa />} />
+          <Route path="contas" element={<Contas />} />
+          <Route path="agendamentos" element={<Agendamentos />} />
+          <Route path="clientes" element={<Clientes />} />
+          <Route path="ponto" element={<Ponto />} />
+          <Route
+            path="funcionarios"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Funcionarios />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="relatorios" element={<Relatorios />} />
+          <Route
+            path="configuracoes"
+            element={
+              <ProtectedRoute requireAdmin>
+                <Configuracoes />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function ProtectedAppProviders({
+  children,
+  mostrarTour,
+  fecharTour,
+  completarTour,
+}: {
+  children: React.ReactNode;
+  mostrarTour: boolean;
+  fecharTour: () => void;
+  completarTour: () => void;
+}) {
+  return (
     <FuncionariosProvider>
       <EntidadesProvider>
         <ClientesProvider>
@@ -238,55 +297,12 @@ function AppContent() {
               <ContasProvider>
                 <RelatoriosProvider>
                   <DashboardProvider>
-                    <BrowserRouter>
-                      <Routes>
-                        <Route path="/login" element={<Login />} />
-                        <Route
-                          path="/"
-                          element={
-                            <ProtectedRoute>
-                              <MainLayout />
-                            </ProtectedRoute>
-                          }
-                        >
-                          <Route index element={<Dashboard />} />
-                          <Route path="caixa" element={<Caixa />} />
-                          <Route path="contas" element={<Contas />} />
-                          <Route
-                            path="agendamentos"
-                            element={<Agendamentos />}
-                          />
-                          <Route path="clientes" element={<Clientes />} />
-                          <Route path="ponto" element={<Ponto />} />
-                          <Route
-                            path="funcionarios"
-                            element={
-                              <ProtectedRoute requireAdmin>
-                                <Funcionarios />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route path="relatorios" element={<Relatorios />} />
-                          <Route
-                            path="configuracoes"
-                            element={
-                              <ProtectedRoute requireAdmin>
-                                <Configuracoes />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route path="*" element={<NotFound />} />
-                        </Route>
-                      </Routes>
-                      <GerenciadorLembretes />
-                    </BrowserRouter>
+                    {children}
+                    <GerenciadorLembretes />
 
                     {/* Tour Guiado */}
                     {mostrarTour && (
-                      <TourGuiado
-                        onClose={fecharTour}
-                        onComplete={completarTour}
-                      />
+                      <TourGuiado onClose={fecharTour} onComplete={completarTour} />
                     )}
                   </DashboardProvider>
                 </RelatoriosProvider>

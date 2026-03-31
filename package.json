@@ -18,7 +18,8 @@
     "start": "node dist/server/node-build.mjs",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "reset:dev": "node scripts/reset-dev.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
