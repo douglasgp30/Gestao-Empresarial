@@ -1,17 +1,37 @@
 #!/usr/bin/env node
-import { PrismaClient } from "@prisma/client";
+import Database from "better-sqlite3";
+import fs from "node:fs";
+import path from "node:path";
 
-const prisma = new PrismaClient();
+const dbPath = path.join(process.cwd(), "prisma", "dev.db");
 
-async function main() {
+function main() {
   console.log("🧪 Iniciando smoke test local...");
 
-  await prisma.$queryRaw`SELECT 1`;
-  const totalFuncionarios = await prisma.funcionario.count();
-  const admin = await prisma.funcionario.findFirst({
-    where: { login: "admin", temAcessoSistema: true },
-    select: { id: true, nome: true, login: true, tipoAcesso: true },
-  });
+  if (!fs.existsSync(dbPath)) {
+    throw new Error("Banco local não encontrado. Rode: npm run setup:dev");
+  }
+
+  const db = new Database(dbPath, { readonly: true });
+
+  const tabelas = db
+    .prepare("SELECT name FROM sqlite_master WHERE type='table'")
+    .all()
+    .map((t) => t.name);
+
+  if (!tabelas.includes("funcionarios")) {
+    throw new Error("Tabela funcionarios não encontrada. Rode: npm run reset:dev");
+  }
+
+  const totalFuncionarios = db
+    .prepare("SELECT COUNT(*) as total FROM funcionarios")
+    .get().total;
+
+  const admin = db
+    .prepare(
+      "SELECT id, nome, login, tipoAcesso FROM funcionarios WHERE login = ? AND temAcessoSistema = 1 LIMIT 1",
+    )
+    .get("admin");
 
   console.log(`✅ Banco respondeu. Funcionários: ${totalFuncionarios}`);
 
@@ -25,11 +45,9 @@ async function main() {
   console.log("🎉 Smoke test concluído com sucesso.");
 }
 
-main()
-  .catch((err) => {
-    console.error("❌ Smoke test falhou:", err.message || err);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+try {
+  main();
+} catch (err) {
+  console.error("❌ Smoke test falhou:", err.message || err);
+  process.exitCode = 1;
+}

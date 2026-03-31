@@ -26,7 +26,8 @@
     "seed:dev": "node scripts/seed-dev.mjs",
     "setup:dev": "node scripts/setup-dev.mjs",
     "test:smoke": "node scripts/smoke-test.mjs",
-    "predev": "node scripts/ensure-dev-ready.mjs"
+    "predev": "node scripts/ensure-dev-ready.mjs",
+    "setup:clean": "npm run reset:dev"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
