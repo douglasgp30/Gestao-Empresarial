@@ -311,29 +311,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     setIsLoading(true);
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Buscar funcionários do localStorage
-    let funcionarios: Funcionario[] = [];
     try {
-      const funcionariosStorage = localStorage.getItem("funcionarios");
-      if (funcionariosStorage) {
-        funcionarios = JSON.parse(funcionariosStorage);
+      // 1) Fluxo principal: autenticação no backend
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          login: credentials.login.trim().toLowerCase(),
+          senha: credentials.senha,
+        }),
+      });
+
+      if (response.ok) {
+        const usuario = await response.json();
+        const authUser: AuthUser = {
+          id: usuario.id,
+          nomeCompleto: usuario.nomeCompleto,
+          login: usuario.login,
+          tipoAcesso: usuario.tipoAcesso,
+          permissaoAcesso: !!usuario.permissaoAcesso,
+          permissoes: usuario.permissoes,
+        };
+
+        setUser(authUser);
+        localStorage.setItem("auth_user", JSON.stringify(authUser));
+        await performAutomaticBackupIfNeeded();
+        return true;
       }
-    } catch (error) {
-      console.warn("Erro ao carregar funcionários para login:", error);
-    }
 
-    const funcionario = funcionarios.find(
-      (f) =>
-        f.login === credentials.login &&
-        f.senha === credentials.senha &&
-        f.permissaoAcesso &&
-        f.ativo,
-    );
+      // 2) Fallback temporário: localStorage (compatibilidade)
+      let funcionarios: Funcionario[] = [];
+      try {
+        const funcionariosStorage = localStorage.getItem("funcionarios");
+        if (funcionariosStorage) {
+          funcionarios = JSON.parse(funcionariosStorage);
+        }
+      } catch (error) {
+        console.warn("Erro ao carregar funcionários para login:", error);
+      }
 
-    if (funcionario) {
+      const funcionario = funcionarios.find(
+        (f) =>
+          (f.login || "").toLowerCase() === credentials.login.trim().toLowerCase() &&
+          f.senha === credentials.senha &&
+          f.permissaoAcesso &&
+          f.ativo,
+      );
+
+      if (!funcionario) {
+        return false;
+      }
+
       const authUser: AuthUser = {
         id: funcionario.id,
         nomeCompleto: funcionario.nomeCompleto,
@@ -344,16 +374,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(authUser);
       localStorage.setItem("auth_user", JSON.stringify(authUser));
-
-      // Verificar se deve fazer backup automático
       await performAutomaticBackupIfNeeded();
-
-      setIsLoading(false);
       return true;
+    } catch (error) {
+      console.error("❌ [AuthContext] Erro no fluxo de login:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
-    return false;
   };
 
   const performAutomaticBackupIfNeeded = async () => {
