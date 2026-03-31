@@ -91,6 +91,7 @@ import NotFound from "./pages/NotFound";
 import PrimeiroAcesso from "./components/Auth/PrimeiroAcesso";
 import TourGuiado, { useTourGuiado } from "./components/ui/tour-guiado";
 import { useAuth } from "./contexts/AuthContext";
+import AppErrorBoundary from "./components/AppErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -322,5 +323,9 @@ let root: ReturnType<typeof createRoot>;
 if (!(rootElement as any)._reactRoot) {
   root = createRoot(rootElement);
   (rootElement as any)._reactRoot = root;
-  root.render(<App />);
+  root.render(
+    <AppErrorBoundary>
+      <App />
+    </AppErrorBoundary>,
+  );
 }

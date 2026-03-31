@@ -19,7 +19,6 @@
     "test": "vitest --run",
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
-    "reset:dev": "node scripts/reset-dev.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",

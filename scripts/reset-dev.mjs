@@ -5,8 +5,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const dbPaths = [
-  path.join(root, "prisma", "dev.db"),
-  path.join(root, "prisma", "prisma", "dev.db"),
+
   path.join(root, "prisma", "dev.db-journal"),
   path.join(root, "prisma", "prisma", "dev.db-journal"),
 ];
@@ -20,8 +19,4 @@ for (const dbPath of dbPaths) {
   }
 }
 
-console.log("🔄 Recriando banco e executando migrations...");
-execSync("npx prisma migrate deploy", { stdio: "inherit" });
 
-console.log("✅ Banco recriado com sucesso.");
-console.log("ℹ️ Próximo passo no navegador: limpar localStorage (DevTools > Application > Local Storage > Clear).");
