@@ -57,6 +57,7 @@ import { cleanFakeDataRoute } from "./routes/clean";
 import descricoesECategoriasRouter from "./routes/descricoes-e-categorias";
 import auditoriaRouter from "./routes/auditoria";
 import pontoRouter from "./routes/ponto";
+import authRouter from "./routes/auth";
 import {
   getLocalizacoesGeograficas,
   getCidades,
@@ -219,6 +220,9 @@ export function createServer(): Express {
     cleanFakeDataRoute,
   );
   app.get("/api/demo", handleDemo);
+
+  // Rotas de Autenticação
+  app.use("/api/auth", authRouter);
 
   // Rotas de Campanhas
   app.get("/api/campanhas", getCampanhas);

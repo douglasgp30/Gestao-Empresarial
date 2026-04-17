@@ -18,7 +18,17 @@
     "start": "node dist/server/node-build.mjs",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "reset:dev": "node scripts/reset-dev.mjs",
+    "postinstall": "npm run setup:prisma",
+    "setup:prisma": "prisma generate",
+    "migrate:dev": "prisma migrate deploy",
+    "seed:dev": "node scripts/seed-dev.mjs",
+    "setup:dev": "node scripts/setup-dev.mjs",
+    "test:smoke": "node scripts/smoke-test.mjs",
+    "predev": "node scripts/ensure-dev-ready.mjs",
+    "setup:clean": "npm run reset:dev",
+    "check:conflicts": "node scripts/check-conflicts.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
