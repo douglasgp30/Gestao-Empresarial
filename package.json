@@ -10,15 +10,6 @@
       "dist/server/**/*.js"
     ]
   },
-  "scripts": {
-    "dev": "vite",
-    "build": "npm run build:client && npm run build:server",
-    "build:client": "vite build",
-    "build:server": "vite build --config vite.config.server.ts",
-    "start": "node dist/server/node-build.mjs",
-    "test": "vitest --run",
-    "format.fix": "prettier --write .",
-    "typecheck": "tsc",
 "scripts": {
   "dev": "vite",
   "build": "npm run build:client && npm run build:server",
@@ -39,7 +30,6 @@
   "setup:clean": "npm run reset:dev",
   "check:conflicts": "node scripts/check-conflicts.mjs"
 },
-  },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^3.9.0",
