@@ -61,30 +61,26 @@ export default function EmpresaLogo({
   const currentVariant = variantClasses[variant];
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center justify-start gap-2 w-full min-w-0">
       <div
-        className={`${currentVariant.iconContainer} ${currentSize.iconContainer} rounded-lg flex-shrink-0`}
+        className={`flex-shrink-0 flex items-center justify-center bg-transparent p-0 m-0`}
+        style={{ minWidth: 0, minHeight: 0, width: size === "lg" ? "112px" : size === "md" ? "48px" : "32px", height: size === "lg" ? "112px" : size === "md" ? "48px" : "32px" }}
       >
         {empresaConfig.logoUrl ? (
           <img
             src={empresaConfig.logoUrl}
             alt="Logo"
-            className={`${currentSize.icon} object-contain`}
+            className="w-full h-full object-contain"
+            style={{ background: "transparent", borderRadius: 0, boxShadow: "none" }}
           />
         ) : (
           <Wrench className={`${currentSize.icon} ${currentVariant.icon}`} />
         )}
       </div>
-      <div className="min-w-0">
-        <h1 className={`${currentSize.title} ${currentVariant.title} truncate`}>
-          {empresaConfig.nomeEmpresa}
-        </h1>
+      <div className="min-w-0 flex flex-col justify-center max-w-full">
+        <h1 className={`${currentSize.title} ${currentVariant.title} whitespace-nowrap`} style={{maxWidth: '100%'}}>{empresaConfig.nomeEmpresa}</h1>
         {showSubtitle && empresaConfig.subtituloEmpresa && (
-          <p
-            className={`${currentSize.subtitle} ${currentVariant.subtitle} truncate`}
-          >
-            {empresaConfig.subtituloEmpresa}
-          </p>
+          <p className={`${currentSize.subtitle} ${currentVariant.subtitle} truncate`}>{empresaConfig.subtituloEmpresa}</p>
         )}
       </div>
     </div>

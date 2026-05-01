@@ -4,22 +4,23 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import EmpresaLogo from "../EmpresaLogo";
+
 import {
-  Menu,
   Home,
   DollarSign,
   FileText,
   Calendar,
-  Users,
+  Clock,
   UserCheck,
+  Users,
   BarChart3,
   Settings,
-  LogOut,
-  ChevronLeft,
   ChevronRight,
-  Clock,
+  ChevronLeft,
+  Menu,
+  LogOut
 } from "lucide-react";
-import { cn } from "../../lib/utils";
+import { cn } from "../../lib/cn";
 
 interface SidebarItem {
   title: string;
@@ -117,22 +118,8 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
       )}
     >
       {/* Header */}
-      <div className="p-4 border-b border-sidebar-border">
-        <div className="flex items-center justify-between">
-          {!collapsed && <EmpresaLogo variant="sidebar" size="md" />}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggle}
-            className="text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            {collapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
+      <div className="p-4 border-b border-sidebar-border flex items-center min-w-0">
+        {!collapsed && <EmpresaLogo variant="sidebar" size="md" />}
       </div>
 
       {/* Navigation */}
@@ -151,8 +138,9 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
                     "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors touch-manipulation",
                     "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                     "min-h-[44px]", // Ensure touch target is at least 44px
-                    isActive &&
-                      "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90",
+                    isActive
+                      ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary)/0.9)]"
+                      : "",
                   )}
                 >
                   <Icon className="h-5 w-5 flex-shrink-0" />
@@ -167,15 +155,11 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
       </nav>
 
       {/* User Info & Logout */}
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-sidebar-border flex flex-col gap-2">
         {!collapsed && (
           <div className="mb-3">
-            <p className="text-sm font-medium text-sidebar-foreground">
-              {user?.nomeCompleto}
-            </p>
-            <p className="text-xs text-sidebar-foreground/70">
-              {user?.tipoAcesso}
-            </p>
+            <p className="text-sm font-medium text-sidebar-foreground">{user?.nomeCompleto}</p>
+            <p className="text-xs text-sidebar-foreground/70">{user?.tipoAcesso}</p>
           </div>
         )}
         <Button
@@ -184,7 +168,7 @@ function Sidebar({ collapsed, onToggle, className }: SidebarProps) {
           onClick={logout}
           className={cn(
             "text-sidebar-foreground hover:bg-destructive hover:text-destructive-foreground",
-            "min-h-[44px] touch-manipulation", // Ensure touch target size
+            "min-h-[44px] touch-manipulation",
             collapsed ? "w-full justify-center" : "w-full justify-start",
           )}
         >
@@ -203,12 +187,12 @@ export default function MainLayout() {
   return (
     <div className="h-screen flex bg-background">
       {/* Desktop Sidebar */}
-      <div
-        className={cn(
-          "hidden md:flex transition-all duration-300",
-          sidebarCollapsed ? "w-16" : "w-64",
-        )}
-      >
+      <div className={cn(
+        "hidden md:flex transition-all duration-300",
+        sidebarCollapsed
+          ? "w-16 min-w-[4rem] max-w-[4rem]"
+          : "min-w-[16rem] max-w-[22rem] w-auto",
+      )} style={{ width: sidebarCollapsed ? undefined : 'fit-content' }}>
         <Sidebar
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -216,17 +200,30 @@ export default function MainLayout() {
         />
       </div>
 
-      {/* Mobile Sidebar */}
-      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="left" className="p-0 w-72 sm:w-80">
-          <Sidebar
-            collapsed={false}
-            onToggle={() => setMobileMenuOpen(false)}
-          />
-        </SheetContent>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header principal com botão de recolher */}
+        <div className="hidden md:flex items-center gap-2 px-4 py-2 border-b bg-background sticky top-0 z-40">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSidebarCollapsed((v) => !v)}
+            className="text-sidebar-foreground hover:bg-sidebar-accent"
+            aria-label={sidebarCollapsed ? "Expandir menu" : "Recolher menu"}
+          >
+            {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
+        </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile Sidebar */}
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetContent side="left" className="p-0 w-72 sm:w-80">
+            <Sidebar
+              collapsed={false}
+              onToggle={() => setMobileMenuOpen(false)}
+            />
+          </SheetContent>
+
           {/* Mobile Header */}
           <div className="md:hidden bg-background border-b px-3 py-2 flex items-center justify-between sticky top-0 z-50">
             <EmpresaLogo variant="default" size="sm" showSubtitle={false} />
@@ -236,13 +233,13 @@ export default function MainLayout() {
               </Button>
             </SheetTrigger>
           </div>
+        </Sheet>
 
-          {/* Page Content */}
-          <main className="flex-1 overflow-auto">
-            <Outlet />
-          </main>
-        </div>
-      </Sheet>
+        {/* Page Content */}
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

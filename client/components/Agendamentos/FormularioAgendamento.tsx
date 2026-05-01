@@ -253,7 +253,10 @@ export default function FormularioAgendamento({
           tipoItem: "cidade",
           ativo: true,
         });
-        setFormData({ ...formData, cidade: novaCidade.trim() });
+        // Aguarda atualização do contexto antes de selecionar a cidade
+        setTimeout(() => {
+          setFormData((prev) => ({ ...prev, cidade: novaCidade.trim(), setor: "" }));
+        }, 100);
         setNovaCidade("");
         setMostrarNovaCidade(false);
         toast({
@@ -272,7 +275,8 @@ export default function FormularioAgendamento({
 
   const gerarHorarios = () => {
     const horarios = [];
-    for (let hora = 6; hora <= 22; hora++) {
+    // Mantém visualmente o scroll inicial em 06:00, mas permite todas as opções
+    for (let hora = 0; hora < 24; hora++) {
       for (let minuto = 0; minuto < 60; minuto += 30) {
         const h = hora.toString().padStart(2, "0");
         const m = minuto.toString().padStart(2, "0");

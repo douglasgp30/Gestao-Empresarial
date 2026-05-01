@@ -240,37 +240,71 @@ export default function Configuracoes() {
     setTemaDark(false);
   };
 
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      // Validar tamanho do arquivo (m��ximo 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        alert("O arquivo deve ter no máximo 2MB.");
-        return;
-      }
+    if (!file) return;
 
-      // Validar tipo do arquivo
-      if (!file.type.startsWith("image/")) {
-        alert("Por favor, selecione apenas arquivos de imagem.");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const logoUrl = e.target?.result as string;
-        setLocalConfig({ ...localConfig, logoUrl });
-
-        // Feedback de sucesso
-        setSavedMessage(true);
-        setTimeout(() => setSavedMessage(false), 2000);
-      };
-      reader.onerror = () => {
-        alert("Erro ao carregar a imagem. Tente novamente.");
-      };
-      reader.readAsDataURL(file);
+    // Validar tipo do arquivo
+    if (!file.type.startsWith("image/")) {
+      alert("Por favor, selecione apenas arquivos de imagem.");
+      return;
     }
 
-    // Limpar o input para permitir upload do mesmo arquivo novamente
+    // Função para comprimir imagem usando canvas
+    const compressImage = (file: File, maxSizeMB = 2): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const img = new window.Image();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return reject("Erro ao criar contexto do canvas");
+            ctx.drawImage(img, 0, 0);
+
+            let quality = 0.92;
+            let dataUrl = "";
+            let mimeType = file.type === "image/png" ? "image/png" : "image/jpeg";
+            // Tenta comprimir iterativamente até ficar abaixo de 2MB
+            do {
+              dataUrl = canvas.toDataURL(mimeType, quality);
+              // Converter base64 para tamanho em bytes
+              const base64Length = dataUrl.length - (dataUrl.indexOf(",") + 1);
+              const sizeInMB = (base64Length * 3) / 4 / (1024 * 1024);
+              if (sizeInMB <= maxSizeMB || quality < 0.5) break;
+              quality -= 0.07;
+            } while (quality > 0.4);
+            resolve(dataUrl);
+          };
+          img.onerror = reject;
+          img.src = e.target?.result as string;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    };
+
+    let logoUrl = "";
+    try {
+      // Se já está abaixo de 2MB, só ler
+      if (file.size <= 2 * 1024 * 1024) {
+        logoUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      } else {
+        logoUrl = await compressImage(file, 2);
+      }
+      setLocalConfig({ ...localConfig, logoUrl });
+      setSavedMessage(true);
+      setTimeout(() => setSavedMessage(false), 2000);
+    } catch (err) {
+      alert("Erro ao processar/comprimir a imagem. Tente novamente.");
+    }
     event.target.value = "";
   };
 
@@ -491,40 +525,37 @@ export default function Configuracoes() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="border-2 border-dashed border-border rounded-lg p-4">
-                  <EmpresaLogo size="lg" />
+              <div className="flex flex-col items-center gap-2 w-full">
+                <div className="flex items-center justify-center w-[56px] h-[56px] bg-transparent p-0 m-0">
+                  <EmpresaLogo size="md" showSubtitle={false} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="logo">Alterar Logo</Label>
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      id="logo"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                    />
+                <div className="flex flex-col items-center gap-2 mt-2">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => document.getElementById("logo")?.click()}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Enviar Imagem
+                  </Button>
+                  <Input
+                    id="logo"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                  {localConfig.logoUrl && (
                     <Button
-                      variant="outline"
-                      onClick={() => document.getElementById("logo")?.click()}
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      onClick={() => setLocalConfig({ ...localConfig, logoUrl: undefined })}
                     >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Enviar Imagem
+                      Remover
                     </Button>
-                    {localConfig.logoUrl && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          setLocalConfig({ ...localConfig, logoUrl: undefined })
-                        }
-                      >
-                        Remover
-                      </Button>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
+                  )}
+                  <p className="text-xs text-muted-foreground text-center">
                     Formatos aceitos: PNG, JPG, SVG (máx. 2MB)
                   </p>
                 </div>
@@ -544,9 +575,12 @@ export default function Configuracoes() {
                 {cores.map((cor) => (
                   <button
                     key={cor.valor}
-                    onClick={() =>
-                      setLocalConfig({ ...localConfig, corPrimaria: cor.valor })
-                    }
+                    onClick={() => {
+                      setLocalConfig((prev) => {
+                        document.documentElement.style.setProperty("--primary", cor.valor);
+                        return { ...prev, corPrimaria: cor.valor };
+                      });
+                    }}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       localConfig.corPrimaria === cor.valor
                         ? "border-foreground"
@@ -568,12 +602,13 @@ export default function Configuracoes() {
                   <Input
                     id="corCustom"
                     value={localConfig.corPrimaria}
-                    onChange={(e) =>
-                      setLocalConfig({
-                        ...localConfig,
-                        corPrimaria: e.target.value,
-                      })
-                    }
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setLocalConfig((prev) => {
+                        document.documentElement.style.setProperty("--primary", value);
+                        return { ...prev, corPrimaria: value };
+                      });
+                    }}
                     placeholder="217 91% 60%"
                   />
                   <div
