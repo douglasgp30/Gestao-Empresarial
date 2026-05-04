@@ -20,42 +20,21 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <div className="text-center">
-        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
-        <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
-          <svg
-            className="animate-spin h-8 w-8 text-slate-400"
-            viewBox="0 0 50 50"
-          >
-            <circle
-              className="opacity-30"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-            />
-            <circle
-              className="text-slate-600"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray="100"
-              strokeDashoffset="75"
-            />
-          </svg>
-          Generating your app...
-        </h1>
-        <p className="mt-4 text-slate-600 max-w-md">
-          Watch the chat on the left for updates that might need your attention
-          to finish generating
-        </p>
-        <p className="mt-4 hidden max-w-md">{exampleFromServer}</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 p-2 sm:p-6">
+      <div className="w-full max-w-2xl mx-auto bg-white/80 rounded-2xl shadow-lg p-6 sm:p-10 flex flex-col items-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-2 text-center">Bem-vindo ao Sistema de Gestão Empresarial</h1>
+        <p className="text-base sm:text-lg text-gray-700 text-center mb-6">Gerencie suas operações, finanças, agendamentos e muito mais de forma simples e eficiente.</p>
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+          <div className="bg-blue-50 rounded-lg p-4 flex flex-col items-center">
+            <span className="text-blue-700 font-semibold">Acesse o menu lateral</span>
+            <span className="text-sm text-blue-600 mt-1 text-center">Utilize o menu para navegar entre os módulos do sistema.</span>
+          </div>
+          <div className="bg-green-50 rounded-lg p-4 flex flex-col items-center">
+            <span className="text-green-700 font-semibold">Totalmente responsivo</span>
+            <span className="text-sm text-green-600 mt-1 text-center">Funciona perfeitamente em computadores, tablets e celulares.</span>
+          </div>
+        </div>
+        <div className="mt-8 text-center text-xs text-gray-400">{exampleFromServer}</div>
       </div>
     </div>
   );

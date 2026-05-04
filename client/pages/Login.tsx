@@ -54,15 +54,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-2 sm:p-4">
+      <Card className="w-full max-w-md shadow-lg rounded-2xl border border-gray-100">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <EmpresaLogo variant="login" size="lg" />
           </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="login">Login</Label>
               <Input
@@ -74,7 +74,7 @@ export default function Login() {
                 placeholder="Digite seu login"
                 autoComplete="username"
                 autoFocus
-                className="w-full"
+                className="w-full h-12 text-base px-4"
               />
             </div>
 
@@ -88,7 +88,7 @@ export default function Login() {
                 onKeyDown={handleKeyDown}
                 placeholder="Digite sua senha"
                 autoComplete="current-password"
-                className="w-full"
+                className="w-full h-12 text-base px-4"
               />
             </div>
 
@@ -98,7 +98,11 @@ export default function Login() {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full h-12 text-base font-semibold rounded-lg shadow-sm bg-primary hover:bg-primary/90 transition"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
